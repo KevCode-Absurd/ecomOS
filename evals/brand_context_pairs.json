@@ -1,0 +1,49 @@
+{
+  "status": "draft_model_reviewed_not_independent_ground_truth",
+  "synthetic_brand_facts": true,
+  "purpose": "Compare the same executor with no library, raw retrieval and reviewed knowledge; do not publish raw extraction candidates to run this evaluation.",
+  "pairs": [
+    {
+      "id": "subscription-gift",
+      "question": "What gift should we add to the third subscription shipment, and what should the reminder say?",
+      "common_facts": {"business": "supplement subscription", "gift_order_number": 3, "recurring_product": "creatine", "observed_cancel_reason": "too much product"},
+      "variants": [
+        {"id": "duplicate", "facts": {"proposed_gift": "another full tub of creatine"}, "expected_difference": "Reject the duplicate-product gift based on excess inventory; propose evaluating a different gift without fabricating its performance."},
+        {"id": "complementary", "facts": {"proposed_gift": "a shaker cup"}, "expected_difference": "The duplicate-product objection does not apply; consider this gift conditionally and communicate it for the correct order number without guaranteeing retention."}
+      ],
+      "shared_requirements": ["Tie reminder to subscribed product and order number", "Do not invent a cancellation lift", "Separate source advice from suggested implementation"],
+      "reference_case": 2,
+      "reference_criteria": ["gift_inventory", "communicate_gifts", "reminder_segments"]
+    },
+    {
+      "id": "cro-traffic",
+      "question": "Should we launch a multivariate test changing the hero, offer and checkout this month?",
+      "common_facts": {"business": "skincare ecommerce", "tracking_validated": true, "baseline_purchase_conversion": 0.02},
+      "variants": [
+        {"id": "low-volume", "facts": {"monthly_sessions": 3000}, "expected_difference": "Flag insufficient basis for multivariate testing and propose a research-led path; do not promise a statistically conclusive test."},
+        {"id": "higher-volume", "facts": {"monthly_sessions": 600000}, "expected_difference": "High volume makes consideration possible, not automatic approval; request effect size, allocation and interactions before final design."}
+      ],
+      "shared_requirements": ["Do not turn a source's 50–100k-session heuristic into a universal sample-size formula", "Define hypothesis and measurement before launching", "Distinguish source recommendations from derived statistical requirements"],
+      "reference_case": 8,
+      "reference_criteria": ["multivariate_volume", "hypothesis", "sample_heuristic", "test_interference"]
+    },
+    {
+      "id": "roas-comparison",
+      "question": "Can we allocate more budget to the item with the higher reported ROAS?",
+      "common_facts": {"business": "established retail brand", "reported_roas_a": 5, "reported_roas_b": 2, "measurement_period_days": 30},
+      "variants": [
+        {"id": "cross-platform", "facts": {"item_a": "Google brand search", "item_b": "TikTok prospecting"}, "expected_difference": "Do not rank channel contribution by these ROAS values; explain funnel roles, attribution and needed business-level evidence."},
+        {"id": "within-platform", "facts": {"item_a": "Meta prospecting campaign A", "item_b": "Meta prospecting campaign B", "same_attribution_settings": true}, "expected_difference": "Allow directional comparison within the platform while asking about spend, audience overlap, marginal returns and uncertainty; do not call it causal proof."}
+      ],
+      "shared_requirements": ["No automatic budget change", "Distinguish attributed performance from incremental impact", "Label additional operator safeguards as derived"],
+      "reference_case": 19,
+      "reference_criteria": ["cross_platform", "within_platform", "financial_metrics"]
+    }
+  ],
+  "scoring": {
+    "dimensions": ["correct_next_action", "brand_applicability", "specialist_detail", "evidence_support", "sequencing", "missing_data_handling", "execution_ready_output"],
+    "scale": {"0": "wrong or missing", "1": "partial", "2": "complete"},
+    "critical_errors": ["fabricated source claim", "unsupported promised lift", "wrong applicability", "contradiction hidden", "unauthorized execution"],
+    "notes": "Scores and critical errors must be reviewed; no automatic keyword proxy establishes semantic correctness. These cases are development cases, not held-out evaluation."
+  }
+}

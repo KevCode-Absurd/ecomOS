@@ -1,0 +1,493 @@
+{
+  "schema_version": 1,
+  "version": "1.0.0-draft",
+  "status": "draft",
+  "domain": "team-and-management",
+  "source_catalog_sha256": "0287a2e2df3a54711125de9d2927b1efd3d7add875be994c4af6f326cfa84074",
+  "required_inputs": [
+    "Business objective",
+    "team capacity",
+    "owners",
+    "process evidence",
+    "deadlines"
+  ],
+  "measures": [
+    "Completion quality",
+    "cycle time",
+    "recurring errors"
+  ],
+  "related_domains": [
+    "finance-and-accounting",
+    "testing",
+    "store-setup"
+  ],
+  "evidence_method": "Local BM25 candidate selection; authored workflow steps are proposals, not source quotations or verified synthesis.",
+  "operating_contract": "../OPERATING_CONTRACT.md",
+  "workflows": [
+    {
+      "id": "team-and-management.operating-cadence",
+      "title": "Define an ecommerce operating cadence",
+      "query": "commit check in close goals ownership team",
+      "steps": [
+        "Translate business outcomes into observable commitments",
+        "Assign owners, dependencies and review dates",
+        "Close commitments with evidence and record lessons"
+      ],
+      "deliverable": "Operating cadence and responsibility map",
+      "status": "draft",
+      "steps_origin": "authored orchestration draft",
+      "retrieval": {
+        "primary_domain": "team-and-management",
+        "related_domains": [
+          "finance-and-accounting",
+          "testing",
+          "store-setup"
+        ],
+        "query": "commit check in close goals ownership team",
+        "selected_card_ids": [
+          "d35411c91008480016afd279",
+          "bc22e9ec9c0504101447ca50",
+          "63cb980cc32a5e25f7063f25"
+        ],
+        "mixed_candidate_ids": [
+          "afb8409d019a53db22348253",
+          "d6b5067b58b0f5f98e6c7906",
+          "8b03a5eaa9769f19bcd9db3c"
+        ],
+        "fallback": "Search primary and related domains using the task and actual constraints; do not silently switch to a different workflow.",
+        "selection_status": "candidate-support-needs-applicability-review"
+      },
+      "supporting_cards": [
+        {
+          "id": "d35411c91008480016afd279",
+          "title": "Run the 3x3 loop: Commit, Check-in, Close for ecommerce teams",
+          "summary": "High-performing teams agree on goals, roles and norms upfront, then repeatedly check in and close the gap between what they say and what they do.",
+          "use_when": "Standing up or fixing the team structure behind a store's merchandising, content, ads or fulfillment operations.",
+          "steps": [
+            "Step 1 — Commit: hold an explicit conversation about three foundations: goals (what we want to achieve), roles (who does what), and norms (how we share information and make decisions). The source stresses these must be explicit and openly discussed, not assumed.",
+            "Step 2 — Check-in: on a recurring basis, revisit those commitments: are we still behind these goals, and does our working style still hold? Mario Musa calls the natural tendency 'drift' — teams get pulled by multiple projects and responsibilities, so goals/roles/norms decay without revisits.",
+            "Step 3 — Close: identify the 'saying-doing gap' between stated intentions and actual behavior, then close it in small, specific steps rather than grand overhauls.",
+            "Pay attention to the environment around each change and adjust it so the small steps are supported, and be a 'realistic optimist' — think ahead about what will get in the way instead of assuming plans will just work.",
+            "Repeat the loop continuously; the source frames it as iterative, not a one-time onboarding event. Ecommerce example: after a catalogue-wide launch has drifted, re-convene, restate the goal (say, conversion on the top 20 SKUs), re-confirm who owns PDP content vs. ad creative vs. inventory, and agree one small test per week."
+          ],
+          "caveats": [
+            "No fixed ratio of check-in time to working time emerged — Mario explicitly says 'it depends' on the team's appetite for process; the important point is that check-ins happen at all.",
+            "Framework is from observation of executive simulation teams, not from measured ecommerce experiments."
+          ],
+          "source_id": "1J_1QWS-roXT8kT70fvReTstWNEVTfTYy",
+          "source_name": "Building High Performance Teams – How-To Tips from Wharton Fellow_Author.docx",
+          "folder": "/21-OPS-team-and-management",
+          "domain": "team-and-management",
+          "section": 0
+        },
+        {
+          "id": "bc22e9ec9c0504101447ca50",
+          "title": "Give ownership for the whole result, not the piece",
+          "summary": "Assigning ownership for a bigger picture rather than a functional slice makes people stretch beyond their scope and integrate with others.",
+          "use_when": "Setting KPIs or goals for category, marketing, supply-chain and merchandising leads on a store team.",
+          "steps": [
+            "Watch for the failure mode shown by the Big Picture exercise: teams given only a one-inch square optimize that square, then discover their enlarged piece doesn't connect — mismatched lines, unblended colors, a patchwork result.",
+            "Instead of measuring each lead solely on their function, give the team a shared measure of the whole outcome — in the source's Intel EPROM example, a division team spanning engineering, manufacturing, marketing and sales each took the same success measure: division profit.",
+            "Expect the team then to contribute across functional boundaries because each member's success depends on the whole, not just their slice.",
+            "Communicate the shared measure clearly enough that people feel the business is 'ours', which the source says produced heightened engagement."
+          ],
+          "caveats": [
+            "The Intel example and the team member's enthusiastic quote are reported case material, not a measured performance uplift.",
+            "Shared measures without clear individual role definitions can blur accountability — pair this with named ownership for the domains inside the whole."
+          ],
+          "source_id": "1ae9VqKDPhE1UGD08PikiIg49ZrANZ4f6",
+          "source_name": "Multipliers_ How the Best Leaders Make Everyone Smarter.docx",
+          "folder": "/21-OPS-team-and-management",
+          "domain": "team-and-management",
+          "section": 6
+        },
+        {
+          "id": "63cb980cc32a5e25f7063f25",
+          "title": "Convert vision into a mission and shared goals the team owns",
+          "summary": "Build team direction top-down from organizational vision to team mission to jointly set goals so members know what is expected and commit.",
+          "use_when": "Writing the charter for a new squad — for example a retention team, content studio, or marketplace expansion pod.",
+          "steps": [
+            "Start from the organizational vision, which the source describes as the 'big picture' that aligns people, ideas and attitudes; it may be vague or specific but must be communicated so members are inspired to be part of it.",
+            "Define the team mission — what the team intends to do, set by leader and members together — and make sure it aligns with that vision.",
+            "Set team goals that directly support both mission and vision; the source stresses that all members should determine the goals, not receive them.",
+            "Check that goals give purpose, clarity and direction, and that roles and responsibilities are clear enough that members can shift responsibilities as needed.",
+            "Build in the source's productive-team conditions where you can: agreement with and commitment to realistic specific goals, team goals weighted as highly as individual goals, diverse and appropriate skill mix, identified norms for managing conflict, managed intra-team competitiveness, and empowerment of all members.",
+            "Where appropriate, use consensus rather than majority vote for decisions, and decide on the substance of an idea rather than the status of whoever proposed it."
+          ],
+          "caveats": [
+            "These are described characteristics of productive teams, not measured outcomes.",
+            "Consensus is qualified in the source as appropriate only 'when appropriate'; it does not demand 100% agreement."
+          ],
+          "source_id": "1M-6al8mthZ9ujcndXlRfPKbXsEauqdvm",
+          "source_name": "Hand-book-on-team-building.docx",
+          "folder": "/21-OPS-team-and-management",
+          "domain": "team-and-management",
+          "section": 1
+        }
+      ],
+      "candidate_scores": [
+        {
+          "card_id": "d35411c91008480016afd279",
+          "score": 21.849805
+        },
+        {
+          "card_id": "bc22e9ec9c0504101447ca50",
+          "score": 16.837912
+        },
+        {
+          "card_id": "63cb980cc32a5e25f7063f25",
+          "score": 15.1282
+        }
+      ],
+      "applicability_checks": [
+        "Does this advice fit the product lifecycle, market, audience and requested deliverable?",
+        "Does it require proof, access, budget or assets the brand does not have?",
+        "Does it change a fixed price, offer, policy or other explicit constraint?",
+        "Are platform details or numerical claims current and substantiated?"
+      ],
+      "output_checks": [
+        "Deliver the specified artifact, not general advice about creating it.",
+        "Use supplied brand facts; label hypotheses and missing inputs separately.",
+        "Preserve relevant source conditions; do not copy another business’s proof or results.",
+        "Include an owner, measurement and decision rule when proposing a test.",
+        "Check the output against the requested constraints and owner feedback."
+      ],
+      "completion_rule": "Stop after the requested artifact passes factual and brief checks; allow at most two revision passes, then report the unresolved issue.",
+      "action_boundary": "Prepare recommendations/artifacts only. Publication, spend changes, customer contact and production modifications require separate task authorization."
+    },
+    {
+      "id": "team-and-management.process-sop",
+      "title": "Document a repeatable ecommerce process",
+      "query": "SOP process delegation checklist quality",
+      "steps": [
+        "Map inputs, decisions, handoffs and failure modes",
+        "Define acceptance checks and escalation ownership",
+        "Test the SOP against a realistic task before adopting it"
+      ],
+      "deliverable": "Task SOP and acceptance checklist",
+      "status": "draft",
+      "steps_origin": "authored orchestration draft",
+      "retrieval": {
+        "primary_domain": "team-and-management",
+        "related_domains": [
+          "finance-and-accounting",
+          "testing",
+          "store-setup"
+        ],
+        "query": "SOP process delegation checklist quality",
+        "selected_card_ids": [
+          "6dc36d7f560163982903a7eb",
+          "10e31326d248d290ba2ed03b",
+          "e3909b2c8cdcde27ef712efe"
+        ],
+        "mixed_candidate_ids": [
+          "99d2957b0b33e7659578e861",
+          "4fe972618132ff757210b309",
+          "38ec5dd1be44cb488927bfa7"
+        ],
+        "fallback": "Search primary and related domains using the task and actual constraints; do not silently switch to a different workflow.",
+        "selection_status": "candidate-support-needs-applicability-review"
+      },
+      "supporting_cards": [
+        {
+          "id": "6dc36d7f560163982903a7eb",
+          "title": "Separate task roles from process roles and staff both",
+          "summary": "Assign explicit task and process roles so the group both achieves its aims and stays focused and harmonious.",
+          "use_when": "Fixing a team that hits tasks but has low morale, or one that is pleasant but never ships.",
+          "steps": [
+            "Task behaviors that move work forward: starting the group working, suggesting directions, offering information and opinions; proposing goals and tasks and developing plans for approaching the task and sharing responsibilities; offering facts, opinions, ideas and relevant information.",
+            "Process behaviors that keep the group functional: listening actively; encouraging compromises and harmonizing; welcoming others' ideas while expressing your own; giving verbal and non-verbal feedback; warmly encouraging participation and visibly valuing contributions; reconciling disagreements when opinions differ.",
+            "Map the broader role set: goal/direction setting, maintenance (tension release, energizing), quality assurance or quality eliciting, monitoring, summarizing/consolidating, empowering/participation, decision making/consensus building, renewal/rejuvenation, leadership, membership.",
+            "Recognize that roles can overlap, and can be given or taken by one or more people.",
+            "Expect the leader to normally hold most roles — but the source notes leaders are often too busy with task performance to perform them well, so delegate specific roles to members with the requisite competence.",
+            "Specific delegated roles include input providing, information seeking, summarizing/consolidating progress into milestones, empowering (acknowledging contributions, building on ideas, complimenting, resolving conflict, using humour to release tension, arranging breaks), and consensus building (ensuring every member gives input, involving quiet members)."
+          ],
+          "caveats": [
+            "The role catalogue is broad and overlapping; assign a small number per person rather than the whole list.",
+            "Roles are often assumed rather than prescribed in practice — the source recommends periodically reviewing which roles are actually being performed and giving feedback on lapses."
+          ],
+          "source_id": "1M-6al8mthZ9ujcndXlRfPKbXsEauqdvm",
+          "source_name": "Hand-book-on-team-building.docx",
+          "folder": "/21-OPS-team-and-management",
+          "domain": "team-and-management",
+          "section": 1
+        },
+        {
+          "id": "10e31326d248d290ba2ed03b",
+          "title": "Delegate problems back: ask for the F-I-X after the A-W-K",
+          "summary": "For routine store problems, ask the accountable owner to propose options while keeping urgent escalation open.",
+          "use_when": "A team member (merchandiser, buyer, store manager, fulfillment lead) escalates a problem to you — a stockout, a listing error, a supplier delay — and waits for you to solve it.",
+          "steps": [
+            "For a routine merchandising, replenishment or creative issue, ask what solutions the owner sees and what help they need.",
+            "Have the owner compare options and recommend a next step within their authority.",
+            "Add context and coaching without automatically taking over the work.",
+            "For a live checkout failure, customer harm or other urgent incident, accept the escalation immediately even when no solution is known.",
+            "Agree who owns the fix, the deadline and when to escalate again."
+          ],
+          "caveats": [
+            "This is a management habit, not a rule about withholding help. The source still has managers engage and support — the point is who owns the fix.",
+            "For genuinely novel or high-risk decisions (a platform migration, a major supplier contract), insisting on a fix before any guidance can waste time; supply context first."
+          ],
+          "source_id": "1ae9VqKDPhE1UGD08PikiIg49ZrANZ4f6",
+          "source_name": "Multipliers_ How the Best Leaders Make Everyone Smarter.docx",
+          "folder": "/21-OPS-team-and-management",
+          "domain": "team-and-management",
+          "section": 7
+        },
+        {
+          "id": "e3909b2c8cdcde27ef712efe",
+          "title": "Leader's Role: Avoid the Accountability Vacuum",
+          "summary": "Strong leaders can accidentally become the only source of discipline; the goal is to let the team be the primary accountability mechanism, with the leader as rare final arbiter.",
+          "use_when": "An operator finds that team members only raise problems to them, not to each other, and wants to shift accountability to the team.",
+          "steps": [
+            "Notice if your own strength as a leader is creating an accountability vacuum — team members may assume the leader will handle discipline, so they hold back.",
+            "Actively encourage and allow the team to serve as the first and primary accountability mechanism.",
+            "Communicate clearly that accountability is a shared team responsibility, not a consensus approach where anyone can opt out.",
+            "Reserve your own intervention as the ultimate arbiter of discipline when the team itself fails — rare, but clear to everyone."
+          ],
+          "caveats": [
+            "The source warns that stepping in too often recreates the vacuum; stepping in too little risks the team never developing its own accountability."
+          ],
+          "source_id": "1nBEOMQNZ0JZzisiGIp-V9XXBZaRvLeBA",
+          "source_name": "The Five Dysfunctions of a Team.docx",
+          "folder": "/21-OPS-team-and-management",
+          "domain": "team-and-management",
+          "section": 5
+        }
+      ],
+      "candidate_scores": [
+        {
+          "card_id": "6dc36d7f560163982903a7eb",
+          "score": 13.226218
+        },
+        {
+          "card_id": "10e31326d248d290ba2ed03b",
+          "score": 13.091355
+        },
+        {
+          "card_id": "e3909b2c8cdcde27ef712efe",
+          "score": 7.993394
+        }
+      ],
+      "applicability_checks": [
+        "Does this advice fit the product lifecycle, market, audience and requested deliverable?",
+        "Does it require proof, access, budget or assets the brand does not have?",
+        "Does it change a fixed price, offer, policy or other explicit constraint?",
+        "Are platform details or numerical claims current and substantiated?"
+      ],
+      "output_checks": [
+        "Deliver the specified artifact, not general advice about creating it.",
+        "Use supplied brand facts; label hypotheses and missing inputs separately.",
+        "Preserve relevant source conditions; do not copy another business’s proof or results.",
+        "Include an owner, measurement and decision rule when proposing a test.",
+        "Check the output against the requested constraints and owner feedback."
+      ],
+      "completion_rule": "Stop after the requested artifact passes factual and brief checks; allow at most two revision passes, then report the unresolved issue.",
+      "action_boundary": "Prepare recommendations/artifacts only. Publication, spend changes, customer contact and production modifications require separate task authorization."
+    },
+    {
+      "id": "team-and-management.capacity-priority",
+      "title": "Prioritise work against team capacity",
+      "query": "team priority bottleneck goals capacity delegation",
+      "steps": [
+        "Identify the current business constraint and competing work",
+        "Estimate capacity, dependencies and delivery risk",
+        "Choose a short committed backlog with clear trade-offs"
+      ],
+      "deliverable": "Prioritised backlog and capacity plan",
+      "status": "draft",
+      "steps_origin": "authored orchestration draft",
+      "retrieval": {
+        "primary_domain": "team-and-management",
+        "related_domains": [
+          "finance-and-accounting",
+          "testing",
+          "store-setup"
+        ],
+        "query": "team priority bottleneck goals capacity delegation",
+        "selected_card_ids": [
+          "8abb782bbe287ce5f01dbaba",
+          "ca4cfa68b414e8ecc7363e54",
+          "2e0b75591c5615c1d035a26f"
+        ],
+        "mixed_candidate_ids": [
+          "d52e908d7529b40133a1f223",
+          "343ad0cbf4157a4deeaa17a9",
+          "03f5accfc4d1c51a66568b12"
+        ],
+        "fallback": "Search primary and related domains using the task and actual constraints; do not silently switch to a different workflow.",
+        "selection_status": "candidate-support-needs-applicability-review"
+      },
+      "supporting_cards": [
+        {
+          "id": "8abb782bbe287ce5f01dbaba",
+          "title": "Estimate the Cost of a Diminisher in a Key Role Before Acting",
+          "summary": "Treat a brilliant but diminishing leader as a bottleneck that caps the output of everyone around them, then decide whether to remove them from leadership rather than necessarily firing them.",
+          "use_when": "A high-performing manager or buyer is personally productive but the team around them is disengaged, siloed, or operating at a fraction of its capacity.",
+          "steps": [
+            "Use the bottleneck analogy from the source: if a machine bottleneck caps your production line at 50 percent capacity, replacing that one machine could double throughput — that is what is at stake with a Diminisher in a key role.",
+            "Recognize the source's claim that Diminishers generate a 2X difference versus Multipliers compared best-to-worst, and that they divert the discretionary effort of others.",
+            "Do not reflexively fire: the source advises smart companies remove Diminishers from key leadership roles, and may isolate or contain those who insist on the approach, where they cannot do great damage.",
+            "Consider the practical objections the source names: Diminishers are, by definition, smart and intimidating, so the course of least resistance is to leave them in place.",
+            "If you do act, the source's rationale is that removing them releases other people's capability and prevents managers beneath them from adopting Diminishing practices.",
+            "Apply this to ecommerce org design: move a brilliant-but-dominating category head into an individual contributor or advisory role rather than letting them lead a team."
+          ],
+          "caveats": [
+            "The 2X figure assumes a best-to-worst comparison (Multiplier versus Diminisher), not Multiplier versus average manager, and holds as an average in the source's research — not a per-team prediction.",
+            "The source's own answer on firing is 'you don't have to fire every Diminisher,' and it acknowledges acting is 'easier said than done.'",
+            "The source lists legitimate exceptions for Diminisher behavior (impending crisis, genuinely superior insight, no time for others to catch up) but says these should be rare."
+          ],
+          "source_id": "1ae9VqKDPhE1UGD08PikiIg49ZrANZ4f6",
+          "source_name": "Multipliers_ How the Best Leaders Make Everyone Smarter.docx",
+          "folder": "/21-OPS-team-and-management",
+          "domain": "team-and-management",
+          "section": 8
+        },
+        {
+          "id": "ca4cfa68b414e8ecc7363e54",
+          "title": "Defend the Off-Site Investment Against 'Real Work' Objections",
+          "summary": "Multi-day off-sites are justified when the team's dysfunction is the actual bottleneck, and the leader must absorb the criticism for taking people out of the office.",
+          "use_when": "Decide whether to pull merchandising, paid media and supply-chain leads out of trading for a planning reset.",
+          "steps": [
+            "Choose a location close enough to avoid expensive travel but far enough to slow people down; the source uses a modest inn rather than a distant resort.",
+            "Pick an off-season, reasonably priced venue with one comfortable, private conference room so the group has nowhere else to go.",
+            "Schedule for early arrival and full days, and expect teammates to test the commitment — the source has one participant arrive at 8:59 for a 9:00 start.",
+            "Tell the team plainly that you know the time out of the office feels unreasonable and that they will understand by the end why it matters.",
+            "Plan breaks (the source gives a whole free afternoon) and expect a long evening session, so energy is spent where the real work happens rather than in a single exhausting block.",
+            "Reject incoming topic suggestions when they don't serve the diagnosis; the source's leader refuses a peer's proposed agenda item because she has her own."
+          ],
+          "caveats": [
+            "Justification depends on dysfunction actually being the constraint; if the store's issue is a broken funnel or an out-of-stock crisis, time away has a higher opportunity cost.",
+            "The source's leader had board support and a turnaround mandate; without that, sustained criticism may block the work."
+          ],
+          "source_id": "1nBEOMQNZ0JZzisiGIp-V9XXBZaRvLeBA",
+          "source_name": "The Five Dysfunctions of a Team.docx",
+          "folder": "/21-OPS-team-and-management",
+          "domain": "team-and-management",
+          "section": 1
+        },
+        {
+          "id": "2e0b75591c5615c1d035a26f",
+          "title": "Shift the Leader Role by Quadrant: Defender, Manager, Lookout, Facilitator",
+          "summary": "A team leader's job changes by work quadrant — buffering, coordinating, scanning or facilitating.",
+          "use_when": "Setting a team lead's priorities for the week across routine operations and emerging channel challenges; diagnosing constant firefighting.",
+          "steps": [
+            "Routine/Autonomous = Defender: act as a buffer between your team and the rest of the organization, defending against unnecessary and overloading reporting requests; check that the team is not generating excess information because you are not present enough to reassure them.",
+            "Routine/Interdependent = Manager: exercise classic coordination management, helping the team build habits so processes run smoothly and reliably.",
+            "Emerging/Autonomous = Lookout: scan within and beyond your area for indicators of problems or change; the source calls this 'helicopter' management — hover, then intervene as needed.",
+            "Emerging/Interdependent = Facilitator: the highest-value and hardest quadrant; bring key players together and ensure each contributes effectively, like a theatrical producer pulling director, actors and technicians into one production.",
+            "Ecommerce example: as Defender, cut redundant store reporting into a dashboard; as Manager, lock weekly promotion and replenishment rhythms; as Lookout, track competitor pricing, ad-platform changes, supplier risk; as Facilitator, convene demand planning, marketing and ops when a channel shift demands a joint response."
+          ],
+          "caveats": [
+            "Quadrant definitions follow the source; a leader can occupy different quadrants in the same day.",
+            "The 'highest payoff' claim for interdependent work is the source's argument, not measured proof."
+          ],
+          "source_id": "1M-6al8mthZ9ujcndXlRfPKbXsEauqdvm",
+          "source_name": "Hand-book-on-team-building.docx",
+          "folder": "/21-OPS-team-and-management",
+          "domain": "team-and-management",
+          "section": 2
+        }
+      ],
+      "candidate_scores": [
+        {
+          "card_id": "8abb782bbe287ce5f01dbaba",
+          "score": 17.600951
+        },
+        {
+          "card_id": "ca4cfa68b414e8ecc7363e54",
+          "score": 17.034087
+        },
+        {
+          "card_id": "2e0b75591c5615c1d035a26f",
+          "score": 15.456993
+        }
+      ],
+      "applicability_checks": [
+        "Does this advice fit the product lifecycle, market, audience and requested deliverable?",
+        "Does it require proof, access, budget or assets the brand does not have?",
+        "Does it change a fixed price, offer, policy or other explicit constraint?",
+        "Are platform details or numerical claims current and substantiated?"
+      ],
+      "output_checks": [
+        "Deliver the specified artifact, not general advice about creating it.",
+        "Use supplied brand facts; label hypotheses and missing inputs separately.",
+        "Preserve relevant source conditions; do not copy another business’s proof or results.",
+        "Include an owner, measurement and decision rule when proposing a test.",
+        "Check the output against the requested constraints and owner feedback."
+      ],
+      "completion_rule": "Stop after the requested artifact passes factual and brief checks; allow at most two revision passes, then report the unresolved issue.",
+      "action_boundary": "Prepare recommendations/artifacts only. Publication, spend changes, customer contact and production modifications require separate task authorization."
+    }
+  ],
+  "foundation_candidates": [
+    {
+      "id": "d35411c91008480016afd279",
+      "title": "Run the 3x3 loop: Commit, Check-in, Close for ecommerce teams",
+      "summary": "High-performing teams agree on goals, roles and norms upfront, then repeatedly check in and close the gap between what they say and what they do.",
+      "use_when": "Standing up or fixing the team structure behind a store's merchandising, content, ads or fulfillment operations.",
+      "steps": [
+        "Step 1 — Commit: hold an explicit conversation about three foundations: goals (what we want to achieve), roles (who does what), and norms (how we share information and make decisions). The source stresses these must be explicit and openly discussed, not assumed.",
+        "Step 2 — Check-in: on a recurring basis, revisit those commitments: are we still behind these goals, and does our working style still hold? Mario Musa calls the natural tendency 'drift' — teams get pulled by multiple projects and responsibilities, so goals/roles/norms decay without revisits.",
+        "Step 3 — Close: identify the 'saying-doing gap' between stated intentions and actual behavior, then close it in small, specific steps rather than grand overhauls.",
+        "Pay attention to the environment around each change and adjust it so the small steps are supported, and be a 'realistic optimist' — think ahead about what will get in the way instead of assuming plans will just work.",
+        "Repeat the loop continuously; the source frames it as iterative, not a one-time onboarding event. Ecommerce example: after a catalogue-wide launch has drifted, re-convene, restate the goal (say, conversion on the top 20 SKUs), re-confirm who owns PDP content vs. ad creative vs. inventory, and agree one small test per week."
+      ],
+      "caveats": [
+        "No fixed ratio of check-in time to working time emerged — Mario explicitly says 'it depends' on the team's appetite for process; the important point is that check-ins happen at all.",
+        "Framework is from observation of executive simulation teams, not from measured ecommerce experiments."
+      ],
+      "source_id": "1J_1QWS-roXT8kT70fvReTstWNEVTfTYy",
+      "source_name": "Building High Performance Teams – How-To Tips from Wharton Fellow_Author.docx",
+      "folder": "/21-OPS-team-and-management",
+      "domain": "team-and-management",
+      "section": 0
+    },
+    {
+      "id": "aedd244c7885b6e618710017",
+      "title": "Slant your meeting table so accountability rolls back to the owner",
+      "summary": "Take part in the work without absorbing problems that belong to someone else — keep action items on their side of the table.",
+      "use_when": "In review meetings where a category owner, channel manager or agent escalates store problems expecting you to take them over.",
+      "steps": [
+        "Engage fully: listen intently, offer carefully dispensed insight, ask great questions, and escalate a critical issue when warranted.",
+        "Aim for the end state where problems pushed at you slide back to where they came from by the close of the conversation.",
+        "Model restraint on note-taking: the source describes an executive who wrote a single note in a small notebook only when he alone was accountable for an action — and because of that selectivity, those commitments were reliably done by the next day.",
+        "Make ownership of the problem, not just the task, stay with the person closest to it.",
+        "Give accountability back with two moves: praise the edge of their thinking, then hand back the problem — the source's phrase pattern is 'that's good thinking' followed by 'you're smart, you can figure this out.'"
+      ],
+      "caveats": [
+        "Attributed to the author's account of leaders he has worked with; the 'slanted table' is a metaphor for a practice, not a measurement.",
+        "This is the opposite of the two-in-a-box support practice, which is used when extra brainpower is genuinely needed — choose deliberately between backing off and adding a partner."
+      ],
+      "source_id": "1ae9VqKDPhE1UGD08PikiIg49ZrANZ4f6",
+      "source_name": "Multipliers_ How the Best Leaders Make Everyone Smarter.docx",
+      "folder": "/21-OPS-team-and-management",
+      "domain": "team-and-management",
+      "section": 6
+    },
+    {
+      "id": "ca4cfa68b414e8ecc7363e54",
+      "title": "Defend the Off-Site Investment Against 'Real Work' Objections",
+      "summary": "Multi-day off-sites are justified when the team's dysfunction is the actual bottleneck, and the leader must absorb the criticism for taking people out of the office.",
+      "use_when": "Decide whether to pull merchandising, paid media and supply-chain leads out of trading for a planning reset.",
+      "steps": [
+        "Choose a location close enough to avoid expensive travel but far enough to slow people down; the source uses a modest inn rather than a distant resort.",
+        "Pick an off-season, reasonably priced venue with one comfortable, private conference room so the group has nowhere else to go.",
+        "Schedule for early arrival and full days, and expect teammates to test the commitment — the source has one participant arrive at 8:59 for a 9:00 start.",
+        "Tell the team plainly that you know the time out of the office feels unreasonable and that they will understand by the end why it matters.",
+        "Plan breaks (the source gives a whole free afternoon) and expect a long evening session, so energy is spent where the real work happens rather than in a single exhausting block.",
+        "Reject incoming topic suggestions when they don't serve the diagnosis; the source's leader refuses a peer's proposed agenda item because she has her own."
+      ],
+      "caveats": [
+        "Justification depends on dysfunction actually being the constraint; if the store's issue is a broken funnel or an out-of-stock crisis, time away has a higher opportunity cost.",
+        "The source's leader had board support and a turnaround mandate; without that, sustained criticism may block the work."
+      ],
+      "source_id": "1nBEOMQNZ0JZzisiGIp-V9XXBZaRvLeBA",
+      "source_name": "The Five Dysfunctions of a Team.docx",
+      "folder": "/21-OPS-team-and-management",
+      "domain": "team-and-management",
+      "section": 1
+    }
+  ],
+  "foundation_note": "Inferred principle labels do not establish universal applicability. Retain source conditions; empty means no matched labelled principle, not absence of foundational knowledge."
+}

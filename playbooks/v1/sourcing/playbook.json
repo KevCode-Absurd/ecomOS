@@ -1,0 +1,492 @@
+{
+  "schema_version": 1,
+  "version": "1.0.0-draft",
+  "status": "draft",
+  "domain": "sourcing",
+  "source_catalog_sha256": "0287a2e2df3a54711125de9d2927b1efd3d7add875be994c4af6f326cfa84074",
+  "required_inputs": [
+    "Specifications/BOM",
+    "supplier quotes",
+    "lead times",
+    "quality evidence",
+    "inventory and cash"
+  ],
+  "measures": [
+    "Landed cost",
+    "defects",
+    "stockouts",
+    "cash tied in inventory"
+  ],
+  "related_domains": [
+    "finance-and-accounting",
+    "product-research",
+    "team-and-management"
+  ],
+  "evidence_method": "Local BM25 candidate selection; authored workflow steps are proposals, not source quotations or verified synthesis.",
+  "operating_contract": "../OPERATING_CONTRACT.md",
+  "workflows": [
+    {
+      "id": "sourcing.supplier-shortlist",
+      "title": "Compare suppliers for an ecommerce product",
+      "query": "supplier BOM specification quality sample redundancy",
+      "steps": [
+        "Define specifications and required quality evidence",
+        "Compare quotes on landed cost, lead time, terms and risk",
+        "Plan samples and acceptance checks before committing volume"
+      ],
+      "deliverable": "Supplier comparison and sample plan",
+      "status": "draft",
+      "steps_origin": "authored orchestration draft",
+      "retrieval": {
+        "primary_domain": "sourcing",
+        "related_domains": [
+          "finance-and-accounting",
+          "product-research",
+          "team-and-management"
+        ],
+        "query": "supplier BOM specification quality sample redundancy",
+        "selected_card_ids": [
+          "89a60c40d39ffec4165fabcd",
+          "8254bc7180c2c3902fcea3f4",
+          "101cb1f841d99d0a183bfd2a"
+        ],
+        "mixed_candidate_ids": [
+          "de43bdcfd16a9df9d3110573",
+          "38c80ae68029672e69cd13ce",
+          "d147d0be41fbb21e1e42ba77"
+        ],
+        "fallback": "Search primary and related domains using the task and actual constraints; do not silently switch to a different workflow.",
+        "selection_status": "candidate-support-needs-applicability-review"
+      },
+      "supporting_cards": [
+        {
+          "id": "89a60c40d39ffec4165fabcd",
+          "title": "Enter Supplier Negotiations From a Position of Redundancy",
+          "summary": "Before asking a supplier to cut cost, do your homework so you already know the benchmark cost and have alternate suppliers mapped — leverage comes from preparation.",
+          "use_when": "Preparing for a cost-down negotiation with a factory or new supplier, or onboarding a supplier for a new product line.",
+          "steps": [
+            "Before negotiating, buy and reverse-engineer competitor samples and map alternative suppliers for every key component.",
+            "Talk to heads of procurement at larger incumbent brands in your category to learn the industry-standard factory margin band (e.g. the source cites jewelry factories at ~5–9% EBITDA).",
+            "Come in with the BOM already drafted from other suppliers so the conversation starts from knowledge, not hope.",
+            "Ask each supplier to build their own BOM to your template rather than sending your current supplier's BOM — you want their independently sourced component costs.",
+            "Always maintain at least one viable alternate factory so you can act if the incumbent won't move."
+          ],
+          "caveats": [
+            "The source's rule: if the factory won't budge, find another factory — but this only works if you actually built the redundancy first. If you entered the relationship giving the factory too much power, leverage is hard to recover."
+          ],
+          "source_id": "1egjI8JUdS3LMMUsqLeDbFtW6Oxjw_4v2",
+          "source_name": "He Went From $3M In Debt To $13M In Cash Using This Playbook.docx",
+          "folder": "/18-COG-sourcing",
+          "domain": "sourcing",
+          "section": 1
+        },
+        {
+          "id": "8254bc7180c2c3902fcea3f4",
+          "title": "Run the Sample Progression: Strike-Off to Pre-Production to Production",
+          "summary": "Advance through three sample stages and hold a factory sample as the gold standard reference so bulk orders can be checked against it.",
+          "use_when": "You are selecting between final candidate factories or preparing to green-light bulk production.",
+          "steps": [
+            "Order samples from every potential supplier you are considering — this tests communication and reliability as much as quality. Watch who follows instructions, sends updates unprompted, and matches your tech pack precisely.",
+            "Start with a strike-off or small test sample to approve materials and prints.",
+            "Move to a pre-production sample that should match your tech pack perfectly. Treat this as the gold standard you will compare bulk against.",
+            "For apparel, confirm grading here: get multiple pre-production samples to verify sizes scale correctly (S, M, L proportions).",
+            "Keep one approved sample in-house and one at the factory for reference.",
+            "After choosing the final supplier, order a production sample built right before mass production. If it does not match the pre-production standard, do not proceed.",
+            "Protect your IP as you scale: keep original tech packs, artwork and source files on your side, sign a manufacturing agreement at volume, and register trademarks."
+          ],
+          "caveats": [
+            "The source presents the production sample mismatch as a hard stop; it does not discuss scenarios where minor deviation might be acceptable.",
+            "Grading guidance is specific to apparel sizing."
+          ],
+          "source_id": "1FiwNYMNjTIvmwNZVGywVhaM3xH2lJYGp",
+          "source_name": "The Ultimate Guide To Product Sourcing In 2026.docx",
+          "folder": "/18-COG-sourcing",
+          "domain": "sourcing",
+          "section": 0
+        },
+        {
+          "id": "101cb1f841d99d0a183bfd2a",
+          "title": "Approve a new factory sample before committing to a store launch",
+          "summary": "Never pitch factory-sourced product to a buyer without first obtaining and inspecting a physical sample from that factory.",
+          "use_when": "Selecting a new supplier or product variation before placing a bulk purchase order for an ecommerce store.",
+          "steps": [
+            "Collect samples from each candidate factory for any new product or new supplier.",
+            "Inspect the sample for the quality attributes your client or store depends on before making any pricing or listing commitments.",
+            "Use approved sample quality and a complete cost quote to decide whether to commit to production and customer-facing promises.",
+            "Keep the sample as the reference for the bulk run, so your quality check has a fixed benchmark.",
+            "Combine sampling with your external vetting: the source builds client trust on saving time and reducing risk, not just lowering cost."
+          ],
+          "caveats": [
+            "A good sample does not guarantee a good bulk run — production quality can drift, so build in pre-shipment checks.",
+            "Sampling adds cost and lead time, which matters most for fast-moving ecommerce launches."
+          ],
+          "source_id": "1UbxjTpKatDyUuGq2MRQI0G6_r7mzH1o-",
+          "source_name": "How He Makes Millions Sourcing Products From China.docx",
+          "folder": "/18-COG-sourcing",
+          "domain": "sourcing",
+          "section": 0
+        }
+      ],
+      "candidate_scores": [
+        {
+          "card_id": "89a60c40d39ffec4165fabcd",
+          "score": 30.473216
+        },
+        {
+          "card_id": "8254bc7180c2c3902fcea3f4",
+          "score": 17.386285
+        },
+        {
+          "card_id": "101cb1f841d99d0a183bfd2a",
+          "score": 17.168222
+        }
+      ],
+      "applicability_checks": [
+        "Does this advice fit the product lifecycle, market, audience and requested deliverable?",
+        "Does it require proof, access, budget or assets the brand does not have?",
+        "Does it change a fixed price, offer, policy or other explicit constraint?",
+        "Are platform details or numerical claims current and substantiated?"
+      ],
+      "output_checks": [
+        "Deliver the specified artifact, not general advice about creating it.",
+        "Use supplied brand facts; label hypotheses and missing inputs separately.",
+        "Preserve relevant source conditions; do not copy another business’s proof or results.",
+        "Include an owner, measurement and decision rule when proposing a test.",
+        "Check the output against the requested constraints and owner feedback."
+      ],
+      "completion_rule": "Stop after the requested artifact passes factual and brief checks; allow at most two revision passes, then report the unresolved issue.",
+      "action_boundary": "Prepare recommendations/artifacts only. Publication, spend changes, customer contact and production modifications require separate task authorization."
+    },
+    {
+      "id": "sourcing.cost-negotiation",
+      "title": "Prepare a supplier negotiation",
+      "query": "BOM cost negotiation volume price payment terms",
+      "steps": [
+        "Break landed cost into components and identify negotiable items",
+        "Compare alternatives and volume commitments against cash exposure",
+        "Prepare requests and acceptable trade-offs"
+      ],
+      "deliverable": "Negotiation brief",
+      "status": "draft",
+      "steps_origin": "authored orchestration draft",
+      "retrieval": {
+        "primary_domain": "sourcing",
+        "related_domains": [
+          "finance-and-accounting",
+          "product-research",
+          "team-and-management"
+        ],
+        "query": "BOM cost negotiation volume price payment terms",
+        "selected_card_ids": [
+          "2cb8e11885e1afc5f86d9ef9",
+          "c7f05c514633358e224d0650",
+          "e929a7dceb465eaed4e4e8b3"
+        ],
+        "mixed_candidate_ids": [
+          "a3a00f7b96c8576e44fafa39",
+          "765be2933ced903dd9234f7d",
+          "561de6374d65f734aa8ce0d1"
+        ],
+        "fallback": "Search primary and related domains using the task and actual constraints; do not silently switch to a different workflow.",
+        "selection_status": "candidate-support-needs-applicability-review"
+      },
+      "supporting_cards": [
+        {
+          "id": "2cb8e11885e1afc5f86d9ef9",
+          "title": "Ask for Volume Price Breaks on Every BOM Line",
+          "summary": "Negotiate component-level price breaks tied to unit volumes, understanding that factory economics rest on machine and labor utilization.",
+          "use_when": "Setting up volume tiers with a factory, planning a purchase order schedule, or forecasting COGS at higher volumes.",
+          "steps": [
+            "For each BOM line (cotton, labor, zippers, polishing/QC, etc.), ask: at what volume does this price drop?",
+            "Frame it around the supplier's utilization — how much of their dedicated line is used, where is idle machine or fixed-labor capacity you can fill?",
+            "Reconcile invoices with the supplier line-by-line (the source has production leads sit with suppliers to do this), so credits for hitting thresholds are actually applied.",
+            "Track price breaks on sub-components too, since suppliers pass through their own sub-vendor economies of scale (e.g. a big zipper maker gives the factory a discount that should flow to you).",
+            "Consider internalizing procurement of key components (buying gold/diamonds/chips directly and supplying your assembler) to capture the sub-vendor margin, but only once you can manage the inventory price risk."
+          ],
+          "caveats": [
+            "The source frames these as credits applied after you hit overage volumes, not blanket discounts — build the mechanism into the agreement. Internalizing components also exposes you to commodity price swings."
+          ],
+          "source_id": "1egjI8JUdS3LMMUsqLeDbFtW6Oxjw_4v2",
+          "source_name": "He Went From $3M In Debt To $13M In Cash Using This Playbook.docx",
+          "folder": "/18-COG-sourcing",
+          "domain": "sourcing",
+          "section": 1
+        },
+        {
+          "id": "c7f05c514633358e224d0650",
+          "title": "Negotiate Down Per-Unit Cost Before You Commit Volume",
+          "summary": "Ask suppliers for a lower unit price rather than accepting the initial quote; small per-unit reductions compound across a large order.",
+          "use_when": "Supplier negotiation: you have a quote in hand for a replenishment or new-product bulk order and are deciding whether to push back on price.",
+          "steps": [
+            "Treat the first quote as an opening position, not a final price. The source got a per-product cost from $6 down to $4.80 through direct negotiation.",
+            "Quantify the saving before you decide how hard to push: the author notes that $1.20 reduction saved roughly $3,500 per order at his volume, which is why the effort was worth it.",
+            "Negotiate alongside volume, payment and shipping terms rather than price alone — suppliers may offer freight consolidation or other concessions instead of a price cut if cash flow constrains your order size.",
+            "A commenter with sourcing expertise suggests unused discounts (volume, consolidated freight) can be repurposed creatively — for example, funding a larger order to unlock a lower tier and structuring payments around it — so ask what other levers exist beyond the sticker price.",
+            "Do not present a source's negotiated outcome as your expected result; your leverage depends on volume, category and supplier."
+          ],
+          "caveats": [
+            "The $6→$4.80 and $3,500 figures are from the author's own order and are examples, not benchmarks.",
+            "Aggressive negotiation can damage a relationship, so weigh it against long-term supply reliability."
+          ],
+          "source_id": "1vFuPtmbb9R1u2oQ41HNihYl2SJ9NmIxF",
+          "source_name": "What I learnt from sourcing e-commerce products from China.docx",
+          "folder": "/18-COG-sourcing",
+          "domain": "sourcing",
+          "section": 0
+        },
+        {
+          "id": "e929a7dceb465eaed4e4e8b3",
+          "title": "Request a Structured Quote Before Sampling",
+          "summary": "A complete quote request forces suppliers to commit on unit cost, MOQ, lead time, packaging and payment terms so factories are comparable side by side.",
+          "use_when": "You have a shortlist of vetted factories and need comparable commercial terms to choose between them or use as negotiation leverage.",
+          "steps": [
+            "Send your tech pack to each shortlisted factory with a request for a quote covering all of the following, not just unit price.",
+            "Ask for unit cost broken out per SKU or variation.",
+            "Ask for minimum order quantity per SKU.",
+            "Ask for lead time to manufacture, in days.",
+            "Ask for packaging details and specifications.",
+            "Ask for payment terms.",
+            "Compare qualified suppliers using the same specifications, quantities and delivery terms; real alternatives can support negotiation, but are not the only reason a factory improves terms."
+          ],
+          "caveats": [
+            "The source does not specify a standard payment-term structure, so negotiate based on what protects your cash flow.",
+            "Getting a competing quote is described as leverage, but the source also warns against hostile squeezing of suppliers."
+          ],
+          "source_id": "1FiwNYMNjTIvmwNZVGywVhaM3xH2lJYGp",
+          "source_name": "The Ultimate Guide To Product Sourcing In 2026.docx",
+          "folder": "/18-COG-sourcing",
+          "domain": "sourcing",
+          "section": 0
+        }
+      ],
+      "candidate_scores": [
+        {
+          "card_id": "2cb8e11885e1afc5f86d9ef9",
+          "score": 26.465719
+        },
+        {
+          "card_id": "c7f05c514633358e224d0650",
+          "score": 23.953587
+        },
+        {
+          "card_id": "e929a7dceb465eaed4e4e8b3",
+          "score": 22.237348
+        }
+      ],
+      "applicability_checks": [
+        "Does this advice fit the product lifecycle, market, audience and requested deliverable?",
+        "Does it require proof, access, budget or assets the brand does not have?",
+        "Does it change a fixed price, offer, policy or other explicit constraint?",
+        "Are platform details or numerical claims current and substantiated?"
+      ],
+      "output_checks": [
+        "Deliver the specified artifact, not general advice about creating it.",
+        "Use supplied brand facts; label hypotheses and missing inputs separately.",
+        "Preserve relevant source conditions; do not copy another business’s proof or results.",
+        "Include an owner, measurement and decision rule when proposing a test.",
+        "Check the output against the requested constraints and owner feedback."
+      ],
+      "completion_rule": "Stop after the requested artifact passes factual and brief checks; allow at most two revision passes, then report the unresolved issue.",
+      "action_boundary": "Prepare recommendations/artifacts only. Publication, spend changes, customer contact and production modifications require separate task authorization."
+    },
+    {
+      "id": "sourcing.inventory-plan",
+      "title": "Plan replenishment under uncertainty",
+      "query": "inventory lead time stockout purchase order demand",
+      "steps": [
+        "Reconcile stock, open orders and demand assumptions",
+        "Model lead-time and demand scenarios with cash constraints",
+        "Propose purchase quantities and review triggers"
+      ],
+      "deliverable": "Replenishment recommendation with scenarios",
+      "status": "draft",
+      "steps_origin": "authored orchestration draft",
+      "retrieval": {
+        "primary_domain": "sourcing",
+        "related_domains": [
+          "finance-and-accounting",
+          "product-research",
+          "team-and-management"
+        ],
+        "query": "inventory lead time stockout purchase order demand",
+        "selected_card_ids": [
+          "8bf409e6c3d5d2bfff0a8ecd",
+          "b2b02a1e47e6cd8453c5ab28",
+          "520876950b5089b2fb3244db"
+        ],
+        "mixed_candidate_ids": [
+          "c8c9e0285d1c94bb1ceec0f0",
+          "88dae8d1f315c0489467aafa",
+          "384fcc700d977347a4dc58f6"
+        ],
+        "fallback": "Search primary and related domains using the task and actual constraints; do not silently switch to a different workflow.",
+        "selection_status": "candidate-support-needs-applicability-review"
+      },
+      "supporting_cards": [
+        {
+          "id": "8bf409e6c3d5d2bfff0a8ecd",
+          "title": "Calculate Reorder Point with Velocity, Lead Time and Safety Stock",
+          "summary": "Reorder Point = (Daily Sales Velocity x Total Lead Time) + Safety Stock, so you reorder before running dry rather than chasing demand.",
+          "use_when": "You are setting reorder triggers and planning replenishment shipments for any SKU.",
+          "steps": [
+            "Measure daily sales velocity: how fast the product actually sells, measured over time. Use Shopify order history to spot velocity, slow movers and seasonal spikes, and review weekly.",
+            "Measure replenishment lead time from releasing a reorder until usable stock is received, including production, freight, customs and receiving; payment date alone may not start the operational clock.",
+            "Set a safety stock buffer to cover sales spikes or freight delays so you keep selling.",
+            "Compute: Reorder Point = (Daily Sales Velocity x Total Lead Time in days) + Safety Stock.",
+            "Example: 50 units/day x 60 days + 500 safety units = 3,500 units. Compare against inventory position: usable on-hand plus confirmed inbound minus committed or backordered demand, avoiding double-counting allocations.",
+            "Feed weekly performance and stock-level reviews into the reorder plan, and communicate them to suppliers before problems appear."
+          ],
+          "caveats": [
+            "The example numbers are illustrative inputs, not benchmarks; your velocity, lead time and safety stock must come from your own data.",
+            "The source attributes a major stockout and lost sales to having no forecasting system in place — treat the formula as a discipline, not a one-time calculation."
+          ],
+          "source_id": "1FiwNYMNjTIvmwNZVGywVhaM3xH2lJYGp",
+          "source_name": "The Ultimate Guide To Product Sourcing In 2026.docx",
+          "folder": "/18-COG-sourcing",
+          "domain": "sourcing",
+          "section": 0
+        },
+        {
+          "id": "b2b02a1e47e6cd8453c5ab28",
+          "title": "Structure Bulk Purchases Around Cash Flow, Not Just Unit Price",
+          "summary": "Unused volume and freight discounts can be leveraged through payment or inventory structures rather than taken as straight price cuts.",
+          "use_when": "Replenishment and cash-flow planning: you are ordering a recurring SKU several times a year and weighing a larger order tier against working capital.",
+          "steps": [
+            "The source describes a 30% deposit and 70% pre-shipment balance as one structure; confirm actual milestones and contractual terms for your order.",
+            "Note the commenter's scenario: a client re-ordering the same product multiple times a year at roughly $10 landed cost. An outside party adds capital to increase the order to a full year's supply, unlocking a volume discount while keeping the client's per-unit cost unchanged at $10.",
+            "The client receives the full year of stock, and only pays the outside party as they consume inventory — removing lead time and MOQ on the portion already warehoused, and improving cash flow.",
+            "For an ecommerce operator, this suggests a decision: if a volume tier would strain cash flow, look for investors or distributors willing to fund the gap and be repaid as you sell through, rather than declining the discount entirely.",
+            "This is a commenter's specific client arrangement, not a standard market practice; structure any such deal with clear inventory ownership and repayment terms."
+          ],
+          "caveats": [
+            "This is one commenter's model, not a proven universal method.",
+            "Splitting inventory ownership introduces legal and accounting complexity that the source does not address."
+          ],
+          "source_id": "1vFuPtmbb9R1u2oQ41HNihYl2SJ9NmIxF",
+          "source_name": "What I learnt from sourcing e-commerce products from China.docx",
+          "folder": "/18-COG-sourcing",
+          "domain": "sourcing",
+          "section": 0
+        },
+        {
+          "id": "520876950b5089b2fb3244db",
+          "title": "Use Payment Terms to Widen Your Float, Not to Chase Sales",
+          "summary": "Your real float is payment terms minus production lead time, so extending net terms buys you error tolerance and free cash flow.",
+          "use_when": "Deciding what payment terms to request from suppliers and how much working capital to hold before scaling ad spend or order volume.",
+          "steps": [
+            "Map the actual deposit, invoice, shipping, receipt, sale and processor-payout dates. If net 90 begins when production starts and stock arrives in 30 days, 60 days remain before payment; a different contractual start changes this calculation.",
+            "Push for longer net terms as you mature — the source went from net 7 to net 90, citing net 180 as an extreme others use.",
+            "Recognize the most valuable outcome is margin of error: marketing is a daily variable cost you can switch off, a purchase order is not.",
+            "Factor in inventory mistakes (e.g. wrong size mix on rings) that eat your float in the real world.",
+            "Target consignment if you can get it: the factory owns goods until you sell, converting a made-to-order business to near-dropship cash dynamics."
+          ],
+          "caveats": [
+            "Consignment is easiest with categories where the supplier can reclaim/resell inventory (the source notes gold's melt value and Hong Kong fulfillment made it feasible for one business); it isn't universally available.",
+            "Time from warehouse arrival to sale and payout consumes the remaining headroom; payment terms alone do not establish cash conversion."
+          ],
+          "source_id": "1egjI8JUdS3LMMUsqLeDbFtW6Oxjw_4v2",
+          "source_name": "He Went From $3M In Debt To $13M In Cash Using This Playbook.docx",
+          "folder": "/18-COG-sourcing",
+          "domain": "sourcing",
+          "section": 1
+        }
+      ],
+      "candidate_scores": [
+        {
+          "card_id": "8bf409e6c3d5d2bfff0a8ecd",
+          "score": 21.774548
+        },
+        {
+          "card_id": "b2b02a1e47e6cd8453c5ab28",
+          "score": 13.474082
+        },
+        {
+          "card_id": "520876950b5089b2fb3244db",
+          "score": 12.045316
+        }
+      ],
+      "applicability_checks": [
+        "Does this advice fit the product lifecycle, market, audience and requested deliverable?",
+        "Does it require proof, access, budget or assets the brand does not have?",
+        "Does it change a fixed price, offer, policy or other explicit constraint?",
+        "Are platform details or numerical claims current and substantiated?"
+      ],
+      "output_checks": [
+        "Deliver the specified artifact, not general advice about creating it.",
+        "Use supplied brand facts; label hypotheses and missing inputs separately.",
+        "Preserve relevant source conditions; do not copy another business’s proof or results.",
+        "Include an owner, measurement and decision rule when proposing a test.",
+        "Check the output against the requested constraints and owner feedback."
+      ],
+      "completion_rule": "Stop after the requested artifact passes factual and brief checks; allow at most two revision passes, then report the unresolved issue.",
+      "action_boundary": "Prepare recommendations/artifacts only. Publication, spend changes, customer contact and production modifications require separate task authorization."
+    }
+  ],
+  "foundation_candidates": [
+    {
+      "id": "b2b02a1e47e6cd8453c5ab28",
+      "title": "Structure Bulk Purchases Around Cash Flow, Not Just Unit Price",
+      "summary": "Unused volume and freight discounts can be leveraged through payment or inventory structures rather than taken as straight price cuts.",
+      "use_when": "Replenishment and cash-flow planning: you are ordering a recurring SKU several times a year and weighing a larger order tier against working capital.",
+      "steps": [
+        "The source describes a 30% deposit and 70% pre-shipment balance as one structure; confirm actual milestones and contractual terms for your order.",
+        "Note the commenter's scenario: a client re-ordering the same product multiple times a year at roughly $10 landed cost. An outside party adds capital to increase the order to a full year's supply, unlocking a volume discount while keeping the client's per-unit cost unchanged at $10.",
+        "The client receives the full year of stock, and only pays the outside party as they consume inventory — removing lead time and MOQ on the portion already warehoused, and improving cash flow.",
+        "For an ecommerce operator, this suggests a decision: if a volume tier would strain cash flow, look for investors or distributors willing to fund the gap and be repaid as you sell through, rather than declining the discount entirely.",
+        "This is a commenter's specific client arrangement, not a standard market practice; structure any such deal with clear inventory ownership and repayment terms."
+      ],
+      "caveats": [
+        "This is one commenter's model, not a proven universal method.",
+        "Splitting inventory ownership introduces legal and accounting complexity that the source does not address."
+      ],
+      "source_id": "1vFuPtmbb9R1u2oQ41HNihYl2SJ9NmIxF",
+      "source_name": "What I learnt from sourcing e-commerce products from China.docx",
+      "folder": "/18-COG-sourcing",
+      "domain": "sourcing",
+      "section": 0
+    },
+    {
+      "id": "89a60c40d39ffec4165fabcd",
+      "title": "Enter Supplier Negotiations From a Position of Redundancy",
+      "summary": "Before asking a supplier to cut cost, do your homework so you already know the benchmark cost and have alternate suppliers mapped — leverage comes from preparation.",
+      "use_when": "Preparing for a cost-down negotiation with a factory or new supplier, or onboarding a supplier for a new product line.",
+      "steps": [
+        "Before negotiating, buy and reverse-engineer competitor samples and map alternative suppliers for every key component.",
+        "Talk to heads of procurement at larger incumbent brands in your category to learn the industry-standard factory margin band (e.g. the source cites jewelry factories at ~5–9% EBITDA).",
+        "Come in with the BOM already drafted from other suppliers so the conversation starts from knowledge, not hope.",
+        "Ask each supplier to build their own BOM to your template rather than sending your current supplier's BOM — you want their independently sourced component costs.",
+        "Always maintain at least one viable alternate factory so you can act if the incumbent won't move."
+      ],
+      "caveats": [
+        "The source's rule: if the factory won't budge, find another factory — but this only works if you actually built the redundancy first. If you entered the relationship giving the factory too much power, leverage is hard to recover."
+      ],
+      "source_id": "1egjI8JUdS3LMMUsqLeDbFtW6Oxjw_4v2",
+      "source_name": "He Went From $3M In Debt To $13M In Cash Using This Playbook.docx",
+      "folder": "/18-COG-sourcing",
+      "domain": "sourcing",
+      "section": 1
+    },
+    {
+      "id": "63dcc0f46e05d9490aa88dfb",
+      "title": "Compare supplier credit with other working-capital options",
+      "summary": "The goal across BOM, price breaks and terms is a supplier relationship where they finance your inventory and dividends.",
+      "use_when": "Designing your overall sourcing/finance strategy and deciding what to prioritize as you scale purchasing.",
+      "steps": [
+        "Stack the levers in order: BOM for cost visibility, then component price breaks, then long payment terms, then consignment.",
+        "Compare actual dated payments, fees, required security and downside obligations across supplier credit and alternatives; the source's lender cost examples are not current quotes.",
+        "Express financing charges in currency and over the financed period; an annual rate on a balance is not automatically the same percentage of COGS or revenue.",
+        "Keep the supplier relationship collaborative and share your vision so they become an eager partner rather than a lender of last resort.",
+        "Choose terms that preserve cash under slower sell-through, defects and delays rather than assuming every saving should fund more advertising."
+      ],
+      "caveats": [
+        "This is Roman Khan's stated approach; results are his own and reflect a specific business mix and scale, not a guarantee. Long terms and consignment still require a supplier willing to extend them."
+      ],
+      "source_id": "1egjI8JUdS3LMMUsqLeDbFtW6Oxjw_4v2",
+      "source_name": "He Went From $3M In Debt To $13M In Cash Using This Playbook.docx",
+      "folder": "/18-COG-sourcing",
+      "domain": "sourcing",
+      "section": 1
+    }
+  ],
+  "foundation_note": "Inferred principle labels do not establish universal applicability. Retain source conditions; empty means no matched labelled principle, not absence of foundational knowledge."
+}

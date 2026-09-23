@@ -1,0 +1,502 @@
+{
+  "schema_version": 1,
+  "version": "1.0.0-draft",
+  "status": "draft",
+  "domain": "store-setup",
+  "source_catalog_sha256": "0287a2e2df3a54711125de9d2927b1efd3d7add875be994c4af6f326cfa84074",
+  "required_inputs": [
+    "Platform/theme",
+    "catalog",
+    "markets",
+    "payments",
+    "shipping",
+    "policies",
+    "access boundaries"
+  ],
+  "measures": [
+    "Successful test purchase",
+    "launch blockers",
+    "checkout errors"
+  ],
+  "related_domains": [
+    "measurement",
+    "speed",
+    "bot-and-agent-security"
+  ],
+  "evidence_method": "Local BM25 candidate selection; authored workflow steps are proposals, not source quotations or verified synthesis.",
+  "operating_contract": "../OPERATING_CONTRACT.md",
+  "workflows": [
+    {
+      "id": "store-setup.launch-store",
+      "title": "Prepare a store for launch",
+      "query": "store setup launch buyable inventory payments shipping",
+      "steps": [
+        "Check product availability, prices and fulfilment settings",
+        "Walk a representative purchase journey in the appropriate test environment",
+        "Assign launch blockers and verify their resolution before release"
+      ],
+      "deliverable": "Launch checklist with evidence and blockers",
+      "status": "draft",
+      "steps_origin": "authored orchestration draft",
+      "retrieval": {
+        "primary_domain": "store-setup",
+        "related_domains": [
+          "measurement",
+          "speed",
+          "bot-and-agent-security"
+        ],
+        "query": "store setup launch buyable inventory payments shipping",
+        "selected_card_ids": [
+          "d7c81282140d8c0a9cd5de68",
+          "a14524485a100465118a5c47",
+          "9237bdf8aa5bda61e30903eb"
+        ],
+        "mixed_candidate_ids": [
+          "c780e415d44d2c082be2c7bd",
+          "4e93962abaeb495f4bfa02fa",
+          "7e066cd286cd76bed76d6b20"
+        ],
+        "fallback": "Search primary and related domains using the task and actual constraints; do not silently switch to a different workflow.",
+        "selection_status": "candidate-support-needs-applicability-review"
+      },
+      "supporting_cards": [
+        {
+          "id": "d7c81282140d8c0a9cd5de68",
+          "title": "Make a product actually buyable before launch",
+          "summary": "The minimum product-admin steps to stop a new product from showing sold out or unaddable-to-cart at launch.",
+          "use_when": "Immediately before driving paid traffic or launch content to a new product, to avoid wasting spend on an unbuyable PDP.",
+          "steps": [
+            "Go to Products, Edit product on the SKU you are launching.",
+            "Set Available inventory (the source example used a large number like 10,000 for a launch SKU) and Save.",
+            "If drop shipping, confirm the fulfillment app or supplier actually holds that stock — Shopify inventory is only a number and does not create real stock.",
+            "After saving, add the product to cart yourself on the live store to confirm it is purchasable and the variant/price is correct."
+          ],
+          "caveats": [
+            "Setting a large inventory number on a drop-ship SKU does not guarantee fulfillment; keep it aligned with real supplier stock.",
+            "If you later toggle inventory tracking, re-check the PDP still allows purchase."
+          ],
+          "source_id": "1Ig6z4IGo0uaqFz7wHZSEla-LB2LUOsUi",
+          "source_name": "Claude & Shopify Built $750k_m Ai Powered Ecom Brand.docx",
+          "folder": "/05-SET-store-setup",
+          "domain": "store-setup",
+          "section": 1
+        },
+        {
+          "id": "a14524485a100465118a5c47",
+          "title": "Doing store setup in the right order to avoid launch breakage",
+          "summary": "Sequence Shopify setup so identity, payments, tax, shipping, domain and tracking are configured before testing and removing the password gate.",
+          "use_when": "You are planning the launch sequence and want to avoid discovering broken checkout or tax settings after customers arrive.",
+          "steps": [
+            "Configure account identity and store settings first, since country, currency and store name affect the defaults of downstream tax and payment screens.",
+            "Set up payments with exact legal identity next, then taxes and physical presence, then shipping zones and package weights, because shipping rates depend on weight data and tax regions depend on where you have presence.",
+            "Connect the custom domain and business email after the store operational settings, so the store is reachable at the final address when you begin testing.",
+            "Install tracking and create the legal pages, then run test-mode orders as the gate that verifies checkout, taxes, shipping rates and policy links together.",
+            "Remove the store password only after the test order passes; the source treats un-gating as the last step, not an early one."
+          ],
+          "caveats": [
+            "This is the source's emphasis on order of operations, not a claim that any other sequence is impossible; it identifies what tends to break if steps are out of order.",
+            "The source warns that interfaces change, so the exact screens for each step should be confirmed in the current Shopify admin."
+          ],
+          "source_id": "1eB2j_ZeImlVA2JjtLr8-WzRNTiMG-oct",
+          "source_name": "The OFFICIAL Shopify 2026 Tutorial.docx",
+          "folder": "/05-SET-store-setup",
+          "domain": "store-setup",
+          "section": 0
+        },
+        {
+          "id": "9237bdf8aa5bda61e30903eb",
+          "title": "Pre-Launch Store Configuration Checklist (Topic Map)",
+          "summary": "A four-part coverage map for a WooCommerce build — domain/email, store configuration, payments/tax, and shipping profiles — to verify nothing was skipped before launch.",
+          "use_when": "You are auditing a WooCommerce store before going live and want to confirm each configuration area is actually done rather than assumed.",
+          "steps": [
+            "Domain and email: confirm the store's domain resolves and transactional email (order confirmations, password resets) actually sends and lands in inboxes — not just spam.",
+            "Store configuration: WordPress installed, theme (e.g. Blocksy) active, page builder (e.g. Elementor) working, store address and currency set correctly.",
+            "Products: at least one Simple Product and one Variable Product published, with prices, stock thresholds, weights/dimensions, and categories assigned.",
+            "Payments and tax: Stripe and PayPal connected and connection-tested, tax plugin configured against the correct store address and calculation basis, test order completed.",
+            "Shipping profiles: zones created for each region, flat vs free-shipping thresholds set deliberately, Shipping Classes assigned to heavy/oversized items and costed.",
+            "Mobile: check key pages on a phone viewport and fix with Elementor responsive toggles.",
+            "Finish with a full test purchase in Test mode before flipping payments to Live."
+          ],
+          "caveats": [
+            "This is a coverage map for baseline configuration — page copy, analytic accuracy, and ongoing speed work belong to separate disciplines and are not covered here.",
+            "Do not treat 'plugin installed' as 'plugin configured'; the test order is the real verification."
+          ],
+          "source_id": "1N7_C41dloQEP_i1ovlcx9YLjlibrEIwZ",
+          "source_name": "WooCommerce Tutorial for Beginners 2026.docx",
+          "folder": "/05-SET-store-setup",
+          "domain": "store-setup",
+          "section": 0
+        }
+      ],
+      "candidate_scores": [
+        {
+          "card_id": "d7c81282140d8c0a9cd5de68",
+          "score": 30.645141
+        },
+        {
+          "card_id": "a14524485a100465118a5c47",
+          "score": 18.137738
+        },
+        {
+          "card_id": "9237bdf8aa5bda61e30903eb",
+          "score": 17.776039
+        }
+      ],
+      "applicability_checks": [
+        "Does this advice fit the product lifecycle, market, audience and requested deliverable?",
+        "Does it require proof, access, budget or assets the brand does not have?",
+        "Does it change a fixed price, offer, policy or other explicit constraint?",
+        "Are platform details or numerical claims current and substantiated?"
+      ],
+      "output_checks": [
+        "Deliver the specified artifact, not general advice about creating it.",
+        "Use supplied brand facts; label hypotheses and missing inputs separately.",
+        "Preserve relevant source conditions; do not copy another business’s proof or results.",
+        "Include an owner, measurement and decision rule when proposing a test.",
+        "Check the output against the requested constraints and owner feedback."
+      ],
+      "completion_rule": "Stop after the requested artifact passes factual and brief checks; allow at most two revision passes, then report the unresolved issue.",
+      "action_boundary": "Prepare recommendations/artifacts only. Publication, spend changes, customer contact and production modifications require separate task authorization."
+    },
+    {
+      "id": "store-setup.change-template",
+      "title": "Specify a storefront template change",
+      "query": "Shopify template Liquid section theme product",
+      "steps": [
+        "Document current behaviour and required shopper outcome",
+        "Specify a scoped change with backup and rollback instructions",
+        "Verify mobile, product selection and purchase-path behaviour"
+      ],
+      "deliverable": "Implementation brief and acceptance checks",
+      "status": "draft",
+      "steps_origin": "authored orchestration draft",
+      "retrieval": {
+        "primary_domain": "store-setup",
+        "related_domains": [
+          "measurement",
+          "speed",
+          "bot-and-agent-security"
+        ],
+        "query": "Shopify template Liquid section theme product",
+        "selected_card_ids": [
+          "c7884fec6d58eb177a45a865",
+          "fe0d110afd3a8e574595786f",
+          "ba017a5df3452f73a52cf85e"
+        ],
+        "mixed_candidate_ids": [
+          "93d8ebb61724a2769e27830f",
+          "c3cde0fb26434b87df3b1727",
+          "577a55dfd0ec83ba51d8e550"
+        ],
+        "fallback": "Search primary and related domains using the task and actual constraints; do not silently switch to a different workflow.",
+        "selection_status": "candidate-support-needs-applicability-review"
+      },
+      "supporting_cards": [
+        {
+          "id": "c7884fec6d58eb177a45a865",
+          "title": "Publish a Custom PDP into Shopify as a Reusable Section",
+          "summary": "Ship a designed product page into Shopify by pasting the generated code as a Liquid section file, then adding it to a product template.",
+          "use_when": "Moving a page built in an external page designer into a live Shopify store.",
+          "steps": [
+            "In Shopify admin go to Online Store, then edit the theme code, and create a new section file with a clear naming convention (source used a WLE/brand/product prefix plus the .liquid extension).",
+            "Paste the generated page code into that section file and save; the file is then stored permanently in the store and can be deleted later if needed.",
+            "Create the product in Products, upload images, set the selling price (source used the supplier's recommended price of 21.50), and confirm inventory is not zero — the source set available units to 10,000 so the page would not show 'sold out'.",
+            "Under the theme's product templates, create a new template for this product and hide the default theme sections you do not want.",
+            "Add a section and select your custom section from the list; the whole page loads in.",
+            "In the section settings, explicitly select the product — the source says this is 'the biggest thing' to do — which then populates images and price automatically.",
+            "Reorder, show or hide individual blocks within the section to match your preferred merchandising.",
+            "Verify the current Shopify theme editor steps in your admin, as menus and labels change."
+          ],
+          "caveats": [
+            "Custom Liquid sections need maintenance when the theme updates.",
+            "Bundles and subscription options are configured separately in the product area, not inside the page section."
+          ],
+          "source_id": "1Ig6z4IGo0uaqFz7wHZSEla-LB2LUOsUi",
+          "source_name": "Claude & Shopify Built $750k_m Ai Powered Ecom Brand.docx",
+          "folder": "/05-SET-store-setup",
+          "domain": "store-setup",
+          "section": 2
+        },
+        {
+          "id": "fe0d110afd3a8e574595786f",
+          "title": "Build richer static pages with templates instead of plain text",
+          "summary": "Turn flat pages like About Us into designed pages by creating templates and assigning them.",
+          "use_when": "Creating or upgrading About Us, story or other static content pages.",
+          "steps": [
+            "A page with only text pasted into the admin renders as a plain static page.",
+            "To design it, create a template for that page and build it with sections like any other page on the store: image-with-text-overlay for a brand image, rich text for the story, image-with-text blocks, scrolling panels, video-with-text.",
+            "Fill content directly in the template sections; because static pages don't vary per product, meta fields are unnecessary here.",
+            "Remove sections you don't need and flip image/text orientation for variety.",
+            "Save the template, then go back to the page in the admin and assign the template from the template selector.",
+            "Apply the same template logic to any other page you want to look designed rather than static."
+          ],
+          "caveats": [
+            "Templates must be assigned to the page after creation or the design won't appear."
+          ],
+          "source_id": "14IqjWo1w9zow-528ogyCrcKOs44cVS3R",
+          "source_name": "Shopify for Beginners_ Everything From Setup to Your First Sale.docx",
+          "folder": "/05-SET-store-setup",
+          "domain": "store-setup",
+          "section": 4
+        },
+        {
+          "id": "ba017a5df3452f73a52cf85e",
+          "title": "Turn a default theme into a brand with global settings and a transparent logo",
+          "summary": "The fast foundational pass — hero H1, colors, typography, logo — that makes a template feel intentional before deeper section work.",
+          "use_when": "Customizing a freshly published theme so it stops looking generic and starts reading as a real brand.",
+          "steps": [
+            "Open Edit theme. The left panel lists sections; the right panel is a live preview you refresh as you change things.",
+            "Start with the header structure and alignment even if your logo is not ready yet.",
+            "Go to Theme settings > Colors: set the primary brand color and keep the background white. The source argues white backgrounds generally convert better because products stand out on them.",
+            "Go to typography settings and choose simple, readable fonts (the source names Montserrat and Source Sans Pro). Decorative fonts are explicitly called a clarity risk — if customers struggle to read, they leave.",
+            "Generate a minimal logo with an AI image tool or free logo tools; text-based logos work well. Then use a background remover such as remove.bg to export a transparent PNG — the source calls messy logo backgrounds a common beginner mistake that instantly lowers perceived quality.",
+            "Upload via the header/theme settings and adjust size so it looks balanced, not oversized or tiny.",
+            "Optionally build a cohesive palette by asking an AI for a primary, secondary and accent hex set, then paste the primary hex into the color field and keep contrast high so text stays legible.",
+            "Optionally use the theme editor's AI section recommendations: describe your brand in a few sentences and it generates layout suggestions for your niche."
+          ],
+          "caveats": [
+            "AI-generated palettes and sections are starting points; you still apply and review them inside the theme editor.",
+            "White background and font choices are the source's conversion-oriented opinions, not tested rules for every brand."
+          ],
+          "source_id": "1ljIAr2ylUWZvpnQdDsCM3ObyPshKXZE4",
+          "source_name": "Shopify Store Setup Full Tutorial 2026_ Step by Step.docx",
+          "folder": "/05-SET-store-setup",
+          "domain": "store-setup",
+          "section": 0
+        }
+      ],
+      "candidate_scores": [
+        {
+          "card_id": "c7884fec6d58eb177a45a865",
+          "score": 29.447399
+        },
+        {
+          "card_id": "fe0d110afd3a8e574595786f",
+          "score": 19.3177
+        },
+        {
+          "card_id": "ba017a5df3452f73a52cf85e",
+          "score": 18.240388
+        }
+      ],
+      "applicability_checks": [
+        "Does this advice fit the product lifecycle, market, audience and requested deliverable?",
+        "Does it require proof, access, budget or assets the brand does not have?",
+        "Does it change a fixed price, offer, policy or other explicit constraint?",
+        "Are platform details or numerical claims current and substantiated?"
+      ],
+      "output_checks": [
+        "Deliver the specified artifact, not general advice about creating it.",
+        "Use supplied brand facts; label hypotheses and missing inputs separately.",
+        "Preserve relevant source conditions; do not copy another business’s proof or results.",
+        "Include an owner, measurement and decision rule when proposing a test.",
+        "Check the output against the requested constraints and owner feedback."
+      ],
+      "completion_rule": "Stop after the requested artifact passes factual and brief checks; allow at most two revision passes, then report the unresolved issue.",
+      "action_boundary": "Prepare recommendations/artifacts only. Publication, spend changes, customer contact and production modifications require separate task authorization."
+    },
+    {
+      "id": "store-setup.audit-store",
+      "title": "Audit store readiness",
+      "query": "store setup navigation checkout product trust",
+      "steps": [
+        "Inspect catalog, navigation and essential product information",
+        "Check market-specific payment, delivery and policy clarity",
+        "Prioritise broken purchase paths over cosmetic improvements"
+      ],
+      "deliverable": "Store readiness audit",
+      "status": "draft",
+      "steps_origin": "authored orchestration draft",
+      "retrieval": {
+        "primary_domain": "store-setup",
+        "related_domains": [
+          "measurement",
+          "speed",
+          "bot-and-agent-security"
+        ],
+        "query": "store setup navigation checkout product trust",
+        "selected_card_ids": [
+          "ab549d0194fc9ddaddcdb0f1",
+          "ed834e77dbd7bccfdbb5194b",
+          "c39aeb8d4ca961859a00d1db"
+        ],
+        "mixed_candidate_ids": [
+          "e0ab1f148d59388bd486efa0",
+          "e6fb10561aef213b43d079cb",
+          "e1020c15977b0bf8dd0999d4"
+        ],
+        "fallback": "Search primary and related domains using the task and actual constraints; do not silently switch to a different workflow.",
+        "selection_status": "candidate-support-needs-applicability-review"
+      },
+      "supporting_cards": [
+        {
+          "id": "ab549d0194fc9ddaddcdb0f1",
+          "title": "Run a Pre-Launch Audit of Products, Policies and Navigation",
+          "summary": "Use Sidekick to scan for missing descriptions, prices and images, generate required policy pages, then do a final click-through of the store as a first-time visitor.",
+          "use_when": "Final quality pass before removing password protection, when the builder has been staring at the store too long to spot obvious errors.",
+          "steps": [
+            "Ask Sidekick to scan the product list for missing descriptions or prices; Sidekick is described as effective at catching missing product images, pricing gaps and half-finished details.",
+            "Ask Sidekick to verify all contact, shipping and return policies are set up correctly.",
+            "Ensure the essential pages exist before launch: contact page, shipping policy, return policy, privacy policy and terms of service — these affect both customer trust and how Google evaluates the site.",
+            "Generate first drafts of policies by asking Sidekick (e.g. a shipping policy, or a return policy for a clothing business with a 30-day window), then customize to match actual practices.",
+            "Do a final walkthrough as a first-time visitor: click through navigation, add an item to the cart, and complete checkout in test mode.",
+            "Confirm shipping rates look right and all payment options work with test card numbers rather than a real card.",
+            "Repeat the walkthrough on a phone before launch."
+          ],
+          "caveats": [
+            "AI-generated policies are starting points to customize, not legal documents to publish unedited.",
+            "The source frames missing policy pages as a red flag for both shoppers and search engines; it does not promise a ranking outcome."
+          ],
+          "source_id": "1eB2j_ZeImlVA2JjtLr8-WzRNTiMG-oct",
+          "source_name": "The OFFICIAL Shopify 2026 Tutorial.docx",
+          "folder": "/05-SET-store-setup",
+          "domain": "store-setup",
+          "section": 1
+        },
+        {
+          "id": "ed834e77dbd7bccfdbb5194b",
+          "title": "Configure cart behavior: drawer vs page and free shipping bar",
+          "summary": "Choose whether Add to cart opens a cart drawer or navigates to the cart page, and whether to add a free shipping bar, since it affects how easily shoppers keep browsing.",
+          "use_when": "Setting up cart experience before launch, and optimizing how customers proceed from product to checkout.",
+          "steps": [
+            "In theme settings' Cart options, choose between 'drawer' and 'page'. Drawer opens a popup overlay; page sends the shopper to the cart page.",
+            "Prefer the drawer: the presenter argues page cart forces shoppers to click back to keep browsing, making it worse for browsing flow. Confirm this against your own store's data rather than treating it as universal.",
+            "Optionally add a free shipping bar in the cart drawer and customize its colors, so shoppers see progress toward free shipping.",
+            "Test the actual add-to-cart flow via quick buy and normal product page to confirm the drawer/page setting applies consistently in your theme.",
+            "Review cart-related theme settings for anything else (e.g. cart notes, upsell blocks) that the theme exposes, and skip settings you won't use."
+          ],
+          "caveats": [
+            "Drawer vs page preference is a stated opinion; some stores/traffic convert better on the cart page. Test rather than assume.",
+            "Available cart settings vary by theme."
+          ],
+          "source_id": "14IqjWo1w9zow-528ogyCrcKOs44cVS3R",
+          "source_name": "Shopify for Beginners_ Everything From Setup to Your First Sale.docx",
+          "folder": "/05-SET-store-setup",
+          "domain": "store-setup",
+          "section": 2
+        },
+        {
+          "id": "c39aeb8d4ca961859a00d1db",
+          "title": "Build Store Front-End Structure That Mirrors Top Ecommerce Sites",
+          "summary": "Lay out the storefront with the standard components shoppers expect on the homepage, shop and product pages.",
+          "use_when": "Planning homepage and shop-page sections for a new store, so shoppers can search, browse and buy without friction.",
+          "steps": [
+            "Header: logo left, navigation menu centre, and search, account and cart buttons right. Make the cart a mini-cart drawer that opens from the side and links to the full cart page.",
+            "My Account should let customers manage orders, delivery addresses and account details so they self-serve instead of contacting you.",
+            "Homepage order used in the build: banner, call-to-action, best-selling products with add-to-cart, a category section, latest products with a countdown offer, testimonials for trust, blog posts, and a footer.",
+            "Shop page: product grid with add-to-cart and wishlist heart buttons, plus sidebar widgets — product search, price filter, recently viewed products, and category/tag filters.",
+            "Product page: name, description, images, variations, a stock progress bar showing remaining stock, quantity selector, add-to-cart, full description, additional information, reviews and related products.",
+            "Cart and checkout: allow removing items and editing quantities in the cart, then checkout with contact details, billing address, payment method choice, a coupon field that discounts automatically, an order summary showing tax, discount, subtotal and total, and a thank-you page after the order is placed."
+          ],
+          "caveats": [
+            "This is a conventional structure the source copied from large marketplaces, not a validated conversion benchmark — treat each section as a hypothesis to test for your catalog.",
+            "A stock progress bar can create urgency or backfire by discouraging purchase when stock looks low; test it."
+          ],
+          "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+          "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+          "folder": "/05-SET-store-setup",
+          "domain": "store-setup",
+          "section": 1
+        }
+      ],
+      "candidate_scores": [
+        {
+          "card_id": "ab549d0194fc9ddaddcdb0f1",
+          "score": 14.864951
+        },
+        {
+          "card_id": "ed834e77dbd7bccfdbb5194b",
+          "score": 13.818096
+        },
+        {
+          "card_id": "c39aeb8d4ca961859a00d1db",
+          "score": 13.336834
+        }
+      ],
+      "applicability_checks": [
+        "Does this advice fit the product lifecycle, market, audience and requested deliverable?",
+        "Does it require proof, access, budget or assets the brand does not have?",
+        "Does it change a fixed price, offer, policy or other explicit constraint?",
+        "Are platform details or numerical claims current and substantiated?"
+      ],
+      "output_checks": [
+        "Deliver the specified artifact, not general advice about creating it.",
+        "Use supplied brand facts; label hypotheses and missing inputs separately.",
+        "Preserve relevant source conditions; do not copy another business’s proof or results.",
+        "Include an owner, measurement and decision rule when proposing a test.",
+        "Check the output against the requested constraints and owner feedback."
+      ],
+      "completion_rule": "Stop after the requested artifact passes factual and brief checks; allow at most two revision passes, then report the unresolved issue.",
+      "action_boundary": "Prepare recommendations/artifacts only. Publication, spend changes, customer contact and production modifications require separate task authorization."
+    }
+  ],
+  "foundation_candidates": [
+    {
+      "id": "d082e7bbfa8ab1aab86e6b89",
+      "title": "Know which three Shopify admin areas actually run the store",
+      "summary": "Reduce admin overwhelm to Products, Online Store and Settings, the three sections that control selling, appearance and configuration.",
+      "use_when": "Orienting yourself in a new Shopify admin before adding products, designing the storefront or configuring checkout.",
+      "steps": [
+        "Treat the admin as the store's control center: Orders, Products, Customers, Marketing, Discounts, Content, Markets, Analytics all live in one menu.",
+        "Prioritize Products — this is where you add and manage the items you sell, including titles, descriptions, images, pricing, inventory and variants.",
+        "Then Online Store — where you select and edit themes, build pages and manage navigation and the visual front end.",
+        "Then Settings — where payments, shipping, taxes and store-wide configuration live.",
+        "The source claims these three areas cover almost everything that matters; use them as the map, not as a reason to ignore Orders, discounts or analytics once you are live.",
+        "Also note the source's framing: your store is technically already live at signup but password-protected, so you are optimizing an existing shell rather than starting from zero."
+      ],
+      "caveats": [
+        "Admin layout and menu labels change between Shopify releases; verify the current interface rather than hunting for exact labels."
+      ],
+      "source_id": "1ljIAr2ylUWZvpnQdDsCM3ObyPshKXZE4",
+      "source_name": "Shopify Store Setup Full Tutorial 2026_ Step by Step.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 0
+    },
+    {
+      "id": "d6854b97be2c5cbde333cc32",
+      "title": "Verifying each setup step actually worked",
+      "summary": "Close out each store configuration step with a concrete check, because a saved setting is not proof that checkout, tax or links behave correctly.",
+      "use_when": "You have configured a store section such as payments, shipping or domains and want to confirm it works before relying on it.",
+      "steps": [
+        "After saving a setting, perform the action a customer would: place a test order for payments and checkout, quote a multi-item order for shipping rates, and open each footer link for legal pages.",
+        "Check the domain resolves at the custom address rather than only the myshopify.com URL before considering the domain connected.",
+        "Confirm the analytics platform receives data during a test session rather than only checking that a script tag exists in the theme.",
+        "Check tax and shipping appear correctly in the test order total instead of only checking that the settings saved.",
+        "Log any step that cannot be verified and resolve it before removing the store password; treat the test order as the aggregated proof of the whole setup."
+      ],
+      "caveats": [
+        "Some checks, such as DNS propagation, are outside your control and only show status rather than instant confirmation.",
+        "Test mode verifies logic but does not prove a live payment settles; complete any live transaction test the current Shopify process requires."
+      ],
+      "source_id": "1eB2j_ZeImlVA2JjtLr8-WzRNTiMG-oct",
+      "source_name": "The OFFICIAL Shopify 2026 Tutorial.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 0
+    },
+    {
+      "id": "a14524485a100465118a5c47",
+      "title": "Doing store setup in the right order to avoid launch breakage",
+      "summary": "Sequence Shopify setup so identity, payments, tax, shipping, domain and tracking are configured before testing and removing the password gate.",
+      "use_when": "You are planning the launch sequence and want to avoid discovering broken checkout or tax settings after customers arrive.",
+      "steps": [
+        "Configure account identity and store settings first, since country, currency and store name affect the defaults of downstream tax and payment screens.",
+        "Set up payments with exact legal identity next, then taxes and physical presence, then shipping zones and package weights, because shipping rates depend on weight data and tax regions depend on where you have presence.",
+        "Connect the custom domain and business email after the store operational settings, so the store is reachable at the final address when you begin testing.",
+        "Install tracking and create the legal pages, then run test-mode orders as the gate that verifies checkout, taxes, shipping rates and policy links together.",
+        "Remove the store password only after the test order passes; the source treats un-gating as the last step, not an early one."
+      ],
+      "caveats": [
+        "This is the source's emphasis on order of operations, not a claim that any other sequence is impossible; it identifies what tends to break if steps are out of order.",
+        "The source warns that interfaces change, so the exact screens for each step should be confirmed in the current Shopify admin."
+      ],
+      "source_id": "1eB2j_ZeImlVA2JjtLr8-WzRNTiMG-oct",
+      "source_name": "The OFFICIAL Shopify 2026 Tutorial.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 0
+    }
+  ],
+  "foundation_note": "Inferred principle labels do not establish universal applicability. Retain source conditions; empty means no matched labelled principle, not absence of foundational knowledge."
+}

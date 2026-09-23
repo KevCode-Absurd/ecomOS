@@ -1,0 +1,499 @@
+{
+  "schema_version": 1,
+  "version": "1.0.0-draft",
+  "status": "draft",
+  "domain": "product-research",
+  "source_catalog_sha256": "0287a2e2df3a54711125de9d2927b1efd3d7add875be994c4af6f326cfa84074",
+  "required_inputs": [
+    "Market",
+    "product candidates",
+    "customer evidence",
+    "target price",
+    "landed costs",
+    "constraints"
+  ],
+  "measures": [
+    "Contribution per order",
+    "validation purchases",
+    "return reasons"
+  ],
+  "related_domains": [
+    "avatars",
+    "offers",
+    "sourcing",
+    "finance-and-accounting"
+  ],
+  "evidence_method": "Local BM25 candidate selection; authored workflow steps are proposals, not source quotations or verified synthesis.",
+  "operating_contract": "../OPERATING_CONTRACT.md",
+  "workflows": [
+    {
+      "id": "product-research.validate-product",
+      "title": "Validate an ecommerce product opportunity",
+      "query": "product research demand selection validation margin",
+      "steps": [
+        "Separate customer-problem evidence from popularity proxies",
+        "Check unit economics and fulfilment constraints before prioritising candidates",
+        "Define a bounded validation with explicit reject and proceed criteria"
+      ],
+      "deliverable": "Candidate comparison and validation brief",
+      "status": "draft",
+      "steps_origin": "authored orchestration draft",
+      "retrieval": {
+        "primary_domain": "product-research",
+        "related_domains": [
+          "avatars",
+          "offers",
+          "sourcing",
+          "finance-and-accounting"
+        ],
+        "query": "product research demand selection validation margin",
+        "selected_card_ids": [
+          "a20e53fb1d991a39e79282c3",
+          "cccca902b3896ea85b116184",
+          "178c6277a818e77ecad08171"
+        ],
+        "mixed_candidate_ids": [
+          "da1c4ad0b07f73d74e11b23c",
+          "cc5525cdafc8c55c5b697173",
+          "cb1e0f63e55e5b76dea610b0"
+        ],
+        "fallback": "Search primary and related domains using the task and actual constraints; do not silently switch to a different workflow.",
+        "selection_status": "candidate-support-needs-applicability-review"
+      },
+      "supporting_cards": [
+        {
+          "id": "a20e53fb1d991a39e79282c3",
+          "title": "Score opportunities on wholesale-to-retail margin before designing",
+          "summary": "The sourcing tool reports wholesale cost, target retail price and gross margin percentage so you can compare product ideas on economics, not just demand.",
+          "use_when": "Choosing between several validated product ideas, or sanity-checking that a category can support the ad and fulfilment costs of ecommerce.",
+          "steps": [
+            "For each candidate product, record wholesale cost, target retail price, MOQ range and the reported gross margin percentage.",
+            "Compare across products on margin as well as demand. The source's example showed hoodies at roughly 200-300% margin while phone cases were cited at 300-400%, with a $6.71 wholesale hoodie as a concrete figure.",
+            "Where margins depend on licensing, treat the licence cost as a separate line before deciding; the source flags licensing as a requirement for the branded example.",
+            "Treat margin percentage as covering product cost only. It does not include freight, platform fees, returns or paid acquisition, so model those separately before committing."
+          ],
+          "caveats": [
+            "Margin and wholesale figures from the tool are estimates and vary by supplier and order size; confirm with actual quotes.",
+            "A high margin category may still be unviable once acquisition cost and returns are included."
+          ],
+          "source_id": "1TBuQhUO2RtHPFE7G4zUgOu5MbpD8jB60",
+          "source_name": "Making $$ with Alibaba's NEW AI Agent (Full Demo).docx",
+          "folder": "/01-PRD-product-research",
+          "domain": "product-research",
+          "section": 0
+        },
+        {
+          "id": "cccca902b3896ea85b116184",
+          "title": "Product Criteria: Daily Problem Plus Retail Absence",
+          "summary": "Two baseline criteria — a problem that recurs daily and no big-box retail availability — for screening product ideas.",
+          "use_when": "Screening candidate products before spending on creative, site build or inventory, especially in health and wellness.",
+          "steps": [
+            "Check that the product solves a real problem, either a deep emotional problem/desire or a physical problem the buyer feels every single day.",
+            "Use the source's example: foot pain — felt every time the person walks — so they will buy almost anything if the copy is good.",
+            "Confirm the product is not available in big-box retail stores; retail absence protects margin and ad-driven demand.",
+            "Prefer problems with high daily frequency and strong aversion (chronic pain, child sleep disruption, incontinence) because urgency shortens the buying decision.",
+            "Assess 'deeply annoying daily problem' as a better signal than 'cool product' — the source explicitly rates a boring problem like tinnitus higher than a gimmicky pillow because of the ongoing irritation."
+          ],
+          "caveats": [
+            "Applies to physical problem-solution goods aimed at older buyers; not a universal test for all ecommerce categories.",
+            "Retail absence is a margin/protection heuristic, not proof of demand — validate separately with ad intelligence.",
+            "The source presents these as his screen, not an empirically benchmarked rule."
+          ],
+          "source_id": "1HMoA3tt8EGixLxhq0KIGiuIsD61WOvZ6",
+          "source_name": "Transcript of the product research method that made me $670k.docx",
+          "folder": "/01-PRD-product-research",
+          "domain": "product-research",
+          "section": 0
+        },
+        {
+          "id": "178c6277a818e77ecad08171",
+          "title": "The validation checklist applied to every product before selling",
+          "summary": "A repeatable gate: proof of competitors making money, demand signals, sourcing price and fulfillment readiness.",
+          "use_when": "Right before committing money or building a store around a product.",
+          "steps": [
+            "Confirm competitors exist and are making money with the product — the core criterion from the start of the workflow.",
+            "Confirm the product either solves a problem or serves a passionate community.",
+            "Confirm demand through repeated viral evidence, multiple competitors, or high active ad volume in the Facebook Ad Library.",
+            "Confirm sourcing: reverse-image search the product to find supplier cost and a margin floor, and check shipping speed.",
+            "Confirm the marketing angle you would use is not already fully occupied — look for a specific sub-demographic or creative angle competitors have not tapped.",
+            "Only then move to store build, creative production and testing; the presenter says once you see what works for competitors there is no need to reinvent the wheel, just adapt it."
+          ],
+          "caveats": [
+            "This is a screening framework from a practitioner, not a statistical model; each signal can be wrong in isolation.",
+            "Fulfillment tooling (e.g. sourcing/3PL apps) is out of scope for this workflow and should be verified separately as interfaces change."
+          ],
+          "source_id": "1N5nL8vQWpqBnZlbxaozUOXH-1BIX91NJ",
+          "source_name": "The Only Product Research Video You Need to Start Dropshipping.docx",
+          "folder": "/01-PRD-product-research",
+          "domain": "product-research",
+          "section": 0
+        }
+      ],
+      "candidate_scores": [
+        {
+          "card_id": "a20e53fb1d991a39e79282c3",
+          "score": 16.354848
+        },
+        {
+          "card_id": "cccca902b3896ea85b116184",
+          "score": 13.451581
+        },
+        {
+          "card_id": "178c6277a818e77ecad08171",
+          "score": 12.8802
+        }
+      ],
+      "applicability_checks": [
+        "Does this advice fit the product lifecycle, market, audience and requested deliverable?",
+        "Does it require proof, access, budget or assets the brand does not have?",
+        "Does it change a fixed price, offer, policy or other explicit constraint?",
+        "Are platform details or numerical claims current and substantiated?"
+      ],
+      "output_checks": [
+        "Deliver the specified artifact, not general advice about creating it.",
+        "Use supplied brand facts; label hypotheses and missing inputs separately.",
+        "Preserve relevant source conditions; do not copy another business’s proof or results.",
+        "Include an owner, measurement and decision rule when proposing a test.",
+        "Check the output against the requested constraints and owner feedback."
+      ],
+      "completion_rule": "Stop after the requested artifact passes factual and brief checks; allow at most two revision passes, then report the unresolved issue.",
+      "action_boundary": "Prepare recommendations/artifacts only. Publication, spend changes, customer contact and production modifications require separate task authorization."
+    },
+    {
+      "id": "product-research.research-competition",
+      "title": "Research competing product offers",
+      "query": "competitor research differentiation market product",
+      "steps": [
+        "Compare products serving the same customer circumstance",
+        "Record verifiable features, prices and proof without assuming competitor profitability",
+        "Identify a substantiated differentiation hypothesis and evidence needed"
+      ],
+      "deliverable": "Competitor comparison and positioning hypotheses",
+      "status": "draft",
+      "steps_origin": "authored orchestration draft",
+      "retrieval": {
+        "primary_domain": "product-research",
+        "related_domains": [
+          "avatars",
+          "offers",
+          "sourcing",
+          "finance-and-accounting"
+        ],
+        "query": "competitor research differentiation market product",
+        "selected_card_ids": [
+          "f966191090dae0ac21ec0fa3",
+          "4be18218219d4e40995262b4",
+          "c840da78d85770f3573102a8"
+        ],
+        "mixed_candidate_ids": [
+          "66cddfb2c547b0890c143e59",
+          "255fc78a445c27602f657909",
+          "383edf04900eb58ad32f4e3b"
+        ],
+        "fallback": "Search primary and related domains using the task and actual constraints; do not silently switch to a different workflow.",
+        "selection_status": "candidate-support-needs-applicability-review"
+      },
+      "supporting_cards": [
+        {
+          "id": "f966191090dae0ac21ec0fa3",
+          "title": "Competitor profit as the primary product-viability filter",
+          "summary": "Treat active, profitable competitors as proof of concept rather than a disqualifying sign of saturation.",
+          "use_when": "Choosing whether to pursue a product or brushing off one because 'everyone is selling it'.",
+          "steps": [
+            "Before anything else, require evidence that at least one other seller is moving this product and making money. The presenter argues this matters more than abstract criteria like 'solves a problem' or 'is in demand'.",
+            "Reframe saturation: there are too many people online to reach everyone with one product, so big competitors do not mean no room; the presenter points to continual new entrants in heavily-marketed categories like teeth-whitening pens.",
+            "When a niche looks saturated, look for an untapped angle rather than abandoning the niche — e.g. a clothing brand targeting only girlfriends of boyfriends 5'8\" and under, which hooks attention and speaks to a very narrow demographic.",
+            "Confirm the product is either problem-solving or serves a passionate community, then validate there are multiple competitors doing well before committing."
+          ],
+          "caveats": [
+            "This is the presenter's opinion and it runs against the common 'pick an unsaturated niche' advice; treat both as situational.",
+            "Saturation can still make paid acquisition more expensive; the angle trick is not a guarantee, only a way to differentiate."
+          ],
+          "source_id": "1N5nL8vQWpqBnZlbxaozUOXH-1BIX91NJ",
+          "source_name": "The Only Product Research Video You Need to Start Dropshipping.docx",
+          "folder": "/01-PRD-product-research",
+          "domain": "product-research",
+          "section": 0
+        },
+        {
+          "id": "4be18218219d4e40995262b4",
+          "title": "Competition assessment via Facebook Ad Library and Page Transparency",
+          "summary": "Assess how many direct competitors are running the product, how long they've been running, and whether their stores and offers look beatable.",
+          "use_when": "Validating saturation and competitive positioning right before you decide to buy or build the store.",
+          "steps": [
+            "Search the product term in Facebook Ad Library. Assess the whole niche first (e.g. all GLP products: gummies, liquids, pills, powders), then narrow to your exact variation (e.g. GLP patches).",
+            "Open the page for each competitor, go to About → Page Transparency, confirm whether the page is currently running ads, then open their ad library to see every active ad.",
+            "Note how long they have been running. A competitor running ads for only nine hours has no spend history, so their ads validate nothing yet — the source says to bookmark them and watch rather than infer a winner.",
+            "Check whether they run video or image ads and what language they target. A competitor running Spanish-only image ads, for example, is not a direct competitor in the US English market.",
+            "Evaluate their store and offer. The source rejects a competitor's store as 'completely trash' — minimal template, wrong product imagery — and notes a stronger brand presentation plus subscription option as a differentiator he could use.",
+            "Expect more competitors to appear over time; finding three already means the product is moving. Speed matters — a competitor found the same product 24 hours earlier, which the source treats as a meaningful head start."
+          ],
+          "caveats": [
+            "Ad Library shows ads, not spend, so you cannot tell if a competitor's campaign is profitable.",
+            "Page Transparency and Ad Library interfaces change; verify current navigation in the tool.",
+            "New competitors with hours of runtime provide no validation either way."
+          ],
+          "source_id": "1QvRAfUQ6OUSwiF_M4V15SrlUtPUAIROU",
+          "source_name": "This Product Research Method Made Me $2.3M Dropshipping (LIVE HUNTING).docx",
+          "folder": "/01-PRD-product-research",
+          "domain": "product-research",
+          "section": 1
+        },
+        {
+          "id": "c840da78d85770f3573102a8",
+          "title": "Verify blue oceans by auditing what competitors are not doing",
+          "summary": "A two-step routine: find a problem-solving product, then audit competitor ads to locate the audience or angle none of them occupy.",
+          "use_when": "Systematically generating differentiated angles for any saturated product you are considering.",
+          "steps": [
+            "Step one: confirm the product solves a real problem and clears the baseline margin, content and shipping criteria.",
+            "Step two: research the product's competitors — collect their ads, landing pages and targeting signals, then write down explicitly what they are not doing: which customer type, life circumstance or outcome they never mention.",
+            "Look for angles that are visibly rare in the ad set rather than completely absent, since a small amount of validation reduces the risk of an angle nobody wants.",
+            "Position your whole campaign on the gap — avatar, hook, imagery, proof — rather than adding it as a secondary message.",
+            "Repeat the audit whenever entering a new category; the source frames this as thinking rather than automating, and argues most dropshippers do not do it."
+          ],
+          "caveats": [
+            "'Do something nobody's doing' is the source's maxim and a direction of travel, not evidence that any untaken angle will convert.",
+            "Competitor ad libraries only show what is currently running, so recently paused tests can be invisible."
+          ],
+          "source_id": "1kDe9GgQ-H0acmu0Atdbq4NimU9Apyn-C",
+          "source_name": "Full Product Research Course for Dropshipping (Find Winning Products FAST).docx",
+          "folder": "/01-PRD-product-research",
+          "domain": "product-research",
+          "section": 0
+        }
+      ],
+      "candidate_scores": [
+        {
+          "card_id": "f966191090dae0ac21ec0fa3",
+          "score": 11.436502
+        },
+        {
+          "card_id": "4be18218219d4e40995262b4",
+          "score": 10.804012
+        },
+        {
+          "card_id": "c840da78d85770f3573102a8",
+          "score": 9.89825
+        }
+      ],
+      "applicability_checks": [
+        "Does this advice fit the product lifecycle, market, audience and requested deliverable?",
+        "Does it require proof, access, budget or assets the brand does not have?",
+        "Does it change a fixed price, offer, policy or other explicit constraint?",
+        "Are platform details or numerical claims current and substantiated?"
+      ],
+      "output_checks": [
+        "Deliver the specified artifact, not general advice about creating it.",
+        "Use supplied brand facts; label hypotheses and missing inputs separately.",
+        "Preserve relevant source conditions; do not copy another business’s proof or results.",
+        "Include an owner, measurement and decision rule when proposing a test.",
+        "Check the output against the requested constraints and owner feedback."
+      ],
+      "completion_rule": "Stop after the requested artifact passes factual and brief checks; allow at most two revision passes, then report the unresolved issue.",
+      "action_boundary": "Prepare recommendations/artifacts only. Publication, spend changes, customer contact and production modifications require separate task authorization."
+    },
+    {
+      "id": "product-research.prioritise-expansion",
+      "title": "Prioritise a product expansion",
+      "query": "product expansion survey demand customer inventory",
+      "steps": [
+        "Group requests by customer problem and repeat frequency",
+        "Assess complementarity, margin and inventory exposure",
+        "Choose a small validation before committing stock"
+      ],
+      "deliverable": "Ranked expansion backlog and validation plan",
+      "status": "draft",
+      "steps_origin": "authored orchestration draft",
+      "retrieval": {
+        "primary_domain": "product-research",
+        "related_domains": [
+          "avatars",
+          "offers",
+          "sourcing",
+          "finance-and-accounting"
+        ],
+        "query": "product expansion survey demand customer inventory",
+        "selected_card_ids": [
+          "baffe12832b0f6c59b71b3c9",
+          "52858475e05d069ee8ce4496",
+          "533302cea5159a2297eb0eb7"
+        ],
+        "mixed_candidate_ids": [
+          "414f3d559f4e716ff8ec26ab",
+          "b3ef8af35c4c8dc666239594",
+          "c38bcfd6b16e39728f3a1e81"
+        ],
+        "fallback": "Search primary and related domains using the task and actual constraints; do not silently switch to a different workflow.",
+        "selection_status": "candidate-support-needs-applicability-review"
+      },
+      "supporting_cards": [
+        {
+          "id": "baffe12832b0f6c59b71b3c9",
+          "title": "Inverse international expansion sequence to dodge US ad auction saturation",
+          "summary": "Enter secondary English-speaking markets in the order Australia, UK, Europe, Canada, then US to build dominant share before competitors saturate Meta auctions.",
+          "use_when": "Planning geographic expansion for an established ecommerce brand that has product-market fit in one market and is deciding which country to enter next.",
+          "steps": [
+            "Sequence entry as Australia, then UK, then Europe, then Canada, and only then the US. The point of going in reverse order of market size is to accumulate revenue, data and brand proof in less contested channels before the largest, most expensive auction.",
+            "Treat the US last because its Meta ad auctions are the most competitive and expensive; a brand entering cold faces established incumbents bidding up the same audiences.",
+            "Use the earlier markets as proving grounds: each launch should produce conversion data, creative learnings and social proof that makes the eventual US entry stronger.",
+            "Confirm the strategy is viable for your situation before committing: this sequence assumes sufficient capital to run several launches and a product that travels across English-speaking markets with minimal localisation.",
+            "Validate demand independently in each new market rather than assuming spillover from the previous one; auction dynamics, competitors and buyer behaviour differ by country."
+          ],
+          "caveats": [
+            "This is one operator's stated sequence from a podcast interview, not a universal rule; the source qualifies it as conditional on brand state and available capital.",
+            "Deferring the US can mean leaving the largest revenue pool to competitors who arrive first; the trade-off is market share versus total addressable revenue.",
+            "The source's broader context was a founder interview including dropshipping anecdotes and mental-health discussion; only the geographic expansion model is transferable.",
+            "Do not score markets on ad demand alone via ad-library scrapers; that approach has different economics and failure modes from a brand expansion."
+          ],
+          "source_id": "1RKRQrilh6wc0fimkIw1C4E3KOL0Aqsqs",
+          "source_name": "How to Build an Billion Dollar E-Commerce Empire.docx",
+          "folder": "/01-PRD-product-research",
+          "domain": "product-research",
+          "section": 0
+        },
+        {
+          "id": "52858475e05d069ee8ce4496",
+          "title": "Map seasonality to protect cash flow",
+          "summary": "Identifying seasonal demand swings with Google Trends lets you plan inventory buys and marketing calendar around cash flow.",
+          "use_when": "You are validating a product whose demand may cluster in specific months, or planning inventory and ad budgets.",
+          "steps": [
+            "Plot the core keywords in Google Trends across multiple years, looking for recurring monthly spikes.",
+            "Label the pattern: extreme seasonality (the source uses Christmas trees, almost all bought in November and December), mild seasonality, or year-round demand.",
+            "If seasonality exists, plan cash flow around it: inventory must be paid for before the spike, and off-season months still carry storage and overhead.",
+            "Use the seasonal pattern in marketing too. In the source example subtle January search spikes were interpreted as cold-weather hair rescue demand and noted for winter marketing.",
+            "Do not confuse mild seasonal variation with a fad; check whether the spikes repeat each year before treating them as predictable."
+          ],
+          "caveats": [
+            "A mildly seasonal product can still be a strong business; the source keeps the data for campaign timing rather than rejecting the product.",
+            "Strong seasonality concentrates both revenue and risk, and complicates launching a new brand from zero."
+          ],
+          "source_id": "1ihgRVpU0vJShWjZiCSglxq-xyRzeD6UY",
+          "source_name": "Transcript of How To Find And Validate WINNING PRODUCTS_ The 16 Step Product Research Guide.docx",
+          "folder": "/01-PRD-product-research",
+          "domain": "product-research",
+          "section": 0
+        },
+        {
+          "id": "533302cea5159a2297eb0eb7",
+          "title": "Geo-arbitrage: move proven US/UK products into untapped markets",
+          "summary": "Take a product already validated by US or UK advertising volume and run it in a market where it has not yet been shown.",
+          "use_when": "You have a proven product with strong English-language ad evidence and want lower competition than the source market.",
+          "steps": [
+            "Identify products with heavy existing US/UK ad volume as proof of demand, not as a place to compete.",
+            "Choose a market where the same product has not been advertised (the source cites untapped European countries as his example).",
+            "Assume consumer preferences transfer reasonably across similar markets — the source argues people 'like the same products' but simply have not been shown them.",
+            "Localise creative and copy to the target market's language and context before launching.",
+            "Verify local shipping costs, delivery times and import duties, since these can erase the margin advantage of lower competition."
+          ],
+          "caveats": [
+            "The source's confidence in cross-market preference transfer is an opinion; the 'pretty much 100% success rate' phrasing is a claim, not a benchmark.",
+            "Logistics, VAT/import rules and payment availability vary by country and must be checked before committing."
+          ],
+          "source_id": "1kDe9GgQ-H0acmu0Atdbq4NimU9Apyn-C",
+          "source_name": "Full Product Research Course for Dropshipping (Find Winning Products FAST).docx",
+          "folder": "/01-PRD-product-research",
+          "domain": "product-research",
+          "section": 0
+        }
+      ],
+      "candidate_scores": [
+        {
+          "card_id": "baffe12832b0f6c59b71b3c9",
+          "score": 10.776152
+        },
+        {
+          "card_id": "52858475e05d069ee8ce4496",
+          "score": 9.593319
+        },
+        {
+          "card_id": "533302cea5159a2297eb0eb7",
+          "score": 9.496991
+        }
+      ],
+      "applicability_checks": [
+        "Does this advice fit the product lifecycle, market, audience and requested deliverable?",
+        "Does it require proof, access, budget or assets the brand does not have?",
+        "Does it change a fixed price, offer, policy or other explicit constraint?",
+        "Are platform details or numerical claims current and substantiated?"
+      ],
+      "output_checks": [
+        "Deliver the specified artifact, not general advice about creating it.",
+        "Use supplied brand facts; label hypotheses and missing inputs separately.",
+        "Preserve relevant source conditions; do not copy another business’s proof or results.",
+        "Include an owner, measurement and decision rule when proposing a test.",
+        "Check the output against the requested constraints and owner feedback."
+      ],
+      "completion_rule": "Stop after the requested artifact passes factual and brief checks; allow at most two revision passes, then report the unresolved issue.",
+      "action_boundary": "Prepare recommendations/artifacts only. Publication, spend changes, customer contact and production modifications require separate task authorization."
+    }
+  ],
+  "foundation_candidates": [
+    {
+      "id": "cccca902b3896ea85b116184",
+      "title": "Product Criteria: Daily Problem Plus Retail Absence",
+      "summary": "Two baseline criteria — a problem that recurs daily and no big-box retail availability — for screening product ideas.",
+      "use_when": "Screening candidate products before spending on creative, site build or inventory, especially in health and wellness.",
+      "steps": [
+        "Check that the product solves a real problem, either a deep emotional problem/desire or a physical problem the buyer feels every single day.",
+        "Use the source's example: foot pain — felt every time the person walks — so they will buy almost anything if the copy is good.",
+        "Confirm the product is not available in big-box retail stores; retail absence protects margin and ad-driven demand.",
+        "Prefer problems with high daily frequency and strong aversion (chronic pain, child sleep disruption, incontinence) because urgency shortens the buying decision.",
+        "Assess 'deeply annoying daily problem' as a better signal than 'cool product' — the source explicitly rates a boring problem like tinnitus higher than a gimmicky pillow because of the ongoing irritation."
+      ],
+      "caveats": [
+        "Applies to physical problem-solution goods aimed at older buyers; not a universal test for all ecommerce categories.",
+        "Retail absence is a margin/protection heuristic, not proof of demand — validate separately with ad intelligence.",
+        "The source presents these as his screen, not an empirically benchmarked rule."
+      ],
+      "source_id": "1HMoA3tt8EGixLxhq0KIGiuIsD61WOvZ6",
+      "source_name": "Transcript of the product research method that made me $670k.docx",
+      "folder": "/01-PRD-product-research",
+      "domain": "product-research",
+      "section": 0
+    },
+    {
+      "id": "f966191090dae0ac21ec0fa3",
+      "title": "Competitor profit as the primary product-viability filter",
+      "summary": "Treat active, profitable competitors as proof of concept rather than a disqualifying sign of saturation.",
+      "use_when": "Choosing whether to pursue a product or brushing off one because 'everyone is selling it'.",
+      "steps": [
+        "Before anything else, require evidence that at least one other seller is moving this product and making money. The presenter argues this matters more than abstract criteria like 'solves a problem' or 'is in demand'.",
+        "Reframe saturation: there are too many people online to reach everyone with one product, so big competitors do not mean no room; the presenter points to continual new entrants in heavily-marketed categories like teeth-whitening pens.",
+        "When a niche looks saturated, look for an untapped angle rather than abandoning the niche — e.g. a clothing brand targeting only girlfriends of boyfriends 5'8\" and under, which hooks attention and speaks to a very narrow demographic.",
+        "Confirm the product is either problem-solving or serves a passionate community, then validate there are multiple competitors doing well before committing."
+      ],
+      "caveats": [
+        "This is the presenter's opinion and it runs against the common 'pick an unsaturated niche' advice; treat both as situational.",
+        "Saturation can still make paid acquisition more expensive; the angle trick is not a guarantee, only a way to differentiate."
+      ],
+      "source_id": "1N5nL8vQWpqBnZlbxaozUOXH-1BIX91NJ",
+      "source_name": "The Only Product Research Video You Need to Start Dropshipping.docx",
+      "folder": "/01-PRD-product-research",
+      "domain": "product-research",
+      "section": 0
+    },
+    {
+      "id": "33a09eb2fe9d840b800f4141",
+      "title": "Keep AI Sourcing and Ad Execution in Separate Ownership",
+      "summary": "AI-assisted sourcing ends at a validated, margin-checked product; creative, media buying and storefront work are separate disciplines that determine whether the product actually succeeds.",
+      "use_when": "Scoping a product-research sprint, or setting expectations that finding the product is only one part of a profitable launch.",
+      "steps": [
+        "Delimit the sourcing workflow to: market selection, emotional problem identification, product selection via AI plus ad-spy data, competitor revenue validation, margin checks, and a basic test-triage game plan.",
+        "Route creative writing and ad design to your creative process — the sourcing workflow does not produce winning ads.",
+        "Route bid management and CPC/CPM optimization to paid-media execution.",
+        "Route checkout-flow and landing-page layout changes to storefront work.",
+        "Treat the KPI thresholds in this method as validation and triage signals for a product test, not as a substitute for media-buying or funnel-building skills.",
+        "Use this split when briefing a team or reviewing a failed test, so you don't replace a creative or checkout fix with another product search."
+      ],
+      "caveats": [
+        "The source maps these boundaries as a module taxonomy; it does not argue paid media or creative are unimportant — the reverse."
+      ],
+      "source_id": "1TYodTXR6LLlNuTKucxPY5dDu3hFIw3Mu",
+      "source_name": "_asked claude to find me a $1k_day product (it worked).docx",
+      "folder": "/01-PRD-product-research",
+      "domain": "product-research",
+      "section": 0
+    }
+  ],
+  "foundation_note": "Inferred principle labels do not establish universal applicability. Retain source conditions; empty means no matched labelled principle, not absence of foundational knowledge."
+}

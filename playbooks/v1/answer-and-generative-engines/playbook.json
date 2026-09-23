@@ -1,0 +1,495 @@
+{
+  "schema_version": 1,
+  "version": "1.0.0-draft",
+  "status": "draft",
+  "domain": "answer-and-generative-engines",
+  "source_catalog_sha256": "0287a2e2df3a54711125de9d2927b1efd3d7add875be994c4af6f326cfa84074",
+  "required_inputs": [
+    "Product facts",
+    "public pages",
+    "target questions",
+    "evidence",
+    "observed answer visibility"
+  ],
+  "measures": [
+    "Answer accuracy",
+    "qualified referrals",
+    "repeated visibility observations"
+  ],
+  "related_domains": [
+    "search",
+    "brand",
+    "measurement"
+  ],
+  "evidence_method": "Local BM25 candidate selection; authored workflow steps are proposals, not source quotations or verified synthesis.",
+  "operating_contract": "../OPERATING_CONTRACT.md",
+  "workflows": [
+    {
+      "id": "answer-and-generative-engines.answer-content",
+      "title": "Create answer-oriented product content",
+      "query": "answer first conversational query citations evidence schema",
+      "steps": [
+        "Select real product questions and supported answers",
+        "Structure clear answers and evidence on relevant pages",
+        "Specify structured data only where it matches visible facts"
+      ],
+      "deliverable": "Answer-content brief",
+      "status": "draft",
+      "steps_origin": "authored orchestration draft",
+      "retrieval": {
+        "primary_domain": "answer-and-generative-engines",
+        "related_domains": [
+          "search",
+          "brand",
+          "measurement"
+        ],
+        "query": "answer first conversational query citations evidence schema",
+        "selected_card_ids": [
+          "ccbc5be4692ffe2c9ec171a5",
+          "7a7c5e12d8bcf1543cfe845a",
+          "ea6702f063e43c682e987e10"
+        ],
+        "mixed_candidate_ids": [
+          "cf409d4e384dafeabda6b4fb",
+          "feb29848807a941be501368e",
+          "239a4c7c70190b2325db780a"
+        ],
+        "fallback": "Search primary and related domains using the task and actual constraints; do not silently switch to a different workflow.",
+        "selection_status": "candidate-support-needs-applicability-review"
+      },
+      "supporting_cards": [
+        {
+          "id": "ccbc5be4692ffe2c9ec171a5",
+          "title": "Using and limiting schema markup for AEO",
+          "summary": "Schema markup is low-risk but unproven for AI citation; add standard types as a good habit without over-investing for AEO alone.",
+          "use_when": "Deciding how much time to spend on structured data when setting up new store pages.",
+          "steps": [
+            "For ecommerce, inspect accurate Product and Offer data on PDPs, with Organization, BreadcrumbList or Article where appropriate to page purpose.",
+            "Recognize that evidence linking schema directly to AI citation is mixed — there's no confirmed data it improves AI citation odds.",
+            "Keep accurate schema that supports current search features; correct inaccurate or conflicting markup rather than retaining it blindly.",
+            "If setting up a new page, add the appropriate schema types as a good habit that makes content easier for any system to understand.",
+            "Avoid spending significant time on schema specifically for AEO; deprioritize it relative to robots.txt, content quality, and rendering."
+          ],
+          "caveats": [
+            "The source is explicit that AEO benefit is unconfirmed; this is a 'doesn't hurt' recommendation, not a proven tactic."
+          ],
+          "source_id": "1Y-SLLJCddFSGRu_WwMBWFN4555wUygUa",
+          "source_name": "AI SEO Course for Beginners_ Complete AEO Tutorial.docx",
+          "folder": "/16-AEO-answer-and-generative-engines",
+          "domain": "answer-and-generative-engines",
+          "section": 2
+        },
+        {
+          "id": "7a7c5e12d8bcf1543cfe845a",
+          "title": "Match Citation Strategy to Your Business Model",
+          "summary": "B2B, commerce and marketplace queries pull from different citation sources and require different measurement approaches.",
+          "use_when": "Choosing which review sites, publications or platforms to target for a B2B, DTC or marketplace store.",
+          "steps": [
+            "Identify the citation set for your model: Smith sees TechRadar appearing heavily for B2B questions; Glamour and Cosmopolitan for commerce; Eater, Yelp and TripAdvisor for marketplaces and local.",
+            "Build your target list from the actual citations the engines return for your questions, not from generic top-domain lists.",
+            "Measurement differs: many B2B answers have nothing clickable, so last-touch referral traffic undercounts impact — you need answer tracking plus a post-conversion 'how did you hear about us' question.",
+            "Commerce does have clickable shoppable cards, so last-touch referral traffic gives a reasonable read of conversions.",
+            "For commerce cards, rich snippet schema and the number of reviews matter for appearing in the carousel.",
+            "B2B purchase cycles involve roughly dozens of touch points — nobody commits to large software from one search."
+          ],
+          "caveats": [
+            "The named publications are Smith's observations of what currently appears, not fixed rules; recheck current citations."
+          ],
+          "source_id": "1hcPyVDTuTN_kyy87JS8-sZ6tSmjJ41zh",
+          "source_name": "The ultimate guide to AEO_ How to get ChatGPT to recommend your product _ Ethan Smith.docx",
+          "folder": "/16-AEO-answer-and-generative-engines",
+          "domain": "answer-and-generative-engines",
+          "section": 1
+        },
+        {
+          "id": "ea6702f063e43c682e987e10",
+          "title": "Run a commercial-page checklist: intent, one keyword, schema, design, specifics",
+          "summary": "Five checks determine whether a product or collection page will perform, starting with search-intent match and including structured data and evidence.",
+          "use_when": "Finalising a new category, product or collection page before publishing.",
+          "steps": [
+            "Intent match: confirm the page answers the searcher's intent — a transactional query needs a page where the product can be bought or requested, not an article about the topic.",
+            "One main keyword per page: assign a single primary target and use secondary/related terms naturally through subheadings and body copy rather than spreading several primaries across one page.",
+            "Schema: add appropriate structured data (service/product schema as applicable) so search engines understand exactly what the page contains. The source says you can rank without it but you're giving up an advantage; SEO plugins often insert it, but validate the output rather than assuming.",
+            "Conversion-friendly design and evidence: prefer real photos of the actual work/product over stock imagery where possible, be specific about prices, include reviews (ideally reviews mentioning that specific product/service), and add a how-it-works section.",
+            "Body structure: use additional H2/H3s for related keywords, and include a short FAQ of the most-asked questions for that specific offering — the source advises keeping commercial-page FAQs to no more than about five so the page stays transactional.",
+            "Use the first fold as the priority: pass the 2-second rule (what/where/next action), keep the headline plain, keep H1 exact, and place a primary CTA above the fold. If roughly 90% of these boxes are ticked, the source considers the page in good shape."
+          ],
+          "caveats": [
+            "The source deliberately avoids prescribing a word count — length should follow what the page needs, not a target.",
+            "Blog/informational content should be kept off commercial pages beyond a short FAQ to avoid diluting transactional focus.",
+            "Structured-data support and plugin behavior change; verify with a current validator."
+          ],
+          "source_id": "1RQ9Vhr72soroQxENrbOHWuMtcBtlCL3z",
+          "source_name": "The Complete AI SEO Course 2026.docx",
+          "folder": "/16-AEO-answer-and-generative-engines",
+          "domain": "answer-and-generative-engines",
+          "section": 1
+        }
+      ],
+      "candidate_scores": [
+        {
+          "card_id": "ccbc5be4692ffe2c9ec171a5",
+          "score": 25.686239
+        },
+        {
+          "card_id": "7a7c5e12d8bcf1543cfe845a",
+          "score": 25.091838
+        },
+        {
+          "card_id": "ea6702f063e43c682e987e10",
+          "score": 22.615401
+        }
+      ],
+      "applicability_checks": [
+        "Does this advice fit the product lifecycle, market, audience and requested deliverable?",
+        "Does it require proof, access, budget or assets the brand does not have?",
+        "Does it change a fixed price, offer, policy or other explicit constraint?",
+        "Are platform details or numerical claims current and substantiated?"
+      ],
+      "output_checks": [
+        "Deliver the specified artifact, not general advice about creating it.",
+        "Use supplied brand facts; label hypotheses and missing inputs separately.",
+        "Preserve relevant source conditions; do not copy another business’s proof or results.",
+        "Include an owner, measurement and decision rule when proposing a test.",
+        "Check the output against the requested constraints and owner feedback."
+      ],
+      "completion_rule": "Stop after the requested artifact passes factual and brief checks; allow at most two revision passes, then report the unresolved issue.",
+      "action_boundary": "Prepare recommendations/artifacts only. Publication, spend changes, customer contact and production modifications require separate task authorization."
+    },
+    {
+      "id": "answer-and-generative-engines.visibility-audit",
+      "title": "Audit AI answer visibility",
+      "query": "unbranded prompts visibility monitoring answer accuracy",
+      "steps": [
+        "Define repeatable prompts, engines and observation dates",
+        "Record actual citations and factual errors across repeated observations",
+        "Prioritise useful content corrections without promising inclusion"
+      ],
+      "deliverable": "Visibility observation log and corrections",
+      "status": "draft",
+      "steps_origin": "authored orchestration draft",
+      "retrieval": {
+        "primary_domain": "answer-and-generative-engines",
+        "related_domains": [
+          "search",
+          "brand",
+          "measurement"
+        ],
+        "query": "unbranded prompts visibility monitoring answer accuracy",
+        "selected_card_ids": [
+          "28b2634c43eb8c2b7c9613b8",
+          "d94670809e775a86f01cad8b",
+          "4df3dc92ffaf5f8c4b520df4"
+        ],
+        "mixed_candidate_ids": [
+          "7d460350a38096003d9e2fa5",
+          "9d66422ea27f4f60461e750a",
+          "a39261c57a5ed84a91fa92a1"
+        ],
+        "fallback": "Search primary and related domains using the task and actual constraints; do not silently switch to a different workflow.",
+        "selection_status": "candidate-support-needs-applicability-review"
+      },
+      "supporting_cards": [
+        {
+          "id": "28b2634c43eb8c2b7c9613b8",
+          "title": "Prompt trackers: understand their limits before trusting AI visibility data",
+          "summary": "Automated AI prompt trackers can report inflated or meaningless visibility when answers vary run-to-run or the model never searched the web.",
+          "use_when": "Reviewing an AI visibility report from a tool, agency or in-house dashboard to decide whether the store is actually being recommended.",
+          "steps": [
+            "Recognize how these tools work: they capture screenshots of a tracked prompt's answer inside ChatGPT or another assistant and upload them for comparison.",
+            "Know the failure mode: if the assistant does not trigger a web search, there are no citations in the answer, so the screen contains no useful evidence of visibility.",
+            "Treat citation counts with suspicion. The source argues citations are easy to inflate — one URL can be cited for an infinite number of branded term variations (e.g. 'how to get rid of mold brand name'), so 'we increased citations' does not mean 'we increased visibility'.",
+            "Recognize that answers vary dynamically; a single tracked prompt is not a stable measurement.",
+            "When reviewing reports, ask which prompts are commercially meaningful to the store, whether web search actually fired, and whether the reported change maps to revenue rather than mention counts."
+          ],
+          "caveats": [
+            "The source's view is that the whole citation-measurement system is of questionable value and partly vendor-driven; treat dashboard metrics as directional at best.",
+            "Trackers and assistants change interfaces and behavior — verify the current mechanics before relying on any single metric."
+          ],
+          "source_id": "1umNspZQgaGH2imR8kuHwuDLJekPD6hJo",
+          "source_name": "Generative Engine Optimization_ Is It Safe and How to Do It the Right Way.docx",
+          "folder": "/16-AEO-answer-and-generative-engines",
+          "domain": "answer-and-generative-engines",
+          "section": 1
+        },
+        {
+          "id": "d94670809e775a86f01cad8b",
+          "title": "Treat GEO as an ongoing monitoring and adaptation loop",
+          "summary": "Generative engine optimization is not one-time work; you must watch how AI platforms evolve and keep refining content.",
+          "use_when": "Setting a recurring workstream for AI search visibility alongside SEO analytics and rank tracking.",
+          "steps": [
+            "Set up recurring monitoring of how AI platforms (ChatGPT, Perplexity, Gemini, Google AI Overviews) structure and cite responses to your target queries.",
+            "Track visibility and engagement benchmarks across those platforms and review changes over time.",
+            "Stay current on AI-driven search trends and refine your strategy rather than locking in a fixed playbook.",
+            "Fold this into existing SEO analytics cadence — the source frames GEO as adapting SEO tracking frameworks, not replacing them.",
+            "When a platform's answer format or citation behavior shifts, re-check whether your target pages still match it."
+          ],
+          "caveats": [
+            "Platform interfaces, features and availability change without notice — verify current tooling before relying on any specific monitoring method.",
+            "GEO visibility metrics are newer and less standardized than classic rank tracking."
+          ],
+          "source_id": "1WEru8DetiNdRfqBLQa6gYafdwZpYfvYO",
+          "source_name": "7 Essential Tactics for Mastering Generative Engine Optimization (GEO).docx",
+          "folder": "/16-AEO-answer-and-generative-engines",
+          "domain": "answer-and-generative-engines",
+          "section": 0
+        },
+        {
+          "id": "4df3dc92ffaf5f8c4b520df4",
+          "title": "Track AI visibility with Search Console and Bing AI performance",
+          "summary": "Use clicks, impressions, average position, and queries from Search Console, and Bing's AI performance tab for citations.",
+          "use_when": "Monitoring whether your store is surfacing in AI overviews and chat results, and deciding what to do next month.",
+          "steps": [
+            "In Google Search Console's Performance tab, track total clicks and impressions — impressions typically rise first, then clicks; also watch average position across all ranking keywords.",
+            "Expect lower clicks generally as AI search engines absorb some traffic; this is described as the new norm, not automatically an error.",
+            "Keep Google Search Console performance separate from dedicated AI citation reporting; verify what each current report actually measures before labeling it AI visibility.",
+            "Read total citations, average pages cited, and the queries you're cited for; growth in citations and average cited pages is good.",
+            "Optionally use a paid AI-visibility tool for additional coverage: a performance tab (citations by engine), a brand tracker for instant checks, and prompt/keyword tracking."
+          ],
+          "caveats": [
+            "The source's visibility-tool data skews to US and English queries; that biases the picture for other markets.",
+            "There is no target number for how fast citations should rise; the source says judge month-to-month improvement, not an absolute benchmark.",
+            "Do not infer that every impression, click or rank movement in Search Console came from an AI feature."
+          ],
+          "source_id": "1RQ9Vhr72soroQxENrbOHWuMtcBtlCL3z",
+          "source_name": "The Complete AI SEO Course 2026.docx",
+          "folder": "/16-AEO-answer-and-generative-engines",
+          "domain": "answer-and-generative-engines",
+          "section": 2
+        }
+      ],
+      "candidate_scores": [
+        {
+          "card_id": "28b2634c43eb8c2b7c9613b8",
+          "score": 15.505582
+        },
+        {
+          "card_id": "d94670809e775a86f01cad8b",
+          "score": 15.196086
+        },
+        {
+          "card_id": "4df3dc92ffaf5f8c4b520df4",
+          "score": 14.793538
+        }
+      ],
+      "applicability_checks": [
+        "Does this advice fit the product lifecycle, market, audience and requested deliverable?",
+        "Does it require proof, access, budget or assets the brand does not have?",
+        "Does it change a fixed price, offer, policy or other explicit constraint?",
+        "Are platform details or numerical claims current and substantiated?"
+      ],
+      "output_checks": [
+        "Deliver the specified artifact, not general advice about creating it.",
+        "Use supplied brand facts; label hypotheses and missing inputs separately.",
+        "Preserve relevant source conditions; do not copy another business’s proof or results.",
+        "Include an owner, measurement and decision rule when proposing a test.",
+        "Check the output against the requested constraints and owner feedback."
+      ],
+      "completion_rule": "Stop after the requested artifact passes factual and brief checks; allow at most two revision passes, then report the unresolved issue.",
+      "action_boundary": "Prepare recommendations/artifacts only. Publication, spend changes, customer contact and production modifications require separate task authorization."
+    },
+    {
+      "id": "answer-and-generative-engines.entity-consistency",
+      "title": "Improve product and brand fact consistency",
+      "query": "entity product facts schema reviews authority citations",
+      "steps": [
+        "Compare important facts across owned public pages",
+        "Resolve contradictions using approved brand evidence",
+        "Specify consistent updates and later checks"
+      ],
+      "deliverable": "Public fact-consistency plan",
+      "status": "draft",
+      "steps_origin": "authored orchestration draft",
+      "retrieval": {
+        "primary_domain": "answer-and-generative-engines",
+        "related_domains": [
+          "search",
+          "brand",
+          "measurement"
+        ],
+        "query": "entity product facts schema reviews authority citations",
+        "selected_card_ids": [
+          "618db29e20911b3adccbf119",
+          "ccbc5be4692ffe2c9ec171a5",
+          "4ddb9e4eaae67ec08d76bdc3"
+        ],
+        "mixed_candidate_ids": [
+          "b4498bb660aa14c0efe067d1",
+          "efb0633227f5bba7a422760d",
+          "d14808598a83b96c68d5025c"
+        ],
+        "fallback": "Search primary and related domains using the task and actual constraints; do not silently switch to a different workflow.",
+        "selection_status": "candidate-support-needs-applicability-review"
+      },
+      "supporting_cards": [
+        {
+          "id": "618db29e20911b3adccbf119",
+          "title": "Validate structured product and brand facts alongside visible copy",
+          "summary": "Structured data spells out your business, products and social profiles in a machine-readable format AI crawlers read reliably.",
+          "use_when": "Adding or auditing structured data on an ecommerce site to improve how LLMs interpret brand and product information.",
+          "steps": [
+            "Structured data can clarify store facts; it is not a prerequisite for all AI systems and does not prevent hallucination.",
+            "Add Organization schema to the homepage including founding date, description, and links to social profiles; this signals that you are a proper, reputable business.",
+            "Use a schema generator tool to select a schema type, fill in the relevant fields, and copy the generated code onto the appropriate page.",
+            "Apply the other schema types recommended in the source checklist to their matching page types (e.g. product-related types on product pages) rather than dumping all schema on one template.",
+            "Link your YouTube channel and social profiles from your website and include them in schema markup alongside the rest of your brand data.",
+            "Validate the markup after deployment so errors do not silently defeat the purpose."
+          ],
+          "caveats": [
+            "Schema improves interpretability but does not guarantee recommendation; the presenter treats it as one of several inputs.",
+            "Exact schema types beyond Organization are in the linked checklist, not enumerated in the video.",
+            "Google does not require special AI schema. Validate applicable product search features separately from any citation hypothesis."
+          ],
+          "source_id": "1qLXwcwAMSA8vD1-WZKnN-CIyVODkJvWY",
+          "source_name": "The Ultimate AI Visibility Checklist (AEO_GEO for 2026).docx",
+          "folder": "/16-AEO-answer-and-generative-engines",
+          "domain": "answer-and-generative-engines",
+          "section": 0
+        },
+        {
+          "id": "ccbc5be4692ffe2c9ec171a5",
+          "title": "Using and limiting schema markup for AEO",
+          "summary": "Schema markup is low-risk but unproven for AI citation; add standard types as a good habit without over-investing for AEO alone.",
+          "use_when": "Deciding how much time to spend on structured data when setting up new store pages.",
+          "steps": [
+            "For ecommerce, inspect accurate Product and Offer data on PDPs, with Organization, BreadcrumbList or Article where appropriate to page purpose.",
+            "Recognize that evidence linking schema directly to AI citation is mixed — there's no confirmed data it improves AI citation odds.",
+            "Keep accurate schema that supports current search features; correct inaccurate or conflicting markup rather than retaining it blindly.",
+            "If setting up a new page, add the appropriate schema types as a good habit that makes content easier for any system to understand.",
+            "Avoid spending significant time on schema specifically for AEO; deprioritize it relative to robots.txt, content quality, and rendering."
+          ],
+          "caveats": [
+            "The source is explicit that AEO benefit is unconfirmed; this is a 'doesn't hurt' recommendation, not a proven tactic."
+          ],
+          "source_id": "1Y-SLLJCddFSGRu_WwMBWFN4555wUygUa",
+          "source_name": "AI SEO Course for Beginners_ Complete AEO Tutorial.docx",
+          "folder": "/16-AEO-answer-and-generative-engines",
+          "domain": "answer-and-generative-engines",
+          "section": 2
+        },
+        {
+          "id": "4ddb9e4eaae67ec08d76bdc3",
+          "title": "Structure and schema-model pages for AI parsing",
+          "summary": "Well-structured pages with clear headings, lists, and schema markup are easier for AI engines to extract and reuse.",
+          "use_when": "Formatting PDPs, category pages, or guides, or when adding structured data for schedules, reviews, or pricing.",
+          "steps": [
+            "Break content into clear sections with descriptive headings. The source's fitness-studio example: 'Benefits of Pilates', 'Beginner Pilates exercises', 'Advanced Pilates movements'.",
+            "Use bullet points and short, concise paragraphs instead of dense blocks.",
+            "Apply structured data and schema markup to surface the facts AI engines need — the source names class schedules, reviews, and pricing as examples.",
+            "Translate that for ecommerce: mark up product price, availability, reviews/ratings, FAQs, and specifications so engines can lift clear answers."
+          ],
+          "caveats": [
+            "Schema types and platform support change; verify current supported markup before implementing.",
+            "Schema improves machine readability but does not substitute for a direct answer in the body content."
+          ],
+          "source_id": "1WEru8DetiNdRfqBLQa6gYafdwZpYfvYO",
+          "source_name": "7 Essential Tactics for Mastering Generative Engine Optimization (GEO).docx",
+          "folder": "/16-AEO-answer-and-generative-engines",
+          "domain": "answer-and-generative-engines",
+          "section": 0
+        }
+      ],
+      "candidate_scores": [
+        {
+          "card_id": "618db29e20911b3adccbf119",
+          "score": 21.558723
+        },
+        {
+          "card_id": "ccbc5be4692ffe2c9ec171a5",
+          "score": 18.737701
+        },
+        {
+          "card_id": "4ddb9e4eaae67ec08d76bdc3",
+          "score": 17.453175
+        }
+      ],
+      "applicability_checks": [
+        "Does this advice fit the product lifecycle, market, audience and requested deliverable?",
+        "Does it require proof, access, budget or assets the brand does not have?",
+        "Does it change a fixed price, offer, policy or other explicit constraint?",
+        "Are platform details or numerical claims current and substantiated?"
+      ],
+      "output_checks": [
+        "Deliver the specified artifact, not general advice about creating it.",
+        "Use supplied brand facts; label hypotheses and missing inputs separately.",
+        "Preserve relevant source conditions; do not copy another business’s proof or results.",
+        "Include an owner, measurement and decision rule when proposing a test.",
+        "Check the output against the requested constraints and owner feedback."
+      ],
+      "completion_rule": "Stop after the requested artifact passes factual and brief checks; allow at most two revision passes, then report the unresolved issue.",
+      "action_boundary": "Prepare recommendations/artifacts only. Publication, spend changes, customer contact and production modifications require separate task authorization."
+    }
+  ],
+  "foundation_candidates": [
+    {
+      "id": "1d269cb7fde523345240c2ba",
+      "title": "Compete in AI citation by niching down the prompt, then expanding",
+      "summary": "You cannot win broad AI queries like 'best CRM', so start with narrow, defensible prompt phrasings, build topical authority, then attempt broader terms.",
+      "use_when": "Targeting AI-assistant answers in a crowded product category where broad 'best X' queries are dominated by incumbents.",
+      "steps": [
+        "Map the query landscape from broad to narrow: 'best CRM' → 'best CRM for SMB' → 'best CRM for fintech' → 'best CRM for health tech sales people'.",
+        "Enter at the narrow end where competition is lowest and you can plausibly be cited.",
+        "Build topical authority/relevance at that niche level first, then take another shot at broader terms.",
+        "On Reddit specifically, use the same strategy: rather than a generic post, target the niche comparison where you can place favorable and get cited.",
+        "Expect competitors to follow you into niches — when they do, keep moving to the next under-served angle; the source frames 'keep moving' as what growth is.",
+        "Treat this as an always-on engine: continuously produce and refresh content, since you cannot rely on a one-time citation."
+      ],
+      "caveats": [
+        "This is the source's stated approach; they explicitly say they lack a proven formula for citation lifetime or selection logic.",
+        "No guaranteed ranking — success depends on category and competition."
+      ],
+      "source_id": "16UkZRLAK_Ho4_4Wepj0YlJWvw6UKe_Us",
+      "source_name": "The Head of Growth at a $100M Company Explains AEO.docx",
+      "folder": "/16-AEO-answer-and-generative-engines",
+      "domain": "answer-and-generative-engines",
+      "section": 1
+    },
+    {
+      "id": "618db29e20911b3adccbf119",
+      "title": "Validate structured product and brand facts alongside visible copy",
+      "summary": "Structured data spells out your business, products and social profiles in a machine-readable format AI crawlers read reliably.",
+      "use_when": "Adding or auditing structured data on an ecommerce site to improve how LLMs interpret brand and product information.",
+      "steps": [
+        "Structured data can clarify store facts; it is not a prerequisite for all AI systems and does not prevent hallucination.",
+        "Add Organization schema to the homepage including founding date, description, and links to social profiles; this signals that you are a proper, reputable business.",
+        "Use a schema generator tool to select a schema type, fill in the relevant fields, and copy the generated code onto the appropriate page.",
+        "Apply the other schema types recommended in the source checklist to their matching page types (e.g. product-related types on product pages) rather than dumping all schema on one template.",
+        "Link your YouTube channel and social profiles from your website and include them in schema markup alongside the rest of your brand data.",
+        "Validate the markup after deployment so errors do not silently defeat the purpose."
+      ],
+      "caveats": [
+        "Schema improves interpretability but does not guarantee recommendation; the presenter treats it as one of several inputs.",
+        "Exact schema types beyond Organization are in the linked checklist, not enumerated in the video.",
+        "Google does not require special AI schema. Validate applicable product search features separately from any citation hypothesis."
+      ],
+      "source_id": "1qLXwcwAMSA8vD1-WZKnN-CIyVODkJvWY",
+      "source_name": "The Ultimate AI Visibility Checklist (AEO_GEO for 2026).docx",
+      "folder": "/16-AEO-answer-and-generative-engines",
+      "domain": "answer-and-generative-engines",
+      "section": 0
+    },
+    {
+      "id": "7a7c5e12d8bcf1543cfe845a",
+      "title": "Match Citation Strategy to Your Business Model",
+      "summary": "B2B, commerce and marketplace queries pull from different citation sources and require different measurement approaches.",
+      "use_when": "Choosing which review sites, publications or platforms to target for a B2B, DTC or marketplace store.",
+      "steps": [
+        "Identify the citation set for your model: Smith sees TechRadar appearing heavily for B2B questions; Glamour and Cosmopolitan for commerce; Eater, Yelp and TripAdvisor for marketplaces and local.",
+        "Build your target list from the actual citations the engines return for your questions, not from generic top-domain lists.",
+        "Measurement differs: many B2B answers have nothing clickable, so last-touch referral traffic undercounts impact — you need answer tracking plus a post-conversion 'how did you hear about us' question.",
+        "Commerce does have clickable shoppable cards, so last-touch referral traffic gives a reasonable read of conversions.",
+        "For commerce cards, rich snippet schema and the number of reviews matter for appearing in the carousel.",
+        "B2B purchase cycles involve roughly dozens of touch points — nobody commits to large software from one search."
+      ],
+      "caveats": [
+        "The named publications are Smith's observations of what currently appears, not fixed rules; recheck current citations."
+      ],
+      "source_id": "1hcPyVDTuTN_kyy87JS8-sZ6tSmjJ41zh",
+      "source_name": "The ultimate guide to AEO_ How to get ChatGPT to recommend your product _ Ethan Smith.docx",
+      "folder": "/16-AEO-answer-and-generative-engines",
+      "domain": "answer-and-generative-engines",
+      "section": 1
+    }
+  ],
+  "foundation_note": "Inferred principle labels do not establish universal applicability. Retain source conditions; empty means no matched labelled principle, not absence of foundational knowledge."
+}

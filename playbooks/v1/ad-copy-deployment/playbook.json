@@ -1,0 +1,495 @@
+{
+  "schema_version": 1,
+  "version": "1.0.0-draft",
+  "status": "draft",
+  "domain": "ad-copy-deployment",
+  "source_catalog_sha256": "0287a2e2df3a54711125de9d2927b1efd3d7add875be994c4af6f326cfa84074",
+  "required_inputs": [
+    "Product facts",
+    "audience evidence",
+    "offer",
+    "approved proof",
+    "visual concept",
+    "voice",
+    "constraints"
+  ],
+  "measures": [
+    "Owner preference",
+    "editing needed",
+    "claim accuracy",
+    "later CPA"
+  ],
+  "related_domains": [
+    "avatars",
+    "brand",
+    "offers",
+    "paid-social-creative"
+  ],
+  "evidence_method": "Local BM25 candidate selection; authored workflow steps are proposals, not source quotations or verified synthesis.",
+  "operating_contract": "../OPERATING_CONTRACT.md",
+  "workflows": [
+    {
+      "id": "ad-copy-deployment.write-static-copy",
+      "title": "Write ecommerce static-ad copy",
+      "query": "copywriting headline benefits awareness proof concrete readability",
+      "steps": [
+        "Choose one customer situation, promise and relevant objection",
+        "Use product evidence to support the promise and complement the visual",
+        "Write distinct finished variants and remove unsupported claims and filler"
+      ],
+      "deliverable": "Primary text, headline and CTA for each concept",
+      "status": "draft",
+      "steps_origin": "authored orchestration draft",
+      "retrieval": {
+        "primary_domain": "ad-copy-deployment",
+        "related_domains": [
+          "avatars",
+          "brand",
+          "offers",
+          "paid-social-creative"
+        ],
+        "query": "copywriting headline benefits awareness proof concrete readability",
+        "selected_card_ids": [
+          "40638b840ce1e28ea89b4b19",
+          "8e6c32baa35ff2f2aa1ef544",
+          "8ff8c16758242cbca73382e2"
+        ],
+        "mixed_candidate_ids": [
+          "b86b75e9bce9d133f6fb0bee",
+          "010fe64918f47b6230e2899e",
+          "299de15a096ab2575b0aec6a"
+        ],
+        "fallback": "Search primary and related domains using the task and actual constraints; do not silently switch to a different workflow.",
+        "selection_status": "candidate-support-needs-applicability-review"
+      },
+      "supporting_cards": [
+        {
+          "id": "40638b840ce1e28ea89b4b19",
+          "title": "Lead With 'What's In It For Me?' Benefits",
+          "summary": "Consumers care about what the product does for them, not company facts, equipment or process.",
+          "use_when": "Reviewing product pages, about sections, ad copy or brochures that currently describe the company, factory or product specs.",
+          "steps": [
+            "Audit each asset for self-serving content: company history, staff counts, square footage, equipment photos, 'unusual camera angles'. The source cites Daniel Starch's research showing readers ignore factory-focused ads.",
+            "For each feature listed, write the corresponding consumer benefit and lead with the benefit.",
+            "Put the single biggest benefit in the headline.",
+            "Batch benefits throughout ('Bombard Your Readers With Benefits') rather than relying on one strong claim.",
+            "Use the Flesch readability ease concept and clear layout so benefit statements land fast."
+          ],
+          "caveats": [
+            "This is the book's core 'advertising should move people to act' doctrine—it is a direct-response stance, not a brand-awareness stance; brand campaigns may weight emotion and imagery differently."
+          ],
+          "source_id": "1ehoZR2J222ACt9k-ZXxKYry6eYZWs_-o",
+          "source_name": "Cashvertising.docx",
+          "folder": "/11-ADC-ad-copy-deployment",
+          "domain": "ad-copy-deployment",
+          "section": 1
+        },
+        {
+          "id": "8e6c32baa35ff2f2aa1ef544",
+          "title": "Abstract-to-Concrete Zoom-In Exercise",
+          "summary": "Rewrite vague benefits by drilling down a two-column abstract/concrete sheet until you hit a picturable object or scenario.",
+          "use_when": "Your product benefits read as adjectives ('effective', 'convenient', 'premium') and you need concrete claims for ads, PDP bullets or category positioning.",
+          "steps": [
+            "Take a sheet of paper and draw a vertical line down the middle. Write 'abstract' at the top of the left column and 'concrete' at the bottom of the right.",
+            "Write your current vague phrase in the left column (e.g. 'regain fitness', 'pretty people in big cities').",
+            "Ask repeatedly, 'What do I actually mean here?' and rewrite the phrase lower and lower in the right column, converting intangible words into objects, people, places or actions a reader can picture.",
+            "Worked example from the source: 'regain fitness' becomes 'getting people up off the couch to run 5K' — the source notes this is effectively the Couch to 5K naming logic.",
+            "Second worked example: 'worn by pretty people in big cities and old people elsewhere' becomes 'worn by supermodels in London and dads in Ohio' — two picturable people in a funny juxtaposition.",
+            "Use the resulting concrete phrasing directly as product name, headline or PDP bullet candidates, then run the three-question copy test on each.",
+            "Sharpen concrete words further where possible: source critique of a Tesla line suggested preferring 'tougher than an F-150' over 'better truck than an F-150' for shorter, more picturable, more ownable phrasing."
+          ],
+          "caveats": [
+            "Drilling down takes real work and multiple rewrites; the source notes 'you can't just like' produce facts — research is required.",
+            "Concrete wording can be less searchable or less category-obvious; you may need one concrete emotional line plus one plain functional line on the same PDP."
+          ],
+          "source_id": "1PJNo3O5jIysn54twXMhryTz3OGwS1gCZ",
+          "source_name": "Learn Copywriting in 76 Minutes – Harry Dry.docx",
+          "folder": "/11-ADC-ad-copy-deployment",
+          "domain": "ad-copy-deployment",
+          "section": 1
+        },
+        {
+          "id": "8ff8c16758242cbca73382e2",
+          "title": "Sales-Page Template and Section Order",
+          "summary": "Copy a fixed section order — hero, story, proof, price positioning, objections, FAQs, repeated CTAs — to prevent incoherent pages.",
+          "use_when": "Building a sales page, product landing page or long-form collection page and deciding section-by-section structure.",
+          "steps": [
+            "Write the hero section first: headline, sub-headline and a call to action. Don't name the product unless you're a household brand like mercedes.com or apple.com — a Mercedes-level brand can get away with it, a newer store cannot.",
+            "Write the story section at the length matching your audience's awareness stage.",
+            "Show why they need the product, then show what happens without it.",
+            "Insert testimonials and success stories, then position the price (offer stack or comparison).",
+            "Handle objections ('what if you took my money and I want it back?'), add FAQs, then more testimonials.",
+            "Slip in a call to action or pricing table every two or three content sections so the reader can buy at any point of readiness."
+          ],
+          "caveats": [
+            "The source gives the template as a starting point and adapts it — don't treat section order as a rigid law.",
+            "The references to mercedes.com and apple.com are illustrative brand examples, not licensing to name-drop in your copy."
+          ],
+          "source_id": "1_WzCa6oeG3NaHQ8N-xLFrJ2pdfy2v8JS",
+          "source_name": "Copywriting 101_ eCommerce copywriting course FOR BEGINNERS.docx",
+          "folder": "/11-ADC-ad-copy-deployment",
+          "domain": "ad-copy-deployment",
+          "section": 2
+        }
+      ],
+      "candidate_scores": [
+        {
+          "card_id": "40638b840ce1e28ea89b4b19",
+          "score": 20.352475
+        },
+        {
+          "card_id": "8e6c32baa35ff2f2aa1ef544",
+          "score": 16.444737
+        },
+        {
+          "card_id": "8ff8c16758242cbca73382e2",
+          "score": 14.539082
+        }
+      ],
+      "applicability_checks": [
+        "Does this advice fit the product lifecycle, market, audience and requested deliverable?",
+        "Does it require proof, access, budget or assets the brand does not have?",
+        "Does it change a fixed price, offer, policy or other explicit constraint?",
+        "Are platform details or numerical claims current and substantiated?"
+      ],
+      "output_checks": [
+        "Deliver the specified artifact, not general advice about creating it.",
+        "Use supplied brand facts; label hypotheses and missing inputs separately.",
+        "Preserve relevant source conditions; do not copy another business’s proof or results.",
+        "Include an owner, measurement and decision rule when proposing a test.",
+        "Check the output against the requested constraints and owner feedback."
+      ],
+      "completion_rule": "Stop after the requested artifact passes factual and brief checks; allow at most two revision passes, then report the unresolved issue.",
+      "action_boundary": "Prepare recommendations/artifacts only. Publication, spend changes, customer contact and production modifications require separate task authorization."
+    },
+    {
+      "id": "ad-copy-deployment.revise-copy",
+      "title": "Revise copy using owner feedback",
+      "query": "copywriting clarity specificity voice edit readability",
+      "steps": [
+        "Classify feedback as factual, voice, concept or structure",
+        "Revise the actual customer-facing text while preserving approved facts",
+        "Explain meaningful changes briefly and keep analysis out of copy"
+      ],
+      "deliverable": "Revised copy and concise change note",
+      "status": "draft",
+      "steps_origin": "authored orchestration draft",
+      "retrieval": {
+        "primary_domain": "ad-copy-deployment",
+        "related_domains": [
+          "avatars",
+          "brand",
+          "offers",
+          "paid-social-creative"
+        ],
+        "query": "copywriting clarity specificity voice edit readability",
+        "selected_card_ids": [
+          "17183d94160ce2f95770a9d7",
+          "28ee2e3aa4ff11299cd991b6",
+          "20fa6900506ffc06314306b2"
+        ],
+        "mixed_candidate_ids": [
+          "7d460350a38096003d9e2fa5",
+          "b86b75e9bce9d133f6fb0bee",
+          "62247a5dc49e3b6106c7f866"
+        ],
+        "fallback": "Search primary and related domains using the task and actual constraints; do not silently switch to a different workflow.",
+        "selection_status": "candidate-support-needs-applicability-review"
+      },
+      "supporting_cards": [
+        {
+          "id": "17183d94160ce2f95770a9d7",
+          "title": "The Psychology of Simplicity: Readable Copy Is Non-Negotiable",
+          "summary": "Advertising exists to get people to act, so it must be written to be understood - simple, direct, and readable.",
+          "use_when": "Final QA on ad copy, PDP text, email, and any customer-facing copy before it ships.",
+          "steps": [
+            "Apply the foundational rule: write so people can understand. The source calls this the #1 key to all effective written communication, and warns that an incomprehensible effective message is equivalent to no ad at all.",
+            "Treat clarity as a prerequisite: you may be advertising, but until someone reads and understands, you're just talking to yourself - and you don't need to pay to do that.",
+            "Audit readability yourself before publishing. The source notes there's no magic to it: you write, run the test, examine the score, and edit until it hits the range you want.",
+            "Tighten sentences and reduce sentence length where the copy reads slowly. Long sentences can require fewer words overall but demand more mental processing, which loses readers."
+          ],
+          "caveats": [
+            "The source argues this is the foundation for everything else in the book - skip it and other techniques won't rescue the ad.",
+            "Clarity work is not just correct grammar; wordy but grammatically perfect copy can still fail the test."
+          ],
+          "source_id": "1ehoZR2J222ACt9k-ZXxKYry6eYZWs_-o",
+          "source_name": "Cashvertising.docx",
+          "folder": "/11-ADC-ad-copy-deployment",
+          "domain": "ad-copy-deployment",
+          "section": 3
+        },
+        {
+          "id": "28ee2e3aa4ff11299cd991b6",
+          "title": "Formatting Rules That Keep Long Copy Readable",
+          "summary": "Long centered text blocks, very long lines and repetitive phrasing make copy physically hard to read and cause skips.",
+          "use_when": "Formatting a sales page, long-form email, or PDP description section before publishing.",
+          "steps": [
+            "Left-align body text — source calls centered body copy on a sales page extremely confusing and hard to read.",
+            "Mix short, medium and long lines rather than a wall of long sentences.",
+            "Break the email or page into distinct sections instead of accumulating separate topics in one piece.",
+            "Replace repetitive stock phrasing (repeated 'sleep in, travel, be your own boss' and 'chat-GPT-style' double-dash constructions) with varied, specific language.",
+            "Shorten CTAs to a simple action phrase rather than a long sentence about getting your foot in the door.",
+            "In ecommerce: apply the same left-align and line-length rules to PDP descriptions and landing page body copy, not just emails."
+          ],
+          "caveats": [
+            "Source's complaints are editorial judgments from live critiques; legibility problems were inferred partly from line length before reading, so use your own readability checks too."
+          ],
+          "source_id": "15YMeR1ImpgAjGJ1pU7c7viI9xyqzqaf_",
+          "source_name": "8 Hour Copywriting Course For Beginners.docx",
+          "folder": "/11-ADC-ad-copy-deployment",
+          "domain": "ad-copy-deployment",
+          "section": 4
+        },
+        {
+          "id": "20fa6900506ffc06314306b2",
+          "title": "Write a one-paragraph messaging strategy before any copy",
+          "summary": "A short written messaging strategy gives every copy and design decision a rationale so you stop choosing words by what 'sounds good'.",
+          "use_when": "You are about to write or rewrite PDP copy, homepage copy or ad creative for a store and need a shared standard for what the copy should do, especially when several people or freelancers touch it.",
+          "steps": [
+            "Before writing any copy, write down the guiding principles your copy must follow as a short document. Joanna Wiebe's example for Page99Test.com is a single paragraph: copy is 'short, friendly and to the point', assumes visitors want to read book excerpts not marketing copy, keeps words to a minimum, and wherever a screenshot, press logo, button, video demo or icon can be used it should replace copy without sacrificing clarity.",
+            "Pick the principles that matter for your store from the source's list of candidate principles: let copy guide design because good writing is good design; some visitors want to read a lot and some don't, and both are customers; support messages with social proof like testimonials or media reviews; support key concepts with video demonstrations; just because you say it doesn't make it true, so prove it; strive for clarity above cleverness; let the message match the medium at an exact point of need; all visitors can be persuaded to join or upgrade; engage visitors with content, experiences or mobile/app options.",
+            "Treat the document as a living document, not etched in stone: update it as you learn your customers' language and as you add or change products.",
+            "Share the strategy with designers, developers and freelancers so they understand your brand and messaging approach before they produce assets.",
+            "Draft your own version in one sitting without censoring yourself, then edit afterward rather than trying to reach a final version on the first, second or third try."
+          ],
+          "caveats": [
+            "The source frames this for startups; a longer or more detailed strategy is not required for it to work.",
+            "The strategy governs copy, not formatting or layout — establish messages before formatting bullets, headlines and buttons."
+          ],
+          "source_id": "1FKQs9OdEtvsuIVyAjNxhAd7cVg3rl28H",
+          "source_name": "COPY HACKERS.docx",
+          "folder": "/11-ADC-ad-copy-deployment",
+          "domain": "ad-copy-deployment",
+          "section": 1
+        }
+      ],
+      "candidate_scores": [
+        {
+          "card_id": "17183d94160ce2f95770a9d7",
+          "score": 21.659635
+        },
+        {
+          "card_id": "28ee2e3aa4ff11299cd991b6",
+          "score": 17.285856
+        },
+        {
+          "card_id": "20fa6900506ffc06314306b2",
+          "score": 15.514746
+        }
+      ],
+      "applicability_checks": [
+        "Does this advice fit the product lifecycle, market, audience and requested deliverable?",
+        "Does it require proof, access, budget or assets the brand does not have?",
+        "Does it change a fixed price, offer, policy or other explicit constraint?",
+        "Are platform details or numerical claims current and substantiated?"
+      ],
+      "output_checks": [
+        "Deliver the specified artifact, not general advice about creating it.",
+        "Use supplied brand facts; label hypotheses and missing inputs separately.",
+        "Preserve relevant source conditions; do not copy another business’s proof or results.",
+        "Include an owner, measurement and decision rule when proposing a test.",
+        "Check the output against the requested constraints and owner feedback."
+      ],
+      "completion_rule": "Stop after the requested artifact passes factual and brief checks; allow at most two revision passes, then report the unresolved issue.",
+      "action_boundary": "Prepare recommendations/artifacts only. Publication, spend changes, customer contact and production modifications require separate task authorization."
+    },
+    {
+      "id": "ad-copy-deployment.objection-copy",
+      "title": "Write copy addressing a buying objection",
+      "query": "objection belief proof mechanism awareness copy",
+      "steps": [
+        "Select an evidenced objection that the product can actually address",
+        "Choose appropriate proof and avoid amplifying unsupported fears",
+        "Write a clear promise, support and next action without changing the offer"
+      ],
+      "deliverable": "Objection-led ad copy variants",
+      "status": "draft",
+      "steps_origin": "authored orchestration draft",
+      "retrieval": {
+        "primary_domain": "ad-copy-deployment",
+        "related_domains": [
+          "avatars",
+          "brand",
+          "offers",
+          "paid-social-creative"
+        ],
+        "query": "objection belief proof mechanism awareness copy",
+        "selected_card_ids": [
+          "e9741d568a978ac5f209974d",
+          "a9db8de6d903f43da80e956e",
+          "79e75a8b36451e7d0b516267"
+        ],
+        "mixed_candidate_ids": [
+          "010fe64918f47b6230e2899e",
+          "4930a1df56a64e44337df968",
+          "5c6cc037d679f4ee76b992d7"
+        ],
+        "fallback": "Search primary and related domains using the task and actual constraints; do not silently switch to a different workflow.",
+        "selection_status": "candidate-support-needs-applicability-review"
+      },
+      "supporting_cards": [
+        {
+          "id": "e9741d568a978ac5f209974d",
+          "title": "Show, Don't Tell: Demonstrate Why You're Convinced",
+          "summary": "Claims create objections while demonstrated personal results create belief, so show your own before-and-after instead of asserting an outcome.",
+          "use_when": "Writing product-page proof sections or ad hooks where a headline claim about results would trigger skepticism.",
+          "steps": [
+            "Identify every sentence in your draft that 'tells' the reader a result ('you can lose 20 lbs in 8 weeks').",
+            "Rewrite it as a first-person demonstration of the same claim ('here's how my arms went from skinny to ripped in 8 weeks').",
+            "Pair the demonstration with visual or numeric proof in the same sentence or block.",
+            "Use the phrase 'in my experience' or 'for me it was' instead of issuing an instruction, so the reader is shown rather than instructed.",
+            "In ecommerce: instead of 'our strips improve sleep,' describe your own tossing-and-turning nights, what changed after using them, and the specific improvements you noticed (waking refreshed, breaking a gym plateau)."
+          ],
+          "caveats": [
+            "Source gives this as the angle to use roughly 90% of the time in copy — treat that percentage as the presenter's heuristic, not a measured rule."
+          ],
+          "source_id": "15YMeR1ImpgAjGJ1pU7c7viI9xyqzqaf_",
+          "source_name": "8 Hour Copywriting Course For Beginners.docx",
+          "folder": "/11-ADC-ad-copy-deployment",
+          "domain": "ad-copy-deployment",
+          "section": 4
+        },
+        {
+          "id": "a9db8de6d903f43da80e956e",
+          "title": "Use Verifiable Evidence to Convert Belief into Purchase",
+          "summary": "Evidence - facts, figures, testimonials, endorsements, research, charts - persuades more effectively than claims you made yourself.",
+          "use_when": "Writing copy for higher-priced or considered-purchase products where prospects need justification before buying.",
+          "steps": [
+            "Use the source's operational definition: evidence is 'any factual statement, object, or opinion not created by the source that is used by that source as support' (Reinhard, 1988). Facts, figures, testimonials, endorsements, research, and charts qualify. Your own claims do not.",
+            "Layer evidence on top of emotional appeal. You must provoke emotion to get the prospect excited enough to spend, but especially for costlier products you must supply enough reasoning so they can justify the purchase and satisfy their sense of responsibility.",
+            "Present evidence clearly and simply. Peripheral thinkers - most readers - won't work through dense data; they'll scan, decide, and move on. Colorful charts and graphs, plus quotes from trusted professionals, let them absorb the proof fast.",
+            "Anticipate the source's key point: buyers want to believe your claims (because believing lets them enjoy the benefits), and strong evidence is what lets them give themselves permission."
+          ],
+          "caveats": [
+            "The source argues evidence is most effective with important or expensive products where buyers think carefully. Lower-cost impulse goods may rely more on emotion.",
+            "Central-route thinkers will scrutinize and check your evidence - make sure it holds up."
+          ],
+          "source_id": "1ehoZR2J222ACt9k-ZXxKYry6eYZWs_-o",
+          "source_name": "Cashvertising.docx",
+          "folder": "/11-ADC-ad-copy-deployment",
+          "domain": "ad-copy-deployment",
+          "section": 3
+        },
+        {
+          "id": "79e75a8b36451e7d0b516267",
+          "title": "Choose Solution-Aware for Mechanism-Led Ads",
+          "summary": "When viewers know the category but haven't picked a product, make your unique mechanism the centre of the creative.",
+          "use_when": "When advertising to audiences who have tried or researched competitors in your category, or when producing mid-funnel creative after top-of-funnel volume is running.",
+          "steps": [
+            "Confirm the audience already knows the category exists — e.g., has used whitening strips or worked with marketing agencies before — since you then don't need category education.",
+            "Make the differentiating mechanism visible within the creative, per the source: purple whitening strips vs normal strips, your agency's audit process vs other agencies, a specific formulation or material.",
+            "Consider how the ad sits across stages: the source's whitening-strip video argues most of its education is about which product to choose, not about whether whitening strips exist, which places it at solution aware.",
+            "Use proof and early product introduction once the mechanism lands — in the Nero gym-short example the product appears around nine seconds in, and being 'the only short in the world like this' removes direct comparison.",
+            "Trim category education from the script — it wastes valuable hook time on people who already know the basics."
+          ],
+          "caveats": [
+            "Judging which stage a real ad occupies is interpretive; the source notes even he and colleagues argue about the exact placement.",
+            "Mechanism-only framing assumes prior category knowledge and will underperform on unaware cold audiences."
+          ],
+          "source_id": "1qtfAFOioFWJ-Y96Fo0jLXuYXYXXNE7sA",
+          "source_name": "How To Make Your Meta Ads Scale.docx",
+          "folder": "/11-ADC-ad-copy-deployment",
+          "domain": "ad-copy-deployment",
+          "section": 0
+        }
+      ],
+      "candidate_scores": [
+        {
+          "card_id": "e9741d568a978ac5f209974d",
+          "score": 17.34669
+        },
+        {
+          "card_id": "a9db8de6d903f43da80e956e",
+          "score": 15.810368
+        },
+        {
+          "card_id": "79e75a8b36451e7d0b516267",
+          "score": 14.712261
+        }
+      ],
+      "applicability_checks": [
+        "Does this advice fit the product lifecycle, market, audience and requested deliverable?",
+        "Does it require proof, access, budget or assets the brand does not have?",
+        "Does it change a fixed price, offer, policy or other explicit constraint?",
+        "Are platform details or numerical claims current and substantiated?"
+      ],
+      "output_checks": [
+        "Deliver the specified artifact, not general advice about creating it.",
+        "Use supplied brand facts; label hypotheses and missing inputs separately.",
+        "Preserve relevant source conditions; do not copy another business’s proof or results.",
+        "Include an owner, measurement and decision rule when proposing a test.",
+        "Check the output against the requested constraints and owner feedback."
+      ],
+      "completion_rule": "Stop after the requested artifact passes factual and brief checks; allow at most two revision passes, then report the unresolved issue.",
+      "action_boundary": "Prepare recommendations/artifacts only. Publication, spend changes, customer contact and production modifications require separate task authorization."
+    }
+  ],
+  "foundation_candidates": [
+    {
+      "id": "581f8a1a98cd0852ea29eed6",
+      "title": "Rewrite Vague Claims with Short Words and Concrete Promises",
+      "summary": "Trade formal abstraction for specific, benefit-led phrasing that the reader can see and believe.",
+      "use_when": "Editing benefit claims, headlines, and PDP bullets to make them more concrete and persuasive.",
+      "steps": [
+        "Replace abstract benefit language with specific, quantified, or vivid phrasing. The source's pair: 'Become financially successful' becomes 'You'll make up to $2,495 every week.'",
+        "Segment by audience and paint the specific outcome. The source's example: instead of 'Want your entire body to look more appealing?', write 'MEN! Do you want a rippling, rock-hard stomach? WOMEN! Do you want lean, luscious thighs?'",
+        "Watch for inflated vocabulary. The source warns that formal education pushes writers toward words like enervated, famished, elephantine, recalcitrant, and nefarious, and that using them in ads is effectively flushing money down the toilet.",
+        "Cut specific filler phrases the source calls out: 'and you'll enjoy same,' 'the aforementioned benefits,' 'you can liken this to,' and 'herein are 10 reasons.'",
+        "Use 'definite words' - nouns, proper names, pronouns, verbs, and specifics - so the reader does less interpretation. 'Joey ate chocolate' is more definite than 'Someone did something.'"
+      ],
+      "caveats": [
+        "The source's specific example headlines are stylistic demonstrations, not tested winners.",
+        "Don't swing to the other extreme of three-word sentences for every line; keep variety."
+      ],
+      "source_id": "1ehoZR2J222ACt9k-ZXxKYry6eYZWs_-o",
+      "source_name": "Cashvertising.docx",
+      "folder": "/11-ADC-ad-copy-deployment",
+      "domain": "ad-copy-deployment",
+      "section": 3
+    },
+    {
+      "id": "17183d94160ce2f95770a9d7",
+      "title": "The Psychology of Simplicity: Readable Copy Is Non-Negotiable",
+      "summary": "Advertising exists to get people to act, so it must be written to be understood - simple, direct, and readable.",
+      "use_when": "Final QA on ad copy, PDP text, email, and any customer-facing copy before it ships.",
+      "steps": [
+        "Apply the foundational rule: write so people can understand. The source calls this the #1 key to all effective written communication, and warns that an incomprehensible effective message is equivalent to no ad at all.",
+        "Treat clarity as a prerequisite: you may be advertising, but until someone reads and understands, you're just talking to yourself - and you don't need to pay to do that.",
+        "Audit readability yourself before publishing. The source notes there's no magic to it: you write, run the test, examine the score, and edit until it hits the range you want.",
+        "Tighten sentences and reduce sentence length where the copy reads slowly. Long sentences can require fewer words overall but demand more mental processing, which loses readers."
+      ],
+      "caveats": [
+        "The source argues this is the foundation for everything else in the book - skip it and other techniques won't rescue the ad.",
+        "Clarity work is not just correct grammar; wordy but grammatically perfect copy can still fail the test."
+      ],
+      "source_id": "1ehoZR2J222ACt9k-ZXxKYry6eYZWs_-o",
+      "source_name": "Cashvertising.docx",
+      "folder": "/11-ADC-ad-copy-deployment",
+      "domain": "ad-copy-deployment",
+      "section": 3
+    },
+    {
+      "id": "8998cd84ed0c5d71e3f42fc3",
+      "title": "Direct Mental Movies With Specific Visual Words",
+      "summary": "Replace vague benefit claims with specific visual language that makes prospects mentally simulate using the product.",
+      "use_when": "Writing product descriptions, ad body copy, landing page sections or video scripts where a generic benefit statement is falling flat.",
+      "steps": [
+        "Start from a vague line ('Go somewhere and do something') and progressively add specificity: location, object, action, then sensory detail (the source's progression: go to the kitchen / open the oven / pull out the pizza / pull out the freshest, crispiest pizza you've ever eaten).",
+        "Use action verbs and concrete nouns so readers picture themselves performing steps with the product, not just reading a claim.",
+        "Add 'positive visual adjectives' (PVAs) sparingly at key moments to intensify the image.",
+        "Apply this to ecommerce PDPs: instead of 'high-quality nonstick pan', write copy that walks the buyer through the first meal they'll cook in it.",
+        "For video ads, script the sequence of images the viewer should see in their mind rather than listing features; the source's framing is that 'the first use of any product is inside the consumers' minds'."
+      ],
+      "caveats": [
+        "Whitman's claim that imagery increases desire is a persuasion principle, not a measured conversion lift—test copy variants against your own baseline.",
+        "Overwriting dense imagery can hurt readability; the source also recommends clear readability formulas and simplicity."
+      ],
+      "source_id": "1ehoZR2J222ACt9k-ZXxKYry6eYZWs_-o",
+      "source_name": "Cashvertising.docx",
+      "folder": "/11-ADC-ad-copy-deployment",
+      "domain": "ad-copy-deployment",
+      "section": 1
+    }
+  ],
+  "foundation_note": "Inferred principle labels do not establish universal applicability. Retain source conditions; empty means no matched labelled principle, not absence of foundational knowledge."
+}

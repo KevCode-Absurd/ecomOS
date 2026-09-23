@@ -1,0 +1,499 @@
+{
+  "schema_version": 1,
+  "version": "1.0.0-draft",
+  "status": "draft",
+  "domain": "email-lifecycle",
+  "source_catalog_sha256": "0287a2e2df3a54711125de9d2927b1efd3d7add875be994c4af6f326cfa84074",
+  "required_inputs": [
+    "Consent/segments",
+    "customer events",
+    "existing flows",
+    "deliverability",
+    "offers",
+    "product facts"
+  ],
+  "measures": [
+    "Contribution",
+    "purchases",
+    "unsubscribes",
+    "complaints"
+  ],
+  "related_domains": [
+    "post-purchase",
+    "ad-copy-deployment",
+    "measurement"
+  ],
+  "evidence_method": "Local BM25 candidate selection; authored workflow steps are proposals, not source quotations or verified synthesis.",
+  "operating_contract": "../OPERATING_CONTRACT.md",
+  "workflows": [
+    {
+      "id": "email-lifecycle.plan-flows",
+      "title": "Plan lifecycle email flows",
+      "query": "customer journey welcome abandoned cart post purchase flow",
+      "steps": [
+        "Map lifecycle events and consent eligibility",
+        "Prioritise flows by customer need and implementation readiness",
+        "Define triggers, exclusions, message purpose and success measures"
+      ],
+      "deliverable": "Lifecycle flow specification",
+      "status": "draft",
+      "steps_origin": "authored orchestration draft",
+      "retrieval": {
+        "primary_domain": "email-lifecycle",
+        "related_domains": [
+          "post-purchase",
+          "ad-copy-deployment",
+          "measurement"
+        ],
+        "query": "customer journey welcome abandoned cart post purchase flow",
+        "selected_card_ids": [
+          "3cf40cda910329753dde8a53",
+          "e5dfe8e98a4921473d54bb07",
+          "b8acdbab97a3a717dea59f37"
+        ],
+        "mixed_candidate_ids": [
+          "36f24e817a8e9586163eb93a",
+          "d7082f8c3c813a3e82f869da",
+          "1667a4459343b6e160a8233c"
+        ],
+        "fallback": "Search primary and related domains using the task and actual constraints; do not silently switch to a different workflow.",
+        "selection_status": "candidate-support-needs-applicability-review"
+      },
+      "supporting_cards": [
+        {
+          "id": "3cf40cda910329753dde8a53",
+          "title": "Build the five core SMS flows (welcome + four abandonments + post-purchase)",
+          "summary": "Every brand should run a welcome flow, site/browse/cart/checkout abandonment, and a post-purchase replenishment or win-back flow.",
+          "use_when": "Setting up or auditing the automated (flow) side of an SMS program.",
+          "steps": [
+            "Welcome flow: triggered when someone joins via the popup (often with a discount). Keep it simple — introduce the brand and drive the discount.",
+            "Four abandonment flows, kept dead simple: site abandoned (browsed site, no product page), browse abandoned (viewed a product page), cart abandoned (added to cart), checkout abandoned (reached checkout).",
+            "Post-purchase / replenishment / win-back flow: bring buyers back after their first order.",
+            "Keep abandonment messages single and simple (see the US compliance card) and split by new vs. returning buyers when you can.",
+            "Treat these basics as the moneymakers: the source reports one brand's core flows producing $517k, with $293k from welcome, $107k cart abandoned, $46k browse abandoned, $20k retention, and $13k site abandoned in a month."
+          ],
+          "caveats": [
+            "Revenue figures are a single agency portfolio example, not a benchmark to expect.",
+            "Exact flow structure should be adjusted per brand context."
+          ],
+          "source_id": "1q_cli2gOMrCQemBXDJCpJE2q4E4w__Ox",
+          "source_name": "How to Create a SMS Marketing Strategy For $10M Shopify Brands.docx",
+          "folder": "/14-EML-email-lifecycle",
+          "domain": "email-lifecycle",
+          "section": 0
+        },
+        {
+          "id": "e5dfe8e98a4921473d54bb07",
+          "title": "Keep only high-engagement flows during recovery",
+          "summary": "Pause most automations and lean on welcome, abandon and post-purchase flows, which reliably earn high engagement.",
+          "use_when": "Deciding which automations to leave running while rebuilding sender reputation, or which flows to prioritize when you can't build everything at once.",
+          "steps": [
+            "Turn off all flows except: welcome, browse abandonment, cart abandonment, checkout abandonment and post-purchase.",
+            "Keep the welcome flow because contacts just opted in for a discount and will open the first email delivering it.",
+            "Keep cart and checkout abandonment because the reminder about an item they were already considering earns strong engagement.",
+            "Keep post-purchase because customers want order information.",
+            "Understand why this matters during recovery: every send that gets opens and clicks is a vote of confidence with providers; flows generate those votes without needing new campaign content.",
+            "Re-enable the remaining flows once engagement and placement have recovered."
+          ],
+          "caveats": [
+            "This is the source's recommended recovery posture, not a claim that other flows are worthless.",
+            "If a flow's own engagement is weak for your brand, including it dilutes the signal you're trying to send."
+          ],
+          "source_id": "1O7snRnsdSzGQFcGwqLifQRarAjLuQMVy",
+          "source_name": "Ecommerce Email Marketing 2025.docx",
+          "folder": "/14-EML-email-lifecycle",
+          "domain": "email-lifecycle",
+          "section": 12
+        },
+        {
+          "id": "b8acdbab97a3a717dea59f37",
+          "title": "Have the Five Core Flows Plus Win-Back and Sunset in Place",
+          "summary": "Prioritize the essential lifecycle flows the source calls the biggest money-makers: welcome series, site abandon, browse abandon, cart abandon, checkout abandon, post-purchase, win-back, and sunset.",
+          "use_when": "Auditing which automation flows a store still needs, or sequencing which flows to build first.",
+          "steps": [
+            "Confirm the pre-purchase set exists: welcome series, site abandon, browse abandon, cart abandon, checkout abandon.",
+            "Confirm post-purchase and customer win-back exist as post-purchase flows.",
+            "Confirm the sunset flow exists for list hygiene.",
+            "The source singles out the welcome series, cart abandon, and browse abandon as the most important flows to keep optimizing over time — treat them as ongoing optimization targets, not set-and-forget.",
+            "Beyond the core, the source lists optional/extended flows as the possibilities are 'endless': bounceback offer right after purchase, back-in-stock, replacement reminder (e.g., a 30-day consumable prompted at ~day 25), product/data-based cross-sell flows, and a tailored 'highly engaged but never purchased' window-shopper flow."
+          ],
+          "caveats": [
+            "Which flows are 'biggest money-makers' is the presenter's assessment, not a measured benchmark across stores.",
+            "Build order should consider your data volume — some flows (e.g., back-in-stock) need inventory/restock events to exist."
+          ],
+          "source_id": "1gAs1Y6DDO4ld3V07pv7EQ4Hq585FJEwm",
+          "source_name": "_Klaviyo Email Marketing FULL COURSE 2025.docx",
+          "folder": "/14-EML-email-lifecycle",
+          "domain": "email-lifecycle",
+          "section": 3
+        }
+      ],
+      "candidate_scores": [
+        {
+          "card_id": "3cf40cda910329753dde8a53",
+          "score": 29.05675
+        },
+        {
+          "card_id": "e5dfe8e98a4921473d54bb07",
+          "score": 28.652809
+        },
+        {
+          "card_id": "b8acdbab97a3a717dea59f37",
+          "score": 28.22025
+        }
+      ],
+      "applicability_checks": [
+        "Does this advice fit the product lifecycle, market, audience and requested deliverable?",
+        "Does it require proof, access, budget or assets the brand does not have?",
+        "Does it change a fixed price, offer, policy or other explicit constraint?",
+        "Are platform details or numerical claims current and substantiated?"
+      ],
+      "output_checks": [
+        "Deliver the specified artifact, not general advice about creating it.",
+        "Use supplied brand facts; label hypotheses and missing inputs separately.",
+        "Preserve relevant source conditions; do not copy another business’s proof or results.",
+        "Include an owner, measurement and decision rule when proposing a test.",
+        "Check the output against the requested constraints and owner feedback."
+      ],
+      "completion_rule": "Stop after the requested artifact passes factual and brief checks; allow at most two revision passes, then report the unresolved issue.",
+      "action_boundary": "Prepare recommendations/artifacts only. Publication, spend changes, customer contact and production modifications require separate task authorization."
+    },
+    {
+      "id": "email-lifecycle.write-campaign",
+      "title": "Write an ecommerce email campaign",
+      "query": "email copy subject preheader offer benefit clarity",
+      "steps": [
+        "Select a relevant segment and one campaign purpose",
+        "Write subject, preheader, body and CTA using approved facts",
+        "Check offer consistency, exclusions and brand voice"
+      ],
+      "deliverable": "Finished email copy and segment brief",
+      "status": "draft",
+      "steps_origin": "authored orchestration draft",
+      "retrieval": {
+        "primary_domain": "email-lifecycle",
+        "related_domains": [
+          "post-purchase",
+          "ad-copy-deployment",
+          "measurement"
+        ],
+        "query": "email copy subject preheader offer benefit clarity",
+        "selected_card_ids": [
+          "589fc4bc3d9b3135629f70f8",
+          "400d584b7e15f2a88817da35",
+          "99679e755f67e645ee972b4e"
+        ],
+        "mixed_candidate_ids": [
+          "7d460350a38096003d9e2fa5",
+          "313c009481176a9875134da4",
+          "3e457e257de62912678cab8e"
+        ],
+        "fallback": "Search primary and related domains using the task and actual constraints; do not silently switch to a different workflow.",
+        "selection_status": "candidate-support-needs-applicability-review"
+      },
+      "supporting_cards": [
+        {
+          "id": "589fc4bc3d9b3135629f70f8",
+          "title": "Split subject line and preview text to stay readable on mobile",
+          "summary": "Short subject lines plus a complementary preview text raise the chance the whole first impression is read on a small screen.",
+          "use_when": "Writing campaign subject lines and preheaders for a store's promotions or content sends.",
+          "steps": [
+            "Treat the subject line's only job as getting the open; it must create curiosity or intrigue and stand out in a crowded inbox.",
+            "Treat the preview text as a second subject line — many brands skip or waste it by focusing only on the subject line.",
+            "Follow up on the subject line's promise in the preview text and tease the content without lying; a high open rate from a broken promise leads to spam complaints or unsubscribes.",
+            "Avoid full sentences: use a few words in the subject line and a few in the preview text. Because most opens happen on mobile, a long subject line is cut off — split one long idea between the two fields.",
+            "Do not promise in subject/preview what the email doesn't deliver."
+          ],
+          "caveats": [
+            "The segment cuts off after listing the email's headline; exact character limits are not specified in the source.",
+            "Open rates are not the only goal — delivering the promise protects sender reputation."
+          ],
+          "source_id": "1gAs1Y6DDO4ld3V07pv7EQ4Hq585FJEwm",
+          "source_name": "_Klaviyo Email Marketing FULL COURSE 2025.docx",
+          "folder": "/14-EML-email-lifecycle",
+          "domain": "email-lifecycle",
+          "section": 4
+        },
+        {
+          "id": "400d584b7e15f2a88817da35",
+          "title": "Upload a finished image-design email into an ESP as stacked images",
+          "summary": "Set up a campaign, strip the template, upload compressed slices in order, remove padding, add links, then test and send.",
+          "use_when": "Publishing an image-based email built in Figma into Omnisend, Klaviyo or a similar platform.",
+          "steps": [
+            "Create the campaign in the ESP, entering the subject line and preheader text (the presenter uses 'Last chance for 20% off' with preheader 'Open for your last gift opportunity').",
+            "Open any template to get a canvas, then delete the template blocks so you start from an empty email.",
+            "Add image elements one by one and upload your compressed slices, stacking them in the exact order they appear in the design.",
+            "Select each image block and remove image padding plus any frame side padding so the stacked slices align edge to edge and look like one continuous design.",
+            "Assign the destination link for each image — one link per image — and add short alt text describing the image.",
+            "Preview and send a test email to your own address, checking that the unsubscribe link is present (the ESP added one automatically in the walkthrough) and that links and rendering are correct.",
+            "Choose recipients — all subscribers or a specific segment with exclusions — review, then send."
+          ],
+          "caveats": [
+            "Omnisend and other ESP interfaces change frequently; verify current campaign, padding and image-upload controls.",
+            "Sending entirely image-based emails means text-only recipients see alt text, so keep alt text meaningful."
+          ],
+          "source_id": "1nMppvpjSbF4ezajnM88xmM7lAuWBSWLN",
+          "source_name": "How to Design High Converting Ecommerce Emails In Figma.docx",
+          "folder": "/14-EML-email-lifecycle",
+          "domain": "email-lifecycle",
+          "section": 0
+        },
+        {
+          "id": "99679e755f67e645ee972b4e",
+          "title": "Clear and concise email copy: short and sweet, one takeaway",
+          "summary": "Keep emails to one to two scrolls and one clear takeaway; assume readers are overwhelmed and forget multiple points.",
+          "use_when": "Writing campaign or flow copy that risks cramming several benefits or messages into one send.",
+          "steps": [
+            "Keep the email to roughly 1-2 phone scrolls maximum; source's guidance is shorter is better because only a few seconds of attention are available.",
+            "Choose ONE takeaway per email and build the headline around it — e.g. a matcha email solely about 'enhances the benefits of caffeine', or a hair-loss email solely about growth potential.",
+            "Ask yourself before sending: is there one clear thing the customer can take away? If the email tries to give 3+ takeaways, assume readers remember none.",
+            "Split a benefit-stuffed email into a series: instead of one email listing estimator, graphs, alerts, multi-cook view, etc., dedicate a whole email to each feature one at a time.",
+            "Cut implied information. On a welcome email, skip telling subscribers they get exclusive offers/insider access (they already know from the opt-in) and let the discount code sit in the clear space you save.",
+            "Every sentence should move the reader toward a purchase; delete fluff that only fills space."
+          ],
+          "caveats": [
+            "Some emails (e.g. a flowchart or comparison email) are intentionally longer because the format itself is the engagement — length alone isn't the failure, unclear/multi-message copy is."
+          ],
+          "source_id": "1O7snRnsdSzGQFcGwqLifQRarAjLuQMVy",
+          "source_name": "Ecommerce Email Marketing 2025.docx",
+          "folder": "/14-EML-email-lifecycle",
+          "domain": "email-lifecycle",
+          "section": 8
+        }
+      ],
+      "candidate_scores": [
+        {
+          "card_id": "589fc4bc3d9b3135629f70f8",
+          "score": 18.321723
+        },
+        {
+          "card_id": "400d584b7e15f2a88817da35",
+          "score": 17.270498
+        },
+        {
+          "card_id": "99679e755f67e645ee972b4e",
+          "score": 16.26254
+        }
+      ],
+      "applicability_checks": [
+        "Does this advice fit the product lifecycle, market, audience and requested deliverable?",
+        "Does it require proof, access, budget or assets the brand does not have?",
+        "Does it change a fixed price, offer, policy or other explicit constraint?",
+        "Are platform details or numerical claims current and substantiated?"
+      ],
+      "output_checks": [
+        "Deliver the specified artifact, not general advice about creating it.",
+        "Use supplied brand facts; label hypotheses and missing inputs separately.",
+        "Preserve relevant source conditions; do not copy another business’s proof or results.",
+        "Include an owner, measurement and decision rule when proposing a test.",
+        "Check the output against the requested constraints and owner feedback."
+      ],
+      "completion_rule": "Stop after the requested artifact passes factual and brief checks; allow at most two revision passes, then report the unresolved issue.",
+      "action_boundary": "Prepare recommendations/artifacts only. Publication, spend changes, customer contact and production modifications require separate task authorization."
+    },
+    {
+      "id": "email-lifecycle.audit-deliverability",
+      "title": "Audit email sending health",
+      "query": "deliverability sender reputation authentication engagement",
+      "steps": [
+        "Review authentication and available complaint/bounce evidence",
+        "Inspect consent, suppressions and engagement segments",
+        "Propose staged corrections and verify current provider requirements"
+      ],
+      "deliverable": "Deliverability audit and correction plan",
+      "status": "draft",
+      "steps_origin": "authored orchestration draft",
+      "retrieval": {
+        "primary_domain": "email-lifecycle",
+        "related_domains": [
+          "post-purchase",
+          "ad-copy-deployment",
+          "measurement"
+        ],
+        "query": "deliverability sender reputation authentication engagement",
+        "selected_card_ids": [
+          "61807f09ea38c7cfb41249af",
+          "6d8587217a67915fe64068e6",
+          "4933eedd5bb2a42ce6ed6980"
+        ],
+        "mixed_candidate_ids": [
+          "1e164e5e7ed121f171ed7bbf",
+          "deb34829023625f9d15c451e",
+          "2e93f14127165a325bea6753"
+        ],
+        "fallback": "Search primary and related domains using the task and actual constraints; do not silently switch to a different workflow.",
+        "selection_status": "candidate-support-needs-applicability-review"
+      },
+      "supporting_cards": [
+        {
+          "id": "61807f09ea38c7cfb41249af",
+          "title": "Treat deliverability as a sender reputation score",
+          "summary": "Inbox providers rank you like a credit score: good reputation lands in primary, bad lands in spam, mediocre lands in promotions.",
+          "use_when": "When diagnosing why campaigns aren't being seen, or when deciding whether low revenue is a content problem or a placement problem.",
+          "steps": [
+            "Frame deliverability as your domain/IP 'credit score' — the question is whether you land in primary, promotions or spam.",
+            "Understand the provider's incentive: inbox providers only surface emails users want so users keep using the platform; they watch engagement as the signal.",
+            "Use open and click engagement as the practical proxy: if few people open or click, providers push you toward promotions or spam, which further reduces visibility — a self-reinforcing cycle.",
+            "Check the technical layer first: the source says if your ESP (e.g., Klaviyo) shows no warning at the top of the homepage about domain setup, assume technical requirements are already in place.",
+            "If technicals are fine, split the cause into two: either your emails are weak, or your sender reputation is poor and you are being filtered."
+          ],
+          "caveats": [
+            "The credit-score framing is the source's analogy, not an official metric.",
+            "The source's claim that a clean ESP dashboard means you're fine is a simplification — authentication and domain setup still deserve a direct check."
+          ],
+          "source_id": "1O7snRnsdSzGQFcGwqLifQRarAjLuQMVy",
+          "source_name": "Ecommerce Email Marketing 2025.docx",
+          "folder": "/14-EML-email-lifecycle",
+          "domain": "email-lifecycle",
+          "section": 12
+        },
+        {
+          "id": "6d8587217a67915fe64068e6",
+          "title": "Maintain sender reputation with bounce, spam and engagement thresholds",
+          "summary": "Treat sender reputation like a credit score and monitor the three inputs — bounce rate, spam complaints and engagement — against the source's thresholds.",
+          "use_when": "Ongoing deliverability monitoring, or when opens collapse and you need to diagnose reputation damage.",
+          "steps": [
+            "Understand the model: reputation is history-based and hard to rebuild once damaged; a good reputation gets primary inbox placement, a bad one gets spam or promotions tab.",
+            "Keep bounce rate under 1%. Bounces come from invalid addresses — e.g. a fake email submitted through a pop-up form still triggering the welcome or abandoned-cart flow. Suppress hard-bouncing addresses and consider preventing obviously fake form entries.",
+            "Keep spam complaint rate below 0.3%, and ideally below 0.1%, to stay inside Gmail and Yahoo's stricter 2024+ requirements. Locate these rates in your account reporting and review on a regular cadence.",
+            "Maximise positive engagement signals: opens, clicks and especially replies tell inbox providers people want to hear from you. Low opens and low clicks act as negative signals.",
+            "Send at a consistent cadence — the source cites an example of two campaigns a week plus flows sending daily — because erratic sending (long silence then a burst) is treated as a negative signal.",
+            "Fix the root cause before re-sending: low opens usually means wrong audience (see 180-day cleaning and engagement segments), not a subject-line problem."
+          ],
+          "caveats": [
+            "Thresholds (0.3% complaint, 0.1% ideal, 1% bounce) are the source's targets and align with stated Gmail/Yahoo expectations; Google's published requirements should be checked for current limits.",
+            "Reputation damage is slow to reverse, so prevention, not remediation, is the practical strategy."
+          ],
+          "source_id": "1grdlATLu0lJAmHQTZ_0MyExN3jVkt8xi",
+          "source_name": "2026 Klaviyo Email Marketing Full Course (3+ Hours).docx",
+          "folder": "/14-EML-email-lifecycle",
+          "domain": "email-lifecycle",
+          "section": 1
+        },
+        {
+          "id": "4933eedd5bb2a42ce6ed6980",
+          "title": "Deliverability Hygiene: Authentication, Engagement Tiers and List Cleaning",
+          "summary": "Implement SPF, DKIM and DMARC, segment by engagement recency, and suppress long-inactive subscribers to protect inbox placement.",
+          "use_when": "Setting up or auditing sending infrastructure and list health, especially before scaling campaign volume.",
+          "steps": [
+            "Implement the technical authentication trio — SPF, DKIM and DMARC — on your sending domain so mailbox providers can verify you.",
+            "Segment by engagement recency using activity windows; the source names 14-day, 30-day, 60-day and 90-day active tiers as the segmentation structure.",
+            "Use those tiers to differentiate sending: mail the most recently engaged tiers most often and reduce frequency or exclude the least engaged tiers.",
+            "Clean the list by suppressing profiles that have been inactive past 180 days — the source's stated list-cleaning benchmark.",
+            "Monitor inbox placement and sender reputation, particularly as AI-driven inbox curation changes how mail is sorted and surfaced.",
+            "Re-check authentication records and suppression rules after any change of sending domain, ESP or marketing platform."
+          ],
+          "caveats": [
+            "The 180-day suppression threshold and the 14/30/60/90-day windows are the source's heuristics, not calculations derived from your data — adjust for your purchase cycle and list size.",
+            "Suppressing inactive profiles reduces list size and can reduce short-term revenue; the source frames it as necessary for placement.",
+            "Authentication setup depends on your DNS provider and ESP interface, both of which change — verify current configuration steps."
+          ],
+          "source_id": "1WQcWqe36XxPolHopi-PTOYh8vY8HC1zr",
+          "source_name": "Klaviyo email.docx",
+          "folder": "/14-EML-email-lifecycle",
+          "domain": "email-lifecycle",
+          "section": 1
+        }
+      ],
+      "candidate_scores": [
+        {
+          "card_id": "61807f09ea38c7cfb41249af",
+          "score": 33.524671
+        },
+        {
+          "card_id": "6d8587217a67915fe64068e6",
+          "score": 29.569916
+        },
+        {
+          "card_id": "4933eedd5bb2a42ce6ed6980",
+          "score": 27.981219
+        }
+      ],
+      "applicability_checks": [
+        "Does this advice fit the product lifecycle, market, audience and requested deliverable?",
+        "Does it require proof, access, budget or assets the brand does not have?",
+        "Does it change a fixed price, offer, policy or other explicit constraint?",
+        "Are platform details or numerical claims current and substantiated?"
+      ],
+      "output_checks": [
+        "Deliver the specified artifact, not general advice about creating it.",
+        "Use supplied brand facts; label hypotheses and missing inputs separately.",
+        "Preserve relevant source conditions; do not copy another business’s proof or results.",
+        "Include an owner, measurement and decision rule when proposing a test.",
+        "Check the output against the requested constraints and owner feedback."
+      ],
+      "completion_rule": "Stop after the requested artifact passes factual and brief checks; allow at most two revision passes, then report the unresolved issue.",
+      "action_boundary": "Prepare recommendations/artifacts only. Publication, spend changes, customer contact and production modifications require separate task authorization."
+    }
+  ],
+  "foundation_candidates": [
+    {
+      "id": "e6ffa2358b86e68f9e088680",
+      "title": "Employ retention and account-level setup: where email sits in the 2026 lifecycle",
+      "summary": "Commit to a measured email cadence and a five-flow automated core, then extend with gamification, zero-party-data quizzes and split desktop/mobile experiences.",
+      "use_when": "Roadmapping the lifecycle programme, deciding sending frequency, and prioritising which automations to build first.",
+      "steps": [
+        "Set the base sending cadence at 3–4 campaigns per week, the source's recommended campaign frequency. Consistency matters as much as volume for reputation — erratic bursts are a negative signal.",
+        "Prioritise the five core Klaviyo automated flows: Welcome, Browse Abandonment, Abandoned Cart, Abandoned Checkout and Post-Purchase. These are the standard set to build before advanced work.",
+        "Give the welcome flow a fast clock: the first 72 hours after signup is the critical conversion window, with day zero driving the highest purchase volume. Put your best converting email first.",
+        "After the core is in place, add advanced tactics the source lists: active gamification such as spin-to-win or scratch-off capture, zero-party data collection quizzes, and separate split-tested desktop and mobile experiences rather than one responsive template.",
+        "Recognise that the inbox itself is now AI-curated (e.g. Gmail's AI inbox), so authentication, regular cleaning and engagement-tiered segmentation are the levers that put mail in the primary inbox rather than the promotions tab.",
+        "Track cadence, flow coverage and inbox placement as programme health metrics, and be prepared to iterate rather than set and forget."
+      ],
+      "caveats": [
+        "3–4 campaigns per week plus flow volume is aggressive for some audiences; the source also tells you to learn whether emails are wanted, so cadence should be validated against engagement and spam complaints.",
+        "The 72-hour welcome window and day-zero concentration are the source's observations across an agency portfolio, not a guarantee for every offer type."
+      ],
+      "source_id": "1grdlATLu0lJAmHQTZ_0MyExN3jVkt8xi",
+      "source_name": "2026 Klaviyo Email Marketing Full Course (3+ Hours).docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 1
+    },
+    {
+      "id": "61807f09ea38c7cfb41249af",
+      "title": "Treat deliverability as a sender reputation score",
+      "summary": "Inbox providers rank you like a credit score: good reputation lands in primary, bad lands in spam, mediocre lands in promotions.",
+      "use_when": "When diagnosing why campaigns aren't being seen, or when deciding whether low revenue is a content problem or a placement problem.",
+      "steps": [
+        "Frame deliverability as your domain/IP 'credit score' — the question is whether you land in primary, promotions or spam.",
+        "Understand the provider's incentive: inbox providers only surface emails users want so users keep using the platform; they watch engagement as the signal.",
+        "Use open and click engagement as the practical proxy: if few people open or click, providers push you toward promotions or spam, which further reduces visibility — a self-reinforcing cycle.",
+        "Check the technical layer first: the source says if your ESP (e.g., Klaviyo) shows no warning at the top of the homepage about domain setup, assume technical requirements are already in place.",
+        "If technicals are fine, split the cause into two: either your emails are weak, or your sender reputation is poor and you are being filtered."
+      ],
+      "caveats": [
+        "The credit-score framing is the source's analogy, not an official metric.",
+        "The source's claim that a clean ESP dashboard means you're fine is a simplification — authentication and domain setup still deserve a direct check."
+      ],
+      "source_id": "1O7snRnsdSzGQFcGwqLifQRarAjLuQMVy",
+      "source_name": "Ecommerce Email Marketing 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 12
+    },
+    {
+      "id": "b8acdbab97a3a717dea59f37",
+      "title": "Have the Five Core Flows Plus Win-Back and Sunset in Place",
+      "summary": "Prioritize the essential lifecycle flows the source calls the biggest money-makers: welcome series, site abandon, browse abandon, cart abandon, checkout abandon, post-purchase, win-back, and sunset.",
+      "use_when": "Auditing which automation flows a store still needs, or sequencing which flows to build first.",
+      "steps": [
+        "Confirm the pre-purchase set exists: welcome series, site abandon, browse abandon, cart abandon, checkout abandon.",
+        "Confirm post-purchase and customer win-back exist as post-purchase flows.",
+        "Confirm the sunset flow exists for list hygiene.",
+        "The source singles out the welcome series, cart abandon, and browse abandon as the most important flows to keep optimizing over time — treat them as ongoing optimization targets, not set-and-forget.",
+        "Beyond the core, the source lists optional/extended flows as the possibilities are 'endless': bounceback offer right after purchase, back-in-stock, replacement reminder (e.g., a 30-day consumable prompted at ~day 25), product/data-based cross-sell flows, and a tailored 'highly engaged but never purchased' window-shopper flow."
+      ],
+      "caveats": [
+        "Which flows are 'biggest money-makers' is the presenter's assessment, not a measured benchmark across stores.",
+        "Build order should consider your data volume — some flows (e.g., back-in-stock) need inventory/restock events to exist."
+      ],
+      "source_id": "1gAs1Y6DDO4ld3V07pv7EQ4Hq585FJEwm",
+      "source_name": "_Klaviyo Email Marketing FULL COURSE 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 3
+    }
+  ],
+  "foundation_note": "Inferred principle labels do not establish universal applicability. Retain source conditions; empty means no matched labelled principle, not absence of foundational knowledge."
+}

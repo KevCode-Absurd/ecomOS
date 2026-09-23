@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Meta ad gallery</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header class="top">
+  <div class="title">
+    <h1>Ad gallery</h1>
+    <span id="account" class="muted"></span>
+  </div>
+  <div class="controls">
+    <label>Dates
+      <select id="preset">
+        <option value="7">Last 7 days</option>
+        <option value="14">Last 14 days</option>
+        <option value="30">Last 30 days</option>
+        <option value="90" selected>Last 90 days</option>
+        <option value="180">Last 180 days</option>
+        <option value="365">Last 365 days</option>
+        <option value="this_month">This month</option>
+        <option value="last_month">Last month</option>
+        <option value="custom">Custom</option>
+      </select>
+    </label>
+    <label>From <input id="since" type="date"></label>
+    <label>To <input id="until" type="date"></label>
+    <label class="check"><input id="compare" type="checkbox" checked> Compare to previous period</label>
+    <button id="reportBtn" class="btn" type="button">Client report</button>
+  </div>
+</header>
+
+<section class="bar" aria-label="Exclusions and targets">
+  <div class="excl-main">
+    <label for="kw" class="excl-title">Exclude campaigns</label>
+    <div id="kwBox" class="tagbox">
+      <span id="kwPills" class="pills"></span>
+      <input id="kw" type="text" placeholder="Type a word in the campaign name, then press comma or Enter" autocomplete="off" aria-describedby="kwHelp">
+    </div>
+    <span id="kwHelp" class="small muted">Any campaign whose name contains a word is left out of every number below. Click × to bring it back.</span>
+  </div>
+  <div class="excl">
+    <details id="campPick" class="pick">
+      <summary>Pick campaigns <span id="campCount" class="muted"></span></summary>
+      <div class="pick-body">
+        <input id="campSearch" type="search" placeholder="Search campaigns">
+        <div id="campList" class="camp-list"></div>
+      </div>
+    </details>
+    <label>Saved exclusions
+      <select id="presetSel"><option value="">None</option></select>
+    </label>
+    <label>Preset name <input id="presetName" type="text" maxlength="60" placeholder="e.g. No sale campaigns"></label>
+    <button id="savePreset" class="btn ghost" type="button">Save as preset</button>
+    <button id="delPreset" class="btn ghost" type="button" hidden>Delete preset</button>
+  </div>
+  <div class="targets">
+    <label>Target ROAS <input id="tRoas" type="number" min="0" step="0.1"></label>
+    <label>Target CPA <input id="tCpa" type="number" min="0" step="100"></label>
+    <button id="saveTargets" class="btn ghost" type="button">Save targets</button>
+  </div>
+  <div id="exclNote" class="small muted"></div>
+</section>
+
+<section class="banner">
+  <div id="rangeLabel" class="label"></div>
+  <div id="error" class="note"></div>
+  <section id="kpis" class="kpis" aria-label="Totals for the selected dates"></section>
+  <details id="formats" class="excluded" open><summary></summary><div class="body"></div></details>
+  <section id="demo" class="demo" aria-label="Spend and ROAS by age and gender"></section>
+</section>
+
+<section class="gridhead">
+  <div class="controls">
+    <label>Format <select id="format"></select></label>
+    <label>Sort
+      <select id="sort">
+        <option value="spend">Spend</option>
+        <option value="roas">Purchase ROAS</option>
+        <option value="change">Spend change vs previous</option>
+      </select>
+    </label>
+    <label>Verdict
+      <select id="verdict">
+        <option value="">All</option>
+        <option value="scale">Scale</option>
+        <option value="watch">Watch</option>
+        <option value="cut">Cut</option>
+        <option value="not_enough_data">Not enough data</option>
+      </select>
+    </label>
+    <label>Min spend <input id="minSpend" type="number" min="0" step="100" placeholder="0"></label>
+    <label>Min ROAS <input id="minRoas" type="number" min="0" step="0.5" placeholder="0"></label>
+    <label>Campaign <select id="campaign"><option value="">All</option></select></label>
+    <label>Ad status <select id="status"><option value="">All</option></select></label>
+  </div>
+  <div id="collectionLabel" class="label"></div>
+  <div id="sortNote" class="note"></div>
+  <div id="totals" class="totals"></div>
+</section>
+
+<main id="grid" class="grid" aria-live="polite"></main>
+<p id="empty" class="empty" hidden>No ads match these filters.</p>
+
+<aside id="panel" class="panel" aria-hidden="true">
+  <div class="panel-head">
+    <strong id="panelTitle"></strong>
+    <button id="close" class="icon" aria-label="Close">&times;</button>
+  </div>
+  <div id="panelBody" class="panel-body"></div>
+</aside>
+<div id="scrim" class="scrim" hidden></div>
+
+<footer id="footer" class="muted"></footer>
+<script src="/static/common.js"></script>
+<script src="/static/app.js"></script>
+</body>
+</html>

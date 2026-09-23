@@ -1,0 +1,499 @@
+{
+  "schema_version": 1,
+  "version": "1.0.0-draft",
+  "status": "draft",
+  "domain": "finance-and-accounting",
+  "source_catalog_sha256": "0287a2e2df3a54711125de9d2927b1efd3d7add875be994c4af6f326cfa84074",
+  "required_inputs": [
+    "Orders/refunds",
+    "COGS",
+    "fulfilment/payment/ad costs",
+    "cash balances",
+    "liabilities",
+    "dates"
+  ],
+  "measures": [
+    "Contribution",
+    "cash runway",
+    "forecast error"
+  ],
+  "related_domains": [
+    "measurement",
+    "sourcing",
+    "offers"
+  ],
+  "evidence_method": "Local BM25 candidate selection; authored workflow steps are proposals, not source quotations or verified synthesis.",
+  "operating_contract": "../OPERATING_CONTRACT.md",
+  "workflows": [
+    {
+      "id": "finance-and-accounting.unit-economics",
+      "title": "Calculate ecommerce unit economics",
+      "query": "landed COGS gross margin contribution shipping payment",
+      "steps": [
+        "Define revenue net of relevant discounts and returns",
+        "Allocate product, fulfilment, payment and acquisition costs consistently",
+        "Show contribution and sensitivity to unknown inputs"
+      ],
+      "deliverable": "Unit-economics table with assumptions",
+      "status": "draft",
+      "steps_origin": "authored orchestration draft",
+      "retrieval": {
+        "primary_domain": "finance-and-accounting",
+        "related_domains": [
+          "measurement",
+          "sourcing",
+          "offers"
+        ],
+        "query": "landed COGS gross margin contribution shipping payment",
+        "selected_card_ids": [
+          "2978d63684eab4dea71a22e7",
+          "db1cf398804d63740e615183",
+          "79cf39d0f59ab5f641daf2c3"
+        ],
+        "mixed_candidate_ids": [
+          "013834b51f3c09687d62b861",
+          "cb72f5171b60d51280f77753",
+          "3a6d05bf8a2a5ceacde401bc"
+        ],
+        "fallback": "Search primary and related domains using the task and actual constraints; do not silently switch to a different workflow.",
+        "selection_status": "candidate-support-needs-applicability-review"
+      },
+      "supporting_cards": [
+        {
+          "id": "2978d63684eab4dea71a22e7",
+          "title": "Turn a contribution-margin model into a pricing and negotiation checklist",
+          "summary": "Because net margin per order is thin, identify each controllable line — freight, duties, pick and pack, packaging, 3PL, payment fees — and quantify what a dollar saved on each is worth at your order volume.",
+          "use_when": "Negotiating with a 3PL, carrier or supplier, evaluating a packaging change, or deciding where to spend optimization effort in an ecommerce P&L.",
+          "steps": [
+            "Lay out the full net revenue to operating income waterfall per unit so every cost is visible on its own line: gross revenue, discounts, returns, shipping income, net revenue, product cost, import freight, duties and taxes, gross margin, pick and pack, packing materials, 3PL charges, shipping to customer, merchant fees, contribution margin, marketing, post-marketing contribution, opex, operating income.",
+            "Track each line period over period as both a dollar per order and a percent of net revenue. In the source case, product COGS moved from 29% to 27% of net revenue, pick and pack declined month over month (possibly from a better warehouse system), and fulfillment totaled $31 then $35 per order.",
+            "Watch the lines the source flags as volatile and worth close attention: import freight, duties and taxes, and shipping to customer — the presenter specifically notes freight costs varying wildly and shipping being a key management area for ecommerce.",
+            "Quantify the payoff of a fix: if you can negotiate or eliminate a couple of dollars from any individual expense, that becomes an extra few dollars per order, which across thousands of orders changes profit by tens of thousands.",
+            "Include payment processing explicitly. The source assumes about 2.75% of revenue for credit card processing in a subscription model and $3.65 to $3.79 per order in the case study — a line that scales with revenue and can be negotiated.",
+            "Compare margins across periods and treat per-unit visibility as the point: a standard P&L that lumps all product and fulfillment costs into one COGS bucket hides whether the unit economics are improving or deteriorating."
+          ],
+          "caveats": [
+            "The case study's 29%/27% COGS, $31/$35 fulfillment and $3.65/$3.79 merchant fees are one brand's figures for two months, not benchmarks.",
+            "Fulfillment scope differs by product and location, so which charges fall into it will vary; the source recommends defining your own margin definitions and measuring them consistently rather than assuming an industry standard.",
+            "Saving a dollar only matters at volume — at low order counts the same per-order improvement is negligible."
+          ],
+          "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+          "source_name": "Finance for eCommerce (1).docx",
+          "folder": "/20-FIN-finance-and-accounting",
+          "domain": "finance-and-accounting",
+          "section": 3
+        },
+        {
+          "id": "db1cf398804d63740e615183",
+          "title": "Calculate pre-marketing contribution using explicit delivery costs",
+          "summary": "Separate accounting gross profit from the management contribution metric used to fund ecommerce acquisition.",
+          "use_when": "Before setting marketing KPIs on a product, deciding whether to keep or cut a SKU, or comparing your margin to competitor pricing.",
+          "steps": [
+            "Start from revenue excluding pass-through taxes and recorded discounts/refunds.",
+            "Subtract landed product cost, fulfillment, outbound shipping, payment fees and incremental expected return costs exactly once.",
+            "Illustration: $100 collected less $9 tax gives $91 revenue. Product $30 + inbound $4 + outbound $11 + pick/pack $4 + fees $3 + assumed return loss $15 leaves $24 contribution, or 24/91 = 26.4%.",
+            "If the $15 includes revenue refunds, remove those from the revenue denominator too; document the definition rather than mixing net and gross bases.",
+            "Use pre-ad contribution dollars to fund acquisition, overhead and target profit; calculate separately for each SKU and channel."
+          ],
+          "caveats": [
+            "This is an internal contribution model, not a universal statutory COGS classification.",
+            "The source calls its full-delivery metric gross margin; preserve explicit included costs when comparing reports."
+          ],
+          "source_id": "1VoLYmy_EdEqYdss2JbmmJWq3tAarNIXb",
+          "source_name": "Everything You Need to Know About Finance in eCommerce.docx",
+          "folder": "/20-FIN-finance-and-accounting",
+          "domain": "finance-and-accounting",
+          "section": 1
+        },
+        {
+          "id": "79cf39d0f59ab5f641daf2c3",
+          "title": "Separate dropship product and shipping costs in margin analysis",
+          "summary": "Compare dropship and stocked orders on complete order contribution, with a documented accounting policy.",
+          "use_when": "When calculating margin for a drop-shipped product line, or when deciding whether to offer free shipping on a SKU.",
+          "steps": [
+            "Separate supplier product charges, inbound costs where relevant and customer-delivery charges.",
+            "Document how bundled supplier invoices are allocated and reported under the applicable policy.",
+            "Do not let free versus separately charged shipping alone determine accounting classification.",
+            "Include all merchant-paid delivery costs when comparing order contribution for stocked and dropship products.",
+            "Reconcile internal contribution reporting with the accountant's inventory and expense classifications."
+          ],
+          "caveats": [
+            "Presented as a general rule with explicit exceptions, not a universal standard; confirm treatment with your accountant for statutory accounts.",
+            "Deciding whether to negotiate freight or find suppliers sits outside this method — that is a sourcing decision."
+          ],
+          "source_id": "1twQ_LfkmNpl2XzOBsayJ3oYXnl3HWvGI",
+          "source_name": "Calculating COGS_ What Ecommerce Businesses Get Wrong.docx",
+          "folder": "/20-FIN-finance-and-accounting",
+          "domain": "finance-and-accounting",
+          "section": 0
+        }
+      ],
+      "candidate_scores": [
+        {
+          "card_id": "2978d63684eab4dea71a22e7",
+          "score": 27.895585
+        },
+        {
+          "card_id": "db1cf398804d63740e615183",
+          "score": 27.757011
+        },
+        {
+          "card_id": "79cf39d0f59ab5f641daf2c3",
+          "score": 27.523282
+        }
+      ],
+      "applicability_checks": [
+        "Does this advice fit the product lifecycle, market, audience and requested deliverable?",
+        "Does it require proof, access, budget or assets the brand does not have?",
+        "Does it change a fixed price, offer, policy or other explicit constraint?",
+        "Are platform details or numerical claims current and substantiated?"
+      ],
+      "output_checks": [
+        "Deliver the specified artifact, not general advice about creating it.",
+        "Use supplied brand facts; label hypotheses and missing inputs separately.",
+        "Preserve relevant source conditions; do not copy another business’s proof or results.",
+        "Include an owner, measurement and decision rule when proposing a test.",
+        "Check the output against the requested constraints and owner feedback."
+      ],
+      "completion_rule": "Stop after the requested artifact passes factual and brief checks; allow at most two revision passes, then report the unresolved issue.",
+      "action_boundary": "Prepare recommendations/artifacts only. Publication, spend changes, customer contact and production modifications require separate task authorization."
+    },
+    {
+      "id": "finance-and-accounting.cash-forecast",
+      "title": "Build a practical cash forecast",
+      "query": "cash flow inventory payment terms forecast working capital",
+      "steps": [
+        "Reconcile opening cash and known obligations",
+        "Model receipts, inventory commitments and operating payments by period",
+        "Stress-test downside cases and identify funding gaps"
+      ],
+      "deliverable": "Cash forecast and action triggers",
+      "status": "draft",
+      "steps_origin": "authored orchestration draft",
+      "retrieval": {
+        "primary_domain": "finance-and-accounting",
+        "related_domains": [
+          "measurement",
+          "sourcing",
+          "offers"
+        ],
+        "query": "cash flow inventory payment terms forecast working capital",
+        "selected_card_ids": [
+          "9d2823e986940b6ded26e7f0",
+          "beb1703b3d17d1f7b84e5f95",
+          "377b3fd122bfca19109b2922"
+        ],
+        "mixed_candidate_ids": [
+          "e9d130295214c8e5fc500397",
+          "5529a92593b370ddae321e69",
+          "1dcdad671ee9b96da563ff65"
+        ],
+        "fallback": "Search primary and related domains using the task and actual constraints; do not silently switch to a different workflow.",
+        "selection_status": "candidate-support-needs-applicability-review"
+      },
+      "supporting_cards": [
+        {
+          "id": "9d2823e986940b6ded26e7f0",
+          "title": "Build a Mini Cash Flow Statement to Find Working Capital Needs and Runway",
+          "summary": "Reconcile net income with inventory purchases to project real cash burn and how much capital the store must raise.",
+          "use_when": "Deciding how much funding or cash buffer the store needs and when, especially for inventory-heavy CPG or subscription-box businesses.",
+          "steps": [
+            "In a simplified bridge, start with net income, add back inventory COGS expensed, then subtract all actual inventory supplier cash payments, whether goods have sold or not.",
+            "Add other non-cash and working-capital adjustments separately. Do not also subtract inventory/payables movements already captured by the supplier-payment bridge.",
+            "Add any starting capital (source scenario begins with $500k raised) and roll the cash balance month by month.",
+            "Expect cash to be choppier than net income: the source's example shows cash going negative around month 8 and again needing a large inventory outlay shortly after.",
+            "Use the trough of the cash curve to size the raise: in the source's example, the business needed roughly $1-1.5M cumulative to reach profitability even though operating income turned positive earlier.",
+            "Separately note the store's revenue run rate (last month's revenue x 12) as a real-time pacing metric alongside trailing 12-month actuals, and be explicit which one you quote."
+          ],
+          "caveats": [
+            "This mini cash flow ignores other assets and liabilities by design — it is not a full three-statement model.",
+            "Capital need figures are the source's scenario and depend heavily on lead times, payment terms and growth rate."
+          ],
+          "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+          "source_name": "Finance for eCommerce (1).docx",
+          "folder": "/20-FIN-finance-and-accounting",
+          "domain": "finance-and-accounting",
+          "section": 4
+        },
+        {
+          "id": "beb1703b3d17d1f7b84e5f95",
+          "title": "Cash conversion cycle explains why ecommerce can't scale arbitrarily fast",
+          "summary": "CCC (DIIO + DSO − DPO) plus supplier lead time and payment terms caps real growth speed regardless of ad efficiency.",
+          "use_when": "Setting growth targets, planning purchase orders, or evaluating whether rapid ad-spend scaling is fundable",
+          "steps": [
+            "Formula: cash conversion cycle = days inventory outstanding + days sales outstanding − days payable outstanding.",
+            "Work through the compounding: if $50 gross profit lets you buy 11 units next cycle and yields $55, which buys 12, inventory purchasing grows only incrementally off prior gross profit.",
+            "Add supplier lead time — e.g., a 90-day lead time with full upfront payment means you must fund inventory 90 days before selling it, potentially forcing a 90-day stockout while waiting for cash.",
+            "Levers to fix it: negotiate better supplier terms (e.g., only 20% upfront, paying the balance on shipment — the source's example reduces stockout from 90 days to ~20), reduce lead time via a different manufacturer, or use inventory financing.",
+            "Compare financing cost, repayment timing, guarantees and collateral in actual quotes; stress-test slower sales before borrowing."
+          ],
+          "caveats": [
+            "The source describes spend rising from $20k to $200k per month, a tenfold increase, with substantial inventory financing; this is an anecdote, not a benchmark.",
+            "Growth capacity depends on working capital, supplier terms, lead times and margins; no universal annual growth ceiling follows from this example."
+          ],
+          "source_id": "1VoLYmy_EdEqYdss2JbmmJWq3tAarNIXb",
+          "source_name": "Everything You Need to Know About Finance in eCommerce.docx",
+          "folder": "/20-FIN-finance-and-accounting",
+          "domain": "finance-and-accounting",
+          "section": 2
+        },
+        {
+          "id": "377b3fd122bfca19109b2922",
+          "title": "Vendor Terms and Cost-of-Capital Arbitrage",
+          "summary": "Negotiate net terms using each partner's cost of capital and cash needs — pay more margin for longer terms, or take on consignment over dropshipping and full inventory ownership.",
+          "use_when": "When negotiating supplier, agency, or software contracts and choosing between dropshipping, buying inventory, or consignment.",
+          "steps": [
+            "Understand each counterpart's cost of capital and cash cycle; suppliers with cheaper capital (e.g., subsidized manufacturing) may accept a small price increase in exchange for longer net terms.",
+            "Aim for payment terms that extend past your production and sell-through timeline so your customer's money pays the manufacturer — a negative cash conversion cycle.",
+            "Recognize the trade matrix: some vendors value margin, some want committed/long-term dollars, some need cash flow — offer the thing they value for the term you want.",
+            "Target consignment as the ideal middle: a supplier holds inventory on your behalf and you pay when you sell — you get dropshipping's cash benefit plus inventory pricing.",
+            "Build trust with suppliers over time; consignment and long terms are granted on demonstrated reliability, not negotiation alone."
+          ],
+          "caveats": [
+            "Consignment and extended terms require relationships built on trust and track record.",
+            "Extreme structures (e.g., an in-house lender floated to a vendor) require scale and leverage most brands don't have."
+          ],
+          "source_id": "1aXQDq2LQIR5jzmrsa5gcOqmUC-dst7Ty",
+          "source_name": "The $3B E-Commerce Strategist_ The Playbook That’s Making Everyone Else Rich.docx",
+          "folder": "/20-FIN-finance-and-accounting",
+          "domain": "finance-and-accounting",
+          "section": 2
+        }
+      ],
+      "candidate_scores": [
+        {
+          "card_id": "9d2823e986940b6ded26e7f0",
+          "score": 37.183058
+        },
+        {
+          "card_id": "beb1703b3d17d1f7b84e5f95",
+          "score": 34.846302
+        },
+        {
+          "card_id": "377b3fd122bfca19109b2922",
+          "score": 29.85275
+        }
+      ],
+      "applicability_checks": [
+        "Does this advice fit the product lifecycle, market, audience and requested deliverable?",
+        "Does it require proof, access, budget or assets the brand does not have?",
+        "Does it change a fixed price, offer, policy or other explicit constraint?",
+        "Are platform details or numerical claims current and substantiated?"
+      ],
+      "output_checks": [
+        "Deliver the specified artifact, not general advice about creating it.",
+        "Use supplied brand facts; label hypotheses and missing inputs separately.",
+        "Preserve relevant source conditions; do not copy another business’s proof or results.",
+        "Include an owner, measurement and decision rule when proposing a test.",
+        "Check the output against the requested constraints and owner feedback."
+      ],
+      "completion_rule": "Stop after the requested artifact passes factual and brief checks; allow at most two revision passes, then report the unresolved issue.",
+      "action_boundary": "Prepare recommendations/artifacts only. Publication, spend changes, customer contact and production modifications require separate task authorization."
+    },
+    {
+      "id": "finance-and-accounting.margin-diagnosis",
+      "title": "Diagnose margin deterioration",
+      "query": "P&L gross margin returns discounts cost diagnosis",
+      "steps": [
+        "Align periods and accounting definitions",
+        "Bridge changes in price, mix, costs, returns and acquisition spend",
+        "Prioritise actions supported by the bridge"
+      ],
+      "deliverable": "Margin bridge and recommended investigations",
+      "status": "draft",
+      "steps_origin": "authored orchestration draft",
+      "retrieval": {
+        "primary_domain": "finance-and-accounting",
+        "related_domains": [
+          "measurement",
+          "sourcing",
+          "offers"
+        ],
+        "query": "P&L gross margin returns discounts cost diagnosis",
+        "selected_card_ids": [
+          "8d570963a07c01bd206aac7f",
+          "957cabf05b5f780f958ce6f8",
+          "20d19584680857c7948e03ba"
+        ],
+        "mixed_candidate_ids": [
+          "29f6666ae3104498c96f3f74",
+          "6b261e1e25a56d59c79b8638",
+          "f82391a766c6158726c2f5f1"
+        ],
+        "fallback": "Search primary and related domains using the task and actual constraints; do not silently switch to a different workflow.",
+        "selection_status": "candidate-support-needs-applicability-review"
+      },
+      "supporting_cards": [
+        {
+          "id": "8d570963a07c01bd206aac7f",
+          "title": "Five core finance practices to run an ecommerce brand",
+          "summary": "A closing checklist of five financial operating habits—margin literacy, live dashboards, new/returning separation, cash vs P&L plays, and constraint diagnosis.",
+          "use_when": "Setting your store's monthly financial operating rhythm or auditing which finance disciplines your team is missing before scaling spend.",
+          "steps": [
+            "1) Know your gross margin and calculate it correctly: identify variable costs, and distinguish product margin from gross margin and how each flows into contribution margin. Use these definitions consistently across the team.",
+            "2) Define your metrics and build live dashboards—not daily ROAS reports. Track acquisition MER, profit contribution, and ideally LTGP to CAC. The source argues weekly ROAS reporting is unproductive for core decision-making.",
+            "3) Separate new vs returning customer metrics: track new-customer economics, acquisition MER, new-customer profit contribution, new-customer revenue and new-customer cohort size separately, because the underlying levers differ (and feed forecasting).",
+            "Coordinate inventory and advertising: additional borrowing raises interest expense and reduces cash/net profit. Interest alone does not change MER (revenue/ad spend); model sales and spend separately.",
+            "5) Use the P&L to identify the constraint in the business: structure it out, set KPIs at each level, and when you fall below target look above that level in the P&L to find what changed and which lever to pull.",
+            "Attribute the daily-vs-weekly ROAS stance to the source as an opinion, not a universal rule."
+          ],
+          "caveats": [
+            "The daily-vs-weekly ROAS preference is the presenter's opinion, not an established benchmark.",
+            "The five-point list is a summary framework; it does not define numeric thresholds for any metric."
+          ],
+          "source_id": "1VoLYmy_EdEqYdss2JbmmJWq3tAarNIXb",
+          "source_name": "Everything You Need to Know About Finance in eCommerce.docx",
+          "folder": "/20-FIN-finance-and-accounting",
+          "domain": "finance-and-accounting",
+          "section": 3
+        },
+        {
+          "id": "957cabf05b5f780f958ce6f8",
+          "title": "Calculate contribution margin per order and post-marketing contribution",
+          "summary": "Structure an ecommerce P&L into net revenue, product COGS, gross margin, fulfillment, contribution margin, CAC and post-marketing contribution so each expense can be optimized separately.",
+          "use_when": "Setting or reviewing product-level and order-level profitability, or diagnosing why a store that looks profitable at gross margin is not producing operating income.",
+          "steps": [
+            "Start at gross revenue (product sales plus tax collected where applicable) and subtract discounts and returns, then add shipping income you charge customers. Result: net revenue, which is effectively your AOV after discounts and returns for the period.",
+            "Split COGS into product cost (manufacturing plus import freight plus duties/taxes to get product to the warehouse) and keep it separate from fulfillment cost (pick and pack, packing materials, 3PL charges, shipping to customer). A generic P&L lumps these together; splitting them is what lets you see which line is moving.",
+            "Compute gross margin = net revenue minus product COGS. In the source case study it ran about 70–75%.",
+            "Compute contribution margin = net revenue minus product COGS minus fulfillment. In the source example, $134 net revenue with $64 contribution margin, just under 50%.",
+            "Compute CAC as total marketing spend divided by first-time purchases, then post-marketing contribution = contribution margin minus CAC. Source example: $22 and $12 post-marketing contribution per order, i.e. profitable on the first order at roughly a 1.5 contribution-margin-to-CAC ratio.",
+            "Check merchant/credit card processing fees and include them — the source uses about 2.75% of revenue as a working assumption.",
+            "Finally subtract operating expense per order to reach operating income. In the source example opex was about $8 and $6 per order and operating income was 11% and 5%, i.e. about $15 and $6 profit per unit.",
+            "Remember the leverage: small per-order changes (knocking a couple of dollars out of one line) multiplied across thousands of orders is the difference between tens of thousands of losses and tens of thousands of profit."
+          ],
+          "caveats": [
+            "Gross margin is the highest figure, contribution margin lower, post-marketing contribution lowest — mixing the terms (calling gross margin contribution margin) causes wrong decisions.",
+            "All percentages in the source are one case-study supplement brand in a specific period; do not treat them as targets.",
+            "After the first order, returning customers generally carry little or no marketing cost, so first-order profitability is the ideal state — the source calls businesses with strong first-order profit exceptional."
+          ],
+          "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+          "source_name": "Finance for eCommerce (1).docx",
+          "folder": "/20-FIN-finance-and-accounting",
+          "domain": "finance-and-accounting",
+          "section": 3
+        },
+        {
+          "id": "20d19584680857c7948e03ba",
+          "title": "Four Quarter Accounting vs Cash Flow: Tradeoffs Are Purposeful",
+          "summary": "Profitability and cash flow are different games — knowingly sacrifice gross margin or P&L efficiency when it accelerates cash and optionality.",
+          "use_when": "When weighing a decision that hurts P&L margin but improves cash position, such as liquidation, longer-term vendor deals, or consignment.",
+          "steps": [
+            "Keep the two views distinct: four quarter accounting analyzes the P&L; cash flow and the balance sheet are managed separately and can call for opposing moves.",
+            "Prioritize growing the bank account — it creates optionality, especially when M&A and funding are constrained.",
+            "Accept tactics that worsen the P&L (liquidation margins, discounting, extended supplier terms) when they convert dead stock or float into usable cash.",
+            "Reinvest recovered cash into new inventory bets or growth rather than holding it in depreciating assets.",
+            "Review both views regularly so tradeoffs are deliberate rather than accidental."
+          ],
+          "caveats": [
+            "Repeated P&L erosion without cash conversion isn't strategy — the tradeoff must produce usable cash.",
+            "Overstating balance-sheet inventory to satisfy asset ratios obscures the cash reality."
+          ],
+          "source_id": "1aXQDq2LQIR5jzmrsa5gcOqmUC-dst7Ty",
+          "source_name": "The $3B E-Commerce Strategist_ The Playbook That’s Making Everyone Else Rich.docx",
+          "folder": "/20-FIN-finance-and-accounting",
+          "domain": "finance-and-accounting",
+          "section": 2
+        }
+      ],
+      "candidate_scores": [
+        {
+          "card_id": "8d570963a07c01bd206aac7f",
+          "score": 35.528655
+        },
+        {
+          "card_id": "957cabf05b5f780f958ce6f8",
+          "score": 29.672499
+        },
+        {
+          "card_id": "20d19584680857c7948e03ba",
+          "score": 28.169099
+        }
+      ],
+      "applicability_checks": [
+        "Does this advice fit the product lifecycle, market, audience and requested deliverable?",
+        "Does it require proof, access, budget or assets the brand does not have?",
+        "Does it change a fixed price, offer, policy or other explicit constraint?",
+        "Are platform details or numerical claims current and substantiated?"
+      ],
+      "output_checks": [
+        "Deliver the specified artifact, not general advice about creating it.",
+        "Use supplied brand facts; label hypotheses and missing inputs separately.",
+        "Preserve relevant source conditions; do not copy another business’s proof or results.",
+        "Include an owner, measurement and decision rule when proposing a test.",
+        "Check the output against the requested constraints and owner feedback."
+      ],
+      "completion_rule": "Stop after the requested artifact passes factual and brief checks; allow at most two revision passes, then report the unresolved issue.",
+      "action_boundary": "Prepare recommendations/artifacts only. Publication, spend changes, customer contact and production modifications require separate task authorization."
+    }
+  ],
+  "foundation_candidates": [
+    {
+      "id": "8d570963a07c01bd206aac7f",
+      "title": "Five core finance practices to run an ecommerce brand",
+      "summary": "A closing checklist of five financial operating habits—margin literacy, live dashboards, new/returning separation, cash vs P&L plays, and constraint diagnosis.",
+      "use_when": "Setting your store's monthly financial operating rhythm or auditing which finance disciplines your team is missing before scaling spend.",
+      "steps": [
+        "1) Know your gross margin and calculate it correctly: identify variable costs, and distinguish product margin from gross margin and how each flows into contribution margin. Use these definitions consistently across the team.",
+        "2) Define your metrics and build live dashboards—not daily ROAS reports. Track acquisition MER, profit contribution, and ideally LTGP to CAC. The source argues weekly ROAS reporting is unproductive for core decision-making.",
+        "3) Separate new vs returning customer metrics: track new-customer economics, acquisition MER, new-customer profit contribution, new-customer revenue and new-customer cohort size separately, because the underlying levers differ (and feed forecasting).",
+        "Coordinate inventory and advertising: additional borrowing raises interest expense and reduces cash/net profit. Interest alone does not change MER (revenue/ad spend); model sales and spend separately.",
+        "5) Use the P&L to identify the constraint in the business: structure it out, set KPIs at each level, and when you fall below target look above that level in the P&L to find what changed and which lever to pull.",
+        "Attribute the daily-vs-weekly ROAS stance to the source as an opinion, not a universal rule."
+      ],
+      "caveats": [
+        "The daily-vs-weekly ROAS preference is the presenter's opinion, not an established benchmark.",
+        "The five-point list is a summary framework; it does not define numeric thresholds for any metric."
+      ],
+      "source_id": "1VoLYmy_EdEqYdss2JbmmJWq3tAarNIXb",
+      "source_name": "Everything You Need to Know About Finance in eCommerce.docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 3
+    },
+    {
+      "id": "6a8332853dd6467236375330",
+      "title": "Why inventory purchases make a profitable store run out of cash",
+      "summary": "Buying stock in large lumps hits cash in the purchase month while the cost only reaches the P&L when goods sell, so profitable periods can coincide with cash shortages.",
+      "use_when": "Planning inventory replenishment or a seasonal stock buy for an ecommerce store, or explaining why a high-revenue month did not improve the bank balance.",
+      "steps": [
+        "Compare units-sold COGS with inventory purchased and supplier payment dates.",
+        "Track deposits, balances due, inventory receipts and payables to explain cash timing.",
+        "An inventory balance increase is not automatically an equal cash payment; supplier credit and prepayments change the bridge.",
+        "Forecast cash at planned reorder dates and stress-test slower sell-through."
+      ],
+      "caveats": [
+        "The case study numbers are illustrative of one store's model, not benchmarks for expected inventory turns or margin levels.",
+        "Inventory dynamics will differ by model — made-to-order, dropship or pre-order stores carry very different cash timing."
+      ],
+      "source_id": "1ZwHlF_tyg4xSsUbqdb0UvMrZ4-E1lajH",
+      "source_name": "Understanding Free Cash Flow for eCommerce Startups _ Finance Case Study.docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 0
+    },
+    {
+      "id": "a490586f1272b8c3e1a858c1",
+      "title": "Balance Sheet to P&L Timing for Inventory Versus Services",
+      "summary": "CPG costs sit on the balance sheet as inventory until sale, while many SaaS costs like wages hit the P&L immediately.",
+      "use_when": "Forecasting cash and monthly profitability, or explaining to a founder-investor why a stock build-up hurts cash before it hits COGS.",
+      "steps": [
+        "For physical products, capitalise inventory (including freight-in) as an asset on the balance sheet when produced or purchased, then move it to COGS on the P&L only when the item sells.",
+        "Understand that building stock consumes cash now and reduces reported profit later — useful when planning seasonal buys or bulk purchasing for cost savings.",
+        "For a SaaS/digital product, most COGS (support wages, implementation wages) hits the P&L immediately; only capitalised fixed assets such as owned servers or computers flow from the balance sheet into COGS via depreciation over time.",
+        "If you rent server capacity (AWS/Azure), the monthly fee goes straight to COGS rather than being depreciated.",
+        "Use this distinction when forecasting: a stock-heavy quarter depresses cash before it depresses profit, while a services-heavy quarter depresses profit immediately."
+      ],
+      "caveats": [
+        "The source notes most modern small companies rent rather than own servers; ownership changes the accounting treatment.",
+        "Inventory costing methods (e.g. FIFO/weighted average) are not covered here."
+      ],
+      "source_id": "1u39Ntqg9IsT72ZP0J9QGMTHUui7nPqSd",
+      "source_name": "Why CFOs Obsess Over COGs.docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 0
+    }
+  ],
+  "foundation_note": "Inferred principle labels do not establish universal applicability. Retain source conditions; empty means no matched labelled principle, not absence of foundational knowledge."
+}

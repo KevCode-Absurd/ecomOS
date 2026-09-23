@@ -1,0 +1,31 @@
+body.report { background: #eceae4; }
+.toolbar { position: sticky; top: 0; z-index: 5; display: flex; flex-wrap: wrap; gap: 10px; align-items: end; padding: 10px 16px; background: #fbfbf9; border-bottom: 1px solid var(--line); }
+.toolbar label { display: flex; flex-direction: column; font-size: 12px; color: var(--muted); gap: 3px; }
+.toolbar label.grow { flex: 1 1 260px; }
+.toolbar input { font: inherit; padding: 5px 8px; border: 1px solid var(--line); border-radius: 6px; }
+.doc { max-width: 900px; margin: 16px auto 40px; background: #fff; padding: 36px 40px; border-radius: 6px; box-shadow: 0 2px 12px rgba(0,0,0,.08); display: grid; gap: 22px; }
+.r-head { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; border-bottom: 2px solid var(--ink); padding-bottom: 12px; }
+.r-agency { font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+.r-title { font-size: 24px; font-weight: 700; margin: 2px 0; }
+.r-sub { font-size: 13px; color: var(--muted); }
+.r-note { font-size: 15px; background: var(--bg); border-left: 3px solid var(--accent); padding: 8px 12px; }
+.doc h2 { font-size: 15px; margin: 0 0 8px; text-transform: uppercase; letter-spacing: .04em; }
+.r-ads { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 12px; }
+.r-ad { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; break-inside: avoid; display: flex; flex-direction: column; }
+.r-ad .thumb { aspect-ratio: 1 / 1; }
+.r-ad .body { padding: 8px 10px; display: grid; gap: 4px; font-size: 12px; }
+.r-ad .name { font-size: 13px; }
+.r-list { margin: 0; padding-left: 18px; font-size: 13px; display: grid; gap: 3px; }
+.r-foot { font-size: 11.5px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 10px; display: grid; gap: 4px; }
+.r-two { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.r-section { break-inside: avoid; }
+@media (max-width: 640px) { .doc { padding: 20px 16px; margin: 0; border-radius: 0; } .r-two { grid-template-columns: 1fr; } }
+@page { size: A4; margin: 12mm; }
+@media print {
+  body.report { background: #fff; }
+  .no-print { display: none !important; }
+  .doc { box-shadow: none; margin: 0; padding: 0; max-width: none; border-radius: 0; }
+  .kpi, .r-ad, .demo { break-inside: avoid; }
+  a { color: inherit; text-decoration: none; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}

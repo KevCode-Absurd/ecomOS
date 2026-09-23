@@ -1,0 +1,507 @@
+{
+  "schema_version": 1,
+  "version": "1.0.0-draft",
+  "status": "draft",
+  "domain": "google-ads",
+  "source_catalog_sha256": "0287a2e2df3a54711125de9d2927b1efd3d7add875be994c4af6f326cfa84074",
+  "required_inputs": [
+    "Feed/catalog",
+    "campaign/search-term reports",
+    "conversion setup",
+    "margins",
+    "goals"
+  ],
+  "measures": [
+    "Contribution",
+    "purchase CPA",
+    "ROAS",
+    "qualified search demand"
+  ],
+  "related_domains": [
+    "measurement",
+    "finance-and-accounting",
+    "landing-pages"
+  ],
+  "evidence_method": "Local BM25 candidate selection; authored workflow steps are proposals, not source quotations or verified synthesis.",
+  "operating_contract": "../OPERATING_CONTRACT.md",
+  "workflows": [
+    {
+      "id": "google-ads.audit-retail-search",
+      "title": "Audit an ecommerce Google Ads account",
+      "query": "Google Shopping PMax brand conversion feed margin",
+      "steps": [
+        "Validate purchase tracking and margin context",
+        "Separate brand/nonbrand and product-level performance where supported",
+        "Prioritise feed, query and budget hypotheses with evidence"
+      ],
+      "deliverable": "Account audit and ranked action plan",
+      "status": "draft",
+      "steps_origin": "authored orchestration draft",
+      "retrieval": {
+        "primary_domain": "google-ads",
+        "related_domains": [
+          "measurement",
+          "finance-and-accounting",
+          "landing-pages"
+        ],
+        "query": "Google Shopping PMax brand conversion feed margin",
+        "selected_card_ids": [
+          "f2e339bd5505c24c503bf11d",
+          "4e3675b7a020bb07760c9416",
+          "4eceae623d26c2b80f95343f"
+        ],
+        "mixed_candidate_ids": [
+          "0d34948521a961485602c895",
+          "ed7c1f01178816b95a5b2d32",
+          "6e67e3c7c4432dabff6f7ff2"
+        ],
+        "fallback": "Search primary and related domains using the task and actual constraints; do not silently switch to a different workflow.",
+        "selection_status": "candidate-support-needs-applicability-review"
+      },
+      "supporting_cards": [
+        {
+          "id": "f2e339bd5505c24c503bf11d",
+          "title": "Standard Shopping for SKU-Level Bid Control",
+          "summary": "Use Standard Shopping when you need product-group bid control, clear per-product query data and read-clean conversions that PMax blurs.",
+          "use_when": "Deciding which products belong in Standard Shopping versus PMax, or when PMax reporting is too blended to tell what is actually working.",
+          "steps": [
+            "Route hero SKUs here when you need to defend top impression share on your most important products.",
+            "Set aggressive product-group bids on high-margin products where the unit economics can absorb higher CPCs.",
+            "Use Standard Shopping for clearance inventory you must move quickly, accepting a lower ROAS target on those product groups.",
+            "Test new arrivals here first: Standard Shopping gives per-product query and conversion data you can read before deciding what to scale into PMax.",
+            "Keep in mind both campaign types bid against the same feed; when running in parallel, duplicate the feed and give Shopping the branded/high-intent version and PMax the discovery version.",
+            "Where attribution clarity matters across multiple sales channels, prefer reading Standard Shopping conversions over PMax's blended number that mixes Shopping, Display, YouTube and Search."
+          ],
+          "caveats": [
+            "Standard Shopping only serves the Shopping surface — it does not reach YouTube, Display, Gmail or Discover.",
+            "Running Shopping and PMax on the same feed without role separation causes direct cannibalisation."
+          ],
+          "source_id": "1qHnlFZvZKsgM8ijL6P-HZpVPMRO4nrc0",
+          "source_name": "# Google Ads for Ecommerce_ The Complete Architecture & Operations Manual (2026 Edition).docx",
+          "folder": "/12-GAD-google-ads",
+          "domain": "google-ads",
+          "section": 0
+        },
+        {
+          "id": "4e3675b7a020bb07760c9416",
+          "title": "Match failure modes to campaign type: PMax and Shopping",
+          "summary": "Why identifying the campaign type first matters, and the specific failure modes to check for PMax and Shopping.",
+          "use_when": "When a Google Ads decline has been traced to a specific campaign and you need to know what to inspect.",
+          "steps": [
+            "Understand that PMax, Shopping and Search decline for different reasons, so establish campaign type before troubleshooting.",
+            "PMax / Shopping check 1 — warm/cold drift: check the search term report for brand terms and the audience report for skew toward existing customers. If brand terms are appearing despite exclusions, or the audience skews warm, the exclusion is broken or target ROAS is pushed too high.",
+            "PMax / Shopping check 2 — feed health: feed quality drives most Shopping performance (the speaker says 80–90% of PMax performance comes from Shopping). Check products in the campaign for out-of-stock, turned-off or disapproved items, and verify the GMC feed for errors and warnings, including changed titles or descriptions.",
+            "PMax / Shopping check 3 — target ROAS: raising tROAS narrows targeting toward warmer, higher-conversion-probability buyers, likely pulling spend back and hurting new-customer acquisition. Cross-check new-customer ROAS in a third-party tool or natively in Google Ads; a higher tROAS typically shows worse NC ROAS.",
+            "PMax / Shopping check 4 — product bloat and stock churn: a rapidly growing SKU count flooding one campaign can hurt learning, and high-spend products going in and out of stock reset that product's learning and can affect the whole campaign.",
+            "Also check whether spend is being distributed into search partners with poor performance."
+          ],
+          "caveats": [
+            "The 80–90% figure is the speaker's stated observation, not a measured benchmark.",
+            "Brand exclusion should already be in place — the check is a double-check, not a fix in itself."
+          ],
+          "source_id": "1FHkxdCv4zRv4MOZ_iQ5uVQ-lqJFakJVB",
+          "source_name": "How To Fix An Underperforming Google Ads Account.docx",
+          "folder": "/12-GAD-google-ads",
+          "domain": "google-ads",
+          "section": 0
+        },
+        {
+          "id": "4eceae623d26c2b80f95343f",
+          "title": "Stop PMax and Shopping Cannibalising Brand Demand",
+          "summary": "Three parallel fixes — brand negatives on PMax, negatives on new-customer campaigns, and dedicated branded campaigns — keep PMax from eating the highest-intent commercial traffic.",
+          "use_when": "PMax and Shopping run against the same feed and you suspect PMax is absorbing branded and high-intent queries, destroying cost transparency on your most valuable searches.",
+          "steps": [
+            "Add branded negative keywords and brand exclusions to PMax campaigns so PMax cannot bid on branded queries.",
+            "Add negative keywords to new-customer-acquisition Search and Shopping campaigns so they do not absorb branded demand and get falsely credited.",
+            "Create dedicated branded Search and Shopping campaigns to collect only branded traffic, with uncapped budget relative to search volume — losing brand impression share to a competitor is one of the most avoidable ways to lose pipeline.",
+            "Optimise branded campaigns on efficiency metrics (ROAS, CPC, impression share), not growth metrics.",
+            "Use feed duplication with strict role rules: the Shopping feed optimised for branded and high-intent category terms, the PMax feed optimised for discovery and scaling, so both can surface products across eligible auctions without sacrificing efficiency.",
+            "Confirm the current location of brand exclusion settings (account vs campaign level) in the live interface."
+          ],
+          "caveats": [
+            "Splitting traffic will initially make your account-level ROAS look worse because brand efficiency no longer flatters non-brand; that is the intended transparency gain.",
+            "Source presents this as the single most common structural failure; treat it as a frequent pattern, not a claim about every account."
+          ],
+          "source_id": "1wZaOcKMTf-VGhMuD5ZaOmc5qF_babL-x",
+          "source_name": "# The Complete Google Ads Architecture & Operations Manual (2026 Edition).docx",
+          "folder": "/12-GAD-google-ads",
+          "domain": "google-ads",
+          "section": 0
+        }
+      ],
+      "candidate_scores": [
+        {
+          "card_id": "f2e339bd5505c24c503bf11d",
+          "score": 24.951959
+        },
+        {
+          "card_id": "4e3675b7a020bb07760c9416",
+          "score": 23.243498
+        },
+        {
+          "card_id": "4eceae623d26c2b80f95343f",
+          "score": 22.731544
+        }
+      ],
+      "applicability_checks": [
+        "Does this advice fit the product lifecycle, market, audience and requested deliverable?",
+        "Does it require proof, access, budget or assets the brand does not have?",
+        "Does it change a fixed price, offer, policy or other explicit constraint?",
+        "Are platform details or numerical claims current and substantiated?"
+      ],
+      "output_checks": [
+        "Deliver the specified artifact, not general advice about creating it.",
+        "Use supplied brand facts; label hypotheses and missing inputs separately.",
+        "Preserve relevant source conditions; do not copy another business’s proof or results.",
+        "Include an owner, measurement and decision rule when proposing a test.",
+        "Check the output against the requested constraints and owner feedback."
+      ],
+      "completion_rule": "Stop after the requested artifact passes factual and brief checks; allow at most two revision passes, then report the unresolved issue.",
+      "action_boundary": "Prepare recommendations/artifacts only. Publication, spend changes, customer contact and production modifications require separate task authorization."
+    },
+    {
+      "id": "google-ads.improve-feed",
+      "title": "Improve a product feed",
+      "query": "feed title attribute product shopping merchant",
+      "steps": [
+        "Check product identity, required attributes and landing-page consistency",
+        "Improve titles and attributes using actual product facts",
+        "Validate disapprovals and measure changes at a comparable grain"
+      ],
+      "deliverable": "Feed correction specification",
+      "status": "draft",
+      "steps_origin": "authored orchestration draft",
+      "retrieval": {
+        "primary_domain": "google-ads",
+        "related_domains": [
+          "measurement",
+          "finance-and-accounting",
+          "landing-pages"
+        ],
+        "query": "feed title attribute product shopping merchant",
+        "selected_card_ids": [
+          "0d729814ee3064f7b6486305",
+          "1f2977dd9a2ce295d93ee901",
+          "7671c6e57a6e5965b133722a"
+        ],
+        "mixed_candidate_ids": [
+          "6e67e3c7c4432dabff6f7ff2",
+          "ac4bf9ad64fd12e1ce92b00e",
+          "7421bd80f1529f7e897598b5"
+        ],
+        "fallback": "Search primary and related domains using the task and actual constraints; do not silently switch to a different workflow.",
+        "selection_status": "candidate-support-needs-applicability-review"
+      },
+      "supporting_cards": [
+        {
+          "id": "0d729814ee3064f7b6486305",
+          "title": "Feed product titles with informative keywords",
+          "summary": "Write Merchant Center product titles that include the full product name, key attributes, and brand so Google matches them to the right searches.",
+          "use_when": "Optimizing Merchant Center product data before running Shopping campaigns.",
+          "steps": [
+            "Put the highly necessary product details first in the title, then attributes, then the brand name at the end.",
+            "Example structure: 'Black Non-Stick Frying Pan 38cm Diameter, Peter's Pans'.",
+            "Include keywords that reflect what shoppers actually search, so Google can target the product ad to the right queries.",
+            "Fill every available field (title, description, product type, category, price, sale price, GTIN, etc.) with high-quality information.",
+            "If you have a GTIN, include it; if not, do not worry and still complete the rest.",
+            "Do not agonize over perfection at this stage — get a correct, informative setup live first; deep optimization is a separate, longer effort."
+          ],
+          "caveats": [
+            "Title keyword strategy must not include terms your product is not (see incorrect-attribute warning card)."
+          ],
+          "source_id": "1EX9YLR_o0-J3vz7D5MKQe6ZOdELGGne-",
+          "source_name": "Full Ecom Google Ads Course 2026 (100% FREE).docx",
+          "folder": "/12-GAD-google-ads",
+          "domain": "google-ads",
+          "section": 1
+        },
+        {
+          "id": "1f2977dd9a2ce295d93ee901",
+          "title": "Focus Feed Optimization on Price, Title and Image",
+          "summary": "In Shopping you cannot choose the queries you serve, so direct roughly 95% of feed effort into price, product title and product image.",
+          "use_when": "Deciding where to spend merchandising effort when Shopping performance is weak and you cannot manipulate query targeting.",
+          "steps": [
+            "Accept the constraint: with Shopping ads you don't pick search queries the way you do in Search campaigns; Google matches your feed to queries.",
+            "Concentrate effort on the three attributes the source says drive roughly 95% of Shopping performance: price, product title and product image.",
+            "Set price competitively relative to the listings you appear beside, since price is visible in the Shopping unit and feeds directly into perceived value.",
+            "Rewrite titles using the core type → features/benefits → specifics → brand structure.",
+            "Upgrade images per the resolution, focus and lifestyle-test guidance.",
+            "Treat remaining feed attributes (descriptions, GTINs, custom labels) as secondary but keep them accurate; ensure every variant has its own unique GTIN and correct identifier codes, which sync reliably when Shopify is connected to Merchant Center."
+          ],
+          "caveats": [
+            "The '95%' figure is the presenter's heuristic emphasis, not a measured attribution model.",
+            "Verify current Merchant Center attribute requirements and sync behaviour before relying on automatic Shopify population."
+          ],
+          "source_id": "1EOpXnuoFKBJtNAVVfYuVfvZnIbC2XRrj",
+          "source_name": "Ecommerce Google Ads 2026 Free Course.docx",
+          "folder": "/12-GAD-google-ads",
+          "domain": "google-ads",
+          "section": 3
+        },
+        {
+          "id": "7671c6e57a6e5965b133722a",
+          "title": "Treat the Product Feed as the Advertising Copy",
+          "summary": "In Shopping and PMax there are no keywords — Google reads your feed title, description, attributes, price and availability to decide which queries each product matches.",
+          "use_when": "You are optimising Google Shopping or Performance Max for ecommerce and deciding where to spend merchandising and copywriting effort.",
+          "steps": [
+            "Accept that your feed is not a data source but the advertising itself: Google scans titles, descriptions, attributes, pricing and availability and decides on its own which search queries each product matches.",
+            "Therefore treat the product title as the most important line of advertising copy you will write, because it determines what Google thinks you sell and who to show it to.",
+            "Front-load the attributes buyers actually search with (structure below) rather than leading with brand and model name.",
+            "Maintain accuracy of price and availability so Google's matching and any automatic item updates stay aligned with your landing pages.",
+            "Re-audit the feed whenever you add categories or price tiers, since matching is driven by feed content, not keyword bids.",
+            "Confirm current matching behaviour in Google Merchant Center documentation, as the algorithm evolves."
+          ],
+          "caveats": [
+            "Source's claim that the title is 'the most important line of advertising copy you will ever write' is a strong practitioner opinion specific to feed-led campaigns.",
+            "Feed classification errors can cause a well-written title to still match poorly."
+          ],
+          "source_id": "1wZaOcKMTf-VGhMuD5ZaOmc5qF_babL-x",
+          "source_name": "# The Complete Google Ads Architecture & Operations Manual (2026 Edition).docx",
+          "folder": "/12-GAD-google-ads",
+          "domain": "google-ads",
+          "section": 0
+        }
+      ],
+      "candidate_scores": [
+        {
+          "card_id": "0d729814ee3064f7b6486305",
+          "score": 27.202895
+        },
+        {
+          "card_id": "1f2977dd9a2ce295d93ee901",
+          "score": 27.085382
+        },
+        {
+          "card_id": "7671c6e57a6e5965b133722a",
+          "score": 26.505764
+        }
+      ],
+      "applicability_checks": [
+        "Does this advice fit the product lifecycle, market, audience and requested deliverable?",
+        "Does it require proof, access, budget or assets the brand does not have?",
+        "Does it change a fixed price, offer, policy or other explicit constraint?",
+        "Are platform details or numerical claims current and substantiated?"
+      ],
+      "output_checks": [
+        "Deliver the specified artifact, not general advice about creating it.",
+        "Use supplied brand facts; label hypotheses and missing inputs separately.",
+        "Preserve relevant source conditions; do not copy another business’s proof or results.",
+        "Include an owner, measurement and decision rule when proposing a test.",
+        "Check the output against the requested constraints and owner feedback."
+      ],
+      "completion_rule": "Stop after the requested artifact passes factual and brief checks; allow at most two revision passes, then report the unresolved issue.",
+      "action_boundary": "Prepare recommendations/artifacts only. Publication, spend changes, customer contact and production modifications require separate task authorization."
+    },
+    {
+      "id": "google-ads.plan-retail-campaign",
+      "title": "Plan a retail search campaign structure",
+      "query": "Shopping PMax asset groups campaign structure bidding",
+      "steps": [
+        "Group products by business economics and shopper intent",
+        "Choose a structure fitting available data and creative assets",
+        "Define budget, tracking and evaluation before execution"
+      ],
+      "deliverable": "Campaign plan with verification requirements",
+      "status": "draft",
+      "steps_origin": "authored orchestration draft",
+      "retrieval": {
+        "primary_domain": "google-ads",
+        "related_domains": [
+          "measurement",
+          "finance-and-accounting",
+          "landing-pages"
+        ],
+        "query": "Shopping PMax asset groups campaign structure bidding",
+        "selected_card_ids": [
+          "f2e339bd5505c24c503bf11d",
+          "903e91b5cc9db4d2b7bb7093",
+          "43c52017c399aea1ab05ee6b"
+        ],
+        "mixed_candidate_ids": [
+          "2b7d05cb2e3f65ccef03542e",
+          "8c4e6e2d406bfb52a74c2d3c",
+          "fb780cdc68aaf637eac0cfb9"
+        ],
+        "fallback": "Search primary and related domains using the task and actual constraints; do not silently switch to a different workflow.",
+        "selection_status": "candidate-support-needs-applicability-review"
+      },
+      "supporting_cards": [
+        {
+          "id": "f2e339bd5505c24c503bf11d",
+          "title": "Standard Shopping for SKU-Level Bid Control",
+          "summary": "Use Standard Shopping when you need product-group bid control, clear per-product query data and read-clean conversions that PMax blurs.",
+          "use_when": "Deciding which products belong in Standard Shopping versus PMax, or when PMax reporting is too blended to tell what is actually working.",
+          "steps": [
+            "Route hero SKUs here when you need to defend top impression share on your most important products.",
+            "Set aggressive product-group bids on high-margin products where the unit economics can absorb higher CPCs.",
+            "Use Standard Shopping for clearance inventory you must move quickly, accepting a lower ROAS target on those product groups.",
+            "Test new arrivals here first: Standard Shopping gives per-product query and conversion data you can read before deciding what to scale into PMax.",
+            "Keep in mind both campaign types bid against the same feed; when running in parallel, duplicate the feed and give Shopping the branded/high-intent version and PMax the discovery version.",
+            "Where attribution clarity matters across multiple sales channels, prefer reading Standard Shopping conversions over PMax's blended number that mixes Shopping, Display, YouTube and Search."
+          ],
+          "caveats": [
+            "Standard Shopping only serves the Shopping surface — it does not reach YouTube, Display, Gmail or Discover.",
+            "Running Shopping and PMax on the same feed without role separation causes direct cannibalisation."
+          ],
+          "source_id": "1qHnlFZvZKsgM8ijL6P-HZpVPMRO4nrc0",
+          "source_name": "# Google Ads for Ecommerce_ The Complete Architecture & Operations Manual (2026 Edition).docx",
+          "folder": "/12-GAD-google-ads",
+          "domain": "google-ads",
+          "section": 0
+        },
+        {
+          "id": "903e91b5cc9db4d2b7bb7093",
+          "title": "Use Brand Exclusions and Weigh What Actually Matters in PMax",
+          "summary": "Without brand exclusions a PMax campaign is effectively a retargeting campaign; the source ranks the variables that move PMax performance.",
+          "use_when": "Configuring or prioritising fixes inside an ecommerce PMax campaign.",
+          "steps": [
+            "Exclude your brand from PMax. Two methods exist: (1) campaign settings → brand exclusions → add new brand, let Google index your branded terms and apply the brand list; (2) the newer capability to add negative keywords directly to PMax. The source recommends doing both as fail-safes so a missed variation is still caught by the list and vice versa.",
+            "After running PMax across ~250 accounts and consulting on ~400 more, the source ranks variables in this order: (1) the GMC feed — titles, descriptions, imagery (assuming PMax is prioritising Shopping); (2) brand exclusions; (3) asset and listing group structure plus the assets themselves; (4) bidding strategy; (5) audience signals and search themes.",
+            "Search themes and audience signals are signals, not targeting — they do not guarantee bids on those terms. Prioritise keywords that historically converted in your account rather than inventing them.",
+            "For mature accounts spending tens of thousands per month, the source reports audience signals and search themes are roughly a 1% lever at best; they matter mainly on new business, new product, new category or new asset group launches, where there is no conversion history.",
+            "Once a campaign has ~30 days of conversion data, Google bypasses the audience signal — the source states you could remove it with no performance impact.",
+            "Verify current interface locations for brand exclusion and negative keyword settings before acting, as Google changes these."
+          ],
+          "caveats": [
+            "The ranking and agency-tested figures are the source's own observations, not published benchmarks.",
+            "The claim that audience signals stop mattering is explicitly flagged as potentially controversial."
+          ],
+          "source_id": "1cVFwWMuAQVnzljzddBcWvIjk-85_LU2W",
+          "source_name": "The Only Google Ads Strategy You Need for 2026.docx",
+          "folder": "/12-GAD-google-ads",
+          "domain": "google-ads",
+          "section": 1
+        },
+        {
+          "id": "43c52017c399aea1ab05ee6b",
+          "title": "Set Up a Standard Shopping Campaign (Not PMax)",
+          "summary": "Configure a standard Shopping campaign with sales objective, purchases-only conversion goal and presence-only location targeting.",
+          "use_when": "Launching a DTC store's first Shopping campaign in Google Ads.",
+          "steps": [
+            "Confirm prerequisites first: conversion tracking installed, Merchant Center account created and linked to Google Ads.",
+            "In ads.google.com go to Campaigns → the blue plus → objective Sales; set the conversion goal to purchases.",
+            "When Google pushes Performance Max, decline and choose Standard Shopping instead (the source's recommendation for this setup).",
+            "Select the linked Merchant Center account from the product drop-down and name the campaign to encode scope: channel, product count, and jurisdiction (e.g. 'Shopping | All Products | UK').",
+            "Set an average daily budget; choose a bid strategy guided by account maturity — manual CPC or Maximise Clicks for new accounts, Target ROAS once conversion data exists.",
+            "In campaign settings, set the location, then open Location options and switch from 'Presence or interest' to 'Presence' so you only pay for people actually in your target market.",
+            "Turn off Search Partners — the source reports consistently weak performance there for these campaigns.",
+            "In ad group settings name the group, set a max CPC if on manual bidding, and choose products by all products, product type/category, item ID, or custom labels (e.g. seasonality, bestsellers) before saving.",
+            "Publish; ads typically start serving within a couple of hours."
+          ],
+          "caveats": [
+            "Bid strategy choice depends on account history — the source points to a separate bid strategy lesson rather than one universal rule.",
+            "Custom labels for seasonality/bestsellers must first be built in Merchant Center.",
+            "Ad interface element names and PMax defaults change frequently; verify the current UI."
+          ],
+          "source_id": "1EOpXnuoFKBJtNAVVfYuVfvZnIbC2XRrj",
+          "source_name": "Ecommerce Google Ads 2026 Free Course.docx",
+          "folder": "/12-GAD-google-ads",
+          "domain": "google-ads",
+          "section": 3
+        }
+      ],
+      "candidate_scores": [
+        {
+          "card_id": "f2e339bd5505c24c503bf11d",
+          "score": 28.098219
+        },
+        {
+          "card_id": "903e91b5cc9db4d2b7bb7093",
+          "score": 25.860929
+        },
+        {
+          "card_id": "43c52017c399aea1ab05ee6b",
+          "score": 25.299114
+        }
+      ],
+      "applicability_checks": [
+        "Does this advice fit the product lifecycle, market, audience and requested deliverable?",
+        "Does it require proof, access, budget or assets the brand does not have?",
+        "Does it change a fixed price, offer, policy or other explicit constraint?",
+        "Are platform details or numerical claims current and substantiated?"
+      ],
+      "output_checks": [
+        "Deliver the specified artifact, not general advice about creating it.",
+        "Use supplied brand facts; label hypotheses and missing inputs separately.",
+        "Preserve relevant source conditions; do not copy another business’s proof or results.",
+        "Include an owner, measurement and decision rule when proposing a test.",
+        "Check the output against the requested constraints and owner feedback."
+      ],
+      "completion_rule": "Stop after the requested artifact passes factual and brief checks; allow at most two revision passes, then report the unresolved issue.",
+      "action_boundary": "Prepare recommendations/artifacts only. Publication, spend changes, customer contact and production modifications require separate task authorization."
+    }
+  ],
+  "foundation_candidates": [
+    {
+      "id": "7671c6e57a6e5965b133722a",
+      "title": "Treat the Product Feed as the Advertising Copy",
+      "summary": "In Shopping and PMax there are no keywords — Google reads your feed title, description, attributes, price and availability to decide which queries each product matches.",
+      "use_when": "You are optimising Google Shopping or Performance Max for ecommerce and deciding where to spend merchandising and copywriting effort.",
+      "steps": [
+        "Accept that your feed is not a data source but the advertising itself: Google scans titles, descriptions, attributes, pricing and availability and decides on its own which search queries each product matches.",
+        "Therefore treat the product title as the most important line of advertising copy you will write, because it determines what Google thinks you sell and who to show it to.",
+        "Front-load the attributes buyers actually search with (structure below) rather than leading with brand and model name.",
+        "Maintain accuracy of price and availability so Google's matching and any automatic item updates stay aligned with your landing pages.",
+        "Re-audit the feed whenever you add categories or price tiers, since matching is driven by feed content, not keyword bids.",
+        "Confirm current matching behaviour in Google Merchant Center documentation, as the algorithm evolves."
+      ],
+      "caveats": [
+        "Source's claim that the title is 'the most important line of advertising copy you will ever write' is a strong practitioner opinion specific to feed-led campaigns.",
+        "Feed classification errors can cause a well-written title to still match poorly."
+      ],
+      "source_id": "1wZaOcKMTf-VGhMuD5ZaOmc5qF_babL-x",
+      "source_name": "# The Complete Google Ads Architecture & Operations Manual (2026 Edition).docx",
+      "folder": "/12-GAD-google-ads",
+      "domain": "google-ads",
+      "section": 0
+    },
+    {
+      "id": "c7807eeedee7005d4d904acd",
+      "title": "Read the Shopping and PMax Auction Correctly",
+      "summary": "In Shopping and PMax there are no keywords — quality signals come from feed data, so product titles and attributes drive Ad Rank.",
+      "use_when": "Explaining why a product wins or loses Shopping auctions, or deciding where to invest to improve visibility and CPC.",
+      "steps": [
+        "Recognise that Google scans your feed (titles, descriptions, attributes, pricing, availability) and decides which queries each product matches — the feed is the advertising, not just a data source.",
+        "Treat the product title as your most important line of ad copy, because that is what Google reads to determine what you sell and who sees it.",
+        "Understand Ad Rank = Max CPC Bid × Quality Score × Expected Impact of Extensions/Formats + Contextual Adjustments; the simplified form is Bid × Quality Score.",
+        "Improve the Shopping quality inputs: title relevance to query, image quality and price competitiveness (expected CTR); closeness of title/description/attributes to the query (ad relevance); and product page load speed, mobile responsiveness and content relevance (landing page experience).",
+        "For PMax, remember quality signals aggregate across the whole asset group, so one weak product drags the group — feed quality is the single biggest Ad Rank lever.",
+        "Work the CPC formula: Actual CPC = (Ad Rank of advertiser below you ÷ Your Quality Score) + $0.01. Because Ad Rank appears in both numerator and denominator, a higher Quality Score lowers your actual CPC for the same position.",
+        "Practical ecommerce consequence: accurate titles and complete attributes can cut CPC on the same products without changing bids."
+      ],
+      "caveats": [
+        "Source-cited 2026 averages (Search CPC ~$1.42, Shopping ~$0.68, PMax ~$0.82; blended ROAS 4.2×; Shopping ROAS 5.1×, Search 3.4×, PMax 4.8×) are benchmark aggregates that vary by vertical and margin — not targets.",
+        "Google Shopping CPCs were cited as up 22% year over year, making feed efficiency more important but also making old CPC assumptions unreliable."
+      ],
+      "source_id": "1qHnlFZvZKsgM8ijL6P-HZpVPMRO4nrc0",
+      "source_name": "# Google Ads for Ecommerce_ The Complete Architecture & Operations Manual (2026 Edition).docx",
+      "folder": "/12-GAD-google-ads",
+      "domain": "google-ads",
+      "section": 0
+    },
+    {
+      "id": "f2e339bd5505c24c503bf11d",
+      "title": "Standard Shopping for SKU-Level Bid Control",
+      "summary": "Use Standard Shopping when you need product-group bid control, clear per-product query data and read-clean conversions that PMax blurs.",
+      "use_when": "Deciding which products belong in Standard Shopping versus PMax, or when PMax reporting is too blended to tell what is actually working.",
+      "steps": [
+        "Route hero SKUs here when you need to defend top impression share on your most important products.",
+        "Set aggressive product-group bids on high-margin products where the unit economics can absorb higher CPCs.",
+        "Use Standard Shopping for clearance inventory you must move quickly, accepting a lower ROAS target on those product groups.",
+        "Test new arrivals here first: Standard Shopping gives per-product query and conversion data you can read before deciding what to scale into PMax.",
+        "Keep in mind both campaign types bid against the same feed; when running in parallel, duplicate the feed and give Shopping the branded/high-intent version and PMax the discovery version.",
+        "Where attribution clarity matters across multiple sales channels, prefer reading Standard Shopping conversions over PMax's blended number that mixes Shopping, Display, YouTube and Search."
+      ],
+      "caveats": [
+        "Standard Shopping only serves the Shopping surface — it does not reach YouTube, Display, Gmail or Discover.",
+        "Running Shopping and PMax on the same feed without role separation causes direct cannibalisation."
+      ],
+      "source_id": "1qHnlFZvZKsgM8ijL6P-HZpVPMRO4nrc0",
+      "source_name": "# Google Ads for Ecommerce_ The Complete Architecture & Operations Manual (2026 Edition).docx",
+      "folder": "/12-GAD-google-ads",
+      "domain": "google-ads",
+      "section": 0
+    }
+  ],
+  "foundation_note": "Inferred principle labels do not establish universal applicability. Retain source conditions; empty means no matched labelled principle, not absence of foundational knowledge."
+}

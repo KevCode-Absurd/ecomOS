@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ecom-intelligence"
+version = "0.1.0"
+description = "Local foundations for a source-grounded ecommerce intelligence service"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.scripts]
+ecom-intelligence = "intelligence.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["intelligence*"]
+
+
+[project.optional-dependencies]
+retrieval = ["numpy>=1.26,<3", "tiktoken>=0.7,<1"]

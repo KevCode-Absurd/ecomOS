@@ -1,0 +1,310 @@
+{
+  "schema_version": 1,
+  "version": "1.4.0-experimental",
+  "status": "experimental",
+  "domain": "ad-copy-deployment",
+  "source_catalog_sha256": "0287a2e2df3a54711125de9d2927b1efd3d7add875be994c4af6f326cfa84074",
+  "required_inputs": [
+    "Product facts",
+    "audience evidence",
+    "offer",
+    "approved proof",
+    "visual concept",
+    "voice",
+    "constraints"
+  ],
+  "measures": [
+    "Owner preference",
+    "editing needed",
+    "claim accuracy",
+    "later CPA"
+  ],
+  "related_domains": [
+    "avatars",
+    "brand",
+    "offers",
+    "paid-social-creative"
+  ],
+  "evidence_method": "Thirteen-card editorial synthesis, user language/bridge criteria, and the observed v1.3 task-focus regression. Experimental, not market-validated.",
+  "operating_contract": "../OPERATING_CONTRACT.md",
+  "workflows": [
+    {
+      "id": "ad-copy-deployment.write-static-copy",
+      "title": "Write ecommerce static-ad copy",
+      "query": "copywriting headline benefits awareness proof concrete readability",
+      "steps": [
+        "Identify the exact buying question, avatar and facts each standalone output must communicate.",
+        "Lock product facts, offer and proof boundaries.",
+        "Assign a different relevant angle to each requested variant.",
+        "Connect one concrete situation and feature to its supported shopper benefit.",
+        "Write finished headline, body and CTA that complement the visual brief.",
+        "Check distinctness, specificity, readability and facts; revise once.",
+        "Read aloud for plain language and check that a scene or formula has not displaced the buying question. Edit once."
+      ],
+      "deliverable": "Primary text, headline and CTA for each concept",
+      "status": "experimental",
+      "steps_origin": "source-informed editorial synthesis with explicit adaptations",
+      "retrieval": {
+        "primary_domain": "ad-copy-deployment",
+        "related_domains": [
+          "avatars",
+          "brand",
+          "offers",
+          "paid-social-creative"
+        ],
+        "query": "copywriting headline benefits awareness proof concrete readability",
+        "selected_card_ids": [],
+        "mixed_candidate_ids": [],
+        "fallback": "Retrieve extra source details only for an unresolved decision. Apply the constraints before adding them; never fill a context quota.",
+        "selection_status": "Optional full-card support; empirical value under test",
+        "reviewed_source_ids": [
+          "20fa6900506ffc06314306b2",
+          "40638b840ce1e28ea89b4b19",
+          "d5db0dddac4ab42c3d5640c1",
+          "8e6c32baa35ff2f2aa1ef544",
+          "17183d94160ce2f95770a9d7",
+          "3f95809c1b82aca30df46509",
+          "28025475600243ca3a03ad4c",
+          "5ca4fa6b39ad6ab0102ceae0",
+          "a9db8de6d903f43da80e956e",
+          "4fb56bc1019fff1c2b939750"
+        ]
+      },
+      "supporting_cards": [],
+      "candidate_scores": [
+        {
+          "card_id": "40638b840ce1e28ea89b4b19",
+          "score": 20.352475
+        },
+        {
+          "card_id": "8e6c32baa35ff2f2aa1ef544",
+          "score": 16.444737
+        },
+        {
+          "card_id": "8ff8c16758242cbca73382e2",
+          "score": 14.539082
+        }
+      ],
+      "applicability_checks": [
+        "Does this advice fit the product lifecycle, market, audience and requested deliverable?",
+        "Does it require proof, access, budget or assets the brand does not have?",
+        "Does it change a fixed price, offer, policy or other explicit constraint?",
+        "Are platform details or numerical claims current and substantiated?"
+      ],
+      "output_checks": [
+        "Deliver the specified artifact, not general advice about creating it.",
+        "Use supplied brand facts; label hypotheses and missing inputs separately.",
+        "Preserve relevant source conditions; do not copy another business’s proof or results.",
+        "Include an owner, measurement and decision rule when proposing a test.",
+        "Check the output against the requested constraints and owner feedback.",
+        "Each standalone ad answers the requested buying question.",
+        "Plain language below grade 10 is a target, not a reason to remove necessary precision.",
+        "The benefit follows credibly from a supplied product feature."
+      ],
+      "completion_rule": "Stop after the requested artifact passes factual and brief checks; allow at most two revision passes, then report the unresolved issue.",
+      "action_boundary": "Prepare recommendations/artifacts only. Publication, spend changes, customer contact and production modifications require separate task authorization."
+    },
+    {
+      "id": "ad-copy-deployment.revise-copy",
+      "title": "Revise copy using owner feedback",
+      "query": "copywriting clarity specificity voice edit readability",
+      "steps": [
+        "Identify the exact buying question, avatar and facts each standalone output must communicate.",
+        "Build a fact sheet separating approved facts, website assertions, customer evidence, hypotheses and unknowns. Lock the offer and other user constraints.",
+        "Classify owner feedback as fact, brand voice, concept, structure or applicability. Preserve approved copy that the feedback does not require changing.",
+        "Set one promise and its support. Choose a feature or benefit lead based on the actual buying question.",
+        "Match copy to the supplied image/concept and destination. Use approved voice examples; make any website-only voice inference explicit internally.",
+        "Return revised finished copy and a short change note. Do not add new variants unless requested.",
+        "Check claim support, offer fidelity, clarity, essential qualifications and visual coherence. Revise at most twice; separate unresolved notes from copy.",
+        "Read aloud for plain language and check that a scene or formula has not displaced the buying question. Edit once."
+      ],
+      "deliverable": "Revised copy and concise change note",
+      "status": "experimental",
+      "steps_origin": "source-informed editorial synthesis with explicit adaptations",
+      "retrieval": {
+        "primary_domain": "ad-copy-deployment",
+        "related_domains": [
+          "avatars",
+          "brand",
+          "offers",
+          "paid-social-creative"
+        ],
+        "query": "copywriting clarity specificity voice edit readability",
+        "selected_card_ids": [],
+        "mixed_candidate_ids": [],
+        "fallback": "Retrieve extra source details only for an unresolved decision. Apply the constraints before adding them; never fill a context quota.",
+        "selection_status": "Optional full-card support; empirical value under test",
+        "reviewed_source_ids": [
+          "20fa6900506ffc06314306b2",
+          "40638b840ce1e28ea89b4b19",
+          "d5db0dddac4ab42c3d5640c1",
+          "8e6c32baa35ff2f2aa1ef544",
+          "17183d94160ce2f95770a9d7",
+          "3f95809c1b82aca30df46509",
+          "28025475600243ca3a03ad4c",
+          "5ca4fa6b39ad6ab0102ceae0",
+          "a9db8de6d903f43da80e956e",
+          "4fb56bc1019fff1c2b939750"
+        ]
+      },
+      "supporting_cards": [],
+      "candidate_scores": [
+        {
+          "card_id": "17183d94160ce2f95770a9d7",
+          "score": 21.659635
+        },
+        {
+          "card_id": "28ee2e3aa4ff11299cd991b6",
+          "score": 17.285856
+        },
+        {
+          "card_id": "20fa6900506ffc06314306b2",
+          "score": 15.514746
+        }
+      ],
+      "applicability_checks": [
+        "Does this advice fit the product lifecycle, market, audience and requested deliverable?",
+        "Does it require proof, access, budget or assets the brand does not have?",
+        "Does it change a fixed price, offer, policy or other explicit constraint?",
+        "Are platform details or numerical claims current and substantiated?"
+      ],
+      "output_checks": [
+        "Deliver the specified artifact, not general advice about creating it.",
+        "Use supplied brand facts; label hypotheses and missing inputs separately.",
+        "Preserve relevant source conditions; do not copy another business’s proof or results.",
+        "Include an owner, measurement and decision rule when proposing a test.",
+        "Check the output against the requested constraints and owner feedback.",
+        "Each standalone ad answers the requested buying question.",
+        "Plain language below grade 10 is a target, not a reason to remove necessary precision.",
+        "The benefit follows credibly from a supplied product feature."
+      ],
+      "completion_rule": "Stop after the requested artifact passes factual and brief checks; allow at most two revision passes, then report the unresolved issue.",
+      "action_boundary": "Prepare recommendations/artifacts only. Publication, spend changes, customer contact and production modifications require separate task authorization."
+    },
+    {
+      "id": "ad-copy-deployment.objection-copy",
+      "title": "Write copy addressing a buying objection",
+      "query": "objection belief proof mechanism awareness copy",
+      "steps": [
+        "Identify the exact buying question, avatar and facts each standalone output must communicate.",
+        "Build a fact sheet separating approved facts, website assertions, customer evidence, hypotheses and unknowns. Lock the offer and other user constraints.",
+        "Select one evidenced objection, or label a provisional objection as a hypothesis. Map it to a supported answer; do not invent reassurance the product cannot provide.",
+        "Set one promise and its support. Choose a feature or benefit lead based on the actual buying question.",
+        "Match copy to the supplied image/concept and destination. Use approved voice examples; make any website-only voice inference explicit internally.",
+        "Produce the requested number of finished primary texts, headlines and CTAs. Make variants meaningfully distinct without changing fixed facts.",
+        "Check claim support, offer fidelity, clarity, essential qualifications and visual coherence. Revise at most twice; separate unresolved notes from copy.",
+        "Read aloud for plain language and check that a scene or formula has not displaced the buying question. Edit once."
+      ],
+      "deliverable": "Objection-led ad copy variants",
+      "status": "experimental",
+      "steps_origin": "source-informed editorial synthesis with explicit adaptations",
+      "retrieval": {
+        "primary_domain": "ad-copy-deployment",
+        "related_domains": [
+          "avatars",
+          "brand",
+          "offers",
+          "paid-social-creative"
+        ],
+        "query": "objection belief proof mechanism awareness copy",
+        "selected_card_ids": [],
+        "mixed_candidate_ids": [],
+        "fallback": "Retrieve extra source details only for an unresolved decision. Apply the constraints before adding them; never fill a context quota.",
+        "selection_status": "Optional full-card support; empirical value under test",
+        "reviewed_source_ids": [
+          "20fa6900506ffc06314306b2",
+          "40638b840ce1e28ea89b4b19",
+          "d5db0dddac4ab42c3d5640c1",
+          "8e6c32baa35ff2f2aa1ef544",
+          "17183d94160ce2f95770a9d7",
+          "3f95809c1b82aca30df46509",
+          "28025475600243ca3a03ad4c",
+          "5ca4fa6b39ad6ab0102ceae0",
+          "a9db8de6d903f43da80e956e",
+          "4fb56bc1019fff1c2b939750"
+        ]
+      },
+      "supporting_cards": [],
+      "candidate_scores": [
+        {
+          "card_id": "e9741d568a978ac5f209974d",
+          "score": 17.34669
+        },
+        {
+          "card_id": "a9db8de6d903f43da80e956e",
+          "score": 15.810368
+        },
+        {
+          "card_id": "79e75a8b36451e7d0b516267",
+          "score": 14.712261
+        }
+      ],
+      "applicability_checks": [
+        "Does this advice fit the product lifecycle, market, audience and requested deliverable?",
+        "Does it require proof, access, budget or assets the brand does not have?",
+        "Does it change a fixed price, offer, policy or other explicit constraint?",
+        "Are platform details or numerical claims current and substantiated?"
+      ],
+      "output_checks": [
+        "Deliver the specified artifact, not general advice about creating it.",
+        "Use supplied brand facts; label hypotheses and missing inputs separately.",
+        "Preserve relevant source conditions; do not copy another business’s proof or results.",
+        "Include an owner, measurement and decision rule when proposing a test.",
+        "Check the output against the requested constraints and owner feedback.",
+        "Each standalone ad answers the requested buying question.",
+        "Plain language below grade 10 is a target, not a reason to remove necessary precision.",
+        "The benefit follows credibly from a supplied product feature."
+      ],
+      "completion_rule": "Stop after the requested artifact passes factual and brief checks; allow at most two revision passes, then report the unresolved issue.",
+      "action_boundary": "Prepare recommendations/artifacts only. Publication, spend changes, customer contact and production modifications require separate task authorization."
+    }
+  ],
+  "foundation_candidates": [],
+  "foundation_note": "Inferred principle labels do not establish universal applicability. Retain source conditions; empty means no matched labelled principle, not absence of foundational knowledge.",
+  "editorial_principles": [
+    {
+      "id": "supported-scene",
+      "guidance": "Use a concrete object/action to make the relevant shopper problem picturable; do not overwrite or invent outcomes.",
+      "source_card_ids": [
+        "8998cd84ed0c5d71e3f42fc3",
+        "8e6c32baa35ff2f2aa1ef544"
+      ]
+    },
+    {
+      "id": "feature-to-benefit",
+      "guidance": "Translate a selected feature into a credible shopper gain; avoid an inventory dump or unsupported numeric promise.",
+      "source_card_ids": [
+        "dc660f4f168c51e69db52095",
+        "d5db0dddac4ab42c3d5640c1"
+      ]
+    },
+    {
+      "id": "clear-headline",
+      "guidance": "A shopper should understand the product or meaningful promise; no forced headline template or invented timeframe/proof.",
+      "source_card_ids": [
+        "db040c273327393ad271a94d"
+      ]
+    },
+    {
+      "id": "word-economy",
+      "guidance": "Delete repeated information and empty abstractions while preserving material qualifications.",
+      "source_card_ids": [
+        "17183d94160ce2f95770a9d7"
+      ]
+    },
+    {
+      "id": "variant-allocation",
+      "guidance": "Allocate distinct relevant angles before drafting; evaluate actual copy, not just concept labels.",
+      "source_card_ids": [],
+      "origin": "User preference and both baseline reviewer observations; editorial design rule, not source-established effect"
+    },
+    {
+      "id": "task-first-plain-bridge",
+      "guidance": "Answer the buying question first. Use plain language and a credible problem-to-benefit connection when useful; never let a scene or formula replace the requested answer.",
+      "source_card_ids": [],
+      "origin": "User preferences and v1.3 failure analysis; editorial rule."
+    }
+  ],
+  "system_prompt": "Write finished ecommerce ad copy that answers this shopper's buying question. Start with the requested job and essential facts: an ad about value must explain value, and an ad about installation must explain the available help. Do not let a scene, a component or a copywriting formula displace that job. Each requested ad must stand on its own.\nWrite in natural, familiar English, aiming below a 10th-grade reading level. Short clear sentences, concrete words and a warm tone. Say it as a person would. Avoid jargon, stock praise, filler and robotic caveats. Keep necessary policy terms accurate rather than simplifying them into a stronger promise.\nConnect a recognisable unwanted situation or buying hesitation to a realistic improvement through a supported product feature. This bridge may be implicit. The product helps the person make a practical change; it does not promise a transformed life. A feature or direct answer can lead when that is what this shopper needs. A concrete moment is useful only if it helps answer the buying question. Do not force every variant into a tiny household scene or a before/after story.\nGive each variant a different useful reason or execution within the brief. Swapping a cabinet for a socket is not automatically a new angle. When the evidence supports only one benefit, vary how you explain it honestly rather than inventing benefits. Include enough product identity and any price or offer essential to the brief in each standalone ad. Select relevant details rather than repeating the full inventory. The headline makes the message clear, the body adds a reason to care, and the CTA gives a natural next step.\nUse only supplied product facts. Cards offer writing methods, not evidence about this product. Do not invent proof, compatibility, quantities, setup time, ease, savings, urgency, guarantees or safety outcomes. Hypothetical situations are not customer research. Keep policy eligibility intact. Include material qualifications concisely; do not repeatedly narrate uncertainty or replace the benefit with instructions to check everything. Put genuinely missing facts in internal_notes.\nEdit once before delivery: does each ad answer the brief, sound natural, fit the avatar, show a credible benefit and differ from the others? Remove padding and unsupported claims. Return the requested JSON with finished copy and separate internal_notes. Do not show planning, browse or publish.",
+  "source_evidence_file": "source-evidence.json"
+}

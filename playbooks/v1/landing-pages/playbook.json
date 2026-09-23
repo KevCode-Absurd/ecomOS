@@ -1,0 +1,504 @@
+{
+  "schema_version": 1,
+  "version": "1.0.0-draft",
+  "status": "draft",
+  "domain": "landing-pages",
+  "source_catalog_sha256": "0287a2e2df3a54711125de9d2927b1efd3d7add875be994c4af6f326cfa84074",
+  "required_inputs": [
+    "Product facts",
+    "traffic source",
+    "audience",
+    "offer",
+    "proof",
+    "existing page",
+    "constraints"
+  ],
+  "measures": [
+    "Purchase conversion",
+    "contribution per visitor",
+    "message comprehension"
+  ],
+  "related_domains": [
+    "avatars",
+    "ad-copy-deployment",
+    "offers",
+    "testing"
+  ],
+  "evidence_method": "Local BM25 candidate selection; authored workflow steps are proposals, not source quotations or verified synthesis.",
+  "operating_contract": "../OPERATING_CONTRACT.md",
+  "workflows": [
+    {
+      "id": "landing-pages.write-page",
+      "title": "Write a product landing page",
+      "query": "product landing page headline proof objection copy",
+      "steps": [
+        "Match the page promise to traffic intent and supported customer need",
+        "Order benefits, mechanism, proof, offer and objections around purchase decisions",
+        "Write finished sections using approved facts and a consistent CTA"
+      ],
+      "deliverable": "Complete section-by-section landing-page copy",
+      "status": "draft",
+      "steps_origin": "authored orchestration draft",
+      "retrieval": {
+        "primary_domain": "landing-pages",
+        "related_domains": [
+          "avatars",
+          "ad-copy-deployment",
+          "offers",
+          "testing"
+        ],
+        "query": "product landing page headline proof objection copy",
+        "selected_card_ids": [
+          "10b436ef5145c8ef197e19f2",
+          "a556c62817f0cb335d4f5222",
+          "2877b10aa93fd325b229d989"
+        ],
+        "mixed_candidate_ids": [
+          "010fe64918f47b6230e2899e",
+          "e1abe7ca30f5e8577e6ad432",
+          "1c351701fc029c4cb73bae3a"
+        ],
+        "fallback": "Search primary and related domains using the task and actual constraints; do not silently switch to a different workflow.",
+        "selection_status": "candidate-support-needs-applicability-review"
+      },
+      "supporting_cards": [
+        {
+          "id": "10b436ef5145c8ef197e19f2",
+          "title": "Voice of Customer Research Before Writing Any Copy",
+          "summary": "Harvest exact customer language, pain points and objections from Reddit, sales calls and qualitative testing before drafting page copy.",
+          "use_when": "Starting a new landing page, PDP rewrite or advertorial and you need the raw material for headlines, pain sections and objection handling.",
+          "steps": [
+            "Mine secondary sources: Reddit threads, YouTube comments, forums in your product category. Record recurring themes and the exact words customers use, not your industry's jargon.",
+            "Interview internal stakeholders who talk to buyers — sales team, customer support, founders. Ask what objections come up most and what a typical sales conversation looks like.",
+            "Run qualitative user testing with a tool like UserBrain: give real customers a set of tasks on your site and ask them to think aloud. A 30-minute recording per person surfaces confusion and the phrasing they use unprompted.",
+            "Pull demographic and interest breakdowns from Google Analytics to segment who is actually arriving.",
+            "Capture, per segment: pain points, dream outcomes/goals, needs and wants, demographics (age, gender, income, personality), and common objections.",
+            "Sort the raw language into a research document, then map each phrase to the section it will feed — headline, pain point, proof or value prop. The copy should be assembled from this document, not invented."
+          ],
+          "caveats": [
+            "This is qualitative input; themes from forums may skew toward the most vocal users rather than the average buyer.",
+            "Verify any third-party tool's current pricing and interface before committing."
+          ],
+          "source_id": "1EER2kmlDMBZxcGE7YIRunRf3NRj_sBBC",
+          "source_name": "The NEW Way Of Landing Pages in 2026.docx",
+          "folder": "/07-LPG-landing-pages",
+          "domain": "landing-pages",
+          "section": 0
+        },
+        {
+          "id": "a556c62817f0cb335d4f5222",
+          "title": "Follow Jakob's Law: familiar layouts beat creative reinvention",
+          "summary": "Users expect landing pages to look and function like other sites they use, so standard structures (one headline, close body copy, top social proof, CTA) convert better than clever deviation.",
+          "use_when": "Choosing a landing page layout, template or redesign direction, especially when balancing brand creativity against conversion goals.",
+          "steps": [
+            "Apply Jakob's Law: because users spend most of their time on other sites, they expect your page to follow familiar patterns — deviating from standard structure forces them to relearn navigation and hurts conversion.",
+            "Adopt the source's baseline structure: one clear headline, body text in close proximity to the headline, social proof near the top, CTA button directly underneath, FUD reducers beneath the CTA, and an image or video.",
+            "Avoid the minimalist trap of headline-only pages with no body text and no CTA — minimalism that removes clarity removes action.",
+            "Avoid multi-headline hero sections, oversized social proof that overpowers the headline, and body copy that sits far from the headline.",
+            "Before shipping a novel layout, ask whether the creativity comes at the cost of clarity; if yes, revert to a standard pattern.",
+            "When the layout is unconventional, run an A/B test against a familiar-layout control rather than assuming the creative version wins."
+          ],
+          "caveats": [
+            "Jakob's Law is a UX heuristic, not a conversion guarantee; some strong brands convert well with differentiated design.",
+            "This contradicts advice to stand out visually — the source frames it as a trade-off favoring clarity over creativity when conversions are the goal."
+          ],
+          "source_id": "1ySsR0tETIT8KKiDM7lAz5TDI4ga4TATf",
+          "source_name": "I Studied 1000 Landing Pages, Here's What Works in 2025.docx",
+          "folder": "/07-LPG-landing-pages",
+          "domain": "landing-pages",
+          "section": 0
+        },
+        {
+          "id": "2877b10aa93fd325b229d989",
+          "title": "Write PDP Headlines for Scanners",
+          "summary": "Assume many shoppers scan headings rather than read every paragraph, so every heading should communicate a standalone product benefit or decision aid.",
+          "use_when": "Writing product-page headings, campaign-page section titles, bundle descriptions, comparison blocks, and testimonial summaries.",
+          "steps": [
+            "Audit every heading without its body copy. A shopper should still understand the key benefit, use case, or proof point from the heading alone.",
+            "Replace generic labels with benefit-led statements. Instead of “Ingredients,” state the relevant shopper implication, then provide the ingredient details beneath it; instead of “Reviews,” summarize the genuine theme of the proof.",
+            "Use a clear hierarchy: the hero claim first, then the most important decision information, followed by supporting details. Use type size, weight, and color contrast to distinguish headings from body copy.",
+            "Keep body copy available for substantiation and product specifics, but do not force shoppers to read it to understand why a section matters.",
+            "Apply the same scanning discipline to review cards: a short, accurate summary heading can surface the relevant usage outcome, while the full verified review remains available below."
+          ],
+          "caveats": [
+            "The source cites a general rule of thumb that people read only a small portion of page content; treat it as a rationale for clear information design, not a precise measurement of your traffic.",
+            "Do not edit testimonial headings in a way that changes what the reviewer actually said."
+          ],
+          "source_id": "191mnuT42e0DvuFHFYJfj_Aft1qFNdE-z",
+          "source_name": "The Only Landing Page Guide You'll Ever Need.docx",
+          "folder": "/07-LPG-landing-pages",
+          "domain": "landing-pages",
+          "section": 2
+        }
+      ],
+      "candidate_scores": [
+        {
+          "card_id": "10b436ef5145c8ef197e19f2",
+          "score": 16.421993
+        },
+        {
+          "card_id": "a556c62817f0cb335d4f5222",
+          "score": 14.730843
+        },
+        {
+          "card_id": "2877b10aa93fd325b229d989",
+          "score": 14.121202
+        }
+      ],
+      "applicability_checks": [
+        "Does this advice fit the product lifecycle, market, audience and requested deliverable?",
+        "Does it require proof, access, budget or assets the brand does not have?",
+        "Does it change a fixed price, offer, policy or other explicit constraint?",
+        "Are platform details or numerical claims current and substantiated?"
+      ],
+      "output_checks": [
+        "Deliver the specified artifact, not general advice about creating it.",
+        "Use supplied brand facts; label hypotheses and missing inputs separately.",
+        "Preserve relevant source conditions; do not copy another business’s proof or results.",
+        "Include an owner, measurement and decision rule when proposing a test.",
+        "Check the output against the requested constraints and owner feedback."
+      ],
+      "completion_rule": "Stop after the requested artifact passes factual and brief checks; allow at most two revision passes, then report the unresolved issue.",
+      "action_boundary": "Prepare recommendations/artifacts only. Publication, spend changes, customer contact and production modifications require separate task authorization."
+    },
+    {
+      "id": "landing-pages.hero-section",
+      "title": "Create a landing-page hero brief",
+      "query": "hero headline product page above fold clarity",
+      "steps": [
+        "Choose the single promise that matches visitor awareness",
+        "Combine clear product identification, relevant proof and CTA",
+        "Specify mobile hierarchy and visual requirements without fabricated proof"
+      ],
+      "deliverable": "Hero copy and layout brief",
+      "status": "draft",
+      "steps_origin": "authored orchestration draft",
+      "retrieval": {
+        "primary_domain": "landing-pages",
+        "related_domains": [
+          "avatars",
+          "ad-copy-deployment",
+          "offers",
+          "testing"
+        ],
+        "query": "hero headline product page above fold clarity",
+        "selected_card_ids": [
+          "59be84f0758c5860c10e1ca6",
+          "f4cbc2b893ed2250e6331bc1",
+          "cb7820a5960b6a281e8be4fa"
+        ],
+        "mixed_candidate_ids": [
+          "f792955c5fb659be723119f0",
+          "1cd22fa872f7e953a41c9c91",
+          "7d460350a38096003d9e2fa5"
+        ],
+        "fallback": "Search primary and related domains using the task and actual constraints; do not silently switch to a different workflow.",
+        "selection_status": "candidate-support-needs-applicability-review"
+      },
+      "supporting_cards": [
+        {
+          "id": "59be84f0758c5860c10e1ca6",
+          "title": "Hero Headline Formula: End Result + Time Period + Emotional Payoff",
+          "summary": "Write the above-the-fold headline with three components and never lead with who you are or what you do.",
+          "use_when": "Writing or rewriting the hero section of a landing page, PDP above-the-fold block or paid-traffic advertorial.",
+          "steps": [
+            "Build the headline from three parts: the end result the customer wants (e.g. 3x your revenue, lose weight, calm your horse), a time period (24 hours, 2 weeks, 12 weeks), and the emotional payoff (how they feel once they have it).",
+            "Reorder the three parts to whatever reads naturally; the source's sequence is not fixed.",
+            "Do not open with who you are or what your company does — the source calls this a massive waste of space. The headline only has to answer 'what's in it for me?'",
+            "Worked ecommerce example from the source: 'Calm your horse… enjoy safer, happier rides… in just 2 weeks' — end result, emotional payoff, time period for a horse-supplement brand.",
+            "Write the sub-headline as pain point first (if applicable), then the solution, then list the unique components from your offer decomposition that deliver the headline result.",
+            "Above the fold also needs at least two forms of relevant social proof (reviews, stats, press), FUD-reducing copy near the CTA, and one image or video that reinforces the core value prop — not a decorative shot."
+          ],
+          "caveats": [
+            "The formulas are the source's proprietary framework; they have not been validated by independent testing in the material.",
+            "A time-period claim must be defensible for your product and category — do not insert a number you cannot substantiate."
+          ],
+          "source_id": "1EER2kmlDMBZxcGE7YIRunRf3NRj_sBBC",
+          "source_name": "The NEW Way Of Landing Pages in 2026.docx",
+          "folder": "/07-LPG-landing-pages",
+          "domain": "landing-pages",
+          "section": 0
+        },
+        {
+          "id": "f4cbc2b893ed2250e6331bc1",
+          "title": "Above-the-fold hero formula for landing pages",
+          "summary": "A six-element hero section (benefit headline, USP sub-headline, two social proofs, CTA, risk reducers, complementary image) that captures the majority of visitors who never scroll.",
+          "use_when": "Building or redesigning the topmost section of a product, offer or lead-capture landing page for paid traffic.",
+          "steps": [
+            "Treat the above-the-fold area (visible without scrolling) as the make-or-break section: the source states a large share of users never scroll past it, so put 80–90% of early effort here.",
+            "Write one benefit-driven headline that answers 'why should I care?' and ties to the customer's dream outcome. Avoid stating who you are, what you do, jargon or vague phrasing.",
+            "Add a sub-headline that carries your USP — who you are and why you differ from competitors.",
+            "Include at least two forms of social proof above the fold (reviews, testimonials, featured-in) to build credibility and give a reason to scroll.",
+            "Place a clear, action-oriented CTA button that stands out visually.",
+            "Directly beneath the CTA, place FUD reducers (free trial, money-back guarantee, easy returns, warranty) to defuse online-purchase anxiety.",
+            "Add one image or video that complements the messaging and subtly communicates the offer.",
+            "Run A/B tests on the headline and on the FUD block separately — the source reports these two elements alone produced large lifts for agency clients, but treat those figures as case examples, not guaranteed results."
+          ],
+          "caveats": [
+            "Conversion lifts cited (e.g., 80% from headline alone, 40–60% from FUD testing) are the source's agency case-study examples, not universal benchmarks.",
+            "Apply to landing pages for a specific offer; top-of-funnel ad scaling belongs elsewhere."
+          ],
+          "source_id": "1ySsR0tETIT8KKiDM7lAz5TDI4ga4TATf",
+          "source_name": "I Studied 1000 Landing Pages, Here's What Works in 2025.docx",
+          "folder": "/07-LPG-landing-pages",
+          "domain": "landing-pages",
+          "section": 0
+        },
+        {
+          "id": "cb7820a5960b6a281e8be4fa",
+          "title": "Test the above-the-fold section first — it is the highest-leverage area",
+          "summary": "The top of the page is the only section 100% of visitors see and roughly 60% never scroll past it, so headline and hero image tests generate the largest gains.",
+          "use_when": "Choosing which page element to test next on a landing page, PDP, or homepage when you can only run one experiment.",
+          "steps": [
+            "Treat the above-the-fold area (headline and the image below it) as the default testing target, especially in early optimization stages. The source advises spending the vast majority of early effort there.",
+            "Test the headline first, then the hero image underneath it. The source's agency says nearly all of the biggest conversion jumps come from these two elements, with headline tests producing lifts in the 60–80% range and above-the-fold tests reported as high as 130% across both B2B and ecommerce clients.",
+            "Justify prioritization with two facts the source cites: 100% of visitors see the above-the-fold area, and statistically about 60% never scroll past it, so changes below the fold are only ever seen by a minority.",
+            "Keep one change per test so you can attribute the lift to the headline or the image rather than a combined redesign.",
+            "Once the above-the-fold is strong, move budget and test slots to lower sections such as trust elements or product-detail modules."
+          ],
+          "caveats": [
+            "The 60% no-scroll figure and the percentage lifts are source-reported approximations and case examples, not universal benchmarks.",
+            "Some product categories need scroll depth for considered purchases; test whether adding above-the-fold information changes scroll behavior."
+          ],
+          "source_id": "1wWvb2WrLdriUbuhWRXaiz1v2V3urHS7r",
+          "source_name": "Alex Hormozi's Advice on Landing Pages.docx",
+          "folder": "/07-LPG-landing-pages",
+          "domain": "landing-pages",
+          "section": 0
+        }
+      ],
+      "candidate_scores": [
+        {
+          "card_id": "59be84f0758c5860c10e1ca6",
+          "score": 24.257604
+        },
+        {
+          "card_id": "f4cbc2b893ed2250e6331bc1",
+          "score": 24.198402
+        },
+        {
+          "card_id": "cb7820a5960b6a281e8be4fa",
+          "score": 23.335117
+        }
+      ],
+      "applicability_checks": [
+        "Does this advice fit the product lifecycle, market, audience and requested deliverable?",
+        "Does it require proof, access, budget or assets the brand does not have?",
+        "Does it change a fixed price, offer, policy or other explicit constraint?",
+        "Are platform details or numerical claims current and substantiated?"
+      ],
+      "output_checks": [
+        "Deliver the specified artifact, not general advice about creating it.",
+        "Use supplied brand facts; label hypotheses and missing inputs separately.",
+        "Preserve relevant source conditions; do not copy another business’s proof or results.",
+        "Include an owner, measurement and decision rule when proposing a test.",
+        "Check the output against the requested constraints and owner feedback."
+      ],
+      "completion_rule": "Stop after the requested artifact passes factual and brief checks; allow at most two revision passes, then report the unresolved issue.",
+      "action_boundary": "Prepare recommendations/artifacts only. Publication, spend changes, customer contact and production modifications require separate task authorization."
+    },
+    {
+      "id": "landing-pages.select-page-format",
+      "title": "Choose an appropriate landing-page format",
+      "query": "advertorial buyer guide awareness demonstration proof",
+      "steps": [
+        "Assess how much explanation the product and audience need",
+        "Compare direct PDP, guide and advertorial approaches",
+        "Define a test preserving offer and attribution consistency"
+      ],
+      "deliverable": "Page-format decision and wireframe outline",
+      "status": "draft",
+      "steps_origin": "authored orchestration draft",
+      "retrieval": {
+        "primary_domain": "landing-pages",
+        "related_domains": [
+          "avatars",
+          "ad-copy-deployment",
+          "offers",
+          "testing"
+        ],
+        "query": "advertorial buyer guide awareness demonstration proof",
+        "selected_card_ids": [
+          "d235019925fc049ac7c56338",
+          "68ab05281912cda9fb4a6c19",
+          "1bc5a164d45765175642fd25"
+        ],
+        "mixed_candidate_ids": [
+          "8004c3204936fdf92a1fc4e1",
+          "cb1e0f63e55e5b76dea610b0",
+          "390171c535c9ceaa4a976d88"
+        ],
+        "fallback": "Search primary and related domains using the task and actual constraints; do not silently switch to a different workflow.",
+        "selection_status": "candidate-support-needs-applicability-review"
+      },
+      "supporting_cards": [
+        {
+          "id": "d235019925fc049ac7c56338",
+          "title": "Pick the Awareness Stage, Then Choose the Headline Type",
+          "summary": "Match your headline to what the reader already knows: symptom-first for unaware buyers, contrarian category-claim for aware buyers.",
+          "use_when": "You're choosing between a problem-led and a contrarian headline on a PDP, advertorial or landing page.",
+          "steps": [
+            "For unaware audiences: use a symptom or consequence headline that presumes nothing about your category, then teach. Clemens used 'digestive health' framing in early probiotic ads.",
+            "For aware audiences: use a pattern-interrupt that contradicts a belief they already hold — 'throw your probiotics in the trash' — and deliver the counter-explanation on the page (not enough strains, prebiotics matter, etc.).",
+            "The contrarian headline only converts if the reader has a prior belief to disrupt; on a clueless audience it reads as nonsense.",
+            "Keep the proof and dream elements of the seven hijacks after the headline: the page still needs demonstration, believable proof and a vivid outcome."
+          ],
+          "caveats": [
+            "Clemens' examples are his own campaigns; timing and performance aren't transferable as benchmarks.",
+            "Contrarian claims may be scrutinised by ad platforms and regulators — keep them defensible."
+          ],
+          "source_id": "1YdWw5dRSwVn5nmiDPn1CylWCT1kyn5Pp",
+          "source_name": "Psychological Tricks I Used To Sell $1 Billion in Products Online - Craig Clemens.docx",
+          "folder": "/07-LPG-landing-pages",
+          "domain": "landing-pages",
+          "section": 2
+        },
+        {
+          "id": "68ab05281912cda9fb4a6c19",
+          "title": "Six Advertorial Formats and the Obstacle Each Solves",
+          "summary": "Map each of the source's six advertorial formats to the specific buyer obstacle it is designed to overcome.",
+          "use_when": "Selecting which advertorial angle to write when cold-traffic conversion is blocked by a known objection.",
+          "steps": [
+            "Storytelling: emotional, identity-driven narrative (e.g. a 72-year-old grandmother's foot-pain fix) that introduces a unique mechanism — use for cold, unaware traffic with emotional problems and identity framing.",
+            "Authority Expert: a real or perceived expert (dermatologist, veterinarian, doctor) gives the reader 'permission' to buy — strong in health, beauty, pain relief and pet niches.",
+            "Buyer's Guide / comparison: a 'Top 5' style listicle that names and discredits real competitors before crowning the featured product.",
+            "Beauty Review / Scandal-Whistleblower: positions a small lab against a corrupt industry (the example cites a $511B beauty industry) to tap distrust of big corporations.",
+            "Case Study: documents a problem, the failure of standard solutions one by one (e.g. discrediting each prescription then surgery), and the product's eventual success.",
+            "Listicles / 'reasons why': a numbered list of reasons to choose the product, handling objections such as time cost alongside comparisons.",
+            "Match the format to the obstacle: low trust → story plus early proof; need for permission → expert; too many options → comparison; skepticism/'seen it all' → buyer's guide; 'will this work for me?' → case study or targeted objection handling."
+          ],
+          "caveats": [
+            "The presenter admits some examples use AI-generated or possibly non-existent 'doctors'; he says he does not recommend fake doctors.",
+            "Format effectiveness varies by niche and awareness level — treat the mapping as a starting hypothesis to test."
+          ],
+          "source_id": "1dEG-JJk9f29llcfvL8OUhgMDVXBkLsJ2",
+          "source_name": "$100 Million Advertorial Formula.docx",
+          "folder": "/07-LPG-landing-pages",
+          "domain": "landing-pages",
+          "section": 0
+        },
+        {
+          "id": "1bc5a164d45765175642fd25",
+          "title": "Test multiple advertorial variants instead of trusting one draft",
+          "summary": "Treat the advertorial as a hypothesis: write variations and expect only some to win, guided by the awareness portfolio.",
+          "use_when": "Moving from a single advertorial draft to a testing plan for a new product launch.",
+          "steps": [
+            "Generate several advertorials spanning archetypes (warning, breaking news, origin) and awareness levels.",
+            "Distribute them per your awareness portfolio (e.g., 30% unaware, 30% problem-aware, rest solution/product/most-aware).",
+            "Run them and let data decide which angle wins, not internal preference.",
+            "Iterate the winning angle by tightening headline, subheads and CTA placement."
+          ],
+          "caveats": [
+            "The presenter explicitly says he doesn't know for certain any angle will work — treat all as hypotheses.",
+            "Don't change too many variables between variants if you want to learn which element drove performance."
+          ],
+          "source_id": "1qs7a4n0LWmVzRMrV9Sg9teMRRafZUKVg",
+          "source_name": "The Most Valuable 60 Minutes on Advertorials You'll Ever Watch.docx",
+          "folder": "/07-LPG-landing-pages",
+          "domain": "landing-pages",
+          "section": 2
+        }
+      ],
+      "candidate_scores": [
+        {
+          "card_id": "d235019925fc049ac7c56338",
+          "score": 19.801646
+        },
+        {
+          "card_id": "68ab05281912cda9fb4a6c19",
+          "score": 19.225971
+        },
+        {
+          "card_id": "1bc5a164d45765175642fd25",
+          "score": 18.996073
+        }
+      ],
+      "applicability_checks": [
+        "Does this advice fit the product lifecycle, market, audience and requested deliverable?",
+        "Does it require proof, access, budget or assets the brand does not have?",
+        "Does it change a fixed price, offer, policy or other explicit constraint?",
+        "Are platform details or numerical claims current and substantiated?"
+      ],
+      "output_checks": [
+        "Deliver the specified artifact, not general advice about creating it.",
+        "Use supplied brand facts; label hypotheses and missing inputs separately.",
+        "Preserve relevant source conditions; do not copy another business’s proof or results.",
+        "Include an owner, measurement and decision rule when proposing a test.",
+        "Check the output against the requested constraints and owner feedback."
+      ],
+      "completion_rule": "Stop after the requested artifact passes factual and brief checks; allow at most two revision passes, then report the unresolved issue.",
+      "action_boundary": "Prepare recommendations/artifacts only. Publication, spend changes, customer contact and production modifications require separate task authorization."
+    }
+  ],
+  "foundation_candidates": [
+    {
+      "id": "12c3e5742646afd432cd5a5c",
+      "title": "Build a physical-product hero around outcome, mechanism, proof, and reassurance",
+      "summary": "A product hero should pair a clear customer outcome with an honest explanation of how the item delivers it, a direct purchase action, relevant proof, and friction reducers.",
+      "use_when": "Designing the above-the-fold portion of a PDP or dedicated single-product campaign page for cold traffic.",
+      "steps": [
+        "Write a benefit-led headline that identifies the shopper outcome or use-case instead of describing the company. Keep claims specific and supportable.",
+        "Use a subheadline to explain the mechanism: what the product is, how it works, why its materials or design matter, or what makes the bundle useful. The subheadline should add information rather than echo the headline.",
+        "Use an action-oriented purchase control such as “Choose your size,” “Build your bundle,” or “Add [product] to cart,” rather than a vague CTA.",
+        "Position genuine friction reducers close to the purchase action: shipping terms, return window, warranty, secure payment, compatibility guidance, or a legitimate guarantee.",
+        "Use product imagery or video that demonstrates the claimed use, outcome, scale, or contents—not decorative imagery that fails to clarify the offer.",
+        "Add relevant, authentic proof such as verified customer feedback, substantiated editorial coverage, or review ratings. If using publication logos, pair them with a real attributable statement when permission and context allow.",
+        "If multiple proof types appear, ensure each resolves a different concern rather than duplicating decorative badges."
+      ],
+      "caveats": [
+        "The source’s preference for stacking two forms of social proof reflects its agency experience, not a guaranteed lift.",
+        "Do not imply endorsements, fabricate reviews, or present generic logos as evidence of product performance."
+      ],
+      "source_id": "1BKyuJNgb-FG9F3s-M0Yw4diFvpQ8sNXN",
+      "source_name": "I Studied 1,000 Landing Pages, This Stops Them Making Money.docx",
+      "folder": "/07-LPG-landing-pages",
+      "domain": "landing-pages",
+      "section": 0
+    },
+    {
+      "id": "0c22726bae24b46f8c967986",
+      "title": "Traffic-Aware Above-the-Fold Layouts by Awareness Stage",
+      "summary": "Match the first screen to how aware the visitor is: educate for interruption traffic, lead with proof and a form for high-intent search.",
+      "use_when": "When designing the top of a campaign landing page or PDP for a specific traffic source such as Meta, Google, or organic search.",
+      "steps": [
+        "For social or interruption-based ad traffic, assume the visitor is unaware or problem-aware. Lead with the problem and the promise, then build trust and rapport quickly before asking for anything.",
+        "For search and SEO traffic, assume solution-aware or ready-to-buy intent. The source's own agency page places the form immediately above the fold for instant capture, then uses the rest of the page to reinforce credibility and highlight benefits.",
+        "Keep the rest of the page consistent with the ad: mismatched hero imagery and no value proposition wastes the click.",
+        "Preserve message continuity between the ad creative and the page headline so the visitor recognizes they landed in the right place.",
+        "Test the choice: run the same offer with an educate-first top versus a direct-form top for search traffic and read the difference in form starts and completions."
+      ],
+      "caveats": [
+        "The source's own site is cited as the example of the search-traffic pattern; this is not an independent benchmark.",
+        "Awareness assumptions should be validated against funnel data rather than assumed."
+      ],
+      "source_id": "191mnuT42e0DvuFHFYJfj_Aft1qFNdE-z",
+      "source_name": "The Only Landing Page Guide You'll Ever Need.docx",
+      "folder": "/07-LPG-landing-pages",
+      "domain": "landing-pages",
+      "section": 1
+    },
+    {
+      "id": "af3eaeba1a44d8149e6d521d",
+      "title": "Match the Product-Page Hero to Traffic Awareness",
+      "summary": "Lead with product selection for high-intent visitors, but lead with the problem, mechanism, and product relevance when campaign traffic is less aware.",
+      "use_when": "Choosing the above-the-fold structure for a PDP, collection landing page, or advertorial-to-product journey based on acquisition source and shopper intent.",
+      "steps": [
+        "Segment the intended traffic by awareness. Visitors arriving from branded search, a category search, or a direct product query are typically closer to choosing a solution; show the product, key benefit, price or bundle options, CTA, and trust cues immediately.",
+        "For social-ad or other interruption traffic, do not assume visitors understand the product category or why it matters. Start with a concise problem or desired outcome, explain the product’s relevant mechanism or use case honestly, then introduce selection options.",
+        "For high-intent product traffic, make the hero conversion unit dense but readable: benefit-led headline, product imagery, three to four expectation-setting bullets, bundle or variant choice, a prominent add-to-cart CTA, and risk-reduction or proof nearby.",
+        "For lower-awareness traffic, put education before demanding a choice. Use real customer proof, factual product explanation, and a clear bridge to the PDP or product selector.",
+        "Review results by traffic source rather than applying one hero to every visitor."
+      ],
+      "caveats": [
+        "Awareness is a planning heuristic, not a substitute for analytics. Validate with product-page engagement, add-to-cart rate, and purchase conversion by source.",
+        "Education must not make unsupported scientific, health, or root-cause claims."
+      ],
+      "source_id": "191mnuT42e0DvuFHFYJfj_Aft1qFNdE-z",
+      "source_name": "The Only Landing Page Guide You'll Ever Need.docx",
+      "folder": "/07-LPG-landing-pages",
+      "domain": "landing-pages",
+      "section": 2
+    }
+  ],
+  "foundation_note": "Inferred principle labels do not establish universal applicability. Retain source conditions; empty means no matched labelled principle, not absence of foundational knowledge."
+}
