@@ -158,6 +158,7 @@ function wire() {
   $('dlReport').addEventListener('click', downloadReport);
   for (const id of ['agency', 'client', 'note']) $(id).addEventListener('input', renderReport);
   for (const id of ['sort', 'verdict', 'minSpend', 'minRoas', 'campaign', 'adStatus']) $(id).addEventListener('input', renderGrid);
+  $('campStatus').addEventListener('input', () => { fillFilters(); renderGrid(); });
   $('format').addEventListener('change', () => { fillFilters(); renderGrid(); remember(); });
   $('rankSet').addEventListener('change', () => {
     // The ROAS list is mostly used to find image ads to learn from, so start it on single images.
@@ -457,6 +458,9 @@ const collection = () => {
   return (set !== 'spend' ? VIEW.collections[`${set}:${f}`] || VIEW.collections[`${set}:all`] : VIEW.collections[f]) || VIEW.collections.all;
 };
 const items = () => collection().ad_ids.map((id) => VIEW.ads[id]);
+// Campaign on or paused. The data has each ad's effective status; CAMPAIGN_PAUSED means its campaign is off.
+// Any other status means the campaign itself is on (the ad or its ad set may still be paused).
+const campState = (ad) => (ad.effective_status === 'CAMPAIGN_PAUSED' ? 'paused' : 'on');
 function fillFilters() {
   const all = items();
   const keep = (sel, values) => {
@@ -464,14 +468,15 @@ function fillFilters() {
     sel.innerHTML = '<option value="">All</option>' + values.map(([v, l]) => `<option value="${esc(v)}">${esc(l)}</option>`).join('');
     sel.value = values.some(([v]) => v === prev) ? prev : '';
   };
-  keep($('campaign'), [...new Map(all.map((ad) => [ad.campaign_id, ad.campaign_name]))].sort((a, b) => String(a[1]).localeCompare(String(b[1]))));
+  const cs = $('campStatus').value;
+  keep($('campaign'), [...new Map(all.filter((ad) => !cs || campState(ad) === cs).map((ad) => [ad.campaign_id, `${ad.campaign_name}${campState(ad) === 'paused' ? ' (paused)' : ''}`]))].sort((a, b) => String(a[1]).localeCompare(String(b[1]))));
   keep($('adStatus'), [...new Set(all.map((ad) => ad.effective_status))].sort().map((s) => [s, statusLabel(s)]));
 }
 function renderGrid() {
   if (!VIEW) return;
   const col = collection(), fmtKey = $('format').value, sort = $('sort').value;
   const minSpend = parseFloat($('minSpend').value) || 0, minRoas = parseFloat($('minRoas').value) || 0;
-  const camp = $('campaign').value, status = $('adStatus').value, verdict = $('verdict').value;
+  const camp = $('campaign').value, status = $('adStatus').value, verdict = $('verdict').value, campSt = $('campStatus').value;
   let hidden = 0;
   const list = items().filter((ad) => {
     const m = ad.view.metrics;
@@ -479,6 +484,7 @@ function renderGrid() {
     if (minRoas > 0 && m.roas === null) { hidden += 1; return false; }
     if (minRoas > 0 && m.roas < minRoas) return false;
     if (camp && ad.campaign_id !== camp) return false;
+    if (campSt && campState(ad) !== campSt) return false;
     if (status && ad.effective_status !== status) return false;
     if (verdict && ad.view.verdict.code !== verdict) return false;
     return true;
