@@ -22,7 +22,7 @@ Two tracks share this repo.
 - On 24 Sep 2026 Kevin split folder 11 (ad copy and deployment) by document: 10 Meta, TikTok and account-audit documents moved to a new Drive folder `24-DEP-ad-deployment`, 4 Google Ads documents moved to `12-GAD`, and 11 keeps copywriting only. cards.json still carries the old folder; `data/library-v3/folder-overrides.json` maps the 14 source ids to their new folder and domain. Apply it when reading folders. Card ids do not change with folder.
 - Search: `scripts/search_knowledge.py` (engine `intelligence/knowledge_search.py`). Keyword (SQLite FTS, `search.sqlite`) plus semantic (`vectors.json`, text-embedding-3-small, 512 dims), labels in `metadata.json`. Defaults: 8,000 tokens and 16 cards for focused tasks. Use `--keyword-only` to avoid an embedding call.
 - Creative routing: `intelligence/creative_retrieval.py`.
-- Playbooks: `playbooks/v1` has 23 domains x 3 workflows = 69 drafts. For ad copy, `playbooks/ad-copy-v1.2` is the strongest tested version; v1.3 and v1.4 did not replace it. Do not overwrite manual versions with `scripts/build_playbooks.py`.
+- Playbooks: `playbooks/v2/<folder>/PLAYBOOK.md` (25 folder playbooks, about 690k words, built 24 Sep 2026) are frozen reference and are not loaded as agent instructions; see the idea bank below. `playbooks/v1` has 23 domains x 3 workflows = 69 older drafts. For ad copy, `playbooks/ad-copy-v1.2` is the strongest tested version; v1.3 and v1.4 did not replace it. Do not overwrite manual versions with `scripts/build_playbooks.py`.
 - Benchmarks (fictional TrailFold, Peach Bucket, ad-copy rounds) gave mixed results. Retrieval is not a proven win, and AI reviewer scores were unstable. Owner preference and editing effort are the better signal.
 
 **2. Meta gallery for Gehna (built with Claude)**
@@ -32,7 +32,13 @@ Two tracks share this repo.
 - Data in `data/meta-gallery/`: `cache/gallery.json` (1 year of Meta), `sales.json` (monthly plus `daily` from 1 Aug 2026), `competitors.json` and `comp_media.json`, `brand.json`. Meta and Metabase were refreshed to 23 Sep 2026 on 24 Sep.
 - Refresh: `python -m meta_gallery.refresh meta ...` (merges a read-only MCP re-pull into a new raw capture) and `python -m meta_gallery.refresh sales FILE` (applies a pull made by `meta_gallery/metabase_pull.js` in a signed-in Metabase tab). Steps are in `META_GALLERY_STATUS.md`, Update 9.
 
-Not built yet: a general brand brain, a general reference library, an experiment registry, hosting with auth, and autonomous execution.
+**3. Idea bank (built with Claude, 24 Sep 2026)**
+- `ideas/v1/<folder>.json`: 4,650 structured, testable ideas across the 25 domains, extracted from the v2 playbooks (pass 1) and the mini playbooks in `sources/` (pass 2). Schema in `ideas/schema.json`, taxonomy and metric vocabulary in `ideas/README.md`, counts in `ideas/v1/_INDEX.md`.
+- Decision: two blind tests showed the v2 playbooks do not improve agent output when loaded as instructions (`reviews/speed-test/`, `reviews/copy-test/`). The playbooks are now frozen reference. The idea bank is the intelligence layer: an agent filters it by the brand's bottleneck and store type, scores in code with brand data, ranks, and puts ideas in front of the founder before anything is executed.
+- Query: `python3 scripts/ideas.py --bottleneck site_speed --store custom_platform india_mobile --top 20`. Validate a file: `python3 scripts/validate_ideas.py ideas/v1/<folder>.json`. Index: `python3 scripts/idea_index.py`. Duplicates: `python3 scripts/idea_dupes.py`.
+- Ideas are brand-agnostic. Brand facts, results and founder decisions belong in the brand brain and the experiment registry, never in the bank.
+
+Not built yet: the brand brain and metric contract, the experiment registry, the diagnose-propose-approve-execute agent loop, hosting with auth, and autonomous execution.
 
 ## Rules
 
