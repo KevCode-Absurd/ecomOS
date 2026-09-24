@@ -92,7 +92,7 @@ MER = revenue / ad spend (a multiple; some compute spend / revenue as a percent)
 LTGP:CAC = gross profit per customer / CAC. Unrestricted windows (for example 6 years) lead to overspending on cash you may not see for 4 years. Measure 30-day and 90-day, and 365-day only when acquisition is aggressive. Bands in section 4. Below 1 is usually poor acquisition efficiency, not a strategy; the source says most brands it audits that lose on acquisition lack the retention to support it. Below 1 can also mean first-order GP is too thin (under about $70 GP on first order "is probably a problem"). Above 3 is also a mistake: you are under-using paid media. "If you think your retention is good, it's usually mediocre." [55599aea266f] [e8db824002f5]
 
 ### 2.27 Keep view-through conversions and existing customers out of reporting
-On Meta use 7-day click for optimisation and reporting. The source says 7-day click ROAS is "super correlated" with acquisition MER "in most businesses" because it drops view-through conversions. View-through: a user sees the ad, does not click, buys within 24 hours, and Meta claims it; many would have bought anyway. Existing customers are not very incremental; platforms "always want to spend here" and widen attribution windows because more attributed revenue means more spend. [de7656f527011]
+On Meta use 7-day click for optimisation and reporting. The source says 7-day click ROAS is "super correlated" with acquisition MER "in most businesses" because it drops view-through conversions. View-through: a user sees the ad, does not click, buys within 24 hours, and Meta claims it; many would have bought anyway. Existing customers are not very incremental; platforms "always want to spend here" and widen attribution windows because more attributed revenue means more spend. [de7656f52701]
 
 ### 2.28 Budget existing-customer ads from customer count x frequency x CPM, not a percent of spend
 Percent-of-budget framing breaks for big brands (a large nine-figure brand gets 80% of revenue from existing customers). Instead: how many existing customers, how many times a month to show them an ad, and the CPM for that segment. Result is usually far lower than teams assume. Formula and example in 3.8. [10c558b5c0d8]
@@ -196,7 +196,7 @@ Worked example in 7.1.
 4. Monthly spend = customers x frequency x CPM / 1,000. Example: 300,000 x 3 x $2.50 / 1,000 = $2,250. (The source and card drop the "/ 1,000" in words but their $2,250 result includes it.) The source says $2.50 is "super low"; real CPMs will be higher.
 5. Sanity check: the source says even big brands with millions of customers are usually fine at $10K, up to $30K to $40K a month at 3 to 6 frequency, and it has seen tiny businesses spend $40K a month on existing customers.
 6. Check 7-day frequency on Meta; above 8 means overspending (see 5.4).
-[10c558b5c0d8] [de7656f527011]
+[10c558b5c0d8] [de7656f52701]
 
 ### 3.9 Returning customer revenue forecast (cohort method)
 1. Build a table of new customers acquired each month back to your first data (example: from Jan 2021). `[needs brand data: monthly new-customer counts and repeat orders]`
@@ -267,9 +267,9 @@ Worked example in 7.1.
 | Thin first-order GP | Under about $70 is "probably a problem" | Paid acquisition at scale | Opinion | 55599aea266f, e8db824002f5 |
 | CAC payback for agencies | 3 to 6 months | Agency model; CPG, fashion, retail similar | Opinion | 285ed6bb4705 |
 | Competitor CAC in CPG | Up to $200 | Brands with high LTV | Example | 285ed6bb4705 |
-| Meta attribution setting | 7-day click, no view-through | Reporting and optimisation | Agency practice | de7656f527011 |
-| View-through window described | Buy within 24 hours of a view | Meta | Presenter's description `[web check: current Meta view-through window]` | de7656f527011 |
-| Existing-customer frequency ceiling | Under 8 over the last 7 days | Meta | Opinion (he also says "a month", see 9.5) | de7656f527011 |
+| Meta attribution setting | 7-day click, no view-through | Reporting and optimisation | Agency practice | de7656f52701 |
+| View-through window described | Buy within 24 hours of a view | Meta | Presenter's description `[web check: current Meta view-through window]` | de7656f52701 |
+| Existing-customer frequency ceiling | Under 8 over the last 7 days | Meta | Opinion (he also says "a month", see 9.5) | de7656f52701 |
 | Existing-customer frequency target | 3 to 6 a month | Budget formula | Opinion | 10c558b5c0d8 |
 | Existing-customer spend, large brands | About $10K, up to $30K to $40K a month | Millions of customers | Agency experience | 10c558b5c0d8 |
 | Incrementality testing needed | Top 20% of brands, over "$10M a month", US or multi-market or omnichannel | Source's heuristic | Opinion | d5c2a3d880d9 |
@@ -299,7 +299,7 @@ Check: gross revenue, refunds, discounts and shipping collected per month (Shopi
 Check: is it total spend / new customers from the store, or platform CPA? Is it paired with new-customer first-order GP, or blended AOV x blended margin? Good: store-based, new-customer only. Bad: platform CPA, per channel, blended AOV. Fix: 2.15 and 2.16. Requires clean new vs returning tagging `[needs brand data: new vs returning customer flag]`. [9a77dac5a3ba]
 
 ### 5.4 Is spend leaking to existing customers?
-Check on Meta: audience segment breakdown for existing customers' share of spend; frequency column over the last 7 days `[verify UI]`. Good: frequency under 8; existing-customer spend near the 3.8 formula. Bad: frequency over 8; tens of thousands a month on a small base. Fix: cap existing-customer spend with the formula; report on 7-day click. [de7656f527011] [10c558b5c0d8]
+Check on Meta: audience segment breakdown for existing customers' share of spend; frequency column over the last 7 days `[verify UI]`. Good: frequency under 8; existing-customer spend near the 3.8 formula. Bad: frequency over 8; tens of thousands a month on a small base. Fix: cap existing-customer spend with the formula; report on 7-day click. [de7656f52701] [10c558b5c0d8]
 
 ### 5.5 Is MER flattering paid media?
 Check: MER vs aMER in the same period. Bad: MER 2 while aMER 1.4 (source example), or aMER below break-even ROAS. Fix: manage to aMER and new customer profit contribution. [8aab49e8f65e]
@@ -329,7 +329,7 @@ Check: 30-day and 90-day LTGP:CAC on new customers. Below 1: fix acquisition eff
 
 - Shopify: gross-to-net revenue breakdown; inventory auto-ranking into grades (location uncertain) `[verify UI]`; average order value. [c9ccfa76430a] [69c220a278fc]
 - Xero and QuickBooks: usually show net or cash revenue only; bookkeeper can tag warehouse staff and build a custom P&L `[verify UI]`. [c9ccfa76430a] [7c524289c2d3]
-- Meta: maximize conversions (default, lowest CPA), maximize conversion value, Advantage+ scaling campaign, 7-day click attribution, view-through conversions, audience segment breakdown, frequency column `[verify UI]`. [3827dc99f5ed] [de7656f527011]
+- Meta: maximize conversions (default, lowest CPA), maximize conversion value, Advantage+ scaling campaign, 7-day click attribution, view-through conversions, audience segment breakdown, frequency column `[verify UI]`. [3827dc99f5ed] [de7656f52701]
 - Google and TikTok: maximize conversions named as the default bid strategy `[verify UI]`. [3827dc99f5ed]
 - Triple Whale: named as multi-touch attribution, bottom tier of the pyramid. [d5c2a3d880d9]
 - Klaviyo ("clavio"): retention tooling cost in the returning-customer example. [30261689958c]
@@ -401,7 +401,7 @@ $8M/year vs $300M/year fashion ad accounts: the larger one has better CPM, CTR, 
 16. Comparing ROAS across platforms; cutting top-of-funnel channels (TikTok) because their ROAS is low. [08a2587ba438] [d5c2a3d880d9]
 17. Moving budget to the highest-ROAS bottom-of-funnel line and then wondering why growth stops. [bc14184eea60]
 18. Using blended MER to judge paid media. [8aab49e8f65e]
-19. Counting view-through conversions and over-serving existing customers (frequency over 8). [de7656f527011]
+19. Counting view-through conversions and over-serving existing customers (frequency over 8). [de7656f52701]
 20. Allocating existing-customer budget as a percent of spend; tiny brands spending $40K a month on existing customers. [10c558b5c0d8]
 21. DIY geo tests in a spreadsheet; they "pretty much always" show no incrementality. [da12ab245d95] [d5c2a3d880d9]
 22. Spreading spend across tertiary channels before the 3 primaries hit the profit frontier. [c60eaf1ca845]
@@ -426,6 +426,7 @@ $8M/year vs $300M/year fashion ad accounts: the larger one has better CPM, CTR, 
 - Existing-customer formula needs "/ 1,000" for CPM; the $2,250 result is right. Card 10c558b5c0d8 writes the formula without it.
 - Brand example: $300M vs $8M is about 37.5x, not the "20x the volume" he says.
 - Gross margin example: 24% on $100 (source) vs 26.4% on $91 (card) depends on whether tax is removed from revenue or counted as a cost. Pick one convention and state it.
+
 ### 9.2 Card errors and additions to watch in the merge
 - Card 8aab49e8f65e says the 1.4 aMER comes "from $100 revenue and $50 spend". In the source, $100/$50 is the blended MER of 2; the 1.4 aMER is a hypothetical with no new-customer revenue stated.
 - Card ac6ec12672a6 reads "$15 to $27" as a range; the source means +$15, to $27.
@@ -447,7 +448,7 @@ Earlier the source recommends 90 or 180-day LTV; later it measures LTGP:CAC at 3
 ### 9.6 Scale heuristic that looks off
 "The 20% that's doing over $10 million a month" for incrementality testing may mean $10M a year. Keep as stated and flag `[web check: industry guidance on minimum spend for geo-lift]`.
 ### 9.7 Conflicts with common ecommerce advice
-- Frequency cap of 8 over 7 days for existing customers, the 1:3 LTGP:CAC "above 3 is a mistake" band, and the view that ROAS is only a within-platform metric are strong single-presenter opinions. Common advice often treats LTV:CAC of 3 or more as the healthy target; this source calls 2 to 3 optimal and above 3 under-investment.
+- The frequency cap of 8 over 7 days for existing customers, the "above 3 is a mistake" LTGP:CAC band, and the view that ROAS is only a within-platform metric are strong single-presenter opinions. Common advice often treats LTV:CAC of 3 or more as the healthy target; this source calls 2 to 3 optimal and above 3 under-investment.
 - The CFO section recommends raising marketing spend during a cash squeeze. That runs against common cash-preservation advice; it only holds when media drives revenue and C/D stock can be cleared at or near break-even.
 - "Can't triple an ecom business in a year" is presented as a rule; it is his view without data.
 - Keystone called the worst method: many retail guides still teach keystone as a floor.

@@ -33,7 +33,7 @@ It gives a finance-minded operator a full planning system for a DTC brand: a 3-m
 18. **Amazon ads and Google branded search are a defensive tax,** not demand creation. Low incrementality until competitors bid on your terms; then a rising cost that erodes margin in categories with no moat. [cb05725b572a]
 19. **Four-quarter accounting: every P&L is 4 buckets** (cost of delivery, CAC, OPEX, profit). Find the bucket that eats profit and fix that, instead of reading line items. [9a74113cfe78]
 20. **CAC as a percent of revenue depends on LTV and stage.** High-LTV brands that hold new-customer acquisition flat see marketing % fall and margin grow over time as repeat revenue builds (source's "Mona Lisa of e-commerce" chart). Low-LTV hard goods stay near 40 to 50% because every month needs new buyers. [ea7eb29c3679]
-21. **Ecommerce is a low-OPEX game.** The OPEX standard moved from 25% to 20% to 15% to 10 to 12% now. Fixed OPEX dollars per day should fall every year, even while scaling, because AI raises output per person. Whoever can pay the most for a customer wins. [434847dcd5bb] [798f1af7e8667]
+21. **Ecommerce is a low-OPEX game.** The OPEX standard moved from 25% to 20% to 15% to 10 to 12% now. Fixed OPEX dollars per day should fall every year, even while scaling, because AI raises output per person. Whoever can pay the most for a customer wins. [434847dcd5bb] [798f1af7e866]
 22. **P&L and cash are different games; trade margin for cash on purpose.** Growing the bank account is the top priority, most of all when M&A and funding are hard. Liquidation, discounts and paying more for longer terms all hurt the P&L and help cash. [20d195846808] [f2fc5286cc97] [c73b11cb714e]
 23. **Every PO should maximise the marginal value of that batch.** Do not pay high CAC to sell stock that is about to run out. Do not sit on stock with no plan to sell it. [61a1eefb7db0] [c73b11cb714e]
 24. **Constraint is a superpower.** Set a CAC or ROAS line from unit economics and payback, and do not move it. The team then solves with story, peaks, creative, product and channels. Evidence: a 2021 partner analysis found 60% of media dollars "never paid back over any period of time". The most common mistake is "capitulation to efficiency of acquisition". Opinion from operating experience; the line must come from real marginal economics. [75cf518af8d3] [09e7f0d32ea7] [35efd9091446]
@@ -43,10 +43,14 @@ It gives a finance-minded operator a full planning system for a DTC brand: a 3-m
 28. **You die by bad inventory buys; lower the cost of each bet.** Return on invested capital has 2 parts: potential return and cost. Cutting the cost of testing raises ROIC as much as raising the upside. [135d3773766f] [032c38a487a4]
 29. **Story, not iteration.** Hook and body iteration finds a local maximum: small changes, small outcomes. A large share of creative effort should go into new stories and new cohorts. Strong opinion; iteration still has a place. [ab2ae93189de] [e6b2cd97910f]
 30. **Create for your audience's audience.** Give buyers something they are proud to share about themselves ("make them a hero in their world"). [e6b2cd97910f]
-31. **Transaction moves to the point of discovery.** Be where people discover (TikTok Shop, Amazon, retail, LLMs). Source calls it "omnipresent commerce". [ede47bc222466] [1e9a211ffece]
+31. **Transaction moves to the point of discovery.** Be where people discover (TikTok Shop, Amazon, retail, LLMs). Source calls it "omnipresent commerce". [ede47bc22246] [1e9a211ffece]
 32. **Format is not the question; answering the buyer's questions is.** List everything a buyer must know to purchase. Simple product: a static image can work, the page does the rest. Complex product: long video answers the questions, then send to checkout. If static for a complex product, the landing page "better be freaking awesome". [fd8e8755b2a2]
 33. **Novelty beats copying formats.** Source leans on Seth Godin's "purple cow": replicating a format that works lowers its value. [a66b37722a78] [3a3fcb1ef07a]
 34. **Incentives drive behaviour; align dashboards with pay and ownership.** [83186e2addd5]
+35. **Influencers supply 3 different things: trust, distribution, or content assets.** Know which you need. A doctor may lend trust with no audience; a big account may lend reach; a creator may supply ads for your account. Best case is all 3. Source says the 2 greatest purchase influences "for all time" are a recommendation from someone you trust, and price. Pick the voice your buyer trusts (a seven-figure ecommerce owner does not care about a famous investor). No CPM or conversion numbers given. [db90865bba0f]
+36. **Write good-role and bad-role documents.** For each job, list what a good holder does and what a bad one does (from an a16z-style "good product manager, bad product manager" document; attribution uncertain). Host: print it and keep it by the desk. [2a77bf2d49f9]
+37. **Creative is judged by sales, not art** (Ogilvy: "It's only creative if it sells"). [3a3fcb1ef07a]
+38. **AI output makes team expectations hard to set.** Guest cannot say whether a team should make 5, 5,000 or 50,000 creatives. Set expectations by outcome, not volume, and revisit often. [d89417c1f558]
 
 ## 3. Procedures
 
@@ -161,10 +165,16 @@ Source gives no test length, no DMA count and no minimum spend. `[web check: cur
 6. Optional: time CTV to the moment when broad distribution exists. [0f4c3e0ac222]
 
 ### Procedure 14. Staffing by the 12% rule
-1. List monthly revenue for the year; take the lowest month. [798f1af7e8667]
-2. Full-time payroll baseline = 12% of that month. Worked examples: lowest month $600,000 -> $72,000 a month; host's example $500,000 -> $60,000. [798f1af7e8667]
-3. Cover the rest with flex labour: agencies, freelancers, seasonal hires, offshore (Philippines, Argentina, Brazil), AI. [798f1af7e8667]
+1. List monthly revenue for the year; take the lowest month. [798f1af7e866]
+2. Full-time payroll baseline = 12% of that month. Worked examples: lowest month $600,000 -> $72,000 a month; host's example $500,000 -> $60,000. [798f1af7e866]
+3. Cover the rest with flex labour: agencies, freelancers, seasonal hires, offshore (Philippines, Argentina, Brazil), AI. [798f1af7e866]
 Source does not address legal, notice or culture costs. `[needs brand data: monthly revenue and payroll]`
+
+### Procedure 15. Test AI creative workflows (source's suggestion to test, not a proven result)
+1. Build 3 workflows for the same product and goal: humans alone; humans briefing AI; AI alone against a set outcome. [f3146559c16b] [edca726509d9]
+2. Run the outputs as live ads with the same optimisation event and budget rules; let results pick. [f3146559c16b]
+3. Keep a human check on brand, legal and product-accuracy claims before launch. [f3146559c16b]
+Basis: a study the guest heard on a podcast (host likely Eric Seufert) where AI alone beat both human workflows. Cited second-hand, no numbers. `[web check: the study and its design]`
 
 ## 4. Rules, thresholds and numbers
 
@@ -196,8 +206,8 @@ Source does not address legal, notice or culture costs. `[needs brand data: mont
 | Marketing % of revenue | 40% to 50% | Low-LTV hard goods | Observation | ea7eb29c3679 |
 | Marketing % of revenue | About 50% | Ridge (high GM, low OPEX) | Example | ea7eb29c3679 |
 | Marketing % of revenue | About 10% | Legacy retailers with a large base | Example | ea7eb29c3679 |
-| Payroll baseline | 12% of the lowest revenue month | Seasonal ecommerce | Heuristic | 798f1af7e8667 |
-| Offshore cost (host) | About 20% of US cost | Host claim | Opinion | 798f1af7e8667 |
+| Payroll baseline | 12% of the lowest revenue month | Seasonal ecommerce | Heuristic | 798f1af7e866 |
+| Offshore cost (host) | About 20% of US cost | Host claim | Opinion | 798f1af7e866 |
 | Stock-out rule | 30 days stock vs 80-day reorder -> raise ROAS target or pause | Best SKUs | Example | 61a1eefb7db0 |
 | Liquidation efficiency | 1.0 or 0.8 ROAS vs 2.0 target on core stock | Aged stock | Example | f2fc5286cc97 |
 | Aged stock | 1,000 days outstanding = problem | Any | Example | f2fc5286cc97 |
@@ -250,7 +260,7 @@ Source does not address legal, notice or culture costs. `[needs brand data: mont
 | Did a winning ad die from a stock-out? | Compare ad CVR drop with size or colour sell-out dates | Stock steady | CVR fell when core size or colour sold out | Relaunch spend on restock; fix price to demand per SKU | 224e4db9b5c9 |
 | Is inventory decaying? | A to D grades; days outstanding vs lead time | Near lead time | Hundreds or 1,000 days; no ads or emails planned | Liquidation funnel, list email, liquidator | f2fc5286cc97, c73b11cb714e |
 | Is the PO backed by a demand plan? | Units by channel and media dollars for the PO | Written, with error bars | Revenue target with no media estimate | Write it before placing the PO | 20338553ad10 |
-| Is payroll sized to the low month? | Monthly FTE payroll / lowest month revenue | About 12% | Well above; losses in low months | Move the excess to flex labour | 798f1af7e8667 |
+| Is payroll sized to the low month? | Monthly FTE payroll / lowest month revenue | About 12% | Well above; losses in low months | Move the excess to flex labour | 798f1af7e866 |
 | Is the category saturated? | Search the core term on Google and Amazon | Few rivals | Many, including top global brands | Push category expansion over ad efficiency | 5e8fb784d881 |
 | Is the team capitulating? | Track how often CAC or ROAS targets were lowered | Target stable | Lowered each quarter | Hold line; change approach or people | 09e7f0d32ea7 |
 
@@ -322,7 +332,7 @@ All are the source's examples, not promises.
 19. Lowering the CAC or ROAS line whenever the team says it cannot be hit; blaming the macro. [09e7f0d32ea7]
 20. Yelling at the Meta team for efficiency in a saturated category. [5e8fb784d881]
 21. Hook-only iteration as the whole creative system; drilling one winning pocket "into the ground". [ab2ae93189de]
-22. Full-time payroll sized to peak months, accepting losses in low months. [798f1af7e8667]
+22. Full-time payroll sized to peak months, accepting losses in low months. [798f1af7e866]
 23. Long-payback investments when cash is tight. [8d574ab5e9da]
 24. Copying ad formats that already work; fast followers get lower yield. [a66b37722a78]
 25. Making new products because they are "cool", not to solve a margin, volume or cash problem. [9d3c956f2cd5]
@@ -337,7 +347,7 @@ All are the source's examples, not promises.
 - **Opinions stated as rules:** 4 peaks a year, under $10M stay single-channel, TikTok ads to .com fail, Amazon ads are a tax, iteration is "the worst creative strategy", "never turn off an ad", AI-only creative beats humans, OPEX heading to 3% (host), service businesses beat ecommerce, "profit engineer" replaces 4 roles. The source itself says it is "not sure" AI is better at creative. [ab2ae93189de] [edca726509d9] [e9c3ba2a4c3e] [a66b37722a78]
 - **Disagreement kept:** guest says the most valuable skill is linking the goal to authority over the outcome; host says it is creative judgement. [e9c3ba2a4c3e]
 - **"Never turn off an ad"** is a one-line quick answer with no reasoning, and it conflicts with the source's own advice to pause ads on stock-outs and cut spend past the marginal frontier. [a66b37722a78] [61a1eefb7db0]
-- **Staffing heuristics** (12% of lowest month; host's "fire 20% to 40%"; "market replacement cost") skip legal, notice, quality and culture costs. Guest frames it as flex staffing. Treat as a planning lens. [798f1af7e8667]
+- **Staffing heuristics** (12% of lowest month; host's "fire 20% to 40%"; "market replacement cost") skip legal, notice, quality and culture costs. Guest frames it as flex staffing. Treat as a planning lens. [798f1af7e866]
 - **Missing how:** no regression spec or error bars for the AMER curve; no event-effect maths; no 13-week cash template; no day cut-offs for A to D inventory grades; no numeric cut-offs for the 4 SKU types; no geo test size, length or spend; no rule for how deep to discount by days outstanding; no marginal-frontier calculation.
 - **Portfolio numbers are CTC's**, mostly US brands on Meta in 2025 to 2026: 1.7 median ROAS, 20/80 Meta Amazon split, YouTube parity, AppLovin 3% to 5% and 100%+ incrementality, 80% return within 6 to 8 months. `[needs brand data: own values for each]`
 - **Sponsor reads** (Beehiiv, Universal Ads) and the host's paid "LLM" consultant are promotions, not evidence.
@@ -375,7 +385,7 @@ All are the source's examples, not promises.
 - `0f4c3e0ac222` CTV as a Complement to Broad Distribution and Moments
 - `20d195846808` Four Quarter Accounting vs Cash Flow: Tradeoffs Are Purposeful
 - `75cf518af8d3` Constraint as a Growth Superpower
-- `434847dcd5bb` Ecommerce Is a Low-Opex Model — Track Revenue per Employee
+- `434847dcd5bb` Ecommerce Is a Low-Opex Model: Track Revenue per Employee
 - `ab546c35c94e` Don't Let .com Efficiency Reports Choke the Whole-Enterprise Engine
 - `09e7f0d32ea7` Use Hard Constraints to Force Creative Problem-Solving
 - `5e8fb784d881` Know When a Category's Profit Has Been Competed Away
