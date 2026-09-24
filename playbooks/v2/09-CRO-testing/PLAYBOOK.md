@@ -575,3 +575,167 @@ Goal: the right path for each backlog item.
 5. Record the decision and the reason in the registry.
 Check: nothing defective is queued for a test. Rollback: for a shipped change, keep the previous theme version or section so it can be restored in 1 step. Cards: [3eca46fe9ba3] [6503bc821ea6] [0bda3b4d7e04] [0b8d2f6cc4d1].
 
+### P13. Size a test and set runtime (05, 02, 03)
+
+Goal: sample per variant, total, and weeks. Preconditions: baseline conversion rate of the tested page and metric; weekly eligible traffic. `[needs brand data: baseline conversion rate per page and device; weekly sessions on the tested page]`
+1. Baseline p: conversion rate of the page for the audience in the test (not sitewide).
+2. MDE: the smallest relative lift worth shipping, thought through in gross profit. Convert to absolute delta = p x relative MDE.
+3. Confirm the calculator's input type (relative vs absolute).
+4. Alpha 0.05, power 0.80, two-sided (R64).
+5. n per variant = 16 x p(1-p) / delta^2, or read the table below, or use Evan Miller's calculator. Check against conversions per variant: about 3,830 (5%), 1,000 (10%), 260 (20%), 120 (30%).
+6. Total = n x number of arms.
+7. Weeks = total / weekly eligible traffic, rounded up to whole weeks; minimum 1, in practice 2; cover each weekday twice.
+8. If RPV is the primary metric, multiply the traffic need by about 6 (05) and pre-register a winsorization cap or a threshold-proportion metric; 05 gives no cap value.
+9. If weeks are unreasonable (05: months), go back to P12 step 4.
+10. Write MDE, n per variant, arms, total, weeks and dates into the brief.
+
+Sample size per variant, 95% confidence, 80% power, two-sided (05, statsunlock.com, consistent with Evan Miller):
+
+| baseline | 5% rel | 10% rel | 20% rel | 30% rel | 50% rel |
+|---|---|---|---|---|---|
+| 1% | 637,010 | 163,095 | 42,693 | 19,827 | 7,750 |
+| 2% | 315,206 | 80,682 | 21,109 | 9,798 | 3,826 |
+| 3% | 207,938 | 53,211 | 13,914 | 6,455 | 2,518 |
+| 5% | 122,124 | 31,234 | 8,158 | 3,780 | 1,471 |
+
+Check: a second person gets the same n from the brief. Cross-check with 02's anchor (about 1,000 conversions per variant for a 10% lift). Rollback: none. Cards: [00c82f0de25d] [5fae1beab1ba] [699a7cd5ac4c] [7eeb62d20124].
+
+### P14. Choose the stats engine and stopping method (05)
+
+Goal: a stopping rule the p-value is valid under.
+1. Can you estimate the expected sample well (stable traffic, known baseline)? Yes: fixed horizon (look once at the planned sample) or group sequential with alpha spending (more powerful). No, or stakeholders will watch daily: always-valid method (mSPRT, GAVI, corrected alpha), accepting wider intervals.
+2. If the tool is Bayesian, find its prior and whether its stopping threshold is protected against optional stopping. If you cannot state the prior, treat results like a peeked frequentist test and size as fixed horizon.
+3. Confirm the tool's current engine and SRM alerting in vendor docs. `[web check: vendor stats engine docs]`
+4. Write the method into the brief. Under fixed horizon, no interim reads are acted on. Under a sequential engine, only its rule stops the test.
+5. New tool or new programme: run an A/A test first (R79).
+Check: the brief names the engine and the exact stopping rule. Rollback: none. Cards: [e3ee87a025c5] [0bda3b4d7e04].
+
+### P15. QA, launch and monitor (03, 05, 02)
+
+Goal: a clean test. Preconditions: brief approved.
+1. QA the variant 2 or 3 times on real devices (mobile first), browsers and connection speeds. Check add to cart, cart, checkout start in both arms.
+2. Confirm tracking fires in both arms and that the tool's conversion count matches the store backend for a short window.
+3. Check flicker on a slow mobile connection; if the original flashes, move to server-side or Rollouts, or accept the anti-flicker cost (up to 3 to 4 seconds hidden) and record it.
+4. Exclude retention traffic (Klaviyo sends) from the test population, or run on a cold-only landing page; confirm sticky bucketing. `[verify UI]`
+5. Check the marketing calendar for promos, launches and holidays in the window; move dates if a sale falls inside.
+6. Launch with the planned split.
+7. Day 1 and then at each planned look: SRM chi-square on users; flag p < 0.001; if flagged, pause trusting the result and find the cause (bots, redirects, tracking, browser failures).
+8. Filter bots.
+9. Do not read significance between planned looks. Do not kill or call on one day.
+10. Watch for tracking breakage; if it breaks, invalidate the read and restart.
+Check: SRM clean, tracking matched, no promo overlap. Rollback: end the test and restore control to 100%; keep the brief and log the reason. Cards: [4d0785cdcf2b] [370ed8c02e34] [699a7cd5ac4c] [7d481c590b57] [3eca46fe9ba3].
+
+### P16. Audit a result or a case study (05, 06)
+
+Goal: decide whether a number can be trusted. Use for your own tests and for any case study, including every case in this playbook.
+1. SRM: chi-square goodness-of-fit on the randomisation unit; p above 0.001.
+2. Flicker: did the original render first in the variant arm?
+3. Tracking: did any pixel or event break mid-test? Do tool conversions match backend orders?
+4. Bots filtered?
+5. Seasonality or promotions overlapping the window?
+6. Stopping: was the test stopped at the planned sample or by a sequential rule, or at the first p < 0.05?
+7. Runtime: at least 1 full week, in practice 2, whole weeks?
+8. Metric count: how many metrics and segments were read? Bonferroni or FDR applied? Were segments pre-registered?
+9. Twyman's law: is the lift plausible (1 to 5% mature, 10 to 20%+ unoptimised)? 50%+ or hundreds of percent: hunt for bugs before celebrating.
+10. Guardrails: AOV, margin, returns, refunds, page load, add to cart flat or better?
+11. Device split: same direction on mobile and desktop?
+12. For a case study: does it state baseline, sample, runtime and validity checks? If not, hypothesis material only.
+Output: pass, fail, or hypothesis-only, with the failing checks named. Cards: [370ed8c02e34] [8dc46d4893e1] [1f26cd618e2d] [300b03fc0354].
+
+### P17. Read, decide and close (05, 03, 02)
+
+Goal: a decision and a learning.
+1. Report the effect on the primary metric with its confidence interval, per arm, with sample and dates.
+2. Compare the interval with the MDE, incremental gross profit, build cost and guardrails.
+3. Plot the daily effect; if novelty is suspected, compare first-exposure with repeat-exposure conversion; judge on the stable period.
+4. Read the pre-registered segments (device, paid vs organic, new vs returning). Opposite directions: do not ship blind.
+5. Win within the realistic band and guardrails flat or better: ship to 100%, add to the live-winner register, schedule the post-ship verification (P6 step 8, P7 step 7).
+6. Win that is surprising or large: replicate or hold out before banking the revenue.
+7. Fully powered inconclusive: record "effect smaller than MDE"; ship neither, or the simpler and cheaper version; do not extend.
+8. Clearly negative: stop; do not wait for a reversal; record why it lost.
+9. Before scaling a winning angle: check returns, chargebacks, repeat rate and 365-day LTV by angle.
+10. Write the registry record (P18).
+Rollback: a shipped winner keeps its control version stored so it can be restored in 1 step if guardrails degrade after launch. Cards: [70db51ffb976] [5fae1beab1ba] [1f26cd618e2d] [dad9c85ea261] [f09cfbc3ef44].
+
+### P18. Write the registry record (05, 06, 03)
+
+Goal: one record per test, repair, holdout or causal analysis, in one log. Fields:
+1. id, date opened, owner, status (planned, live, closed, shipped, reverted).
+2. type: A/B, A/B/n, bandit, feature holdout, programme holdout, repair, before-and-after, causal method.
+3. page, device scope, audience, platform tool and engine.
+4. hypothesis in R42 form, with the evidence list (each point: source, date, what it showed) and verbatims.
+5. primary metric and why; guardrails with thresholds; pre-registered segments.
+6. MDE relative and absolute; baseline; planned sample per variant; arms and split; planned dates; tails; stopping method.
+7. validity plan and results: QA passes, SRM values per look, tracking match, flicker check, bots filtered, promo overlap notes.
+8. actual sample per variant, actual dates, whether the sample was reached.
+9. results: effect and confidence interval per metric per segment; guardrail results; daily plot note (novelty).
+10. Twyman check: plausible or investigated.
+11. decision: ship, kill, inconclusive, replicate, hold out; the action pre-written in the brief versus the action taken.
+12. learning: why it won or lost; what the next hypothesis is.
+13. shipped date; live-winner check dates; any later reversion and why.
+14. for repairs: what was broken, evidence, fix, verification.
+15. for holdouts: question, groups and shares, period, net lift with interval, decision.
+Check: a reader with no context can compute the same sample and reproduce the decision. Cards: [70db51ffb976] [2b951af15841] [f09cfbc3ef44] [3eca46fe9ba3].
+
+### P19. Run a CRO programme holdout (06)
+
+Goal: net programme value. Preconditions: user-level randomisation available; 06's rough gate is over 100,000 monthly visitors. `[needs brand data: monthly visitors, logged-in share]`
+1. Compute detectability first: with the holdout share and period, can the holdout reach enough conversions to detect the effect you care about (P13 math with unequal arms)? 06's 5% and 90 days are illustrations.
+2. Randomly assign the holdout share (example 5%) to see the site as it was before the programme; sticky by user.
+3. Everyone else gets every shipped winner.
+4. Apply repairs and accessibility, policy and major usability fixes to both groups; do not withhold them.
+5. Keep assignment stable for the period (example 90 days).
+6. At the end, compare conversion rate and RPV with confidence intervals. Report net lift, not the sum of test lifts.
+7. Record which experiences each group could receive, the interval and the decision (P18).
+Check: the holdout was never exposed to a shipped winner (check the tool's audience logs). Rollback: end the holdout and expose everyone. Cards: [f671352f5b6e].
+
+### P20. Run a feature holdout (06)
+
+Goal: net revenue effect of a popup, recommendation module, personalisation layer or cart-recovery flow.
+1. Define the decision metric: RPV. Support: conversion rate, AOV, opt-in rate, repeat purchase.
+2. Randomly hold out a group that never sees the feature (examples: popup 90/10; recommendations 5% holdout). Sticky by user.
+3. Tag both groups and track through to purchase and, if the feature targets it, repeat purchase.
+4. Run long enough to capture delayed purchases; compute the detectable effect first.
+5. Read trade-offs: more opt-ins but fewer purchases; more clicks but no bigger baskets.
+6. Segment only if the sample supports it; decide on the pre-declared overall metric.
+7. Decision: keep, rework, or remove. Record (P18).
+Rollback: expose everyone or remove the feature. Cards: [c076b110d253] [e46b405d55df].
+
+### P21. Run a price or offer test (05, 03, 02)
+
+Goal: a legal, ethical test of value perception.
+1. Legal and ethics review for the market. `[web check: jurisdiction rules on personalised pricing and disclosure]`
+2. Never base price differences on protected characteristics. Do not show different prices for the same SKU to different users at the same time.
+3. Choose what to test instead: price presentation, savings framing, payment framing (4 payments of $12), tiers, bundles, gift thresholds, free-shipping thresholds, post-purchase upsells, or different offerings at different prices.
+4. Price bundle discounts from fulfilment savings (02) so margin holds; check gift COGS against perceived value.
+5. Document refund, support and price-match handling before exposing traffic.
+6. If a price-test app is used (05 names TestSignal; 03's sponsor is likely Intelligems `[web check: tool name]`), check how it assigns prices, handles disclosure, and records revenue and margin.
+7. Primary metric: contribution per visitor where powered; otherwise conversion rate with AOV and margin guardrails.
+8. Size, run, audit and close as P13 to P17.
+Rollback: restore the single price and offer for everyone. Cards: [34fa165a64fe] [d12e614c0b4e] [d5a74f7edadd] [0ca0ef2a3d5d].
+
+### P22. Plan a Shopify test around platform limits (05) `[verify UI]`
+
+Goal: a test the platform can actually run.
+1. Check the plan tier. `[web check: Shopify checkout extensibility and A/B options, yearly]`
+2. Basic, Shopify, Advanced: test only before checkout (product, collection, cart, homepage, add to cart, trust elements, pricing display). A head-snippet tool (Varify named) runs on all plans. Checkout changes ship as repairs, measured by stage rates as weak evidence.
+3. Shopify Plus: checkout extensibility (Checkout Blocks, UI extensions, Functions, Branding API); some apps (Personizely, Checkout Boost named) run limited checkout-element tests via Checkout Blocks.
+4. Theme tests: consider Shopify Rollouts (server-side, no flicker, numbers with no significance verdict, paid tier); do the stats yourself (P13, P14).
+5. Client-side for visuals; server-side or Rollouts for checkout, pricing logic and speed-sensitive paths.
+6. Record the platform constraint in the brief.
+Cards: [7c932a3b4986].
+
+### P23. Route a measurement question (06)
+
+Goal: the right design for the question, and the right folder.
+1. "Did this specific test win?": A/B test, this folder.
+2. "Does this feature add net revenue?": feature holdout (P20), this folder.
+3. "Has the CRO programme created value?": programme holdout (P19), this folder.
+4. "Does retargeting drive incremental revenue?": user-level holdout (06's illustration: 30-day non-buyers, 80/20 split, 14 days; holdout rate divided by exposed rate is the share that would have bought anyway). Route to 11-ADC.
+5. "Does Meta drive incremental sales?": geo holdout (06's Hourglass example: 10 DMAs paused 6 weeks, market correlations 0.96 to 0.99). Route to 11-ADC.
+6. "Does this email campaign drive incremental purchases?": list holdout (example 10%; lift = promoted rate minus holdout rate). Route to 14-EML.
+7. "What was the impact of a site-wide change during peak season?": difference-in-differences or BSTS. Route to 06-MEA; state the identifying assumption.
+8. "We cannot randomise": synthetic control, propensity matching, regression discontinuity. Route to 06-MEA.
+9. Whatever the route, write the question, method, result with interval and decision into the shared log (P18).
+Cards: [0eca60fd9161] [ddbbe8061d10] [e353aade03ae] [04a08881ac09] [2b951af15841].
+

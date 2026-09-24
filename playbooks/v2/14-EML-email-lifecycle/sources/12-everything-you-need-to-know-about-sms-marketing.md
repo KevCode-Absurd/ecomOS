@@ -94,7 +94,7 @@ Resulting example calendar (source's dates):
 | 30 Oct | Flash sale launch | Sale |
 | 31 Oct | Flash sale last chance | Sale |
 
-That is 6 to 7 sends in 31 days, about 1.5 a week, with 2 back-to-back pairs (8 to 10 Oct if the teaser runs on 9 Oct, and 30 to 31 Oct).
+That is 6 to 7 sends in 31 days, about 1.5 a week, with 2 back-to-back pairs (9 and 10 Oct if the teaser runs on 9 Oct; 30 and 31 Oct).
 
 ### 3.7 Pick send times
 1. Start with 11:00 a.m. to 2:00 p.m. (after the morning, lunch at work). This is the "safest" window and where most messages should go. [5a21fae6ffd5]
@@ -238,7 +238,7 @@ All are examples from the presenter's clients, not promises.
 - 775acf1e29be  Build a two-step micro-commitment pop-up: email first, then phone
 - 171673d6f3de  Aim pop-up forms at 8–10% conversion vs the 2–3% baseline
 - 71d9f81273f0  Launch five core SMS automation flows before heavy campaign sending
-- bcc0f86cebc6  Keep SMS campaigns transactional, urgent, or announcement-based—not nurture
+- bcc0f86cebc6  Keep SMS campaigns transactional, urgent, or announcement-based, not nurture
 - 3f1ec5d057e8  Model the SMS month around launches and flash sales, then fill the gaps
 - 5a21fae6ffd5  Test SMS send times; default to 11 a.m.–2 p.m. and 4–5 p.m.
 - bb9581c6a1d8  Treat the SMS list as a channel asset for revenue you control
