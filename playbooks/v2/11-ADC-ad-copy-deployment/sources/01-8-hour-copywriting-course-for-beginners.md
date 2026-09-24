@@ -46,7 +46,10 @@ It teaches a beginner how to write direct-response copy, starting with 200 to 30
 33. **AI is a tool, not the writer.** "Saying AI will replace copywriting is like saying calculators will replace mathematicians." Never paste long ChatGPT copy; use it for ideas, analogies, explanations, examples, stories and line-level improvements. [57ebdcf883f4] [5f65d6e25e3c]
 34. **Copy is one layer of a marketing stack.** Email sequences, automations, VSLs, landing pages, offers and funnels together make the money ("copywriting is an introduction to digital marketing"). Marketing "has a lot to do with numbers". [0f415a3ed151] [0bba65ed7c6c]
 35. **Structure can be stolen; claims cannot.** For VSLs, study category leaders and copy the structure closely ("structure is something you can basically steal"), then fill it with your own facts. [7da6cda41cbe]
-36. **Quality over quantity, but quality comes from quantity.** "To learn quality you must first produce quantity"; your 101st email beats the best first email you could write. Habits must be implemented before they can be optimised ("start sloppy"). [977fa0fc63ca] [7fd437ffe114]
+36. **Skin in the game makes people commit.** 2 ways: tell others you will do it (accountability, a public bet) and invest your own money ("no turning back"). Source uses it to set up a cheap entry offer ($99 course for $10) as a way to "invest in yourself"; saying "skin in the game" sounds less salesy than "invest in yourself", so it bridges smoothly into the CTA. Opinion, not tested. [828588e0b5a5]
+37. **Owners outsource copy because bad copy costs more than good copy.** Source argues a $4-an-hour writer risks the brand ("it's going to hurt your business more than it helps") and that paying $2,000 to $4,000 a month is rational when the copy returns far more. Framed from the freelancer's side. [507ec29f36ec]
+38. **Open story emails on the question the email answers.** "People ask me why I'm such a hard worker", then go straight into the story, then the lesson at the end. Keep the setup short (the story detail is not the point), cut "if you'd like to hear more of my story", and close with a problem-solution loop back to the reader's next problem before the CTA. [ed8a53d10a41] [a98bb10fd49f]
+39. **Quality over quantity, but quality comes from quantity.** "To learn quality you must first produce quantity"; your 101st email beats the best first email you could write. Habits must be implemented before they can be optimised ("start sloppy"). [977fa0fc63ca] [7fd437ffe114]
 
 ## 3. Procedures
 
@@ -396,7 +399,7 @@ All are the presenter's examples or claims, not promises.
 - [f95389e976bd] Use Three Copy Frameworks: CJN, PAS and HSO
 - [ecb28758fd66] Give the Product a Unique Mechanism to Escape Commodity Comparison
 - [de12e750842c] Structure a Video Sales Letter and Landing Page Block
-- [a81371537582] Write Bite-Sized Email Copy First (200–300 Words)
+- [a81371537582] Write Bite-Sized Email Copy First (200 to 300 Words)
 - [b88d5fdf5214] Run the Compile-Ideate-Structure-Polish Email Process
 - [4e85d10ef802] Turn Creator Content into Store Copy with Transcript Distillation
 - [243af58d06bd] Capture Hooks, Stories and Belief Shifts from Source Content
@@ -484,7 +487,7 @@ All are the presenter's examples or claims, not promises.
 - [48a87de9b79b] Train opens and clicks with value-only welcome emails
 - [22a2130d998e] Place a P.S. soft-sell CTA at the end of value emails
 - [3afc3ff48150] Write deadline emails with a duplicated CTA structure
-- [5e43074e0a7e] Trigger a re-engagement sequence at 30–60 days of inactivity
+- [5e43074e0a7e] Trigger a re-engagement sequence at 30 to 60 days of inactivity
 - [cab8c603e36c] Set one concrete goal per store email before writing
 - [0622a180b998] Keep subject lines at or under 40 characters
 - [be2cafef8511] Branch store automations by engagement level

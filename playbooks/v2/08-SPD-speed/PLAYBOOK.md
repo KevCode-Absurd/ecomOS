@@ -313,3 +313,249 @@ Numbering runs across all groups. Each rule gives the rule, its condition, the m
 **R103. After any loading change, exercise every affected app's full function and every tracking event before calling it done.** Condition: defer, delay, unload, remove, cache. Reviews, upsells, loyalty, forms, chat, pixels, consent. Re-check after app updates, since script URLs change. Sources: 01. Cards: [6427c0d96eec] [b711b4ded0ce] [ef51a42e0e16].
 
 **R104. Rollback is part of the change: keep the original theme or the pre-change setting, and revert the single change that broke something rather than the whole batch.** Condition: always. Sources: 01, 05, 02. Cards: [58c5589c135f] [8f0d567d9844] [44c02380f01e].
+
+## 4. Procedures (implementation)
+
+Each procedure: goal, preconditions, steps, checks, rollback. Platform steps carry `[verify UI]`. Sources named in brackets by mini playbook number; card ids at the end of each procedure.
+
+### P1. Baseline and testing protocol (run before and after every change)
+
+Goal: numbers you can compare. Preconditions: list of templates and the ad landing pages (R3); a duplicate theme or staging (R14).
+
+1. Pick the reference pages: home, 1 collection, the top-traffic product page, the ad landing page if different, cart, checkout. Record URLs. [01, 08, 04]
+2. On Shopify, duplicate the live theme and test its preview link. Compare preview to preview, never preview to live. [01]
+3. Open PageSpeed Insights (pagespeed.web.dev). Paste the URL. Analyze. Mobile tab first, then Desktop. [05] [verify UI]
+4. Run each page 3 times per device with a pause between runs. Record score, LCP, CLS, INP (field), TBT, TTFB, FCP and the LCP element in a table (date, page, device, run). Average the 3. Example variance: 48, 51, 54. [01, 02]
+5. Note the field section: URL or Origin, and whether the URL toggle is greyed (too little traffic). [05]
+6. Take the PSI screenshot and note which metric the hover hint flags as the biggest lever. [05]
+7. Run the slow-connection visual test (P2) on the product page and home. Note what you saw in words. [02, 01]
+8. Start the dated change log. First entry: the baseline. [08]
+9. After each batch of changes: wait 1 to 2 minutes, confirm freshness (P4), run 3 more tests, average, compare averages. Treat differences of a few points as noise. [01]
+10. Optional cross-check: GTmetrix (waterfall, Top Issues) or WebPageTest (filmstrip) on the same URL. Do not compare scores across tools. [04, 09, 03]
+11. Lighthouse in Chrome for the render-blocking list: right-click > Inspect > Lighthouse > Analyze page load. [01] [verify UI]
+
+Checks: baseline table complete for every template on both devices; change log started. Rollback: none needed.
+Cards: [c33439a2c9b9] [079f8ea11444] [9b3008487ad5] [6012d71fccb6] [085b91000740] [693051f7daf7] [21b1708d102a] [a4ded81551ca].
+
+### P2. See the store the way a slow-connection shopper does
+
+Goal: catch what scores hide (blank wait, jumps, hidden hero). Preconditions: Chrome.
+
+1. Chrome DevTools > Network. Tick Disable cache. Throttling: Slow 4G (source 02's default) or Fast 3G / Slow 3G (source 01). Pick the slowest connection common among your visitors. [02, 01] [verify UI] [needs brand data: connection mix]
+2. Reload. Watch: time to first content; layout jumps; images revealing in chunks; the main image absent while other things appear.
+3. If 3G is still too fast to see a shift, add a custom profile (source 01 used about 20 kbps). If throttling seems not to apply, switch profiles and back, then reload. [01] [verify UI]
+4. Stop the load when the suspect element appears and inspect it mid-load. [01]
+5. Optional: DevTools Performance tab recording for a timeline. [01] [verify UI]
+6. Optional: open the store on a phone on mobile data away from Wi-Fi. [01] Real mid-range device preferred. [04]
+7. Mobile layout check: DevTools device toolbar, pick a phone (iPhone 12 Pro in the demo); Safari Develop > Enter Responsive Design Mode. Pass if text stays on screen, images are not shrunk or distorted, everything is reachable. [01] [verify UI]
+8. Repeat after each stage so gains can be attributed. For a final comparison, load an unoptimized copy and the optimized page in incognito with the same throttle; then untick Disable cache for the repeat-visit case (the cache-disabled run is the worst case, not the typical user). [02]
+
+Checks: written notes per page. Rollback: none.
+Cards: [29d73beaf348] [d16d1fcdd349] [a5d2c3aee970] [74187c8d7e19] [58bc1e28be27] [15b41de4c239] [a4ded81551ca].
+
+### P3. Read a PageSpeed Insights report
+
+Goal: correct reading of field vs lab and the right first fix. Preconditions: P1 run.
+
+1. Top section = field data (CrUX, real Chrome users, 28 days). Expand to see which 3 are Core Web Vitals (LCP, INP, CLS); FCP and TTFB are notable metrics, not vitals. [05]
+2. URL vs Origin toggle: URL = this page; Origin = site average. Greyed URL = not enough traffic; read Origin as site-wide only. No field data at all = work from lab. [05]
+3. Bottom section = lab (Lighthouse, simulated mid-tier phone). Score bands: 90+ green, 50 to 89 orange, under 50 red. [05, 04]
+4. If field fails and lab passes, that is real devices and networks, not an error. Optimize against lab; field follows in about 28 days. [05]
+5. Hover the score circle to see which metric would move the score most. Open that metric's opportunity group first. Work top down. Retest after each change. [05]
+6. Diagnostics > "Largest Contentful Paint element" names the LCP element. [05] [verify UI]
+7. For CLS, open the filmstrip screenshots and compare frames for an element that appears and pushes content; PSI outlines the shifting element. Check the desktop tab too. [01]
+8. Read the estimated savings per opportunity and order by saving against effort. [09]
+9. "Reduce unused JavaScript" means unused at test time, not useless. The fix is remove leftovers, then defer, delay or load conditionally; not line-by-line edits of app code you do not own. [01]
+10. Copy the report link and attach it to the change log or the developer brief. [05] [verify UI]
+
+Cards: [085b91000740] [7d6d1e80db3c] [dfde1d811af8] [693051f7daf7] [eb9525bda54a] [f00068c50316] [b35da7f37105] [68699dfd59de] [f338ed52ce8f] [95c02555626f].
+
+### P4. Confirm the test saw your latest version
+
+1. Add a small visible marker above the fold (a line of text). [05]
+2. Rerun PSI. Check the screenshot. Marker visible = fresh. Missing = cached; clear caches (theme, plugin, CDN) and rerun. [05]
+3. Remove the marker. [05]
+4. On Shopify, also wait 1 to 2 minutes after saving before the retest. [01]
+
+Cards: [f1a837edbfbe] [079f8ea11444].
+
+### P5. Site-wide audit for large catalogs
+
+Goal: find outlier pages. Preconditions: staging URL, or owner's go-ahead to throttle against production; Node installed.
+
+1. New directory. Run `npx unlighthouse --site <url>`. A UI opens with live results; hundreds of pages take a couple of minutes. [07] [verify UI: flags]
+2. Sort by score. List the outliers and their templates.
+3. Confirm key pages with PSI field data (P3); Unlighthouse is triage. [07]
+4. Optional: the Unlighthouse SDK in CI to keep the check running. [07]
+
+Cards: [08cf33a0563a] [b906791efd1b].
+
+### P6. Business case (revenue model)
+
+Goal: a number the owner trusts, built from the brand's data. Preconditions: [needs brand data: daily sessions, conversion rate, AOV, margin, current load time, mobile share].
+
+1. Today: daily sessions x conversion rate x AOV = daily revenue. Source 06's example: 50,000 x 3.5% x $50 = $87,500. [06]
+2. Choose an assumed lift for 1 s faster and label it as an assumption. The sources' range: +5.6% conversion per second (06); about 7% loss per 1 s delay (04, 08); +8.4% per 0.1 s (03, 04, 06, an upper bound, retail); 0.3% per second (03, uncited). See 7.2 and 7.9. Do not present any of them as the store's own result. [03, 04, 06, 08]
+3. Recompute with the lifted conversion rate. Difference x 365. Source 06's example: 3.5% to 3.7% = $5,000 a day, about $1.8 million a year. [06]
+4. Add the ad-spend angle: paid clicks that leave before load never see the offer. [08]
+5. Present benchmarks as direction (Portent 1 s vs 5 s = 2.5x; source 08 says up to 3x; sources 04 and 06 say 5x for 1 s vs 10 s). Say which study, and say they are third-party figures. [03, 04, 06, 08]
+6. Do the arithmetic in code, not in prose.
+
+Cards: [77da7bd48ab8] [fa57997432c4] [b36e60f619f7] [41ce06260ce9] [f8bdb58727f9] [af5fd5b1745b].
+
+### P7. App, plugin and third-party triage
+
+Goal: a shorter list of scripts, each with a stated revenue role. Preconditions: [needs brand data: app list and revenue role per app]; duplicate theme or staging.
+
+1. List every installed app, sales-channel app, app embed, plugin and external script. Include scripts pasted by hand. [01, 03, 08]
+2. For each, write the concrete revenue or operations mechanism (sizing chart for sized products; reviews for social proof; pixel for attribution). "How does this contribute to revenue now?" [01, 08]
+3. Mark: no clear value, purely visual, trial left on, duplicate of a theme feature (announcement bar, cart discount code), or not used. Remove those completely (uninstall or delete, not deactivate). [01, 03, 08]
+4. Uncertain items: disable in staging, re-measure, decide. No speed change and useful = keep; clear gain = remove. [08]
+5. Count what remains against the budget: more than 20 apps is a warning (03); each third-party script about 34 ms (06); the median mobile score fell from 74 at 0 to 5 services to 44 at 21 to 30 (04). [03, 04, 06]
+6. Shopify: Customize > App embeds. Turn off every embed not in active use. Save. [01] [verify UI]
+7. For each kept script decide its loading: needed at first paint (keep), needed on this template only (P11), needed only after interaction (P10), pixel (R48).
+8. Clean residual code (P8). Re-test (P1).
+9. Set the rule for the future: reviews for speed complaints, theme-already-does-it check, and a before-and-after test for every new install. [04, 01]
+
+Rollback: reinstall the app; restore the theme copy. Cards: [8dbbb42b9c2e] [474204ae609c] [d675d594782b] [efd7ec0cb6ce] [753859e92e44] [c09e2fd0f0d7] [a62896aba3d8] [4e05290f17d5].
+
+### P8. Remove residual app and pixel code (Shopify)
+
+Goal: no leftover calls to servers of apps you removed. Preconditions: backup or duplicate theme; list of uninstalled apps and old pixels.
+
+1. Online Store > Themes > Edit code. Use the left-panel search. Search the app's brand name and its App Store listing name (example: "Hexom" and "free shipping bar"; "Loox" captioned as "logs"). [01] [verify UI]
+2. Check theme.liquid, head and footer snippets at minimum. The Chrome extension "Shopify Theme File Search" searches all files at once. [01]
+3. Deep search: Themes > theme menu > Download theme file; unzip; open the folder in a code editor (Cursor is free); global search for each app name, listing name, old pixel or provider ("Google"). Matches can sit in JSON files. Note file and line. The download is a snapshot; re-download if you change the theme. [01] [verify UI]
+4. Back in Edit code, open that file and line. Remove only the target tag, or comment it out with Cmd+/ or Ctrl+/ (Liquid comment). [01]
+5. Also scroll theme.liquid for script and pixel tags you do not recognize. To tell whether a script belongs to an installed app, check Apps (including sales channels); if unsure, ask whoever managed the store. Do not touch scripts you cannot identify. [01]
+6. Remove old tracking pixels, unused custom fonts and style tags from plugins you stopped using. [01]
+7. Save. Load the store. Check it works. Re-test after each removal so changes can be attributed. [01]
+
+Rollback: restore from the backup theme or un-comment. Cards: [3c6bd0cce957] [68699dfd59de] [fde546149035] [10d064e032f8] [58c5589c135f] [8dbbb42b9c2e].
+
+### P9. Add defer or async to scripts in theme.liquid (or the WordPress head)
+
+Goal: no render-blocking scripts that do not need to block. Preconditions: Lighthouse render-blocking list (P1 step 11); duplicate theme.
+
+1. Note each script under render-blocking resources. [01]
+2. Open theme.liquid. Find `<script>` tags with neither `defer` nor `async`. Shopify's newer code editor flags them. [01] [verify UI]
+3. Identify what each script does and which app it belongs to (inspect the front end; example: a script traced to a cookie banner widget). Skip anything you cannot identify. [01]
+4. Add `defer` (`defer` or `defer="defer"` both work). Save. [01]
+5. Load the store and test the exact feature the script powers. Works: keep. Breaks: replace with `async`, test again. Also breaks: remove the attribute; that script must block. [01, 03]
+6. Re-run Lighthouse; confirm the entry is gone. Example: 78 to 80 after 1 defer, 81 after removing a jQuery script. [01]
+7. Unknown speed or caching service scripts: comment out, re-test; if unchanged, leave them. [01]
+8. WordPress: use the plugin's "Load JavaScript deferred" with exclusions for scripts that must load first (P13). [05]
+
+Rollback: remove the attribute. Cards: [1dffb0dd47d1] [1d1dca3e3cfb] [07b358e531fb] [e42f2f04f259] [9714159dd4aa] [cdc61c33e699].
+
+### P10. Delay app scripts until the shopper interacts (Shopify)
+
+Goal: app widgets that are not in view load on the first scroll, click, touch, mouse move or key press instead of at load. Preconditions: P7 done; CLS and LCP fixed first or at least measured (R78); [needs brand data: widgets that must show at load; pixel and consent setup]; duplicate theme.
+
+Source 01 sells the code and does not publish it. The method is described; a developer or the agent writes the small vanilla JavaScript function.
+
+**10a. All app scripts via the content_for_header override**
+1. Edit code > theme.liquid > search `content_for_header`. [01] [verify UI]
+2. In DevTools Elements, expand the head, open the unnamed script tags until you find the "async load" function (usually the last). It lists every app script URL Shopify injects. Copy the list for the record. [01]
+3. Wrap `{{ content_for_header }}` in `{% comment %}` ... `{% endcomment %}` and, directly under it, render a snippet that outputs content_for_header with the async injection stopped and replays it on the first human interaction (scroll, click, mousemove, touchstart, keydown). Brief for the developer: "look at the async function and delay the injection until first interaction". [01]
+4. Save. Wait 1 to 2 minutes. Re-test 3 times. [01]
+5. Verify: Console open, refresh, do not touch the page: widgets absent; move the mouse: a console message and the widgets appear. [01]
+6. Exercise every app fully: reviews, upsells, loyalty, forms, chat, subscriptions. Anything broken: take that app out of the delay (10b) or revert. [01]
+7. Tracking: test page view, variant change, add to cart and a test purchase, with consent accepted and refused; check for missing and duplicated events. If events break, keep the pixel in the initial load (source 01's rule) or move to the platform's supported pixel integration (card correction). Pixel setup is 06-MEA. [01]
+8. Expected effect: blocking time drops; source 01 claims 10 to 20% score gain when apps are the bottleneck; on a store with large CLS or LCP the gain is small. [01]
+
+**10b. One app script only (capture and filter)**
+1. Copy the app script URL from the async function. [01]
+2. In theme.liquid: capture content_for_header, assign a version with that URL removed, output the modified version. Confirm the URL is gone from the async function and the app stops working on the front end. If it still works, it is also injected via an app embed: toggle the embed off. [01] [verify UI]
+3. Create a snippet (example name lazy-scripts.liquid) with a function that creates a script tag with that src on the first interaction; render it in theme.liquid. Verify the app fires on click or scroll. [01]
+
+**10c. An app embed widget (chat widget example)**
+1. Leave the embed on. Refresh, DevTools Elements, search the app name. Right-click its script element > Edit as HTML, copy the JS URL; same for its CSS URL. [01] [verify UI]
+2. Add both URLs to the lazy-load function's lists. Save. Customize > App embeds: toggle the app off, save. [01] [verify UI]
+3. Verify the widget appears only after hover or scroll and works fully. Example: 57 to about 65. Re-check after app updates, since URLs change. [01]
+
+**10d. A hardcoded script (cookie banner example)**
+1. Confirm the banner causes CLS or blocking in the report. Confirm the consent owner allows delaying it (R76). [01]
+2. Comment out its script tag in theme.liquid. Paste the lazy-load function above `</head>` with the banner URL in its list. [01]
+3. Verify: refresh without touching, banner absent; move the mouse, banner appears; Console message shows. Example: CLS gone, 48 to 57. [01]
+
+**10e. Dynamic checkout buttons**
+1. [needs brand data: wallet button usage]. If unused, disable them in the theme settings. [01] [verify UI]
+2. If kept: remove their script from content_for_header as in 10b and inject on interaction. Buttons appear late; trade-off unmeasured. Test on the copy theme. [01]
+
+Rollback: un-comment `{{ content_for_header }}` and remove the snippet render; toggle embeds back on. Cards: [d1007a68a9e0] [4e05290f17d5] [b7d4c6046a25] [2a89f4e58923] [9714159dd4aa] [56315833a352] [b711b4ded0ce] [b1f2c1da412b] [867a3ac29ede] [98a7bf9f5fb4] [6427c0d96eec] [ef51a42e0e16] [20821a7ae674].
+
+### P11. Load app assets only where the widget is, and remove duplicates
+
+1. For each script flagged as unused on a template, check whether its widget is visible on that template. Reviews and subscriptions: collection and product only. Rewards: rewards page only. Carousel library: only where a carousel is in view at load. [01]
+2. Load those assets conditionally by template (Liquid template conditions; developer if the theme is complex). This also clears the app's "reduce unused CSS" warning on other pages. Source 01 gives no code. [01]
+3. Look for scripts loaded twice (Facebook by hand and by app; PostScript twice). Remove the duplicate; test events (R48). [01]
+4. App assets that lack minification or text compression and are served from the app's host: ask the app's support, or drop the app. [01]
+5. WordPress equivalent: Asset CleanUp per page (P13). [02]
+
+Cards: [adc3ea59042a] [81ac749043da] [44c02380f01e].
+
+### P12. Self-host a library you must keep (Shopify)
+
+1. Prefer removing jQuery; use vanilla JavaScript. [01]
+2. If you must keep a CDN library: open its URL, save the file, upload it to the theme assets folder. [01] [verify UI]
+3. Copy an existing script line that uses the `asset_url` filter and replace only the file name. Hovering the link in the editor should say assets should be served from the Shopify CDN. [01, 03] [verify UI]
+
+Cards: [fdbc70a82f75] [5748b07d6cda].
+
+### P13. WordPress and WooCommerce: unload assets and tune the optimization plugin
+
+Goal: no jQuery, cart files, block CSS or emoji scripts on pages that do not use them; JS minified, deferred and delayed without breaking anything. Preconditions: staging; a waterfall (GTmetrix) of each key page.
+
+1. Waterfall audit: PSI "Render-blocking requests", then the full GTmetrix waterfall. Mark what the page does not use (jQuery, WooCommerce CSS, add-to-cart script on a page with no cart, entrance animations, Google Fonts). Split into global and page-specific. [02] [verify UI]
+2. Site-wide bloat: theme or builder performance settings (Oxygen > Settings > Performance in the demo). Tick: Gutenberg block CSS (only if unused), disable emojis, disable dashicons for logged-out users, remove pingbacks. Skip toggles tied to features you use. Save, recheck the waterfall. [02] [verify UI]
+3. jQuery: only if theme and plugins do not need it on the front end. Snippet on `wp_enqueue_scripts` that dequeues and deregisters jQuery, with conditions front end AND not logged in (the admin bar needs it). Verify against WordPress docs; source 02 does not print the code. Recheck the waterfall. [02] [verify UI]
+4. Per-page unload: Asset CleanUp (free). Open the page; the metabox lists loaded files by plugin group (13 WooCommerce files in the demo). Unload what the page does not use (brand styles, sourcebuster, add-to-cart, block styles, jQuery block UI). Keep what you are unsure about. Write down what you unloaded; re-enable if you add a mini cart later. [02] [verify UI]
+5. Optimization plugin (WP Rocket in source 05): File Optimization tab. Tick "Minify JavaScript files" only. Save. Clear cache. Browse several pages incognito; everything must work. Breaks: untick. Repeat the same loop for "Combine JavaScript files", then "Load JavaScript deferred" (add exclusions for scripts that must load first), then "Delay JavaScript execution" (can break add to cart or sliders). One setting per loop. [05] [verify UI]
+6. Image dimensions: WP Rocket "Add missing width and height attributes". [05] [verify UI]
+7. Fonts: P21. Caching and compression: P26. Database: P28 step 6.
+8. Rerun PSI. Demo: 69 to 99 on 1 page; example only. [05]
+
+Rollback: untick the last setting; re-enable unloaded files; disable the snippet. Cards: [701c087d0917] [83d6ff4a133c] [0d00d9d01688] [44c02380f01e] [8f0d567d9844] [883371c7111c] [514d616ab421].
+
+### P14. Image pipeline before upload
+
+Goal: every new image arrives sized, compressed, named and described. Order matters; other orders create rework: resize, crop, convert, compress, rename, alt text, upload, order gallery, verify. [01]
+
+1. Resize: long edge to about 2,000 px (3,000 only for a full-bleed hero). macOS Preview batch: same-orientation images in 1 folder, select all, open in Preview, Edit > Select All, Tools > Adjust Size, set the larger dimension to 2,000. Do not mix portrait and landscape in 1 batch. Content images: 2x the rendered width is the target (source 02), capped at 2,000. [01, 02] [verify UI]
+2. Crop 1 by 1, never in bulk; product position differs per shot. Square for general grids, 4:5 for fashion. [01] [verify UI]
+3. Convert: JPEG for photos, PNG only with transparency, MP4 for motion; never GIF. If your platform serves WebP or AVIF automatically (Shopify, Shopware), upload JPEG or PNG and let it convert. If you control delivery (WordPress), export AVIF (source 02, quality 50%) or WebP (source 04). [01, 02, 04, 08]
+4. Compress with a preview. Squoosh: drag quality from 75 down until artifacts show. Photopea: Image > Size 2,000 px, Export as JPEG about 70%. Source 04: JPEG 80% typical. Optional second pass on TinyJPEG or compressjpeg.com saves little (8% in a demo). Compress once from the original; keep the original. [01, 04, 02]
+5. Check size against the ceiling: product under 100 KB, hero under 200 KB target; 250 KB max for the LCP image; 500 KB hard stop (R31). [04, 05, 01]
+6. Rename: keyword + descriptor + unique detail + angle (leather-wallet-men-brown-front). Never camera or supplier names. [01]
+7. Alt text: describe the image in plain language with product, visible attributes and angle; no sales pitch; decorative images get empty alt. Not a speed factor; done here because you are touching the file. [01, 02]
+8. Upload once to the media library and select it everywhere (Content > Files, product page, collection cover, customizer pickers all land in 1 library). Update with Replace image; check each placement after. [01] [verify UI]
+9. Assign variant images so swatches switch the gallery. [01] [verify UI]
+10. Verify on the live page (P16).
+11. Video: compress files; `preload="none"`; MP4 in a video tag replaces GIF. [01]
+
+Cards: [08bb3d69ec5b] [dc287d5fb7e6] [cfa3fe76f953] [621e302f651f] [02dbd594ff18] [3dd6497a4d63] [f50e2bf2a5c4] [b783c30c2217] [8883db1cfb1d] [88d406704603] [fe083ee96b08] [876fb6014fe1] [23917da7d97a] [c4e17c272dd9] [c371cc94a060] [0f413fcac223] [5148a60eef22].
+
+### P15. Find and fix heavy images already on the store
+
+1. Shopify: Content > Files. Scroll for large files (3 MB, 5 MB examples). Flag everything over 500 KB. Compressor apps often skip these. [01] [verify UI]
+2. Find the section that uses each heavy image. Download it. [01]
+3. Compress on a free tool (example cut about 70%). If still over budget (1.7 MB in the demo), resize (Shopify image editor: Resize, example width 1,500, keeps ratio, saves a copy; or Photopea), download, compress again (about 400 KB). [01] [verify UI]
+4. Re-upload and place it back. Keep the original file. [01]
+5. Quick in-theme hero fix: Customize > section > image > Edit > Resize > new width > Apply > Save. This resizes but does not compress, so compress separately for the real gain. [01] [verify UI]
+6. Large catalogs: bulk compression app set to compress on upload (Tiny SEO Speed and Image Optimizer and SEOAnt in source 01, affiliate; ShortPixel, Imagify, TinyIMG in 04 and 02) or a CDN image service. Measure before and after; the app adds scripts. [01, 04, 02]
+7. WordPress: inspect the image, hover `src` to read rendered, intrinsic and file size (demo: 398 x 597 rendered, 1770 x 2560 intrinsic, 161 KB). Open the URL, copy into Photopea, Export as AVIF at 2x rendered width, quality 50% (about 10 KB in the demo). Replace on the page; re-add alt text. Background images that cover a section: convert only, do not resize. [02] [verify UI]
+
+Cards: [3a99be49f292] [0c4e0163aff8] [7558889b0856] [3bbbee3c2099] [64042fc21a8b] [f50e2bf2a5c4] [08e530e7d0b2].
+
+### P16. Inspect rendered vs intrinsic size, and check the theme serves responsive widths
+
+1. On the live page, right-click an image > Inspect. Hover `src`. Read intrinsic size and file size vs the rendered box. Dock DevTools to the side. [01, 02]
+2. Network tab, reload: read delivered file sizes. [01]
+3. Flag gaps: intrinsic more than about 2x the box (5,000 px in a 700 px box, 6 MB). Decide per image: oversized dimensions, resize; heavy after resize, compress; right size but heavy, compress only; small and right size, leave it. [01, 02]
+4. Theme check (Shopify): Edit code > open a section or snippet that renders an image (hero, image with text, product card). Bad: a single `src` using the image URL filter with `master`. Good: several widths (1,600 default; 800 under 800 px; 1,200 under 1,200 px) or srcset. Check every image section on old, custom or agency themes. Fix or brief a developer (R100). [01] [verify UI]
+5. How to see Shopify's variants: the image URL ends with a width parameter (493, 450); removing it opens the original. Newer themes resize automatically (a 5,000 px upload shown at 1,300 px intrinsic). [01]
+6. Category grids: thumbnails, never full-size photos. [04]
+7. Re-check visually after each change; apply to hero, section images and repeated blocks, not only product images. [01]
+
+Cards: [036e673a5a05] [c9fcbc1b5513] [08b2e0e2f95d] [c5fb935a9b7d] [21698bb77d52] [b783c30c2217] [8883db1cfb1d].
