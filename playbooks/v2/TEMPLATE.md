@@ -2,7 +2,7 @@
 
 Playbooks v2 are the knowledge an execution agent runs from. They are built in 2 passes per folder.
 
-- Pass 1: one mini playbook per source document, written from the full source text plus its cards.
+- Pass 1: one mini playbook per source document, written from the full source text plus its cards. One agent run per source, so each read is focused and any file can be redone alone.
 - Pass 2: one folder playbook that merges all mini playbooks into a single, detailed, actionable document.
 
 Cards in `data/library-v3/cards.json` stay unchanged. Playbooks cite card ids so an agent can look up the original.
@@ -110,6 +110,14 @@ Which rules depend on platform UI or pricing and should be re-verified, and how 
 ## 12. Source index
 Each mini playbook: number, title, type, credibility, what it contributed most. Then the neighbour folders and what lives there.
 ```
+
+## Layering after pass 2
+
+The folder playbook is the base layer and stays traceable to the sources. Additions go on top as separate files, never edited into the base:
+
+- `playbooks/v2/<folder>/overlays/<agent-or-task>.md`: extra rules, checklists or procedures one agent needs.
+- `brands/<brand>/overlays/<folder>.md`: one brand's exceptions and preferences for this domain.
+- New sources: add a new mini playbook under `sources/`, then re-run the pass 2 merge. The merge is repeatable.
 
 ## Quality bar for pass 2
 

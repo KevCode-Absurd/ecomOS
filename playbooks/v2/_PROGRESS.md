@@ -1,10 +1,10 @@
 # Playbooks v2 build progress
 
-Started 24 Sep 2026. Method in `TEMPLATE.md`. Batch plan in `_batch_plan.json` (sources grouped per folder, about 60,000 words per batch).
+Started 24 Sep 2026. Method in `TEMPLATE.md`. Source list per folder in `_batch_plan.json`. Pass 1 runs one agent per source (256 runs); the batch grouping in that file is only a size guide.
 
 Pass 1 = mini playbook per source. Pass 2 = folder playbook. Status: todo, running, done, reviewed.
 
-| Folder | Sources | Words | Cards | Pass 1 batches | Pass 1 | Pass 2 |
+| Folder | Sources | Words | Cards | Sources to run | Pass 1 | Pass 2 |
 |---|---|---|---|---|---|---|
 | /01-PRD-product-research | 10 | 79,296 | 170 | 2 | todo | todo |
 | /02-AVT-avatars | 9 | 114,876 | 216 | 2 | todo | todo |
