@@ -1,0 +1,479 @@
+{
+  "cards": [
+    {
+      "title": "Design Welcome Emails Outside Klaviyo, Export as Image Slices",
+      "summary": "Build welcome emails in Figma, export sliced images, and assemble them in Klaviyo for branding consistency beyond what templates allow.",
+      "use_when": "Designing your first welcome email for a new subscriber, where you need a branded look that Klaviyo's template/HTML editor can't produce (e.g., custom graphic placement).",
+      "steps": [
+        "Design the full welcome series in Figma (or similar design tool) with the logo, offer code, hero graphic, and body content laid out exactly as you want it.",
+        "Slice each visual block in the design into separate images and export each as PNG or JPEG.",
+        "In Klaviyo, drag in an image block, upload the exported slice, and compress it.",
+        "Repeat for each section, stacking image blocks until the email matches the Figma design.",
+        "Add subject line and preview text after the design is assembled.",
+        "Set one-day time delays between each welcome email, then set the emails live one by one."
+      ],
+      "caveats": [
+        "This workflow assumes design work happens outside Klaviyo; Klaviyo's templates and HTML editor are described as too rigid for advanced layouts.",
+        "Image-heavy emails trade design control for text deliverability — the source does not address that tradeoff."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "welcome-flow",
+        "email-design",
+        "figma",
+        "klaviyo",
+        "branding"
+      ],
+      "id": "b6185512bac64e22016f7469",
+      "source_id": "1grdlATLu0lJAmHQTZ_0MyExN3jVkt8xi",
+      "source_sha256": "6305409b97bb58ef4e8967d3ff99f3cde0bf6725a849a0291792799883f8c0dd",
+      "source_name": "2026 Klaviyo Email Marketing Full Course (3+ Hours).docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 3
+    },
+    {
+      "title": "Welcome Series Content Blueprint for DTC Brands",
+      "summary": "Sequence five-plus welcome emails, each covering a different reason to buy, while keeping the pop-up offer visible in every email.",
+      "use_when": "Planning the content and sequence of your welcome flow after a subscriber joins via a pop-up offer.",
+      "steps": [
+        "Email 1: deliver the pop-up offer code with the goal of getting the subscriber back to the site as fast as possible; include the logo plus one or two of: a short founder letter, brand values, USPs, or best-selling products/collections.",
+        "Add a one-day delay, then email 2: explain your unique selling points — why they should buy from you rather than competitors.",
+        "Email 3: guide subscribers to the best product for them by highlighting your top 3–5 best sellers or best-selling collections.",
+        "One-day delay, email 4: feature the brand story, framing why the subscriber should care (e.g., the market problem the brand was created to solve).",
+        "One-day delay, email 5: a direct us-vs-them comparison arguing why to buy from you over specific competitors.",
+        "Then spotlight customer reviews/testimonials, then answer FAQs (many prospects never visit your FAQ page).",
+        "Add brand-specific angle emails (e.g., heritage, trust) based on what your customers care about.",
+        "In every email, keep a banner or line reminding them their offer is still valid."
+      ],
+      "caveats": [
+        "Presented as a baseline the source says fits ~99% of DTC brands based on their A/B tests, not a universal requirement.",
+        "Not every brand has a brand story that drives conversion; the source acknowledges this.",
+        "Withhold nothing that could help a subscriber convert — the goal is to give new subscribers everything they need to make a first purchase."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "welcome-flow",
+        "customer-research",
+        "offer-design",
+        "retention",
+        "conversion-optimization"
+      ],
+      "id": "65d6a163c4ce4edbb8db76b6",
+      "source_id": "1grdlATLu0lJAmHQTZ_0MyExN3jVkt8xi",
+      "source_sha256": "6305409b97bb58ef4e8967d3ff99f3cde0bf6725a849a0291792799883f8c0dd",
+      "source_name": "2026 Klaviyo Email Marketing Full Course (3+ Hours).docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 3
+    },
+    {
+      "title": "Trigger Abandoned Checkout on checkout started With Order Filtering",
+      "summary": "Set up the abandoned checkout flow on the checkout started metric (labeled 'abandoned cart' in Klaviyo) filtered to exclude completed orders.",
+      "use_when": "Building the abandoned checkout flow in Klaviyo and setting the trigger and flow filters.",
+      "steps": [
+        "In Klaviyo flow templates, search 'checkout'; the abandoned cart reminder template is actually triggered by the checkout started metric — Klaviyo names it cart but it fires on checkout.",
+        "Confirm both an abandoned cart flow (added to cart trigger) and an abandoned checkout flow (checkout started trigger) exist, since a shopper who adds to cart without starting checkout will not enter the checkout flow.",
+        "Add filter: placed order zero times since starting this flow, so Klaviyo checks they haven't already purchased before sending.",
+        "Optionally add 'has not been in flow in the last X days' — the source keeps this at 2–3 days for clients so returning shoppers who restart checkout still get reminded, arguing interest justifies more sends."
+      ],
+      "caveats": [
+        "Flow filter windows (2–3 days vs. longer suppression) are a source opinion, not a benchmark; longer windows avoid over-messaging but the source believes shorter windows make more money.",
+        "Verify current Klaviyo template naming and filter options in your account, as interface and labels can change."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "abandoned-checkout",
+        "klaviyo",
+        "flow-filters",
+        "cart-recovery"
+      ],
+      "id": "85117c7d09108698841362fb",
+      "source_id": "1grdlATLu0lJAmHQTZ_0MyExN3jVkt8xi",
+      "source_sha256": "6305409b97bb58ef4e8967d3ff99f3cde0bf6725a849a0291792799883f8c0dd",
+      "source_name": "2026 Klaviyo Email Marketing Full Course (3+ Hours).docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 3
+    },
+    {
+      "title": "Don't Gate Email Behind SMS in Abandonment Flows",
+      "summary": "Instead of sending SMS-first with email as a fallback, send email and SMS at the same time or close together, because either channel can be the converting one.",
+      "use_when": "Configuring the channel logic in an abandoned checkout or abandoned cart flow when you have both email and SMS.",
+      "steps": [
+        "Review Klaviyo's default template split, which sends SMS if reachable and only sends email 4 hours later if SMS is not possible.",
+        "Replace that ordering: send email and SMS either simultaneously or within a short window of each other.",
+        "Reason: you cannot know whether a given shopper converts from SMS or email; email carries advantages like visuals that SMS lacks, and after an abandoned checkout every hour counts.",
+        "A/B test time delays (e.g., 4-hour vs. 2-hour first delay) for your own list rather than adopting a fixed default."
+      ],
+      "caveats": [
+        "Source opinion that simultaneously sending beats SMS-first fallback; not backed by a cited benchmark.",
+        "Shorter time delays 'typically convert better' is the source's testing observation, and they say to A/B test per client."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "abandoned-checkout",
+        "abandoned-cart",
+        "sms",
+        "experiment-design",
+        "klaviyo"
+      ],
+      "id": "930409f923f75921f9ba5280",
+      "source_id": "1grdlATLu0lJAmHQTZ_0MyExN3jVkt8xi",
+      "source_sha256": "6305409b97bb58ef4e8967d3ff99f3cde0bf6725a849a0291792799883f8c0dd",
+      "source_name": "2026 Klaviyo Email Marketing Full Course (3+ Hours).docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 3
+    },
+    {
+      "title": "Branch Abandonment Flows by Prospect vs. Existing Customer",
+      "summary": "Split abandoned checkout and cart flows into first-time prospects (welcome offer, product highlights, objections) and returning customers (loyalty/subscription incentives).",
+      "use_when": "Writing content and setting up conditional splits inside abandoned checkout and abandoned cart flows.",
+      "steps": [
+        "Add a conditional split on 'has someone placed an order at least once over all time' — yes = existing customer, no = prospect.",
+        "For prospects: remind them of the welcome offer they're still eligible for, show their abandoned products via Klaviyo dynamic cart content, and restate why they should buy from you (USPs).",
+        "Use roughly a 20-hour delay between prospect emails as a starting point, then remind them of the offer and cart contents again and address 1–2 common objections (e.g., price, perceived value) using relevant customer reviews.",
+        "Include a minimum of three abandoned cart emails for prospects, with the third addressing another objection.",
+        "For existing customers: they are past the acquisition offer, so instead focus on other incentives — subscribe-and-save, loyalty programs, or other reasons to repurchase."
+      ],
+      "caveats": [
+        "The ~20-hour delay is a starting point the source says varies by brand.",
+        "The three-email minimum is the source's stated floor, not a measured optimum."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "abandoned-cart",
+        "abandoned-checkout",
+        "customer-segmentation",
+        "objection-handling",
+        "retention"
+      ],
+      "id": "f147a186a98db1c32de933fd",
+      "source_id": "1grdlATLu0lJAmHQTZ_0MyExN3jVkt8xi",
+      "source_sha256": "6305409b97bb58ef4e8967d3ff99f3cde0bf6725a849a0291792799883f8c0dd",
+      "source_name": "2026 Klaviyo Email Marketing Full Course (3+ Hours).docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 3
+    },
+    {
+      "title": "Link Abandonment Emails Directly Back to Checkout",
+      "summary": "Use the checkout URL event variable on images and buttons so recovery emails return each shopper to their saved checkout, not the homepage.",
+      "use_when": "Setting up links in abandoned checkout/cart email images and buttons so shoppers don't have to re-add products.",
+      "steps": [
+        "On all image slices in the abandoned checkout flow, set the link address to the curly-bracket event variable event.extra.checkout URL.",
+        "You can copy this link from the 'back to my cart' button that Klaviyo already includes in its abandoned cart template.",
+        "This directs each specific person back to the checkout they started, with their products ready so they only need to place the order.",
+        "For browse abandonment, do the equivalent: preview/test the email, open the event properties (product name, ID, price, URL), copy the product URL property, and paste it as the link on 'shop now' slices instead of Klaviyo's default organization URL."
+      ],
+      "caveats": [
+        "Dynamic variable names are Klaviyo-specific and may change — verify in the current template and event preview.",
+        "Copying event properties requires previewing a real triggering event to see the field names."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "abandoned-checkout",
+        "browse-abandonment",
+        "klaviyo",
+        "checkout",
+        "dynamic-content"
+      ],
+      "id": "79cdac8bb86eba4c7cf16b77",
+      "source_id": "1grdlATLu0lJAmHQTZ_0MyExN3jVkt8xi",
+      "source_sha256": "6305409b97bb58ef4e8967d3ff99f3cde0bf6725a849a0291792799883f8c0dd",
+      "source_name": "2026 Klaviyo Email Marketing Full Course (3+ Hours).docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 3
+    },
+    {
+      "title": "Use Klaviyo Templates Only For Dynamic Cart Tables",
+      "summary": "Start abandonment flows from Klaviyo templates to inherit the working dynamic product table, then replace the design with your Figma-built email.",
+      "use_when": "Building abandoned cart, abandoned checkout, or browse abandonment emails where you need a dynamic product table but custom design.",
+      "steps": [
+        "Create the flow from Klaviyo's template (e.g., 'abandoned cart reminder') so the trigger, filters, and dynamic content are pre-built.",
+        "The template includes a two-column table: column one pulls the product image via a dynamic variable, the other shows product title, quantity, and total.",
+        "Delete quantity or total cells if you don't want them shown, keeping just the product name.",
+        "Keep the graphic slices from your Figma design as separate image blocks above/below the dynamic table, mixing static design with the dynamic block.",
+        "Preview for different profiles to confirm the right product images and titles render per recipient.",
+        "Use the template primarily for the dynamic table because building that code from scratch is technical and time-consuming."
+      ],
+      "caveats": [
+        "For post-purchase flows with no dynamic content, the source builds from scratch instead of using a template.",
+        "Verify current template structure and variable names in your Klaviyo account."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "klaviyo",
+        "abandoned-cart",
+        "dynamic-content",
+        "email-design",
+        "abandoned-checkout"
+      ],
+      "id": "a0bdafa6ea4073797a94ed28",
+      "source_id": "1grdlATLu0lJAmHQTZ_0MyExN3jVkt8xi",
+      "source_sha256": "6305409b97bb58ef4e8967d3ff99f3cde0bf6725a849a0291792799883f8c0dd",
+      "source_name": "2026 Klaviyo Email Marketing Full Course (3+ Hours).docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 3
+    },
+    {
+      "title": "Fix Browse Abandonment Filters and Link to the Viewed Product",
+      "summary": "Add the missing added-to-cart filter to Klaviyo's browse abandonment template, then link each email to the specific viewed product, not the homepage.",
+      "use_when": "Setting up the browse abandonment flow for shoppers who viewed a product but took no further action.",
+      "steps": [
+        "Use Klaviyo's browse abandonment template (trigger: viewed product), but note the default profile filters only exclude checkout started and placed order.",
+        "Add the missing filter: added to cart zero times since starting this flow, so only shoppers who haven't moved down the funnel receive it.",
+        "Keep 'has not been in flow in the last 30 days' as a reasonable default for most brands, since browse-stage interest doesn't justify frequent reminders.",
+        "Approve the source's warning about browse abandonment objectives: purchase intent is lower, so write copy that acknowledges this and consider suggesting other products.",
+        "Emphasize social proof heavily for this audience, as they haven't signaled purchase interest yet.",
+        "Branch prospects vs. existing customers and show the viewed products via the dynamic table; replace the template's organization-URL link with the product URL from the viewed-product event so 'shop now' goes to the product page, reducing friction."
+      ],
+      "caveats": [
+        "The 30-day flow re-entry window is the source's default preference, not a calculated rule.",
+        "The source recommends more than the single email Klaviyo provides by default."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "browse-abandonment",
+        "klaviyo",
+        "flow-filters",
+        "social-proof",
+        "product-page"
+      ],
+      "id": "909e75c1eb8da6d99b606aa0",
+      "source_id": "1grdlATLu0lJAmHQTZ_0MyExN3jVkt8xi",
+      "source_sha256": "6305409b97bb58ef4e8967d3ff99f3cde0bf6725a849a0291792799883f8c0dd",
+      "source_name": "2026 Klaviyo Email Marketing Full Course (3+ Hours).docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 3
+    },
+    {
+      "title": "Design Post-Purchase Flows Around First-Time vs. Returning Customers",
+      "summary": "Split the placed-order flow so first-time buyers get onboarding, education, and a proactive service check-in while returning customers get loyalty and cross-sell messages.",
+      "use_when": "Planning the post-purchase flow that fires after an order, especially to improve first-purchase experience and repeat purchase.",
+      "steps": [
+        "Trigger on placed order; add brand-specific filters (e.g., exclude subscription or B2B customers from the standard post-purchase content, or route them to a different flow).",
+        "Do not schedule sends at a fixed time of day (e.g., 9 a.m.) — instead keep relative timing like '1 day after' so emails land when that buyer is typically active.",
+        "For first-time buyers: thank them, then deliver education/resources and use cases so they get full value — a poor first experience makes a return purchase unlikely.",
+        "Include a proactive plain-text customer-service check-in email ('how's it going, let us know if you need help'), which most brands skip and which requires no staff time once automated.",
+        "Then move them toward a next purchase via subscription, loyalty, or other programs.",
+        "Set a conditional split on 'placed order equals 1 over all time' to separate first-timers from returning customers, who instead get loyalty appreciation and personalized cross-sells."
+      ],
+      "caveats": [
+        "The source notes post-purchase flows are highly brand-specific, so filters and content must be set per brand rather than copied.",
+        "The anti-9 a.m. opinion assumes buyer activity patterns match purchase time; it is a stated rationale, not a tested benchmark."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "post-purchase",
+        "customer-retention",
+        "klaviyo",
+        "customer-service",
+        "cross-sell"
+      ],
+      "id": "55898f20e16116a726da3dca",
+      "source_id": "1grdlATLu0lJAmHQTZ_0MyExN3jVkt8xi",
+      "source_sha256": "6305409b97bb58ef4e8967d3ff99f3cde0bf6725a849a0291792799883f8c0dd",
+      "source_name": "2026 Klaviyo Email Marketing Full Course (3+ Hours).docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 3
+    },
+    {
+      "title": "Time Your Win-Back Flow Using Actual Repurchase Data",
+      "summary": "Calculate median and average days between purchases, take a point in between, and delay the win-back flow to that — not Klaviyo's default 90 days.",
+      "use_when": "Setting the initial time delay before your customer win-back flow sends its offer emails.",
+      "steps": [
+        "Pull your order data (e.g., Shopify) and calculate the median and average number of days between a customer's purchases.",
+        "Choose a delay between the median and average rather than guessing.",
+        "Sanity-check the delay against your product's consumption cycle. Example from the source: a food/beverage product consumed within 30 days, with ~5 days shipping, means you can assume after ~45–50 days a customer has likely run out and may need a nudge.",
+        "Build the flow on the placed order trigger with filter 'placed order zero times since starting this flow' so anyone who repurchases drops out automatically.",
+        "Space the win-back emails with longer delays (e.g., 7 days and 5 days per the source) rather than one-day gaps, since you can't know exactly when the customer is ready.",
+        "Content should say 'we miss you,' present a special exclusive offer with urgency, and reiterate why your brand beats the competition before they lapse."
+      ],
+      "caveats": [
+        "The 45–50 day example is a worked illustration, not a universal benchmark — derive your own from your data.",
+        "Klaviyo's default ~90-day delay should not be accepted uncritically per the source."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "win-back",
+        "repurchase",
+        "measurement",
+        "shopify-data",
+        "offer-design"
+      ],
+      "id": "021057848a4f481d8186a8d5",
+      "source_id": "1grdlATLu0lJAmHQTZ_0MyExN3jVkt8xi",
+      "source_sha256": "6305409b97bb58ef4e8967d3ff99f3cde0bf6725a849a0291792799883f8c0dd",
+      "source_name": "2026 Klaviyo Email Marketing Full Course (3+ Hours).docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 3
+    },
+    {
+      "title": "Build a Sunset Flow With a Segment Trigger and Profile Property",
+      "summary": "Identify unengaged subscribers with a segment, send three last-chance emails, then tag and suppress non-responders to protect deliverability and billing.",
+      "use_when": "Setting up the sunset flow to remove chronically unengaged subscribers from your active list.",
+      "steps": [
+        "Build a segment: opened an email zero times in the last 180 days AND clicked an email zero times in the last 180 days AND can still receive email marketing (not already suppressed).",
+        "Create a flow triggered by 'added to segment' using that segment.",
+        "Add profile filters: opened email zero times since starting this flow OR clicked email zero times since starting this flow, so anyone who engages drops out.",
+        "Send three last-chance emails focused on a strong offer, with subject lines that highlight it; use a dynamic code so it can't leak.",
+        "In the final email, tell them they'll be removed from the list unless they engage.",
+        "After a further delay (e.g., 5 days), add a profile property update setting a boolean custom property (e.g., 'unengaged' = true) on anyone who never engaged.",
+        "Create a second segment for 'unengaged = true' AND still able to receive email marketing; once a month, export that segment as CSV and import it under suppressed profiles."
+      ],
+      "caveats": [
+        "The 180-day engagement window is presented as 'usually good for most brands,' i.e., a heuristic.",
+        "Suppression reduces active profiles and can lower Klaviyo billing, but the source frames the primary benefit as deliverability protection."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "deliverability",
+        "sunset-flow",
+        "klaviyo",
+        "suppression",
+        "segmentation"
+      ],
+      "id": "56d433c32a2bc272956c5b13",
+      "source_id": "1grdlATLu0lJAmHQTZ_0MyExN3jVkt8xi",
+      "source_sha256": "6305409b97bb58ef4e8967d3ff99f3cde0bf6725a849a0291792799883f8c0dd",
+      "source_name": "2026 Klaviyo Email Marketing Full Course (3+ Hours).docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 3
+    },
+    {
+      "title": "Set Campaign Cadence From Data, Not Ambition",
+      "summary": "Increase send frequency only while CTR holds and unsubscribes/spam complaints stay flat, and only to a volume you can sustain.",
+      "use_when": "Deciding how many campaigns per week to send for a brand roughly doing $1M–$10M/year.",
+      "steps": [
+        "Decide the target volume based on two questions: what volume maximizes the balance of engagement, deliverability, and ROI, and what volume can you realistically sustain week after week.",
+        "Track click-through rate, unsubscribe rate, and spam complaint rate as you increase frequency.",
+        "If you go from one to four emails per week and those metrics stay roughly flat, you can send more — the list is signaling it wants that volume.",
+        "If metrics deteriorate dramatically, reduce back toward the level that preserves them.",
+        "Choose a cadence you can actually commit to: the source warns against promising four per week and delivering four one week and one the next.",
+        "If needed, start at a sustainable two per week and invest in resources/team before increasing."
+      ],
+      "caveats": [
+        "The $1M–$10M revenue range is the source's stated sweet spot for this guidance.",
+        "The 'metrics stay flat' test is described as a hypothetical illustration of the principle, not a fixed numeric threshold.",
+        "Falling out of cadence risks higher unsubscribes and spam complaints and reduced engagement for seasonal peaks like Black Friday."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "campaigns",
+        "cadence",
+        "deliverability",
+        "measurement",
+        "experiment-design"
+      ],
+      "id": "dbd9ab70c7dbc929960952b7",
+      "source_id": "1grdlATLu0lJAmHQTZ_0MyExN3jVkt8xi",
+      "source_sha256": "6305409b97bb58ef4e8967d3ff99f3cde0bf6725a849a0291792799883f8c0dd",
+      "source_name": "2026 Klaviyo Email Marketing Full Course (3+ Hours).docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 3
+    },
+    {
+      "title": "Product and Collection Spotlight Campaigns",
+      "summary": "Build campaign emails around one product or a thematic collection, going deep on why that specific item is best rather than listing the catalog.",
+      "use_when": "Choosing what to send in a weekly/regular campaign, especially for products you assume customers don't want.",
+      "steps": [
+        "Product spotlight: pick one product and go deep on the details that make it better than competitors — materials, ingredients, construction — surfacing details that exist on the product page but that customers overlook.",
+        "Frame the email around why someone should care about this product specifically, rather than letting it compete with the rest of the catalog.",
+        "Collection spotlight: group products by a theme or common thread rather than by store category. Example cited: a 'head-to-toe neutrals' collection that pulls from separate tops and bottoms categories.",
+        "Use this framing even for slower products — the source argues results often surprise brands that assume they aren't wanted."
+      ],
+      "caveats": [
+        "The claim that spotlighting non-bestsellers 'shocks' brands is anecdotal from the source's agency work, not a measured benchmark.",
+        "The source reports these campaign types perform well for roughly 99% of brands based on agency data, not a controlled study."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "campaigns",
+        "merchandising",
+        "product-page",
+        "collection-strategy",
+        "creative-strategy"
+      ],
+      "id": "826d4337358d887c91fcd4bc",
+      "source_id": "1grdlATLu0lJAmHQTZ_0MyExN3jVkt8xi",
+      "source_sha256": "6305409b97bb58ef4e8967d3ff99f3cde0bf6725a849a0291792799883f8c0dd",
+      "source_name": "2026 Klaviyo Email Marketing Full Course (3+ Hours).docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 3
+    },
+    {
+      "title": "Benefit-Focused Campaigns: One Benefit Per Email",
+      "summary": "Isolate a single product benefit and build an entire email around it instead of listing all benefits at once.",
+      "use_when": "Planning campaign content when you have multiple selling points and want higher conversion from a specific customer segment.",
+      "steps": [
+        "List the reasons different customer segments might buy your product (e.g., water savings, durability, materials).",
+        "Pick one benefit that matters disproportionately to a segment on your list.",
+        "Devote a full email to that benefit and its 'what's in it for me' — treat a single product-page bullet as the whole email premise.",
+        "Example cited: a shower-head brand building an email around 'over a billion gallons saved' rather than listing it alongside other features.",
+        "This approach lets you send more campaigns without repeating yourself, speaking to different benefits in turn."
+      ],
+      "caveats": [
+        "The source notes this works when one segment will overwhelmingly care about the angle — testing different angles is advised rather than assuming.",
+        "Not a universal rule for every product with only one benefit to offer."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "campaigns",
+        "offer-design",
+        "segmentation",
+        "creative-strategy",
+        "conversion-optimization"
+      ],
+      "id": "783cb03489e374913be326a1",
+      "source_id": "1grdlATLu0lJAmHQTZ_0MyExN3jVkt8xi",
+      "source_sha256": "6305409b97bb58ef4e8967d3ff99f3cde0bf6725a849a0291792799883f8c0dd",
+      "source_name": "2026 Klaviyo Email Marketing Full Course (3+ Hours).docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 3
+    },
+    {
+      "title": "Use Content and Education Campaigns to Seed Purchase Intent",
+      "summary": "Repurpose blog/social content or teach a problem in email, then tie it back to the product you sell.",
+      "use_when": "Filling the campaign calendar when you don't have a promotion running, or when your product needs category education.",
+      "steps": [
+        "Content spotlight: reformat existing blog or Instagram/TikTok content into an email, or use email to drive subscribers to content they haven't seen on other channels.",
+        "Structure the email so the first section teases and links to the content, then a second section presents the product from that content as available to shop.",
+        "Example cited: a client blog post on spotting food-allergy signs was turned into an email that teased the post and linked out, then promoted the brand's allergen-introduction products — parents learn the signs, then get offered a solution.",
+        "Education spotlight: teach the category or ingredient deeply rather than listing benefits. Example cited: explaining everything about argan oil so readers connect the dots themselves, or a 'three reasons wet wipes are not your friend' email that makes the case against the alternative before presenting the brand's product.",
+        "Use weekly newsletters (creation or curation — memes, playlists, industry news) to stay top of mind affordably when time is tight."
+      ],
+      "caveats": [
+        "The blog-email conversion success is an agency case example, not a guaranteed result.",
+        "Education angles work best when your product/ingredients genuinely benefit from explanation."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "campaigns",
+        "content-marketing",
+        "education",
+        "creative-strategy",
+        "retention"
+      ],
+      "id": "d70e0719ccfaebd870118fe8",
+      "source_id": "1grdlATLu0lJAmHQTZ_0MyExN3jVkt8xi",
+      "source_sha256": "6305409b97bb58ef4e8967d3ff99f3cde0bf6725a849a0291792799883f8c0dd",
+      "source_name": "2026 Klaviyo Email Marketing Full Course (3+ Hours).docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 3
+    }
+  ],
+  "request_id": "61d0bd07bbd2cb63186c78ddc77a998f047163965068c4ac56f9df4c7621b96f",
+  "ecommerce_scope_version": 1
+}

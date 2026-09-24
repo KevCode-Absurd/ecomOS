@@ -1,0 +1,510 @@
+{
+  "cards": [
+    {
+      "title": "Technical SEO on Shopify: Audit Order and Purpose",
+      "summary": "Run a three-step Shopify technical SEO audit (manual, crawl, Search Console) as the foundation before content or link work.",
+      "use_when": "Before investing in content marketing or link building for your store; when organic rankings are stagnant and you don't know if the technical foundation is broken.",
+      "steps": [
+        "Understand the mechanism: Google spends a limited crawl budget per site, so cleaning up duplicates and low-value pages lowers the 'cost of retrieval' and improves your odds of ranking.",
+        "Step 1 - Manually review the store for the known Shopify issue classes: product URL duplication from collection paths, auto-generated tag/vendor/type pages, unredirected deleted products, variant duplication, missing structured data.",
+        "Step 2 - Crawl the whole site with a crawler such as Sitebulb, using the Chrome (JS-rendering) crawler and a mobile user agent since Google uses mobile-first indexing. Enable structured data checks in crawl settings.",
+        "Step 3 - Open Google Search Console and review Page Indexing for 404s, 'crawled - currently not indexed,' robots.txt blocks, and the Shopping/Enhancements structured data reports.",
+        "Prioritize critical and high-severity crawl issues first, then work down the list. Fix redirects on unintended 404s (301 to the relevant live page) to recover traffic and preserve link equity."
+      ],
+      "caveats": [
+        "Presenter's opinion: technical SEO is the mandatory first step; skipping it undermines even excellent content and backlinks.",
+        "Sitebulb and GSC interfaces change - verify current menu names.",
+        "Large stores with thousands of pages are most affected, but small stores still benefit."
+      ],
+      "tags": [
+        "search",
+        "technical-seo",
+        "site-audit",
+        "search-console",
+        "crawlability",
+        "indexing",
+        "shopify"
+      ],
+      "id": "6b922910be5636aa4d47cbf5",
+      "source_id": "1auRfTru5x54m8nlBa6w5kN4eomlWF7RE",
+      "source_sha256": "822727a8148b91821066133079018cf0381ed5adc02b9c3951df866dec74dae5",
+      "source_name": "Beginners Guide to Shopify SEO - Full Course (4+ Hour Masterclass).docx",
+      "folder": "/15-SEO-search",
+      "domain": "search",
+      "section": 0
+    },
+    {
+      "title": "Fix Shopify Product URL Duplication (Within-Collection Paths)",
+      "summary": "Remove the within-collection URL parameter in Shopify theme code so product links always resolve to the canonical /products/ URL.",
+      "use_when": "When auditing technical SEO on a Shopify store and product URLs appear as /collections/x/products/y when navigated from a collection.",
+      "steps": [
+        "Navigate to a product via two different collections and confirm the URL changes (e.g., .../collections/healthy-beef-jerky/products/... vs .../collections/jerky/products/...).",
+        "View source and locate the canonical tag: Shopify usually still points canonical to the clean /products/handle URL, so Google needs to reconcile multiple URLs and duplicates waste crawl budget.",
+        "Go to Shopify admin > Online Store > Edit code, open Snippets and find the product grid snippet (commonly main-collection-product-grid.liquid or another file with 'grid' in the name).",
+        "Search the snippet for 'within_collection' and delete that parameter, then save. Repeat for all instances of within_collection across theme files.",
+        "Note that some newer themes already omit this parameter - if you can't find it, no action is needed."
+      ],
+      "caveats": [
+        "Editing this can break URL-derived breadcrumbs - see the breadcrumb meta field card.",
+        "Always back up your theme before editing; if unsure, ask a developer or AI assistant where to place code.",
+        "Remove from every occurrence, not just the first."
+      ],
+      "tags": [
+        "search",
+        "technical-seo",
+        "url-structure",
+        "shopify",
+        "theme-code",
+        "crawlability"
+      ],
+      "id": "d8681a26d74e3629e465eb8b",
+      "source_id": "1auRfTru5x54m8nlBa6w5kN4eomlWF7RE",
+      "source_sha256": "822727a8148b91821066133079018cf0381ed5adc02b9c3951df866dec74dae5",
+      "source_name": "Beginners Guide to Shopify SEO - Full Course (4+ Hour Masterclass).docx",
+      "folder": "/15-SEO-search",
+      "domain": "search",
+      "section": 0
+    },
+    {
+      "title": "Rebuild Shopify Breadcrumbs With a Meta Field After URL Fix",
+      "summary": "Shopify builds breadcrumbs from the URL path, so fixing product URLs breaks them - store collection links in a breadcrumb meta field and render from that.",
+      "use_when": "After removing the within_collection parameter (or any time breadcrumbs on product/collection pages disappear or show wrong hierarchy).",
+      "steps": [
+        "In Shopify admin, go to Content > Metaobjects > Manage definitions, select Products, and create a new definition such as 'breadcrumb'.",
+        "Set it to global and choose type URL (avoid the collection type, which can create issues).",
+        "For each product, store the URL of the collection it belongs to in that meta field.",
+        "Modify the theme's breadcrumb section/snippet to render the link from that meta field instead of Shopify's default URL-derived breadcrumb.",
+        "This also gives manual control over what each breadcrumb says rather than relying on URL parsing."
+      ],
+      "caveats": [
+        "Best done with at least some theme code comfort; the source suggests asking ChatGPT to help place the code if non-developer.",
+        "Best practice: same manual meta-field approach for collection pages.",
+        "Full how-to code isn't fully given here - verify instructions in current Shopify theme docs."
+      ],
+      "tags": [
+        "search",
+        "technical-seo",
+        "breadcrumbs",
+        "shopify",
+        "theme-code",
+        "navigation"
+      ],
+      "id": "97c5e148f6398997e725caf1",
+      "source_id": "1auRfTru5x54m8nlBa6w5kN4eomlWF7RE",
+      "source_sha256": "822727a8148b91821066133079018cf0381ed5adc02b9c3951df866dec74dae5",
+      "source_name": "Beginners Guide to Shopify SEO - Full Course (4+ Hour Masterclass).docx",
+      "folder": "/15-SEO-search",
+      "domain": "search",
+      "section": 0
+    },
+    {
+      "title": "No-Index Auto-Generated Tag, Vendor, Type, and Utility Pages",
+      "summary": "Shopify generates thin tag/vendor/type/utility pages that can't be customized, so set them to noindex, follow.",
+      "use_when": "When the store has many product tags (sizes, colors, skin types) or blog tags, or when GSC shows many thin/duplicate pages indexed.",
+      "steps": [
+        "Understand the issue: tags with spaces become ugly URLs, auto-generated tag pages can't have unique titles/H1s/meta descriptions, and sites with thousands of products/posts produce thousands of thin duplicate pages.",
+        "For product tags and blog tags, add the provided noindex, follow code snippet to your theme.liquid file.",
+        "For vendor and product-type pages, add the corresponding noindex, follow snippets to theme.liquid as well.",
+        "Also noindex site utility pages: all collections, all products, new products - they target no keywords and serve no SEO purpose.",
+        "Do NOT index tags you actually want: create a real dedicated collection page for that tag instead (e.g., 'moisturizers for dry skin'), so you control H1, URL, title, and content."
+      ],
+      "caveats": [
+        "Find the correct spot in theme.liquid via a developer or AI assistant - Shopify's theme structure varies by theme.",
+        "Noindex, follow preserves link equity while preventing indexation."
+      ],
+      "tags": [
+        "search",
+        "technical-seo",
+        "indexing",
+        "shopify",
+        "tag-pages",
+        "thin-content"
+      ],
+      "id": "c45f3f4a4121a58752446fa7",
+      "source_id": "1auRfTru5x54m8nlBa6w5kN4eomlWF7RE",
+      "source_sha256": "822727a8148b91821066133079018cf0381ed5adc02b9c3951df866dec74dae5",
+      "source_name": "Beginners Guide to Shopify SEO - Full Course (4+ Hour Masterclass).docx",
+      "folder": "/15-SEO-search",
+      "domain": "search",
+      "section": 0
+    },
+    {
+      "title": "Custom robots.txt on Shopify: Block Low-Value Pages",
+      "summary": "Create a custom robots.txt in a Shopify template to block crawling of auto-generated, duplicate, and low-value pages.",
+      "use_when": "After you have set low-value pages to noindex, as defense-in-depth to save crawl budget from duplicate/tag/vendor churn.",
+      "steps": [
+        "Go to Shopify admin > Online Store > Edit code > Templates and click Add a new template, selecting the robots.txt template type.",
+        "Add rules blocking crawling of: all product collections, vendor pages, product type pages, product tag pages, and blog tag pages.",
+        "Replace any placeholder domain with your real domain in the snippets.",
+        "Check your current robots.txt by visiting yourdomain.com/robots.txt.",
+        "PREREQUISITE: Only block these if you already fixed the product URL duplication, since mismatched rules can create crawl problems for products."
+      ],
+      "caveats": [
+        "Proceed with caution - the presenter explicitly warns that these rules can cause crawl issues if you don't fully understand them.",
+        "If already noindexed via other means, robots.txt changes add redundancy rather than new treatment.",
+        "Verify current Shopify template behavior against live docs before deploying."
+      ],
+      "tags": [
+        "search",
+        "technical-seo",
+        "robots-txt",
+        "crawl-budget",
+        "shopify",
+        "indexing"
+      ],
+      "id": "9098b567f5957016219815d1",
+      "source_id": "1auRfTru5x54m8nlBa6w5kN4eomlWF7RE",
+      "source_sha256": "822727a8148b91821066133079018cf0381ed5adc02b9c3951df866dec74dae5",
+      "source_name": "Beginners Guide to Shopify SEO - Full Course (4+ Hour Masterclass).docx",
+      "folder": "/15-SEO-search",
+      "domain": "search",
+      "section": 0
+    },
+    {
+      "title": "Manage Variant Duplication: Merge or Canonicalize",
+      "summary": "Merge low-search-volume variants into one product, or keep them but point canonical tags at the primary product URL.",
+      "use_when": "When color/size variants each create near-duplicate product listings (e.g., cotton sock green vs cotton sock black) with no distinct descriptions or search volume.",
+      "steps": [
+        "Assess whether the variant difference has meaningful search demand and whether the variant page would have genuinely unique content (description, H1, title).",
+        "Option 1 - Merge: create one Shopify product with the variants as options, keeping one URL and one content set. This keeps the site clean and avoids duplicate pages.",
+        "Option 2 - Canonicalize: create separate variant products but use a custom metafield holding the canonical URL, editable in bulk via Shopify admin (paste the primary product URL for each variant).",
+        "Or update the theme to read that canonical metafield and emit the canonical tag - ask a developer or AI assistant for placement.",
+        "Goal either way: search engines index only the primary product page while users can still browse variants."
+      ],
+      "caveats": [
+        "Do not create separate variant pages when there is no significant search volume - that creates thin duplicates.",
+        "Presenter's judgment, not a hard benchmark; the threshold of 'significant search volume' is contextual."
+      ],
+      "tags": [
+        "search",
+        "technical-seo",
+        "product-variants",
+        "canonical-tags",
+        "duplicate-content",
+        "shopify"
+      ],
+      "id": "4c936159bddbfdbdbae0b3e8",
+      "source_id": "1auRfTru5x54m8nlBa6w5kN4eomlWF7RE",
+      "source_sha256": "822727a8148b91821066133079018cf0381ed5adc02b9c3951df866dec74dae5",
+      "source_name": "Beginners Guide to Shopify SEO - Full Course (4+ Hour Masterclass).docx",
+      "folder": "/15-SEO-search",
+      "domain": "search",
+      "section": 0
+    },
+    {
+      "title": "Redirect Deleted Products to Preserve Redirect Path and Link Equity",
+      "summary": "Never let deleted product URLs 404 - 301 redirect them to a related product or collection to keep visitors and link equity.",
+      "use_when": "Whenever a product is removed or discontinued and was previously live, especially if it received traffic or backlinks.",
+      "steps": [
+        "Before or immediately after deleting, go to Shopify admin > Online Store > Navigation > View URL redirects.",
+        "Add a redirect from the deleted product URL to a relevant replacement product or collection page - not the homepage unless nothing relevant exists.",
+        "Save the redirect.",
+        "Confirm in Google Search Console that old URLs return 301s rather than 404s.",
+        "This preserves link equity from any external links to the deleted product and prevents bad user experiences."
+      ],
+      "caveats": [
+        "A 404 does not automatically harm rankings, but redirecting relevant pages preserves equity and UX per the source's practice.",
+        "Redirect to genuinely relevant pages; redirecting everything to the homepage is noted as suboptimal."
+      ],
+      "tags": [
+        "search",
+        "technical-seo",
+        "redirects",
+        "link-equity",
+        "shopify",
+        "user-experience"
+      ],
+      "id": "abd78e24fb447afb7e4139bb",
+      "source_id": "1auRfTru5x54m8nlBa6w5kN4eomlWF7RE",
+      "source_sha256": "822727a8148b91821066133079018cf0381ed5adc02b9c3951df866dec74dae5",
+      "source_name": "Beginners Guide to Shopify SEO - Full Course (4+ Hour Masterclass).docx",
+      "folder": "/15-SEO-search",
+      "domain": "search",
+      "section": 0
+    },
+    {
+      "title": "Remove Pages from Shopify Sitemaps Correctly (Avoid the Hidden SEO Trap)",
+      "summary": "Shopify requires manual sitemap exclusion, and the hidden SEO checkbox also forces noindex, nofollow - use the theme meta tag instead.",
+      "use_when": "When you canonicalize or want to exclude pages from the sitemap without preventing them from ranking (e.g., variant or parameter pages).",
+      "steps": [
+        "Unlike WordPress, Shopify does NOT automatically remove canonicalized/noindexed pages from the sitemap.",
+        "Shopify exposes a hidden SEO field for products/pages (accessible via a special admin URL path; verify current mechanics). Setting its toggle to true removes the URL from the sitemap.",
+        "CAUTION: setting the hidden SEO toggle also sets the page to noindex, nofollow - bad if you only wanted sitemap exclusion.",
+        "To bypass that side effect, edit theme.liquid, find the relevant section, and replace it with the provided code snippet so the page is excluded from the sitemap without noindex, nofollow.",
+        "Test by requesting the sitemap after the change."
+      ],
+      "caveats": [
+        "Editing theme code without developer experience risks breaking structured output; the presenter advises caution.",
+        "Shopify admin internals change - validate the current hidden SEO field behavior before relying on it.",
+        "Sitemaps support discovery; submission does not guarantee crawling, indexing or rankings."
+      ],
+      "tags": [
+        "search",
+        "technical-seo",
+        "sitemap",
+        "shopify",
+        "indexing",
+        "theme-code"
+      ],
+      "id": "9dc7ea365326d74c8304e2a7",
+      "source_id": "1auRfTru5x54m8nlBa6w5kN4eomlWF7RE",
+      "source_sha256": "822727a8148b91821066133079018cf0381ed5adc02b9c3951df866dec74dae5",
+      "source_name": "Beginners Guide to Shopify SEO - Full Course (4+ Hour Masterclass).docx",
+      "folder": "/15-SEO-search",
+      "domain": "search",
+      "section": 0
+    },
+    {
+      "title": "Implement Product, Article, and Breadcrumb Structured Data",
+      "summary": "Verify and enrich schema so products show price, ratings, shipping, and returns in search results, and breadcrumbs show hierarchy.",
+      "use_when": "When you want rich snippets for product and blog listings, or when auditing technical SEO to ensure schema is valid.",
+      "steps": [
+        "Product schema: most Shopify themes include basic product schema, but verify it is actually output and includes the key properties your theme supports (price, availability, ratings, shipping/return info where relevant).",
+        "Article schema for blog posts: check the theme's default output and verify key properties are present; blog articles pulling in rich results supports content-led SEO.",
+        "BreadcrumbList schema: check the theme's breadcrumbs.liquid snippet under Snippets to ensure it emits BreadcrumbList markup that reflects your site hierarchy.",
+        "Use GSC's Shopping/Enhancements structured data report and a crawler's structured data check to catch errors (often trivial, like a missing comma).",
+        "If implementation is beyond you, get a developer - the payoff is richer SERP presentation and clearer context for Google."
+      ],
+      "caveats": [
+        "Exact key property lists weren't enumerated in the source; verify against schema.org and current Google rich results requirements.",
+        "Schema issues can silently lose rich snippet eligibility."
+      ],
+      "tags": [
+        "search",
+        "technical-seo",
+        "structured-data",
+        "schema",
+        "rich-snippets",
+        "shopify"
+      ],
+      "id": "15208e629d08181d341e5309",
+      "source_id": "1auRfTru5x54m8nlBa6w5kN4eomlWF7RE",
+      "source_sha256": "822727a8148b91821066133079018cf0381ed5adc02b9c3951df866dec74dae5",
+      "source_name": "Beginners Guide to Shopify SEO - Full Course (4+ Hour Masterclass).docx",
+      "folder": "/15-SEO-search",
+      "domain": "search",
+      "section": 0
+    },
+    {
+      "title": "Posture Site Speed: Avoid Bloat Rather Than Optimize",
+      "summary": "Shopify is fast out of the box; site speed work mostly means avoiding heavy themes, oversized images, and unused/unconditional apps.",
+      "use_when": "When store pages feel slow, mobile conversion lags, or before adding new apps, sliders, or hero assets.",
+      "steps": [
+        "Acknowledge the baseline: Shopify's hosting, browser caching, and CDN make a bare store fast. Speed degrades from added factors.",
+        "Diagnose with Google PageSpeed Insights to see actual bottlenecks and third-party impact.",
+        "Apply the fixes in priority order: lightweight theme, image format/size optimization, lazy loading, removing dead app code, conditional app scripts, minification.",
+        "Treat speed as both a conversion lever (bounce/abandonment) and a (modest) ranking signal, per the source's cited data."
+      ],
+      "caveats": [
+        "The source cites Semrush/Search Engine Watch graphics for speed-to-conversion and speed-to-ranking relationships but reports the ranking effect as slight.",
+        "Precise speed benchmarks vary by store and connection; no universal target is established here."
+      ],
+      "tags": [
+        "search",
+        "site-speed",
+        "conversion-optimization",
+        "shopify",
+        "pagespeed",
+        "diagnostics"
+      ],
+      "id": "6223d92e1e72aa84b8671111",
+      "source_id": "1auRfTru5x54m8nlBa6w5kN4eomlWF7RE",
+      "source_sha256": "822727a8148b91821066133079018cf0381ed5adc02b9c3951df866dec74dae5",
+      "source_name": "Beginners Guide to Shopify SEO - Full Course (4+ Hour Masterclass).docx",
+      "folder": "/15-SEO-search",
+      "domain": "search",
+      "section": 0
+    },
+    {
+      "title": "Choose Lightweight Themes and Cut Hero/Grid Bloat",
+      "summary": "Prefer lean themes (Dawn free; Palo Alto paid) and replace sliders, carousels, and oversized grids with simpler components.",
+      "use_when": "At store build time or when auditing an existing Shopify theme that feels sluggish on mobile.",
+      "steps": [
+        "If starting fresh, choose a lightweight, efficiently coded theme: Dawn is suggested for free, Palo Alto when budget allows.",
+        "Audit an existing theme for bloat: count sliders/carousels, hero styles, and oversized product grids.",
+        "Replace a slider with a single static hero image.",
+        "Cut product carousels from large counts (the source's example: 64 items) to a manageable number (~8) if the design allows.",
+        "These structural simplifications improve speed without needing code-level optimization."
+      ],
+      "caveats": [
+        "Theme recommendations reflect the presenter's opinion and may date; verify current theme marketplace options.",
+        "Reducing components can affect merchandising/design - balance speed with conversion needs."
+      ],
+      "tags": [
+        "search",
+        "site-speed",
+        "theme-selection",
+        "merchandising",
+        "shopify",
+        "mobile"
+      ],
+      "id": "1a7d18d205edbff4bd672c43",
+      "source_id": "1auRfTru5x54m8nlBa6w5kN4eomlWF7RE",
+      "source_sha256": "822727a8148b91821066133079018cf0381ed5adc02b9c3951df866dec74dae5",
+      "source_name": "Beginners Guide to Shopify SEO - Full Course (4+ Hour Masterclass).docx",
+      "folder": "/15-SEO-search",
+      "domain": "search",
+      "section": 0
+    },
+    {
+      "title": "Optimize Image Format and Compression for Speed",
+      "summary": "Use WebP/JPEG for product images, WebP/PNG for hero text graphics, SVG for logos, and auto-compress with an app.",
+      "use_when": "When preparing product photography, hero images, logos, or auditing an image-heavy collection page.",
+      "steps": [
+        "Choose format by role: WebP or JPEG for product photos; WebP for hero images and text graphics (good quality/size balance); PNG for lossless/absolute clarity; SVG for logos and icons (vector, crisp, tiny).",
+        "Compress existing images app-side: the source uses Crush Pixels (Shopify app) which auto-compresses on upload, commonly cutting file sizes ~50%.",
+        "For manual compression, the source cites Crush Pics app results (nearly identical visual quality, ~50% smaller).",
+        "Resize images before upload so you never upload desktop-resolution images for mobile consumption.",
+        "Adopt srcset for responsive images: let browsers load an appropriately sized source per device - mobile loads small, high-DPI loads large."
+      ],
+      "caveats": [
+        "Percentages cited are the presenter's example, not a guaranteed benchmark.",
+        "srcset requires theme code edits - may need a developer.",
+        "App names/features change; verify current Shopify app listings."
+      ],
+      "tags": [
+        "search",
+        "site-speed",
+        "images",
+        "webp",
+        "shopify",
+        "core-web-vitals"
+      ],
+      "id": "3472ce4f007f429b8b04d715",
+      "source_id": "1auRfTru5x54m8nlBa6w5kN4eomlWF7RE",
+      "source_sha256": "822727a8148b91821066133079018cf0381ed5adc02b9c3951df866dec74dae5",
+      "source_name": "Beginners Guide to Shopify SEO - Full Course (4+ Hour Masterclass).docx",
+      "folder": "/15-SEO-search",
+      "domain": "search",
+      "section": 0
+    },
+    {
+      "title": "Lazy Load Offscreen Images on Collection Pages",
+      "summary": "Delay loading images until they approach the viewport so long product grids don't load every image up front.",
+      "use_when": "On collection/category pages with many product images (e.g., 36-grid) where only the first rows are visible at load.",
+      "steps": [
+        "Understand the mechanism: by default the browser loads every image at once, but only the first visible rows matter for initial load time.",
+        "Add the lazysizes.js library to the theme's assets folder.",
+        "Modify theme.liquid to include the lazysizes.js script.",
+        "Update image tags: replace the src attribute with data-src and add the lazyload class to the image.",
+        "Save and test on mobile - offscreen images should only load as the user scrolls."
+      ],
+      "caveats": [
+        "Over-lazy-loading above-the-fold images can hurt LCP - do not lazy-load the hero.",
+        "Source gives one library (lazysizes); modern browsers support native loading='lazy' as an alternative to verify.",
+        "Requires theme code deployment; back up first."
+      ],
+      "tags": [
+        "search",
+        "site-speed",
+        "lazy-loading",
+        "collections",
+        "shopify",
+        "theme-code"
+      ],
+      "id": "00a2fbad5f22d9e312a180e2",
+      "source_id": "1auRfTru5x54m8nlBa6w5kN4eomlWF7RE",
+      "source_sha256": "822727a8148b91821066133079018cf0381ed5adc02b9c3951df866dec74dae5",
+      "source_name": "Beginners Guide to Shopify SEO - Full Course (4+ Hour Masterclass).docx",
+      "folder": "/15-SEO-search",
+      "domain": "search",
+      "section": 0
+    },
+    {
+      "title": "Audit and Remove Unused App Code from Themes",
+      "summary": "Uninstalling a Shopify app often leaves its scripts behind in the theme, so sweep with PageSpeed Insights and remove orphan code.",
+      "use_when": "After uninstalling apps, or when third-party script overhead is flagged on the store.",
+      "steps": [
+        "Recognize that uninstalling an app does not always remove its code injections from the theme.",
+        "Run Google PageSpeed Insights and read the 'Reduce the impact of third-party code' findings.",
+        "Look for scripts serving from domains of apps you no longer use, and any code not serving the current setup.",
+        "Remove obsolete app code from theme files, or have a developer do it to avoid breaking live functionality.",
+        "Only install essential apps; where possible, bake functionality into theme code instead of adding another app."
+      ],
+      "caveats": [
+        "Removing the wrong snippet can break live features - the source recommends a developer for pinpoint-safe removal.",
+        "There's no built-in Shopify 'app cleanup' guarantee; residue varies by app."
+      ],
+      "tags": [
+        "search",
+        "site-speed",
+        "third-party-scripts",
+        "shopify",
+        "app-management",
+        "pagespeed"
+      ],
+      "id": "959f69db4f65295b23d745a7",
+      "source_id": "1auRfTru5x54m8nlBa6w5kN4eomlWF7RE",
+      "source_sha256": "822727a8148b91821066133079018cf0381ed5adc02b9c3951df866dec74dae5",
+      "source_name": "Beginners Guide to Shopify SEO - Full Course (4+ Hour Masterclass).docx",
+      "folder": "/15-SEO-search",
+      "domain": "search",
+      "section": 0
+    },
+    {
+      "title": "Conditionally Load App Scripts by Page Type",
+      "summary": "Load each app's scripts only on pages where they're needed instead of sitewide via theme.liquid.",
+      "use_when": "When review widgets, zoom scripts, custom-option code, or social share buttons load on every page and slow unrelated pages.",
+      "steps": [
+        "Identify where each app's scripts currently load (typically theme.liquid sitewide).",
+        "Map scripts to pages: product previews/reviews, image zoom, custom options -> product pages only; social share buttons -> blog posts only.",
+        "In theme.liquid or relevant templates, wrap each script in a Liquid condition so it only renders on the matching template (e.g., only when template contains 'product').",
+        "Save and verify the feature still works on its intended page and no longer loads elsewhere.",
+        "If uncomfortable with code, have a developer implement the conditionals."
+      ],
+      "caveats": [
+        "Conditional includes can break if apps assume their scripts load globally - test each feature.",
+        "Requires theme edit and periodic re-audit when apps update."
+      ],
+      "tags": [
+        "search",
+        "site-speed",
+        "third-party-scripts",
+        "shopify",
+        "theme-code",
+        "conditional-loading"
+      ],
+      "id": "504893b96bd4ec77ee263cef",
+      "source_id": "1auRfTru5x54m8nlBa6w5kN4eomlWF7RE",
+      "source_sha256": "822727a8148b91821066133079018cf0381ed5adc02b9c3951df866dec74dae5",
+      "source_name": "Beginners Guide to Shopify SEO - Full Course (4+ Hour Masterclass).docx",
+      "folder": "/15-SEO-search",
+      "domain": "search",
+      "section": 0
+    },
+    {
+      "title": "Minify JavaScript and CSS to Reduce File Size",
+      "summary": "Strip comments, spacing, and line breaks from JS/CSS to shrink files and speed up loading.",
+      "use_when": "When PageSpeed or an audit shows unminified JS/CSS asset opportunities on the store.",
+      "steps": [
+        "Understand minification: remove developer-only characters (spaces, line breaks, comments) without changing functionality.",
+        "For a no-code route, use a Shopify app like File Optimizer to auto-minify assets.",
+        "For manual JS minification, use a tool such as JSCompress.",
+        "For CSS, Shopify offers a built-in route - the source notes you can convert CSS to the .doc.css form (verify current Shopify asset/SCSS handling).",
+        "Apply, then re-run PageSpeed to confirm reduced transfer sizes."
+      ],
+      "caveats": [
+        "Keep an unminified copy for future editing.",
+        "App names and Shopify's built-in CSS handling evolve - verify current dashboard options."
+      ],
+      "tags": [
+        "search",
+        "site-speed",
+        "minification",
+        "javascript",
+        "css",
+        "shopify"
+      ],
+      "id": "ac5223c74551ca2115398b36",
+      "source_id": "1auRfTru5x54m8nlBa6w5kN4eomlWF7RE",
+      "source_sha256": "822727a8148b91821066133079018cf0381ed5adc02b9c3951df866dec74dae5",
+      "source_name": "Beginners Guide to Shopify SEO - Full Course (4+ Hour Masterclass).docx",
+      "folder": "/15-SEO-search",
+      "domain": "search",
+      "section": 0
+    }
+  ],
+  "request_id": "b63b84bc7e6b2548c8b73f301fd73a87b9317490cfac5c9b1783ed5505552d2d",
+  "ecommerce_scope_version": 1,
+  "local_recovery": "Added missing colon before steps array; no paid retry."
+}

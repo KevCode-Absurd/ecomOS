@@ -1,0 +1,267 @@
+{
+  "request_id": "0adf8ae2d00c3c1311223fc2722b5df1450d684f665ea74a11c193565ea13b51",
+  "provider": "deepseek",
+  "model": "deepseek-flash",
+  "effort": "none",
+  "completion_limit": 16384,
+  "usage": {
+    "prompt_tokens": 4658,
+    "completion_tokens": 3302,
+    "total_tokens": 7960,
+    "prompt_tokens_details": {
+      "cached_tokens": 512
+    },
+    "prompt_cache_hit_tokens": 512,
+    "prompt_cache_miss_tokens": 4146
+  },
+  "booked_cost_usd": 0.0053598,
+  "seconds": 19.75,
+  "finish_reason": "stop",
+  "output": {
+    "cards": [
+      {
+        "title": "RCS vs SMS/MMS: what changes in the message",
+        "summary": "RCS is a distinct messaging protocol with SMS fallback that upgrades text-only or single-image messages into rich carousels, video, web views and native action buttons.",
+        "use_when": "Deciding whether to pilot RCS for campaign sends or transactional/drop messaging, and scoping which message formats to build for it.",
+        "steps": [
+          "Understand RCS as a separate protocol from SMS/MMS, not a formatting tweak: SMS is text-only, MMS adds an image, RCS supports carousels, scrolling, video and embedded web views inside the messaging thread. Where a recipient can't receive RCS, the message falls back to SMS, so keep an SMS-safe version of every send.",
+          "Exploit native phone integrations for commerce use cases: action buttons can be programmed as any CTA, and calendar functionality lets a pre-launch drop message offer 'add to calendar' instead of 'watch this space' — replacing a reminder prompt with an actual saved event.",
+          "Know that consumers are already trained on this interaction pattern (iMessage-style rich bubbles have existed for years), so richer messages don't require teaching the customer new behavior.",
+          "Treat RCS as an early-adopter inbox-distinction play: the present lift partly comes from standing out versus SMS-only brands, and the source expects that advantage to diminish as adoption grows.",
+          "Weigh the cost: RCS is somewhat more expensive than SMS because carriers take a cut, so a pilot should be judged on incremental performance, not just message-level cost."
+        ],
+        "caveats": [
+          "The source's claim of outsized RCS performance over SMS/MMS is a current observation from one provider and its brand base, not a benchmark; the source itself names carrier cost/performance as the main threat to the channel.",
+          "RCS availability details vary and change quickly — verify current device and carrier coverage before planning a send.",
+          "Live brand example mentioned: one brand switched to RCS with a holdout group running to measure incremental impact."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "sms",
+          "rcs",
+          "creative-strategy",
+          "campaign-sends",
+          "measurement",
+          "retention",
+          "conversion-optimization"
+        ]
+      },
+      {
+        "title": "Test RCS by holding out or running a clean flow",
+        "summary": "Operationalize an RCS switch with either a holdout group for incremental read or a deliberately simple one-to-one flow for a cleaner test signal.",
+        "use_when": "Launching or planning a first RCS campaign and needing to decide how to structure the test so results are trustworthy.",
+        "steps": [
+          "Choose your measurement design up front. One option discussed: run a holdout so you can read the incremental impact of the new RCS experience versus the baseline SMS path. The other option: keep the RCS flow deliberately one-to-one and simple first, then test richer elements (carousels, cards) so the effect of each addition is cleaner.",
+          "If you change flow and format at the same time, you can't attribute lift to RCS versus your new creative — separate the protocol change from the creative change where possible.",
+          "Only after a clean baseline read should you layer richer formats: carousels for recommendations, web views for expanded browsing, action buttons for CTAs.",
+          "Build the SMS fallback version of each RCS send so the holdout/control experience is a true comparison, not a broken message."
+        ],
+        "caveats": [
+          "The source only states this as an intended approach ('we'll probably go a little bit more one to one and then we'll test to get a cleaner read') — it is a plan, not a proven result.",
+          "Early-adopter novelty effects can inflate RCS lift; expect the advantage to shrink as more brands adopt the channel."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "sms",
+          "rcs",
+          "experiment-design",
+          "measurement",
+          "campaign-sends",
+          "conversion-optimization"
+        ]
+      },
+      {
+        "title": "Conversational carousels for product recommendation",
+        "summary": "Use RCS carousels inside a conversational thread to answer 'what do you recommend' with a small set of tailored best-sellers plus a native web view.",
+        "use_when": "Merchandising and PDP/landing-page substitution inside SMS/RCS: when a customer asks for a recommendation and you need to move them to a purchase path in-thread.",
+        "steps": [
+          "Treat the conversational recommendation as a replacement for sending bare links. Where the old flow produced a few links in reply to 'I'm buying for a guy who likes the outdoors — what do you recommend?', the richer flow returns a carousel of three items curated for that buyer type.",
+          "Constrain the carousel to a small, opinionated set (the source uses three) so the customer makes a choice rather than browsing a catalog in a text thread.",
+          "Lean on attached web view so the customer can expand into a native browser experience inside the messaging app — the whole browse-to-buy path stays in the thread.",
+          "Use the carousel to serve best-seller logic for a persona/use-case rather than one generic product, and feed objection data from these conversations back into your other flows.",
+          "Because the format relies on consumer familiarity with in-thread rich content, no new customer education is needed; the constraint is building the recommendation logic behind it."
+        ],
+        "caveats": [
+          "The recommendation-carousel capability is described as a future/planned application by the source, not a documented live result.",
+          "Named brand (Ridge) is used illustratively — do not treat it as evidence of conversion lift."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "sms",
+          "rcs",
+          "merchandising",
+          "product-recommendations",
+          "creative-strategy",
+          "conversion-optimization",
+          "retention"
+        ]
+      },
+      {
+        "title": "List growth first: fix pop-up opt-in rate",
+        "summary": "For a $5–10M brand trying to grow SMS, the highest-leverage first move is on-site opt-in rate, because list size is the top of the funnel for every downstream send.",
+        "use_when": "Auditing SMS as an acquisition/growth channel and deciding where to spend first effort on list growth.",
+        "steps": [
+          "Start with on-site opt-in. The source names it the fastest way to grow an SMS list, ahead of other capture methods, because it sits at the very top of your own-channel funnel and pays off in every future campaign.",
+          "If you do nothing else, fix the pop-up acquisition rate first — treat it as the single most important list-growth lever before adding new flows or formats.",
+          "Add fun/compelling content to the pop-up to lift opt-in rate; one brand explicitly says they had been under-optimizing pop-ups and are now doing it aggressively.",
+          "Make this an owned-site-team responsibility: the source recommends having your site team drive the opt-in effort aggressively and watch that the metric trends up.",
+          "Recognize the strategic logic: more numbers means more people you can text, and the source long considered list-growth capability the main differentiator between SMS providers (now shifting toward features like conversational commerce and RCS)."
+        ],
+        "caveats": [
+          "The $5–10M annual revenue band is the source's own framing for who should prioritize this, not a universal threshold.",
+          "The claim that on-site opt-in is 'the best' capture method is the source's opinion, stated alongside acknowledgement that other methods exist."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "sms",
+          "list-growth",
+          "acquisition",
+          "conversion-optimization",
+          "pop-up",
+          "measurement"
+        ]
+      },
+      {
+        "title": "Raise send cadence until unsubscribe rate ticks up",
+        "summary": "Increase message frequency one send at a time and let unsubscribe rate find your new ceiling, then treat that as the baseline.",
+        "use_when": "Setting campaign cadence for an established SMS program and deciding how many sends per week the list can absorb.",
+        "steps": [
+          "Starting from your current cadence, add one more message per week (or one every two weeks if you send infrequently) as an increment, not a one-time jump.",
+          "Measure the unsubscribe rate after each increment and keep pushing until you see the unsubscribe rate begin to tick up — that inflection is where you stop and reset the baseline.",
+          "Do not treat the send-frequency question as separate from revenue: the point is to see how the added sends affect overall revenue from the channel, so track channel revenue alongside unsubscribes.",
+          "Once you find the ceiling, hold that cadence as your new baseline rather than reverting to the old, more conservative one.",
+          "Repeat the exercise periodically, since list composition and tolerance shift over time."
+        ],
+        "caveats": [
+          "This is the source's recommended operating heuristic, not a measured benchmark; the correct ceiling differs by list and offer.",
+          "Pushing cadence without watching unsubscribe (and other list-health signals) can degrade the channel — the source explicitly uses unsub rate as the stop signal."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "sms",
+          "campaign-cadence",
+          "retention",
+          "list-health",
+          "measurement",
+          "experiment-design"
+        ]
+      },
+      {
+        "title": "Ask customers why they didn't buy to feed all flows",
+        "summary": "Run conversational questions to surface purchase objections, then push that learning into your team and every flow — not just to generate incremental revenue.",
+        "use_when": "Running conversational SMS and using customer-research output to improve abandoned-cart, win-back, PDP and objection-handling flows.",
+        "steps": [
+          "Start a conversational thread that asks questions rather than only pushing offers; the goal is to learn why people aren't purchasing, not solely to drive a sale in the thread.",
+          "Capture the objection reasons as customer insight and route them into the team's decision-making as fast as possible — the source treats asking customers directly as the fastest way to get this data into the team's head.",
+          "Apply the objections to your existing flows: if the recurring objection is shipping, sizing, price or trust, adjust the flow copy/offer that handles that stage.",
+          "Use the same mechanism to feed conversational recommendation logic (e.g., carousels of best-sellers for a stated use case) once you know the buyer intents coming in.",
+          "Run this before/alongside cadence expansion so you know what to say when you add sends."
+        ],
+        "caveats": [
+          "The source frames conversational questions as valuable mainly for objection insight and revenue; it does not supply benchmarks or expected response rates.",
+          "If you use an AI 'shopper' assistant for conversational replies (the source's provider offers one), verify current capability and QA the answers before scaling."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "sms",
+          "conversational-commerce",
+          "customer-research",
+          "retention",
+          "conversion-optimization",
+          "abandoned-cart",
+          "ai"
+        ]
+      },
+      {
+        "title": "Capture experiment learnings causally so the model earns trust",
+        "summary": "Operationalizing incrementality means running geo-lift and causal experiments and feeding them into your measurement model, so channel decisions are informed by tested lift rather than a black box.",
+        "use_when": "Attributing and budgeting across SMS/email/paid channels where you need to know which sends add incremental revenue versus cannibalize.",
+        "steps": [
+          "Run structured experiments — the source uses a platform for all experiments and geo-lift testing — rather than inferring incrementality from last-click channel revenue.",
+          "Feed causal experiment results into your measurement mix model so the model is calibrated on tested lift; the source specifically values having experiments inform the MM ('causal MM') so it isn't a black box.",
+          "Use the resulting incrementality read to set the channel roadmap and budget, not just to report on past performance.",
+          "Apply the same framework to media mix and SMS sends so cadence and format decisions rest on observed lift rather than raw attributed revenue.",
+          "Build the muscle to distinguish lead conversion, purchase conversion and lift in this context before acting on the numbers."
+        ],
+        "caveats": [
+          "This appears inside a sponsorship segment for a causal-MM vendor; treat the tool endorsement as promotional and evaluate measurement tools independently.",
+          "Causal-MM methodology and availability change — verify current product behavior before relying on it."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "measurement",
+          "incrementality",
+          "experiment-design",
+          "attribution",
+          "media-mix",
+          "geo-lift"
+        ]
+      },
+      {
+        "title": "Tactical SMS starting order for a mid-size brand",
+        "summary": "The source's recommended sequence for a $5–10M brand under-using SMS: fix pop-up opt-in, then expand cadence until unsubs rise, then add conversational questions.",
+        "use_when": "Prioritizing the first 30–90 days of an SMS improvement program when the team is lean and everything feels urgent.",
+        "steps": [
+          "Step 1 — List growth: maximize subscribers through the on-site opt-in/pop-up and fix its acquisition rate first; this is the top of your owned-channel funnel and pays off later.",
+          "Step 2 — Cadence: add one send per interval and monitor unsubscribe rate, resetting your baseline at the point unsubs start rising; watch total channel revenue with it.",
+          "Step 3 — Conversation: begin asking customers questions to learn objections and purchase intent, and route those insights into all your flows.",
+          "Step 4 — Tooling/partner: if the team is lean and cannot execute the above, the source's own advice is to pick a hands-on platform that will push you toward the latest capabilities, accepting that this is the presenter's commercial pitch.",
+          "Sequence matters: list size and opt-in rate bound what cadence and conversation can deliver, so don't start by adding formats if your capture is weak."
+        ],
+        "caveats": [
+          "The $5–10M band is the presenter's segmentation; smaller and larger brands may need a different order.",
+          "Step 4 is a vendor recommendation from the vendor's own employee and should not be read as an independent assessment."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "sms",
+          "prioritization",
+          "list-growth",
+          "campaign-cadence",
+          "conversational-commerce",
+          "acquisition",
+          "retention"
+        ]
+      },
+      {
+        "title": "Checklist cadence: SMS/retention program for a growing brand",
+        "summary": "Small ecommerce teams run everything interconnected and hourly, so list health, cadence and message content should be managed as one operating rhythm.",
+        "use_when": "Running the day-to-day SMS/email lifecycle for a small ecom team and setting the review rhythm for list, cadence and messaging.",
+        "steps": [
+          "Treat SMS/retention as small-team, high-frequency work: the source frames ecom as small teams doing big numbers where every hour matters and list, cadence and content are interconnected, so avoid optimizing one in isolation.",
+          "Keep a standing check on three top-of-funnel metrics together: pop-up opt-in rate (list growth), unsubscribe rate (list health), and channel revenue (output).",
+          "Change one lever at a time — a cadence increment or a format change — so you can tell what moved the unsubscribe rate.",
+          "Feed conversational objections back into the flows on a regular loop so the talking points stay current with what customers actually say.",
+          "Assign ownership: the source recommends the site team drive pop-up capture aggressively and watch the trend."
+        ],
+        "caveats": [
+          "This is a synthesis of the source's advice rather than a single prescribed process.",
+          "Cadence and ceiling differ by list; no universal numeric target is established in the source."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "sms",
+          "retention",
+          "operations",
+          "measurement",
+          "list-health",
+          "conversion-optimization"
+        ]
+      }
+    ]
+  },
+  "raw_content": "{\"cards\": [{\"title\": \"RCS vs SMS/MMS: what changes in the message\", \"summary\": \"RCS is a distinct messaging protocol with SMS fallback that upgrades text-only or single-image messages into rich carousels, video, web views and native action buttons.\", \"use_when\": \"Deciding whether to pilot RCS for campaign sends or transactional/drop messaging, and scoping which message formats to build for it.\", \"steps\": [\"Understand RCS as a separate protocol from SMS/MMS, not a formatting tweak: SMS is text-only, MMS adds an image, RCS supports carousels, scrolling, video and embedded web views inside the messaging thread. Where a recipient can't receive RCS, the message falls back to SMS, so keep an SMS-safe version of every send.\", \"Exploit native phone integrations for commerce use cases: action buttons can be programmed as any CTA, and calendar functionality lets a pre-launch drop message offer 'add to calendar' instead of 'watch this space' — replacing a reminder prompt with an actual saved event.\", \"Know that consumers are already trained on this interaction pattern (iMessage-style rich bubbles have existed for years), so richer messages don't require teaching the customer new behavior.\", \"Treat RCS as an early-adopter inbox-distinction play: the present lift partly comes from standing out versus SMS-only brands, and the source expects that advantage to diminish as adoption grows.\", \"Weigh the cost: RCS is somewhat more expensive than SMS because carriers take a cut, so a pilot should be judged on incremental performance, not just message-level cost.\"], \"caveats\": [\"The source's claim of outsized RCS performance over SMS/MMS is a current observation from one provider and its brand base, not a benchmark; the source itself names carrier cost/performance as the main threat to the channel.\", \"RCS availability details vary and change quickly — verify current device and carrier coverage before planning a send.\", \"Live brand example mentioned: one brand switched to RCS with a holdout group running to measure incremental impact.\"], \"tags\": [\"email-lifecycle\", \"sms\", \"rcs\", \"creative-strategy\", \"campaign-sends\", \"measurement\", \"retention\", \"conversion-optimization\"]}, {\"title\": \"Test RCS by holding out or running a clean flow\", \"summary\": \"Operationalize an RCS switch with either a holdout group for incremental read or a deliberately simple one-to-one flow for a cleaner test signal.\", \"use_when\": \"Launching or planning a first RCS campaign and needing to decide how to structure the test so results are trustworthy.\", \"steps\": [\"Choose your measurement design up front. One option discussed: run a holdout so you can read the incremental impact of the new RCS experience versus the baseline SMS path. The other option: keep the RCS flow deliberately one-to-one and simple first, then test richer elements (carousels, cards) so the effect of each addition is cleaner.\", \"If you change flow and format at the same time, you can't attribute lift to RCS versus your new creative — separate the protocol change from the creative change where possible.\", \"Only after a clean baseline read should you layer richer formats: carousels for recommendations, web views for expanded browsing, action buttons for CTAs.\", \"Build the SMS fallback version of each RCS send so the holdout/control experience is a true comparison, not a broken message.\"], \"caveats\": [\"The source only states this as an intended approach ('we'll probably go a little bit more one to one and then we'll test to get a cleaner read') — it is a plan, not a proven result.\", \"Early-adopter novelty effects can inflate RCS lift; expect the advantage to shrink as more brands adopt the channel.\"], \"tags\": [\"email-lifecycle\", \"sms\", \"rcs\", \"experiment-design\", \"measurement\", \"campaign-sends\", \"conversion-optimization\"]}, {\"title\": \"Conversational carousels for product recommendation\", \"summary\": \"Use RCS carousels inside a conversational thread to answer 'what do you recommend' with a small set of tailored best-sellers plus a native web view.\", \"use_when\": \"Merchandising and PDP/landing-page substitution inside SMS/RCS: when a customer asks for a recommendation and you need to move them to a purchase path in-thread.\", \"steps\": [\"Treat the conversational recommendation as a replacement for sending bare links. Where the old flow produced a few links in reply to 'I'm buying for a guy who likes the outdoors — what do you recommend?', the richer flow returns a carousel of three items curated for that buyer type.\", \"Constrain the carousel to a small, opinionated set (the source uses three) so the customer makes a choice rather than browsing a catalog in a text thread.\", \"Lean on attached web view so the customer can expand into a native browser experience inside the messaging app — the whole browse-to-buy path stays in the thread.\", \"Use the carousel to serve best-seller logic for a persona/use-case rather than one generic product, and feed objection data from these conversations back into your other flows.\", \"Because the format relies on consumer familiarity with in-thread rich content, no new customer education is needed; the constraint is building the recommendation logic behind it.\"], \"caveats\": [\"The recommendation-carousel capability is described as a future/planned application by the source, not a documented live result.\", \"Named brand (Ridge) is used illustratively — do not treat it as evidence of conversion lift.\"], \"tags\": [\"email-lifecycle\", \"sms\", \"rcs\", \"merchandising\", \"product-recommendations\", \"creative-strategy\", \"conversion-optimization\", \"retention\"]}, {\"title\": \"List growth first: fix pop-up opt-in rate\", \"summary\": \"For a $5–10M brand trying to grow SMS, the highest-leverage first move is on-site opt-in rate, because list size is the top of the funnel for every downstream send.\", \"use_when\": \"Auditing SMS as an acquisition/growth channel and deciding where to spend first effort on list growth.\", \"steps\": [\"Start with on-site opt-in. The source names it the fastest way to grow an SMS list, ahead of other capture methods, because it sits at the very top of your own-channel funnel and pays off in every future campaign.\", \"If you do nothing else, fix the pop-up acquisition rate first — treat it as the single most important list-growth lever before adding new flows or formats.\", \"Add fun/compelling content to the pop-up to lift opt-in rate; one brand explicitly says they had been under-optimizing pop-ups and are now doing it aggressively.\", \"Make this an owned-site-team responsibility: the source recommends having your site team drive the opt-in effort aggressively and watch that the metric trends up.\", \"Recognize the strategic logic: more numbers means more people you can text, and the source long considered list-growth capability the main differentiator between SMS providers (now shifting toward features like conversational commerce and RCS).\"], \"caveats\": [\"The $5–10M annual revenue band is the source's own framing for who should prioritize this, not a universal threshold.\", \"The claim that on-site opt-in is 'the best' capture method is the source's opinion, stated alongside acknowledgement that other methods exist.\"], \"tags\": [\"email-lifecycle\", \"sms\", \"list-growth\", \"acquisition\", \"conversion-optimization\", \"pop-up\", \"measurement\"]}, {\"title\": \"Raise send cadence until unsubscribe rate ticks up\", \"summary\": \"Increase message frequency one send at a time and let unsubscribe rate find your new ceiling, then treat that as the baseline.\", \"use_when\": \"Setting campaign cadence for an established SMS program and deciding how many sends per week the list can absorb.\", \"steps\": [\"Starting from your current cadence, add one more message per week (or one every two weeks if you send infrequently) as an increment, not a one-time jump.\", \"Measure the unsubscribe rate after each increment and keep pushing until you see the unsubscribe rate begin to tick up — that inflection is where you stop and reset the baseline.\", \"Do not treat the send-frequency question as separate from revenue: the point is to see how the added sends affect overall revenue from the channel, so track channel revenue alongside unsubscribes.\", \"Once you find the ceiling, hold that cadence as your new baseline rather than reverting to the old, more conservative one.\", \"Repeat the exercise periodically, since list composition and tolerance shift over time.\"], \"caveats\": [\"This is the source's recommended operating heuristic, not a measured benchmark; the correct ceiling differs by list and offer.\", \"Pushing cadence without watching unsubscribe (and other list-health signals) can degrade the channel — the source explicitly uses unsub rate as the stop signal.\"], \"tags\": [\"email-lifecycle\", \"sms\", \"campaign-cadence\", \"retention\", \"list-health\", \"measurement\", \"experiment-design\"]}, {\"title\": \"Ask customers why they didn't buy to feed all flows\", \"summary\": \"Run conversational questions to surface purchase objections, then push that learning into your team and every flow — not just to generate incremental revenue.\", \"use_when\": \"Running conversational SMS and using customer-research output to improve abandoned-cart, win-back, PDP and objection-handling flows.\", \"steps\": [\"Start a conversational thread that asks questions rather than only pushing offers; the goal is to learn why people aren't purchasing, not solely to drive a sale in the thread.\", \"Capture the objection reasons as customer insight and route them into the team's decision-making as fast as possible — the source treats asking customers directly as the fastest way to get this data into the team's head.\", \"Apply the objections to your existing flows: if the recurring objection is shipping, sizing, price or trust, adjust the flow copy/offer that handles that stage.\", \"Use the same mechanism to feed conversational recommendation logic (e.g., carousels of best-sellers for a stated use case) once you know the buyer intents coming in.\", \"Run this before/alongside cadence expansion so you know what to say when you add sends.\"], \"caveats\": [\"The source frames conversational questions as valuable mainly for objection insight and revenue; it does not supply benchmarks or expected response rates.\", \"If you use an AI 'shopper' assistant for conversational replies (the source's provider offers one), verify current capability and QA the answers before scaling.\"], \"tags\": [\"email-lifecycle\", \"sms\", \"conversational-commerce\", \"customer-research\", \"retention\", \"conversion-optimization\", \"abandoned-cart\", \"ai\"]}, {\"title\": \"Capture experiment learnings causally so the model earns trust\", \"summary\": \"Operationalizing incrementality means running geo-lift and causal experiments and feeding them into your measurement model, so channel decisions are informed by tested lift rather than a black box.\", \"use_when\": \"Attributing and budgeting across SMS/email/paid channels where you need to know which sends add incremental revenue versus cannibalize.\", \"steps\": [\"Run structured experiments — the source uses a platform for all experiments and geo-lift testing — rather than inferring incrementality from last-click channel revenue.\", \"Feed causal experiment results into your measurement mix model so the model is calibrated on tested lift; the source specifically values having experiments inform the MM ('causal MM') so it isn't a black box.\", \"Use the resulting incrementality read to set the channel roadmap and budget, not just to report on past performance.\", \"Apply the same framework to media mix and SMS sends so cadence and format decisions rest on observed lift rather than raw attributed revenue.\", \"Build the muscle to distinguish lead conversion, purchase conversion and lift in this context before acting on the numbers.\"], \"caveats\": [\"This appears inside a sponsorship segment for a causal-MM vendor; treat the tool endorsement as promotional and evaluate measurement tools independently.\", \"Causal-MM methodology and availability change — verify current product behavior before relying on it.\"], \"tags\": [\"email-lifecycle\", \"measurement\", \"incrementality\", \"experiment-design\", \"attribution\", \"media-mix\", \"geo-lift\"]}, {\"title\": \"Tactical SMS starting order for a mid-size brand\", \"summary\": \"The source's recommended sequence for a $5–10M brand under-using SMS: fix pop-up opt-in, then expand cadence until unsubs rise, then add conversational questions.\", \"use_when\": \"Prioritizing the first 30–90 days of an SMS improvement program when the team is lean and everything feels urgent.\", \"steps\": [\"Step 1 — List growth: maximize subscribers through the on-site opt-in/pop-up and fix its acquisition rate first; this is the top of your owned-channel funnel and pays off later.\", \"Step 2 — Cadence: add one send per interval and monitor unsubscribe rate, resetting your baseline at the point unsubs start rising; watch total channel revenue with it.\", \"Step 3 — Conversation: begin asking customers questions to learn objections and purchase intent, and route those insights into all your flows.\", \"Step 4 — Tooling/partner: if the team is lean and cannot execute the above, the source's own advice is to pick a hands-on platform that will push you toward the latest capabilities, accepting that this is the presenter's commercial pitch.\", \"Sequence matters: list size and opt-in rate bound what cadence and conversation can deliver, so don't start by adding formats if your capture is weak.\"], \"caveats\": [\"The $5–10M band is the presenter's segmentation; smaller and larger brands may need a different order.\", \"Step 4 is a vendor recommendation from the vendor's own employee and should not be read as an independent assessment.\"], \"tags\": [\"email-lifecycle\", \"sms\", \"prioritization\", \"list-growth\", \"campaign-cadence\", \"conversational-commerce\", \"acquisition\", \"retention\"]}, {\"title\": \"Checklist cadence: SMS/retention program for a growing brand\", \"summary\": \"Small ecommerce teams run everything interconnected and hourly, so list health, cadence and message content should be managed as one operating rhythm.\", \"use_when\": \"Running the day-to-day SMS/email lifecycle for a small ecom team and setting the review rhythm for list, cadence and messaging.\", \"steps\": [\"Treat SMS/retention as small-team, high-frequency work: the source frames ecom as small teams doing big numbers where every hour matters and list, cadence and content are interconnected, so avoid optimizing one in isolation.\", \"Keep a standing check on three top-of-funnel metrics together: pop-up opt-in rate (list growth), unsubscribe rate (list health), and channel revenue (output).\", \"Change one lever at a time — a cadence increment or a format change — so you can tell what moved the unsubscribe rate.\", \"Feed conversational objections back into the flows on a regular loop so the talking points stay current with what customers actually say.\", \"Assign ownership: the source recommends the site team drive pop-up capture aggressively and watch the trend.\"], \"caveats\": [\"This is a synthesis of the source's advice rather than a single prescribed process.\", \"Cadence and ceiling differ by list; no universal numeric target is established in the source.\"], \"tags\": [\"email-lifecycle\", \"sms\", \"retention\", \"operations\", \"measurement\", \"list-health\", \"conversion-optimization\"]}]}",
+  "input": {
+    "source_id": "1wpHg6ozp-NR4OO70G3qB8R_12lfabRbD",
+    "source_sha256": "df31723654314a8de3b02299655f628f9e8e45113b8011222c20b111fffdb758",
+    "source_name": "Rethinking SMS Marketing for Ecommerce_ AI, RCS & LTV.docx",
+    "folder": "/14-EML-email-lifecycle",
+    "domain": "email-lifecycle",
+    "section": 2,
+    "section_count": 3,
+    "text": " own channel. So like when you send an RCS message um in postcript like if the person can't receive an RCS message there's SMS fallback. So they're distinct things. RCS is a different messaging protocol. Um it is available for everyone on everyone's device in the United States. So like we're ready to do RCS and we have dozens and dozens of brands that are on RCS right now. Essentially it raises the floor on what you can message somebody. So before SMS would be just text only. MMS, you could add a picture and you're pretty much limited to that. RCS will allow you to do carousel um scrolling. Um it'll allow you to have um video. Um we just rolled out um iOS uh calendar functionality. So if you're like doing a drop, like imagine you're like, \"Hey, we're going to launch a new product in a week.\" Instead of just telling people like watch this space, you can actually have an action button in there where they can add it to their calendar and save it. So you get these action buttons, these CTAs that integrate natively with the phone and it's just expanding the amount of use cases that happen on the messaging channels. Um, right now we're seeing outsized performance on RCS over SMS and MMS.\n\n So there the reason to do it, it's driving incremental performance which is amazing. Um, it's also creating like richer brand experiences. And so those are like the two reasons why I think people are super excited about it. Um it's completely reinventing what's possible on the channel. >> We are not using it yet. I heard you guys are. >> We just switched. I think we went live this week. We have a hold out running. Um I think we went live this week. I haven't seen ours. I think I got a text yesterday from us. So I think I'm in the the control group unfortunately. But I will say I got one from different I think it was Party Full and it was maybe a month or two ago. It was uh it was beautiful. It like feels it I actually questioned whether I was in an app or not. Like I I forgot it was a text. Like it feels like you're in an app. It's a really nice experience that I'm not surprised it's performing better because in this environment where you're texting one to one and it's trust is essential. Like it feels really premium and I could see it feeling much more like secure for for customers. So I'm I'm excited to see ours. >> Did you guys um did you guys change like any of the flow? I I know like so if you have your standard flow you're sending links in the SMS side and then on RCS side it will just look better it'll be a more immersive experience you get some cards like did you guys add some of the carousel stuff and are you relying on that or are you just going to measure sort of the incremental impact of this new RCS experience >> I haven't been close to it so >> you'll report back >> let me look in Slack um yeah I don't know I I my guess is we're probably going a little bit more one to one and then we'll test to get like a cleaner read but I'm not sure >> yeah Cuz what I was just going to say there quickly is I there's only a handful of brands I get RCS messages from and it just looks better. It can be the same messages and like I do think just being an early adopter here. Mike, to your point, I hadn't really thought about it that way, but just like just being more distinct than the other brands is going to have value for some amount of time. >> Yeah, there's like the the stand out in the inbox ARB that you can get right now, which is great. what we're really eventually obviously that'll diminish as as more people get on the channel but um yeah the use cases are just like insane like and not to make everything about conversational but we're really excited about like shopper being able to use the carousels to make recommendations like right now people would go to like Ridge and be like I'm buying for a guy who likes the outdoors like what do you recommend shopper and like you know we'll come up with some links imagine now we can say like cool here's a carousel of three items that we think are best sellers for that type of person and it also has web view. So like they can expand and get like the native web experience in the browser that's native to the um the messaging app. So it's like it's all happening right there. Like it is a completely rich webl like experience from from the the messaging thread and and um I think that you know the the outsized performance is because consumers are like you know they're trained to use all that functionality. iMessage has had all all sorts of cool built-in uh functionalities for for many many years. And so I think like you know there's no training necessary. Consumers are just pushing the limits of what can be done. The ability to do the action buttons which can literally be like any CTA you want you could like program in there. It's just it's really really cool. Um it is I think going to be the dominant channel that people use to message. Um I think you what you'll see is a big shift especially in the eight and nine figure brand space where you know maybe a year from now 100% of them will be using RCS with SMS as a fallback as opposed to sending SMS campaigns. Um the only threat to that would be if performance doesn't hold up because it is a little more expensive. The carriers always you know find a way to get their their cut of it and so if the performance doesn't hold up that could be a threat to the channel. But right now, we're seeing very meaningful lift from standing out in the inbox. And I think as consumers start to see and get used to these experiences, they're going to demand richer and richer stuff from the messaging channels that they that they engage with. >> We talk about incrementality a lot, but how do you actually operationalize it to make your business better? That is one thing that I've been really leaning in with my team recently, and House has played a tremendous role. We use it for all of our experiments, all of our geo lift testing, but we now use it for our MM as well. I've been a design partner. I've been one of the early design partners on House's CMM. C stands for causal. So, it's one of the only MM if not the only MM that I've seen that's actually using your causal experiments to build the model. And that allows me to just trust the data so much more. So, it's not a black box, but actually informs our road map and has been so crucial for allowing us to operationalize around incrementality. The house team is world class. I can't speak highly enough about them. They've also built a really amazing community with some of the best DTOC growth operators out there. They have a few exciting events coming up soon that they call the House Growth Lab. One is in LA on May 19th and the other is in New York on May 21st. So, I highly recommend checking it out if you're in the area. If you want to check it out, learn a little bit more about CMM, go to house.io/operators to start making better datadriven decisions today. >> All right, sweet. So, I want to wrap on maybe we just hit some real tactical advice. We've had plenty of it so far this episode. I've got a couple notes here. Um, but for for those listening, we could we could leave them with with some actionable next steps. So, um, Mike, if you're a brand doing55 to$10 million a year, they're listening to this episode and they're like, there's so much going on with SMS. I'm not paying attention to it. I'm not taking as much advantage of all of this as I could. What would you be recommending? Like, what would be the first thing they should be changing about how they handle SMS? >> Yeah. I think the first thing that you should be looking at if you're a5 to10 million brand and you're thinking about SMS as a growth channel for you and you're trying to max it out. Um very very basic list growth. Focus on list growth first. Postcript has on-site optin which is the fastest way to grow your list. There are other methods out there. That's the best one. Uh focus on driving as much subscribers as you possibly can through your pop-up. Like ultimately that's the very very top of the funnel for your own marketing programs. like that will pay dividends down the line. Fix your pop-up acquisition rate first. If you do nothing else, that's the most important thing. The next thing I would do is um whatever your cadence is for message sending, start trying to send one more message a week. Uh you know, maybe one every two weeks, like just start trying to bump up the amount you're messaging and see what happens to your unsub rate. Do that until you see the unsub rate start to tick up. That's your new baseline. you're leaving money on the table if you aren't seeing how that's affecting your overall revenue from the channel. And then um you know three, we've talked about conversational commerce a bunch like I would start asking some questions and seeing what you can learn. Not even just to drive incremental revenue, but just to figure out how you should better be handling objections in all of your flows. Like the customer insights that you get about why people aren't purchasing is going to tell you so so so much. If you want to get that data into the brain of your team as fast as you possibly can and asking questions um of your of your customers is the best way to go get that. Maybe I'll add a fourth. If you are like I want to do all that but my team's lean and I don't have time to do that. Um and you're not on Postcript, switch to Postcript. We are going to be the most hands-on provider that you can find and we'll make sure that you're always doing the latest and greatest stuff and maxing out the returns that you're getting for your SMS bill. We know that the SMS bill is a big growing line item for everyone who's listening to this. Um, we will get more dollars out of that spend than any other provider on the market. That's why 25,000 Shopify brands choose Postcript. And uh, so if you if you want that type of performance, hit us up. We are happy to get you rolling and uh, help SMS be a highly performant channel for your brand. >> I love it. You stole all the good ones, frankly. I'm going to I'll plus one the uh, list growth. And this is what we always joke about the like midcurve meme and like the far left and the far right side strategy is just like grow your list faster and like uh I I've said for a long time and this has changed but for a long time I felt like the best SMS provider is the one that could help you grow the list the fastest. It's just simply if you have more me if you have more numbers you can text more people. I think with conversational commerce, with RCS, with all the functionality, like that's changing over time, like the actual features are a little bit more of a differentiating factor, but list growth plus one. I think everybody could probably be doing a little bit better. Cody, anything you'd leave listeners with? >> Everything Mike said, I I I don't want to like phone it in, but I totally agree with everything he said. It it has proven incremental for us. We're big fans of Shopper. We are I think we've been under uh optimizing our our our pop-ups in the past and so we're doing it now pretty aggressively. Trying to get a lot of you know fun stuff in there. So yeah, I I think having your your site team do it just do that aggressively and make sure that's going in the right direction is a big one. >> Love it. All right guys, well super fun episode. Mike, thanks for coming on. >> Of course. Anytime. Postcript. Um, obviously Postcript is a B2B company. B2B marketing is incredibly boring and stupid usually. And we uh set out to do something that we think is unique and fun. And we filmed a scripted series. And this is the trailer to that scripted series cuz it's ready to be released. And um we would love to show it to you guys first. Wonderful. >> All right. You ready for this? >> You're putting that attentive money to good use. >> Instead of AirPods, we did this. >> Okay. Ready? >> Mhm. >> Avery, >> did we run new ads? >> No. >> Did an email go out? >> Nope. >> Marty, what's the good news? >> Cheers to that. It's a SAS barilla. >> Please, Sean. We need an ecom miracle. >> Scarcity works. Namaste. >> So good. And that'll be on that'll be on HBO on Sundays this fall. >> Yes. HBO on Sundays X stream near you. Um, yes, it's coming out uh in just a bit here. We are uh super excited about it. >> That is so funny. How how' the idea come about? >> Well, we're first off, one of the things that drives our thinking around like how do we market our products and whatnot is that the bar for B2B marketing is on the floor. And so we're always trying to do something remotely interesting. So that's that's one bit. Um but the idea for this show was more um as we've been everyone's talking about AI. Some people are talking about AI because they >> Yeah. You hadn't heard about it? Some some people are talking about AI because >> Guy had a sick crossover >> about um uh because they know about it. Some people are talking about it because other people are talking about it. some people are talking about it because they hate it and we've been encountering all these different um sort of perspectives about it. Um and we were started kind of playing around with the idea that like you know ecom is its own unique thing. All of you who work in ecom know it's like you know small teams doing big numbers every day matters every hour matters. There's so many things that are interconnected. Meanwhile, you have people working on these problems where maybe the founders like we have to do everything with AI and then you have people on the team who are like I don't even know what AI is and other people are trying to like run cloud bots on the side. So, we're like okay there's something really like funny in there um around like what's hype and what's not. Um how these things should actually be deployed. How does AI like layer on to like the craziness that is running an ecom brand? because uh as everyone who's listening to this and you guys well know um every day is just uh a a wild day in ecom land and so uh we were like instead of just doing like you know another white paper which of course Postcript does white papers too uh we were like let's uh do something more interesting and we got out to LA with a small crew and filmed a uh scripted short um I think it's going to be six or seven episodes and um they're already in the tank. They're filmed. We're editing them and um hopefully hopefully we get a couple a couple laughs out of it. Um we're excited about it. Fantastic. I'm I'm I think this is super fun. I'm I'm going to push back. You said B2B marketing is extremely boring. B2B marketing seems so it seems like it's become so much more fun at the very least over the last like couple years. And you've heard me say this, Postcript crushes the events, the cabs, you guys are you you're producing TV shows. I mean, it just doesn't sound like your typical like marketing collateral that you're handing out at conferences. >> Yeah, it's getting better. Um, it's getting more fun. I think that uh there's plenty of like aspirational brands in B2B that are showing a different way. Like when I think about I think about like a ramp for example, uh crushing it, growing massively, putting up all the numbers and also doing really really cool interesting brand stuff. And so that traditionally is not the way B2B marketers approach their jobs. Um so there's definitely some folks out there showing what's possible and um you know at Postcript we always say like you know we want to try to zigg where other people zag and let's do some weird stuff because if it's not interesting then it's probably not good and you know now we're filming a TV show so uh we'll see what happens but we're excited about it. There'll be some uh some cameos there. Um and uh I think that the the community will will enjoy those. >> I'm most I'm most curious by the Sean Frank part because he's he's gone big time. So it looks like he has a starring role in this and he was just in a uh Common Thread Collective ad as well. So he's he's gone mainstream. >> Oh yeah, he's he's definitely crossed over. He's the talent now and uh we uh he'll make a cameo. Um, there'll be a few other folks in the mix, too. It'll be a lot of fun. Um, if people watch it, we'll do a Skeptic season, too. You know what? We'll pick it up. We'll pick it up for another season. But, um, we'll see how the first one goes. We're really pumped about it. It was a lot of fun to make. Um, and hopefully it resonates with the",
+    "prior_notes": [],
+    "id": "f97812c7cfcb1ffcc4522609"
+  },
+  "system_prompt_sha256": "f2341d28186a0dbaee868d37ce33c173f631088eb1754997556740d4905c0f2b"
+}

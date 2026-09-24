@@ -1,0 +1,379 @@
+{
+  "cards": [
+    {
+      "title": "Never Use document.domain to Relax Same-Origin Policy",
+      "summary": "document.domain opt-in lets any attacker page on the same registrable domain cross origin boundaries, so treat it as a forbidden pattern.",
+      "use_when": "Auditing storefront or admin front-end code for cross-subdomain communication (e.g. shop.example.com talking to checkout.example.com) and deciding whether document.domain is acceptable.",
+      "steps": [
+        "Understand the mechanism: pages can opt in to a common registrable domain by setting document.domain, which relaxes the same-origin check for iframes or popups that also opted in. Protocol and port cannot be relaxed, only the host component.",
+        "Recognise the vulnerability condition: once a legitimate subdomain opts in, any other page on that same registrable domain can also opt in and then read or manipulate the first page's content and cookies. On a store, an attacker-controlled or third-party-hosted subdomain or any XSS on any sibling subdomain gains access to the checkout or account subdomain.",
+        "Prefer per-subdomain isolation: keep authentication, checkout and account pages on their own origins and communicate only via postMessage with strict origin checks, or use a shared backend endpoint.",
+        "If document.domain already exists in the codebase, flag it for removal during review and replace the cross-frame access with postMessage, same-origin API calls, or a server-side session check.",
+        "Verify in the current browser's documentation what the current status of document.domain is; behaviour and deprecation plans have changed over time."
+      ],
+      "caveats": [
+        "The source states this is a bad idea and instructs never to use it.",
+        "Relaxation applies only to the host component; you cannot bridge different protocols or ports this way."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "same-origin-policy",
+        "iframe",
+        "code-review",
+        "checkout",
+        "authentication"
+      ],
+      "id": "bb7586c2f74e03a2375305f1",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 6
+    },
+    {
+      "title": "Use postMessage for Cross-Origin Page Communication",
+      "summary": "The postMessage API is the sanctioned way for cooperating origins to exchange messages, replacing the old fragment-identifier hack.",
+      "use_when": "Building or reviewing legitimate cross-origin communication in an ecommerce flow, e.g. a checkout iframe talking to the parent storefront, an embedded payment widget, or a third-party upsell frame.",
+      "steps": [
+        "From the sender: obtain a handle to the target window (an iframe's contentWindow, or a window you opened), then call targetWindow.postMessage(message, targetOrigin).",
+        "From the receiver: register a listener with addEventListener('message', handler) and update your UI from the event's data.",
+        "The message can be a structured object (arrays, nested properties, even cyclic references) but cannot include functions, DOM nodes or live object instances.",
+        "For very large payloads such as graphics buffers, use transferable objects so ownership moves to the other page without copying, at the cost of losing your reference.",
+        "Avoid the historical workaround of encoding messages into a child iframe's URL fragment and polling location.hash every fraction of a second; it is slow, fragile and only relevant as history.",
+        "Confirm the current API surface in MDN or the browser vendor docs before implementing, as supported options evolve."
+      ],
+      "caveats": [
+        "postMessage only works when at least one page holds a reference to the other, typically via an iframe or a window opened by script.",
+        "Without origin validation on both ends the channel is open to any page that can obtain a reference."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "postmessage",
+        "iframe",
+        "checkout",
+        "integrations",
+        "web-apis"
+      ],
+      "id": "35429981841411264488edb3",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 6
+    },
+    {
+      "title": "Always Specify targetOrigin When Posting Messages",
+      "summary": "Omitting the destination origin in postMessage leaks data to any page that manages to embed or reference your window.",
+      "use_when": "Reviewing any code on an account page, login helper or checkout frame that posts user data such as a name or session detail to a parent window.",
+      "steps": [
+        "Identify every postMessage call in store code and its third-party widgets.",
+        "Ensure the call passes an explicit targetOrigin string (e.g. 'https://shop.example.com') rather than '*' or an omitted argument.",
+        "The browser then refuses to deliver the message if the receiving window's origin does not match, which removes the need to hand-roll origin checks that are easy to get wrong.",
+        "If multiple legitimate destinations exist, some APIs accept an array of origins; verify current browser support before relying on it.",
+        "Treat the destination list as a security boundary and update it deliberately when adding new frames or partners."
+      ],
+      "caveats": [
+        "A recipient you correctly trust may still mishandle the data it receives; the source notes that once information is handed to a cooperative but incompetent site, the sender cannot retrieve or revoke it.",
+        "Trusting a site to handle data responsibly is a business decision, not a technical control."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "postmessage",
+        "data-leakage",
+        "iframe",
+        "account-pages",
+        "code-review"
+      ],
+      "id": "1a05df9dd965f837507a1f1b",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 6
+    },
+    {
+      "title": "Validate event.origin on Every Message Listener",
+      "summary": "A message listener without an origin check accepts forged data from any page that holds a window reference, enabling spoofed user data.",
+      "use_when": "Hardening storefront frames that receive data such as logged-in status, cart contents, coupon codes or shipping details from a parent or sibling origin.",
+      "steps": [
+        "Locate every addEventListener('message', ...) callback in the storefront and embedded widgets.",
+        "At the top of the handler, compare event.origin against the exact expected origin and return early on mismatch, before reading or acting on event.data.",
+        "Assume the event object does not identify the sender beyond origin, so untrusted sources cannot be distinguished by any other property.",
+        "Consider window references cheap for an attacker: a page can open a popup or new tab and immediately hold a reference, so any window that does not verify the sender is reachable.",
+        "If a frame may navigate between being legitimate and hostile, re-check origin on each message rather than caching trust at setup time."
+      ],
+      "caveats": [
+        "postMessage makes the origin check easy to omit because it is a runtime property, unlike the sender-side targetOrigin parameter which the API can enforce at call time.",
+        "The source treats failure to validate origin as a real vulnerability class, not merely a nicety."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "postmessage",
+        "origin-validation",
+        "cart",
+        "pricing",
+        "code-review"
+      ],
+      "id": "40beeeafdd0ea10018672468",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 6
+    },
+    {
+      "title": "Prevent Clickjacking on Checkout and Account Pages",
+      "summary": "If your site can be framed, an attacker overlays invisible elements and turns a visitor's click into a purchase, bid or account action.",
+      "use_when": "Reviewing whether a checkout, buy-now, one-click order, subscription cancel or account settings page should refuse to render inside a third-party frame.",
+      "steps": [
+        "Understand the attack class: the attacker frames your page, positions it with CSS, sets the frame's opacity to zero, and places their own visible button exactly over a sensitive control such as Buy Now. The visitor sees one button and clicks another.",
+        "The framed action executes with the visitor's ambient session, so the usual outcome is whatever would have happened had they clicked normally, including completing a purchase or bid.",
+        "Compare to what reduces risk: blocking framing on sensitive pages, and using SameSite cookies so a cross-site framed request arrives logged out and cannot complete an authenticated action.",
+        "Evaluate whether a clickjacking defence header or frame-ancestors policy is appropriate for the specific pages, and confirm the current syntax and browser behaviour in vendor documentation.",
+        "Note that HTTPS alone does not stop clickjacking; the source says the same attack works over secure connections."
+      ],
+      "caveats": [
+        "Any site that allows itself to be framed is exposed; the source frames this as the site permitting framing, not as a transport problem.",
+        "SameSite cookies mitigate the authenticated outcome but are described by the source as a complementary fix, not a complete clickjacking solution."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "clickjacking",
+        "checkout",
+        "iframe",
+        "samesite-cookies",
+        "account-pages"
+      ],
+      "id": "f40756f20bb749bf57450fef",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 6
+    },
+    {
+      "title": "Set SameSite on Session Cookies to Stop Ambient Cross-Site Requests",
+      "summary": "Cross-site image, form and frame requests silently carry a visitor's cookies unless the session cookie is scoped with SameSite.",
+      "use_when": "Configuring authentication and cart-session cookies so cross-site requests from third-party pages cannot act as the logged-in shopper.",
+      "steps": [
+        "Recognise the ambient-authority problem: the browser attaches cookies automatically to cross-site requests such as an embedded image or a submitted form, so the receiving server may treat the request as coming from the logged-in user.",
+        "One illustrated case: an attacker page can embed an image URL that maps to the logged-in user's avatar, confirming login status or making a page look more convincing, because the browser supplies the target site's cookies.",
+        "Apply SameSite to session and authentication cookies so they are only attached on requests originating from your own site; the source describes strict and lax modes and notes you should check the slides or current documentation for exact semantics.",
+        "Test the chosen mode against real flows, because stricter settings affect links clicked from external sites, embedded payments and OAuth redirects.",
+        "Treat this as the preferred fix rather than trying to infer identity from the Referer header."
+      ],
+      "caveats": [
+        "The source describes two modes, strict and lax, and refers to details outside the transcript; verify current cookie attribute names and browser behaviour before shipping.",
+        "A framed request from your own site to your own site is still within scope, so framing your own pages can reintroduce exposure."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "samesite-cookies",
+        "authentication",
+        "cart",
+        "iframe",
+        "cross-site-requests"
+      ],
+      "id": "0279d922e7225195b39f10d9",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 6
+    },
+    {
+      "title": "Do Not Rely on the Referer Header for Access Control",
+      "summary": "Referer-based defences break under caching, referrer-policy opt-outs and legitimate unknown referrers.",
+      "use_when": "Considering blocking requests to product images, downloads, coupon pages or account resources based on where the request appears to come from.",
+      "steps": [
+        "Note the intent: the browser sends a Referer header telling the server which page generated the request, and some sites use it to reject or vary responses.",
+        "Identify failure mode one: browsers cache responses. If an image or asset was already fetched legitimately, an attacker's later request can be served from the local HTTP cache without contacting your server, so your check never runs.",
+        "Identify failure mode two: sites can opt out of sending the referrer entirely for privacy reasons, for example documents that embed secret URLs. Google Docs is cited as a case where outgoing links deliberately omit or reduce the referrer.",
+        "Identify failure mode three: referrer policy has several levels from full URL, to origin-only, to nothing, and the modern default already strips the referrer on secure-to-insecure downgrades. The linking site chooses this, not you.",
+        "Where caching is unavoidable, the source mentions a cache-varying header as a partial workaround, but presents SameSite cookies as the better answer; confirm current header names before implementing."
+      ],
+      "caveats": [
+        "A site owner cannot prevent another site from linking to them; the source says there is no real answer for that and Referer inspection is only the best available partial tactic.",
+        "Referrer policy is set by the page containing the link, so an adversarial linker controls whether you receive the header."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "referer",
+        "caching",
+        "access-control",
+        "privacy",
+        "assets"
+      ],
+      "id": "332f8d82f1e1b624da98d6a6",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 6
+    },
+    {
+      "title": "Treat Referrer Policy Settings as a Store-Level Trade-off",
+      "summary": "Choosing a referrer policy balances analytics, partner attribution and leaking private URLs.",
+      "use_when": "Setting or reviewing the referrer policy on storefront pages, order confirmations, customer dashboards or shared cart links.",
+      "steps": [
+        "Enumerate what you lose with each level: no-referrer hides everything from destinations but also blocks you from seeing inbound referral sources for your own analytics.",
+        "Origin-only reference tells a destination that traffic came from your site, which preserves attribution credit, without exposing the specific page path.",
+        "Full-URL reference supports your own flow analysis across your pages but reveals individual page URLs to any destination you link to.",
+        "Consider the sensitive-URL case: if one of your pages is protected only by an unguessable URL, such as an order status or shared wishlist link, a referrer can leak that URL to whatever the customer clicks next.",
+        "Choose a policy that still allows the analytics and partner crediting you genuinely need, and re-check the currently supported policy values in browser documentation because the defaults have changed over time."
+      ],
+      "caveats": [
+        "The source characterises Google Docs' policy as a bundle covering full URL for same-origin and stripping down to origin or nothing across origins; treat that as an illustration of the trade-off rather than a recommendation for stores.",
+        "Referrer policy is a blunt instrument and cannot be relied on as a security boundary."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "referer",
+        "privacy",
+        "analytics",
+        "order-confirmation",
+        "shared-links"
+      ],
+      "id": "6e1a3962fe725fce442ec859",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 6
+    },
+    {
+      "title": "Treat Cross-Origin Script and Style Embeds as Full Trust",
+      "summary": "Scripts, stylesheets, images and fonts from other origins can be embedded by default, but an embedded script executes with your page's authority.",
+      "use_when": "Deciding whether to load third-party JavaScript, CSS, fonts or pixels on product pages, checkout or account pages.",
+      "steps": [
+        "List the automatic exceptions to the same-origin policy: pages may embed images, stylesheets, scripts, fonts and other resources from other origins, link to them, and submit forms to them, but cannot read data back from another origin.",
+        "Recognise that an embedded script runs in your page's context, exactly as if you had pasted the code into your page. It can therefore read and act on everything your page can, including form fields and session-dependent behaviour.",
+        "Apply this to tag managers, chat widgets, reviews, A/B testing tools and analytics on checkout: each is a script with full page authority, not a sandboxed component.",
+        "Prefer self-hosting or reviewing critical libraries, and keep third-party scripts off the most sensitive pages where possible.",
+        "Remember that cross-origin stylesheet and font embeds are common and generally lower risk than scripts, since they carry layout and font data rather than executable code."
+      ],
+      "caveats": [
+        "The source notes these embed permissions predate the same-origin policy and were effectively grandfathered in; that is why they feel inconsistent with origin isolation.",
+        "There are minor edge cases around content-type sniffing that the source declines to cover in detail."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "third-party-scripts",
+        "content-security",
+        "checkout",
+        "product-page",
+        "integrations"
+      ],
+      "id": "0cc21dc1fdd05f5832d79006",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 6
+    },
+    {
+      "title": "Prevent Cross-Site Script Inclusion Leakage of JSON Endpoints",
+      "summary": "Endpoints that return JSON as a script-compatible response can be read cross-origin when loaded via a script tag.",
+      "use_when": "Reviewing API or data endpoints on a store that return buyer data, pricing tiers, inventory or account details and may be fetchable as scripts.",
+      "steps": [
+        "Understand that a script loaded from another origin runs in the loading page's context, so an attacker page can include a script tag pointing at your data endpoint and receive whatever the browser parses as JavaScript.",
+        "When you inspect JSON-returning endpoints in a live store, look for an unusual leading sequence of characters before the data; the source points to such a prefix in a major webmail response as a deliberate defence against this class of inclusion attack.",
+        "Treat a syntactically invalid prefix as the defensive idea: the payload then fails to parse as a script in a foreign page while remaining parseable by a careful legitimate consumer.",
+        "Add an equivalent prefix only together with verifying that existing legit clients still parse the response, and that the endpoint does not leak session-scoped data solely because cookies were attached.",
+        "Pair this with SameSite cookies and origin checks on the endpoint so inclusion alone does not reach authenticated data."
+      ],
+      "caveats": [
+        "The source presents the prefix observation as a motivating puzzle rather than a fully specified recipe; do not copy an exact hard-coded prefix without testing your own parsers.",
+        "JSON is not generally valid JavaScript in all cases, but the source treats script-compatible responses as the live risk."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "cross-site-script-inclusion",
+        "api-security",
+        "json",
+        "data-leakage",
+        "samesite-cookies"
+      ],
+      "id": "08fff0f7b695dd7518f4e28e",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 6
+    },
+    {
+      "title": "Do Not Trust Cookie Path Scoping as an Origin Boundary",
+      "summary": "Cookies and the same-origin policy are different, mismatched models, so path scoping and subdomain scoping are weaker than they look.",
+      "use_when": "Designing cookie scope for a store with several subdomains, such as www, account and checkout, or auditing an existing cookie configuration.",
+      "steps": [
+        "Note that cookies are more specific than origins in one direction, allowing a path restriction, but that path scoping is ineffective as isolation because pages on the same origin can frame each other and read the sibling's cookies.",
+        "Note that cookies are less specific in the other direction: a page on one subdomain can set cookies for the broader registrable domain, and a DNS-hijacked or otherwise hostile response on that domain can read and set cookies for the whole domain.",
+        "Illustrate the risk with the invalid-domain case: if an ISP hijacks a nonexistent domain and serves an ad page, JavaScript on that page can read and set cookies for that domain, so an insecure or malicious ad is enough to compromise it.",
+        "Choose your session cookie's domain deliberately, prefer host-only cookies where subdomains do not need to share the session, and avoid broadly scoped cookies for authentication.",
+        "Combine with SameSite and HTTPS on the whole site, since the source notes that mandating HTTPS addresses the network-interception leg of this scenario."
+      ],
+      "caveats": [
+        "The source stresses that cookies were designed before the same-origin policy and were never retrofitted to match it.",
+        "HTTPS fixes interception; it does not by itself fix scoping mistakes or same-domain hostility between subdomains."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "cookies",
+        "same-origin-policy",
+        "subdomains",
+        "authentication",
+        "dns"
+      ],
+      "id": "a88d4d33040c7617930b1cd4",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 6
+    },
+    {
+      "title": "Bound Validation of Cross-Origin Flows to Owned Environments",
+      "summary": "Hands-on verification of frame and message behaviour belongs in local test setups with two controlled origins, not on live third-party sites.",
+      "use_when": "Prototyping or regression-testing cross-origin communication in a store's checkout or account flow before shipping postMessage or frame changes.",
+      "steps": [
+        "Reproduce the environment safely: run two local servers on different ports so that the pages count as distinct origins under the origin tuple rule, and load one inside an iframe of the other.",
+        "Instrument what you need to see, for example rendering the received message string into a visible element so you can confirm delivery and timing.",
+        "Verify sender-side enforcement by setting targetOrigin to the exact expected origin and confirming the browser drops messages when the frame points elsewhere.",
+        "Verify receiver-side enforcement by checking event.origin and returning early on mismatch, then attempting a message from a deliberately wrong origin to confirm it is ignored.",
+        "Keep the harness to systems you own or are authorised to test, and never point these techniques at production third-party sites or real customer sessions."
+      ],
+      "caveats": [
+        "The source demonstrates these techniques in a classroom with two local servers; the localhost ports are a teaching setup, not a deployment recommendation.",
+        "Origin equality includes scheme and port, so a same-host page on a different port is a distinct origin for these checks."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "postmessage",
+        "origin-validation",
+        "test-harness",
+        "iframe",
+        "checkout"
+      ],
+      "id": "3f7b46ca25bf7029c94b4d14",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 6
+    }
+  ],
+  "request_id": "26324f9ee41a9439e9968558933f4839b9e792fab2e13c4cc4683329aa7e4084",
+  "ecommerce_scope_version": 1
+}

@@ -1,0 +1,395 @@
+{
+  "request_id": "c8f6da0e6ced5dadee9db99ae434139e5d08f1637bb389d331638af8eeec7802",
+  "provider": "deepseek",
+  "model": "deepseek-flash",
+  "effort": "none",
+  "completion_limit": 16384,
+  "usage": {
+    "prompt_tokens": 5307,
+    "completion_tokens": 4773,
+    "total_tokens": 10080,
+    "prompt_tokens_details": {
+      "cached_tokens": 512
+    },
+    "prompt_cache_hit_tokens": 512,
+    "prompt_cache_miss_tokens": 4795
+  },
+  "booked_cost_usd": 0.007319699999999999,
+  "seconds": 24.24,
+  "finish_reason": "stop",
+  "output": {
+    "cards": [
+      {
+        "title": "Audit Performance Max Spend Distribution Before Replacing It",
+        "summary": "Break down where PMax actually spends your budget — roughly 60-70% Shopping, 20-30% search text, 5-10% image/video retargeting — to see which components you can rebuild with better control.",
+        "use_when": "When deciding whether to keep leaning on Performance Max or to build manual campaign structures, and you need evidence of what PMax is doing with the budget.",
+        "steps": [
+          "Before changing anything, pull the spend distribution inside your Performance Max campaign and estimate the split across Shopping, search text ads, and image/video placements. The source's observed pattern across accounts is roughly 60-70% Shopping, 20-30% search, and 5-10% image/video, but verify your own numbers.",
+          "Recognize that the image/video portion is reportedly near-100% retargeting rather than cold prospecting, so any ROAS credited to it is largely re-engaging existing visitors, not new customers.",
+          "Note that PMax does not expose quality score, ad-group structure, brand vs non-brand splits, or audience/placement-level reporting, which limits your ability to diagnose and optimize.",
+          "Use these observations to decide which of the three components to rebuild first — most advertisers start with Standard Shopping because it absorbs the majority of spend.",
+          "Set expectations: PMax is described as a reasonable starting point for beginners or low-time operators; the rebuild is aimed at advertisers with capacity to manage more structure."
+        ],
+        "caveats": [
+          "The spend percentages are the presenter's typical observation, not a guaranteed split for every account.",
+          "Rebuilding campaigns requires ongoing management time; the source explicitly frames this as an advanced-advertiser strategy."
+        ],
+        "tags": [
+          "ad-copy-deployment",
+          "campaign-structure",
+          "performance-max",
+          "measurement",
+          "google-ads",
+          "spend-allocation"
+        ]
+      },
+      {
+        "title": "Performance-Based Shopping Structure by ROAS Tiers",
+        "summary": "Segment Standard Shopping products into four ROAS/spend tiers when product margins are similar, so budget flows to proven winners, zombies get tested, and inefficient spend is cut.",
+        "use_when": "Setting up or restructuring Standard Shopping campaigns for a store where product-level profit margins are within about 10% of each other.",
+        "steps": [
+          "Confirm this structure applies: the source recommends it when profit margins are similar across products (within roughly 10% at product level). If margins vary widely, use the gross-profit-margin structure instead.",
+          "Tier 1 — high-ROAS products: allocate more budget to scale winners.",
+          "Tier 2 — low-ROAS products currently getting spend but converting poorly: reduce bids to improve efficiency.",
+          "Tier 3 — low-spend products with insufficient data: give them more opportunity to accumulate data and prove themselves.",
+          "Tier 4 — 'zombie' products with zero spend that have never been tested: isolate into their own campaign with a dedicated budget to revive potential hidden gems.",
+          "Build these as separate campaigns so each tier has its own budget and bidding control rather than relying on a single algorithm-managed pool.",
+          "Feed the tier assignments from your historical ROAS and spend data, and revisit the tiers as new data arrives."
+        ],
+        "caveats": [
+          "Tier classification depends on having enough historical spend/conversion data; new products may sit in Tier 3 by default.",
+          "The four-tier labels and the ~10% margin-similarity threshold are the source's heuristics, not universal rules."
+        ],
+        "tags": [
+          "ad-copy-deployment",
+          "campaign-structure",
+          "shopping-ads",
+          "google-ads",
+          "roas",
+          "merchandising",
+          "budget-allocation"
+        ]
+      },
+      {
+        "title": "Gross Profit Margin Shopping Structure When Margins Vary",
+        "summary": "When product margins differ widely, build Shopping campaigns around margin tiers and set lower ROAS targets on high-margin items and higher targets on low-margin items to stay profitable at scale.",
+        "use_when": "Structuring Standard Shopping campaigns for a catalog where product-level margins vary significantly (the source cites roughly 30% to 70% as an example range).",
+        "steps": [
+          "Segment products into margin tiers — the source typically uses three to five tiers depending on catalog size and conversion volume. A simple version uses high, mid, and low margin.",
+          "Build a separate campaign per margin tier so you can assign distinct ROAS targets.",
+          "For high-margin products, set a lower ROAS target so you can bid more aggressively and capture more volume — even at lower ROAS you remain profitable because the margin is high.",
+          "For low-margin products, set a higher ROAS target to stay conservative, since there is less room for error and less profit per sale.",
+          "Remember the underlying insight: PMax does not know your product margins and treats every product the same, so this margin-aware structure is something only you can impose.",
+          "Review margin tiers periodically as supplier costs or pricing change, since the structure's value depends on accurate margin data."
+        ],
+        "caveats": [
+          "The 30-70% margin range is an illustrative example, not a benchmark.",
+          "Three-to-five tiers is a starting heuristic; too few products or conversions per tier weakens the approach."
+        ],
+        "tags": [
+          "ad-copy-deployment",
+          "campaign-structure",
+          "shopping-ads",
+          "google-ads",
+          "profit-margin",
+          "roas",
+          "pricing"
+        ]
+      },
+      {
+        "title": "Shopping Feed Optimization: Titles, Images, Budget Priority",
+        "summary": "Beyond campaign structure, optimize keyword-rich product titles, high-quality images, and give Shopping the largest share of your Google Ads budget since it is the core ecommerce placement.",
+        "use_when": "Improving Standard Shopping campaign performance for a store — particularly product feed quality and cross-campaign budget allocation.",
+        "steps": [
+          "Rewrite product titles to be keyword-rich: include the most important search terms shoppers use to find the product directly in the title, so the ad surfaces on more relevant searches and earns more clicks.",
+          "Upgrade product images: high-quality images stand out in the Shopping carousel and directly affect click-through rate.",
+          "Control budget allocation deliberately: because you are building Shopping yourself, you can prioritize it and give it the lion's share of the overall Google Ads budget — the source calls Shopping the bread and butter for ecommerce on Google Ads.",
+          "Hold these feed-level improvements as ongoing tasks rather than one-off fixes, since titles and images affect both impressions and CTR.",
+          "Treat budget priority as a deliberate allocation decision you can now make, unlike when PMax auto-splits budget across placements."
+        ],
+        "caveats": [
+          "The 'lion's share of budget' guidance is the presenter's recommendation for ecommerce, not a calculated optimum for every account.",
+          "Title and image gains are described as affecting impressions and CTR, not a quantified ROAS lift."
+        ],
+        "tags": [
+          "ad-copy-deployment",
+          "shopping-ads",
+          "product-page",
+          "feed-optimization",
+          "google-ads",
+          "creative-strategy"
+        ]
+      },
+      {
+        "title": "Separate Brand and Non-Brand Search Campaigns",
+        "summary": "Split branded and non-branded search traffic into distinct campaigns so you can see true incremental performance and set brand ROAS targets much higher than non-brand targets.",
+        "use_when": "Restructuring Google Search campaigns to reveal true incremental acquisition and avoid PMax's tendency to over-index on branded traffic.",
+        "steps": [
+          "Create separate campaigns for brand queries (searches for your company/brand name) and non-brand queries. PMax does not separate these by default, which the source says leads it to over-rely on branded traffic.",
+          "Recognize that brand traffic is less incremental: those searchers already know you and likely first arrived via another channel, so a brand click-to-purchase is often a sale you would have gotten anyway.",
+          "Set a much higher ROAS target for the brand campaign because brand converts more easily and is less incremental; set a lower ROAS target for non-brand because those sales are more incremental.",
+          "Use the separated reporting to view brand ROAS and non-brand ROAS as distinct numbers, then control the brand vs non-brand budget split — shift budget to non-brand if you are over-indexed on brand.",
+          "Build a dedicated strategy to grow non-brand keyword presence, which the source identifies as where real business growth comes from.",
+          "Note that the source still sees value in bidding on brand in Google, but with much higher ROAS expectations."
+        ],
+        "caveats": [
+          "Brand and non-brand ROAS targets will differ substantially; the source does not provide universal numbers.",
+          "The claim that branded sales are usually non-incremental is the presenter's view and may vary by business."
+        ],
+        "tags": [
+          "ad-copy-deployment",
+          "campaign-structure",
+          "search-ads",
+          "google-ads",
+          "brand-vs-nonbrand",
+          "roas",
+          "acquisition"
+        ]
+      },
+      {
+        "title": "Use Fewer Headlines and Descriptions to Speed Ad Testing",
+        "summary": "Limit responsive search ad assets to roughly 8 headlines and 2 descriptions instead of Google's maximum, so each combination accumulates enough impressions to actually be tested.",
+        "use_when": "Writing or revising responsive search ad copy and wanting interpretable test results rather than an untested combinatorial sprawl.",
+        "steps": [
+          "Reduce asset count: the source typically uses 8 headlines and 2 descriptions in place of Google's recommended maximum of 15 headlines and 4 descriptions.",
+          "Understand the rationale: fewer assets produce fewer possible combinations, so each combination is more likely to receive enough impressions to test meaningfully.",
+          "Create multiple ads per ad group and rotate/test them so you can learn which copy drives better CTR and conversions.",
+          "Feed those learnings back into quality score improvement, since copy relevance affects quality score, CPC, and ad position.",
+          "Keep the strongest, most differentiated headlines in rotation rather than padding the count to hit a platform suggestion.",
+          "Verify the current asset limits and recommendations in the Google Ads interface, as platform guidance changes."
+        ],
+        "caveats": [
+          "The 8-headline/2-description setup is the presenter's preference, not a platform requirement.",
+          "Reducing assets trades breadth of automated combinations for cleaner test data — a deliberate choice, not a universal best practice."
+        ],
+        "tags": [
+          "ad-copy-deployment",
+          "search-ads",
+          "google-ads",
+          "creative-testing",
+          "experiment-design",
+          "ad-copy"
+        ]
+      },
+      {
+        "title": "Build Single-Themed Ad Groups from Keyword and PMax Search-Term Research",
+        "summary": "Mine the PMax search terms report plus Keyword Planner for proven queries, then organize keywords into single-themed ad groups with matching ad copy to raise relevance and quality score.",
+        "use_when": "Structuring Search campaigns and writing ad copy after deciding to move search traffic out of PMax.",
+        "steps": [
+          "Research your market's keywords using Google Ads Keyword Planner.",
+          "Additionally, mine your PMax search terms report for the best-performing queries — the search terms already driving sales inside PMax.",
+          "Pull those proven terms out and use them in your dedicated Search campaigns alongside the keywords found in Keyword Planner.",
+          "Organize keywords into single-themed ad groups (STAGs), with each ad group focused on one theme.",
+          "Write ad copy customized to each ad group's theme, which improves relevance, improves quality score, and reduces costs.",
+          "Confirm the exact report names and locations in the current Google Ads interface, since UI labels change."
+        ],
+        "caveats": [
+          "PMax search terms reporting can be limited or delayed depending on account settings; verify what's available.",
+          "The quality-score-to-cost relationship is directional; the source gives no specific savings figures."
+        ],
+        "tags": [
+          "ad-copy-deployment",
+          "search-ads",
+          "google-ads",
+          "keyword-research",
+          "campaign-structure",
+          "ad-copy",
+          "quality-score"
+        ]
+      },
+      {
+        "title": "Use Quality Score Visibility to Cut Search Costs",
+        "summary": "Monitor per-keyword quality score in manual Search campaigns — something PMax hides — because it affects CPC and ad position and can be improved through relevance work.",
+        "use_when": "Optimizing existing Search campaigns for efficiency and diagnosing high CPCs.",
+        "steps": [
+          "Open your manual Search campaigns (not PMax, where quality score is not visible) and review quality score at the keyword level.",
+          "Identify keywords with weak quality scores and investigate relevance issues — for example, ad copy that does not match the query theme or landing page mismatch.",
+          "Apply the fixes available in manual Search that PMax does not allow: split-test ad copy, run campaign experiments, and inspect search terms.",
+          "Reallocate or pause keywords where the cost of poor quality score outweighs the value of the traffic.",
+          "Re-check scores periodically, since quality score moves with relevance and performance over time."
+        ],
+        "caveats": [
+          "Quality score is described as directionally affecting CPC and position; the source offers no quantified relationship.",
+          "This optimization only exists if you run manual Search campaigns — it is not available inside PMax."
+        ],
+        "tags": [
+          "ad-copy-deployment",
+          "search-ads",
+          "google-ads",
+          "quality-score",
+          "measurement",
+          "conversion-optimization"
+        ]
+      },
+      {
+        "title": "Set Up Demand Gen Retargeting with PMax's Winning Creative",
+        "summary": "Move proven PMax image and video creative into a single Demand Gen retargeting campaign so the algorithm can switch a user seamlessly between image and video ads with consolidated data.",
+        "use_when": "Building the image/video retargeting component of an ecommerce Google Ads structure to replace PMax's opaque retargeting.",
+        "steps": [
+          "If you have been running PMax, identify the videos and images that have been performing, and reuse that winning creative in the Demand Gen campaign rather than starting from scratch.",
+          "Put images and videos into the same Demand Gen campaign for consolidated data, which lets the algorithm track an individual user and switch between image and video retargeting formats.",
+          "Set up the campaign as a retargeting campaign using your best creative assets.",
+          "Expect better reporting than PMax provides — audience-level and placement/network-level data — which is the basis for the creative optimization steps that follow.",
+          "Verify current Demand Gen campaign setup options in Google Ads, as campaign types and interfaces evolve."
+        ],
+        "caveats": [
+          "This replaces PMax's image/video retargeting with an equivalent but more controllable setup; it is not a cold-prospecting solution in the source's framing.",
+          "Reusing PMax creative assumes you have enough PMax history to identify winners."
+        ],
+        "tags": [
+          "ad-copy-deployment",
+          "demand-gen",
+          "retargeting",
+          "google-ads",
+          "creative-strategy",
+          "video-ads"
+        ]
+      },
+      {
+        "title": "Segment Retargeting Audiences by Funnel Stage",
+        "summary": "Build distinct retargeting audiences — product page viewers, ATC non-purchasers, checkout abandoners, category viewers, all visitors, past purchasers — so you can read ROAS, spend, and clicks per audience.",
+        "use_when": "Configuring Demand Gen (or other retargeting) campaign audiences for an ecommerce store and needing audience-level performance reporting.",
+        "steps": [
+          "Create these segmented retargeting audiences, per the source's recommended list: product page viewers; add-to-cart users who did not purchase; abandoned cart users who started checkout but did not finish; category page viewers; all site visitors; and past purchasers (for repeat purchases and upsells).",
+          "Attach the audiences to your Demand Gen retargeting campaign with proper audience segmentation so performance is reported per audience rather than blended.",
+          "Read performance by audience — ROAS by audience, spend by audience, clicks by audience — to identify which segments actually work.",
+          "Shift budget and creative toward the audiences that perform and away from those that do not.",
+          "Keep past-purchaser audiences distinct because their role is repeat purchase and upsell, not first conversion.",
+          "Note that PMax does not provide this level of audience reporting, which is the core reason for running Demand Gen separately."
+        ],
+        "caveats": [
+          "Audience sizes can be too small for reliable reporting in low-traffic stores; segmentation only pays off above a data threshold.",
+          "The audience list is the presenter's recommendation, not an exhaustive standard."
+        ],
+        "tags": [
+          "ad-copy-deployment",
+          "demand-gen",
+          "retargeting",
+          "audience-segmentation",
+          "google-ads",
+          "retention",
+          "measurement"
+        ]
+      },
+      {
+        "title": "Segment Demand Gen Reporting by Network and Optimize Creative Accordingly",
+        "summary": "Use Demand Gen's network/placement segmentation to see whether YouTube in-stream, Shorts, Discover, Gmail, or Display is driving results, then reallocate creative and budget to what works.",
+        "use_when": "Optimizing image/video retargeting creative and placement allocation for an ecommerce store running Demand Gen.",
+        "steps": [
+          "In the Demand Gen campaign, click to segment by network so you can view performance at the individual ad or ad group level.",
+          "Evaluate each placement separately: YouTube in-stream, YouTube Shorts, Google Discover, Gmail, and the Display network.",
+          "Where a placement performs (for example, the source's illustration of Shorts outperforming Display), produce more creative suited to it — e.g., more portrait-format videos for Shorts.",
+          "Where a placement underperforms and cannot be fixed, consider turning it off entirely and focusing creative effort on the remaining placements.",
+          "Run creative variations and double down on what performs, cutting what does not.",
+          "Note that this level of creative testing and iteration is described as impossible within PMax, which hides placement data."
+        ],
+        "caveats": [
+          "The Shorts-vs-Display example is illustrative, not a predicted outcome for your account.",
+          "Placement availability and labeling in Demand Gen change over time; verify in the current interface."
+        ],
+        "tags": [
+          "ad-copy-deployment",
+          "demand-gen",
+          "creative-strategy",
+          "placement-optimization",
+          "google-ads",
+          "video-ads",
+          "creative-testing"
+        ]
+      },
+      {
+        "title": "The PMax ROAS-Floor Hack: Keep PMax as a De-Prioritized Safety Net",
+        "summary": "Set PMax's ROAS target far above your manual campaigns (e.g., manual at 300-400%, PMax at 600-700%) so higher manual bids win most auctions while PMax catches leftover queries and audiences.",
+        "use_when": "After building Standard Shopping, Search, and Demand Gen campaigns, deciding what to do with the existing Performance Max campaign.",
+        "steps": [
+          "Do not pause or delete PMax — keep it active but de-prioritized.",
+          "Set PMax's ROAS target significantly higher than your new manual campaigns. The source's example: if manual campaigns run around 300-400% average ROAS target, set PMax to 600% or even 700%.",
+          "Understand the mechanism: lower ROAS targets in manual campaigns translate to higher CPC bids, so Google prioritizes those campaigns and they win more auctions, getting the lion's share of impressions and clicks.",
+          "Let PMax act as the catch-all: it picks up search queries your Search campaigns did not cover or audiences your Demand Gen campaigns missed.",
+          "Monitor that PMax is genuinely de-prioritized rather than still dominant, and adjust the target gap if it keeps taking meaningful volume.",
+          "Treat the 300-400 vs 600-700 numbers as an illustrative starting ratio, not a required setting."
+        ],
+        "caveats": [
+          "This is the source's described hack, not a documented platform feature or guarantee.",
+          "ROAS targets must be meaningful in your own account's economics; the example numbers may be inappropriate for low-margin catalogs.",
+          "Behavior of platform bidding and target semantics can change; verify current mechanics before relying on the effect."
+        ],
+        "tags": [
+          "ad-copy-deployment",
+          "performance-max",
+          "google-ads",
+          "roas",
+          "budget-allocation",
+          "campaign-structure"
+        ]
+      },
+      {
+        "title": "Set Different ROAS Targets for Incremental vs Non-Incremental Traffic",
+        "summary": "Apply aggressive ROAS targets to high-intent branded traffic and lower targets to non-brand acquisition, so reported performance reflects true business growth instead of funnel re-engagement.",
+        "use_when": "Setting campaign-level ROAS targets or evaluating whether reported Google Ads ROAS represents genuine new-customer growth for an ecommerce store.",
+        "steps": [
+          "Classify traffic by incrementality: branded and retargeting traffic is high-intent and easier to convert but often less incremental; non-brand acquisition is lower-intent but more likely to be a sale you would not otherwise have gotten.",
+          "Set aggressive (higher) ROAS targets on high-intent branded traffic.",
+          "Set lower ROAS targets on non-brand acquisition to allow more aggressive bidding for incremental growth.",
+          "Interpret blended or PMax-reported ROAS with caution: the source warns that strong ROAS can hide an over-reliance on retargeting and branded traffic that was already in the funnel.",
+          "Judge success by whether non-brand/incremental volume grows, not only by the headline ROAS figure.",
+          "Keep brand and non-brand reporting separated wherever possible so you can apply and monitor the distinct targets."
+        ],
+        "caveats": [
+          "This is a strategic framing from the presenter, not a formula; appropriate target levels depend on margins and customer economics.",
+          "Incrementality is not directly measured by the platform's default ROAS reporting."
+        ],
+        "tags": [
+          "ad-copy-deployment",
+          "roas",
+          "measurement",
+          "google-ads",
+          "brand-vs-nonbrand",
+          "acquisition",
+          "performance-max"
+        ]
+      },
+      {
+        "title": "Decide Between PMax-First and Manual Multi-Campaign Structures",
+        "summary": "Choose PMax alone for simplicity, or the three-component manual build (Standard Shopping + segregated Search + Demand Gen) when you have the time and expertise to scale beyond PMax's control limits.",
+        "use_when": "Deciding how much Google Ads campaign structure to operate for an ecommerce store, based on available time, skill, and scaling ambitions.",
+        "steps": [
+          "Assess honestly whether you are a beginner or time-constrained operator: the source states PMax is a solid, efficient starting point for that situation.",
+          "If you want to scale beyond PMax's ceiling, build the three dedicated components instead: Standard Shopping campaigns, segregated Search campaigns (brand vs non-brand), and Demand Gen campaigns for image/video retargeting.",
+          "Expect the manual build to outperform PMax in each component when run properly, because each component gets custom structure and optimization PMax does not expose.",
+          "Plan for the management load: this structure requires keyword research, feed work, ad copy testing, audience segmentation, and ongoing bidding decisions.",
+          "If you lack the time or expertise, the source's alternative is to have an agency build and manage the structure for you, so the decision becomes build-in-house vs outsource rather than PMax vs manual.",
+          "Reassess periodically as data accumulates on which components beat the PMax baseline in your account."
+        ],
+        "caveats": [
+          "The claim that the manual structure significantly outperforms PMax is the presenter's experience, supported by agency case examples rather than a controlled test.",
+          "Agency results cited (e.g., specific eyewear and bedding ROAS figures) are examples, not promises for other stores.",
+          "The source has a commercial interest in recommending the managed-service path."
+        ],
+        "tags": [
+          "ad-copy-deployment",
+          "google-ads",
+          "campaign-structure",
+          "performance-max",
+          "shopping-ads",
+          "search-ads",
+          "demand-gen"
+        ]
+      }
+    ]
+  },
+  "raw_content": "{\"cards\":[{\"title\":\"Audit Performance Max Spend Distribution Before Replacing It\",\"summary\":\"Break down where PMax actually spends your budget — roughly 60-70% Shopping, 20-30% search text, 5-10% image/video retargeting — to see which components you can rebuild with better control.\",\"use_when\":\"When deciding whether to keep leaning on Performance Max or to build manual campaign structures, and you need evidence of what PMax is doing with the budget.\",\"steps\":[\"Before changing anything, pull the spend distribution inside your Performance Max campaign and estimate the split across Shopping, search text ads, and image/video placements. The source's observed pattern across accounts is roughly 60-70% Shopping, 20-30% search, and 5-10% image/video, but verify your own numbers.\",\"Recognize that the image/video portion is reportedly near-100% retargeting rather than cold prospecting, so any ROAS credited to it is largely re-engaging existing visitors, not new customers.\",\"Note that PMax does not expose quality score, ad-group structure, brand vs non-brand splits, or audience/placement-level reporting, which limits your ability to diagnose and optimize.\",\"Use these observations to decide which of the three components to rebuild first — most advertisers start with Standard Shopping because it absorbs the majority of spend.\",\"Set expectations: PMax is described as a reasonable starting point for beginners or low-time operators; the rebuild is aimed at advertisers with capacity to manage more structure.\"],\"caveats\":[\"The spend percentages are the presenter's typical observation, not a guaranteed split for every account.\",\"Rebuilding campaigns requires ongoing management time; the source explicitly frames this as an advanced-advertiser strategy.\"],\"tags\":[\"ad-copy-deployment\",\"campaign-structure\",\"performance-max\",\"measurement\",\"google-ads\",\"spend-allocation\"]},{\"title\":\"Performance-Based Shopping Structure by ROAS Tiers\",\"summary\":\"Segment Standard Shopping products into four ROAS/spend tiers when product margins are similar, so budget flows to proven winners, zombies get tested, and inefficient spend is cut.\",\"use_when\":\"Setting up or restructuring Standard Shopping campaigns for a store where product-level profit margins are within about 10% of each other.\",\"steps\":[\"Confirm this structure applies: the source recommends it when profit margins are similar across products (within roughly 10% at product level). If margins vary widely, use the gross-profit-margin structure instead.\",\"Tier 1 — high-ROAS products: allocate more budget to scale winners.\",\"Tier 2 — low-ROAS products currently getting spend but converting poorly: reduce bids to improve efficiency.\",\"Tier 3 — low-spend products with insufficient data: give them more opportunity to accumulate data and prove themselves.\",\"Tier 4 — 'zombie' products with zero spend that have never been tested: isolate into their own campaign with a dedicated budget to revive potential hidden gems.\",\"Build these as separate campaigns so each tier has its own budget and bidding control rather than relying on a single algorithm-managed pool.\",\"Feed the tier assignments from your historical ROAS and spend data, and revisit the tiers as new data arrives.\"],\"caveats\":[\"Tier classification depends on having enough historical spend/conversion data; new products may sit in Tier 3 by default.\",\"The four-tier labels and the ~10% margin-similarity threshold are the source's heuristics, not universal rules.\"],\"tags\":[\"ad-copy-deployment\",\"campaign-structure\",\"shopping-ads\",\"google-ads\",\"roas\",\"merchandising\",\"budget-allocation\"]},{\"title\":\"Gross Profit Margin Shopping Structure When Margins Vary\",\"summary\":\"When product margins differ widely, build Shopping campaigns around margin tiers and set lower ROAS targets on high-margin items and higher targets on low-margin items to stay profitable at scale.\",\"use_when\":\"Structuring Standard Shopping campaigns for a catalog where product-level margins vary significantly (the source cites roughly 30% to 70% as an example range).\",\"steps\":[\"Segment products into margin tiers — the source typically uses three to five tiers depending on catalog size and conversion volume. A simple version uses high, mid, and low margin.\",\"Build a separate campaign per margin tier so you can assign distinct ROAS targets.\",\"For high-margin products, set a lower ROAS target so you can bid more aggressively and capture more volume — even at lower ROAS you remain profitable because the margin is high.\",\"For low-margin products, set a higher ROAS target to stay conservative, since there is less room for error and less profit per sale.\",\"Remember the underlying insight: PMax does not know your product margins and treats every product the same, so this margin-aware structure is something only you can impose.\",\"Review margin tiers periodically as supplier costs or pricing change, since the structure's value depends on accurate margin data.\"],\"caveats\":[\"The 30-70% margin range is an illustrative example, not a benchmark.\",\"Three-to-five tiers is a starting heuristic; too few products or conversions per tier weakens the approach.\"],\"tags\":[\"ad-copy-deployment\",\"campaign-structure\",\"shopping-ads\",\"google-ads\",\"profit-margin\",\"roas\",\"pricing\"]},{\"title\":\"Shopping Feed Optimization: Titles, Images, Budget Priority\",\"summary\":\"Beyond campaign structure, optimize keyword-rich product titles, high-quality images, and give Shopping the largest share of your Google Ads budget since it is the core ecommerce placement.\",\"use_when\":\"Improving Standard Shopping campaign performance for a store — particularly product feed quality and cross-campaign budget allocation.\",\"steps\":[\"Rewrite product titles to be keyword-rich: include the most important search terms shoppers use to find the product directly in the title, so the ad surfaces on more relevant searches and earns more clicks.\",\"Upgrade product images: high-quality images stand out in the Shopping carousel and directly affect click-through rate.\",\"Control budget allocation deliberately: because you are building Shopping yourself, you can prioritize it and give it the lion's share of the overall Google Ads budget — the source calls Shopping the bread and butter for ecommerce on Google Ads.\",\"Hold these feed-level improvements as ongoing tasks rather than one-off fixes, since titles and images affect both impressions and CTR.\",\"Treat budget priority as a deliberate allocation decision you can now make, unlike when PMax auto-splits budget across placements.\"],\"caveats\":[\"The 'lion's share of budget' guidance is the presenter's recommendation for ecommerce, not a calculated optimum for every account.\",\"Title and image gains are described as affecting impressions and CTR, not a quantified ROAS lift.\"],\"tags\":[\"ad-copy-deployment\",\"shopping-ads\",\"product-page\",\"feed-optimization\",\"google-ads\",\"creative-strategy\"]},{\"title\":\"Separate Brand and Non-Brand Search Campaigns\",\"summary\":\"Split branded and non-branded search traffic into distinct campaigns so you can see true incremental performance and set brand ROAS targets much higher than non-brand targets.\",\"use_when\":\"Restructuring Google Search campaigns to reveal true incremental acquisition and avoid PMax's tendency to over-index on branded traffic.\",\"steps\":[\"Create separate campaigns for brand queries (searches for your company/brand name) and non-brand queries. PMax does not separate these by default, which the source says leads it to over-rely on branded traffic.\",\"Recognize that brand traffic is less incremental: those searchers already know you and likely first arrived via another channel, so a brand click-to-purchase is often a sale you would have gotten anyway.\",\"Set a much higher ROAS target for the brand campaign because brand converts more easily and is less incremental; set a lower ROAS target for non-brand because those sales are more incremental.\",\"Use the separated reporting to view brand ROAS and non-brand ROAS as distinct numbers, then control the brand vs non-brand budget split — shift budget to non-brand if you are over-indexed on brand.\",\"Build a dedicated strategy to grow non-brand keyword presence, which the source identifies as where real business growth comes from.\",\"Note that the source still sees value in bidding on brand in Google, but with much higher ROAS expectations.\"],\"caveats\":[\"Brand and non-brand ROAS targets will differ substantially; the source does not provide universal numbers.\",\"The claim that branded sales are usually non-incremental is the presenter's view and may vary by business.\"],\"tags\":[\"ad-copy-deployment\",\"campaign-structure\",\"search-ads\",\"google-ads\",\"brand-vs-nonbrand\",\"roas\",\"acquisition\"]},{\"title\":\"Use Fewer Headlines and Descriptions to Speed Ad Testing\",\"summary\":\"Limit responsive search ad assets to roughly 8 headlines and 2 descriptions instead of Google's maximum, so each combination accumulates enough impressions to actually be tested.\",\"use_when\":\"Writing or revising responsive search ad copy and wanting interpretable test results rather than an untested combinatorial sprawl.\",\"steps\":[\"Reduce asset count: the source typically uses 8 headlines and 2 descriptions in place of Google's recommended maximum of 15 headlines and 4 descriptions.\",\"Understand the rationale: fewer assets produce fewer possible combinations, so each combination is more likely to receive enough impressions to test meaningfully.\",\"Create multiple ads per ad group and rotate/test them so you can learn which copy drives better CTR and conversions.\",\"Feed those learnings back into quality score improvement, since copy relevance affects quality score, CPC, and ad position.\",\"Keep the strongest, most differentiated headlines in rotation rather than padding the count to hit a platform suggestion.\",\"Verify the current asset limits and recommendations in the Google Ads interface, as platform guidance changes.\"],\"caveats\":[\"The 8-headline/2-description setup is the presenter's preference, not a platform requirement.\",\"Reducing assets trades breadth of automated combinations for cleaner test data — a deliberate choice, not a universal best practice.\"],\"tags\":[\"ad-copy-deployment\",\"search-ads\",\"google-ads\",\"creative-testing\",\"experiment-design\",\"ad-copy\"]},{\"title\":\"Build Single-Themed Ad Groups from Keyword and PMax Search-Term Research\",\"summary\":\"Mine the PMax search terms report plus Keyword Planner for proven queries, then organize keywords into single-themed ad groups with matching ad copy to raise relevance and quality score.\",\"use_when\":\"Structuring Search campaigns and writing ad copy after deciding to move search traffic out of PMax.\",\"steps\":[\"Research your market's keywords using Google Ads Keyword Planner.\",\"Additionally, mine your PMax search terms report for the best-performing queries — the search terms already driving sales inside PMax.\",\"Pull those proven terms out and use them in your dedicated Search campaigns alongside the keywords found in Keyword Planner.\",\"Organize keywords into single-themed ad groups (STAGs), with each ad group focused on one theme.\",\"Write ad copy customized to each ad group's theme, which improves relevance, improves quality score, and reduces costs.\",\"Confirm the exact report names and locations in the current Google Ads interface, since UI labels change.\"],\"caveats\":[\"PMax search terms reporting can be limited or delayed depending on account settings; verify what's available.\",\"The quality-score-to-cost relationship is directional; the source gives no specific savings figures.\"],\"tags\":[\"ad-copy-deployment\",\"search-ads\",\"google-ads\",\"keyword-research\",\"campaign-structure\",\"ad-copy\",\"quality-score\"]},{\"title\":\"Use Quality Score Visibility to Cut Search Costs\",\"summary\":\"Monitor per-keyword quality score in manual Search campaigns — something PMax hides — because it affects CPC and ad position and can be improved through relevance work.\",\"use_when\":\"Optimizing existing Search campaigns for efficiency and diagnosing high CPCs.\",\"steps\":[\"Open your manual Search campaigns (not PMax, where quality score is not visible) and review quality score at the keyword level.\",\"Identify keywords with weak quality scores and investigate relevance issues — for example, ad copy that does not match the query theme or landing page mismatch.\",\"Apply the fixes available in manual Search that PMax does not allow: split-test ad copy, run campaign experiments, and inspect search terms.\",\"Reallocate or pause keywords where the cost of poor quality score outweighs the value of the traffic.\",\"Re-check scores periodically, since quality score moves with relevance and performance over time.\"],\"caveats\":[\"Quality score is described as directionally affecting CPC and position; the source offers no quantified relationship.\",\"This optimization only exists if you run manual Search campaigns — it is not available inside PMax.\"],\"tags\":[\"ad-copy-deployment\",\"search-ads\",\"google-ads\",\"quality-score\",\"measurement\",\"conversion-optimization\"]},{\"title\":\"Set Up Demand Gen Retargeting with PMax's Winning Creative\",\"summary\":\"Move proven PMax image and video creative into a single Demand Gen retargeting campaign so the algorithm can switch a user seamlessly between image and video ads with consolidated data.\",\"use_when\":\"Building the image/video retargeting component of an ecommerce Google Ads structure to replace PMax's opaque retargeting.\",\"steps\":[\"If you have been running PMax, identify the videos and images that have been performing, and reuse that winning creative in the Demand Gen campaign rather than starting from scratch.\",\"Put images and videos into the same Demand Gen campaign for consolidated data, which lets the algorithm track an individual user and switch between image and video retargeting formats.\",\"Set up the campaign as a retargeting campaign using your best creative assets.\",\"Expect better reporting than PMax provides — audience-level and placement/network-level data — which is the basis for the creative optimization steps that follow.\",\"Verify current Demand Gen campaign setup options in Google Ads, as campaign types and interfaces evolve.\"],\"caveats\":[\"This replaces PMax's image/video retargeting with an equivalent but more controllable setup; it is not a cold-prospecting solution in the source's framing.\",\"Reusing PMax creative assumes you have enough PMax history to identify winners.\"],\"tags\":[\"ad-copy-deployment\",\"demand-gen\",\"retargeting\",\"google-ads\",\"creative-strategy\",\"video-ads\"]},{\"title\":\"Segment Retargeting Audiences by Funnel Stage\",\"summary\":\"Build distinct retargeting audiences — product page viewers, ATC non-purchasers, checkout abandoners, category viewers, all visitors, past purchasers — so you can read ROAS, spend, and clicks per audience.\",\"use_when\":\"Configuring Demand Gen (or other retargeting) campaign audiences for an ecommerce store and needing audience-level performance reporting.\",\"steps\":[\"Create these segmented retargeting audiences, per the source's recommended list: product page viewers; add-to-cart users who did not purchase; abandoned cart users who started checkout but did not finish; category page viewers; all site visitors; and past purchasers (for repeat purchases and upsells).\",\"Attach the audiences to your Demand Gen retargeting campaign with proper audience segmentation so performance is reported per audience rather than blended.\",\"Read performance by audience — ROAS by audience, spend by audience, clicks by audience — to identify which segments actually work.\",\"Shift budget and creative toward the audiences that perform and away from those that do not.\",\"Keep past-purchaser audiences distinct because their role is repeat purchase and upsell, not first conversion.\",\"Note that PMax does not provide this level of audience reporting, which is the core reason for running Demand Gen separately.\"],\"caveats\":[\"Audience sizes can be too small for reliable reporting in low-traffic stores; segmentation only pays off above a data threshold.\",\"The audience list is the presenter's recommendation, not an exhaustive standard.\"],\"tags\":[\"ad-copy-deployment\",\"demand-gen\",\"retargeting\",\"audience-segmentation\",\"google-ads\",\"retention\",\"measurement\"]},{\"title\":\"Segment Demand Gen Reporting by Network and Optimize Creative Accordingly\",\"summary\":\"Use Demand Gen's network/placement segmentation to see whether YouTube in-stream, Shorts, Discover, Gmail, or Display is driving results, then reallocate creative and budget to what works.\",\"use_when\":\"Optimizing image/video retargeting creative and placement allocation for an ecommerce store running Demand Gen.\",\"steps\":[\"In the Demand Gen campaign, click to segment by network so you can view performance at the individual ad or ad group level.\",\"Evaluate each placement separately: YouTube in-stream, YouTube Shorts, Google Discover, Gmail, and the Display network.\",\"Where a placement performs (for example, the source's illustration of Shorts outperforming Display), produce more creative suited to it — e.g., more portrait-format videos for Shorts.\",\"Where a placement underperforms and cannot be fixed, consider turning it off entirely and focusing creative effort on the remaining placements.\",\"Run creative variations and double down on what performs, cutting what does not.\",\"Note that this level of creative testing and iteration is described as impossible within PMax, which hides placement data.\"],\"caveats\":[\"The Shorts-vs-Display example is illustrative, not a predicted outcome for your account.\",\"Placement availability and labeling in Demand Gen change over time; verify in the current interface.\"],\"tags\":[\"ad-copy-deployment\",\"demand-gen\",\"creative-strategy\",\"placement-optimization\",\"google-ads\",\"video-ads\",\"creative-testing\"]},{\"title\":\"The PMax ROAS-Floor Hack: Keep PMax as a De-Prioritized Safety Net\",\"summary\":\"Set PMax's ROAS target far above your manual campaigns (e.g., manual at 300-400%, PMax at 600-700%) so higher manual bids win most auctions while PMax catches leftover queries and audiences.\",\"use_when\":\"After building Standard Shopping, Search, and Demand Gen campaigns, deciding what to do with the existing Performance Max campaign.\",\"steps\":[\"Do not pause or delete PMax — keep it active but de-prioritized.\",\"Set PMax's ROAS target significantly higher than your new manual campaigns. The source's example: if manual campaigns run around 300-400% average ROAS target, set PMax to 600% or even 700%.\",\"Understand the mechanism: lower ROAS targets in manual campaigns translate to higher CPC bids, so Google prioritizes those campaigns and they win more auctions, getting the lion's share of impressions and clicks.\",\"Let PMax act as the catch-all: it picks up search queries your Search campaigns did not cover or audiences your Demand Gen campaigns missed.\",\"Monitor that PMax is genuinely de-prioritized rather than still dominant, and adjust the target gap if it keeps taking meaningful volume.\",\"Treat the 300-400 vs 600-700 numbers as an illustrative starting ratio, not a required setting.\"],\"caveats\":[\"This is the source's described hack, not a documented platform feature or guarantee.\",\"ROAS targets must be meaningful in your own account's economics; the example numbers may be inappropriate for low-margin catalogs.\",\"Behavior of platform bidding and target semantics can change; verify current mechanics before relying on the effect.\"],\"tags\":[\"ad-copy-deployment\",\"performance-max\",\"google-ads\",\"roas\",\"budget-allocation\",\"campaign-structure\"]},{\"title\":\"Set Different ROAS Targets for Incremental vs Non-Incremental Traffic\",\"summary\":\"Apply aggressive ROAS targets to high-intent branded traffic and lower targets to non-brand acquisition, so reported performance reflects true business growth instead of funnel re-engagement.\",\"use_when\":\"Setting campaign-level ROAS targets or evaluating whether reported Google Ads ROAS represents genuine new-customer growth for an ecommerce store.\",\"steps\":[\"Classify traffic by incrementality: branded and retargeting traffic is high-intent and easier to convert but often less incremental; non-brand acquisition is lower-intent but more likely to be a sale you would not otherwise have gotten.\",\"Set aggressive (higher) ROAS targets on high-intent branded traffic.\",\"Set lower ROAS targets on non-brand acquisition to allow more aggressive bidding for incremental growth.\",\"Interpret blended or PMax-reported ROAS with caution: the source warns that strong ROAS can hide an over-reliance on retargeting and branded traffic that was already in the funnel.\",\"Judge success by whether non-brand/incremental volume grows, not only by the headline ROAS figure.\",\"Keep brand and non-brand reporting separated wherever possible so you can apply and monitor the distinct targets.\"],\"caveats\":[\"This is a strategic framing from the presenter, not a formula; appropriate target levels depend on margins and customer economics.\",\"Incrementality is not directly measured by the platform's default ROAS reporting.\"],\"tags\":[\"ad-copy-deployment\",\"roas\",\"measurement\",\"google-ads\",\"brand-vs-nonbrand\",\"acquisition\",\"performance-max\"]},{\"title\":\"Decide Between PMax-First and Manual Multi-Campaign Structures\",\"summary\":\"Choose PMax alone for simplicity, or the three-component manual build (Standard Shopping + segregated Search + Demand Gen) when you have the time and expertise to scale beyond PMax's control limits.\",\"use_when\":\"Deciding how much Google Ads campaign structure to operate for an ecommerce store, based on available time, skill, and scaling ambitions.\",\"steps\":[\"Assess honestly whether you are a beginner or time-constrained operator: the source states PMax is a solid, efficient starting point for that situation.\",\"If you want to scale beyond PMax's ceiling, build the three dedicated components instead: Standard Shopping campaigns, segregated Search campaigns (brand vs non-brand), and Demand Gen campaigns for image/video retargeting.\",\"Expect the manual build to outperform PMax in each component when run properly, because each component gets custom structure and optimization PMax does not expose.\",\"Plan for the management load: this structure requires keyword research, feed work, ad copy testing, audience segmentation, and ongoing bidding decisions.\",\"If you lack the time or expertise, the source's alternative is to have an agency build and manage the structure for you, so the decision becomes build-in-house vs outsource rather than PMax vs manual.\",\"Reassess periodically as data accumulates on which components beat the PMax baseline in your account.\"],\"caveats\":[\"The claim that the manual structure significantly outperforms PMax is the presenter's experience, supported by agency case examples rather than a controlled test.\",\"Agency results cited (e.g., specific eyewear and bedding ROAS figures) are examples, not promises for other stores.\",\"The source has a commercial interest in recommending the managed-service path.\"],\"tags\":[\"ad-copy-deployment\",\"google-ads\",\"campaign-structure\",\"performance-max\",\"shopping-ads\",\"search-ads\",\"demand-gen\"]}]}",
+  "input": {
+    "source_id": "1Jv6lbnzgKzvRyT678B1VMbCwiQOZuiIU",
+    "source_sha256": "96c979ee3718f6d18efe604b7c238bc6791b5506f1295024eaa937e929257028",
+    "source_name": "The Best E-commerce Google Ads Strategy for 2026.docx",
+    "folder": "/11-ADC-ad-copy-deployment",
+    "domain": "ad-copy-deployment",
+    "section": 0,
+    "section_count": 1,
+    "text": "11-ADC / ad copy and deployment\n\nGoes here. Paid social creative production, hook writing, direct response video frameworks, creator/UGC scripting, static ad design, messaging strategies, evaluating stages of awareness, identifying new ad formats/angles, advertorials, unique mechanisms, and creative strategist workflows.\n\nNot here.\n\nPaid advertising performance metrics, ROAS, scaling rules, bidding, or ad-platform specific attribution -> 11-ADC\n\nConversion rate optimization (CRO) on core website pages or general analytics -> 06-MEA\n\nHeader. url: rights: public_reference why: Details advanced, non-PMax e-commerce scaling frameworks for Google Ads in 2026—breaking down bespoke campaign architectures (isolated Standard Shopping, segregated Search, and Demand Gen retargeting) alongside the strategic \"high-ROAS PMax de-prioritization\" safety-net hack. modules: [ADC] topics: [campaign setup and tracking, algorithm mechanics, return on ad spend (ROAS)] tier: 2 scope_hint: core\n\nTopics. campaign setup and tracking / Architecting advanced e-commerce Google Ads campaign structures that bypass Performance Max reliance by building three dedicated, high-control components: Standard Shopping campaigns (segmented by ROAS performance tiers or gross profit margins), segregated Search campaigns (with strict separation between brand and non-brand traffic), and Demand Gen campaigns (for targeted image and video retargeting). algorithm mechanics / Managing traffic cannibalization and algorithmic prioritization. Utilizing the \"PMax ROAS-floor hack\" by setting Performance Max return-on-ad-spend (ROAS) targets significantly higher than manual campaigns, thereby forcing Google to prioritize high-control Standard Shopping, Search, and Demand Gen traffic while keeping PMax active purely as a de-prioritized catch-all safety net. return on ad spend (ROAS) / Evaluating profitability by separating brand versus non-brand performance. Applying aggressive ROAS targets to high-intent branded traffic while enforcing lower ROAS targets on incremental non-brand acquisition to drive true business growth rather than inflated, non-incremental metrics.\n\nLook for. The primary limitation of Performance Max for advanced e-commerce scaling: PMax acts as a \"jack of all trades\" that hides data, overrelies on retargeting/branded traffic, and lacks granular optimization control. The core multi-campaign architecture replacing PMax: building out dedicated Standard Shopping, segmented Search, and Demand Gen retargeting campaigns. The PMax de-prioritization hack: setting PMax ROAS targets much higher than manual campaigns to force budget allocation toward controlled inventory while keeping PMax as a safety net.\n\nSkip. Promotional pitches for agency strategy calls or external software tools.\n\nScope mix. Almost all core.\n\nVolume. 15 to 20.\n\nIf you want to know what's actually working for e-commerce Google Ads in 2026, this is the video for you. I've been running a Google Ads agency called Big Flare for over 12 years. And in that time, I've generated over $150 million in e-commerce revenue for my clients. And I've helped over 100 e-commerce businesses to scale with Google Ads. So, when I tell you this is the strategy you should be running for your e-commerce store in 2026, I'm speaking from experience. So, here's the thing. Most e-commerce advertisers right now are relying heavily on Performance Max. And look, if you're a beginner or you don't have a lot of time, that's totally fine. Pmax is a solid starting point and is an efficient use of your limited time. But this video isn't for beginners or people happy to settle with what Pmax can deliver on its own. This is for advanced advertisers who want to scale beyond what Pmax can deliver. Because Performance Max is a jack of all trades. It does everything okay, but nothing exceptionally well. So, this strategy my team and I have developed over the years is something that can outperform Pmax by a significant degree when you run it right. And in this video, I'm going to reveal the exact strategy we use to dramatically outperform Pmax. It involves building three dedicated campaign types yourself, each one optimized to beat what Pmax does automatically. Plus, I'll show you the hack that keeps PMAX in your account as a safety net without it cannibalizing your best traffic. All right, let's dive in. Before I show you how to build something better, you need to understand what Performance Max is actually doing with your money. Because once you see what's happening behind the scenes, the strategy I'm about to share will make complete sense. So, here's the typical spend distribution I see in most e-commerce performance max campaigns. you get about 60 to 70% maybe of your budget goes to standard shopping ads and then approximately 20 to 30% might go to Google's search text ads and then the remainder maybe 5 to 10% goes to images and videos and now that image and video traffic it's likely to be 100% retargeting not cold traffic is very good at retargeting people who've already visited your site before but it's not very good using the images and videos part of it to find new customers. And this is why I call PMAX a jack of all trades. It does shopping, okay, it does search, okay, it does display and video, okay, but just retargeting. But then it does none of those things exceptionally well. And here's the real problem with this. PMAX can overrely on retargeting and branded traffic. And then this makes your return on ad spend look fantastic on paper, but it hides the fact that these traffic sources are often less incremental than acquiring brand new customers. You're more likely to be bidding on people who are already in your funnel than on people who are totally new to you. So the rorowass looks great, but your actual business growth is then limited. So why does this matter? It's because when you understand what Pmax is doing, you realize you can build each component yourself with better structure and better optimization. And that's exactly what I'm going to show you today. All right, so here's the core strategy. Instead of relying on Pmax's average attempt at everything, you're going to build those three dedicated campaign types. Standard shopping campaigns, search text ads campaigns, and demand gen campaigns to handle that image and video retargeting traffic. Each one of these will have its own custom structure optimized to outperform what Pmax does automatically. Plus, and this is important, you keep your PMAX in the account and switched on as a deprioritized catch all campaign. We're not going to eliminate it entirely. We're just making sure it's not the primary driver of our traffic. So, I'll explain exactly how to do that later in the video. Okay, so that's the core strategy. We're going to replicate everything PMAX is doing by building out those three campaign types on our own. And then we're going to outperform Pmax in each of those individual campaign types. So what I will do next is take you through each campaign type you need to build and then I'll give you the strategy on how to get it running better than PMAX. Let's start with shopping campaigns because this is typically where Pmax spends most of your budget anyway. So it makes sense for us to be talking about this one first. So here's the strategic advantage of building your own standard shopping campaigns. You get dedicated budget specifically for shopping, which is the best placement for e-commerce. Instead of your budget getting split across all platforms automatically, you control exactly how much goes to shopping, and you get more visibility into what's working and what's not. Now, when it comes to structuring your shopping campaigns, there are two main approaches. The first approach I call the rorowass performance-based structure. So, use this when your profit margins are similar. uh across all your products. If your profit margins are all within 10% of each other at the product level, then this is the right approach. So, here's how it works. You segment your products by their historical return on ad spend and spend performance into four tiers. Tier one is your high rorowass products, your best performers. Give these more budget to scale your winners. Tier two is your low rorowass products. They're getting spend but not converting really well. So reduce bids on these to improve efficiency. Tier three is your low spend products. Not enough data to judge yet. So you just need to give these more opportunity to prove themselves. And then tier four are your zombies products with zero spend that have never been tested. You isolate these into their own campaign with a dedicated budget to revive those hidden gems. So by segmenting this way, you're allocating budgets strategically based on actual performance data. PMAX on the other hand just kind of throws everything together and lets the algorithm figure it out. Second approach is structure B, the gross profit margin structure. So use this campaign structure when your profit margins vary significantly across your products. Let's say your profit margin per product could be as high as 70% on some or as low as 30% on others. So if that's the range of your variability in your profit margins, the gross profit margin structure is for you. So here's the logic. You segment your products by their margin tiers. Usually, we might do anywhere from three to five different profit margin tiers depending on how many products and conversions we have. So, let's take the most basic form of this structure and say we have just three tiers. High margin, mid- margin, low margin. So, you build your campaigns around those margin tiers and then you set different rorowass targets for each tier. For your high margin products, you're going to set a lower return on ad spend target. This allows you to bid more aggressively and get more volume because even at a lower return on ad spend, you're still profitable due to the high margins. For your low margin products, you set a higher return on ad spend target. This ensures you maintain profitability despite the tighter margins. You're being more conservative with these products because you have less room for error. This is something Pmax cannot do effectively on its own. It doesn't know your margins. It treats every product the same regardless of how much profit you actually make on each sale. Beyond the campaign structure, there are a few additional shopping optimizations you should focus on. First, optimize your product titles so that you show up on more searches and get more clicks. Your titles should be keywordri. Include the most important search terms that people use to find your products within the title. And then second, focus on your product images. High- quality images really stand out in the shopping ads carousel. They directly impact your clickthrough rate. And third, control your budget allocation. When you build shopping yourself, you can prioritize it accordingly. Give it the lion's share of your overall Google Ads budget. Because for e-commerce in Google Ads, shopping is usually going to be your bread and butter. Right now, let's move to the second component, search campaigns. The strategic advantage here is visibility and control that PMAX simply doesn't provide. When PMAX runs search ads, you get less visibility and control. You have no idea what your quality score looks like. You can't split test different ad copies or run campaign experiments. And you can't specify different targets for brand versus non-brand traffic. So, you're stuck with just trusting Google here. When you build search campaigns yourself, however, you get full transparency and control. The first and most important thing to do here is segment brand and non-brand into separate campaigns. And this is critical and here's why. PMAX doesn't separate these by default and it tends to overrely on branded traffic. Brand traffic is when someone searches for your company name. These people already know you. Some other marketing channel was likely the first touch point. And so when they click on your brand ads and buy, they are less likely to be a truly incremental sale. When PMAX captures this brand traffic, your rorowass looks amazing, but it's deceptive. you're not really acquiring incremental sales to the same degree as if it were all non-brand traffic. And whilst there is value to be had in bidding on your brand in Google, our rorowass expectations need to be a lot higher. So by separating brand and non-brand into different campaigns, you gain several advantages. First, you can see the true performance of each. What is your brand rorowass? What is your non-brand rorowass? These are going to be very different numbers. Second, you can then set different targets for each of them. Brand should have a much higher rorowass target because it's easier to convert and it is less incremental than non-brand. Non-brand should have a lower rorowass target because sales coming from here are more incremental. A higher proportion of them will be sales that you would not have gotten anyway. Third, you can control the split between brand and non-brand traffic. If you're overindexed on brand, you can shift budget to non-brand to drive more incremental growth. And fourth, you can develop a strategy specifically for growing your non-branded keyword presence. This is where the real business growth comes from. Beyond the brand non-brand segmentation, there are some key optimizations you should focus on. First, monitor and improve your quality score. This is not visible in Pmax, but in regular search campaigns, you can now see your quality score for each keyword. Quality score directly impacts your cost per click and your ad position. Improving it can dramatically reduce your costs. Second, optimize your ad copy strategically. Here's my recommendation. Use fewer headlines and descriptions than Google recommends. I typically use eight headlines and two descriptions instead of the maximum 15 and four. Why? It reduces the number of total possible ad combinations, meaning that each ad combination is now more likely to actually get enough impressions to test with. Then create multiple ads per ad group for rotation and testing. This way you can start to learn what actually works. You can see which ad copy combinations drive better CTR and conversions and then you can take those learnings and use that to improve your quality score. PMAX doesn't give you this level of insight or control. You're just kind of trusting Google to figure it all out on its own. And sometimes Google doesn't figure it out quite as well as you could. Now, here's another thing you can control in search that Pmax doesn't let you do. You can control your ad group structure. This is huge for performance. And here's the approach I recommend. First, thoroughly research the keywords in your market. Use the keyword planner tool in Google Ads. And then also scour your PMAX search terms report for the best performing terms. These are the queries that are already driving sales for you within the PMAX campaign. You pull them out and then use them in your dedicated search campaigns alongside the relevant keywords that you found when you were researching in Google Keyword Planner. Then you structure those keywords into single themed ad groups, also known as STAGs. Each ad group focuses on one theme, and you can now write ad copy that's customized specifically for that theme. This improves relevance, which improves quality score, which reduces your costs. PMAX does not let you do any of this very effectively. You can't fully control the ad group structure. You're just handing everything over to Google. With dedicated search campaigns, you have much more control to optimize performance up to better levels. Okay. The third component is demand genen campaigns for your images and your videos. Remember, in Pmax, only 5 to 10% of your budget typically goes to images and videos, and it's almost always very focused on retargeting. With demand genen, we can set up exactly the same retargeting approach, but due to the added control and reporting available here, we can then outperform Pmax's attempt at retargeting. Let's start with the basics. Set up a demand genen retargeting campaign with your best videos and images. If you've been running PMAX, you already have creative that's been performing. Take those winning videos and images and put them into the demand genen campaign. and yes, put the images and videos into the same campaign for consolidated data. This allows the algorithm to track an individual user and seamlessly switch between showing them image or video-based retargeting ads. Now, let's talk about how and why demand genen retargeting is better than letting PMAX do it all. With Demand Genen compared to PMAX, you're going to get way better data to work with. For example, you get more audience level data if you set this up the right way. To get that audience level data, you first need to set up segmented audiences. Here are the retargeting audiences I recommend. Product page viewers, add to cart users who didn't complete purchase, abandoned cart users who started checkout but didn't finish, category page viewers, all site visitors, and past purchases for repeat purchases and upsells. Once these are all set up, you can see performance for each audience. Rorowass by audience, spend by audience, clicks by audience. You can see which audiences are actually working and which ones are not. PMAX doesn't give you this level of audience reporting. But it gets even better. You can also see performance by placement or network at the individual ad level or ad group level. Is YouTube inream working well? What about YouTube Shorts? Is Google Discover driving conversions? What about Gmail? You can see all of this. PMAX hides this from you, but Demands Gen reveals it. Simply click segment by network and then you can see all this data at any level that you want. Better data means better optimization of your creative and targeting. This is the key advantage over PMAX. With all this data now you can actually optimize your creative properly. If you see that YouTube shorts is crushing it but display network is underperforming, you can adjust. You can create more portrait videos for shorts and then you can potentially turn off display network entirely and then focus on better creative for the remaining placements. Using the better data in demand genen, make sure to test different creative variations and see what works. Double down on what's performing and cut what isn't. This level of creative testing and iteration is impossible within Pmax. Now, if you're watching this and thinking, \"This sounds great, but I don't have the time or expertise to implement all of this myself.\" I have some news for you. This is exactly what my agency, Big Flare, does for our clients. We build and manage these advanced campaign structures so that you can focus on running your business. We've been doing this for over 12 years across hundreds of e-commerce accounts. For example, we helped an eyewear store increase their rorowass from 28% to 563%. We've taken a bedding company to 692% rorowass with a 91% increase in quarterly profit. If you want us to do all of this for you, we offer a fully done for you Google Ads management service. Click the link in the description to book a free strategy call. There's no obligation. We'll just chat about your business and see if we're a good fit. All right, let's continue with the final piece of this strategy. This is important, so pay attention. You don't eliminate Pmax entirely. I know I've been telling you to build your own campaigns to outperform Pmax, but PMAX still has a role to play here. It's just not as your primary traffic driver. Here's the strategy. raise Pmax's rorowass target significantly higher than your new standard shopping search and demand gen campaigns. If your manual campaigns are running at say 300 to 400% average rorowass target, set pmax to 600 or even 700%. Now, here's why this works. The lower rorowass targets in your manual campaigns means higher cost perclick bids. Higher cost perclick bids means Google will prioritize those campaigns for most of the traffic. Your search, shopping, and demand gen campaigns will win more of the auctions. They'll get the lion's share of impressions and clicks, but Pmax catches anything that they might miss. Maybe there's a search query your search campaigns didn't cover, or maybe there's an audience your demand genen campaigns didn't quite capture. Pmax picks up those stragglers. The higher rorowass target helps to depprioritize Pmax, but we still get to keep it there as a safety net. You get the best of both worlds. The control and performance of the more manual campaign types, plus the comprehensive coverage of PAX as a backup. All right, guys. In this video, I've talked a lot about how you can go beyond PAX with your own campaign setup. But for those of you who rather stay within PAX and optimize what you have in there as well as possible, well, this video up here has my top five advanced level strategies for Pmax. Check it out if you also want to optimize your existing PMAX setup to be as fine-tuned as it can",
+    "prior_notes": [],
+    "id": "21d35e38f11a37975c60eb4b"
+  },
+  "system_prompt_sha256": "f2341d28186a0dbaee868d37ce33c173f631088eb1754997556740d4905c0f2b"
+}

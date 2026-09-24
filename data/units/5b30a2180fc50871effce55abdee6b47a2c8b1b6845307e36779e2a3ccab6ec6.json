@@ -1,0 +1,74 @@
+{
+  "case_index": 20,
+  "evidence": [
+    {
+      "end": 46432,
+      "field": "claim",
+      "locator": "body:14/paragraph",
+      "quote": "I'll see people grab those 30 days and forecast out the next 90 days based on those numbers not not recognizing that they were extremely out of stock in those those 15 days",
+      "source_id": "1gkDP7vVRMnDRuuoJDvnTNfumOz3vN926",
+      "source_sha256": "43f7a73810c8cbf37b510fefc54abc2c67a2550db64bfae2e484d6f29f242631",
+      "start": 46260
+    },
+    {
+      "end": 46571,
+      "field": "action",
+      "locator": "body:14/paragraph",
+      "quote": "grabbing the 15 days that they were in in stock and extrapolating that out",
+      "source_id": "1gkDP7vVRMnDRuuoJDvnTNfumOz3vN926",
+      "source_sha256": "43f7a73810c8cbf37b510fefc54abc2c67a2550db64bfae2e484d6f29f242631",
+      "start": 46497
+    },
+    {
+      "end": 46259,
+      "field": "trigger.0",
+      "locator": "body:14/paragraph",
+      "quote": "you're kind of out of stock for half a month or then you're in stock for the rest of the 15 days",
+      "source_id": "1gkDP7vVRMnDRuuoJDvnTNfumOz3vN926",
+      "source_sha256": "43f7a73810c8cbf37b510fefc54abc2c67a2550db64bfae2e484d6f29f242631",
+      "start": 46163
+    }
+  ],
+  "extraction_request": "7710b3a2f9a6bcdb57b79dc909be870e101655051337041d4eace8cb7d44b1b0",
+  "id": "5b30a2180fc50871effce55abdee6b47a2c8b1b6845307e36779e2a3ccab6ec6",
+  "provenance": "unverified",
+  "publication_allowed": false,
+  "schema_version": 2,
+  "semantic_review": "required",
+  "status": "candidate",
+  "unit": {
+    "action": {
+      "quote": "grabbing the 15 days that they were in in stock and extrapolating that out",
+      "text": "Grab the days that were in stock and extrapolate those out."
+    },
+    "claim": {
+      "quote": "I'll see people grab those 30 days and forecast out the next 90 days based on those numbers not not recognizing that they were extremely out of stock in those those 15 days",
+      "text": "The source says people go wrong by selecting the wrong dates, such as taking 30 days that include 15 out-of-stock days and forecasting the next 90 days from those numbers."
+    },
+    "completion": [],
+    "exclusions": {
+      "args": [],
+      "op": "any"
+    },
+    "id": "wrong_dates",
+    "kind": "action",
+    "prerequisites": {
+      "args": [],
+      "op": "all"
+    },
+    "relations": [],
+    "title": "Use in-stock days rather than periods containing stockouts for forecasting",
+    "trigger": {
+      "args": [
+        {
+          "quote": "you're kind of out of stock for half a month or then you're in stock for the rest of the 15 days",
+          "text": "The selected period includes out-of-stock days."
+        }
+      ],
+      "op": "all"
+    },
+    "unknowns": [
+      "The source does not state how to handle seasonality or partial stockouts in the extrapolation."
+    ]
+  }
+}

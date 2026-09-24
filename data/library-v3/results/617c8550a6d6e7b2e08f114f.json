@@ -1,0 +1,329 @@
+{
+  "cards": [
+    {
+      "title": "Test SMS/email send frequency with a holdout to prove incrementality",
+      "summary": "Design a cohort split (normal / zero / double) to measure whether extra messages actually lift revenue before scaling budget.",
+      "use_when": "Deciding whether to increase lifecycle message cadence or justify a growing SMS bill to leadership.",
+      "steps": [
+        "Split your subscriber base into three cohorts: hold steady at current cadence (for example 50%), send nothing at all (for example 25%), and send double the cadence (for example 25%).",
+        "Run for a full cycle long enough to capture conversion behavior—Postscript's test moved brands from roughly one text per week to two.",
+        "Compare revenue per subscriber across cohorts against the true holdout, not just platform-attributed revenue, to see incremental lift.",
+        "If 2x shows a statistically significant revenue lift over holdout, raise cadence; if not, keep the baseline.",
+        "Note that in the test described, more sending produced higher ROI with ~98% confidence the 2x group yielded significantly more revenue—treat this as one brand's result, not a universal benchmark."
+      ],
+      "caveats": [
+        "Every SMS has a real per-message cost, unlike email, so incremental revenue must clear the toll.",
+        "Attribution tools report what happened; only a holdout shows what would have happened otherwise."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "sms-marketing",
+        "incrementality",
+        "experiment-design",
+        "measurement",
+        "budget-allocation"
+      ],
+      "id": "651884bb18e3a2ac816017f8",
+      "source_id": "1wpHg6ozp-NR4OO70G3qB8R_12lfabRbD",
+      "source_sha256": "df31723654314a8de3b02299655f628f9e8e45113b8011222c20b111fffdb758",
+      "source_name": "Rethinking SMS Marketing for Ecommerce_ AI, RCS & LTV.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 1
+    },
+    {
+      "title": "Set an SMS frequency baseline using subscriber LTV and unsub rate",
+      "summary": "Use subscriber LTV (acquisition rate, messages per subscriber, revenue per message, unsub rate) to find the send cadence that maximizes revenue without spiking unsubscribes.",
+      "use_when": "Setting or revising monthly SMS cadence and worried about annoying the list.",
+      "steps": [
+        "Track four metrics: % of list subscribing (acquisition rate), messages sent per subscriber per month, revenue per message, and unsubscribe rate.",
+        "Watch unsubscribes inside the first 30 days as the key signal of over-messaging.",
+        "Start near Postscript's observed sweet spot of roughly 8–10 texts per subscriber per month, which they report generates high returns with essentially zero impact on baseline unsub rate.",
+        "Do not assume this is fixed—the correct baseline must be tested per brand by mapping the relationship between messages per subscriber, revenue, and unsub rate.",
+        "Use the data, not gut fear of 'annoying people'—if frequency were a problem, it would surface in the unsub metric.",
+        "Recognize real spread across brands: some large brands send ~2 texts/subscriber (e.g., a subscription-first model), while others (e.g., Grüns) send ~20+ in the first 30–45 days."
+      ],
+      "caveats": [
+        "8–10/month is Postscript's observed range, not a guaranteed optimum for every store.",
+        "High-frequency brands often accept higher spend for a specific goal such as converting to subscription; low-frequency brands may be filtering out long-term non-buyers to avoid fees."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "sms-marketing",
+        "retention",
+        "measurement",
+        "list-management",
+        "frequency"
+      ],
+      "id": "52f701ac2a638665fe4f44b0",
+      "source_id": "1wpHg6ozp-NR4OO70G3qB8R_12lfabRbD",
+      "source_sha256": "df31723654314a8de3b02299655f628f9e8e45113b8011222c20b111fffdb758",
+      "source_name": "Rethinking SMS Marketing for Ecommerce_ AI, RCS & LTV.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 1
+    },
+    {
+      "title": "Treat SMS as an acquisition channel, not just retention",
+      "summary": "Most people who give you a phone number haven't bought yet, so SMS flows are the welcome mat for paid traffic—manage and optimize them like performance marketing.",
+      "use_when": "Allocating team ownership, budget, or optimization effort across paid acquisition and lifecycle channels.",
+      "steps": [
+        "Recognize that the first action a Meta/Google click often triggers is the signup popup—so SMS/email pop-ups and welcome flows are part of the acquisition funnel.",
+        "Track that roughly 25% of compliant double-opt-in subscribers buy within 30 days (Postscript's cross-brand figure); the remaining ~75% are unconverted subscribers whose first-purchase objections still need handling.",
+        "Treat the pop-up → welcome series as your acquisition engine, distinct from campaigns that serve retention at day 15/30/45.",
+        "Align org structure so one leader sees paid, creative, ecom, and retention—Postscript and operators report that siloed teams miss second-order effects (e.g., an ad change tanking SMS list growth).",
+        "Test pop-up changes against full-site conversion rate, not just opt-in rate, because a pop-up can lift signups while hurting checkout.",
+        "An operator predicts retention will become the next frontier as paid channels saturate—an opinion, not a guarantee."
+      ],
+      "caveats": [
+        "The 25% figure is an aggregate across Postscript's ~25,000 brands, not a target for your store.",
+        "Centralizing teams is a recommendation from practitioners, not a proven universal structure."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "sms-marketing",
+        "acquisition",
+        "list-growth",
+        "conversion-optimization",
+        "team-structure",
+        "pop-up"
+      ],
+      "id": "a971c5673088bc93e6cd7c29",
+      "source_id": "1wpHg6ozp-NR4OO70G3qB8R_12lfabRbD",
+      "source_sha256": "df31723654314a8de3b02299655f628f9e8e45113b8011222c20b111fffdb758",
+      "source_name": "Rethinking SMS Marketing for Ecommerce_ AI, RCS & LTV.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 1
+    },
+    {
+      "title": "Add a question to lifecycle flows to start conversations",
+      "summary": "The lowest-effort entry to conversational commerce is appending a simple question to an existing flow message and reading the replies.",
+      "use_when": "Starting conversational commerce or sourcing zero-party data without new tooling.",
+      "steps": [
+        "Pick any existing flow (welcome series, abandoned cart, delivery follow-up).",
+        "After the standard link or message, append a plain question such as 'Is there anything else I can help you with today?' or 'Do you have any questions I can answer?'",
+        "Test it: one operator split a 6-message welcome flow, with the variant ending in a question, and it performed well; keep the standard flow to convert the easy 25% then use the question to catch marginal prospects where conversation is required.",
+        "Expect volume—operators report brands getting thousands of replies in the first week when they ask.",
+        "Mine the replies for objection themes and use them to guide future flows and ad copy.",
+        "Extend this to more touchpoints: post-delivery usage questions, winback, long-consideration prospects."
+      ],
+      "caveats": [
+        "For short-consideration, low-ticket impulse buys (e.g., a wallet before Father's Day), conversation at the end of the flow is sufficient—going conversation-first is overkill.",
+        "For long-consideration or high-ticket categories (e.g., a $1,000 sofa with a ~90-day window), consider putting conversation earlier to compress the decision."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "sms-marketing",
+        "conversational-commerce",
+        "abandoned-cart",
+        "welcome-series",
+        "customer-research",
+        "zero-party-data"
+      ],
+      "id": "c2cd726a16ab0f3eeb4c173c",
+      "source_id": "1wpHg6ozp-NR4OO70G3qB8R_12lfabRbD",
+      "source_sha256": "df31723654314a8de3b02299655f628f9e8e45113b8011222c20b111fffdb758",
+      "source_name": "Rethinking SMS Marketing for Ecommerce_ AI, RCS & LTV.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 1
+    },
+    {
+      "title": "Match conversation strategy to consideration period and ticket size",
+      "summary": "When and how aggressively to open conversations depends on how long buyers deliberate and how high the stakes are.",
+      "use_when": "Designing whether flows should lead with conversation or stay broadcast-first for a given product category.",
+      "steps": [
+        "Identify your category's consideration period (time from click/opt-in to purchase).",
+        "For short, impulse-driven buys, run a normal broadcast flow and reserve conversation for the end to handle stragglers.",
+        "For long-consideration or high-ticket items, place conversation earlier—the source compares it to putting your best salesperson in front of a shopper while they compare you to competitors.",
+        "For one-time-to-subscription conversion, which carries an outsized value bump, lean conversation-heavy to handle objections and upsell.",
+        "Use winback and unconverted-senior-subscriber segments as conversation targets, since they've engaged with texts but never bought.",
+        "Post-delivery, ask a follow-up question about product usage to open a dialogue at the best moment for repeat purchase."
+      ],
+      "caveats": [
+        "Consideration-period length is a judgment call per category; the source gives 90 days as an example for furniture, not a rule."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "sms-marketing",
+        "conversational-commerce",
+        "lifecycle-flows",
+        "subscription",
+        "retention"
+      ],
+      "id": "d0012f077a0da46871812e52",
+      "source_id": "1wpHg6ozp-NR4OO70G3qB8R_12lfabRbD",
+      "source_sha256": "df31723654314a8de3b02299655f628f9e8e45113b8011222c20b111fffdb758",
+      "source_name": "Rethinking SMS Marketing for Ecommerce_ AI, RCS & LTV.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 1
+    },
+    {
+      "title": "Use conversation data to build real zero-party customer attributes",
+      "summary": "Conversations surface static facts and ephemeral attributes you can operationalize across text and your CDP.",
+      "use_when": "Enriching subscriber profiles with personalization data and building one-to-one messaging.",
+      "steps": [
+        "Instrument conversational replies so the content is queryable, not just answered in the moment.",
+        "Separate static data (a purchase made a year ago, a SKU, a subscription tier) from ephemeral data that changes over time (a child ages from 1 to 2, seasonal location, a fitness or health change).",
+        "Push attributes into your CRM/CDP so they can inform messaging beyond SMS—the source is building toward API/MCP access so personas like Claude can consume them (verify current availability).",
+        "Build triggers around ephemeral attributes: a daughter's next birthday, a season change, a size change after a weight-loss journey.",
+        "Treat this as the path to 'audience of one' personalization marketers have chased but lacked data to execute.",
+        "Example of the kind of data conversations yield: a belt brand learned a wife buys for her husband, that he was on a health journey down 40 lbs, and that his size would keep changing—actionable but not obtainable from browsing data alone.",
+        "Operators report subscribers who have a conversation with the brand show ~1.5x higher lifetime value—an internal metric, not a guarantee."
+      ],
+      "caveats": [
+        "Postscript's API/MCP access was in development at the recording—check current product docs.",
+        "The 1.5x LTV lift is the vendor's observed metric; validate on your own list."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "conversational-commerce",
+        "zero-party-data",
+        "personalization",
+        "segmentation",
+        "retention",
+        "cdp"
+      ],
+      "id": "67b11f173f1a912e8358c991",
+      "source_id": "1wpHg6ozp-NR4OO70G3qB8R_12lfabRbD",
+      "source_sha256": "df31723654314a8de3b02299655f628f9e8e45113b8011222c20b111fffdb758",
+      "source_name": "Rethinking SMS Marketing for Ecommerce_ AI, RCS & LTV.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 1
+    },
+    {
+      "title": "Use SMS/MMS/RCS as distinct channels and enable RCS for richer actions",
+      "summary": "RCS is a separate messaging channel with SMS fallback that raises the creative ceiling with carousels, video, and native action buttons.",
+      "use_when": "Planning SMS creative formats and considering RCS rollouts for launches or drops.",
+      "steps": [
+        "Understand RCS is not SMS/MMS—it's its own protocol; if a recipient can't receive RCS, messages fall back to SMS in tools like Postscript.",
+        "Use RCS for rich formats: carousel scrolling, video, and native action buttons.",
+        "For product drops, use the iOS calendar action button so recipients can add a launch date directly instead of a vague 'watch this space' text.",
+        "Exploit native CTAs that integrate with the phone to expand use cases on the messaging channel.",
+        "Operators report outsized performance on RCS over SMS/MMS—treat as early directional signal, not a benchmark.",
+        "Confirm current carrier/device support and platform interface before committing budget, as RCS availability and features change."
+      ],
+      "caveats": [
+        "RCS performance claims are early-stage and vendor-reported.",
+        "Feature availability (e.g., iOS calendar) varies by platform and time—verify in your messaging tool."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "sms-marketing",
+        "rcs",
+        "creative-strategy",
+        "product-launch",
+        "new-channels"
+      ],
+      "id": "30309dfff699cc8bddad6c38",
+      "source_id": "1wpHg6ozp-NR4OO70G3qB8R_12lfabRbD",
+      "source_sha256": "df31723654314a8de3b02299655f628f9e8e45113b8011222c20b111fffdb758",
+      "source_name": "Rethinking SMS Marketing for Ecommerce_ AI, RCS & LTV.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 1
+    },
+    {
+      "title": "Adapt to customer data through conversations",
+      "summary": "Persistent conversations uncover the objections preventing purchase that no PDP can pre-empt, so build a process to capture and act on those objections.",
+      "use_when": "Diagnosing mid-funnel purchase blockers and reducing friction at PDP and checkout.",
+      "steps": [
+        "Run ongoing conversations on your list to capture live objections people don't broadcast anywhere else.",
+        "Look for objections that are too specific to design for: e.g., a shopper who would only buy 'Miracle Balm' if assured it holds up to a 5-hour-a-day gardening/sweating regimen, or a buyer whose cart total ($75) exceeded her budget ($68) and who needed a small offer to close.",
+        "Use conversational tools to handle these at the moment of decision (the source's Shopper AI handles shade-matching and small price-gap offers automatically).",
+        "Query conversation archives to surface trends and recurring blockers (the source's 'Ask Shopper' feature).",
+        "Feed the discovered objections back into PDP copy, FAQ, and ad creative so future traffic self-serves.",
+        "Treat conversation logs as arguably your richest consumer-insight stream, since many brands never text customers at all."
+      ],
+      "caveats": [
+        "The specific brand examples (Jones Road, belts) are illustrative, not benchmarks.",
+        "Automated handling of price-gap offers requires merchant-defined guardrails—set them deliberately."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "conversational-commerce",
+        "objection-handling",
+        "product-page",
+        "customer-research",
+        "conversion-optimization"
+      ],
+      "id": "73d16bfc4a2749e0582a2fc7",
+      "source_id": "1wpHg6ozp-NR4OO70G3qB8R_12lfabRbD",
+      "source_sha256": "df31723654314a8de3b02299655f628f9e8e45113b8011222c20b111fffdb758",
+      "source_name": "Rethinking SMS Marketing for Ecommerce_ AI, RCS & LTV.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 1
+    },
+    {
+      "title": "Chase incremental value in retention channels as paid channels saturate",
+      "summary": "As the curve of paid acquisition flattens, finer optimization of lifecycle messaging on owned channels becomes the marginal growth lever.",
+      "use_when": "Setting next-quarter growth priorities and allocating between paid acquisition and lifecycle optimization.",
+      "steps": [
+        "Recognize that as paid opportunities are exhausted, marginal value moves into retention channels—the source quotes a CMO predicting retention would become the topic of focus after everybody exhausts paid incrementality.",
+        "Shift toward precise optimization: for example, deciding whether 50K, 75K, or 100K of monthly SMS spend is most efficient at the margin, not just whether the current spend works.",
+        "Scrutinize the SMS bill as a meaningful cost that lives between SaaS costs and performance marketing on the P&L—as it scales, so should the demand for incrementality evidence.",
+        "Partner with a vendor or team willing to 'grade their own homework' with holdouts on large spend.",
+        "Separate lead conversion (subscribing) from purchase conversion (buying) and from close rate—holdouts and cohort measurement track whether the channel produced net-new purchases."
+      ],
+      "caveats": [
+        "The CMO's retention prediction is a forecast, not a law.",
+        "Retention-only isn't universal—brands with long consideration periods should still invest in top-of-funnel acquisition."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "retention",
+        "incrementality",
+        "budget-allocation",
+        "measurement",
+        "sms-marketing",
+        "ltv"
+      ],
+      "id": "9a17b76595cd2af5cbb57a5d",
+      "source_id": "1wpHg6ozp-NR4OO70G3qB8R_12lfabRbD",
+      "source_sha256": "df31723654314a8de3b02299655f628f9e8e45113b8011222c20b111fffdb758",
+      "source_name": "Rethinking SMS Marketing for Ecommerce_ AI, RCS & LTV.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 1
+    },
+    {
+      "title": "Align pop-ups, flows, and campaigns to the true purchase decision",
+      "summary": "Pop-ups and welcome flows are acquisition touch points; campaigns are retention—design and own them accordingly.",
+      "use_when": "Deciding ownership and testing scope for pop-ups, welcome series, and campaigns.",
+      "steps": [
+        "Treat the pop-up and welcome flow as part of the acquisition engine (ad → lander → pop-up → flow), because that chain is the first interaction with many paid visitors.",
+        "Treat campaigns as a retention touchpoint where you speak to subscribers at day 15/30/45 with launches and first-party-data-driven messages.",
+        "Ensure at least one leader sees both the flow and site behavior so signals aren't missed—e.g., an ad change lowering SMS list growth below forecast.",
+        "Test pop-up experience against full-site conversion rate, not just opt-in rate, to catch changes that hurt checkout.",
+        "Recognize the 'customer journey as a line' is misleading—people interact with all touchpoints in non-linear ways, so siloed assembly-line thinking invalidates decisions.",
+        "Follow the source's 'just ask' rule: solicit conversations at the acquisition stage to intercept people who look like a converted customer but have a first-purchase objection."
+      ],
+      "caveats": [
+        "Full-site A/B testing of pop-ups requires sufficient traffic to detect conversion-rate impact.",
+        "Org restructuring is contextual—not every store can centralize teams."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "pop-up",
+        "welcome-series",
+        "conversion-optimization",
+        "acquisition",
+        "retention",
+        "experiment-design"
+      ],
+      "id": "1282cefafb08b1e2a4475a3f",
+      "source_id": "1wpHg6ozp-NR4OO70G3qB8R_12lfabRbD",
+      "source_sha256": "df31723654314a8de3b02299655f628f9e8e45113b8011222c20b111fffdb758",
+      "source_name": "Rethinking SMS Marketing for Ecommerce_ AI, RCS & LTV.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 1
+    }
+  ],
+  "request_id": "22f87aaa429d9a6fa546c401386ff81757bd7e7aee228e32ef9f94a453992932",
+  "ecommerce_scope_version": 1
+}

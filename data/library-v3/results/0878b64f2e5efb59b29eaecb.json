@@ -1,0 +1,379 @@
+{
+  "cards": [
+    {
+      "title": "Install Node, Git and Shopify CLI before AI-assisted theme work",
+      "summary": "Set up the local toolchain (Node.js, Git, Shopify CLI) that lets Claude Code read and edit a live Shopify theme.",
+      "use_when": "You are preparing a machine to build or modify a Shopify theme with an AI coding agent rather than in the theme editor.",
+      "steps": [
+        "Install Node.js from nodejs.org using the pre-built installer for your OS; accept defaults. On the 'Tools for native modules' screen leave the box unchecked — the presenter says it is not needed for this setup.",
+        "Install Git from git-scm.com (needed as a helper for the Shopify CLI).",
+        "Open PowerShell (Windows) or Terminal (Mac) and run npm install -g @shopify/cli@latest on a single line.",
+        "Verify with shopify version. A version number means it installed; lines of install output are normal, not errors.",
+        "Install Claude Code separately: on Windows run irm https://claude.ai/install.ps1 | iex, then restart the terminal and type claude to authenticate.",
+        "Log in with the Claude account that has the Pro subscription, since Pro is what includes Claude Code.",
+        "Verify current install URLs and commands in the official docs before running them — these interfaces change."
+      ],
+      "caveats": [
+        "The presenter's exact install commands and pricing are point-in-time and should be re-verified.",
+        "Native modules were left unchecked specifically for this workflow; other Node projects may need them."
+      ],
+      "tags": [
+        "store-setup",
+        "shopify",
+        "claude-code",
+        "developer-environment",
+        "nodejs",
+        "shopify-cli",
+        "theme-development"
+      ],
+      "id": "3982a5a8da7a046ec556d614",
+      "source_id": "1jz7Ogw0tf0m2Z44y_eerkueDY3b1aPTT",
+      "source_sha256": "477a7b0aeb8a6dc657333ff6394a993977241fb086ddb7a08c904c443b959e05",
+      "source_name": "How to Build a Full Shopify Store using AI (Claude Code).docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 0
+    },
+    {
+      "title": "Pull the live theme locally so the AI can edit real code",
+      "summary": "Use shopify theme pull to copy the store's current live theme into a clean project folder, giving the AI agent read/write access to actual theme files.",
+      "use_when": "You are about to have an AI agent customise a Shopify theme and need the live theme files on your machine first.",
+      "steps": [
+        "Exit any running Claude Code session with /exit to return to a plain terminal.",
+        "Create and enter a fresh project folder: mkdir my-store-build then cd my-store-build.",
+        "Copy your store domain from Shopify admin > Settings (top of the page).",
+        "Run shopify theme pull --store [your-store-domain] --live.",
+        "Complete the browser login prompt; the code shown in the terminal confirms you are logging into the correct device.",
+        "Wait for the 'pulled successfully' message, which means the theme is now local and editable by the agent."
+      ],
+      "caveats": [
+        "Pulling --live copies the live theme; changes are made locally first and are not live until you push and publish.",
+        "The store password and account password are different things — see the preview card."
+      ],
+      "tags": [
+        "store-setup",
+        "shopify",
+        "shopify-cli",
+        "theme-development",
+        "claude-code"
+      ],
+      "id": "401b6d0774014d6f0d3e5de5",
+      "source_id": "1jz7Ogw0tf0m2Z44y_eerkueDY3b1aPTT",
+      "source_sha256": "477a7b0aeb8a6dc657333ff6394a993977241fb086ddb7a08c904c443b959e05",
+      "source_name": "How to Build a Full Shopify Store using AI (Claude Code).docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 0
+    },
+    {
+      "title": "Add products and collections before generating the store",
+      "summary": "Seed the store with real products first so the AI designs the homepage and PDPs around actual catalog data rather than placeholders.",
+      "use_when": "You are starting an AI-assisted store build and need something for the design to be built around.",
+      "steps": [
+        "In Shopify admin go to Products > Add product.",
+        "Draft the title and description yourself or ask a chat AI for a short, clean title and description, dragging the product image into the prompt for context; iterate with feedback if the first version misses.",
+        "Upload product photos in the Media section — own photos, AI-generated, or stock (the presenter used Pexels stock).",
+        "Set price, inventory quantity and shipping per product; enable variants (e.g. Size: S/M/L/XL) and set per-variant price, inventory and variant-specific images where relevant.",
+        "Create a manual collection (e.g. 'T-Shirts') for each product type and assign the product, optionally with a collection image, then save.",
+        "Repeat for every product; collections make the catalog easier to organise as it grows."
+      ],
+      "caveats": [
+        "Category metafields and SEO fields were left at defaults in the walkthrough — not required for a first build.",
+        "Shipping is configured later at the store level, not fully per product."
+      ],
+      "tags": [
+        "store-setup",
+        "shopify",
+        "product-management",
+        "collections",
+        "variants",
+        "merchandising"
+      ],
+      "id": "5a0b9ad6456fde702285190e",
+      "source_id": "1jz7Ogw0tf0m2Z44y_eerkueDY3b1aPTT",
+      "source_sha256": "477a7b0aeb8a6dc657333ff6394a993977241fb086ddb7a08c904c443b959e05",
+      "source_name": "How to Build a Full Shopify Store using AI (Claude Code).docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 0
+    },
+    {
+      "title": "Organise a local asset folder as the AI's design brief",
+      "summary": "Compile screenshots of desired theme sections plus your own logos, product photos and lifestyle images into one folder the AI reads as visual constraints.",
+      "use_when": "You are briefing an AI agent to build a homepage or theme and need it to match a specific look instead of guessing.",
+      "steps": [
+        "Browse the Shopify theme store demo pages and screenshot the specific sections you like — hero, product display, collection page, product page, reviews, story — mixing and matching across themes.",
+        "Create folders for product photos, store inspiration screenshots, logo (including transparent dark and light versions), and homepage lifestyle images.",
+        "Generate a logo if needed (the presenter used Canva) and source lifestyle images from stock sites, AI generation or your own photography.",
+        "Inside your project folder run mkdir inspiration, then 'explorer .' (Windows) to open the folder and paste all assets in.",
+        "Start the agent with the project open so it can see the inspiration directory before it writes any code."
+      ],
+      "caveats": [
+        "Folder structure does not have to match the presenter's exactly; the point is that every reference asset is reachable in one place.",
+        "Screenshots of third-party themes are references, not licensed assets to copy wholesale."
+      ],
+      "tags": [
+        "store-setup",
+        "creative-strategy",
+        "inspiration-research",
+        "shopify",
+        "asset-management",
+        "claude-code"
+      ],
+      "id": "66e36f527ce23a078025dfc3",
+      "source_id": "1jz7Ogw0tf0m2Z44y_eerkueDY3b1aPTT",
+      "source_sha256": "477a7b0aeb8a6dc657333ff6394a993977241fb086ddb7a08c904c443b959e05",
+      "source_name": "How to Build a Full Shopify Store using AI (Claude Code).docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 0
+    },
+    {
+      "title": "Prompt the AI to interview you before it builds",
+      "summary": "Kick off a theme build with a prompt that makes the agent explore the theme and assets, ask about brand direction, and propose a plan instead of generating everything at once.",
+      "use_when": "You are starting a store build or major redesign and want controlled, reviewable output rather than a single giant generation.",
+      "steps": [
+        "Write an initial prompt that gives the agent a few instructions and guidelines, and swap in your real brand name (the guide's version uses a placeholder).",
+        "Let it first read the theme and the inspiration folder to understand the starting point.",
+        "Answer its questions: choose the visual direction (e.g. loud/blue-yellow inspiration vs clean and neutral matching your logo and photography), select homepage sections, and pick fonts.",
+        "Expect a plan confirmation request including your Shopify URL; approve building only the first section.",
+        "Approve command-permission prompts as they appear (choose 'yes, and don't ask again' for repeat permissions) and use plain English to correct anything that diverges."
+      ],
+      "caveats": [
+        "The presenter frames this as working like a real designer — the interview step is what stops mismatched output, so do not skip to 'build the whole store'.",
+        "Approving commands blindly is risky; read what the agent is about to run."
+      ],
+      "tags": [
+        "store-setup",
+        "claude-code",
+        "prompt-architecture",
+        "brand-positioning",
+        "shopify"
+      ],
+      "id": "13e82e14fdd037cd7cf15a49",
+      "source_id": "1jz7Ogw0tf0m2Z44y_eerkueDY3b1aPTT",
+      "source_sha256": "477a7b0aeb8a6dc657333ff6394a993977241fb086ddb7a08c904c443b959e05",
+      "source_name": "How to Build a Full Shopify Store using AI (Claude Code).docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 0
+    },
+    {
+      "title": "Build the homepage section by section in plain English",
+      "summary": "Have the AI generate one homepage section at a time, review it in a private preview, request plain-English tweaks, then explicitly move to the next section.",
+      "use_when": "You are generating or redesigning a homepage and want to catch layout and content problems before they compound.",
+      "steps": [
+        "Order sections deliberately, e.g. Hero, Shop by Category, Featured Products, Customer Reviews, Our Story.",
+        "After each section, refresh the local preview, judge it, and describe changes conversationally ('the icons don't match the category — quality check this section').",
+        "When the Featured Products section comes up, explicitly instruct the agent to use the real products already in the store: 'my store already has three products — use the real products.'",
+        "Approve the section verbally ('looks great') and then explicitly tell it to build the next section in the same style.",
+        "Once every section exists, run a final quality pass prompt asking it to catch anything missed and improve polish.",
+        "Optionally batch small remaining fixes (product pages, header with logo, footer with policy links, rest of the store) into one prompt."
+      ],
+      "caveats": [
+        "Placeholder review names, text and images will need real replacement later.",
+        "Section prompts assume the store already has products — add them first or the featured section has nothing to reference."
+      ],
+      "tags": [
+        "store-setup",
+        "landing-page",
+        "prompt-architecture",
+        "shopify",
+        "claude-code",
+        "merchandising"
+      ],
+      "id": "4d8bf77b16e5d3884845a71c",
+      "source_id": "1jz7Ogw0tf0m2Z44y_eerkueDY3b1aPTT",
+      "source_sha256": "477a7b0aeb8a6dc657333ff6394a993977241fb086ddb7a08c904c443b959e05",
+      "source_name": "How to Build a Full Shopify Store using AI (Claude Code).docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 0
+    },
+    {
+      "title": "Preview changes privately on a local dev server",
+      "summary": "Run a private local preview of the AI-built theme, using the store's Shopify-generated password, so you can review each section before anything goes public.",
+      "use_when": "You are iterating on theme code and need to see changes live without exposing them to customers.",
+      "steps": [
+        "Pick 'local dev server' when the agent asks how to preview sections — it is a private live preview running on your machine that updates as the agent writes.",
+        "Open a second terminal, cd into the project folder, and paste the preview command the agent prints.",
+        "When asked for a store password, use the Shopify admin Online Store password (Online Store > Edit password), not your account password.",
+        "Open the resulting link in a browser and refresh after each change to see updates.",
+        "Request adjustments in plain English — e.g. ask for easing animations on load and fade-in on scroll, then refine speed and stagger timing."
+      ],
+      "caveats": [
+        "This is the presenter's recommended preview mode; unpublished preview theme and static mockups were the other options offered.",
+        "After the initial easing request the presenter found the result improved but noted timing may need further refinement."
+      ],
+      "tags": [
+        "store-setup",
+        "shopify",
+        "claude-code",
+        "theme-development",
+        "conversion-optimization"
+      ],
+      "id": "e27f5204761846831543fcb8",
+      "source_id": "1jz7Ogw0tf0m2Z44y_eerkueDY3b1aPTT",
+      "source_sha256": "477a7b0aeb8a6dc657333ff6394a993977241fb086ddb7a08c904c443b959e05",
+      "source_name": "How to Build a Full Shopify Store using AI (Claude Code).docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 0
+    },
+    {
+      "title": "Use easing and scroll animations to soften load friction",
+      "summary": "Ask the agent to add entry and scroll animations so sections fade in rather than snapping onto the screen.",
+      "use_when": "A page feels harsh or unpolished because everything renders instantly on load.",
+      "steps": [
+        "Review the first load: if all text and images appear at once, request a clean easing animation for elements as they appear.",
+        "Also request that subsequent sections fade in as the visitor scrolls.",
+        "Phrase it in plain English to the coding agent, describing the desired feel rather than the implementation.",
+        "After the change, refresh the preview and judge it; if needed, ask to tune the animation speed and stagger timing.",
+        "Confirm the effect on both desktop and mobile before moving on."
+      ],
+      "caveats": [
+        "This is the presenter's taste judgement, not a measured conversion claim.",
+        "Animation is a polish step, not a substitute for content or offer quality."
+      ],
+      "tags": [
+        "store-setup",
+        "conversion-optimization",
+        "landing-page",
+        "claude-code"
+      ],
+      "id": "5fa9ccc816eccaa661b2077e",
+      "source_id": "1jz7Ogw0tf0m2Z44y_eerkueDY3b1aPTT",
+      "source_sha256": "477a7b0aeb8a6dc657333ff6394a993977241fb086ddb7a08c904c443b959e05",
+      "source_name": "How to Build a Full Shopify Store using AI (Claude Code).docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 0
+    },
+    {
+      "title": "Push the AI-built theme, then keep editing it in Shopify",
+      "summary": "Upload the finished theme to Shopify unpublised, verify it in the theme editor and on mobile, and keep using Shopify's native editor for manual changes.",
+      "use_when": "Your AI-assisted theme build is done and you need to review, adjust and prepare it for publishing.",
+      "steps": [
+        "Tell the agent you are ready to publish to the live theme; it will return a command for your preview terminal.",
+        "In the preview terminal press Ctrl+C, paste the upload command and run it — the theme uploads to Shopify without being published.",
+        "In Shopify admin go to Online Store and click Edit theme on the uploaded theme.",
+        "Manually edit text and images by clicking sections, reorder sections by dragging them in the left panel, add sections with the plus button, and undo from the top right.",
+        "Use the mobile-phone icon in the editor to check every page and section on mobile as well as desktop, then save.",
+        "Only after manual review, publish."
+      ],
+      "caveats": [
+        "Anything you change in the visual editor works the same as any other Shopify theme — building with AI does not lock you into code-only edits.",
+        "Reordering sections changes the homepage format; review after each move."
+      ],
+      "tags": [
+        "store-setup",
+        "shopify",
+        "theme-development",
+        "conversion-optimization",
+        "merchandising"
+      ],
+      "id": "d23a4cb7706cb8e25a07ef1b",
+      "source_id": "1jz7Ogw0tf0m2Z44y_eerkueDY3b1aPTT",
+      "source_sha256": "477a7b0aeb8a6dc657333ff6394a993977241fb086ddb7a08c904c443b959e05",
+      "source_name": "How to Build a Full Shopify Store using AI (Claude Code).docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 0
+    },
+    {
+      "title": "Configure shipping zones, free-shipping thresholds and taxes",
+      "summary": "Set up Shopify Payments, a single free-shipping zone with an order minimum and transit time, delete unwanted zones, and confirm tax regions.",
+      "use_when": "You are finishing back-office configuration before taking orders.",
+      "steps": [
+        "In Settings > Payments, complete Shopify Payments setup so you can be paid.",
+        "In Settings > Shipping and delivery, open your shipping profile; the presenter recommends simply offering free shipping for most stores.",
+        "Delete the express option if unused, then edit the standard rate: rename to 'Free Shipping', turn on the offer-free-shipping toggle, and set the minimum order amount (e.g. $10).",
+        "Set the transit time you will actually honour (the example used 5–8 business days) and save.",
+        "For international zones, configure them deliberately or delete the zone entirely if you do not ship internationally (the example kept only US free shipping).",
+        "In Settings > Taxes and duties, confirm the Shopify tax service and the regions where you collect tax — in the example, only the US."
+      ],
+      "caveats": [
+        "The $10 free-shipping minimum and 5–8 day transit are the presenter's examples, not benchmarks; choose based on your margins and carrier reality.",
+        "The presenter advises consulting a tax professional if unsure."
+      ],
+      "tags": [
+        "store-setup",
+        "shipping",
+        "tax",
+        "shopify",
+        "fulfillment",
+        "checkout"
+      ],
+      "id": "a3ff8ef93a56811d9876b958",
+      "source_id": "1jz7Ogw0tf0m2Z44y_eerkueDY3b1aPTT",
+      "source_sha256": "477a7b0aeb8a6dc657333ff6394a993977241fb086ddb7a08c904c443b959e05",
+      "source_name": "How to Build a Full Shopify Store using AI (Claude Code).docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 0
+    },
+    {
+      "title": "Generate policy pages from templates and AI, then publish",
+      "summary": "Fill in Refund, Privacy and Terms policies using Shopify templates, write a custom shipping policy with AI, and publish them so footer links appear.",
+      "use_when": "You need the legal pages that checkout and the theme footer link to before you remove the store password.",
+      "steps": [
+        "In Settings > Policies, open each policy and use the Insert template option where offered.",
+        "Scan the template for placeholders — e.g. delete 'insert return address' and enter your real return address — before publishing.",
+        "Publish each policy after reviewing it.",
+        "Write your own shipping policy if no template exists, using an AI with your exact shipping rules and regions, then paste and publish.",
+        "Skip the legal notice only if it genuinely does not apply; the presenter says to consult a professional if unsure.",
+        "Recheck the store footer afterwards: the presenter's build only showed policy links once policies existed in admin."
+      ],
+      "caveats": [
+        "Templates are a starting point, not legal advice.",
+        "AI-written policies should be reviewed for accuracy against your actual operations."
+      ],
+      "tags": [
+        "store-setup",
+        "shopify",
+        "legal-pages",
+        "retention",
+        "customer-trust"
+      ],
+      "id": "dd3f3bb627c72a515239ad50",
+      "source_id": "1jz7Ogw0tf0m2Z44y_eerkueDY3b1aPTT",
+      "source_sha256": "477a7b0aeb8a6dc657333ff6394a993977241fb086ddb7a08c904c443b959e05",
+      "source_name": "How to Build a Full Shopify Store using AI (Claude Code).docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 0
+    },
+    {
+      "title": "Connect a custom domain and go live",
+      "summary": "Replace the default myshopify.com domain with a purchased .com, then publish the theme and remove the store password.",
+      "use_when": "You are finalising the store for public launch.",
+      "steps": [
+        "In Settings > Domains, choose Connect existing domain or Buy new domain (the example priced a .com at about $16/year).",
+        "The presenter recommends a .com for a professional store rather than staying on the Shopify subdomain long term.",
+        "Once products, theme, shipping, taxes and policies are done, go to Online Store, open the theme, click Publish and confirm.",
+        "Click Remove password to open the store to everyone.",
+        "Use View store to confirm the published theme transferred correctly."
+      ],
+      "caveats": [
+        "Domain pricing is point-in-time and varies by registrar/TLD.",
+        "The presenter treats the default Shopify domain as a long-term liability for professionalism, but it works for testing."
+      ],
+      "tags": [
+        "store-setup",
+        "shopify",
+        "domains",
+        "conversion-optimization",
+        "brand-positioning"
+      ],
+      "id": "4ad69ffecb22acd93ae859cb",
+      "source_id": "1jz7Ogw0tf0m2Z44y_eerkueDY3b1aPTT",
+      "source_sha256": "477a7b0aeb8a6dc657333ff6394a993977241fb086ddb7a08c904c443b959e05",
+      "source_name": "How to Build a Full Shopify Store using AI (Claude Code).docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 0
+    }
+  ],
+  "request_id": "d491bb067029ea01b3ba415153132c077d433d163c9151ed5e5555727b9cca64",
+  "ecommerce_scope_version": 1
+}

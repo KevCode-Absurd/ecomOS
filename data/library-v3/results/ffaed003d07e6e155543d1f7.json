@@ -1,0 +1,491 @@
+{
+  "cards": [
+    {
+      "title": "HTTP status codes drive retry and error-handling logic",
+      "summary": "Use distinct status codes to decide whether an automated or manual request should be retried, fixed, or abandoned.",
+      "use_when": "Designing error handling for an ecommerce integration (inventory sync, payment webhook, catalog feed) or deciding how storefront client code should react to a failed API call.",
+      "steps": [
+        "Read the response status code before deciding what to do. A 404 means the resource is not there; retrying the same request will not help, so surface a real error or fix the URL.",
+        "A 500 means the server had an exception. It is reasonable to retry later with backoff because the failure may be transient.",
+        "A 503 service unavailable means the server is temporarily down or overloaded; retry after a delay rather than immediately.",
+        "A timeout means the request took too long; decide based on your store's needs whether to retry, degrade gracefully, or alert.",
+        "A 400 bad request means the client's request was malformed (the source demonstration removes the required Host header and gets a 400) — fix the request, do not retry unchanged.",
+        "Codes exist separately from messages so that machines and humans can branch on a stable, standard signal rather than parse free-text error strings.",
+        "Build retry policy per code: retry transient (5xx, timeout), do not retry deterministic client errors (4xx) until the request is corrected."
+      ],
+      "caveats": [
+        "The specific meaning of any given code should be verified against current HTTP specifications, which can change; the retry advice here is a design heuristic, not a guarantee of the server's behavior."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "api-integration",
+        "error-handling",
+        "integrations",
+        "reliability",
+        "monitoring"
+      ],
+      "id": "8dafbe3112f225f36ff615a9",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 3
+    },
+    {
+      "title": "Use the Host header to route multi-tenant or multi-store requests",
+      "summary": "Servers rely on the Host header to know which domain or store is being requested when one IP serves many sites.",
+      "use_when": "Setting up, debugging, or securing a storefront server, reverse proxy, or CDN where multiple domains or brand sites share infrastructure.",
+      "steps": [
+        "Always include the Host header in request tooling and custom HTTP clients. Most servers will not respond without it.",
+        "Understand that a single IP address commonly hosts many domains (the source notes a server might serve several sites under one IP). Without a Host header, the server may error (400) or return an arbitrary site.",
+        "When writing storefront or integration code that calls backends, pass the intended store's hostname explicitly so requests hit the correct tenant.",
+        "When building or configuring a reverse proxy, use the Host header to route traffic to the correct backend store.",
+        "In security review, treat Host-header handling as a configuration to validate (mis-routing can send one brand's traffic to another); test on your own infrastructure."
+      ],
+      "caveats": [
+        "The source describes this behavior in a general teaching context; exact proxy and server behavior varies by vendor and configuration, so verify against your current platform."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "infrastructure",
+        "host-header",
+        "multi-tenant",
+        "routing",
+        "configuration"
+      ],
+      "id": "490bcd204080046a3b491bfa",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 3
+    },
+    {
+      "title": "Treat User-Agent as a weak signal, not an access control",
+      "summary": "User-Agent headers can identify crawlers and obvious bad bots for monitoring or coarse blocking, but clients control them so they are not a reliable defense.",
+      "use_when": "Analyzing storefront traffic, deciding whether to allow or block a bot, or setting up analytics to distinguish search crawlers from scrapers.",
+      "steps": [
+        "Read the User-Agent to understand who is visiting: search engines identify themselves (e.g., Googlebot), command-line tools send recognizable strings like curl.",
+        "Use this for analytics and monitoring — e.g., seeing which crawlers or startups are hitting your store — rather than for trust decisions.",
+        "Optionally block requests from an obviously abusive user-agent string (the source blocks a scraper called Site Slurper that was downloading an entire site).",
+        "Do not rely on User-Agent as security: attackers fully control the header and can impersonate a legitimate browser or crawler.",
+        "Pair agent-string filtering with other controls (rate limiting, authentication) rather than treating it as sufficient."
+      ],
+      "caveats": [
+        "The source explicitly states User-Agent is not a good defense because clients control it; it is only useful against obvious, lazy visitors. Specific bot user-agent strings change over time and should be verified."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "traffic-analysis",
+        "crawlers",
+        "scraping",
+        "monitoring",
+        "access-control"
+      ],
+      "id": "c86c31eeee9981fd3ce94788",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 3
+    },
+    {
+      "title": "Use referer data to see inbound traffic sources",
+      "summary": "The Referer header tells you the page a visitor came from, useful for understanding traffic sources and off-site links.",
+      "use_when": "Analyzing acquisition channels or investigating where traffic to a product or landing page originates.",
+      "steps": [
+        "Read the Referer request header to learn which page the user was on before requesting your page.",
+        "Use it to measure how many visitors arrive from a given external site and to attribute traffic sources.",
+        "Recognize that the header is historically misspelled as 'referer' in the HTTP standard and is unlikely to be corrected because changing it would break existing code — this reflects the web's strong preference for backward compatibility over cleaning up old decisions.",
+        "Keep in mind the header is client-supplied and can be stripped or spoofed, so treat it as one signal, not a definitive attribution method; supplement with server-side tracking.",
+        "When building analytics for a store, log Referer to help identify which partner, ad, or site drove a visit."
+      ],
+      "caveats": [
+        "Referer is client-controlled and can be absent or falsified; privacy tools and policies may strip it, so do not treat it as authoritative."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "analytics",
+        "attribution",
+        "acquisition",
+        "request-headers",
+        "measurement"
+      ],
+      "id": "be4fc9dfbd675ed5c70a87a2",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 3
+    },
+    {
+      "title": "Use request headers for content negotiation and language",
+      "summary": "Accept-Language and compression headers let you return the right localized or compressed response for each visitor.",
+      "use_when": "Implementing storefront localization, serving translated product pages, or optimizing response size for faster page loads.",
+      "steps": [
+        "Read the Accept-Language header to detect a visitor's preferred language and vary the response (the source demo requests Spanish, then Arabic, and gets back localized content).",
+        "Use Accept headers to decide response format — for example return HTML only when the client accepts HTML, and avoid sending a format the client cannot handle.",
+        "Advertise and honor compression: a client can indicate it understands compressed (e.g., gzip) responses, so the server can compress to reduce payload size.",
+        "Control connection and caching behavior with headers (keep connections open for multiple requests for performance; use conditional requests to fetch only if changed since a date).",
+        "Verify your current framework and CDN behavior, since which headers are honored varies by stack."
+      ],
+      "caveats": [
+        "Header names and supported values are version- and vendor-dependent; confirm against current specifications and your platform's documentation."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "localization",
+        "content-negotiation",
+        "performance",
+        "request-headers",
+        "storefront"
+      ],
+      "id": "7215ab0eb25add9b59895749",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 3
+    },
+    {
+      "title": "Control caching with response headers to avoid stale or wrong content",
+      "summary": "Response cache-control headers plus Vary prevent one user from receiving another user's cached page.",
+      "use_when": "Configuring caching for product pages, localized content, or any personalized storefront response served to many visitors.",
+      "steps": [
+        "Use cache-control to say a response may be cached, or to forbid caching entirely for sensitive or personalized content that must not be saved on the user's machine.",
+        "Use an Expires value to instruct the client to discard a cached copy after a specific date when you know a new version will be published.",
+        "Set the Vary header to list the request headers that affect the response (e.g., language). The client stores those header values with the cached copy and reuses the cache only when the new request's headers match exactly.",
+        "Worked example from the source: if a page is cached under a Spanish Accept-Language setting, a later Arabic request for the same URL must not reuse it — Vary on the language header prevents the wrong-language page being served.",
+        "Apply the same reasoning to any variable that changes the page (locale, device, logged-in state) and treat those as cache-key dimensions."
+      ],
+      "caveats": [
+        "Vary on too many headers degrades cache hit rate; balance correctness against performance. Specific header handling differs across CDNs and frameworks — verify current behavior."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "caching",
+        "cdn",
+        "performance",
+        "personalization",
+        "response-headers",
+        "localization"
+      ],
+      "id": "f1e9ae8b0ea093ee88dac765",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 3
+    },
+    {
+      "title": "Serve large files as streams instead of buffering",
+      "summary": "Stream files to responses so large product images or downloads don't consume memory and delay delivery.",
+      "use_when": "Serving large assets (images, videos, downloadable catalogs) from your store's backend or implementing file endpoints.",
+      "steps": [
+        "Instead of reading an entire file into memory and then sending it, open a read stream and pipe it directly to the response object (the source uses createReadStream piped to the HTTP response).",
+        "This sends bytes across the socket as they are read, so a very large file (the source cites a 1 GB example) does not require holding the whole thing in RAM before responding.",
+        "Use this pattern for any large asset so the first bytes reach the client sooner and memory use stays bounded.",
+        "Watch for the stream lifecycle: in raw-socket demos the connection may stay open after the response because the client never closed it or the server didn't signal connection close; explicitly manage connection close where relevant.",
+        "Verify your framework's current streaming API, since method names and conventions change between versions."
+      ],
+      "caveats": [
+        "The source demonstrates this with Node's file-system streams; the specific API is version-dependent and should be checked against current documentation."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "performance",
+        "streaming",
+        "assets",
+        "backend",
+        "storefront"
+      ],
+      "id": "30411f850269439713dc634f",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 3
+    },
+    {
+      "title": "Understand a page load as many chained requests",
+      "summary": "One URL triggers an HTML request followed by many sub-resource requests, and minimizing round trips matters for storefront performance.",
+      "use_when": "Diagnosing slow product pages, optimizing page load, or explaining why a storefront makes so many network calls.",
+      "steps": [
+        "Recognize the full flow: DNS lookup → open a TCP connection to the IP on the web port → send a GET → receive HTML → parse HTML → build the DOM → render → then request missing sub-resources (CSS, JS, images).",
+        "Expect sub-resource responses to potentially generate more requests, repeating until all resources are resolved and the page finishes rendering.",
+        "Use the browser's developer tools Network tab to inspect exactly which request and response headers the browser sends and receives on your store pages.",
+        "Reduce round trips where you can — fewer requests and earlier requests generally improve perceived load time.",
+        "Use this model when auditing a storefront with an agent or performance tool so failures are traced to the right request, not just the page."
+      ],
+      "caveats": [
+        "The exact rendering pipeline varies by browser and is described here in simplified teaching form; measure with current tooling rather than assuming a fixed sequence."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "performance",
+        "page-load",
+        "storefront",
+        "developer-tools",
+        "diagnostics"
+      ],
+      "id": "24af5e6a3c71daab2bf3543d",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 3
+    },
+    {
+      "title": "Never trust client-controlled cookies for identity or authorization",
+      "summary": "Cookies are client-controlled, so storing a username or role in a plain cookie lets anyone impersonate another user.",
+      "use_when": "Reviewing authentication or session handling for a storefront, admin panel, or customer account system before shipping.",
+      "steps": [
+        "Recognize the vulnerability: if the server trusts a plain cookie like username=Alice to identify the user, anyone can edit the cookie to username=Bob and be treated as Bob (the source demonstrates this directly).",
+        "Treat all cookie content as attacker-controlled input. Do not use a client-set value as proof of identity or authorization.",
+        "Apply the principle 'you cannot trust the client': users can modify any client-side state and skip the steps your app expects.",
+        "Validate on the server side: check the identity against a server-held session or signed token rather than reading an unverified value.",
+        "Be aware that many real sites have stored important data in cookies this way; audit your own session design for the same flaw."
+      ],
+      "caveats": [
+        "This is about plain, unsigned cookies; the correct fix (signing or server-side sessions) is covered separately. Cookie attributes and same-site rules also matter and should be verified."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "authentication",
+        "sessions",
+        "cookies",
+        "access-control",
+        "vulnerability"
+      ],
+      "id": "0d3a15b17b43a838aee45b6c",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 3
+    },
+    {
+      "title": "Sign cookies so tampering is detectable",
+      "summary": "Use a signing algorithm and verify the tag server-side so a modified cookie is rejected.",
+      "use_when": "Designing session cookies for a storefront or agent integration where you need tamper-evident client-held state.",
+      "steps": [
+        "Understand the primer: a signing scheme has a generator producing a public key and a secret key, a signer that takes the secret key and a value and outputs a tag, and a verifier.",
+        "When the client returns the value, it also returns the tag. The server verifies the value against the tag using the verification key so it can detect whether the value was changed.",
+        "Apply this so the browser can hold, e.g., username=Alice and the server can be confident the value was not edited to username=Bob.",
+        "Keep the secret key server-side; never expose it to the client.",
+        "Distinguish signing from encryption: signing detects tampering, it does not hide the value.",
+        "Verify your framework's current signing API and key management before relying on it."
+      ],
+      "caveats": [
+        "The source gives an introductory overview, not a full crypto recipe; correct implementation details (algorithm choice, key storage, rotation) require current, authoritative documentation."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "authentication",
+        "sessions",
+        "cookies",
+        "cryptography",
+        "tamper-detection"
+      ],
+      "id": "922fb8a0700d1ded809b69d8",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 3
+    },
+    {
+      "title": "Clear a cookie by re-sending it with a past expiry",
+      "summary": "There is no direct 'delete cookie' call; you clear a cookie by setting the same name with an expiry date in the past.",
+      "use_when": "Implementing logout or session invalidation on a storefront or customer account system.",
+      "steps": [
+        "To log a user out, send a Set-Cookie with the same cookie name and any value, plus an expiration date in the past (the source uses 1970-01-01).",
+        "The browser sees the past date and deletes the cookie. The source notes there is no built-in clear operation — this expiry trick is the mechanism.",
+        "The cookie name must match exactly for the clear to work; verify the path/scope also matches so the right cookie is removed.",
+        "After clearing, redirect the user back to a sensible page (e.g., home) as the source does.",
+        "Remember that logout is only effective if the server does not also honor a still-valid token elsewhere; invalidate server-side session state where you maintain it."
+      ],
+      "caveats": [
+        "Cookie attributes (path, domain, secure, same-site) affect whether the clear takes effect; verify against current browser behavior."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "authentication",
+        "sessions",
+        "cookies",
+        "logout",
+        "customer-accounts"
+      ],
+      "id": "8b10f43349b6af71e010c402",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 3
+    },
+    {
+      "title": "Sessions exist because HTTP is stateless",
+      "summary": "Cookies let a server tie a series of requests to one user, enabling login, carts, and preferences.",
+      "use_when": "Designing cart persistence, login persistence, or any storefront feature that must remember state across page loads.",
+      "steps": [
+        "Understand that HTTP itself is stateless: without a mechanism, the server cannot tell that two requests come from the same user.",
+        "Use a session — a set of data the server keeps about a user across requests — to solve this.",
+        "Implement it by having the server set a cookie the browser returns on subsequent requests; the server matches those requests to the stored session.",
+        "Apply this to real storefront needs: staying logged in while browsing, keeping a shopping cart populated as a visitor moves between pages, and remembering preferences such as dark mode.",
+        "Note the same mechanism is used for cross-site tracking by ad servers; be mindful of privacy expectations and rules when you use cookies for identification."
+      ],
+      "caveats": [
+        "Cookies are the most common session mechanism but not the only one; server-side sessions and tokens have different tradeoffs. Privacy regulations affect cookie use and should be checked."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "sessions",
+        "cookies",
+        "cart",
+        "retention",
+        "customer-accounts"
+      ],
+      "id": "2705342004427c6368a7de07",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 3
+    },
+    {
+      "title": "Recognize ambient authority and its limits",
+      "summary": "Ambient authority lets a cookie automatically authorize every request, which is convenient but must be scoped and protected.",
+      "use_when": "Deciding how much access a logged-in customer or an automated agent gets without re-authenticating each action.",
+      "steps": [
+        "Understand ambient authority: access control is based on a global, persistent property of the requester (the cookie sent on every request), so the user is not re-proving identity every time.",
+        "This convenience is why you stay logged in while browsing and why a like button doesn't require re-entering a password each time; the alternative (re-authenticating every action) is impractical.",
+        "Accept the tradeoff: because the cookie carries the authority, protecting it becomes critical — anyone who obtains or forges the cookie inherits that authority.",
+        "Scope authority narrowly so a stolen or misused credential grants the least access needed, and combine with signing and expiration.",
+        "Note the alternative ambient-authority mechanisms exist (IP-based, built-in HTTP auth), but cookies are by far the most common on the web."
+      ],
+      "caveats": [
+        "Ambient authority is inherently broad; the source treats cookies as the dominant web mechanism but notes IP-based and HTTP-auth approaches exist and are used in narrower cases."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "authentication",
+        "sessions",
+        "access-control",
+        "cookies",
+        "authorization"
+      ],
+      "id": "e734ff1cfc33993e2ffe0278",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 3
+    },
+    {
+      "title": "Use built-in HTTP authentication and IP checks only in narrow cases",
+      "summary": "Alternative ambient-authority mechanisms (IP address, built-in browser auth) are limited and often unsuitable for storefronts.",
+      "use_when": "Evaluating whether to use IP allow-listing (e.g., for an internal admin tool) or deciding against built-in browser auth for customer login.",
+      "steps": [
+        "IP-based authentication grants access based on the source IP of the request (the source cites libraries allowing access only from campus).",
+        "Recognize its weakness: it can be bypassed if a user routes traffic through a machine in the allowed range, and it is hard to make reliable because TCP connections involve a round trip.",
+        "Understand built-in HTTP authentication as the old browser username/password prompt: it was envisioned as the original web login but is inflexible in UI and experience, so cookies became the norm.",
+        "For a customer-facing storefront, prefer cookie-based sessions with proper signing; reserve IP checks for tightly controlled internal or partner access.",
+        "Verify current browser and platform behavior before depending on any of these."
+      ],
+      "caveats": [
+        "The source marks built-in HTTP auth and some IP-based approaches as rarely appropriate; specifics vary by environment and should be validated."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "authentication",
+        "ip-allowlist",
+        "access-control",
+        "sessions",
+        "infrastructure"
+      ],
+      "id": "1cf7e74aa70a53bf69adb062",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 3
+    },
+    {
+      "title": "Parse form bodies and cookies with framework middleware",
+      "summary": "Use body-parser and cookie-parser so you get clean objects instead of manually parsing raw request text.",
+      "use_when": "Building a storefront login, checkout form handler, or any endpoint that receives posted form data or reads cookies.",
+      "steps": [
+        "Raw form submissions arrive as URL-encoded key/value text (e.g., username=Alice&password=...), which is tedious to parse by hand.",
+        "Add a body parser middleware so the request exposes a clean body object with the submitted keys and values (the source parses username and password).",
+        "Add a cookie parser middleware so requests expose a cookies object with all cookies on the request, instead of parsing the Cookie header yourself.",
+        "Use these parsed values in your route logic to compare credentials or read session state.",
+        "Verify the current middleware package names and setup, since these libraries and their APIs change over time."
+      ],
+      "caveats": [
+        "The source uses specific npm packages during a live demo; the exact module names and usage should be confirmed against current documentation."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "backend",
+        "forms",
+        "cookies",
+        "middleware",
+        "storefront"
+      ],
+      "id": "9dafe13a37b6fe3ee829d961",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 3
+    },
+    {
+      "title": "Routes and request/response objects structure a storefront backend",
+      "summary": "Express-style routes match method plus URL and hand you a request and response object for reading inputs and sending results.",
+      "use_when": "Implementing storefront endpoints such as login, logout, product pages, or cart actions.",
+      "steps": [
+        "Create a server and have it listen on a chosen port; that makes it an HTTP server.",
+        "Define routes as conditional handlers: when the request method and URL match (e.g., POST /login), run the associated function.",
+        "Match the method correctly — a login form submits via POST, so the route must be POST, not GET.",
+        "Read inputs from the request object (body, headers, cookies) and write outputs through the response object.",
+        "Use a development auto-restart tool so the server picks up file changes, speeding iteration on store features.",
+        "Verify current framework APIs, since these evolve."
+      ],
+      "caveats": [
+        "The source demonstrates with Express and nodemon in a teaching context; API details are version-specific."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "backend",
+        "storefront",
+        "routing",
+        "development-workflow",
+        "http"
+      ],
+      "id": "7e602e0ffdac0ca104c6dd9f",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 3
+    }
+  ],
+  "request_id": "7e1ab7a6c9497251f6ce5ccc4ef6df5854e2c14ce26b28104aa17107a09a1b21",
+  "ecommerce_scope_version": 1
+}

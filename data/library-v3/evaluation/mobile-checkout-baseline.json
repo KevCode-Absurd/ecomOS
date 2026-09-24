@@ -1,0 +1,148 @@
+{
+  "case": {
+    "name": "mobile-checkout",
+    "query": "Build a prioritized investigation and action plan for mobile checkout abandonment using session recordings.",
+    "brand": "Apparel store; 80% mobile traffic; desktop purchase conversion is 3%, mobile is 0.8%; no checkout-step data supplied.",
+    "complexity": "broad"
+  },
+  "variant": "baseline",
+  "model": "gpt-5.6-terra",
+  "answer": {
+    "diagnosis": {
+      "current_state": "Mobile purchase conversion (0.8%) is materially lower than desktop conversion (3%) for an apparel store where mobile represents 80% of traffic. This indicates a mobile-specific conversion problem may exist, but the supplied data cannot establish whether abandonment occurs in cart, checkout entry, a particular checkout step, payment, or after checkout.",
+      "working_hypotheses_to_test_with_recordings": [
+        "Mobile users encounter usability friction in cart or checkout, such as obscured buttons, small tap targets, keyboard overlap, sticky elements, or difficult form completion.",
+        "Form fields, address validation, password/account requirements, promo-code behavior, or error messages create repeated attempts or exits.",
+        "Payment options, payment-provider redirects, authentication flows, or payment errors interrupt completion.",
+        "Performance problems, page reloads, blank states, or client-side errors occur disproportionately on mobile devices or browsers.",
+        "Unexpected delivery cost, taxes, return-policy uncertainty, or other checkout disclosures cause intentional abandonment.",
+        "The desktop/mobile gap may partly reflect traffic mix or intent differences rather than a checkout defect; recordings should be paired with funnel and technical data before prioritizing fixes."
+      ],
+      "evidence_gap": "There is no checkout-step funnel, event taxonomy, payment outcome data, device/browser breakdown, traffic-source segmentation, or recording sample supplied. Recordings can reveal behavior and visible failures, but cannot reliably quantify impact or diagnose backend/payment failures without instrumentation."
+    },
+    "actions": [
+      {
+        "priority": 0,
+        "action": "Establish a mobile checkout measurement baseline before drawing conclusions from recordings.",
+        "details": [
+          "Instrument or validate events for: cart viewed, checkout started, each checkout step viewed/completed, contact details submitted, shipping method selected, payment method selected, payment submitted, payment authorization result, order confirmation viewed, and checkout error displayed.",
+          "Include properties needed for analysis: device type, browser, operating system, viewport, traffic source, new versus returning customer, login state, payment method, shipping destination/region where permitted, coupon usage, error type, and page/load or client-error indicators.",
+          "Ensure order confirmation and successful payment are deduplicated so conversion is measured consistently.",
+          "Create a mobile-versus-desktop funnel and segment it by browser, operating system, payment method, login state, and acquisition source."
+        ],
+        "owner": "Analytics and engineering"
+      },
+      {
+        "priority": 1,
+        "action": "Create a structured session-recording review program focused on mobile checkout attempts.",
+        "details": [
+          "Review recordings from mobile sessions that entered checkout and did not reach the confirmation page, alongside a comparison sample of mobile sessions that completed purchase.",
+          "Also review desktop abandoners and completers to distinguish mobile-only issues from checkout-wide issues.",
+          "Stratify samples by major mobile browser/operating-system combinations, payment method, new versus returning users, and checkout entry point where data is available.",
+          "Use a shared review sheet with one primary issue per session, affected step, observable behavior, exact UI/error context, reproducibility status, suspected cause, and recording links or session IDs.",
+          "Have two reviewers classify an initial subset independently, reconcile definitions, and then continue with a consistent taxonomy."
+        ],
+        "owner": "Conversion-rate optimization, product, and UX"
+      },
+      {
+        "priority": 1,
+        "action": "Use a specific observation taxonomy so recordings produce actionable findings rather than anecdotal notes.",
+        "details": [
+          "Navigation and layout: hidden or disabled CTA, sticky footer overlap, modal trapping, horizontal scrolling, viewport clipping, accidental back navigation, and keyboard covering active fields or buttons.",
+          "Form friction: excessive fields, repeated typing, field-format confusion, address-autocomplete failure, validation that appears late, unclear required fields, and errors that disappear or are off-screen.",
+          "Account and identity: forced account creation, confusing guest checkout, login loops, password reset interruptions, and autofill conflicts.",
+          "Payment: unavailable preferred payment options, provider redirect loops, authentication interruptions, repeated submit attempts, payment errors, and return-from-provider failures.",
+          "Costs and delivery: abandonment immediately after shipping options, delivery estimate, tax, discount, or total-price changes.",
+          "Trust and comprehension: unclear return policy, payment-security concerns, unfamiliar payment descriptors, or unclear next-step messaging.",
+          "Technical behavior: long waits, spinner persistence, blank screens, page refreshes, JavaScript error states, and browser-specific rendering defects."
+        ],
+        "owner": "UX research and engineering"
+      },
+      {
+        "priority": 1,
+        "action": "Immediately triage clearly reproducible mobile blockers found in recordings.",
+        "details": [
+          "For each apparent blocker, reproduce it on the recorded device/browser combination or an equivalent test environment before release.",
+          "Prioritize defects that prevent a user from advancing, submitting payment, seeing an error, or recovering from an error.",
+          "Document the user path, device/browser, steps to reproduce, expected versus actual behavior, screenshots or recording reference, and relevant console/network evidence where available.",
+          "Route payment authorization failures and provider-return issues jointly to engineering and the payment provider; recordings alone cannot identify the payment-system root cause."
+        ],
+        "owner": "Engineering, QA, and payments"
+      },
+      {
+        "priority": 2,
+        "action": "Convert recurring friction into controlled checkout improvements.",
+        "details": [
+          "Reduce only fields demonstrated to be unnecessary or duplicative; preserve required fraud, tax, fulfillment, and legal inputs.",
+          "Improve mobile form behavior: correct input types, autocomplete attributes, persistent labels, inline validation near the field, retained entries after errors, and a clear focus/scroll path to the first error.",
+          "Ensure primary checkout actions remain visible and tappable with the mobile keyboard open, and that overlays or consent tools do not cover checkout controls.",
+          "Make guest checkout and login choices clear if recordings show account friction.",
+          "Clarify total cost, delivery choices, expected arrival, returns, and payment options at the point where users need the information.",
+          "If payment-method behavior is implicated, test the affected provider flow and evaluate whether the available methods match observed customer preferences; do not remove fraud or authentication controls solely based on recordings."
+        ],
+        "owner": "Product, UX, engineering, and payments"
+      },
+      {
+        "priority": 2,
+        "action": "Validate each released change with both behavioral and quantitative evidence.",
+        "details": [
+          "Use QA across relevant mobile browsers and viewport sizes, including keyboard-open states, autofill, address entry, error recovery, and payment return flows.",
+          "Monitor the affected checkout-step completion, error events, payment outcomes, confirmation-page reach rate, and recording patterns after release.",
+          "Where feasible, use an experiment or phased rollout to separate the effect of the change from traffic mix, promotions, seasonality, and other concurrent releases.",
+          "Maintain a finding log that records whether a hypothesized issue was confirmed, disproved, fixed, or requires further investigation."
+        ],
+        "owner": "Analytics, product, engineering, and QA"
+      },
+      {
+        "priority": 3,
+        "action": "Add complementary qualitative evidence for issues that recordings cannot explain.",
+        "details": [
+          "Use on-page intercepts or post-abandonment surveys with a short question such as why the shopper did not complete checkout, subject to consent and privacy requirements.",
+          "Review customer-support contacts, payment decline reasons where available, and site-error logs for patterns matching the recording findings.",
+          "Conduct moderated mobile checkout usability tests if recordings repeatedly show hesitation but not a visible failure."
+        ],
+        "owner": "UX research, customer support, analytics, and payments"
+      }
+    ],
+    "missing_information": [
+      "The definition and time period used for the stated desktop and mobile conversion rates.",
+      "Whether conversion is session-based, user-based, or checkout-start-based, and whether bot/internal traffic is excluded.",
+      "Checkout-step completion and drop-off data for mobile and desktop.",
+      "Whether checkout is one page, multi-step, embedded, or redirects to a third-party payment flow.",
+      "Session-recording coverage, sampling rules, consent status, masking configuration, and whether recordings include checkout interactions.",
+      "Mobile browser, operating-system, viewport, and app-versus-mobile-web distribution.",
+      "Traffic-source, campaign, geography, new/returning customer, and login-state mix by device.",
+      "Payment-method usage, payment decline/error outcomes, 3-D Secure or other authentication behavior, and payment-provider incident history.",
+      "Client-side error logs, performance data, network failures, and recent checkout, tag-manager, payment, or promotion changes.",
+      "Cart abandonment, checkout-start rate, coupon usage, shipping-cost visibility, delivery-region restrictions, and stock-out behavior.",
+      "Existing usability constraints, fraud controls, tax requirements, accessibility requirements, and checkout-platform limitations."
+    ],
+    "caveats": [
+      "The difference between 3% desktop conversion and 0.8% mobile conversion is a signal for investigation, not proof that checkout alone causes the gap.",
+      "Session recordings are qualitative evidence. Frequent-looking behaviors in a small or biased sample should not be treated as population-level impact without event and funnel data.",
+      "Recordings may omit failed sessions because of sampling, consent, ad blockers, recording-script failures, or cross-domain payment redirects.",
+      "Do not expose or retain payment data, passwords, full addresses, or other sensitive personal data in recordings. Confirm field masking, consent, access controls, retention, and applicable privacy obligations before review.",
+      "Avoid changes that weaken payment authentication, fraud prevention, tax collection, or required address validation without risk, legal, and payments review.",
+      "A visible abandonment pattern can reflect deliberate comparison shopping or price sensitivity rather than a usability defect; compare abandoners with completers and inspect the relevant checkout context."
+    ]
+  },
+  "usage": {
+    "prompt_tokens": 128,
+    "completion_tokens": 2131,
+    "total_tokens": 2259,
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "audio_tokens": 0
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 51,
+      "audio_tokens": 0,
+      "accepted_prediction_tokens": 0,
+      "rejected_prediction_tokens": 0
+    }
+  },
+  "estimated_cost_usd": 0.025892,
+  "knowledge_tokens": 0,
+  "retrieved_titles": []
+}

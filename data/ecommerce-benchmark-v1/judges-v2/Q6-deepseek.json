@@ -1,0 +1,188 @@
+{
+  "status": "complete",
+  "mapping": {
+    "A": "frontier_without",
+    "B": "frontier_with",
+    "C": "cheap_without",
+    "D": "cheap_with"
+  },
+  "judge_model": "deepseek-flash",
+  "output": {
+    "reviews": [
+      {
+        "label": "A",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 4,
+          "prioritization": 4
+        },
+        "strengths": [
+          "Correct inventory math: 210/8=26.3 days cover, 70-unit shortfall, 6/day max, 5.5/day buffer.",
+          "Balances inventory, acquisition, conversion and retention in a clear three-priority order.",
+          "Brand-safe copy: 13-inch sleeve, water-resistant not waterproof, 4–7 day delivery, no discount.",
+          "Strong uncertainty handling: asks whether stock is sellable/committed, paid DAY18 demand share, and accessory economics."
+        ],
+        "issues": [
+          "The $750 allowable release from the $3,000 budget is arbitrary rather than derived.",
+          "Designer 8 hrs/week is not explicitly capped, though the scope stays modest."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "210/8 = 26.25 days of Daypack stock against 35-day replenishment; about 8.75-day gap at current rate.",
+            "met": true,
+            "reason": "States 26.3 days vs 35 days, 70-unit shortfall, 6/day max, 5.5/day buffer."
+          },
+          {
+            "criterion": "Avoid accelerating Daypack demand without a stock plan.",
+            "met": true,
+            "reason": "Sets inventory-led acquisition ceiling and tells reduce/pause DAY18-focused acquisition."
+          },
+          {
+            "criterion": "Respect 8 designer and 4 developer hours per week and $3000 budget.",
+            "met": true,
+            "reason": "Caps developer at 4 hrs/week and keeps at least $2,250 of $3,000 uncommitted."
+          }
+        ]
+      },
+      {
+        "label": "B",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 4,
+          "prioritization": 4
+        },
+        "strengths": [
+          "Correct inventory, mobile-funnel, Meta/Shopify and contribution calculations.",
+          "Explicitly caps resources at 12 designer, 6 developer, 8 owner hours over the fortnight and treats $3,000 as a ceiling.",
+          "Concrete accessory retention test with contribution math and holdout caveat.",
+          "Plain-spoken, brand-safe product messaging."
+        ],
+        "issues": [
+          "Accessory standalone shipping/pick-pack costs are unknown, though this is caveated.",
+          "A two-week email holdout may be statistically inconclusive, also noted.",
+          "Does not explicitly address the missing Added-to-Cart flow."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "210/8 = 26.25 days of Daypack stock against 35-day replenishment; about 8.75-day gap at current rate.",
+            "met": true,
+            "reason": "States 26.25 days cover, 70-unit shortfall, 6/day max, 5.5/day buffer."
+          },
+          {
+            "criterion": "Avoid accelerating Daypack demand without a stock plan.",
+            "met": true,
+            "reason": "Inventory guardrail and paid-spend reduction; says conversion gains must stay inside the guardrail."
+          },
+          {
+            "criterion": "Respect 8 designer and 4 developer hours per week and $3000 budget.",
+            "met": true,
+            "reason": "Caps at 12 designer/6 developer/8 owner hours over two weeks and treats $3,000 as a ceiling."
+          }
+        ]
+      },
+      {
+        "label": "C",
+        "scores": {
+          "factual_accuracy": 3,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 3,
+          "prioritization": 4
+        },
+        "strengths": [
+          "Core inventory math is correct: 26.25 days cover, 8.75-day gap, 6/day max, 28-unit reduction over 14 days.",
+          "Identifies mobile as the main order decline and uses the ATC-to-checkout drop correctly.",
+          "Good customer-ticket and Klaviyo attribution caveats.",
+          "Clear three-priority plan with timelines."
+        ],
+        "issues": [
+          "Calls prior Meta CPA 'profitable' from $39.60 contribution before returns/overhead and assumes all orders are Daypack.",
+          "Recommends shifting paid budget to POUCH/BOTTLE before showing accessory demand or economics; this is flagged as an assumption but still stated as an action.",
+          "Says there is no cart-abandonment flow while a checkout-abandonment flow exists; should distinguish ATC vs checkout flow.",
+          "Uses exact 6/day cap without an explicit safety buffer for delayed replenishment."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "210/8 = 26.25 days of Daypack stock against 35-day replenishment; about 8.75-day gap at current rate.",
+            "met": true,
+            "reason": "States 26.25 days cover, 35−26.25=8.75-day gap, 6/day max, 28-unit two-week reduction."
+          },
+          {
+            "criterion": "Avoid accelerating Daypack demand without a stock plan.",
+            "met": true,
+            "reason": "Caps Daypack at 6/day, shifts paid away from Daypack, and suggests waitlist/notify if organic demand exceeds cap."
+          },
+          {
+            "criterion": "Respect 8 designer and 4 developer hours per week and $3000 budget.",
+            "met": true,
+            "reason": "Mentions using available 8 design/4 dev hours and the $3,000 test budget, though the flow scope is aggressive."
+          }
+        ]
+      },
+      {
+        "label": "D",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 3,
+          "uncertainty_and_questions": 4,
+          "prioritization": 4
+        },
+        "strengths": [
+          "Excellent numeric diagnosis: mobile CVR, ATC-to-checkout, Meta/Klaviyo overlap, inventory gap and replenishment cash.",
+          "Brand-safe product fixes for sizing, water resistance, delivery and returns.",
+          "Strong uncertainty handling with clear questions and assumptions.",
+          "Clear three-priority structure that avoids discounting and broad DAY18 acquisition."
+        ],
+        "issues": [
+          "Weekly designer/developer hour caps are not explicitly allocated; the PDP variant, ATC flow, post-purchase flow and delivery messaging may strain 8 designer/4 developer hours per week.",
+          "Uses exact 6/day cap with no explicit buffer if replenishment is delayed.",
+          "Shifting only the $3,000 test budget may not address the bulk of existing $22k Meta spend, even though the sell-through cap is the main control.",
+          "CTA change to 'Add to cart' is a reasonable hypothesis but unsupported by the supplied data."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "210/8 = 26.25 days of Daypack stock against 35-day replenishment; about 8.75-day gap at current rate.",
+            "met": true,
+            "reason": "States 26.25 days cover, 70-unit gap, roughly 9 uncovered days, and 6/day cap."
+          },
+          {
+            "criterion": "Avoid accelerating Daypack demand without a stock plan.",
+            "met": true,
+            "reason": "Sets a hard DAY18 sell-through cap and shifts test budget away from broad DAY18 prospecting."
+          },
+          {
+            "criterion": "Respect 8 designer and 4 developer hours per week and $3000 budget.",
+            "met": true,
+            "reason": "Mentions the $3,000 test budget and limits work to three priorities, but the weekly 8/4 cap is implicit rather than explicit."
+          }
+        ]
+      }
+    ],
+    "ranking": [
+      "B",
+      "A",
+      "D",
+      "C"
+    ],
+    "summary": "B and A are the strongest: both calculate inventory and funnel math correctly, respect brand constraints, and stay focused. B edges ahead on explicit resource caps and a concrete accessory-retention test; A is slightly more cautious but less explicit on designer hours. D is analytically strong but less explicit about weekly hour caps and proposes a large two-week scope. C is useful but has notable overstatements around Meta CPA profitability and accessory-spend reallocation, plus a flow-labeling imprecision."
+  },
+  "request_id": "14e7325c2774c7d555ac9b88778e4147ab63034bc0897f31f4497b8d2262e2bc",
+  "cost_upper_estimate_usd": 0.032790599999999996
+}

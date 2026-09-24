@@ -1,0 +1,1941 @@
+{
+  "batch": 9,
+  "request_id": "802fae372ac273aaa7af030c8fa6641c12d6ba4a9c79c7fe300c63ead1e17779",
+  "revision": "source-grounded-repair-v1",
+  "checked": {
+    "errors": [],
+    "candidates": [
+      {
+        "id": "e4319c70cec655966777b7a22e92c766a35a95ac1fb950fe2df944a0aa7b4219",
+        "unit": {
+          "id": "0cc3069e011475594e5d5e1d41baf332f5401dd47b0dad27081e720a3dfec283",
+          "kind": "warning",
+          "title": "Bayesian tests still mislead when stopped on peeking thresholds",
+          "claim": {
+            "text": "The source states Bayesian A/B testing is not immune to peeking, reporting a simulation with about an 80% false positive rate when peeking every 100 observations and stopping at P(A>B)>0.95.",
+            "quote": "simulation showing about 80% false positive rate when peeking every 100 obs and stopping at P(A>B)>0.95"
+          },
+          "action": null,
+          "trigger": {
+            "op": "any",
+            "args": [
+              {
+                "text": "Peeking every 100 observations and stopping when P(A>B)>0.95.",
+                "quote": "peeking every 100 obs and stopping at P(A>B)>0.95"
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "Simulation parameters (prior, effect size, other thresholds) are not given in the passage.",
+            "Not stated whether the ~80% figure generalises to other peek intervals or stopping thresholds."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:166/paragraph",
+            "start": 184,
+            "end": 287,
+            "quote": "simulation showing about 80% false positive rate when peeking every 100 obs and stopping at P(A>B)>0.95"
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:166/paragraph",
+            "start": 238,
+            "end": 287,
+            "quote": "peeking every 100 obs and stopping at P(A>B)>0.95"
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "19669127fcf3117599382b36bbd79b559bd71aa98ea34cd76669aeb3bef5f97e",
+        "unit": {
+          "id": "cef972d8ef57e3b383216e7a29cdc18440db2d2b9b9af79bde274449d0be8bbe",
+          "kind": "unresolved_claim",
+          "title": "CUPED is default-on in vendor tooling with a 30-50% sample-reduction claim",
+          "claim": {
+            "text": "The Optimizely and Datadog CUPED documentation is characterised as vendor implementation detail carrying a 30-50% sample reduction claim and default-on behaviour.",
+            "quote": "vendor implementation detail, 30-50% sample reduction claim, default-on behaviour"
+          },
+          "action": null,
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "The 30-50% sample reduction is an attributed vendor claim, not independently verified in the passage.",
+            "Which metrics, traffic levels or effect sizes the reduction applies to is not stated."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:167/paragraph",
+            "start": 204,
+            "end": 285,
+            "quote": "vendor implementation detail, 30-50% sample reduction claim, default-on behaviour"
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "30d8144293d590f22cd6ca9480579b2e5d85b2e0ddd2a0f5fbb9c8cb6587264c",
+        "unit": {
+          "id": "d0b15d70040c8589552c8816e3143c5e966ee25e82070632472d0badd55a0a66",
+          "kind": "action",
+          "title": "Prioritize tests with the PXL scorecard",
+          "claim": {
+            "text": "PXL is described as a binary, evidence-weighted scorecard and an antidote to subjective ICE prioritization.",
+            "quote": "the actual PXL binary/evidence-weighted scorecard, an antidote to subjective ICE"
+          },
+          "action": {
+            "text": "Use the PXL binary, evidence-weighted scorecard to prioritize A/B tests instead of subjective ICE scoring.",
+            "quote": "the actual PXL binary/evidence-weighted scorecard, an antidote to subjective ICE"
+          },
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "The PXL scoring criteria and weights themselves are not provided in the passage.",
+            "The source is Tier 3 (named practitioner)."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:168/paragraph",
+            "start": 163,
+            "end": 243,
+            "quote": "the actual PXL binary/evidence-weighted scorecard, an antidote to subjective ICE"
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:168/paragraph",
+            "start": 163,
+            "end": 243,
+            "quote": "the actual PXL binary/evidence-weighted scorecard, an antidote to subjective ICE"
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "e98e871a4b6ad179d4fe824547ba763e3fdac28b073ef18f61da70f334bfefe1",
+        "unit": {
+          "id": "6c40ea17b4228f5ad45a98a7f58f4cdad55a32d6cb26d2f984397d0e5202f000",
+          "kind": "principle",
+          "title": "Named conditions for running bandit tests",
+          "claim": {
+            "text": "The source names short campaigns, headlines and promotions as conditions for bandit tests, alongside Stephen Pavlovich's ecommerce reasoning on regret.",
+            "quote": "named conditions (short campaigns, headlines, promotions) with Stephen Pavlovich's ecommerce reasoning on regret"
+          },
+          "action": null,
+          "trigger": {
+            "op": "any",
+            "args": [
+              {
+                "text": "Short campaigns, headlines or promotions.",
+                "quote": "short campaigns, headlines, promotions"
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "Whether the listed conditions are individually sufficient or jointly required is not stated.",
+            "The regret reasoning itself is not reproduced in the passage."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:169/paragraph",
+            "start": 118,
+            "end": 230,
+            "quote": "named conditions (short campaigns, headlines, promotions) with Stephen Pavlovich's ecommerce reasoning on regret"
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:169/paragraph",
+            "start": 136,
+            "end": 174,
+            "quote": "short campaigns, headlines, promotions"
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "ee67d54be67b86f82998ef415f9f3e1a4cb06f920937eb7946940e978fed4aa7",
+        "unit": {
+          "id": "cb64a2f0bdcd787a8a64536ee6de5c164896316be100ca1789f254c2881864b2",
+          "kind": "warning",
+          "title": "100 conversions per variant is not a stopping threshold",
+          "claim": {
+            "text": "The source debunks magic conversion-number rules and shows why 100 conversions per variant is not a threshold.",
+            "quote": "shows why 100/variant is not a threshold"
+          },
+          "action": null,
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "The correct stopping criterion is not stated in the passage.",
+            "Source of the debunking argument is not reproduced in the passage."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:170/paragraph",
+            "start": 203,
+            "end": 243,
+            "quote": "shows why 100/variant is not a threshold"
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "715f30d0e613fe992327e00379b97b06448e0ac056580cf2507b03f7cc9cdb6f",
+        "unit": {
+          "id": "2b50ea69e948ac45a6f4f65829d659489030abe759463cf334c446e3dd782408",
+          "kind": "action",
+          "title": "Detect sample ratio mismatch with the chi-square method",
+          "claim": {
+            "text": "The SRM sources describe a chi-square method with a worked p-value example and a ~6% Microsoft rate.",
+            "quote": "chi-square method, worked p-value example, ~6% Microsoft rate"
+          },
+          "action": {
+            "text": "Use the chi-square method to detect sample ratio mismatch.",
+            "quote": "chi-square method"
+          },
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "The significance threshold used for the chi-square test is not stated in the passage.",
+            "Whether ~6% is per experiment or uses another denominator is not stated."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:171/paragraph",
+            "start": 231,
+            "end": 292,
+            "quote": "chi-square method, worked p-value example, ~6% Microsoft rate"
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:171/paragraph",
+            "start": 231,
+            "end": 248,
+            "quote": "chi-square method"
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "e1129dd2ddf27f01b04286b6c80fcdeb0f8487ab57dca60f05ba209c7d8c126e",
+        "unit": {
+          "id": "571ee2cd751125148371d9601f7efc54cef2d6e9c6a71bd1c58cc3511ebc50ce",
+          "kind": "example",
+          "title": "Baymard checkout benchmarks as evidence for big-swing hypotheses",
+          "claim": {
+            "text": "Baymard reports 70.22% global average cart abandonment from a meta-analysis of 50 studies (last updated September 22 2025; the rate has held 69-71% since 2014), 11.3 average checkout form fields, up to 35.26% achievable checkout uplift, and about $260B recoverable orders across US/EU.",
+            "quote": "70.22% global average cart abandonment from a meta-analysis of 50 studies"
+          },
+          "action": null,
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "Composition of the 50 studies and the baseline behind the 35.26% uplift figure are not given.",
+            "Denominators behind the $260B recoverable-orders estimate are not stated."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:172/paragraph",
+            "start": 134,
+            "end": 207,
+            "quote": "70.22% global average cart abandonment from a meta-analysis of 50 studies"
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "6dd2f175d986b619f9b95667eb95ec366042413fd3b9cdfda455b1d09cfc6034",
+        "unit": {
+          "id": "dbaf93812c92e4e5863b5d0b8e108d2e92afd7816aea748af693dcc8e0698591",
+          "kind": "warning",
+          "title": "Shopify checkout testability is plan-dependent and client-side testing was killed in August 2024",
+          "claim": {
+            "text": "What is testable on Shopify is described as plan-dependent, and an August 2024 extensibility change is said to have killed client-side checkout A/B testing.",
+            "quote": "the August 2024 extensibility change that killed client-side checkout A/B testing"
+          },
+          "action": null,
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "Which Shopify plan permits which test types is not detailed in the passage.",
+            "The exact mechanics of the August 2024 extensibility change are not described."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:173/paragraph",
+            "start": 301,
+            "end": 382,
+            "quote": "the August 2024 extensibility change that killed client-side checkout A/B testing"
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "b3571d78079f7506e10c5a00469ff64632e07aa9807f906ce2bb89dca5c407e8",
+        "unit": {
+          "id": "3bff0067d00bf64f112f70385016a9edea8f0c351311295a72f4aae659506997",
+          "kind": "warning",
+          "title": "No built-in Shopify checkout-extensibility A/B rule",
+          "claim": {
+            "text": "Shopify community confirmation is cited that there is no built-in checkout-extensibility A/B rule to show or hide customisations per group.",
+            "quote": "official confirmation there is no built-in checkout-extensibility A/B rule to show/hide customisations per group"
+          },
+          "action": null,
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "Whether any workaround exists is not stated in the passage.",
+            "Whether the confirmation still holds is not established from a current primary source in the passage."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:174/paragraph",
+            "start": 208,
+            "end": 320,
+            "quote": "official confirmation there is no built-in checkout-extensibility A/B rule to show/hide customisations per group"
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "de1c18b9bf8909f32d8d7b72f8a554ef584ac44a823a63a27c929e496a47fe1c",
+        "unit": {
+          "id": "08d42a1c1331133413842ff65c1c69941a89c06fa51340dc934932e4cf665905",
+          "kind": "example",
+          "title": "Company-by-company win-rate and false-positive-risk table",
+          "claim": {
+            "text": "A company-by-company win-rate and false-positive-risk table with citations reports Microsoft 33%, Bing 15%, Booking/Google/Netflix 10% and Airbnb 8%.",
+            "quote": "the company-by-company win-rate and false-positive-risk table (Microsoft 33%, Bing 15%, Booking/Google/Netflix 10%, Airbnb 8%) with citations"
+          },
+          "action": null,
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "Definitions of win rate and false-positive risk, plus underlying test counts, are not in the passage.",
+            "The table is a second-hand report of Kohavi data (Tier 2)."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:175/paragraph",
+            "start": 238,
+            "end": 379,
+            "quote": "the company-by-company win-rate and false-positive-risk table (Microsoft 33%, Bing 15%, Booking/Google/Netflix 10%, Airbnb 8%) with citations"
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "5f492aab71020c4d50d2cd8bff6f9baada42a0892bd8b1d440809c45436b0464",
+        "unit": {
+          "id": "e9e5c99c6eea06b19283a6690c3f0cd779a86c5ce4caa51dc63fefa729e86326",
+          "kind": "example",
+          "title": "Named-sample ecommerce win rates from a test database",
+          "claim": {
+            "text": "A real test database is reported to give named-sample ecommerce win rates of 36.3% win, 41.6% inconclusive and +2.77% median RPV, with the caveat that research pre-qualification raises win rate.",
+            "quote": "named-sample ecommerce win rates (36.3% win, 41.6% inconclusive, +2.77% median RPV) from a real test database"
+          },
+          "action": null,
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "Sample size and time period of the database are not given.",
+            "The denominator behind median RPV is not stated.",
+            "Tier 3 source."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:177/paragraph",
+            "start": 145,
+            "end": 254,
+            "quote": "named-sample ecommerce win rates (36.3% win, 41.6% inconclusive, +2.77% median RPV) from a real test database"
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "1ce76455d0d24373d6342e16da28c91311c29acb0630cf93eaf2fafafca60e3c",
+        "unit": {
+          "id": "0a0b8582f9cdc1ac5e04f7afb0dd609d0bb7ff68f038b74cdfeb84c51f0d494d",
+          "kind": "principle",
+          "title": "Winsorization is a cited workaround for high-variance revenue metrics, not a general rule",
+          "claim": {
+            "text": "A Tier 3 source reports concrete variance figures for revenue metrics (97% spend $0, CoV ~750%, revenue needs ~6x traffic, 28k vs 175k per variant) and cites a winsorization workaround.",
+            "quote": "the concrete variance numbers (97% spend $0, CoV ~750%, revenue needs ~6x traffic, 28k vs 175k per variant) and the winsorization workaround"
+          },
+          "action": null,
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "Winsorization cut-offs or percentiles are not stated in the passage.",
+            "No decision criteria, timing, or implementation constraints for when to apply winsorization are provided.",
+            "Figures are attributed to a Tier 3 blog (Atticus Li), March 2026."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:180/paragraph",
+            "start": 202,
+            "end": 342,
+            "quote": "the concrete variance numbers (97% spend $0, CoV ~750%, revenue needs ~6x traffic, 28k vs 175k per variant) and the winsorization workaround"
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "220f09ffc45448390fba35c586eaaf0377f14e0d7254e275c515b931c458ffa4",
+        "unit": {
+          "id": "45a65a592ae319c5a394a3a082e33201c5b0cc55afe04c77e5765f5621007a79",
+          "kind": "principle",
+          "title": "CUPED has a ceiling on volatile revenue metrics",
+          "claim": {
+            "text": "A hard number is cited showing CUPED's Ceiling on volatile revenue metrics at 15.91% variance reduction on n=400,000, described as key evidence for why CUPED underdelivers on DTC revenue.",
+            "quote": "the hard number showing CUPED's ceiling on volatile revenue metrics (15.91% variance reduction on n=400,000)"
+          },
+          "action": null,
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "The metric definition and experiment context for the 15.91% figure are not in the passage.",
+            "Whether the ceiling transfers to DTC revenue settings is asserted, not demonstrated, in the passage."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:194/paragraph",
+            "start": 176,
+            "end": 284,
+            "quote": "the hard number showing CUPED's ceiling on volatile revenue metrics (15.91% variance reduction on n=400,000)"
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "b99785d8b923ef94601d2229e40549caef98985a0c9be7b1359e053dc37ad083",
+        "unit": {
+          "id": "4f277ce318dba6073ceaf3b322b24523f1efccc6d858f45e02d4092d18db837e",
+          "kind": "warning",
+          "title": "Anti-flicker page hiding costs 3-4 seconds",
+          "claim": {
+            "text": "The sources cover the FOOC mechanism, state there is no miracle fix, and report a 3-4s anti-flicker page-hide cost (DebugBear, Feb 2022, updated Dec 2025).",
+            "quote": "and the 3-4s anti-flicker page-hide cost (DebugBear, Feb 2022, updated Dec 2025)"
+          },
+          "action": null,
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "The measurement method behind the 3-4s cost is not stated in the passage.",
+            "No alternative anti-flicker approach is given beyond the absence of a miracle fix."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:191/paragraph",
+            "start": 335,
+            "end": 415,
+            "quote": "and the 3-4s anti-flicker page-hide cost (DebugBear, Feb 2022, updated Dec 2025)"
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "2e13e66f07548c8d67dc078853941dea3b98e345078fadbb11742ad9afda852b",
+        "unit": {
+          "id": "ad5057b5b735542113540ae30a8357ba445c34e3b6527575fbb6cd7c7ffce397",
+          "kind": "action",
+          "title": "Bold changes only under 100,000 visitors per month, with holdout re-testing",
+          "claim": {
+            "text": "The source sets an under-100,000-visitors-per-month bold-changes-only gate and a re-test-surprising-winners-with-a-holdout rule.",
+            "quote": "the under-100,000-visitors/month \"bold changes only\" gate and re-test-surprising-winners-with-a-holdout rule"
+          },
+          "action": {
+            "text": "Below 100,000 visitors per month, test only bold changes and re-test surprising winners with a holdout.",
+            "quote": "the under-100,000-visitors/month \"bold changes only\" gate and re-test-surprising-winners-with-a-holdout rule"
+          },
+          "trigger": {
+            "op": "any",
+            "args": [
+              {
+                "text": "Traffic under 100,000 visitors per month.",
+                "quote": "under-100,000-visitors/month"
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "Whether the 100,000-visitors/month gate is site-wide or page-level is not stated.",
+            "This is a Tier 3 heuristic; its derivation is not given in the passage.",
+            "Holdout duration and size are not stated."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:188/paragraph",
+            "start": 154,
+            "end": 262,
+            "quote": "the under-100,000-visitors/month \"bold changes only\" gate and re-test-surprising-winners-with-a-holdout rule"
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:188/paragraph",
+            "start": 154,
+            "end": 262,
+            "quote": "the under-100,000-visitors/month \"bold changes only\" gate and re-test-surprising-winners-with-a-holdout rule"
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:188/paragraph",
+            "start": 158,
+            "end": 186,
+            "quote": "under-100,000-visitors/month"
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "44e3cff16e746fee01b00064a9c0869c83c11292dae8e2735093beb2b12a9f01",
+        "unit": {
+          "id": "f1ee4cf6c6d09cb8434df7944d7147647245af1b2e00b36394c589d05da83045",
+          "kind": "action",
+          "title": "Test price framing rather than the price number",
+          "claim": {
+            "text": "For pricing tests the source cites the Amazon 2000 case (6,896 refunds, $3.10 average), an EU personalised-price disclosure rule, negative vs positive price discrimination, and advises testing framing rather than the number.",
+            "quote": "test framing not the number"
+          },
+          "action": {
+            "text": "Test the framing of a price rather than the price number itself.",
+            "quote": "test framing not the number"
+          },
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "The Amazon case details and the jurisdiction(s) where the EU disclosure rule applies are not elaborated in the passage.",
+            "Whether the EU disclosure rule is a legal prerequisite for personalised-price tests is not stated explicitly.",
+            "Tier 3 sources."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:190/paragraph",
+            "start": 308,
+            "end": 335,
+            "quote": "test framing not the number"
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:190/paragraph",
+            "start": 308,
+            "end": 335,
+            "quote": "test framing not the number"
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "d1dc82f49575e70cf531a4b6336c0671a4112a9e3061e6c2bed5714fe98101f5",
+        "unit": {
+          "id": "040766abfe1a434aa5f33d0d1f0a3e42550f866440b2de3ed6e4417d6d23bf6b",
+          "kind": "example",
+          "title": "Audited A/B test win rate benchmark",
+          "claim": {
+            "text": "A stated 2,288-test sample showed a 19.1% significant win rate, cross-checked against platform benchmarks.",
+            "quote": "19.1% significant win rate on a stated 2,288-test sample, cross-checked against platform benchmarks."
+          },
+          "action": null,
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "What platform benchmarks were used for cross-check is not stated.",
+            "The confidence threshold for significance is not stated."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:178/paragraph",
+            "start": 151,
+            "end": 251,
+            "quote": "19.1% significant win rate on a stated 2,288-test sample, cross-checked against platform benchmarks."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "310fe315de5f7bf67da47a402be3560b87a7ed77ada929d5f164d88dd6e32642",
+        "unit": {
+          "id": "7824f6a830e6593c4658d175953804048c53c2d00cc3c6194bf455b1f07e6731",
+          "kind": "example",
+          "title": "Optimizely meta-analysis significant uplift",
+          "claim": {
+            "text": "Oliver Palmer cites the Thomke/Ghosh 20,000-experiment Optimizely meta-analysis finding 10% significant uplift.",
+            "quote": "cites the Thomke/Ghosh 20,000-experiment Optimizely meta-analysis (10% significant uplift)."
+          },
+          "action": null,
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "The meta-analysis methodology and confidence threshold are not stated."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:179/paragraph",
+            "start": 144,
+            "end": 235,
+            "quote": "cites the Thomke/Ghosh 20,000-experiment Optimizely meta-analysis (10% significant uplift)."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "f247f76e98180fa7a53bccd99599198cd3a64f9b85d671964382c3bef627ff42",
+        "unit": {
+          "id": "f976585f54d5d42caa2722c68a2cb49cf6d2874726eb5e5efae24ebe7973ced3",
+          "kind": "example",
+          "title": "Revenue inference can invert conversion ranking",
+          "claim": {
+            "text": "A worked example shows a higher conversion rate yielding lower revenue, highlighting the outlier problem in revenue inference.",
+            "quote": "worked example where higher conversion rate yields lower revenue, and the outlier problem in revenue inference."
+          },
+          "action": null,
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "The exact worked example values and the recommended outlier treatment are not stated."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:181/paragraph",
+            "start": 209,
+            "end": 320,
+            "quote": "worked example where higher conversion rate yields lower revenue, and the outlier problem in revenue inference."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "65da182a85acb48518dea2c61f61057d32dce91802c4b52d4bb87e8414d42223",
+        "unit": {
+          "id": "d3b603100637b6083a418e1d754a50dbae720ed56ed906ae7acead54db0c6e21",
+          "kind": "principle",
+          "title": "CUPED, winsorization and threshold-metric guidance",
+          "claim": {
+            "text": "GrowthBook provides practical CUPED, winsorization and threshold-metric guidance with a $5,000-order example.",
+            "quote": "practical CUPED/winsorization/threshold-metric guidance with the $5,000-order example."
+          },
+          "action": null,
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "Specific threshold values and implementation steps are not stated."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:182/paragraph",
+            "start": 135,
+            "end": 221,
+            "quote": "practical CUPED/winsorization/threshold-metric guidance with the $5,000-order example."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "02d56b1251bda1701a13ab68fa3abc80ab699507ee774edf7e2b17ac5f479501",
+        "unit": {
+          "id": "bca8f86f5374f9b790a17495a237314dca99f80e3bafd1b3b19fbe6ef45e69a5",
+          "kind": "principle",
+          "title": "Flat-prior critique of commercial Bayesian tools",
+          "claim": {
+            "text": "DRIP states a flat-prior critique: commercial Bayesian tools can collapse to frequentist behavior.",
+            "quote": "the flat-prior critique (commercial Bayesian tools collapse to frequentist) stated plainly."
+          },
+          "action": null,
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "The exact conditions under which the collapse occurs are not stated."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:183/paragraph",
+            "start": 169,
+            "end": 260,
+            "quote": "the flat-prior critique (commercial Bayesian tools collapse to frequentist) stated plainly."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "494fa1e751fdc16e939fe3bf872be3acb92389c284be2deb6cd080acbe3a7b82",
+        "unit": {
+          "id": "ab2facee5e6a007f6a95a9d4a4ba744415b1ed454c2ea2877fa1224be1cc0c33",
+          "kind": "example",
+          "title": "Platform statistical engine mapping",
+          "claim": {
+            "text": "A guide maps each platform's engine: Optimizely mSPRT+FDR, VWO Beta-Binomial, Eppo shrinkage, Statsig sequential.",
+            "quote": "maps each platform's engine (Optimizely mSPRT+FDR, VWO Beta-Binomial, Eppo shrinkage, Statsig sequential)."
+          },
+          "action": null,
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "The guide's date and method for verifying engines are not stated."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:184/paragraph",
+            "start": 252,
+            "end": 358,
+            "quote": "maps each platform's engine (Optimizely mSPRT+FDR, VWO Beta-Binomial, Eppo shrinkage, Statsig sequential)."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "0d0060d5f0ad7fa88bdcdc0756fa3c834faf90900210ed4aa3b763c965033938",
+        "unit": {
+          "id": "6934a88a536939b35962cdc2b50f33996438ceb86b724bec4bb404d457552bef",
+          "kind": "example",
+          "title": "Hybrid bandit ecommerce pattern and power timing",
+          "claim": {
+            "text": "The source describes a hybrid ecommerce pattern and a two-week-to-power note for a $100M retailer.",
+            "quote": "the hybrid ecommerce pattern and the two-week-to-power note for a $100M retailer."
+          },
+          "action": null,
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "The exact hybrid design and the metric for two-week power are not stated."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:186/paragraph",
+            "start": 188,
+            "end": 269,
+            "quote": "the hybrid ecommerce pattern and the two-week-to-power note for a $100M retailer."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "4dfdbb4a4fb7f8b5806da42212b3f60baef12ff6731d9942b5152bde54c879ef",
+        "unit": {
+          "id": "c8c869cebd5871222347d710427bf9d49ab00c79671b413b946f11f8a71b9cb6",
+          "kind": "action",
+          "title": "Test fewer, bigger things on higher-traffic pages for DTC brands",
+          "claim": {
+            "text": "SplitBase recommends DTC-specific test fewer, bigger things on higher-traffic pages and an A/B/n same-question rule.",
+            "quote": "DTC-specific \"test fewer, bigger things on higher-traffic pages\" and the A/B/n same-question rule."
+          },
+          "action": {
+            "text": "Test fewer, bigger things on higher-traffic pages.",
+            "quote": "test fewer, bigger things on higher-traffic pages"
+          },
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "For DTC brands.",
+                "quote": "DTC-specific"
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "What counts as a higher-traffic page is not stated.",
+            "The A/B/n same-question rule is named but not defined.",
+            "Tier 3 source."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:187/paragraph",
+            "start": 143,
+            "end": 241,
+            "quote": "DTC-specific \"test fewer, bigger things on higher-traffic pages\" and the A/B/n same-question rule."
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:187/paragraph",
+            "start": 157,
+            "end": 206,
+            "quote": "test fewer, bigger things on higher-traffic pages"
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:187/paragraph",
+            "start": 143,
+            "end": 155,
+            "quote": "DTC-specific"
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "e83b78350a9be4d43055f92a7209101f9306bd687b53e47f9fc4151de0d2b118",
+        "unit": {
+          "id": "4bc0481855c51319c2f02ba9e09ee3d9847f0e6324fe0a0f1ae6423add2fc937",
+          "kind": "unresolved_claim",
+          "title": "Conditions for sequential before/after in low traffic",
+          "claim": {
+            "text": "The source identifies honest conditions under which sequential before/after is defensible and when it is not, but does not state those conditions in the provided text.",
+            "quote": "the honest conditions under which sequential before/after is defensible and when it is not."
+          },
+          "action": null,
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "The actual conditions are not stated in the provided passage."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:189/paragraph",
+            "start": 135,
+            "end": 226,
+            "quote": "the honest conditions under which sequential before/after is defensible and when it is not."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "5c8627ee7f771eb368c873bbf48309cbca29562cec245156f462507614b9adb9",
+        "unit": {
+          "id": "145943b86d6db3a9765dec3152afcf77c59a70c5c6357d41a21381fe15dfb466",
+          "kind": "principle",
+          "title": "Client-side versus server-side trade-offs",
+          "claim": {
+            "text": "AB Tasty/Wingify provide explicit pros/cons lists including flicker, performance, secrecy, and omnichannel.",
+            "quote": "explicit pros/cons lists including flicker, performance, secrecy, and omnichannel."
+          },
+          "action": null,
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "The specific pros and cons for each side are not enumerated."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:192/paragraph",
+            "start": 185,
+            "end": 267,
+            "quote": "explicit pros/cons lists including flicker, performance, secrecy, and omnichannel."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "f0011fd1005f0f750917612884119230b0460103ccce768f655a1740d414e8d5",
+        "unit": {
+          "id": "d56dd19fd2f9fcf3bc4b234bf06791fe36dcf20f3bd629dc285a465540095bfa",
+          "kind": "warning",
+          "title": "Reject vendor case studies lacking sample details",
+          "claim": {
+            "text": "Vendor case studies claiming large lifts without stating sample, duration, and baseline are rejected under Twyman's law and kept only as unvalidated hypothesis material.",
+            "quote": "Vendor case studies claiming large lifts (e.g. \"+364%\") without stating sample, duration, and baseline. Rejected under Twyman's law; these are the single most common source of bad knowledge in this field. Keep only as unvalidated hypothesis material."
+          },
+          "action": null,
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "Twyman's law is named but not defined in the passage."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:197/paragraph",
+            "start": 0,
+            "end": 250,
+            "quote": "Vendor case studies claiming large lifts (e.g. \"+364%\") without stating sample, duration, and baseline. Rejected under Twyman's law; these are the single most common source of bad knowledge in this field. Keep only as unvalidated hypothesis material."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "264c222fc74e64114732060596fff7cffd3877b8aefa3472b2274f2689a3d334",
+        "unit": {
+          "id": "6ad6c5f863aeff84ef0f7979e2e396aa356fd7878b556b75fc2b5757cee6cfd8",
+          "kind": "action",
+          "title": "Cite Evan Miller directly instead of auto-generated calculator pages",
+          "claim": {
+            "text": "abtestpro.com and similar auto-generated calculator/learn pages are rejected as primary sources because they restate Evan Miller correctly but add no independent evidence.",
+            "quote": "abtestpro.com and similar auto-generated calculator/learn pages. Rejected as primary: they restate Evan Miller correctly but add no independent evidence; cite Miller directly instead."
+          },
+          "action": {
+            "text": "Cite Miller directly instead.",
+            "quote": "cite Miller directly instead."
+          },
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "Which specific Evan Miller material to cite is not stated."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:198/paragraph",
+            "start": 0,
+            "end": 183,
+            "quote": "abtestpro.com and similar auto-generated calculator/learn pages. Rejected as primary: they restate Evan Miller correctly but add no independent evidence; cite Miller directly instead."
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:198/paragraph",
+            "start": 154,
+            "end": 183,
+            "quote": "cite Miller directly instead."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "18828c84eb9d66128c703f6b1e137520ef2ffc9392980278eab06ea3e5ad99a8",
+        "unit": {
+          "id": "b981cd9d587a7a2567a6e1f5b98c9095a0812ee7e9a12269088bf725c1394589",
+          "kind": "warning",
+          "title": "Reject HubSpot 20,000 rule as general source",
+          "claim": {
+            "text": "The HubSpot \"20,000 rule\" post is rejected as a general source because it is email-list-oriented and the round-number rule does not generalise across baselines.",
+            "quote": "HubSpot \"20,000 rule\" post. Partially used for the claim-2 check only; rejected as a general source because it is email-list-oriented and the round-number rule does not generalise across baselines."
+          },
+          "action": null,
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "The claim-2 check referenced in the rejection is not explained."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:199/paragraph",
+            "start": 0,
+            "end": 197,
+            "quote": "HubSpot \"20,000 rule\" post. Partially used for the claim-2 check only; rejected as a general source because it is email-list-oriented and the round-number rule does not generalise across baselines."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "271a289ee319c73c4886ab3691f15f4bc9345d5a46792633bf52f0d0f2f54542",
+        "unit": {
+          "id": "367af5a533fcc7da5acd352d58f349ffaf6e18b7b089082a0d2095bbdaa3572d",
+          "kind": "warning",
+          "title": "Reject listicles without sample data",
+          "claim": {
+            "text": "Generic A/B testing statistics listicles quoting round win-rate numbers with no sample are rejected for violating the no-sample-size rule and for citing win rates without the test count or confidence threshold.",
+            "quote": "Generic \"A/B testing statistics\" listicles quoting round win-rate numbers with no sample (multiple). Rejected: violate the no-sample-size rule; win rates cited without the test count or confidence threshold."
+          },
+          "action": null,
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "The no-sample-size rule is named but not defined."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:196/paragraph",
+            "start": 0,
+            "end": 207,
+            "quote": "Generic \"A/B testing statistics\" listicles quoting round win-rate numbers with no sample (multiple). Rejected: violate the no-sample-size rule; win rates cited without the test count or confidence threshold."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "a3e57b74d2bd7e13efe01b903dcbe089825fbea69dd675807bcc6d3c5d65390d",
+        "unit": {
+          "id": "d1abeea2913a278705ee6ba100cbec6723bc0d3b4810109843f947100dbebb18",
+          "kind": "warning",
+          "title": "Reject opinion posts without data",
+          "claim": {
+            "text": "LinkedIn and Medium opinion posts without data are rejected as Tier 4 except where they present a named simulation or concrete platform numbers.",
+            "quote": "LinkedIn and Medium opinion posts without data. Rejected as Tier 4 except where they present a named simulation (Molas) or concrete platform numbers (Atticus Li)."
+          },
+          "action": null,
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "Which specific posts were evaluated is not stated."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:200/paragraph",
+            "start": 0,
+            "end": 162,
+            "quote": "LinkedIn and Medium opinion posts without data. Rejected as Tier 4 except where they present a named simulation (Molas) or concrete platform numbers (Atticus Li)."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "9abe22bc86e2157033c871c2975b3504d290f93adb3cde12e763f75bdaf32f5d",
+        "unit": {
+          "id": "ca50dd5cbacb05f6f32be9079769bfc47ae03f87c0e2e566a847440f41387b03",
+          "kind": "action",
+          "title": "Treat calculator sample-size tables as reliable only after agreement check",
+          "claim": {
+            "text": "The sample-size tables from calculator sites agree with each other and with Evan Miller's n=16 formula to within rounding, and the source says to treat them as reliable.",
+            "quote": "The sample-size tables from calculator sites agree with each other and with Evan Miller's n=16 formula to within rounding. Treat them as reliable."
+          },
+          "action": {
+            "text": "Treat the sample-size tables as reliable.",
+            "quote": "Treat them as reliable."
+          },
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": [
+              {
+                "text": "Only when the reviewed calculator sample-size tables agree with each other and with Evan Miller's n=16 formula to within rounding.",
+                "quote": "The sample-size tables from calculator sites agree with each other and with Evan Miller's n=16 formula to within rounding."
+              }
+            ]
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "The acceptable rounding tolerance is not specified.",
+            "Which calculators were reviewed is not stated."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:202/paragraph",
+            "start": 0,
+            "end": 146,
+            "quote": "The sample-size tables from calculator sites agree with each other and with Evan Miller's n=16 formula to within rounding. Treat them as reliable."
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:202/paragraph",
+            "start": 123,
+            "end": 146,
+            "quote": "Treat them as reliable."
+          },
+          {
+            "field": "prerequisites.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:202/paragraph",
+            "start": 0,
+            "end": 122,
+            "quote": "The sample-size tables from calculator sites agree with each other and with Evan Miller's n=16 formula to within rounding."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "2083ff088e196dd60664adce358d86bae95837213c7ee07459b3e9d54a013029",
+        "unit": {
+          "id": "a74a38f9fe136661a4a3114b1eba4c32d79d3ac28e856f884d0ee67137fe0a4b",
+          "kind": "principle",
+          "title": "Correcting the myth that Bayesian A/B testing is immune to peeking",
+          "claim": {
+            "text": "The source states that the Bayesian peeking simulation corrects a common Bayesian myth.",
+            "quote": "corrects a common Bayesian myth."
+          },
+          "action": null,
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "Addressing the common Bayesian myth about peeking.",
+                "quote": "corrects a common Bayesian myth."
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "The source does not state the exact formulation of the common Bayesian myth."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:166/paragraph",
+            "start": 289,
+            "end": 321,
+            "quote": "corrects a common Bayesian myth."
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:166/paragraph",
+            "start": 289,
+            "end": 321,
+            "quote": "corrects a common Bayesian myth."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "ecddadc6ae862e313e83440b31f4fda8daa8fe547f37ee79b954435a0d3ae109",
+        "unit": {
+          "id": "3b910c375aca95f76982b25346020fe07966ee94d64f501f9da6022fc6c73bcb",
+          "kind": "example",
+          "title": "Ecommerce bandit use for promotions and short-term initiatives",
+          "claim": {
+            "text": "The source describes Monetate as covering ecommerce-specific bandit use for promotions and short-term initiatives.",
+            "quote": "ecommerce-specific bandit use for promotions and short-term initiatives"
+          },
+          "action": null,
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "The source does not define what counts as short-term initiatives for bandit tests."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:185/paragraph",
+            "start": 166,
+            "end": 237,
+            "quote": "ecommerce-specific bandit use for promotions and short-term initiatives"
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "24d59604d33faa7a6f37bce9883b86ef7a3d6836de975602cad8b8c53b3b3de3",
+        "unit": {
+          "id": "470be6feb7d05f042542df12278f41126d839095d625f94194be7158882216f6",
+          "kind": "example",
+          "title": "Google Optimize sunset and current tool split",
+          "claim": {
+            "text": "The source records the September 30 2023 Google Optimize sunset and a free/paid tool split with Statsig free to 1M events and GrowthBook open source.",
+            "quote": "the September 30 2023 sunset date and the current free/paid tool split (Statsig free to 1M events, GrowthBook open source)"
+          },
+          "action": null,
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "The source does not verify current pricing or availability after the annotation date."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:193/paragraph",
+            "start": 147,
+            "end": 269,
+            "quote": "the September 30 2023 sunset date and the current free/paid tool split (Statsig free to 1M events, GrowthBook open source)"
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "3cefeabc5675bda83bef0a235d8543ed60c7c84b80f145471068fdb6a9ea391d",
+        "unit": {
+          "id": "001bd9f3badd359c21eef2778b54d60e619ec36ff1dafd882db40f8a163d0819",
+          "kind": "principle",
+          "title": "Sources of small differences between sample-size calculators",
+          "claim": {
+            "text": "The source says small differences between calculators come from the leading constant (Miller uses a value slightly below 16) and from pooled versus unpooled variance.",
+            "quote": "Small differences between calculators come from the leading constant (Miller uses a value slightly below 16) and from pooled vs unpooled variance."
+          },
+          "action": null,
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "The source does not state which calculators use pooled versus unpooled variance."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:202/paragraph",
+            "start": 147,
+            "end": 293,
+            "quote": "Small differences between calculators come from the leading constant (Miller uses a value slightly below 16) and from pooled vs unpooled variance."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "abf13a6f2df4f2501fc0b30740a6467e50188fd88dc0e2f844bb2dddd8f19161",
+        "unit": {
+          "id": "83a23164ec5a7b4cf6f4885a9c66000defe09b5050469d49e5ca715f952fdd38",
+          "kind": "action",
+          "title": "Cite Evan Miller directly instead of auto-generated calculator pages",
+          "claim": {
+            "text": "The source says abtestpro.com and similar auto-generated calculator/learn pages restate Evan Miller correctly but add no independent evidence.",
+            "quote": "they restate Evan Miller correctly but add no independent evidence; cite Miller directly instead."
+          },
+          "action": {
+            "text": "Cite Miller directly instead.",
+            "quote": "cite Miller directly instead."
+          },
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "Encountering abtestpro.com or similar auto-generated calculator/learn pages.",
+                "quote": "abtestpro.com and similar auto-generated calculator/learn pages."
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "The source does not specify which Evan Miller article or formula to cite."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:198/paragraph",
+            "start": 86,
+            "end": 183,
+            "quote": "they restate Evan Miller correctly but add no independent evidence; cite Miller directly instead."
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:198/paragraph",
+            "start": 154,
+            "end": 183,
+            "quote": "cite Miller directly instead."
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:198/paragraph",
+            "start": 0,
+            "end": 64,
+            "quote": "abtestpro.com and similar auto-generated calculator/learn pages."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "8b89edf51bb38b641c691e916df9e9a34a7547199c07eced41a68ef6654e9623",
+        "unit": {
+          "id": "9fe9865d8e74332777624d030f6215baea4d9bbabae36b655471fd58a15a26dc",
+          "kind": "warning",
+          "title": "Vendor case studies are the most common source of bad knowledge",
+          "claim": {
+            "text": "The source warns that vendor case studies claiming large lifts without sample, duration, and baseline are the single most common source of bad knowledge in this field.",
+            "quote": "these are the single most common source of bad knowledge in this field."
+          },
+          "action": null,
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "Encountering vendor case studies claiming large lifts without stating sample, duration, and baseline.",
+                "quote": "Vendor case studies claiming large lifts"
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "The source does not define what counts as a large lift or how to validate such cases."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:197/paragraph",
+            "start": 133,
+            "end": 204,
+            "quote": "these are the single most common source of bad knowledge in this field."
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:197/paragraph",
+            "start": 0,
+            "end": 40,
+            "quote": "Vendor case studies claiming large lifts"
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      }
+    ],
+    "held": [],
+    "more_units": true,
+    "unresolved": [
+      "The provided text is an annotated source list, not the underlying linked documents; most methods, data definitions, populations, calculations, and implementation procedures are not reproduced.",
+      "Most numerical claims are attributed summaries and lack the underlying study design, sample sizes, confidence thresholds, denominators, or outcome definitions in this excerpt.",
+      "Tier labels and editorial rationales indicate the compiler's assessment but do not independently validate the linked sources' claims.",
+      "Platform behavior, pricing, product availability, and legal statements are time-sensitive and not verifiable from the excerpt alone.",
+      "The source does not state the simulation parameters for the Bayesian peeking simulation.",
+      "The source does not state the correct stopping criterion to replace the 100-conversions-per-variant rule.",
+      "The source does not state the honest conditions under which sequential before/after is defensible.",
+      "The source does not state which Shopify plan permits which test types.",
+      "The source does not state the exact mechanics of the August 2024 Shopify extensibility change.",
+      "The source does not define Twyman's law.",
+      "The source does not define the no-sample-size rule.",
+      "The source does not state the significance threshold used for the chi-square SRM test.",
+      "The source does not state winsorization cut-offs, decision criteria, timing, or implementation constraints.",
+      "The source does not specify which Evan Miller material to cite.",
+      "The source does not state whether the EU personalised-price disclosure rule is a legal prerequisite for personalised-price tests.",
+      "The source does not state which calculators use pooled versus unpooled variance.",
+      "The source does not define what counts as a higher-traffic page or the A/B/n same-question rule.",
+      "The source does not state the acceptable rounding tolerance for sample-size calculator agreement.",
+      "The source does not state whether ~6% Microsoft SRM rate is per experiment or uses another denominator."
+    ],
+    "publication_allowed": false
+  },
+  "normalizations": [],
+  "semantic_recheck": "required",
+  "publication_allowed": false
+}

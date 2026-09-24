@@ -1,0 +1,67 @@
+{
+  "case_index": 22,
+  "evidence": [
+    {
+      "end": 711823,
+      "field": "claim",
+      "locator": "body:17/paragraph",
+      "quote": "when a link is visited, I want the background of it to be an image from my server. And so now every time I visited a link uh anytime a link has been visited, I can uh I will tell because my server got got a request for this background image, right?",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "start": 711575
+    },
+    {
+      "end": 711657,
+      "field": "trigger.0",
+      "locator": "body:17/paragraph",
+      "quote": "we can write a CSS rule that says that uh for example, when a link is visited, I want the background of it to be an image from my server.",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "start": 711520
+    }
+  ],
+  "extraction_request": "eda03fdd99dc07b5871a3d312899828b4e928a493d51bfd9da6a3645e4fa1e6a",
+  "id": "be9a0d8ba7af8228784e03dce293df081a278edc40f4d7e1813df67c89e07f42",
+  "provenance": "unverified",
+  "publication_allowed": false,
+  "schema_version": 2,
+  "semantic_review": "required",
+  "status": "held",
+  "unit": {
+    "action": null,
+    "claim": {
+      "quote": "when a link is visited, I want the background of it to be an image from my server. And so now every time I visited a link uh anytime a link has been visited, I can uh I will tell because my server got got a request for this background image, right?",
+      "text": "The speaker warns that visited-link CSS could create a background-image request to the attacker's server, revealing that a link was visited without relying only on readable link color."
+    },
+    "completion": [],
+    "exclusions": {
+      "args": [],
+      "op": "any"
+    },
+    "id": "u9",
+    "kind": "warning",
+    "prerequisites": {
+      "args": [],
+      "op": "all"
+    },
+    "relations": [
+      {
+        "kind": "depends_on",
+        "target": "u8"
+      }
+    ],
+    "title": "Restricting color reads alone would not stop visited-link leakage",
+    "trigger": {
+      "args": [
+        {
+          "quote": "we can write a CSS rule that says that uh for example, when a link is visited, I want the background of it to be an image from my server.",
+          "text": "A visited-link CSS rule can cause a background image from the page's server to load."
+        }
+      ],
+      "op": "all"
+    },
+    "unknowns": [
+      "The source does not establish whether this CSS behavior applies to any current browser or CSS configuration."
+    ]
+  }
+}

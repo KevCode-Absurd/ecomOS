@@ -1,0 +1,882 @@
+{
+  "summary": {
+    "case_index": 0,
+    "provider": "deepseek",
+    "effort": "high",
+    "request_id": "71b8ad4b8c2f79a56ec5c161e8749065bb141bb6b94f37df7e3d6a48d953ba68",
+    "complete": true,
+    "completion_limit": 32768,
+    "units": 16,
+    "held": 0,
+    "errors": [],
+    "more_units": true,
+    "cost": 0.032415
+  },
+  "errors": [],
+  "candidates": [
+    {
+      "id": "87f088e0bd364620286882d2d25c6fbc0c65e58f2a77eb67dd12c3e19e293982",
+      "unit": {
+        "id": "u1",
+        "kind": "action",
+        "title": "Search a product in Magic AI to surface competitors",
+        "claim": {
+          "text": "The source shows using Magic AI to search a product, after which the software displays competitors running the product on Facebook and related products.",
+          "quote": "we can go up to Magic AI here. We can then search toothbrush cleaner. Then the software is going to show us all the other competitors who are running this product right now on Facebook"
+        },
+        "action": {
+          "text": "Use Magic AI to search a product and review the competitors and related products it shows.",
+          "quote": "we can go up to Magic AI here. We can then search toothbrush cleaner. Then the software is going to show us all the other competitors who are running this product right now on Facebook"
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not state how to evaluate the related products shown."
+        ],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1kDe9GgQ-H0acmu0Atdbq4NimU9Apyn-C",
+          "source_sha256": "f2346b8756acb594827d4fb1d37898d6ace098bdb96ceb0d7ae89f422673eb15",
+          "locator": "body:13/paragraph",
+          "start": 19018,
+          "end": 19202,
+          "quote": "we can go up to Magic AI here. We can then search toothbrush cleaner. Then the software is going to show us all the other competitors who are running this product right now on Facebook"
+        },
+        {
+          "field": "action",
+          "source_id": "1kDe9GgQ-H0acmu0Atdbq4NimU9Apyn-C",
+          "source_sha256": "f2346b8756acb594827d4fb1d37898d6ace098bdb96ceb0d7ae89f422673eb15",
+          "locator": "body:13/paragraph",
+          "start": 19018,
+          "end": 19202,
+          "quote": "we can go up to Magic AI here. We can then search toothbrush cleaner. Then the software is going to show us all the other competitors who are running this product right now on Facebook"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "15f4e9951563e620fa5fffb1bd14c9e0432b4959382f7d0d571f5e4aba25d4b6",
+      "unit": {
+        "id": "u2",
+        "kind": "principle",
+        "title": "Competitor-count thresholds for product research",
+        "claim": {
+          "text": "The source sets a goal of no more than 10 stores selling the product and no more than three serious competitors.",
+          "quote": "no more than 10 stores are selling it and that no more than three are serious competitors"
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not define what counts as a serious competitor."
+        ],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1kDe9GgQ-H0acmu0Atdbq4NimU9Apyn-C",
+          "source_sha256": "f2346b8756acb594827d4fb1d37898d6ace098bdb96ceb0d7ae89f422673eb15",
+          "locator": "body:13/paragraph",
+          "start": 19323,
+          "end": 19412,
+          "quote": "no more than 10 stores are selling it and that no more than three are serious competitors"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "d25d553e97804c7524f7c239d7b1df9bfdcf6bb6107b1209532f125d0a23cd77",
+      "unit": {
+        "id": "u3",
+        "kind": "action",
+        "title": "Green-light products with weak or inactive competitors",
+        "claim": {
+          "text": "The source treats an awful-looking competitor store or a competitor that stopped selling the product as a green flag to start running it.",
+          "quote": "it's a pretty green flag to start running it"
+        },
+        "action": {
+          "text": "Start running the product when competitors are not serious or have stopped selling it.",
+          "quote": "it's a pretty green flag to start running it"
+        },
+        "trigger": {
+          "op": "any",
+          "args": [
+            {
+              "text": "A store looks like it is not a serious competitor.",
+              "quote": "he's not a very serious competitor. The store looks absolutely awful."
+            },
+            {
+              "text": "A store is no longer selling the product.",
+              "quote": "they're not even selling it anymore."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not define what makes a store absolutely awful beyond the example."
+        ],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1kDe9GgQ-H0acmu0Atdbq4NimU9Apyn-C",
+          "source_sha256": "f2346b8756acb594827d4fb1d37898d6ace098bdb96ceb0d7ae89f422673eb15",
+          "locator": "body:13/paragraph",
+          "start": 19632,
+          "end": 19676,
+          "quote": "it's a pretty green flag to start running it"
+        },
+        {
+          "field": "action",
+          "source_id": "1kDe9GgQ-H0acmu0Atdbq4NimU9Apyn-C",
+          "source_sha256": "f2346b8756acb594827d4fb1d37898d6ace098bdb96ceb0d7ae89f422673eb15",
+          "locator": "body:13/paragraph",
+          "start": 19632,
+          "end": 19676,
+          "quote": "it's a pretty green flag to start running it"
+        },
+        {
+          "field": "trigger.0",
+          "source_id": "1kDe9GgQ-H0acmu0Atdbq4NimU9Apyn-C",
+          "source_sha256": "f2346b8756acb594827d4fb1d37898d6ace098bdb96ceb0d7ae89f422673eb15",
+          "locator": "body:13/paragraph",
+          "start": 19444,
+          "end": 19513,
+          "quote": "he's not a very serious competitor. The store looks absolutely awful."
+        },
+        {
+          "field": "trigger.1",
+          "source_id": "1kDe9GgQ-H0acmu0Atdbq4NimU9Apyn-C",
+          "source_sha256": "f2346b8756acb594827d4fb1d37898d6ace098bdb96ceb0d7ae89f422673eb15",
+          "locator": "body:13/paragraph",
+          "start": 19545,
+          "end": 19581,
+          "quote": "they're not even selling it anymore."
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "268b1330a0da47184802ea85372ca72a0bcc538d117d708ccf1bcfa3d5dafa6b",
+      "unit": {
+        "id": "u4",
+        "kind": "action",
+        "title": "Use dropship ads scrolling as a simple product research strategy",
+        "claim": {
+          "text": "The source says the short simple strategy is to hit dropship ads and start scrolling down.",
+          "quote": "the short simple strategy is just hit drop ship ads and start scrolling down"
+        },
+        "action": {
+          "text": "Hit drop ship ads and start scrolling down.",
+          "quote": "the short simple strategy is just hit drop ship ads and start scrolling down"
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not name the platform or ad library where to hit drop ship ads."
+        ],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1kDe9GgQ-H0acmu0Atdbq4NimU9Apyn-C",
+          "source_sha256": "f2346b8756acb594827d4fb1d37898d6ace098bdb96ceb0d7ae89f422673eb15",
+          "locator": "body:13/paragraph",
+          "start": 20016,
+          "end": 20092,
+          "quote": "the short simple strategy is just hit drop ship ads and start scrolling down"
+        },
+        {
+          "field": "action",
+          "source_id": "1kDe9GgQ-H0acmu0Atdbq4NimU9Apyn-C",
+          "source_sha256": "f2346b8756acb594827d4fb1d37898d6ace098bdb96ceb0d7ae89f422673eb15",
+          "locator": "body:13/paragraph",
+          "start": 20016,
+          "end": 20092,
+          "quote": "the short simple strategy is just hit drop ship ads and start scrolling down"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "a939c8c3c9f4d3b5df3e27c3c2c4b37cbbbd04b25178823af1b09599ab316a84",
+      "unit": {
+        "id": "u5",
+        "kind": "principle",
+        "title": "Mindset over research method when criteria fit",
+        "claim": {
+          "text": "The source says the research method matters less than the marketer's mindset during product research as long as the product fits the criteria.",
+          "quote": "what really matters is your mindset when you're doing product research as long as it fits the criteria"
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The criteria referenced are not restated in this passage."
+        ],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1kDe9GgQ-H0acmu0Atdbq4NimU9Apyn-C",
+          "source_sha256": "f2346b8756acb594827d4fb1d37898d6ace098bdb96ceb0d7ae89f422673eb15",
+          "locator": "body:13/paragraph",
+          "start": 20221,
+          "end": 20323,
+          "quote": "what really matters is your mindset when you're doing product research as long as it fits the criteria"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "d96c58cb2be4cfeeacdec4b98a27ce37159516c0eb771fe1e95329ae37119bc5",
+      "unit": {
+        "id": "u6",
+        "kind": "action",
+        "title": "Track product research in a Google sheet",
+        "claim": {
+          "text": "The source recommends making a Google sheet to write down favorite products.",
+          "quote": "make a Google sheet where you write down your favorites"
+        },
+        "action": {
+          "text": "Make a Google sheet and write down your favorite products.",
+          "quote": "make a Google sheet where you write down your favorites"
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source says the additional columns are up to you and does not require specific fields."
+        ],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1kDe9GgQ-H0acmu0Atdbq4NimU9Apyn-C",
+          "source_sha256": "f2346b8756acb594827d4fb1d37898d6ace098bdb96ceb0d7ae89f422673eb15",
+          "locator": "body:13/paragraph",
+          "start": 20491,
+          "end": 20546,
+          "quote": "make a Google sheet where you write down your favorites"
+        },
+        {
+          "field": "action",
+          "source_id": "1kDe9GgQ-H0acmu0Atdbq4NimU9Apyn-C",
+          "source_sha256": "f2346b8756acb594827d4fb1d37898d6ace098bdb96ceb0d7ae89f422673eb15",
+          "locator": "body:13/paragraph",
+          "start": 20491,
+          "end": 20546,
+          "quote": "make a Google sheet where you write down your favorites"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "dec5e73ed06e0acfc6dd8ec41640dc0f0617cc1c37152ddf18f72447e4d353ab",
+      "unit": {
+        "id": "u7",
+        "kind": "action",
+        "title": "Run the daily three-to-one product selection routine",
+        "claim": {
+          "text": "The source recommends adding three products every day, narrowing them to three favorites, picking one favorite, and running that product.",
+          "quote": "every day let's say you add three products you niche it down to your three favorites and then you pick your one favorite out of the three favorites"
+        },
+        "action": {
+          "text": "Every day add three products, narrow them to three favorites, pick one favorite, and run that product.",
+          "quote": "every day let's say you add three products you niche it down to your three favorites and then you pick your one favorite out of the three favorites"
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source presents this as a recommendation but does not specify what time period beyond every day."
+        ],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1kDe9GgQ-H0acmu0Atdbq4NimU9Apyn-C",
+          "source_sha256": "f2346b8756acb594827d4fb1d37898d6ace098bdb96ceb0d7ae89f422673eb15",
+          "locator": "body:13/paragraph",
+          "start": 20882,
+          "end": 21029,
+          "quote": "every day let's say you add three products you niche it down to your three favorites and then you pick your one favorite out of the three favorites"
+        },
+        {
+          "field": "action",
+          "source_id": "1kDe9GgQ-H0acmu0Atdbq4NimU9Apyn-C",
+          "source_sha256": "f2346b8756acb594827d4fb1d37898d6ace098bdb96ceb0d7ae89f422673eb15",
+          "locator": "body:13/paragraph",
+          "start": 20882,
+          "end": 21029,
+          "quote": "every day let's say you add three products you niche it down to your three favorites and then you pick your one favorite out of the three favorites"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "d8309309ac359872cf2fd7b24705d0169aec9875ed68b8e6516858bbb5b3fb85",
+      "unit": {
+        "id": "u8",
+        "kind": "principle",
+        "title": "Red vs blue ocean means finding untapped markets",
+        "claim": {
+          "text": "The source says the red/blue ocean concept means find untapped markets.",
+          "quote": "find untapped markets"
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not define a quantitative threshold for an untapped market."
+        ],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1kDe9GgQ-H0acmu0Atdbq4NimU9Apyn-C",
+          "source_sha256": "f2346b8756acb594827d4fb1d37898d6ace098bdb96ceb0d7ae89f422673eb15",
+          "locator": "body:13/paragraph",
+          "start": 23476,
+          "end": 23497,
+          "quote": "find untapped markets"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "4a0ee5643af7f4c2394f133817895b082d278611fc548ad95273a7ba4d503d2a",
+      "unit": {
+        "id": "u9",
+        "kind": "example",
+        "title": "Blue ocean example: selling a winning product to an untapped European country",
+        "claim": {
+          "text": "The source gives selling a winning product in an untapped European country as a good red/blue ocean example, claiming pretty much 100% success rate because people like the same products in Europe but have not been shown them.",
+          "quote": "A good example of red blue ocean drop shipping would be selling to a untapped European country. Taking a winning product that everyone else is selling and putting it there, you will have pretty much 100% success rate cuz people aren't that different. They like the same products in Europe, but they haven't been shown it to."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The 100% success rate claim is unverified; no denominator, timeframe, or source is given."
+        ],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1kDe9GgQ-H0acmu0Atdbq4NimU9Apyn-C",
+          "source_sha256": "f2346b8756acb594827d4fb1d37898d6ace098bdb96ceb0d7ae89f422673eb15",
+          "locator": "body:13/paragraph",
+          "start": 23808,
+          "end": 24132,
+          "quote": "A good example of red blue ocean drop shipping would be selling to a untapped European country. Taking a winning product that everyone else is selling and putting it there, you will have pretty much 100% success rate cuz people aren't that different. They like the same products in Europe, but they haven't been shown it to."
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "5c640f4a670300b04ddf0830f3941b60c3eea72375ad2c1f18df627e86f696fb",
+      "unit": {
+        "id": "u10",
+        "kind": "action",
+        "title": "Sell to people no one is talking to instead of competing",
+        "claim": {
+          "text": "The source advises stopping competition with 100 plus other drop shippers for a small piece of the cake and instead selling to people no one is talking to.",
+          "quote": "Stop competing with 100 plus other drop shippers for a small piece of the cake. Instead, start selling to people no one is talking to."
+        },
+        "action": {
+          "text": "Start selling to people no one is talking to.",
+          "quote": "start selling to people no one is talking to"
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not define who no one is talking to operationally."
+        ],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1kDe9GgQ-H0acmu0Atdbq4NimU9Apyn-C",
+          "source_sha256": "f2346b8756acb594827d4fb1d37898d6ace098bdb96ceb0d7ae89f422673eb15",
+          "locator": "body:13/paragraph",
+          "start": 24715,
+          "end": 24849,
+          "quote": "Stop competing with 100 plus other drop shippers for a small piece of the cake. Instead, start selling to people no one is talking to."
+        },
+        {
+          "field": "action",
+          "source_id": "1kDe9GgQ-H0acmu0Atdbq4NimU9Apyn-C",
+          "source_sha256": "f2346b8756acb594827d4fb1d37898d6ace098bdb96ceb0d7ae89f422673eb15",
+          "locator": "body:13/paragraph",
+          "start": 24804,
+          "end": 24848,
+          "quote": "start selling to people no one is talking to"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "f199d5873c5f011e92439ba6470be9b945f05adde8569213ba30731b27875d52",
+      "unit": {
+        "id": "u11",
+        "kind": "action",
+        "title": "Use TikTok search to detect market opportunity",
+        "claim": {
+          "text": "The source says the easiest way to detect market opportunity is by searching up the product on TikTok.",
+          "quote": "the easiest way to detect market opportunity is by searching up the product on Tik Tok"
+        },
+        "action": {
+          "text": "Search up the product on TikTok to detect market opportunity.",
+          "quote": "the easiest way to detect market opportunity is by searching up the product on Tik Tok"
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not specify which signals in TikTok search indicate market opportunity."
+        ],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1kDe9GgQ-H0acmu0Atdbq4NimU9Apyn-C",
+          "source_sha256": "f2346b8756acb594827d4fb1d37898d6ace098bdb96ceb0d7ae89f422673eb15",
+          "locator": "body:13/paragraph",
+          "start": 24956,
+          "end": 25042,
+          "quote": "the easiest way to detect market opportunity is by searching up the product on Tik Tok"
+        },
+        {
+          "field": "action",
+          "source_id": "1kDe9GgQ-H0acmu0Atdbq4NimU9Apyn-C",
+          "source_sha256": "f2346b8756acb594827d4fb1d37898d6ace098bdb96ceb0d7ae89f422673eb15",
+          "locator": "body:13/paragraph",
+          "start": 24956,
+          "end": 25042,
+          "quote": "the easiest way to detect market opportunity is by searching up the product on Tik Tok"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "0bfff4a88e1254e492fbe8b28fb957b919e0802f26346e477d98fc77e4e0130f",
+      "unit": {
+        "id": "u12",
+        "kind": "principle",
+        "title": "Saturation indicates demand and a new audience can revive the product",
+        "claim": {
+          "text": "The source says when a product is saturated it only means demand, and showing a saturated product to a new audience can give it a new life.",
+          "quote": "when the product is saturated, it only means one thing, demand, right? People love the product. So, if we can show a saturated product to a new audience, we can give it a new life"
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not quantify the new-life effect or provide results."
+        ],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1kDe9GgQ-H0acmu0Atdbq4NimU9Apyn-C",
+          "source_sha256": "f2346b8756acb594827d4fb1d37898d6ace098bdb96ceb0d7ae89f422673eb15",
+          "locator": "body:13/paragraph",
+          "start": 26716,
+          "end": 26895,
+          "quote": "when the product is saturated, it only means one thing, demand, right? People love the product. So, if we can show a saturated product to a new audience, we can give it a new life"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "21e9cfdc4e003f8dd1933fa5a6a18a6b387d66b1db3ffe79dbac300365210a0f",
+      "unit": {
+        "id": "u13",
+        "kind": "action",
+        "title": "Research blue-water markets in depth",
+        "claim": {
+          "text": "The source instructs researching the market in depth for blue waters.",
+          "quote": "research the market in depth for blue waters"
+        },
+        "action": {
+          "text": "Research the market in depth for blue waters.",
+          "quote": "research the market in depth for blue waters"
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not define the scope or output of the in-depth research."
+        ],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1kDe9GgQ-H0acmu0Atdbq4NimU9Apyn-C",
+          "source_sha256": "f2346b8756acb594827d4fb1d37898d6ace098bdb96ceb0d7ae89f422673eb15",
+          "locator": "body:13/paragraph",
+          "start": 27091,
+          "end": 27135,
+          "quote": "research the market in depth for blue waters"
+        },
+        {
+          "field": "action",
+          "source_id": "1kDe9GgQ-H0acmu0Atdbq4NimU9Apyn-C",
+          "source_sha256": "f2346b8756acb594827d4fb1d37898d6ace098bdb96ceb0d7ae89f422673eb15",
+          "locator": "body:13/paragraph",
+          "start": 27091,
+          "end": 27135,
+          "quote": "research the market in depth for blue waters"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "e71694b4bd55e7fd8418b80d36c0365c57acc6050718a522733be8142e393e43",
+      "unit": {
+        "id": "u14",
+        "kind": "action",
+        "title": "Blue ocean step 1: find a product that solves a problem",
+        "claim": {
+          "text": "The source's step one is to find a product that solves a problem.",
+          "quote": "step number one, find a product that solves a problem."
+        },
+        "action": {
+          "text": "Find a product that solves a problem.",
+          "quote": "step number one, find a product that solves a problem."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not define what counts as a problem."
+        ],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1kDe9GgQ-H0acmu0Atdbq4NimU9Apyn-C",
+          "source_sha256": "f2346b8756acb594827d4fb1d37898d6ace098bdb96ceb0d7ae89f422673eb15",
+          "locator": "body:13/paragraph",
+          "start": 28755,
+          "end": 28809,
+          "quote": "step number one, find a product that solves a problem."
+        },
+        {
+          "field": "action",
+          "source_id": "1kDe9GgQ-H0acmu0Atdbq4NimU9Apyn-C",
+          "source_sha256": "f2346b8756acb594827d4fb1d37898d6ace098bdb96ceb0d7ae89f422673eb15",
+          "locator": "body:13/paragraph",
+          "start": 28755,
+          "end": 28809,
+          "quote": "step number one, find a product that solves a problem."
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "4791b2abc63f7ec61a3b6b0b1de772c5bab8fbb3a75e56dc3656ade5aa238588",
+      "unit": {
+        "id": "u15",
+        "kind": "action",
+        "title": "Blue ocean step 2: identify blue oceans through competitor gaps",
+        "claim": {
+          "text": "The source's step two is to identify blue oceans by researching a product, finding competitors, and seeing what they're not doing.",
+          "quote": "Step two, identify blue oceans by researching a product, finding competitors, and seeing what they're not doing."
+        },
+        "action": {
+          "text": "Identify blue oceans by researching a product, finding competitors, and seeing what they're not doing.",
+          "quote": "Step two, identify blue oceans by researching a product, finding competitors, and seeing what they're not doing."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not specify how many competitors to review or what evidence counts as a blue ocean."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u14"
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1kDe9GgQ-H0acmu0Atdbq4NimU9Apyn-C",
+          "source_sha256": "f2346b8756acb594827d4fb1d37898d6ace098bdb96ceb0d7ae89f422673eb15",
+          "locator": "body:13/paragraph",
+          "start": 28810,
+          "end": 28922,
+          "quote": "Step two, identify blue oceans by researching a product, finding competitors, and seeing what they're not doing."
+        },
+        {
+          "field": "action",
+          "source_id": "1kDe9GgQ-H0acmu0Atdbq4NimU9Apyn-C",
+          "source_sha256": "f2346b8756acb594827d4fb1d37898d6ace098bdb96ceb0d7ae89f422673eb15",
+          "locator": "body:13/paragraph",
+          "start": 28810,
+          "end": 28922,
+          "quote": "Step two, identify blue oceans by researching a product, finding competitors, and seeing what they're not doing."
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "e4d34cf696ed3e97c8113f8d8921232b3257633cbbd46274073f90335a13f917",
+      "unit": {
+        "id": "u16",
+        "kind": "unresolved_claim",
+        "title": "Incomplete final instruction after You just have to do",
+        "claim": {
+          "text": "The passage ends with an incomplete instruction after You just have to do.",
+          "quote": "You just have to do"
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The continuation of the final instruction is missing; neighboring evidence is needed."
+        ],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1kDe9GgQ-H0acmu0Atdbq4NimU9Apyn-C",
+          "source_sha256": "f2346b8756acb594827d4fb1d37898d6ace098bdb96ceb0d7ae89f422673eb15",
+          "locator": "body:13/paragraph",
+          "start": 28971,
+          "end": 28990,
+          "quote": "You just have to do"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    }
+  ],
+  "held": [],
+  "more_units": true,
+  "unresolved": [
+    "Omitted due to cap: don't reinvent the wheel principle; shoe dryer moms-of-soccer-players example; older-people home workout example; slightly-overweight home workout example; competitor video/photo reuse; daily Google-sheet review on calls.",
+    "The passage refers to three product research methods, but the preceding methods are not fully visible in this excerpt.",
+    "Source ends with an incomplete instruction after You just have to do.",
+    "The 100% success rate claim for an untapped European country is unverified in the passage."
+  ]
+}

@@ -1,0 +1,87 @@
+# 20-FIN / finance and accounting
+
+**Goes here.** How the money works over time. Cash flow and the cash conversion cycle,
+working capital and inventory financing, P&L structure and chart of accounts,
+bookkeeping and inventory accounting, COGS recognition, tax registration and
+remittance, forecasting and budgeting, payment processing economics including payout
+timing, reserves and chargebacks, funding options, runway and burn, financial
+reporting for lenders or investors.
+
+## Why this module exists
+
+The OS ranks by profit, but a cash-constrained brand cannot act on a recommendation
+that ties up money it does not have for 90 days. Cash is a precondition on plays.
+
+## Not here
+
+- Per-order contribution margin and the profit formulas the ranking uses -> 06-MEA
+- Configuring tax settings inside the store -> 05-SET
+- Negotiating landed cost down -> 18-COG
+- Whether to make a hire and what it should cost -> 21-OPS
+- Amazon fee structure -> 22-AMZ
+- Growth diagnostics spanning economics, offer and operations -> 99-multi
+
+**The MEA and FIN line is the one that matters.**
+
+```
+gross profit per purchase                    -> MEA
+the landed cost formula                      -> MEA
+what counts inside COGS                      -> FIN and MEA, tag both
+when COGS is recognised, which method        -> FIN
+cash conversion cycle                        -> FIN
+chargeback reserves and payout timing        -> FIN
+```
+
+Which costs count as COGS IS the gross profit formula the ranking engine runs on, so
+those sources carry `modules: [FIN, MEA]`. Tagged `[FIN]` alone, the measurement
+agents never retrieve them.
+
+## Header
+
+```
+---
+url:                   # REQUIRED. Never blank.
+rights: public_reference
+why:
+modules: [FIN]         # add MEA for anything touching COGS or margin
+jurisdiction: []       # IN | US | UK | EU | global   REQUIRED here
+topics: []
+tier:                  # a practitioner is 3, never 1
+scope_hint: mixed
+---
+```
+
+`jurisdiction` is the safety mechanism for this folder. A card about GST filing
+thresholds is useless to a US brand and dangerous if retrieved for one. Use `global`
+only for universal mechanics like the cash conversion cycle.
+
+## Topics
+
+cash conversion cycle, working capital and inventory financing, chart of accounts and
+P&L structure, inventory accounting and COGS recognition, bookkeeping and
+reconciliation, payment processing economics, chargebacks and reserves, tax
+registration and remittance, forecasting and budgeting, purchase order planning,
+funding options and cost of capital, runway and burn, financial reporting.
+
+## Look for
+
+Formulas with every term defined. Timing above all: days between paying a supplier and
+being paid by a processor. Real payout schedules and reserve percentages. Thresholds
+that trigger a registration or filing, with the jurisdiction beside them.
+
+## Skip
+
+Aggressive tax structuring. Jurisdiction-free tax advice. Personal finance.
+
+## Output rule
+
+The system never presents tax or accounting output as settled fact. It carries an
+explicit confirm-with-your-accountant label.
+
+## Scope mix
+
+Real baseline: a chart of accounts exists, COGS recorded per SKU, inventory reconciles
+to stock on hand, processor payouts reconcile to orders. Collect these baseline topics
+early, alongside MEA.
+
+Current file counts, duplicates and holds: see `_INGESTION-STATE.yaml`.

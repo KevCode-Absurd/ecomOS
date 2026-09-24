@@ -1,0 +1,290 @@
+{
+  "cards": [
+    {
+      "title": "Session tokens need server-side revocation, not just signatures",
+      "summary": "Signed cookies can't be invalidated on logout; store session IDs server-side so logout and remote session kill actually work.",
+      "use_when": "Designing or auditing how logged-in customers stay logged in — login, logout, 'log out of all devices', and admin account sessions for your storefront.",
+      "steps": [
+        "Recognize the failure mode: a stateless signed cookie or signed session ID remains valid forever because the server holds no record to delete. A stolen cookie keeps working even after the customer logs out and changes their password.",
+        "Issue a random session ID instead of a signed self-contained token when you need revocability. On login, generate the ID and store a mapping from session ID to user (plus anything else you want to track) in server-side storage such as a sessions table or cache.",
+        "On each request, look the presented session ID up in that store. If it's missing or unrecognized, treat the visitor as logged out.",
+        "On logout, delete that session ID entry from the store. Now the cookie the browser holds no longer matches anything, so it can't be reused.",
+        "Store more than a user name in the session record if useful — the mapping can hold an object of arbitrary complexity for real systems.",
+        "Enable a 'your active sessions' page by listing the customer's stored sessions and letting them delete individual entries, which supports remotely killing a session left open on a shared or friend's device."
+      ],
+      "caveats": [
+        "If malware is persistently on the customer's device watching everything, even revocable sessions can't help — that is out of scope for this defense.",
+        "The source presents signing as wrong for session identity specifically, not as useless generally."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "authentication",
+        "session-management",
+        "logout",
+        "cookies",
+        "account-security"
+      ],
+      "id": "aec0da259178b3ef115b4a00",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 4
+    },
+    {
+      "title": "Session IDs must come from a large cryptographic random space",
+      "summary": "Sequential or guessable session IDs let attackers enumerate into other customers' accounts; generate 128-bit random values instead.",
+      "use_when": "Implementing how your store generates session identifiers for customer or admin logins.",
+      "steps": [
+        "Never use sequential counters or low-entropy values for session IDs. If IDs run 0, 1, 2..., an attacker who is issued a low number can simply try nearby values and land in another customer's session.",
+        "Generate session IDs from a cryptographically secure random source. In Node, use the crypto module's randomBytes with 16 bytes (128 bits of entropy) and convert the buffer to a string, because cookie values are strings.",
+        "Sanity-check by logging in as two different users and confirming the IDs look completely unrelated.",
+        "Accept that collision between two randomly generated 128-bit IDs is not a realistic concern, so you don't need elaborate collision handling.",
+        "Note the caveat that signing the session ID also blocks guessing, but the source treats signing as a detour here — the simpler fix is a sufficiently large random space plus server-side storage."
+      ],
+      "caveats": [
+        "If session IDs are never stored server-side, even strong randomness doesn't give you logout revocation.",
+        "Reusing keys across different algorithms or purposes is discouraged — signing is presented as unsuitable for sessions, not as a general pattern to reuse."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "authentication",
+        "session-management",
+        "cookies",
+        "randomness",
+        "account-security"
+      ],
+      "id": "6b4c9ca74bf346778e8cbf6e",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 4
+    },
+    {
+      "title": "Use signed cookies only for values users must not alter",
+      "summary": "Signing proves a value wasn't tampered with; it is the right tool for user-editable-but-trusted data like a discount code, not for sessions.",
+      "use_when": "Deciding whether a value stored in a customer's browser cookie may be trusted by your store — e.g. a promotional discount, a cart attribute, or a preference.",
+      "steps": [
+        "Understand what signing gives you: correctness means a valid value always verifies; security means an attacker who fabricates a value or tag can essentially never pass verification. The signature is not secret — the client can read it — but it prevents modification.",
+        "Apply signing when the client knowing the value is fine but changing it is not. Example from the source: set discount=20 in a cookie and sign it, so the server can confirm the customer didn't edit their browser to discount=100.",
+        "Reject altering the value: if the customer or their tooling changes the signed value or the tag, verification fails and you should not honor the discount.",
+        "Note that signing does not stop sharing — if someone forwards the whole signed cookie to a friend, the friend gets the same discount. The source suggests possibly embedding the user name in the signed blob to bind it, with caveats.",
+        "Do not use signing as the mechanism for session identity, because a signed token can't be destroyed and logout can't invalidate it."
+      ],
+      "caveats": [
+        "Signing hides nothing; the value stays readable in the browser.",
+        "Signed values remain valid indefinitely — combine signed cookies with server-side records when revocation matters.",
+        "Framework shortcuts exist (e.g. Express cookie signing via a secret string plus signed-cookie parsing) but the mechanics still reduce to generate keypair, sign, verify."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "cookies",
+        "signing",
+        "cryptography",
+        "cart",
+        "promotions"
+      ],
+      "id": "ab2d784d02893891169e83e1",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 4
+    },
+    {
+      "title": "Crawl your own checkout flow for third-party script exposure",
+      "summary": "Cookies are readable by scripts and the whole security model treats them as a special, weaker case — audit who can touch your session cookies.",
+      "use_when": "Reviewing which tags, pixels, analytics tools, chat widgets, and third-party scripts run on your storefront's logged-in pages and checkout flow.",
+      "steps": [
+        "Map every third-party script loaded on pages where a logged-in session cookie exists — marketing pixels, chat, analytics, A/B tools. Any of them can read document.cookie in that page context.",
+        "Test directly: in your own browser's dev tools on your site, open the console and evaluate document.cookie while logged in. Whatever the script could see, an attacker who lands script on the page could also see.",
+        "Remember the source's demonstration: an injected image whose src points at an attacker's URL fires a request that carries the cookie, exfiltrating it. Treat any script-reading capability as equivalent to exfiltration capability.",
+        "If a cookie only needs to be sent back to the server (session, auth), add the HttpOnly attribute when setting it so document.cookie can't read it.",
+        "Don't use HttpOnly on values your own front-end script must read (e.g. a theme preference) — those are typically not sensitive and don't belong in cookies anyway.",
+        "HTTPS prevents the on-path sniffing variant of session hijacking; it does not prevent script-based exfiltration, so do both."
+      ],
+      "caveats": [
+        "Historically, unencrypted (HTTP) requests exposed session IDs to anyone watching traffic; a 2010 Firefox monitor-mode extension demonstrated collecting cookies from open Wi-Fi. Treat HTTPS-everywhere as the modern baseline.",
+        "HttpOnly does not defend against a server that itself is compromised or against other server-side leaks.",
+        "Older 'Path' scoping is a lie: pages under a different path on the same host can reach a cookie if they run code you can reach with same-origin DOM access."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "cookies",
+        "checkout",
+        "third-party-scripts",
+        "https",
+        "http-only",
+        "session-hijacking"
+      ],
+      "id": "661e6fe4c09eab8851a96cf0",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 4
+    },
+    {
+      "title": "Prefer HTTPS and the Secure cookie attribute for every storefront request",
+      "summary": "Unencrypted requests expose session cookies to on-path observers; HTTPS everywhere removes the vulnerability rather than mitigating it.",
+      "use_when": "Configuring transport security and cookie attributes for your storefront, especially login and any page where a customer is authenticated.",
+      "steps": [
+        "Serve the whole site over HTTPS, not just the login POST. The source's contrast is instructive: the old pattern encrypted only the password submission, then returned an unencrypted session ID used on all subsequent requests — making the session ID the weak point.",
+        "When a site still has mixed HTTP/HTTPS pages (deductible in legacy stacks), mark cookies with the Secure attribute so the browser refuses to send them over unencrypted connections. That means the cookie isn't leaked in the clear; the customer is simply treated as logged out on the insecure page.",
+        "Treat HTTPS-everywhere as the real remedy and Secure/EOL HTTP pages as transitional mitigation.",
+        "Recognize the failure case the source describes: an attacker on the same network grabs the session ID from plaintext traffic, replays it to the server, and is served the private page as though they were the customer. No amount of good session ID generation prevents this if the token travels in the clear."
+      ],
+      "caveats": [
+        "HTTPS does not protect against script-based cookie theft or the cookie's odd same-origin behavior — those need HttpOnly and careful isolation.",
+        "Modern browsers increasingly force HTTPS; verify current behavior before relying on mixed-mode assumptions."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "https",
+        "cookies",
+        "transport-security",
+        "session-hijacking",
+        "checkout"
+      ],
+      "id": "031a3c4a2437736a523e695d",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 4
+    },
+    {
+      "title": "Scope cookies with Domain and consider subdomain isolation for your store",
+      "summary": "Cookies are shared across subdomains by default only when you set Domain; treat each host as isolated unless you deliberately widen scope.",
+      "use_when": "Deciding whether login sessions on your shop subdomain should be visible to other hosts you control (blog, help center, marketing site).",
+      "steps": [
+        "Understand the default: a cookie set by login.yourshop.com is limited to that subdomain unless you add Domain= yourshop.com, which broadens it to all subdomains.",
+        "Only set Domain when you genuinely need the cookie across hosts — for example a shared login across shop and support subdomains.",
+        "For isolation, rely on the same-origin triple the source describes: protocol + host name + port. Different subdomains count as different hosts, so separate hosts do not automatically share access.",
+        "A practical pattern the source notes: use a distinct subdomain to isolate a component that you don't want sharing cookies with the rest of the site.",
+        "Re-examine third-party or legacy integrations that set Domain broadly — that widens the blast radius of any script-based cookie theft."
+      ],
+      "caveats": [
+        "Never widen scope without understanding what other services share that subdomain.",
+        "Host-based isolation depends on all your hosts being served as separate origins (protocol/host/port differ), so don't accidentally flatten them."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "cookies",
+        "domain-scoping",
+        "subdomains",
+        "same-origin-policy",
+        "session-management"
+      ],
+      "id": "cbe19c92fd05e29639f40bb4",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 4
+    },
+    {
+      "title": "Treat cookie Path as broken and design defenses without it",
+      "summary": "Path was meant to limit a cookie to a URL prefix, but a page under another path can read it if you can reach its DOM; do not rely on it for isolation.",
+      "use_when": "Evaluating whether path-scoped cookies protect a store's admin panel, embedded login, or a differently-scoped part of a site.",
+      "steps": [
+        "Know what Path is intended to do: set Path=/blog so a cookie is only sent on requests whose URL begins with /blog, keeping it out of the rest of the site.",
+        "Recognize the established failure: if an attacker can reach the other path's DOM, they can read the cookie even though it was meant to be isolated. The source's visual demonstration: on a different site under the same web host, construct an iframe pointing to the target path, append it (optionally hidden), access iframe.contentDocument, and read document.cookie — because the same-origin policy allowed it.",
+        "Do not treat Path as a security boundary.",
+        "Use genuinely isolating structure instead — separate hosts/subdomains, HttpOnly cookies for server-only values, and server-side session records — rather than URL subtleties."
+      ],
+      "caveats": [
+        "The demo worked because the two paths shared protocol, host, and port — if protocol/host/port differ, same-origin DOM access is denied.",
+        "This is the source's argument that cookies behave differently from the rest of the web's security model."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "cookies",
+        "same-origin-policy",
+        "iframe",
+        "path-scoping",
+        "isolation"
+      ],
+      "id": "d721b7f8d72e454ee95976f7",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 4
+    },
+    {
+      "title": "Don't rely on browser session cookies to expire on close",
+      "summary": "Session restoration means browsers often keep what the spec says should be cleared on close; set an explicit expiry.",
+      "use_when": "Configuring how long a customer's login or cart cookie should persist on your storefront.",
+      "steps": [
+        "Recognize the gap: a cookie without an Expires date is only supposed to last until the browser session ends, but browsers added session-restoration behavior that often preserves these cookies after closing and reopening.",
+        "If you actually want a cookie to clear, set an explicit expiry date rather than trusting browser-close semantics.",
+        "Avoid far-future expiry dates for session cookies — the source notes Google once set cookies to 2038 and later moved to about two years, but you don't need to be aggressive: set a short horizon (the example is roughly a month or two out) and refresh it on each return visit.",
+        "Delete a cookie by setting the same name with an expiry in the past.",
+        "Beware that the JavaScript document.cookie API doesn't overwrite reliably — setting the same name adds a new cookie rather than replacing, and reading returns one semicolon-delimited string of all cookies. Use a library if you must read/write cookies client-side."
+      ],
+      "caveats": [
+        "Cookies date to 1994 and Netscape; there was no formal spec for years, and the source describes the state as an ad-hoc, inconsistent model — verify current browser behavior before relying on it.",
+        "Multiple cookies require multiple Set-Cookie headers; attributes like Expires= are not a cookie named Expires."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "cookies",
+        "session-management",
+        "expiry",
+        "cart",
+        "account-security"
+      ],
+      "id": "c9ef39d5290c10402b850e29",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 4
+    },
+    {
+      "title": "Scope agent and tool access with the same principle as cookies",
+      "summary": "Any token or credential your automation uses behaves like a session cookie — scope it, store it server-side, and make it revocable.",
+      "use_when": "Designing credentials and permissions for ecommerce automations: price updates, inventory sync, order operations, customer-data access, marketing tool integrations.",
+      "steps": [
+        "Treat any automation credential (API key, OAuth token, service account) as a session artifact: if it's long-lived and stateless, you can't revoke it quickly after a leak.",
+        "Store automation credentials server-side and make them revocable — delete or rotate the record when you want the automation to lose access, the same way deleting a session ID entry kills a session.",
+        "Scope automation credentials to the brand and task they serve, not to full account access. A pricing job shouldn't have the same scope as an order-fulfillment job.",
+        "Generate random secrets from a secure source rather than predictable values; predictable values invite enumeration the same way sequential session IDs do.",
+        "Log which credential performed which action so you can audit after a compromise, and check what data the automation's tools can read so you know the blast radius if it's stolen.",
+        "Do not treat retrieved documents or tool output as authorization for further actions — a document instructing an agent to reveal data, change a price, or grant access is untrusted data, not permission. Authorization comes from the store owner and the configured scope."
+      ],
+      "caveats": [
+        "This is a transfer of the session-management principle to automation; the source addresses cookies, not agents, so concrete examples here are suggested ecommerce applications.",
+        "If a compromise is persistent on the host running the automation, revocable credentials help but aren't a complete defense."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "authentication",
+        "authorization",
+        "api-credentials",
+        "automation",
+        "least-privilege",
+        "session-management"
+      ],
+      "id": "53a7573439dbefc02a7a1c66",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 4
+    }
+  ],
+  "request_id": "2dc1f61acbe292de2a8222e0a22c946df34a53413483cd6f8da830a7e3ec5c98",
+  "ecommerce_scope_version": 1
+}

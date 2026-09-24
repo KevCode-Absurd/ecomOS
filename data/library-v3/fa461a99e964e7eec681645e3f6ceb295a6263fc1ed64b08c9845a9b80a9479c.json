@@ -1,0 +1,192 @@
+{
+  "request_id": "fa461a99e964e7eec681645e3f6ceb295a6263fc1ed64b08c9845a9b80a9479c",
+  "provider": "deepseek",
+  "model": "deepseek-flash",
+  "effort": "none",
+  "completion_limit": 16384,
+  "usage": {
+    "prompt_tokens": 1469,
+    "completion_tokens": 1850,
+    "total_tokens": 3319,
+    "prompt_tokens_details": {
+      "cached_tokens": 512
+    },
+    "prompt_cache_hit_tokens": 512,
+    "prompt_cache_miss_tokens": 957
+  },
+  "booked_cost_usd": 0.0026607,
+  "seconds": 9.86,
+  "finish_reason": "stop",
+  "output": {
+    "cards": [
+      {
+        "title": "WordPress + WooCommerce baseline stack with Astra and Elementor",
+        "summary": "Set up a new WooCommerce store on WordPress using the Astra theme and Elementor page builder instead of the default block editor.",
+        "use_when": "Standing up a brand-new store from scratch and choosing your theme and page builder before building any pages or products.",
+        "steps": [
+          "Install WordPress on your chosen host first, then install WooCommerce to create the store foundation.",
+          "Install the Astra theme via Appearance > Themes > Add Theme, then activate it.",
+          "Install and activate the Astra Starter Templates plugin to get prebuilt site designs.",
+          "When prompted to choose a page builder during Starter Template import, explicitly select Elementor rather than the WordPress block editor — this decision locks in which editor you will use for later page edits.",
+          "Because WordPress, Elementor and Astra interfaces change frequently, verify current menu names and click paths against live documentation before following any step-by-step tutorial, and avoid tutorials older than roughly 18 months."
+        ],
+        "caveats": [
+          "The source is a walkthrough for a specific version of the tools; menu locations may have moved.",
+          "Hosting affiliate pitches and domain/server definitions in the source are not part of the setup procedure and can be skipped."
+        ],
+        "tags": [
+          "store-setup",
+          "wordpress",
+          "woocommerce",
+          "elementor",
+          "astra",
+          "theme-setup",
+          "page-builder"
+        ]
+      },
+      {
+        "title": "Creating mobile-specific layouts with Elementor responsive toggles",
+        "summary": "Build separate mobile and desktop section layouts by duplicating containers and using Elementor's Hide on mobile/tablet/desktop toggles.",
+        "use_when": "Merchandising a homepage or landing page where the desktop layout (e.g. wide hero with side-by-side blocks) would break or read poorly on phones.",
+        "steps": [
+          "Build the primary section or container for desktop first, e.g. a wide hero with two columns.",
+          "Duplicate the entire container so you have an identical copy to modify.",
+          "On the duplicate, restyle it for mobile — stack elements, enlarge tap targets, simplify content.",
+          "Open the duplicate's Advanced > Responsive settings.",
+          "Use the 'Hide on tablet' and 'Hide on desktop' toggles on the mobile version, and the 'Hide on mobile' toggle on the original desktop version, so only one version renders per device.",
+          "Preview each breakpoint in Elementor to confirm the correct variant appears and no duplicate content shows.",
+          "Because the Elementor interface changes, verify the current location of the Responsive toggles in your installed version."
+        ],
+        "caveats": [
+          "Duplicating full sections doubles maintenance: a content change must be made in both the desktop and mobile copies.",
+          "Device-specific hiding is a layout tool, not a substitute for genuinely responsive design — overuse creates divergent content across devices."
+        ],
+        "tags": [
+          "store-setup",
+          "elementor",
+          "responsive-design",
+          "mobile",
+          "landing-page",
+          "merchandising"
+        ]
+      },
+      {
+        "title": "Building WooCommerce variable products with color/size variations",
+        "summary": "Configure a variable product so each variation (e.g. per color) has its own SKU, stock level and price.",
+        "use_when": "Listing a product that comes in multiple colors, sizes or options where each variant needs separate inventory and pricing.",
+        "steps": [
+          "Create or edit the product, then change Product type to 'Variable product'.",
+          "Go to the Attributes tab, add an attribute such as Color, and enter its values separated by the | symbol (for example Red | Blue | Green).",
+          "Check 'Use for variations' for that attribute so WooCommerce treats it as a variation axis, then save the attribute.",
+          "Open the Variations tab and click 'Generate variations' to build a row for every combination of attribute values.",
+          "Edit each generated variation individually to set its SKU, stock quantity and price.",
+          "Save the product and preview it on the front end to confirm the variation dropdown shows all options and updates price/availability correctly.",
+          "Verify current menu labels in your WooCommerce version, as admin screens shift between releases."
+        ],
+        "caveats": [
+          "Every variation generated must be manually configured — generated rows start blank, so unedited variations can ship with missing prices or SKUs.",
+          "Attribute values typed with the | separator must match exactly across the attribute definition and variation rows."
+        ],
+        "tags": [
+          "store-setup",
+          "woocommerce",
+          "variable-products",
+          "product-catalog",
+          "inventory",
+          "attributes"
+        ]
+      },
+      {
+        "title": "Connecting Stripe and PayPal payments in WooCommerce",
+        "summary": "Install the Stripe and PayPal WooCommerce gateway plugins, connect the accounts, run the connection test, and switch from Test to Live mode.",
+        "use_when": "Enabling card and PayPal checkout on a new store before going live.",
+        "steps": [
+          "Install the WooCommerce Stripe payment gateway plugin and the WooCommerce PayPal payment gateway plugin (the source names 'Payment Plugins for Stripe WooCommerce' and 'Payment Plugins for PayPal WooCommerce').",
+          "Open each plugin's settings and connect it to your Stripe and PayPal merchant accounts.",
+          "Run the built-in connection test each plugin provides to confirm the handshake works.",
+          "Place a test order using each gateway while still in Test mode to verify the full checkout and confirmation flow.",
+          "Explicitly switch each gateway's mode setting from 'Test' to 'Live' — orders will not actually charge cards while Test mode is active.",
+          "Re-verify in the live dashboard that the mode indicator reads Live after switching.",
+          "Plugin names and settings screens change; confirm the current plugin and mode toggle before relying on these steps."
+        ],
+        "caveats": [
+          "Forgetting to flip from Test to Live mode is a common silent failure — checkout appears to work but no money is collected.",
+          "The specific plugin vendors named may be replaced or renamed; verify you are installing the current, maintained integration."
+        ],
+        "tags": [
+          "store-setup",
+          "payments",
+          "stripe",
+          "paypal",
+          "woocommerce",
+          "checkout",
+          "go-live"
+        ]
+      },
+      {
+        "title": "Configuring shipping zones with flat rate vs free-shipping thresholds",
+        "summary": "Set up WooCommerce shipping zones and choose between a flat rate and a free-shipping minimum to shape buyer incentive.",
+        "use_when": "Deciding how to charge for shipping and whether to offer a free-shipping threshold to lift average order value.",
+        "steps": [
+          "Create Shipping Zones in WooCommerce for the regions you actually ship to (e.g. domestic, specific countries).",
+          "Within each zone, add the shipping method you want to offer.",
+          "Choose between a flat rate — a fixed charge per order regardless of basket size — and a free-shipping method conditioned on a minimum spend.",
+          "If using free shipping, set a threshold amount (the source uses $100 as an example) above which shipping becomes free.",
+          "Verify the threshold math in cart: confirm orders below the minimum are charged and orders at/above it show free shipping.",
+          "Consider whether the threshold is set below, at, or above your typical basket size — a threshold just above average order value is what encourages an add-on. The $100 figure is the source's example, not a universal benchmark."
+        ],
+        "caveats": [
+          "A free-shipping threshold below typical basket size gives away margin without changing behavior.",
+          "Flat rate and free-shipping-threshold models are situational alternatives, not a single correct answer."
+        ],
+        "tags": [
+          "store-setup",
+          "shipping",
+          "woocommerce",
+          "aov",
+          "pricing",
+          "fulfillment"
+        ]
+      },
+      {
+        "title": "Setting up a first-purchase welcome coupon with usage controls",
+        "summary": "Create a one-per-customer discount coupon to drive first orders while limiting abuse.",
+        "use_when": "Launching a store or running an acquisition push where you want a first-purchase incentive without unlimited reuse.",
+        "steps": [
+          "Create a new coupon in WooCommerce and give it a recognizable code.",
+          "Set the discount type to 'Percentage discount' with the rate you intend.",
+          "Set 'Usage limit per user' to 1 so each customer can redeem it only once.",
+          "Optionally set an overall usage limit and an expiry date to bound total liability.",
+          "Test the coupon at checkout: confirm it applies, respects the one-per-user rule, and produces the expected order total.",
+          "Confirm the discount is factored into your effective margin before promoting it widely."
+        ],
+        "caveats": [
+          "A percentage discount applied without a usage limit per user can be stacked repeatedly by the same buyer.",
+          "Coupon abuse controls depend on customer account or email matching — guests may still work around limits."
+        ],
+        "tags": [
+          "store-setup",
+          "coupons",
+          "promotions",
+          "woocommerce",
+          "acquisition",
+          "discounting"
+        ]
+      }
+    ]
+  },
+  "raw_content": "{\"cards\": [{\"title\": \"WordPress + WooCommerce baseline stack with Astra and Elementor\", \"summary\": \"Set up a new WooCommerce store on WordPress using the Astra theme and Elementor page builder instead of the default block editor.\", \"use_when\": \"Standing up a brand-new store from scratch and choosing your theme and page builder before building any pages or products.\", \"steps\": [\"Install WordPress on your chosen host first, then install WooCommerce to create the store foundation.\", \"Install the Astra theme via Appearance > Themes > Add Theme, then activate it.\", \"Install and activate the Astra Starter Templates plugin to get prebuilt site designs.\", \"When prompted to choose a page builder during Starter Template import, explicitly select Elementor rather than the WordPress block editor — this decision locks in which editor you will use for later page edits.\", \"Because WordPress, Elementor and Astra interfaces change frequently, verify current menu names and click paths against live documentation before following any step-by-step tutorial, and avoid tutorials older than roughly 18 months.\"], \"caveats\": [\"The source is a walkthrough for a specific version of the tools; menu locations may have moved.\", \"Hosting affiliate pitches and domain/server definitions in the source are not part of the setup procedure and can be skipped.\"], \"tags\": [\"store-setup\", \"wordpress\", \"woocommerce\", \"elementor\", \"astra\", \"theme-setup\", \"page-builder\"]}, {\"title\": \"Creating mobile-specific layouts with Elementor responsive toggles\", \"summary\": \"Build separate mobile and desktop section layouts by duplicating containers and using Elementor's Hide on mobile/tablet/desktop toggles.\", \"use_when\": \"Merchandising a homepage or landing page where the desktop layout (e.g. wide hero with side-by-side blocks) would break or read poorly on phones.\", \"steps\": [\"Build the primary section or container for desktop first, e.g. a wide hero with two columns.\", \"Duplicate the entire container so you have an identical copy to modify.\", \"On the duplicate, restyle it for mobile — stack elements, enlarge tap targets, simplify content.\", \"Open the duplicate's Advanced > Responsive settings.\", \"Use the 'Hide on tablet' and 'Hide on desktop' toggles on the mobile version, and the 'Hide on mobile' toggle on the original desktop version, so only one version renders per device.\", \"Preview each breakpoint in Elementor to confirm the correct variant appears and no duplicate content shows.\", \"Because the Elementor interface changes, verify the current location of the Responsive toggles in your installed version.\"], \"caveats\": [\"Duplicating full sections doubles maintenance: a content change must be made in both the desktop and mobile copies.\", \"Device-specific hiding is a layout tool, not a substitute for genuinely responsive design — overuse creates divergent content across devices.\"], \"tags\": [\"store-setup\", \"elementor\", \"responsive-design\", \"mobile\", \"landing-page\", \"merchandising\"]}, {\"title\": \"Building WooCommerce variable products with color/size variations\", \"summary\": \"Configure a variable product so each variation (e.g. per color) has its own SKU, stock level and price.\", \"use_when\": \"Listing a product that comes in multiple colors, sizes or options where each variant needs separate inventory and pricing.\", \"steps\": [\"Create or edit the product, then change Product type to 'Variable product'.\", \"Go to the Attributes tab, add an attribute such as Color, and enter its values separated by the | symbol (for example Red | Blue | Green).\", \"Check 'Use for variations' for that attribute so WooCommerce treats it as a variation axis, then save the attribute.\", \"Open the Variations tab and click 'Generate variations' to build a row for every combination of attribute values.\", \"Edit each generated variation individually to set its SKU, stock quantity and price.\", \"Save the product and preview it on the front end to confirm the variation dropdown shows all options and updates price/availability correctly.\", \"Verify current menu labels in your WooCommerce version, as admin screens shift between releases.\"], \"caveats\": [\"Every variation generated must be manually configured — generated rows start blank, so unedited variations can ship with missing prices or SKUs.\", \"Attribute values typed with the | separator must match exactly across the attribute definition and variation rows.\"], \"tags\": [\"store-setup\", \"woocommerce\", \"variable-products\", \"product-catalog\", \"inventory\", \"attributes\"]}, {\"title\": \"Connecting Stripe and PayPal payments in WooCommerce\", \"summary\": \"Install the Stripe and PayPal WooCommerce gateway plugins, connect the accounts, run the connection test, and switch from Test to Live mode.\", \"use_when\": \"Enabling card and PayPal checkout on a new store before going live.\", \"steps\": [\"Install the WooCommerce Stripe payment gateway plugin and the WooCommerce PayPal payment gateway plugin (the source names 'Payment Plugins for Stripe WooCommerce' and 'Payment Plugins for PayPal WooCommerce').\", \"Open each plugin's settings and connect it to your Stripe and PayPal merchant accounts.\", \"Run the built-in connection test each plugin provides to confirm the handshake works.\", \"Place a test order using each gateway while still in Test mode to verify the full checkout and confirmation flow.\", \"Explicitly switch each gateway's mode setting from 'Test' to 'Live' — orders will not actually charge cards while Test mode is active.\", \"Re-verify in the live dashboard that the mode indicator reads Live after switching.\", \"Plugin names and settings screens change; confirm the current plugin and mode toggle before relying on these steps.\"], \"caveats\": [\"Forgetting to flip from Test to Live mode is a common silent failure — checkout appears to work but no money is collected.\", \"The specific plugin vendors named may be replaced or renamed; verify you are installing the current, maintained integration.\"], \"tags\": [\"store-setup\", \"payments\", \"stripe\", \"paypal\", \"woocommerce\", \"checkout\", \"go-live\"]}, {\"title\": \"Configuring shipping zones with flat rate vs free-shipping thresholds\", \"summary\": \"Set up WooCommerce shipping zones and choose between a flat rate and a free-shipping minimum to shape buyer incentive.\", \"use_when\": \"Deciding how to charge for shipping and whether to offer a free-shipping threshold to lift average order value.\", \"steps\": [\"Create Shipping Zones in WooCommerce for the regions you actually ship to (e.g. domestic, specific countries).\", \"Within each zone, add the shipping method you want to offer.\", \"Choose between a flat rate — a fixed charge per order regardless of basket size — and a free-shipping method conditioned on a minimum spend.\", \"If using free shipping, set a threshold amount (the source uses $100 as an example) above which shipping becomes free.\", \"Verify the threshold math in cart: confirm orders below the minimum are charged and orders at/above it show free shipping.\", \"Consider whether the threshold is set below, at, or above your typical basket size — a threshold just above average order value is what encourages an add-on. The $100 figure is the source's example, not a universal benchmark.\"], \"caveats\": [\"A free-shipping threshold below typical basket size gives away margin without changing behavior.\", \"Flat rate and free-shipping-threshold models are situational alternatives, not a single correct answer.\"], \"tags\": [\"store-setup\", \"shipping\", \"woocommerce\", \"aov\", \"pricing\", \"fulfillment\"]}, {\"title\": \"Setting up a first-purchase welcome coupon with usage controls\", \"summary\": \"Create a one-per-customer discount coupon to drive first orders while limiting abuse.\", \"use_when\": \"Launching a store or running an acquisition push where you want a first-purchase incentive without unlimited reuse.\", \"steps\": [\"Create a new coupon in WooCommerce and give it a recognizable code.\", \"Set the discount type to 'Percentage discount' with the rate you intend.\", \"Set 'Usage limit per user' to 1 so each customer can redeem it only once.\", \"Optionally set an overall usage limit and an expiry date to bound total liability.\", \"Test the coupon at checkout: confirm it applies, respects the one-per-user rule, and produces the expected order total.\", \"Confirm the discount is factored into your effective margin before promoting it widely.\"], \"caveats\": [\"A percentage discount applied without a usage limit per user can be stacked repeatedly by the same buyer.\", \"Coupon abuse controls depend on customer account or email matching — guests may still work around limits.\"], \"tags\": [\"store-setup\", \"coupons\", \"promotions\", \"woocommerce\", \"acquisition\", \"discounting\"]}]}",
+  "input": {
+    "source_id": "1Wkwgmn2r1WmdIXB9ionMa7wpQXdSAucF",
+    "source_sha256": "6b7c2c99cb4a5c776e6d68ed0731115845968c60409f3015f9433ee152b01590",
+    "source_name": "How to Create an Ecommerce Website with WordPress 2026 (step by step).docx",
+    "folder": "/05-SET-store-setup",
+    "domain": "store-setup",
+    "section": 0,
+    "section_count": 3,
+    "text": "Yes, I understand. Here is the extraction formatted strictly according to the OS Module Guide taxonomy for the provided source material.\n\n05-SET / store and domain setup\n\nGoes here. Going from nothing to a live store. Domain setup, WordPress and WooCommerce configuration, theme and page builder installation (Astra and Elementor), payments (Stripe/PayPal), shipping profiles, variable product creation, coupon setup, and mobile responsiveness toggles.\n\nNot here. • Page copy principles and section structure -> 07-LPG • Whether the numbers a tool reports are correct -> 06-MEA • Ongoing page performance and load speeds -> 08-SPD\n\nHeader. url: rights: public_reference why: Provides the exact click paths for configuring a WooCommerce store using Elementor and Astra, including variable product setup, mobile-responsive hiding toggles, and Stripe/PayPal integration. modules: [SET] topics: [domain and email, store configuration, payments and tax, shipping profiles] tier: 1 scope_hint: baseline\n\nTopics. domain and email, store configuration, payments and tax, shipping profiles.\n\nLook for.\n\nTheme & Builder Setup: The exact click path for installing the Astra theme (Appearance > Themes > Add Theme), activating the Starter Templates plugin, and explicitly selecting Elementor as the page builder over the block editor.\n\nElementor Responsive Mechanics: The exact method for making mobile-specific sections: duplicate the container, go to Advanced > Responsive, and use the \"Hide on tablet/desktop\" or \"Hide on mobile\" toggles to serve device-specific layouts.\n\nWooCommerce Variable Products: The step-by-step mechanics for variations: Change product type to \"Variable product,\" go to \"Attributes\" (e.g., Color), enter values separated by the | symbol, check \"Use for variations,\" save, then go to \"Variations\" and click \"Generate variations\" to individually configure SKUs, stock levels, and prices for each color.\n\nPayments: Installing \"Payment Plugins for Stripe WooCommerce\" and \"Payment Plugins for PayPal WooCommerce,\" connecting the accounts, running the connection test, and explicitly switching the mode from \"Test\" to \"Live.\"\n\nShipping & Coupons: Creating Shipping Zones, establishing flat rate vs. free shipping minimum thresholds (e.g., $100), and configuring welcome coupons (ensuring settings like \"percentage discount\" and \"usage limit per user: 1\" are applied).\n\nSkip. Generic affiliate pitches for hosting providers (e.g., Hostinger Black Friday deals, coupon codes), basic definitions of what a domain name or server is, and generic commentary on why responsive design is important. Anything more than 18 months old, as WordPress/Elementor interfaces change frequently.\n\nScope mix. Nearly all baseline.",
+    "prior_notes": [],
+    "id": "141fb805038f644fc0a1419e"
+  },
+  "system_prompt_sha256": "f2341d28186a0dbaee868d37ce33c173f631088eb1754997556740d4905c0f2b"
+}

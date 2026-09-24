@@ -1,0 +1,302 @@
+{
+  "request_id": "edb593c2fc64e7caf05ec17bd93b12110666834e52427200c0c1967ea1457086",
+  "provider": "deepseek",
+  "model": "deepseek-flash",
+  "effort": "none",
+  "completion_limit": 16384,
+  "usage": {
+    "prompt_tokens": 5698,
+    "completion_tokens": 3304,
+    "total_tokens": 9002,
+    "prompt_tokens_details": {
+      "cached_tokens": 384
+    },
+    "prompt_cache_hit_tokens": 384,
+    "prompt_cache_miss_tokens": 5314
+  },
+  "booked_cost_usd": 0.0056742,
+  "seconds": 18.89,
+  "finish_reason": "stop",
+  "output": {
+    "cards": [
+      {
+        "title": "Evaluate Offers by Profit Per Session",
+        "summary": "Test offers against Profit Per Session (net profit ÷ sessions) rather than AOV or revenue alone.",
+        "use_when": "Choosing between offer variants (discount depth, bundle size, free-gift structure) and you need a decision rule that protects margin.",
+        "steps": [
+          "Define Profit Per Session = Total Net Profit ÷ Total Sessions, and track it per offer variant, not just store-wide.",
+          "Recognise that conversion rate and AOV both feed this metric, and both are influenced by creative, traffic source and site as well as the offer — so isolate offer changes where you can.",
+          "Before testing a higher-AOV offer, model the expected conversion-rate drop: a forced pack (e.g. a 360-day supply) can raise AOV while dropping conversion enough that profit per visitor falls.",
+          "Run the offer test against a control that keeps creative constant if you want to attribute the result to the offer; test offers and creatives in parallel once you have a working baseline.",
+          "Judge the winner on net profit per session, not on revenue: a variant can post higher revenue and still lose money if profit targets weren't adjusted."
+        ],
+        "caveats": [
+          "The source warns that a merchant running a 'buy two get one free' offer scaled revenue but lost profit because profit targets weren't recalculated — revenue growth is not evidence of a winning offer.",
+          "There is no universal winning structure; the source explicitly rejects any 'magic formula' offer and says it must be tested per brand."
+        ],
+        "tags": [
+          "offers",
+          "measurement",
+          "conversion-optimization",
+          "experiment-design",
+          "bundles",
+          "aov",
+          "margin"
+        ]
+      },
+      {
+        "title": "Model Fixed Costs Across Bundle Tiers Before Discounting",
+        "summary": "Build a simple cost/shipping/margin spreadsheet per offer tier so bundle depth is funded by real operational savings.",
+        "use_when": "Designing multi-pack or bundle tiers and deciding how deep a discount the economics can support.",
+        "steps": [
+          "List per tier: unit cost, total shipping and fulfilment cost, pick/pack labour, processing fees, price and resulting margin.",
+          "Model shipping as a fixed cost per order rather than per unit — a lightweight item such as skincare that costs about $5 to ship is roughly $5 per unit at one unit but about $1.25 per unit at four units.",
+          "Let that per-unit compression plus savings in pick/pack labour and processing fees set your break-even, then size the bundle discount from the operational saving rather than from an arbitrary percentage.",
+          "Recompute break-even CPA and target ROAS for the new offer, since a deeper bundle changes both margin and cost structure.",
+          "Round costs up and understate revenue conservatively when modelling, so the offer isn't validated on optimistic inputs."
+        ],
+        "caveats": [
+          "The source stresses that this requires knowing real costs in and out and recommends involving an accountant for actual P&L; the spreadsheet exercise is a quick planning tool, not bookkeeping.",
+          "Results shown in the source (e.g. AOV moving from $93 to $135) are examples from other stores, not benchmarks for any given brand."
+        ],
+        "tags": [
+          "offers",
+          "bundles",
+          "margin",
+          "aov",
+          "measurement",
+          "shipping"
+        ]
+      },
+      {
+        "title": "Balance AOV Against Conversion Rate Instead of Chasing AOV",
+        "summary": "Treat AOV and conversion rate as a trade-off to be optimised jointly, not a one-directional push for bigger orders.",
+        "use_when": "Deciding whether to add larger packs, raise prices, or restrict selection to higher-ticket options.",
+        "steps": [
+          "Do not simply offer the most expensive option or assume the highest AOV variant wins — offering only a year's supply, for instance, can cut conversion because few buyers want that quantity.",
+          "Compare variants on profit per session: a lower-AOV offer with materially higher conversion can beat a higher-AOV offer that suppresses conversion.",
+          "Keep at least one low-friction entry option available if your audience isn't uniformly ready for bulk purchasing.",
+          "Where you add tiers, keep the entry tier's promise intact so the added tiers read as upgrades rather than as the only sensible choice.",
+          "Re-test the balance after changing traffic source or creative, because a different audience (e.g. buying for a family rather than for themselves) shifts both AOV and conversion."
+        ],
+        "caveats": [
+          "The source presents this as a general balancing act, not a formula with a target ratio; the correct point depends on your own margins and audience."
+        ],
+        "tags": [
+          "offers",
+          "aov",
+          "conversion-optimization",
+          "pricing",
+          "bundles",
+          "experiment-design"
+        ]
+      },
+      {
+        "title": "Use the Rule of Larger Numbers for Discount Framing",
+        "summary": "Display the discount as whichever is numerically larger — dollars saved or percentage off — to reduce hesitation.",
+        "use_when": "Writing discount badges, offer headlines and bundle callouts, and choosing between '$ off' and '% off' copy.",
+        "steps": [
+          "Calculate both representations for each offer: absolute dollars saved and percentage off.",
+          "Show whichever number is larger — the source's example: '$178 Saved' beats '10% Off', while '61% Off' beats '$40 Saved'.",
+          "Apply the same logic to bundle tier labels, so the saving displayed against each tier is the more impressive of the two numbers.",
+          "Keep the displayed figure honest and consistent with the actual saving at checkout.",
+          "Test both framings where the numbers are close, since 'larger number' is the source's default rule rather than a proven universal."
+        ],
+        "caveats": [
+          "This is attributed to the source as a behavioural framing tactic; it doesn't replace margin analysis — a larger-looking number can still be a deeper discount than you can afford.",
+          "No specific lift figures are given; treat it as a copy test hypothesis."
+        ],
+        "tags": [
+          "offers",
+          "pricing",
+          "creative-strategy",
+          "discounts",
+          "conversion-optimization",
+          "copywriting"
+        ]
+      },
+      {
+        "title": "Eliminate Buyer Mental Math in Offer Copy",
+        "summary": "Replace percentage-of-a-unit and multi-item maths with explicit, zero-calculation framings like 'Buy 2, Get 1 Free'.",
+        "use_when": "Writing bundle and discount copy that currently requires the shopper to compute a per-unit or fractional saving.",
+        "steps": [
+          "Identify any offer described as a fractional or multi-item percentage (e.g. '67% off the 3rd unit') — this forces the buyer to do arithmetic.",
+          "Rewrite as a concrete outcome, favouring 'Buy 2, Get 1 Free' over the percentage equivalent because 'free' is easier to grasp than a number.",
+          "Convert large totals into unit-of-use framing: cost per day, cost per kit, or cost per unit, so the total doesn't dominate the decision.",
+          "Show the saving explicitly against each tier so the buyer doesn't have to subtract prices themselves.",
+          "Keep the total number of offer mechanics a shopper has to parse small — simpler value propositions are stated by the source to perform better."
+        ],
+        "caveats": [
+          "The source treats this as a consistency heuristic drawn from observing offers, not a tested lift number.",
+          "Don't strip so much detail that the actual terms (what's included, per-tier price) become ambiguous."
+        ],
+        "tags": [
+          "offers",
+          "copywriting",
+          "conversion-optimization",
+          "bundles",
+          "pricing"
+        ]
+      },
+      {
+        "title": "Justify Quantity Tiers With Physical Use Cases",
+        "summary": "Anchor each bundle tier to a concrete real-world capacity or household need instead of arbitrary volume.",
+        "use_when": "Designing tiered bundle options and choosing how many packs to offer.",
+        "steps": [
+          "Assign each tier a physical reason to exist rather than a generic 'save more' label — e.g. one unit covers 700 sq ft, two covers 1,400 sq ft; or an individual supply versus a family multi-kit.",
+          "Use the customer's own context as the selector: room size for cleaning devices, number of kids for family supplements, household consumption rate for consumables.",
+          "Label tiers so the buyer self-selects ('for small living rooms' / 'for large living rooms') instead of doing price-per-unit maths.",
+          "Pair each tier with its saving figure using the larger-number framing.",
+          "Reiterate the upgrade reason near the tier selector, so a shopper with a higher need actually takes the bigger pack."
+        ],
+        "caveats": [
+          "The source gives these as observed examples from brands doing large daily volume; it doesn't claim a specific conversion lift.",
+          "Not every product has an intuitive capacity metric — forcing one can confuse rather than clarify."
+        ],
+        "tags": [
+          "offers",
+          "bundles",
+          "aov",
+          "product-page",
+          "positioning",
+          "conversion-optimization"
+        ]
+      },
+      {
+        "title": "Prefer 'Buy X Get Y Free' Over Equivalent Percentage Off",
+        "summary": "Frame multi-buy discounts as free units rather than percentage equivalents because 'free' reads more simply.",
+        "use_when": "Choosing between a stay-even percentage discount and a get-one-free structure for the same economics.",
+        "steps": [
+          "Work out the equivalent structures (e.g. a 60%-style saving versus 'buy two, get one free') and confirm they're economically comparable for your margins.",
+          "Default to the free-unit framing where the economics match, since the source reports buyers respond to 'free' more readily than to a percentage.",
+          "Keep the mechanic literal and unambiguous: state exactly how many units are bought and how many are added.",
+          "Display the per-kit or per-unit cost alongside so the buyer can see the effective price without calculating.",
+          "Test the alternative (percentage-off variant) when the numbers don't clearly favour one, as the source says the winner can only be determined by testing."
+        ],
+        "caveats": [
+          "This is the source's stated preference, not a guaranteed lift; it explicitly says there is no magic structure and results must be tested per brand.",
+          "Free-unit framings affect inventory cost directly — verify margin per order, not just headline appeal."
+        ],
+        "tags": [
+          "offers",
+          "bundles",
+          "discounts",
+          "copywriting",
+          "conversion-optimization",
+          "pricing"
+        ]
+      },
+      {
+        "title": "Strengthen Offers With the Four-Part Value Equation",
+        "summary": "Improve an offer beyond discount structure by raising perceived value across dream outcome, likelihood of achievement, time delay, and effort/sacrifice.",
+        "use_when": "An offer is already functional but you want more perceived value without discounting deeper.",
+        "steps": [
+          "Dream outcome: align the site and ad with the strongest desire the customer holds, not a bland feature claim — e.g. framing around feeling attractive again rather than simply 'look slimmer'.",
+          "Perceived likelihood of achievement: add proof that the outcome is achievable — UGC and unboxing videos, reviews, ingredient breakdowns, guarantees, and demonstration for the actual use case (e.g. parents asking 'will this work for my kid?').",
+          "Time delay: shorten the gap between purchase and benefit — faster shipping options, delivery deadlines (why Amazon pushes 'get it before Christmas'), and fewer intermediate steps.",
+          "Effort and sacrifice: reduce the work and risk required — try-before-you-buy, guarantees, and buy-now-pay-later options such as Shop Pay, Affirm or Afterpay; contrast a convenience product against the effort of diet and exercise.",
+          "Apply these across the whole funnel, from the ad to the landing page, so the claim and the on-site offer reinforce each other."
+        ],
+        "caveats": [
+          "The four-factor framing is attributed in the source to Hormozi's value equation; the source says it has reviewed many offers, which is an opinion claim, not measured evidence.",
+          "Guarantees and BNPL integrations carry real operational and financial cost — assess them against margin, not just conversion."
+        ],
+        "tags": [
+          "offers",
+          "positioning",
+          "offer-design",
+          "guarantees",
+          "proof",
+          "conversion-optimization"
+        ]
+      },
+      {
+        "title": "Match Offer Claims to Awareness Stage (Eugene Schwartz)",
+        "summary": "Vary the claim and dream outcome by the prospect's awareness stage so ad and page meet the buyer where they are.",
+        "use_when": "Aligning ad hooks with landing-page claims, or when one message is being used across cold and warm traffic.",
+        "steps": [
+          "Segment by awareness stage: problem-aware, solution-aware, product-aware.",
+          "For problem-aware buyers, lead with the problem in their terms — e.g. waking with dryness in the morning for a humidifier.",
+          "For solution-aware buyers, lead with the outcome category they're already considering — e.g. eliminating seasonal allergies.",
+          "For product-aware buyers, lead with comparative specifics — e.g. the easiest humidifier to clean.",
+          "Keep the claim consistent from ad to landing page so the buyer who clicked for one promise isn't handed a different one; congruence is the point of this tactic.",
+          "Ensure the on-page offer and claims match that stage's dream outcome, not just the discount mechanic."
+        ],
+        "caveats": [
+          "Awareness stages and the examples are the source's application of Schwartz's framework; they are illustrative, not validated benchmarks.",
+          "Requires knowing your audience's awareness level — the source places avatar and desire research in a separate module, not in offer construction."
+        ],
+        "tags": [
+          "offers",
+          "positioning",
+          "creative-strategy",
+          "landing-page",
+          "congruence",
+          "customer-research"
+        ]
+      },
+      {
+        "title": "Treat the Offer as Extending From Ad to Site",
+        "summary": "The offer is the total package — product, price, bonus, claims, guarantees and conditions — across every touchpoint, not just the on-site buy-X-get-Y.",
+        "use_when": "Auditing whether ad, landing page and checkout present one coherent value proposition.",
+        "steps": [
+          "Define the offer as everything the customer receives in total and the value they perceive at purchase, including product, price, bonuses, claims, guarantees and conditions.",
+          "Map the offer across touchpoints: ad hook, landing-page claims, product page, guarantee and risk reversal, and checkout/payment options.",
+          "Check that the same dream outcome and proof appear in the ad and on the page, so interest generated by the ad isn't lost at the buy decision.",
+          "Include non-discount components in the offer — free gifts, subscription incentives, proof assets — as alternatives to bundle discounting.",
+          "Test full-funnel variations where feasible, since a stronger ad-level offer can improve conversion even when the on-site mechanic is unchanged."
+        ],
+        "caveats": [
+          "The source's claim that a strong offer can take a store from unprofitable to profitable is anecdotal from other merchants; no verified unit-margin data is offered.",
+          "Ad copy construction and campaign deployment are outside this module's scope."
+        ],
+        "tags": [
+          "offers",
+          "positioning",
+          "congruence",
+          "landing-page",
+          "creative-strategy",
+          "offer-design"
+        ]
+      },
+      {
+        "title": "Use Free Gifts and Subscriptions Instead of Bundle Discounts",
+        "summary": "Some brands grow without bundle-and-save mechanics by optimising opt-ins, subscriptions, and free-gift offers.",
+        "use_when": "Your economics don't support deep bundle discounts, or your product is consumed on a replenishment cycle.",
+        "steps": [
+          "Assess whether your category suits replenishment; if so, weight the offer toward subscription opt-in rather than one-off bundle depth.",
+          "Structure a free-gift or gift-with-purchase offer as the value add instead of deeper unit discounts.",
+          "Where you do offer choice, keep it simple: one selection per category rather than a complex mix-and-match builder.",
+          "Track the value of the opt-in itself (retention and repeat purchase), since the payoff sits beyond the first order.",
+          "Compare this structure against a bundle-and-save variant on profit per session before committing."
+        ],
+        "caveats": [
+          "The source notes this brand's revenue level with less certainty than the bundle examples, so treat it as an observed alternative structure, not a superior one.",
+          "Subscription value depends on churn and LTV, which the source notes are tracked separately for consumables."
+        ],
+        "tags": [
+          "offers",
+          "retention",
+          "subscriptions",
+          "bundles",
+          "aov",
+          "free-gifts"
+        ]
+      }
+    ]
+  },
+  "raw_content": "{\"cards\":[{\"title\":\"Evaluate Offers by Profit Per Session\",\"summary\":\"Test offers against Profit Per Session (net profit ÷ sessions) rather than AOV or revenue alone.\",\"use_when\":\"Choosing between offer variants (discount depth, bundle size, free-gift structure) and you need a decision rule that protects margin.\",\"steps\":[\"Define Profit Per Session = Total Net Profit ÷ Total Sessions, and track it per offer variant, not just store-wide.\",\"Recognise that conversion rate and AOV both feed this metric, and both are influenced by creative, traffic source and site as well as the offer — so isolate offer changes where you can.\",\"Before testing a higher-AOV offer, model the expected conversion-rate drop: a forced pack (e.g. a 360-day supply) can raise AOV while dropping conversion enough that profit per visitor falls.\",\"Run the offer test against a control that keeps creative constant if you want to attribute the result to the offer; test offers and creatives in parallel once you have a working baseline.\",\"Judge the winner on net profit per session, not on revenue: a variant can post higher revenue and still lose money if profit targets weren't adjusted.\"],\"caveats\":[\"The source warns that a merchant running a 'buy two get one free' offer scaled revenue but lost profit because profit targets weren't recalculated — revenue growth is not evidence of a winning offer.\",\"There is no universal winning structure; the source explicitly rejects any 'magic formula' offer and says it must be tested per brand.\"],\"tags\":[\"offers\",\"measurement\",\"conversion-optimization\",\"experiment-design\",\"bundles\",\"aov\",\"margin\"]},{\"title\":\"Model Fixed Costs Across Bundle Tiers Before Discounting\",\"summary\":\"Build a simple cost/shipping/margin spreadsheet per offer tier so bundle depth is funded by real operational savings.\",\"use_when\":\"Designing multi-pack or bundle tiers and deciding how deep a discount the economics can support.\",\"steps\":[\"List per tier: unit cost, total shipping and fulfilment cost, pick/pack labour, processing fees, price and resulting margin.\",\"Model shipping as a fixed cost per order rather than per unit — a lightweight item such as skincare that costs about $5 to ship is roughly $5 per unit at one unit but about $1.25 per unit at four units.\",\"Let that per-unit compression plus savings in pick/pack labour and processing fees set your break-even, then size the bundle discount from the operational saving rather than from an arbitrary percentage.\",\"Recompute break-even CPA and target ROAS for the new offer, since a deeper bundle changes both margin and cost structure.\",\"Round costs up and understate revenue conservatively when modelling, so the offer isn't validated on optimistic inputs.\"],\"caveats\":[\"The source stresses that this requires knowing real costs in and out and recommends involving an accountant for actual P&L; the spreadsheet exercise is a quick planning tool, not bookkeeping.\",\"Results shown in the source (e.g. AOV moving from $93 to $135) are examples from other stores, not benchmarks for any given brand.\"],\"tags\":[\"offers\",\"bundles\",\"margin\",\"aov\",\"measurement\",\"shipping\"]},{\"title\":\"Balance AOV Against Conversion Rate Instead of Chasing AOV\",\"summary\":\"Treat AOV and conversion rate as a trade-off to be optimised jointly, not a one-directional push for bigger orders.\",\"use_when\":\"Deciding whether to add larger packs, raise prices, or restrict selection to higher-ticket options.\",\"steps\":[\"Do not simply offer the most expensive option or assume the highest AOV variant wins — offering only a year's supply, for instance, can cut conversion because few buyers want that quantity.\",\"Compare variants on profit per session: a lower-AOV offer with materially higher conversion can beat a higher-AOV offer that suppresses conversion.\",\"Keep at least one low-friction entry option available if your audience isn't uniformly ready for bulk purchasing.\",\"Where you add tiers, keep the entry tier's promise intact so the added tiers read as upgrades rather than as the only sensible choice.\",\"Re-test the balance after changing traffic source or creative, because a different audience (e.g. buying for a family rather than for themselves) shifts both AOV and conversion.\"],\"caveats\":[\"The source presents this as a general balancing act, not a formula with a target ratio; the correct point depends on your own margins and audience.\"],\"tags\":[\"offers\",\"aov\",\"conversion-optimization\",\"pricing\",\"bundles\",\"experiment-design\"]},{\"title\":\"Use the Rule of Larger Numbers for Discount Framing\",\"summary\":\"Display the discount as whichever is numerically larger — dollars saved or percentage off — to reduce hesitation.\",\"use_when\":\"Writing discount badges, offer headlines and bundle callouts, and choosing between '$ off' and '% off' copy.\",\"steps\":[\"Calculate both representations for each offer: absolute dollars saved and percentage off.\",\"Show whichever number is larger — the source's example: '$178 Saved' beats '10% Off', while '61% Off' beats '$40 Saved'.\",\"Apply the same logic to bundle tier labels, so the saving displayed against each tier is the more impressive of the two numbers.\",\"Keep the displayed figure honest and consistent with the actual saving at checkout.\",\"Test both framings where the numbers are close, since 'larger number' is the source's default rule rather than a proven universal.\"],\"caveats\":[\"This is attributed to the source as a behavioural framing tactic; it doesn't replace margin analysis — a larger-looking number can still be a deeper discount than you can afford.\",\"No specific lift figures are given; treat it as a copy test hypothesis.\"],\"tags\":[\"offers\",\"pricing\",\"creative-strategy\",\"discounts\",\"conversion-optimization\",\"copywriting\"]},{\"title\":\"Eliminate Buyer Mental Math in Offer Copy\",\"summary\":\"Replace percentage-of-a-unit and multi-item maths with explicit, zero-calculation framings like 'Buy 2, Get 1 Free'.\",\"use_when\":\"Writing bundle and discount copy that currently requires the shopper to compute a per-unit or fractional saving.\",\"steps\":[\"Identify any offer described as a fractional or multi-item percentage (e.g. '67% off the 3rd unit') — this forces the buyer to do arithmetic.\",\"Rewrite as a concrete outcome, favouring 'Buy 2, Get 1 Free' over the percentage equivalent because 'free' is easier to grasp than a number.\",\"Convert large totals into unit-of-use framing: cost per day, cost per kit, or cost per unit, so the total doesn't dominate the decision.\",\"Show the saving explicitly against each tier so the buyer doesn't have to subtract prices themselves.\",\"Keep the total number of offer mechanics a shopper has to parse small — simpler value propositions are stated by the source to perform better.\"],\"caveats\":[\"The source treats this as a consistency heuristic drawn from observing offers, not a tested lift number.\",\"Don't strip so much detail that the actual terms (what's included, per-tier price) become ambiguous.\"],\"tags\":[\"offers\",\"copywriting\",\"conversion-optimization\",\"bundles\",\"pricing\"]},{\"title\":\"Justify Quantity Tiers With Physical Use Cases\",\"summary\":\"Anchor each bundle tier to a concrete real-world capacity or household need instead of arbitrary volume.\",\"use_when\":\"Designing tiered bundle options and choosing how many packs to offer.\",\"steps\":[\"Assign each tier a physical reason to exist rather than a generic 'save more' label — e.g. one unit covers 700 sq ft, two covers 1,400 sq ft; or an individual supply versus a family multi-kit.\",\"Use the customer's own context as the selector: room size for cleaning devices, number of kids for family supplements, household consumption rate for consumables.\",\"Label tiers so the buyer self-selects ('for small living rooms' / 'for large living rooms') instead of doing price-per-unit maths.\",\"Pair each tier with its saving figure using the larger-number framing.\",\"Reiterate the upgrade reason near the tier selector, so a shopper with a higher need actually takes the bigger pack.\"],\"caveats\":[\"The source gives these as observed examples from brands doing large daily volume; it doesn't claim a specific conversion lift.\",\"Not every product has an intuitive capacity metric — forcing one can confuse rather than clarify.\"],\"tags\":[\"offers\",\"bundles\",\"aov\",\"product-page\",\"positioning\",\"conversion-optimization\"]},{\"title\":\"Prefer 'Buy X Get Y Free' Over Equivalent Percentage Off\",\"summary\":\"Frame multi-buy discounts as free units rather than percentage equivalents because 'free' reads more simply.\",\"use_when\":\"Choosing between a stay-even percentage discount and a get-one-free structure for the same economics.\",\"steps\":[\"Work out the equivalent structures (e.g. a 60%-style saving versus 'buy two, get one free') and confirm they're economically comparable for your margins.\",\"Default to the free-unit framing where the economics match, since the source reports buyers respond to 'free' more readily than to a percentage.\",\"Keep the mechanic literal and unambiguous: state exactly how many units are bought and how many are added.\",\"Display the per-kit or per-unit cost alongside so the buyer can see the effective price without calculating.\",\"Test the alternative (percentage-off variant) when the numbers don't clearly favour one, as the source says the winner can only be determined by testing.\"],\"caveats\":[\"This is the source's stated preference, not a guaranteed lift; it explicitly says there is no magic structure and results must be tested per brand.\",\"Free-unit framings affect inventory cost directly — verify margin per order, not just headline appeal.\"],\"tags\":[\"offers\",\"bundles\",\"discounts\",\"copywriting\",\"conversion-optimization\",\"pricing\"]},{\"title\":\"Strengthen Offers With the Four-Part Value Equation\",\"summary\":\"Improve an offer beyond discount structure by raising perceived value across dream outcome, likelihood of achievement, time delay, and effort/sacrifice.\",\"use_when\":\"An offer is already functional but you want more perceived value without discounting deeper.\",\"steps\":[\"Dream outcome: align the site and ad with the strongest desire the customer holds, not a bland feature claim — e.g. framing around feeling attractive again rather than simply 'look slimmer'.\",\"Perceived likelihood of achievement: add proof that the outcome is achievable — UGC and unboxing videos, reviews, ingredient breakdowns, guarantees, and demonstration for the actual use case (e.g. parents asking 'will this work for my kid?').\",\"Time delay: shorten the gap between purchase and benefit — faster shipping options, delivery deadlines (why Amazon pushes 'get it before Christmas'), and fewer intermediate steps.\",\"Effort and sacrifice: reduce the work and risk required — try-before-you-buy, guarantees, and buy-now-pay-later options such as Shop Pay, Affirm or Afterpay; contrast a convenience product against the effort of diet and exercise.\",\"Apply these across the whole funnel, from the ad to the landing page, so the claim and the on-site offer reinforce each other.\"],\"caveats\":[\"The four-factor framing is attributed in the source to Hormozi's value equation; the source says it has reviewed many offers, which is an opinion claim, not measured evidence.\",\"Guarantees and BNPL integrations carry real operational and financial cost — assess them against margin, not just conversion.\"],\"tags\":[\"offers\",\"positioning\",\"offer-design\",\"guarantees\",\"proof\",\"conversion-optimization\"]},{\"title\":\"Match Offer Claims to Awareness Stage (Eugene Schwartz)\",\"summary\":\"Vary the claim and dream outcome by the prospect's awareness stage so ad and page meet the buyer where they are.\",\"use_when\":\"Aligning ad hooks with landing-page claims, or when one message is being used across cold and warm traffic.\",\"steps\":[\"Segment by awareness stage: problem-aware, solution-aware, product-aware.\",\"For problem-aware buyers, lead with the problem in their terms — e.g. waking with dryness in the morning for a humidifier.\",\"For solution-aware buyers, lead with the outcome category they're already considering — e.g. eliminating seasonal allergies.\",\"For product-aware buyers, lead with comparative specifics — e.g. the easiest humidifier to clean.\",\"Keep the claim consistent from ad to landing page so the buyer who clicked for one promise isn't handed a different one; congruence is the point of this tactic.\",\"Ensure the on-page offer and claims match that stage's dream outcome, not just the discount mechanic.\"],\"caveats\":[\"Awareness stages and the examples are the source's application of Schwartz's framework; they are illustrative, not validated benchmarks.\",\"Requires knowing your audience's awareness level — the source places avatar and desire research in a separate module, not in offer construction.\"],\"tags\":[\"offers\",\"positioning\",\"creative-strategy\",\"landing-page\",\"congruence\",\"customer-research\"]},{\"title\":\"Treat the Offer as Extending From Ad to Site\",\"summary\":\"The offer is the total package — product, price, bonus, claims, guarantees and conditions — across every touchpoint, not just the on-site buy-X-get-Y.\",\"use_when\":\"Auditing whether ad, landing page and checkout present one coherent value proposition.\",\"steps\":[\"Define the offer as everything the customer receives in total and the value they perceive at purchase, including product, price, bonuses, claims, guarantees and conditions.\",\"Map the offer across touchpoints: ad hook, landing-page claims, product page, guarantee and risk reversal, and checkout/payment options.\",\"Check that the same dream outcome and proof appear in the ad and on the page, so interest generated by the ad isn't lost at the buy decision.\",\"Include non-discount components in the offer — free gifts, subscription incentives, proof assets — as alternatives to bundle discounting.\",\"Test full-funnel variations where feasible, since a stronger ad-level offer can improve conversion even when the on-site mechanic is unchanged.\"],\"caveats\":[\"The source's claim that a strong offer can take a store from unprofitable to profitable is anecdotal from other merchants; no verified unit-margin data is offered.\",\"Ad copy construction and campaign deployment are outside this module's scope.\"],\"tags\":[\"offers\",\"positioning\",\"congruence\",\"landing-page\",\"creative-strategy\",\"offer-design\"]},{\"title\":\"Use Free Gifts and Subscriptions Instead of Bundle Discounts\",\"summary\":\"Some brands grow without bundle-and-save mechanics by optimising opt-ins, subscriptions, and free-gift offers.\",\"use_when\":\"Your economics don't support deep bundle discounts, or your product is consumed on a replenishment cycle.\",\"steps\":[\"Assess whether your category suits replenishment; if so, weight the offer toward subscription opt-in rather than one-off bundle depth.\",\"Structure a free-gift or gift-with-purchase offer as the value add instead of deeper unit discounts.\",\"Where you do offer choice, keep it simple: one selection per category rather than a complex mix-and-match builder.\",\"Track the value of the opt-in itself (retention and repeat purchase), since the payoff sits beyond the first order.\",\"Compare this structure against a bundle-and-save variant on profit per session before committing.\"],\"caveats\":[\"The source notes this brand's revenue level with less certainty than the bundle examples, so treat it as an observed alternative structure, not a superior one.\",\"Subscription value depends on churn and LTV, which the source notes are tracked separately for consumables.\"],\"tags\":[\"offers\",\"retention\",\"subscriptions\",\"bundles\",\"aov\",\"free-gifts\"]}]}",
+  "input": {
+    "source_id": "18h-3pD4sPE0m-xONhbKOL0vxk96OA3su",
+    "source_sha256": "06d74015e48c956b23bd50e8079343c1f07d29567d91b1de8c2ddd413114318b",
+    "source_name": "How To Create Winning Offers In Ecom.docx",
+    "folder": "/03-OFF-offers",
+    "domain": "offers",
+    "section": 0,
+    "section_count": 1,
+    "text": "03-OFF / offers Goes here. Pre-purchase offer construction and testing mechanics. The balancing act between Average Order Value (AOV) and conversion rate, tracking Profit Per Session as the core validation metric, cognitive load reduction tactics (mental math elimination, presenting per-day and per-unit breakdowns), contextual quantity framing (tying bundle tiers to physical use cases like room size or family count), the \"rule of larger numbers\" for dollar-off versus percentage-off display, Buy X Get Y Free framing over percentage equivalents, and full-funnel offer congruence across awareness stages. Not here. • Ad copy construction, account structure, and campaign deployment -> 11-ADC • Avatar objection discovery, desire mining, and customer research -> 02-AVT • Formal landed cost calculations, bookkeeping, and P&L financial statements -> 06-MEA / 20-FIN • Landing page wireframing, layout hierarchy, and visual section design -> 07-LPG\n\nHeader.\n\nurl:\n\nrights: public_reference\n\nwhy: Enforces evaluating offers via Profit Per Session to prevent margin-destructive AOV chasing, while eliminating buyer mental math through contextual volume justification and the rule-of-larger-numbers discount framing.\n\nmodules: [OFF]\n\ntopics: [offer mechanics, bundles and AOV, discount depth and margin, guarantees and risk reversal, offer congruence]\n\ntier: 2\n\nscope_hint: growth\n\nTopics. offer mechanics / AOV vs. conversion rate balancing, Profit Per Session optimization, cognitive math elimination, shipping cost absorption across multi-packs; bundles and AOV / contextual tier justification (space/capacity/family sizing), Buy X Get Y Free vs. equivalent percentage off, tiered unit pricing; discount depth and margin / rule of larger numbers ($ off vs. % off framing), cost-per-day breakdown display; guarantees and risk reversal / try-before-you-buy, BNPL financing integrations, proof asset placement (unboxing, UGC, ingredient breakdowns); offer congruence / aligning ad hook desires with on-page claims across Eugene Schwartz awareness stages (problem-aware, solution-aware, product-aware).\n\nLook for.\n\nProfit Per Session Optimization: The primary evaluation metric for offer testing:$$\\text{Profit Per Session} = \\frac{\\text{Total Net Profit}}{\\text{Total Sessions}}$$Ensuring that an artificial increase in AOV (e.g., forcing a 360-day pack) does not depress conversion rate to the point where net profit per visitor declines.\n\nThe Rule of Larger Numbers: Formatting the discount using whichever integer is numerically larger to reduce hesitation (e.g., \"$178 Saved\" instead of \"10% Off\", versus \"61% Off\" instead of \"$40 Saved\").\n\nElimination of Mental Math: Replacing fractional or multi-item percentage math (e.g., \"67% off the 3rd unit\") with explicit, zero-friction framing (\"Buy 2, Get 1 Free\"), and breaking high total prices into \"cost per day\" or \"cost per kit.\"\n\nContextual Quantity Anchoring: Providing explicit physical utility for higher tiers rather than arbitrary volume stacks (e.g., Tier 1 = 700 sq ft, Tier 2 = 1,400 sq ft; or individual supply vs. family multi-kit).\n\nShipping & Handling Compression: Modeling fixed fulfillment costs across unit thresholds (e.g., shipping a lightweight skincare product costs $5.00 for 1 unit = $5.00/unit, but remains $5.00 for 4 units = $1.25/unit), utilizing the operational savings to fund the bundle discount depth.\n\nSkip. Motivational commentary on \"testing more creatives vs. testing offers\", unverified revenue claims lacking unit margin data (e.g., \"scaling to 100k days in Mexico\"), basic instructions to ask an AI or accountant to create a spreadsheet, and promotional pitches for private consulting communities (\"Evolve\") or courses.\n\nScope mix. 15% baseline (offer congruence, foundational margin and break-even checks), 85% growth (Profit Per Session testing, contextual tier justifications, behavioral discount framing). Volume. 20 to 30\n\nYou can send a million different people to your store, but if your offer isn't compelling, they won't ever buy your product. Most people will tell you just test more creatives, bro, and everything will work out. But that's not true. Offers matter as much as your creatives. I've seen stores double their average order. You can go from unprofitable to crushing it just by having great offers. Your ad gets the click, but your offer needs to close the sale. In this video, I'm going to walk you through the exact step-by-step process to create your first profitable offer, one capable of scaling you to those 100k days. All right, the first thing, what even is an offer in the first place? The long answer is just basically the package of what customer receives in total where the product, the price, the bonus, what they actually getting, how do you make it compelling enough for them to actually feel its perceived value is highest when they purchase basically total what they get, the value they get. That's an offer. Offers are absolutely critical. You pair it with good creatives. Now you're sending at 100K a day. Dude, for example, this dude about this AOV $93 to $135 by steing his customers, improving his offer, did 20K day, up 40%. Let's do the same thing as well. Did 100k day, test two offers, final bidding, one did 100k day in Mexico. All with just testing offers. Assuming even your creative don't change, you can still scale. Now you know what is an offer. How do you create an offer? Good question. So the more important thing for an offers is there's no one size fit all. So what you need to know is your numbers. Always underestimate the numbers and round up because you want to make sure that the end goal for creating a better offer is to make more profit. Right? If you don't know what profit in and out you're having, please find an accountant. I say this because I had a dude tell me, \"Oh, I I'm using this buy two free offer right now. It's crashing for us. It's helping us scale.\" Turns out he didn't adjust his profit targets and he actually lost more money although he still bigger revenue. Not good. So I want you to avoid that. So price making offer. Always use a profit calculator to figure out what your targets are for your robots in CPA. If you don't know how to do this, you can use Excel sheet or you can just go to Claude. Claude, here's my new offer. Here's my prices. Here's my cost, costs, shipping, everything. How much profit am I going to make? Simple enough. Like this table over here. shipping cost, shipping per unit, offer, all this one down here as well. What's my margins as well? Literally just screenshot this and put in the CL and ask him to ask you questions on how to create this. That's really it. Very basic maths we're going to go through. Obviously, so this case over here, if let's say I offer only one, two, or four options. And obviously my shipping cost is going to be for for something so light this like a skincare is going to be the same whether it's one, two, or four products. Which means that if I sold four products, my cost per unit is $1.25, 25 which is much cheaper than my one product at $5 which means you make more money. Very simple. You put it into perspective. You calculate that in in your Excel sheet or cloth whatever it may be. In that case you make more margin as you sell more products obviously and your break even rewards decreases. Right? In reality you're going to be saving on shipping pick pack labor cost processing fees etc with better offer. I show you this is super basic simple right because in theory if you just increase the AOV you'll usually net more margins. That's how offers are built. But that is not always the case because it's more of a balancing ad. You need to balance AOV and conversion rate. Figure it safely. If let's say you only offer one option, right? Two pack for 100, four pack for 190 and a pack for 360. You wouldn't just go what's the most expensive one 360 and sell that because obviously higher AV doesn't mean it's better. Maybe that's the only option you offer. The higher AV AOV results in a lower conversion rate because not everyone is going to buy a year's worth of supplements. Obviously, conversion rate drops. Overall, you make less profit per customer. Profit per session is the most important metric you need to track when you're tracking offers. How do you actually go about creating offers? Now that you have that in mind, there is no magic formula for offers. Some dudes will tell you my buy one free one, buy two, free two, buy three, free offer is the magic formula. It's not true. Unfortunately, just that creatives offer is something that you need to constantly test to find what is the magic formula for you. These four examples over here are brands that all do 100k a day. And they also have different offers. So there's no one size fits all. But let me just walk you through what type of offers there are and how to implement them. First obviously like we said increasing ego bundle and save offers. Same thing over here. Grants is interesting. How many kits do you have? Buy one, buy two, buy three. The more you buy obviously the more you save, right? Same thing. The more important thing when you want to actually encourage people to buy more to increase your AOV is actually giving them a reason of why they should buy COT. There's this GR there's this C pot straightforward. You buy one for 700 ft² you buy 2,400 ft² can be a vacuum cleaner as well. Small one for a small living room, bigger one for big living room, right? Get them a reason of why they should upgrade to it. Dollar amount off as well does well. uh this everyday dose for example this much off or or you see all these other offers where it says you buy more you get save this amount save this amount x percentage amount off every do thing percentage off as well which one should you use dollar off or percentage off whichever is the bigger number is what you should be using in this one care example how much is this 10% off doesn't sound as nice as $178 saved whereas for this case every day those do instead of saving you're saying save $40 you save 61% that cuz that's the bigger number. Next, buy X, get X free. If you buy a certain number of products, you get another one free. This brand, for example, buy one, save. When you buy two, instead of just saying save 60% people like free, you get buy two, get one free. Or you can buy X, get X percentage off, which same thing over here. How much is it per kit? Or same thing, save 67 or 70% off. So these in general are the types of offers that people can run. They are like more unique ones as well. gift card, gifting offers for example. But like the thing with offers is you need to keep it simple and not let the prospect do the mental math. The easier it is for them to understand the value proposition, the better it's going to do. Why does this say save dollar off here? Because you don't want the customer to actually do the maths of how much they're going to get. Why does this say 67% off and then the cut off here? People are not going to do the maths of like, oh, that's crazy amount. To make it even simpler, I see 67% off. That's great. But what if you just say get one free? That's more simple than thinking about the number in the head. Just get one free. Same thing for this one as well. It does the maths for you. How many kids do you have? It's how much it cost per kit. It's how much it cost per day is how much they saving. So this way they can very clearly see how much they save if if they buy more. And you give them a good reasoning of why they should buy more kits or or more space they need, for example. Cuz you always want to be increasing your AOV. But only these three examples are the ones where it actually has a bundle and save offer every day. Those still a brand that does I think I'm not sure how much they do. I'm pretty sure they do multi figures a year. There's no bundle offer to it. They optimize for the optins subscriptions. So instead of a bundle offer is actually a free gift offer and that's really it, right? It's not where you only choose one thing over here. You're going to combine multiple things. Over here in this category you choose one and over here in this category you choose one. That's really it. That's what a bundle and save offer is, right? If they buy more, they get better stuff and then you show them how much they're saving. All all offers are pretty much comprised of this. Same thing, right? It can be free gifts in this case. Can be saving more money, getting free same product. That's really the offer. There's no magic formula to it. Unfortunately, the more important thing is you know this already. You do the maths, put in CL, and see what you can come up with. How much can you push? Maybe it's a price increase or is it like a a buy two get two offer for a higher price. Then you measure from there. So what do you actually measure? Then the goal of doing this testing is you want to find a sweet spot for AOV and conversion rate. Like we discussed, I can't tell you which one is going to do the best until you test it. Same thing with creatives. Is a buy two free two at a higher price better than a buy two free one at a lower price? I I don't know for your brand. So you have to test it. So end of the day, the most important metric is profit per session. How do you calculate profit per session? Straightforward sessions and profit. then you can track it uh per offer as well. Profit peression is is made out of your conversion rate and AOV, right? If both conversion rate and AOV increase obviously you're going to make more profit. The thing with in the importance of both creative and offer is that conversion rate also is affected by creatives heavily. If you have a new wing and convert rate up, not just on the side AOV, same thing as well. If your creative targeted, you know, a dude purchasing for himself compared to someone purchasing for their family, your AOE is also going to change and it's also heavily affected by the site. Which is why it's not only one or the other. You need to test both at the same time. Winning offers and winning creatives. It's how you get a higher profit per session. All right, you know the basis of it already. There's still other ways for you to actually improve your offer beyond just testing. Buy two free one, 30% off, 40% off, whatever it may be. Here is the value equation by homozy because I've read $100 million offers. He says that value equation the offer is made out of four things. What the customer wants to achieve their goal, the dream outcome, the perceived likelihood of achievement, how likely the customer thinks they can achieve the goal, time delay, the time between now to their dream outcome, and effort and sacrifice. How much work they need to put in. If you can improve four of these things, your offer becomes better as well. Cuz offer is not just what is on the site that buys you free one. It's not just that brain list, right? Here's where the plot list comes in. The offer is not just on the actual page itself. Offer is also in the app. Why do I mean? Let's let's talk about it. Dream outcome for example. Dream outcome same thing like desires, right? Desire to be wanted again. Your husband calling you how on how that makes you look hot and sexy in your ad. What if instead of just saying look slimmer, you just said oh finally husb will will think you're hot and sexy again. It's a much stronger desire and if that becomes your winning ad your conversion rate increases your conversion increases or make more profit on the same thing on the site as well on a website instead of just saying um look slim the offer on the side the whole landing page is just tailored towards you know looking hot and sexy again that's the offer that's the value proposition to your customer right if you remember we scroll up an offer is not just buy what's on the site what they get in total type product right what type of claims they get the guarantees the conditions That is an offer as well. Okay. The better you target the desire on the site on the actual offer itself, your claims on the ad, the better people are going to convert. Same thing desire to be perceive as motherly. A mother getting a mini event because it will show the other moms she was a better mother rather than just saying you can fit more kids in the event. Now just say be a better mother. The offers cannot do better. And it's headed towards your stage of awareness as well. Eugene Schwartz. I have a lot of videos covering this as well if you guys don't know what it is. So the claims you make and the offers you make on the ads and the and the websites are different right if let's say you're saying air humidifier problem aware is you know having dry during the morning that's your claim solution aware is want to eliminate seasonal allergies the product aware is just easiest humidifier to clean this is your your claims at different stages of awareness and this is going to be your dream outcome as well right the claims you offer perceived likelihood of achievement talks about this if you had a chance to pay a plastic session of someone with no experience. Obviously, you're going to pay more just to get, you know, a more experienced person to do it. Same thing in e-com, let's say Grants page example, right? Why why in their product page do you think they sell um supplements? By the way, these are Grunts kits. They sell supplements for kids. Why in their product page do they have so many, you know, all these UDC videos to to compare, right? Cuz what what parents going to think of? Is this going to work for my kid? Here are the ingredients, the nutrient gaps, the benefits. Is it work for other families? Oh, look at all these kids families it works for, right? These type of things on your page besides just the buy two free actually affects your offer, increases your AOV, increases your conversion rate. Reviews you see guarantees unboxing videos show people that they actually can achieve the same thing as what you show. Time delay. Time delay obviously is the time between people actually getting and getting the benefit. If you could give someone like next day shipping compared to your competitors, they're going to buy from you. It's more compelling. Value proposition is stronger. Which is why eventually you can't keep relying on shipping from China. Two week delivery is no. You got to make sure you optimize this conversion rate is going to shoot up. Make more profit. Ease of use. Same thing as well. People can't figure out your product. They're not going to post about it. They're not going to give you any reviews. Bad reviews. People don't want to buy. Same thing for supplement brands as well. They they track their churn right in the LTV. Shipping time can be the biggest factor in churn rate. If they have a bad experience, they don't get a product fast. They're going to not want to stick with the brand anymore. Which is why the value proposition very simple, right? Time delayed. Amazon, why do they offer next day delivery? Get it before Christmas. Why introduce deadlines to it? Why does everything increase, right? Add urgency. It's just people want to get it before get it as soon as possible. Very straightforward as well. Last part is effort and sacrifice. The less effort it takes for them to achieve the outcome, the stronger people are wanting to buy. If you have to restructure diet, wake up early, exercise, or you can take OMIC. It's priced a lot more expensive, but man, it's effortless. People are going to buy that. It increases effort and sacrifice, which increases the value of the offer. Same thing with ecom as well. If you introduce try before you buy, buy now pay later and guarantees. There's less risk for the customer. Also, why cler is a big thing. Amazon offers, you know, payment plans, shop pay, affirm, after pay, all play a factor as well. With all these four factors, if you improve on all of these, you introduce more value to your customers, which improves the offer. Your AOV is going to shoot up and your conversion is going to shoot up as well. The beauty of it is offer like I said runs from ad to the landing page. In your ad, if you have a stronger desire, tell people and showing them, you know, really people who actually the same thing for them, telling them they can get it tomorrow, fast shipping, whatever it may be, and that they can try it risk-f free. Even from the ad level, you increase the offer already. You made the offer better. When you go on the site, they're more ready to purchase. And they see the same thing on your sites as well. They're going to be ready to purchase as well. So that is the basics of creating an offer. First doing the maths, quick maths, going through this and figuring out, okay, how to increase my conversion rate and AOV, higher price, more bundles, test it out. There's no magic formula, like I said. Okay, some examples that do really well already. then increasing the the overall value, making the offer stronger from the ad to the landing page side by improving these four things. That's really what an offer comes down to. You have a winning creative, it works for you, but you don't know maybe it's going to make a better one. Keep testing, keep testing. Same thing with offers as well. So, that is the value equation summed up. You now know exactly how you create irresistible offers to scale to 100K per day and how to apply it to your store. If you want more guidance or coaching in ecom, we do run an elite consulting community called Evolve. We have over 600 active members inside. They do anywhere from 100k a month all the way to 10 million plus per month. If you want the full playbook, how to create winning offers, winning creatives. We've got like 200 plus modules inside training inside our community. We update these a few times a month as well with latest strategies that we use ourselves. So, we're in there daily answering questions, breaking down what's working right now, helping members troubleshoot whatever is holding them back. If that's something you benefit from, the link is down below. And once again, remember to take action.",
+    "prior_notes": [],
+    "id": "76a1d27917862db4a26be95f"
+  },
+  "system_prompt_sha256": "458942624a5ba73364ec3f25288651f604b915c91776cbe18915311c9c3637ed"
+}

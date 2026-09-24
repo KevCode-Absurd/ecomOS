@@ -1,0 +1,467 @@
+{
+  "cards": [
+    {
+      "title": "DNS Rebinding: How an Attacker Turns a Visitor's Browser into a Proxy for Your Local Services",
+      "summary": "Explains the DNS rebinding mechanism so operators can recognize which local services and device integrations on their own network are exposed to browser-originated requests.",
+      "use_when": "Auditing store hardware, local sync utilities, label printers, or any locally-hosted admin service that your ecommerce staff run on machines also used for web browsing.",
+      "steps": [
+        "Understand the pattern as a sequence: an attacker page loads from a domain the attacker controls and resolves to the attacker's own server; then the attacker changes the DNS record for that same domain to point at a loopback or LAN address; the page's JavaScript then issues a request to that same attacker hostname, the browser re-resolves, and the request lands on a machine on the visitor's own network.",
+        "The browser treats the request as same-origin because the scheme, hostname and port in the URL did not change, even though the IP the request actually reached changed completely. Same-origin policy is defined on hostname, not on IP address, so a DNS flip is invisible to it.",
+        "Recognize why local services are the high-value target: they typically assume that anyone who can reach them is on the same trusted network, so they often lack authentication entirely. A printer, a smart plug, or a locally running helper daemon may accept commands from anything that can open a connection.",
+        "In real attacks the visitor does not click a button; the page retries the request on a timer (the source describes roughly every ten seconds) to outlast DNS caching. Keep-alive is countered by requesting connection close so the browser must re-resolve and open a new socket.",
+        "Take the practical lesson for store operations: any web-connected device or local utility that accepts unauthenticated commands is in scope, and you cannot rely on the network boundary alone because the browser sits on the trusted side."
+      ],
+      "caveats": [
+        "Attacker-side operational detail is included only to explain the vulnerability class; the defensive conclusion is that unauthenticated local services are unsafe regardless of network placement.",
+        "Browser DNS caching behavior, keep-alive defaults and resolver caching policies vary and change over time; verify current behavior rather than assuming the source's described timings."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "network-security",
+        "dns-rebinding",
+        "iot",
+        "local-server",
+        "threat-modeling",
+        "same-origin-policy"
+      ],
+      "id": "beb76ff27355a79d059df754",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 25
+    },
+    {
+      "title": "Host Header Validation: The Standard Server-Side Defense Against DNS Rebinding",
+      "summary": "A local or device server should reject any request whose Host header is not its own expected hostname, enforced in middleware that runs before every route handler.",
+      "use_when": "Hardening any locally running service, device API, or integration helper that your store operates and that is reachable from a browser on the same machine or network.",
+      "steps": [
+        "Read the Host header on every inbound request. The Host header states which site the request is intended for, and it is the one part of the request that reflects what the browser believes it is talking to rather than the URL path.",
+        "Compare it against the exact hostname (and port, if applicable) that the service expects, such as the loopback name plus its listening port. A request carrying an external attacker hostname is the signature of a rebinding attempt.",
+        "Reject mismatches before routing: throw an error, return a 4xx, or destroy the socket without producing a body, so the browser gets no useful response.",
+        "Implement the check once as middleware that runs before all handlers, rather than duplicating it into each handler, so new endpoints are covered automatically and a future handler cannot forget it.",
+        "Validate by reproducing the attack on systems you own: point a test DNS entry at the local address, issue the request, and confirm the server refuses it while normal loopback traffic still succeeds."
+      ],
+      "caveats": [
+        "Do not confuse the Host header with the Origin header. The source describes a real case where a check was placed on the Origin path and merely suppressed a CORS response header instead of closing the connection; the service stayed vulnerable for months because the connection was still processed.",
+        "Sending a deny response rather than terminating the connection may still let some handlers act; the source's later, correct fix was to close the socket immediately on Host mismatch."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "dns-rebinding",
+        "host-header",
+        "local-server",
+        "input-validation",
+        "defensive-coding"
+      ],
+      "id": "607192d0a0b8a60dec0fa2bc",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 25
+    },
+    {
+      "title": "Host vs Origin Headers: Keeping the Two Checks Straight in Store Integrations",
+      "summary": "Origin identifies the page that initiated a request while Host identifies the destination the browser thinks it is reaching, and conflating them leaves rebinding defenses ineffective.",
+      "use_when": "Reviewing the request-validation code of an ecommerce integration, local print/sync agent, or any service that exposes an HTTP API to browsers.",
+      "steps": [
+        "Treat the Origin header as the identity of the initiating page: it answers 'which site is making this request'. It is the basis for CORS allow-list decisions.",
+        "Treat the Host header as the destination identity: it answers 'which server is this request addressed to'. It is the basis for DNS rebinding detection.",
+        "When defending against rebinding, the control must act on Host. If Host does not match the expected local hostname, the connection should be terminated — not merely added to an allow/deny origin calculation, because a failed origin check may only omit a response header while the request still executes.",
+        "When relaxing CORS for a legitimate first-party front end, be deliberate about which origins you allow, and recognize that CORS response headers do not stop a rebinding request that never needed CORS in the first place (it looked same-origin).",
+        "Write the check at the very top of the request lifecycle so no later handler can run on a mismatched Host."
+      ],
+      "caveats": [
+        "This distinction was the exact source of a bug in a real project the source cites, where an adequate-looking fix failed in testing and shipped broken; test the negative case, not just the happy path."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "dns-rebinding",
+        "host-header",
+        "origin-header",
+        "cors",
+        "input-validation"
+      ],
+      "id": "253ee935eb076a75d2d2e50a",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 25
+    },
+    {
+      "title": "Reduce the Local-Server Attack Surface Before Adding Detection",
+      "summary": "Every avoidable local HTTP server is an unauthenticated API on the customer's or employee's machine, so the first control is architectural elimination.",
+      "use_when": "Designing or reviewing desktop companion apps, in-store device software, POS helpers, or any product that spins up a listener on the operator's machine.",
+      "steps": [
+        "Ask whether a local server is needed at all, and be willing to argue hard against shipping one. The source's recommendation is to avoid it if possible because the class of mistake is common and easy to get wrong.",
+        "If one is required, bind the listener to the loopback address rather than all interfaces, so connections from other machines on the network are refused at the socket level.",
+        "Recognize that OS firewalls that prompt for inbound connections do not protect against rebinding, because the browser making the request runs on the same host and the traffic never crosses the interface being filtered.",
+        "Inventory every local service your software starts, including ones that feel incidental, and document the commands each accepts and whether they are authenticated.",
+        "Prefer authenticated, token-gated access over network-position trust for any local service that can change data or execute code."
+      ],
+      "caveats": [
+        "Loopback binding and OS firewalls reduce but do not eliminate risk; the source is explicit that these defenses do nothing against a browser acting as a proxy on the same machine.",
+        "Some legitimate functionality depends on a local server — the source describes a torrent client serving media to a local browser player — so removal is a trade-off, not a blanket rule."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "local-server",
+        "attack-surface",
+        "pos",
+        "iot",
+        "defensive-architecture"
+      ],
+      "id": "ab7590c804a160420cc810d6",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 25
+    },
+    {
+      "title": "Rebinding Against Remote HTTPS Sites Is Largely Blunted by TLS and Cookies",
+      "summary": "A DNS flip toward a public site fails at the TLS certificate check and carries the wrong cookies, so rebinding's real power is confined to services that trust network position.",
+      "use_when": "Prioritizing which of your assets need rebinding protection: ranking local unauthenticated services above public HTTPS storefront endpoints.",
+      "steps": [
+        "Walk through the outcome when the flipped record points at a public HTTPS destination: the browser still believes it is talking to the attacker hostname, so the certificate presented for the real site's domain does not match and the connection is blocked.",
+        "Even on plain HTTP targets, cookies are keyed to hostname: the browser attaches the attacker hostname's cookies, not the target's, so the request arrives unauthenticated and cannot act as the logged-in user.",
+        "Conclude that the attacker gains little against a remote site, since they could have sent the same request themselves unless they can obtain the victim's ambient credentials.",
+        "Apply this reasoning in triage: prioritize services that assume 'anyone who can reach me is trusted' — local daemons, network devices, admin panels bound to a LAN address — rather than those requiring authenticated sessions over TLS."
+      ],
+      "caveats": [
+        "The source frames this as why the remote-site case is 'not a big deal' relative to the local case; it is a limitation of the attack, not a reason to skip TLS or cookie hygiene.",
+        "This reasoning assumes current browser certificate-validation and cookie-scoping behavior; verify current browser behavior for your own test cases."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "dns-rebinding",
+        "tls",
+        "cookies",
+        "risk-prioritization",
+        "threat-modeling"
+      ],
+      "id": "caf8a153db5fe3aa3126f1f9",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 25
+    },
+    {
+      "title": "Resolver-Level Mitigation: Refusing DNS Answers That Point to Loopback or Private Ranges",
+      "summary": "A DNS resolver under your control can refuse answers that resolve to loopback or RFC1918 addresses, which neutralizes rebinding for everything behind it.",
+      "use_when": "Configuring network policy for a store's office, warehouse or back-of-house networks where unpatched devices live alongside browsing machines.",
+      "steps": [
+        "Identify the resolver your network clients actually use — the endpoint on each machine, the router, or the ISP resolver — because that is where the filter must be applied.",
+        "Filter returned A/AAAA answers that point to loopback addresses, which map to services on the requesting device itself.",
+        "Also filter private ranges. The source notes that it is not enough to block only loopback, because private address blocks used by local devices can be iterated just as easily; cover all of the private ranges your network uses.",
+        "Recognize this as a network-wide control appropriate where you cannot patch or audit every device, which the source describes as the motivation enterprises have for it.",
+        "Validate on an owned test network by resolving a hostname you control to a loopback value and confirming the resolver drops or rejects the answer."
+      ],
+      "caveats": [
+        "This is a resolver-side control; it does not fix a service that lacks Host validation, and it does not help traffic resolved by an external or client-side resolver you do not govern.",
+        "It is not a substitute for the server-side Host check, which remains the control that travels with the software."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "dns",
+        "network-policy",
+        "dns-rebinding",
+        "iot",
+        "defensive-architecture"
+      ],
+      "id": "14b6536a8fe742d481dec7a2",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 25
+    },
+    {
+      "title": "Caching and Keep-Alive Timing Determine Whether Rebinding Succeeds at All",
+      "summary": "The attack depends on the victim's DNS cache expiring and the browser opening a fresh connection, which is why it is unreliable and repeated on a timer.",
+      "use_when": "Assessing residual risk from rebinding for a device or integration and deciding how confidently to claim a fix works.",
+      "steps": [
+        "Note that the request must land after the attacker's DNS record has propagated and after the browser's cached answer has expired. The source describes attackers setting very short TTLs and retrying periodically so they eventually hit the right window.",
+        "Account for intermediary caches: recursive resolvers and ISP resolvers may impose a minimum cache time longer than the record requests, which can delay the attack considerably or defeat it in some networks.",
+        "Account for connection reuse: if the browser keeps a TCP connection alive, no new DNS lookup occurs and the flipped record never takes effect. Blocking or refusing keep-alive forces re-resolution.",
+        "Use this variability when validating a control: a single successful or failed test is not conclusive. Repeat the test across a time span that exceeds your resolver's cache behavior.",
+        "Do not treat the attack's unreliability as a defense — a patient attacker with a retry loop waits out the cache."
+      ],
+      "caveats": [
+        "Concrete cache durations, minimum-TTL policies and keep-alive defaults vary by browser, resolver and platform, and are subject to change; treat the source's second-to-minute timescales as illustrative."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "dns-rebinding",
+        "dns",
+        "caching",
+        "keep-alive",
+        "test-design"
+      ],
+      "id": "c6ab9bef15567d28f920dff1",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 25
+    },
+    {
+      "title": "Real DNS Rebinding Incidents Show the Blast Radius: Update Agents and Background Daemons",
+      "summary": "Documented rebinding cases involved update agents and peer-to-peer client services that accepted unauthenticated commands, illustrating why any local listener is a liability.",
+      "use_when": "Assessing your own desktop software, updater, or background service for the same class of flaw before shipping or renewing a security review.",
+      "steps": [
+        "Look for local HTTP servers started by updaters and companion apps. The source describes a game update agent that ran a local server accepting commands to download and execute binaries, which meant any website the user browsed could trigger execution.",
+        "Look for split-process architectures where a UI process talks to a background worker over HTTP on a local port. The source cites a torrent client whose worker accepted executions from anything that could connect, not just its own UI.",
+        "For each such service, enumerate every endpoint that changes state or executes anything, and ask whether it authenticates the caller rather than trusting the connection's apparent origin.",
+        "Apply the Host check you would apply to any local server, and additionally add authentication for anything privileged so a rebinding attempt cannot succeed merely by guessing the port.",
+        "When you fix such an issue, test the actual negative case end to end; the source recounts a fix that looked correct in testing and left the service exposed for about six months until someone re-found it."
+      ],
+      "caveats": [
+        "These are cited real-world cases, not guarantees about any specific vendor's current software; verify the present state of any tool before relying on it.",
+        "Do not assume a local service is safe because its port is obscure; the source notes port ranges are enumerable by a page left open long enough."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "dns-rebinding",
+        "local-server",
+        "updater",
+        "vulnerability-management",
+        "desktop-software"
+      ],
+      "id": "cfc30f6f66f17d185bf4668a",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 25
+    },
+    {
+      "title": "Mirai as an Ecommerce-IoT Cautionary Case: Default Credentials and Internet-Facing Device Ports",
+      "summary": "A large-scale botnet built from consumer IoT devices exploited devices that listened on the open internet and shipped with default passwords, not a clever rebinding trick.",
+      "use_when": "Procuring any internet-connected device for a store — cameras, signage players, smart plugs, routers, thermostats — or drafting requirements for connected-device purchases.",
+      "steps": [
+        "Treat default credentials as a procurement-blocking defect. The source highlights devices shipping with administrative passwords set to trivially guessable defaults and attackers trying them directly.",
+        "Treat an internet-reachable management port as a design defect. Many devices listened on all interfaces with no firewall, so attackers connected directly without needing rebinding at all.",
+        "Recognize why updates lag: consumer price pressure means little security scrutiny at purchase and infrequent firmware updates after shipment, so assume the device's security posture is frozen.",
+        "In a store deployment, put management interfaces behind a separate network segment with no inbound path from the public internet, and change credentials before the device carries any real traffic.",
+        "Include 'no default credentials, updatable firmware, no unnecessary listening services' in purchase criteria rather than evaluating only price and features."
+      ],
+      "caveats": [
+        "The source recounts the botnet's origin story and its targeting-avoidance choices as background color, not as technical guidance; the transferable lesson is the device-side hygiene, not the operational history.",
+        "The source's remark that the 'S' in IoT stands for security is a presenter's joke about market incentives, not an evaluated claim."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "iot",
+        "default-credentials",
+        "network-segmentation",
+        "procurement",
+        "botnet"
+      ],
+      "id": "10ca40764a04813e3ee1abb7",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 25
+    },
+    {
+      "title": "Bound Session Reuse of Local Admin Tools in Store Operations",
+      "summary": "Web-connected devices and local admin utilities should never be reachable from a browsing session that also touches external sites.",
+      "use_when": "Setting up in-store workstations, POS terminals, or back-office machines that use both web admin panels and general web browsing.",
+      "steps": [
+        "Separate browsing from device administration. Put device and appliance management interfaces on a dedicated machine or dedicated browser profile that is not used to visit arbitrary external sites.",
+        "Where a single machine must do both, restrict outbound browsing for that machine so an attacker page cannot be reached in the same session as the admin interface.",
+        "Audit which locally running services accept requests without authentication, since those are the ones a rebinding page can reach regardless of the network path.",
+        "Treat any admin panel on a store workstation as exposed to every website the operator visits, not merely to the local network.",
+        "Log and review access to device management endpoints so unexpected requests from a browser session stand out."
+      ],
+      "caveats": [
+        "This is a source-derived operational practice built on the source's rebinding explanation; it is not a demonstrated case study from the source."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "pos",
+        "browser-security",
+        "network-segmentation",
+        "device-management",
+        "operational-hygiene"
+      ],
+      "id": "c3761e03321cd490dfc6b127",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 25
+    },
+    {
+      "title": "Browser Engine Bugs Let Merely Visiting a Page Compromise the Machine",
+      "summary": "JavaScript engine flaws have allowed a plain web page to read and write arbitrary process memory, which is why a store workstation's browsing habits are a security control.",
+      "use_when": "Deciding how much general web browsing to permit on machines that handle customer data or payment-adjacent operations.",
+      "steps": [
+        "Understand the mechanism at a high level: a language-level property, implemented as a getter, can report a buffer length far larger than the memory actually allocated when native code reads that property, producing an out-of-bounds read and write primitive.",
+        "Recognize that this class of flaw is exploited from ordinary untrusted pages, so no plugin, download or user consent is needed — the visit itself is the trigger.",
+        "Apply it operationally: browsers are large, network-facing codebases frequently written in memory-unsafe languages and continuously gaining features, so assume defects exist and reduce time spent browsing untrusted sites on sensitive machines.",
+        "Prefer keeping browsers updated promptly, since many such flaws are fixed by vendor patches, and treat patch currency as a control rather than a formality.",
+        "Where possible, constrain which sites a store operations browser can reach, since only permitting known destinations removes most of the exposure."
+      ],
+      "caveats": [
+        "This is presented as a historical demonstration, not a claim about any current browser version; do not cite it as a present-day vulnerability.",
+        "The source frames such exploits as having become less common after browser architecture improvements, not eliminated."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "browser-security",
+        "memory-safety",
+        "malware",
+        "workstation-hardening",
+        "patching"
+      ],
+      "id": "c7cb2f7d9bcdf6b60e818b12",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 25
+    },
+    {
+      "title": "Assume Breach at the Browser Layer and Design Store Systems for Containment",
+      "summary": "Because a browser compromise can read memory and issue commands, design store systems so a single compromised workstation or session cannot reach the whole operation.",
+      "use_when": "Architecting access for ecommerce back office, order management and payment tooling where staff use web browsers all day.",
+      "steps": [
+        "Assume that a machine used for browsing untrusted sites may be fully compromised, and design downstream access accordingly rather than relying on endpoint trust.",
+        "Require re-authentication or a second factor for high-impact actions such as exporting customer records, changing payout or bank details, or bulk-editing prices, so stolen session material alone is insufficient.",
+        "Scope administrative permissions per person and per role, so a compromised session holds only the privileges that operator actually needs.",
+        "Keep high-privilege admin surfaces on separate accounts and separate browser profiles or machines from day-to-day browsing.",
+        "Log privileged actions with actor and source information so anomalous activity from a normally low-traffic workstation can be detected."
+      ],
+      "caveats": [
+        "This is a defensive inference drawn from the source's browser-attack material rather than a procedure the source itself prescribes; treat it as risk reduction, not a guarantee.",
+        "Additional factors and least privilege do not stop a compromise of a privileged session that has itself been authenticated."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "least-privilege",
+        "browser-security",
+        "access-control",
+        "logging",
+        "back-office"
+      ],
+      "id": "eac31cbbcd3c1f4043c66b00",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 25
+    },
+    {
+      "title": "Run a Bounded Rebinding Test Against Your Own Local Service",
+      "summary": "A controlled test confirms whether a local store service rejects hostname mismatches, and it must check the negative case with the socket, not just the response headers.",
+      "use_when": "Validating a fix to an updater, device API, or local companion service before shipping it or closing out a security finding.",
+      "steps": [
+        "Stand up the service on a machine you own, and craft a request whose Host header names an external hostname rather than the service's own hostname, simulating what a browser would send after a DNS flip.",
+        "Observe whether the service refuses the request. Confirm that the connection is terminated and no handler executes; a response that merely omits a CORS header is not a pass.",
+        "Confirm the legitimate path still works: a request carrying the expected local hostname must be processed normally, so the control is not simply breaking functionality.",
+        "Repeat the test with the request issued from a page that could plausibly originate it, so you exercise the same code path a browser would.",
+        "Re-run the test after later refactors, since the source's own example shows a fix that appeared correct in testing yet remained exploitable for months."
+      ],
+      "caveats": [
+        "Perform this only against systems you own or are explicitly authorized to test; the underlying technique is offensive and must not be pointed at third-party services.",
+        "Do not generalize a pass from one endpoint to the whole service; unlisted endpoints may bypass middleware that was added later."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "dns-rebinding",
+        "test-design",
+        "host-header",
+        "validation",
+        "local-server"
+      ],
+      "id": "31b04866d31bc397d9a7cd64",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 25
+    },
+    {
+      "title": "Enforce the Host Check at the Very Top of the Request Pipeline",
+      "summary": "Placing a security check inside a later, conditional function lets requests slip past it; the source's bug was fixed only by moving the check to the first code that runs.",
+      "use_when": "Implementing or reviewing request-validation middleware for any store service, integration endpoint or local device API.",
+      "steps": [
+        "Identify the earliest point in the request lifecycle that runs for every request, and place the reject-on-mismatch logic there.",
+        "Reject by destroying the socket or returning an error immediately, so no downstream handler and no response body processing occurs.",
+        "Avoid nesting security checks inside helpers whose failure path has a different meaning — for example, an allow-list helper whose false return only suppresses a response header rather than denying the request.",
+        "Write a test that asserts the specific negative outcome you intend (connection closed, no side effect), not merely that some response was returned.",
+        "Review each new endpoint against the single top-level guard, rather than waiting for each handler author to add their own."
+      ],
+      "caveats": [
+        "Middleware ordering assumptions can change as frameworks are upgraded; verify the guard still executes first after dependency updates.",
+        "A correct guard still requires the service to be bound and exposed appropriately; it is one layer, not the entire defense."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "defensive-coding",
+        "middleware",
+        "host-header",
+        "dns-rebinding",
+        "code-review"
+      ],
+      "id": "1a615ebaa111bd7ba7a6184a",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 25
+    },
+    {
+      "title": "Decide How Much Local-Server Functionality Your Product Actually Needs",
+      "summary": "Legitimate use cases for a local server do exist, but each one must be weighed against a class of vulnerability that developers routinely get wrong.",
+      "use_when": "Prioritizing which local-service features to keep, redesign, or retire in store software and companion apps.",
+      "steps": [
+        "List the concrete user-facing capabilities that require a local listener, such as serving media to a browser player or letting the UI control a background worker.",
+        "For each, ask whether the same capability can be delivered without a listener — an OS-level integration, an in-process call, or a server-side flow — before accepting the risk.",
+        "Where the listener is necessary, constrain what it accepts to the narrowest command set possible, and add authentication on top of the Host check rather than relying on either alone.",
+        "Make the hostname the service expects an explicit configuration value so the guard can compare against a known expected value rather than a hardcoded assumption that may drift.",
+        "Record in your documentation that the local listener exists and why, so future teams do not silently expand its capabilities."
+      ],
+      "caveats": [
+        "The source's stance is that local servers are risky and should be avoided where possible; it also acknowledges legitimate uses, so treat this as a weighted trade-off rather than a blanket prohibition."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "local-server",
+        "product-design",
+        "attack-surface",
+        "host-header",
+        "risk-tradeoff"
+      ],
+      "id": "2bb630f6df7d95bbdc98475b",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 25
+    }
+  ],
+  "request_id": "465cdd4b2c50d29b2e5cef9676b25968dfeedbe3ea173564162b8173872069b3",
+  "ecommerce_scope_version": 1
+}

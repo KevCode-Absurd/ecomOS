@@ -1,0 +1,793 @@
+{
+  "cards": [
+    {
+      "title": "Choose a popup first step: scratch-off, quiz, or micro-commitment",
+      "summary": "Evaluate three popup first-step formats (scratch-off, mini quiz, micro-commitment) to raise email signup rate before the email field appears.",
+      "use_when": "Deciding how to structure the first screen of your email capture popup so more store visitors begin the signup interaction.",
+      "steps": [
+        "Recall the source's claimed example: for one ecom brand already converting at 11%, adding a scratch-off first step correlated with a move to 14%. Treat this as a single-case example, not a benchmark.",
+        "Pick scratch-off or mini quiz as your primary test if you want a more engaging, gamified first interaction with the brand; the source presenter rates these as likely to outperform older formats, based on what they see across client accounts.",
+        "Keep the older micro-commitment pattern as a backup test: a simple yes/no frame like 'claim 10% off or no thanks', or 'do you want a mystery discount?' followed by the email field. It still produces a decent signup rate.",
+        "Optionally test skipping the first step entirely and showing the email opt-in immediately. Both presenters advise against it, but it can suit audiences that don't respond to games.",
+        "Run the formats as real A/B tests on your own traffic and keep the winner, rather than adopting any one format permanently."
+      ],
+      "caveats": [
+        "The 11% to 14% lift is a source-reported client result, not a guaranteed outcome.",
+        "The claim that quiz and scratch-off will 'probably' outperform micro-commitment is the presenter's observation, not a measured universal rule."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "list-growth",
+        "popup-forms",
+        "conversion-optimization",
+        "experiment-design",
+        "signup-rate",
+        "lead-capture"
+      ],
+      "id": "d80edbbaaf503d1bff56d18d",
+      "source_id": "1WQcWqe36XxPolHopi-PTOYh8vY8HC1zr",
+      "source_sha256": "69b3b9e9495ed44c6cb3241fbb24a4afac37bdcd623d5fd26d7ebd82e1e3a344",
+      "source_name": "Klaviyo email.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 2
+    },
+    {
+      "title": "Decide whether the popup success page reveals the discount code or sends to email",
+      "summary": "Trade off immediate code delivery against first-email engagement and deliverability when configuring the signup success page.",
+      "use_when": "Configuring the success/reward step of your email signup popup and choosing between showing the discount immediately or routing the subscriber to their inbox.",
+      "steps": [
+        "Option A (source presenter's preference): show no reward on the success page. Use a plain 'you're in' confirmation plus copy telling them to check their inbox for the code, and to check spam or the promotions tab if it hasn't arrived within 5 minutes.",
+        "Use this option when first-email engagement matters to you: the argument is that if the code is already in the popup, subscribers have no reason to open email one, and low opens on a brand-new subscriber's first email can signal spam to Gmail and push future sends to promotions or spam.",
+        "Option B: reveal the discount code on the success page with a 'shop now' button. This removes friction and lets people buy immediately, at the cost of weaker first-email engagement.",
+        "Test both, since the source describes the debate as roughly 50/50. The presenter reports their own client tests show only a minimal conversion downside for the no-reward option, offset by the welcome flow in the first 72 hours, plus deliverability upside.",
+        "If you switch to the no-reward option, make sure your first welcome email delivers the promised code clearly, or you create unnecessary friction."
+      ],
+      "caveats": [
+        "The deliverability reasoning is the presenter's interpretation of how mailbox providers behave, not a documented provider rule.",
+        "Reported minimal conversion downside is from the presenter's own client tests and may not hold for your list."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "list-growth",
+        "popup-forms",
+        "deliverability",
+        "welcome-flow",
+        "signup-rate",
+        "conversion-optimization"
+      ],
+      "id": "8e47ceff852bd401b8ea7a58",
+      "source_id": "1WQcWqe36XxPolHopi-PTOYh8vY8HC1zr",
+      "source_sha256": "69b3b9e9495ed44c6cb3241fbb24a4afac37bdcd623d5fd26d7ebd82e1e3a344",
+      "source_name": "Klaviyo email.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 2
+    },
+    {
+      "title": "Configure single vs double opt-in for popup signup forms",
+      "summary": "Choose single opt-in or double opt-in based on provider capability and your willingness to trade list size for confirmation.",
+      "use_when": "Setting the opt-in method on your signup form, which determines whether the discount is shown on-screen or delivered by email.",
+      "steps": [
+        "Single opt-in: show reward info immediately after signup. The source presenter recommends this for Klaviyo and most other providers, and uses it themselves.",
+        "Double opt-in: users receive their reward only after confirming via a button in an email; the on-screen message becomes 'you're in, check your email to receive your discount code'. This requires you to set up a setup/confirmation journey in your ESP so subscribers actually receive the reward.",
+        "The source states double opt-in is recommended for Postscript and Attentive. Verify current guidance in your ESP's documentation, since provider recommendations change.",
+        "The presenter is not a fan of double opt-in because the confirm-click step reduces the number of new email subscribers you collect.",
+        "If you still want the first welcome email opened while using single opt-in, rely on the success-page copy rather than adding a confirmation click."
+      ],
+      "caveats": [
+        "Provider recommendations (Postscript, Attentive) are stated as of the source and should be verified.",
+        "The list-size downside of double opt-in is the presenter's stated experience, not a measured range."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "list-growth",
+        "popup-forms",
+        "opt-in",
+        "compliance",
+        "deliverability",
+        "klaviyo"
+      ],
+      "id": "7b31d369130d9ef5e66e4c5a",
+      "source_id": "1WQcWqe36XxPolHopi-PTOYh8vY8HC1zr",
+      "source_sha256": "69b3b9e9495ed44c6cb3241fbb24a4afac37bdcd623d5fd26d7ebd82e1e3a344",
+      "source_name": "Klaviyo email.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 2
+    },
+    {
+      "title": "Set popup trigger timing, scroll depth, and exit intent",
+      "summary": "Configure time-delay, scroll-depth and exit-intent triggers for signup popups, with a 4s vs 12s test as the starting point.",
+      "use_when": "Choosing when the email capture popup appears on your store, to avoid interrupting visitors too early or missing them entirely.",
+      "steps": [
+        "Set a time-delay trigger between 4 and 12 seconds. The presenter always uses this band and starts experimentation with 4 seconds versus 12 seconds, then dials in the exact timing.",
+        "Add a 60% scroll-depth trigger so the popup also fires for engaged readers who haven't hit the time threshold.",
+        "Add exit intent: on desktop this fires when the mouse leaves the site, on mobile when the user quickly scrolls up.",
+        "Where the tool allows, separate mobile-only and desktop-only rules so trigger behavior matches each device's exit behavior.",
+        "Test smart/predictive triggering as an addition to your manual triggers: the source describes it as an AI model that learns the best moment to show the popup and fires it in addition to basic triggers.",
+        "When testing smart triggering, expect the presenter's typical pattern: signup rate dips slightly while total signups rise, because the popup is shown more often. Both the presenter and the tool vendor favor leaving it on, with the caveat that some clients see the opposite."
+      ],
+      "caveats": [
+        "The 4-12 second band and 60% scroll depth are the source's recommended starting points, not validated universal thresholds.",
+        "Smart triggering behavior is tool-specific (Aaliyah). Verify the current setting and its behavior in your own tool's interface."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "list-growth",
+        "popup-forms",
+        "conversion-optimization",
+        "experiment-design",
+        "trigger-timing",
+        "signup-rate"
+      ],
+      "id": "143e7458c1be01faf154591f",
+      "source_id": "1WQcWqe36XxPolHopi-PTOYh8vY8HC1zr",
+      "source_sha256": "69b3b9e9495ed44c6cb3241fbb24a4afac37bdcd623d5fd26d7ebd82e1e3a344",
+      "source_name": "Klaviyo email.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 2
+    },
+    {
+      "title": "Build signup-form targeting rules for new vs returning visitors",
+      "summary": "Use targeting rules to show a first-time capture popup to new visitors and separate popups to already-subscribed visitors.",
+      "use_when": "Setting up popup audiences so you capture new emails without annoying existing subscribers, or to collect extra data from people already on your list.",
+      "steps": [
+        "For your main signup form, target new visitors who have not signed up for email and have not signed up for SMS. This is the standard configuration the source uses.",
+        "Set up a separate popup for returning visitors: has signed up for email or SMS, or is identified by a cookie.",
+        "Use the returning-visitor popup to collect zero-party data, or to move an email subscriber onto your SMS list with a dedicated SMS opt-in form.",
+        "Configure re-trigger suppression: choose how long before the same popup can be shown again (the source notes options from seconds to a year), and suppress if another popup was viewed in the last 15 seconds when running multiple popups.",
+        "Set an overall store theme/branding once and reuse it across every popup so new forms stay visually consistent."
+      ],
+      "caveats": [
+        "Popup targeting terminology and available conditions vary between tools; verify field names in your current interface.",
+        "The 15-second popup suppression is an example setting, not a recommended optimal value."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "list-growth",
+        "popup-forms",
+        "segmentation",
+        "targeting",
+        "zero-party-data",
+        "sms"
+      ],
+      "id": "ba6a52eba2e922c9f1c012a7",
+      "source_id": "1WQcWqe36XxPolHopi-PTOYh8vY8HC1zr",
+      "source_sha256": "69b3b9e9495ed44c6cb3241fbb24a4afac37bdcd623d5fd26d7ebd82e1e3a344",
+      "source_name": "Klaviyo email.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 2
+    },
+    {
+      "title": "Preview and QA signup popups across devices before publishing",
+      "summary": "Use preview and device-simulation tools to confirm the popup renders and animates correctly everywhere before pushing it live.",
+      "use_when": "Final QA before publishing a new email capture popup to your live storefront.",
+      "steps": [
+        "Play the animation preview so you can see the popup as an end user experiences it, including multi-step transitions such as first step, email step, and reward step.",
+        "Review the form on simulated devices — the source demonstrates an iPhone 15 and a 4K desktop — to confirm layout holds on both small and very wide viewports.",
+        "Use the preview button in the top-right corner to open your actual website with the popup showing, verifying it appears correctly on the live storefront.",
+        "Confirm the teaser/floating button (step one) looks correct before the full popup opens.",
+        "Check styling levers left in the builder: colors, fonts, button styles, input styles.",
+        "After publishing, create the reward in the rewards section: select a static code from your Shopify discount codes, generate a unique code, or use a custom reward such as a giveaway. Aaliyah's more granular preview options are noted as an advantage compared with the Klaviyo signup form."
+      ],
+      "caveats": [
+        "Device-simulation coverage and builder options are tool-specific; check what your popup tool currently offers.",
+        "Some preview functionality described here may not exist in Klaviyo's signup form."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "list-growth",
+        "popup-forms",
+        "qa-testing",
+        "mobile-optimization",
+        "shopify",
+        "merchandising"
+      ],
+      "id": "6f18ca80ca5c3c327841fe48",
+      "source_id": "1WQcWqe36XxPolHopi-PTOYh8vY8HC1zr",
+      "source_sha256": "69b3b9e9495ed44c6cb3241fbb24a4afac37bdcd623d5fd26d7ebd82e1e3a344",
+      "source_name": "Klaviyo email.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 2
+    },
+    {
+      "title": "Offer copy for signups: explicit discount vs mystery discount",
+      "summary": "Test mystery or exclusive offer copy against explicit percentage-off copy, especially at lower discount levels.",
+      "use_when": "Writing the headline and button copy of a signup popup to raise signup rate without changing your actual discount.",
+      "steps": [
+        "Run a copy test between an explicit offer ('10% off', '50% off'), a mystery discount ('you've got a mystery discount'), an exclusive offer, and a special offer.",
+        "Choose variants based on discount depth: the source states that if your discount is 10% or less, testing copy like mystery discount or exclusive discount is recommended.",
+        "The presenter's own rule of thumb: everything under 20% off tends to work better with the mystery discount angle; they recommend the mystery discount angle even for discounts at 50% off or less.",
+        "Let the A/B test decide for your audience rather than applying the rule of thumb blindly — the presenter explicitly says the data should confirm it.",
+        "Use automated smart testing where available: the source describes an AI system that builds the variant (for example a fully generated mystery-discount version) and runs tests automatically, ending each test when results are significant and moving to the next."
+      ],
+      "caveats": [
+        "The under-20%-off and 50%-off-less thresholds are the presenter's heuristics, not measured cutoffs.",
+        "The automated test sequencing is specific to Aaliyah's smart testing; other tools may require manual test setup."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "list-growth",
+        "popup-forms",
+        "offer-design",
+        "copywriting",
+        "experiment-design",
+        "signup-rate"
+      ],
+      "id": "020eec5d0a13d42c905af576",
+      "source_id": "1WQcWqe36XxPolHopi-PTOYh8vY8HC1zr",
+      "source_sha256": "69b3b9e9495ed44c6cb3241fbb24a4afac37bdcd623d5fd26d7ebd82e1e3a344",
+      "source_name": "Klaviyo email.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 2
+    },
+    {
+      "title": "Diagnose a monetization problem before blaming email or buying more traffic",
+      "summary": "Frame list and welcome-flow weakness as a monetization problem that leaks paid traffic and inflates CAC.",
+      "use_when": "Reviewing why paid acquisition costs keep rising and deciding whether to invest in welcome flows rather than more ad spend.",
+      "steps": [
+        "Check whether you are overpaying for traffic and under-monetizing it: many brands buy Meta, Google, TikTok, influencer, affiliate and landing-page traffic and let visitors leave with only a pixel hit.",
+        "Treat the resulting dependence on buying ever more traffic to hold revenue flat as the signal of a leaking funnel, not a traffic shortage.",
+        "Audit the three consequences the source names: rising blended CAC from traffic leaking without converting; email getting blamed based on topline email revenue instead of whether the welcome series captures first-time buying intent; and over-reliance on retargeting to recover people you already paid for once.",
+        "Invest in the welcome series as the fastest lever: it monetizes people you already paid to attract, improves first-time buyer conversion and payback speed.",
+        "Use the welcome series to build trust at the exact moment a new subscriber is deciding whether you are worth buying from, since that trust gap is often the real blocker."
+      ],
+      "caveats": [
+        "This is a diagnostic frame from the source, not a measured causal model; rising CAC can have other drivers.",
+        "The claim that most brands have a monetization problem rather than a traffic problem is the presenter's generalization."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "welcome-flow",
+        "customer-acquisition-cost",
+        "retention",
+        "measurement",
+        "conversion-optimization",
+        "paid-acquisition"
+      ],
+      "id": "9ed0b65913bbcbbf9eb40c0a",
+      "source_id": "1WQcWqe36XxPolHopi-PTOYh8vY8HC1zr",
+      "source_sha256": "69b3b9e9495ed44c6cb3241fbb24a4afac37bdcd623d5fd26d7ebd82e1e3a344",
+      "source_name": "Klaviyo email.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 2
+    },
+    {
+      "title": "Front-load the welcome flow around the first 72 hours",
+      "summary": "Structure the welcome flow to concentrate persuasion and sends in the first 72 hours after signup when momentum and intent peak.",
+      "use_when": "Designing or restructuring the welcome series cadence for new email subscribers.",
+      "steps": [
+        "Recognize the pattern the source reports across accounts: the overwhelming majority of welcome-flow revenue is generated within the first three days after signup, with the highest number of conversions on day zero and a steep drop after that.",
+        "Avoid stretched-out 10-, 14-, or 21-day welcome flows built mainly to 'build a relationship'; the source argues this wastes the moment of highest intent.",
+        "Schedule two emails on day one: email 1A immediately after signup, then email 1B eight hours later as a plain-text reminder.",
+        "Add a 16-hour delay after 1B so you reach 24 hours, then send email two, and continue daily through email six.",
+        "Accept the tension: the first email usually generates the most revenue because people only want the promised offer, so the later emails are what separate mediocre welcome flows from strong ones.",
+        "Use the later emails to build conviction quickly via social proof, brand credibility, product education, objection handling, USPs, category guidance, bestsellers, founder credibility, or urgency — not all of them, but enough to reduce hesitation fast."
+      ],
+      "caveats": [
+        "The 72-hour concentration and the day-zero peak come from the source's own account analytics; timing will vary by brand, price point and traffic source.",
+        "The specific 8-hour and 16-hour delays are the source's recommended cadence, not tested universal optima."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "welcome-flow",
+        "cadence",
+        "retention",
+        "conversion-optimization",
+        "measurement",
+        "automation"
+      ],
+      "id": "f2c3f6895ad4f57aeccb6f46",
+      "source_id": "1WQcWqe36XxPolHopi-PTOYh8vY8HC1zr",
+      "source_sha256": "69b3b9e9495ed44c6cb3241fbb24a4afac37bdcd623d5fd26d7ebd82e1e3a344",
+      "source_name": "Klaviyo email.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 2
+    },
+    {
+      "title": "Set welcome flow trigger filters and disable smart sending",
+      "summary": "Configure the welcome flow entry trigger, zero-purchase filter, no re-entry, and per-email send settings so only new non-buyers get the welcome discount.",
+      "use_when": "Building or auditing the welcome flow automation settings in your ESP.",
+      "steps": [
+        "Trigger the flow when someone is added to your main list (often the newsletter list).",
+        "Add a profile filter: has placed order zero times over all time. This prevents existing buyers who re-subscribe from receiving the welcome discount again.",
+        "Disable re-entry so a person can only go through the welcome series once.",
+        "If working from a default template, delete the split for existing customers and remove any conditional split you're not using, then rebuild the delays.",
+        "Add time delays of 8 hours after email 1A, then 16 hours after 1B, then one day before each subsequent email through email six.",
+        "Turn off smart sending on every flow email. The source's reasoning: smart sending skips anyone who received an email in the last (default) 16 hours, but flow emails are trigger-based and must be delivered. For campaigns, the source advises the opposite — turn smart sending on. Verify the current smart sending window settings in your ESP.",
+        "Enable UTM tracking on the flow emails."
+      ],
+      "caveats": [
+        "Filter names and default behaviors differ between ESPs and change over time; verify in your current account.",
+        "The advice to turn smart sending off for flows assumes trigger-based flows; the presenter's rule is not a universal deliverability law."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "welcome-flow",
+        "automation",
+        "klaviyo",
+        "segmentation",
+        "deliverability",
+        "utm-tracking"
+      ],
+      "id": "4d6f11a9f4434e6d5b767d59",
+      "source_id": "1WQcWqe36XxPolHopi-PTOYh8vY8HC1zr",
+      "source_sha256": "69b3b9e9495ed44c6cb3241fbb24a4afac37bdcd623d5fd26d7ebd82e1e3a344",
+      "source_name": "Klaviyo email.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 2
+    },
+    {
+      "title": "Write welcome email 1A: deliver the code above the fold",
+      "summary": "Make the first welcome email a frictionless delivery of the promised code with product guidance and trust builders directly in the above-the-fold area.",
+      "use_when": "Drafting or rewriting the first email of the welcome series.",
+      "steps": [
+        "Put the offer, the discount code, and a one-click call to action in the above-the-fold section — the part visible without scrolling on mobile or desktop. The source's rationale: an estimated 90-99% of people only see the above-fold area before leaving the email.",
+        "Do not bury the code or make subscribers work for it. The subscriber signed up for one thing; give it immediately rather than leading with brand news.",
+        "Below the fold, show one to three bestsellers or a 'start here' selection to route them to a specific product or category.",
+        "Add trust builders where applicable: reviews, press mentions, expert endorsements, social proof.",
+        "Add risk reversals where applicable: free shipping, free returns, warranty, free trial.",
+        "Keep the hero simple. The source's example ('Welcome to [brand], 10% off your first order, use code X') is deliberately plain but unambiguous, then repeats the code with a CTA at the bottom of the email."
+      ],
+      "caveats": [
+        "The 90-99% above-fold-only figure is the presenter's estimate, not a measured statistic.",
+        "The described layout is a source example for one brand; the exact modules should match your product mix and AOV."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "welcome-flow",
+        "email-copywriting",
+        "product-page",
+        "merchandising",
+        "social-proof",
+        "conversion-optimization"
+      ],
+      "id": "681426ed9a3aaec1988b301a",
+      "source_id": "1WQcWqe36XxPolHopi-PTOYh8vY8HC1zr",
+      "source_sha256": "69b3b9e9495ed44c6cb3241fbb24a4afac37bdcd623d5fd26d7ebd82e1e3a344",
+      "source_name": "Klaviyo email.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 2
+    },
+    {
+      "title": "Send a same-day plain-text founder reminder as welcome email 1B",
+      "summary": "Add a short, human plain-text second email eight hours after the first to capture day-zero momentum.",
+      "use_when": "Adding a second welcome-flow email on the day of signup to recover subscribers who didn't buy immediately.",
+      "steps": [
+        "Send it eight hours after email 1A. The source's reasoning: momentum is highest on day zero and waiting 24 hours wastes it.",
+        "Write it as a short, direct, human plain-text founder-style note, for example 'just making sure you saw your code'.",
+        "Include a reminder of the discount code, one or two simple product or category references (bestsellers, bundles, top categories, or the most logical first purchase), and a direct CTA to the site.",
+        "Do not add a designed template or design flourish; the format is the point because conversational, human-feeling emails tend to be rewarded by inbox providers through engagement, per the source.",
+        "Expect a meaningful incremental revenue contribution from this second same-day email. The source reports this repeatedly in their tests and addresses the common concern that two emails in one day feels like too much."
+      ],
+      "caveats": [
+        "The claim that email 1B 'drives a surprising amount' of incremental revenue is the presenter's client experience, not a published benchmark.",
+        "Two emails in one day may be inappropriate for very low-frequency or high-consideration catalogs; test on your own list."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "welcome-flow",
+        "email-copywriting",
+        "plain-text",
+        "cadence",
+        "deliverability",
+        "conversion-optimization"
+      ],
+      "id": "63691cee89e19fe7ba1b166f",
+      "source_id": "1WQcWqe36XxPolHopi-PTOYh8vY8HC1zr",
+      "source_sha256": "69b3b9e9495ed44c6cb3241fbb24a4afac37bdcd623d5fd26d7ebd82e1e3a344",
+      "source_name": "Klaviyo email.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 2
+    },
+    {
+      "title": "Use welcome email 2 to build brand trust with substance, not fluff",
+      "summary": "Answer 'who are you and why should I trust you' in a short trust-building email with a discount reminder and CTA.",
+      "use_when": "Writing the second-day welcome email that establishes credibility for new subscribers who haven't bought yet.",
+      "steps": [
+        "Choose the trust angle that fits your niche: a founder story, mission statement, quality standards, ingredients, sourcing, craftsmanship, or product philosophy. It depends on the brand.",
+        "Include a reminder of the welcome discount, a clear trust-building narrative, brand backstory or mission only if it actually matters, founder presence only if credible and relevant, and a clear CTA.",
+        "Keep it short. The source explicitly warns against big paragraphs; the goal is to reduce uncertainty and increase belief in the brand, not to tell the founder's entire life story.",
+        "Use a founder photo where it humanizes the brand — the example pairs a founder introduction with her product/category context and repeats the discount code.",
+        "Avoid 'brand poetry' with no substance; every claim should help a hesitant shopper decide you're a legitimate choice versus the alternatives they're comparing."
+      ],
+      "caveats": [
+        "The source gives no length target; 'not too long' is a judgment call.",
+        "Founder credibility framing is not appropriate for every brand or category."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "welcome-flow",
+        "brand-positioning",
+        "email-copywriting",
+        "social-proof",
+        "conversion-optimization",
+        "trust"
+      ],
+      "id": "d50bbcaf474a475d1ae67bea",
+      "source_id": "1WQcWqe36XxPolHopi-PTOYh8vY8HC1zr",
+      "source_sha256": "69b3b9e9495ed44c6cb3241fbb24a4afac37bdcd623d5fd26d7ebd82e1e3a344",
+      "source_name": "Klaviyo email.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 2
+    },
+    {
+      "title": "Use welcome email 3 to guide overwhelmed subscribers to a first purchase",
+      "summary": "Reduce choice paralysis by naming one to three bestsellers with benefit-led positioning and a discount reminder.",
+      "use_when": "Writing the welcome-flow email that helps undecided subscribers pick a first product.",
+      "steps": [
+        "Assume subscribers don't know what to do with the discount code; tell them explicitly rather than expecting them to figure out the catalog.",
+        "Feature one to three bestsellers or best collections as recommended starting points.",
+        "Use simple benefit-led positioning rather than specs. The source's example leads with outcomes (grams of plant-based carbs for fast energy, dual carbs for quick absorption, hydration and endurance in one) instead of product features.",
+        "Explain why these are the best starting points and set clear expectations.",
+        "Remind them of the welcome gift again, typically in a top bar and in the email body.",
+        "Keep the email focused on routing, not on additional persuasion angles — that job belongs to later emails."
+      ],
+      "caveats": [
+        "Benefit-first framing is a general copywriting principle; the source's specific framing comes from a supplement/energy brand example.",
+        "One to three featured products is the source's guidance; catalogs with very narrow assortment may need a different treatment."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "welcome-flow",
+        "merchandising",
+        "email-copywriting",
+        "product-selection",
+        "conversion-optimization",
+        "bestsellers"
+      ],
+      "id": "7f27679135bf3fadd5f3389e",
+      "source_id": "1WQcWqe36XxPolHopi-PTOYh8vY8HC1zr",
+      "source_sha256": "69b3b9e9495ed44c6cb3241fbb24a4afac37bdcd623d5fd26d7ebd82e1e3a344",
+      "source_name": "Klaviyo email.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 2
+    },
+    {
+      "title": "Welcome email 4: handle objections and differentiate at the product or category level",
+      "summary": "Answer unasked objections about price, quality and alternatives, then add real urgency tied to a credible discount code.",
+      "use_when": "Writing the welcome-flow email that targets subscribers still hesitating after the first three sends.",
+      "steps": [
+        "Assume remaining hesitation is friction and answer the questions they haven't asked: why buy from you instead of a competitor, why the price is justified, why they should trust your quality, and why act now.",
+        "Include core brand or product/category-level differentiators plus objection handling.",
+        "Remind them of the discount and add real urgency — a clear deadline if applicable (the source example: 'hurry, this code expires in 48 hours').",
+        "Make urgency believable by using unique discount codes, or static codes that look unique. The source warns that generic codes like WELCOME10 make urgency look fake because everyone knows such a code won't expire.",
+        "Add a review to support the argument.",
+        "Keep the focus on trust and differentiation rather than another hard sell."
+      ],
+      "caveats": [
+        "The 48-hour deadline is a source example; your deadline must match your actual discount expiry for the urgency to be honest.",
+        "Not every brand has product-level differentiators worth a dedicated email; adapt the angle."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "welcome-flow",
+        "objection-handling",
+        "positioning",
+        "offer-design",
+        "urgency",
+        "email-copywriting"
+      ],
+      "id": "cefa2905adfdb0e0a6a52e81",
+      "source_id": "1WQcWqe36XxPolHopi-PTOYh8vY8HC1zr",
+      "source_sha256": "69b3b9e9495ed44c6cb3241fbb24a4afac37bdcd623d5fd26d7ebd82e1e3a344",
+      "source_name": "Klaviyo email.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 2
+    },
+    {
+      "title": "Welcome email 5: escalate urgency with reviews that mirror buyer objections",
+      "summary": "Push for the first purchase using a tightened deadline and one to three specific, pain-point-matching reviews.",
+      "use_when": "Writing the welcome-flow email that uses a closing deadline plus social proof to convert hesitant subscribers.",
+      "steps": [
+        "Communicate a clear urgency deadline and escalate from the prior email: if email 4 said 48 hours left, email 5 says 24 hours left. If you hadn't stated a deadline earlier, 48 hours is a usable starting point. The source notes the escalation depends on the chosen strategy.",
+        "Add one to three reviews.",
+        "Select reviews carefully: avoid generic reviews that just say 'great product'. Choose reviews that highlight a specific pain point or objection and make readers feel recognized, so the reviewer's outcome maps to the reader's situation.",
+        "Prefer one strong, specific review over three generic ones.",
+        "Keep the email straightforward — urgency plus social proof, no new persuasion angles."
+      ],
+      "caveats": [
+        "Deadline escalation only works if the deadlines are real; repeated fake deadlines damage trust.",
+        "The source gives no data on optimal review count beyond preferring quality over quantity."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "welcome-flow",
+        "social-proof",
+        "urgency",
+        "email-copywriting",
+        "conversion-optimization",
+        "objection-handling"
+      ],
+      "id": "38077a826b1286526dc1c0bf",
+      "source_id": "1WQcWqe36XxPolHopi-PTOYh8vY8HC1zr",
+      "source_sha256": "69b3b9e9495ed44c6cb3241fbb24a4afac37bdcd623d5fd26d7ebd82e1e3a344",
+      "source_name": "Klaviyo email.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 2
+    },
+    {
+      "title": "Welcome email 6: close with a final reason to act, and test the format",
+      "summary": "Deliver the final welcome-flow push with the offer, strong urgency, and either a designed or plain-text format chosen by testing.",
+      "use_when": "Writing the final email of the welcome series and choosing its format.",
+      "steps": [
+        "Include a final reminder of the offer, strong urgency, and a clear indication of what to buy.",
+        "Choose the strongest support angle for your brand: reviews, authority signals, or risk reversals.",
+        "Test designed versus plain-text format for this email rather than assuming one wins.",
+        "One route the source uses often: after email 4 at 48 hours and email 5 at 24 hours, make email 6 an 'extended sale' sent as a plain-text founder email ('we've extended your welcome discount for another 24 hours, act fast').",
+        "A/B test the closing angle and treat this email's format as a variable, not a fixed rule.",
+        "Keep the momentum assumption realistic: later emails in the flow generate less than the day-zero content, so expect incremental rather than dramatic returns."
+      ],
+      "caveats": [
+        "The 'extended sale' angle works well in the source's experience but implies the deadline was moved; only use it if it is truthful.",
+        "The source presents two routes (designed vs plain text) as alternatives to test, not as a settled best practice."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "welcome-flow",
+        "email-copywriting",
+        "experiment-design",
+        "urgency",
+        "offer-design",
+        "conversion-optimization"
+      ],
+      "id": "18ddf0ee7ebfb8147024f21a",
+      "source_id": "1WQcWqe36XxPolHopi-PTOYh8vY8HC1zr",
+      "source_sha256": "69b3b9e9495ed44c6cb3241fbb24a4afac37bdcd623d5fd26d7ebd82e1e3a344",
+      "source_name": "Klaviyo email.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 2
+    },
+    {
+      "title": "Add proven evergreen campaigns to the welcome flow for extra revenue",
+      "summary": "Extend the welcome series beyond the core emails by appending evergreen campaigns that performed well as broadcasts.",
+      "use_when": "Looking for incremental welcome-flow revenue after the core six-email structure is working.",
+      "steps": [
+        "Review past campaigns and identify the ones that generated the best results for your brand.",
+        "Check whether those top performers are evergreen, meaning they remain relevant and usable all year.",
+        "Add the evergreen winners into the welcome flow after the closing emails.",
+        "Candidate campaign types the source names: how-tos, blog promotions, review or user-generated content, myth-busting emails, product highlights, subscription promos, bundles, gift guides, and educational emails.",
+        "Do not cap the welcome flow at seven emails. The source explicitly says not to cap it and treats this as an easy way to squeeze additional revenue.",
+        "Set expectations modestly: because momentum is concentrated in the first 72 hours, treat the appended emails as incremental additions rather than major revenue drivers."
+      ],
+      "caveats": [
+        "Purely seasonal campaigns are not evergreen and shouldn't be appended as standing flow emails.",
+        "The source does not quantify the incremental revenue, only that it is additional."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "welcome-flow",
+        "campaigns",
+        "evergreen-content",
+        "retention",
+        "automation",
+        "revenue-optimization"
+      ],
+      "id": "71218ab504b848c56439bc91",
+      "source_id": "1WQcWqe36XxPolHopi-PTOYh8vY8HC1zr",
+      "source_sha256": "69b3b9e9495ed44c6cb3241fbb24a4afac37bdcd623d5fd26d7ebd82e1e3a344",
+      "source_name": "Klaviyo email.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 2
+    },
+    {
+      "title": "Position browse abandonment as mid-funnel persuasion, not lost-sale recovery",
+      "summary": "Treat browse-abandonment emails as trust and objection-handling plays for comparing shoppers rather than as discount-driven cart recovery.",
+      "use_when": "Deciding the strategy and tone for a browse abandonment flow targeting product-page visitors who didn't add to cart.",
+      "steps": [
+        "Separate intent levels: browse abandoners viewed a product page but did not add to cart, so they are usually comparing alternatives in evaluation mode, not recovering a near-sale.",
+        "Shift the priority order for this flow: trust matters more than urgency, objection handling matters more than giving away a discount, and positioning matters more than promotion.",
+        "Do not clone your cart abandonment flow. The source says most brands get this wrong by treating browse abandonment as a weaker cart abandonment flow.",
+        "Recognize the competitive reality the source describes: a visitor viewing your product page likely has competing product tabs open, so the flow's job is to stay in the decision process with controlled persuasion rather than desperation.",
+        "Use the flow for margin- and LTV-conscious brands: follow up without immediately discounting, and reserve discounts for the later escalation emails."
+      ],
+      "caveats": [
+        "The 'three other tabs' description is the presenter's illustration of comparison behavior, not measured data.",
+        "For very short deliberation categories, browse abandonment may behave more like cart abandonment."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "browse-abandonment",
+        "retention",
+        "positioning",
+        "objection-handling",
+        "conversion-optimization",
+        "customer-journey"
+      ],
+      "id": "d0e8f91819ba19866f4edfb9",
+      "source_id": "1WQcWqe36XxPolHopi-PTOYh8vY8HC1zr",
+      "source_sha256": "69b3b9e9495ed44c6cb3241fbb24a4afac37bdcd623d5fd26d7ebd82e1e3a344",
+      "source_name": "Klaviyo email.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 2
+    },
+    {
+      "title": "Set browse abandonment trigger filters and a 30-day cooldown",
+      "summary": "Configure the viewed-product trigger with zero-order, zero-checkout, zero-add-to-cart filters and a 30-day re-entry limit.",
+      "use_when": "Building or auditing the browse abandonment flow in your ESP so it fires only for genuinely unconverted browsers.",
+      "steps": [
+        "Trigger the flow on viewed product.",
+        "Add profile filters so the email only sends if the person has placed order zero times since starting this flow, has checkout started zero times since starting this flow, and has added to cart zero times since starting this flow.",
+        "Allow re-entry after a 30-day time period to create a cooldown window.",
+        "If you run Shopify, use the Shopify added-to-cart trigger rather than the API added-to-cart trigger. The source flags this as important.",
+        "Do not split the browse abandonment flow between new and returning customers in most cases. Rationale: browse abandoners are low-intent window shoppers, and even previous buyers are re-evaluating and comparing you against alternatives.",
+        "Exception: if margins are extremely tight and you truly cannot afford an incentive for returning buyers, consider a conditional split. The source argues that for most brands doing serious volume, the incremental revenue outweighs the marginal discount cost precisely because these visitors were not high-intent to begin with.",
+        "Note the contrast with cart abandonment, where the source does recommend splitting returning customers from non-buyers because intent is higher."
+      ],
+      "caveats": [
+        "Filter and trigger names differ by ESP and change over time; verify in your current account.",
+        "The no-split recommendation is the source's general preference with a stated margin-based exception, not an absolute rule."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "browse-abandonment",
+        "automation",
+        "segmentation",
+        "shopify",
+        "klaviyo",
+        "conversion-optimization"
+      ],
+      "id": "5ad3da1bdb3a5774dcbee3a8",
+      "source_id": "1WQcWqe36XxPolHopi-PTOYh8vY8HC1zr",
+      "source_sha256": "69b3b9e9495ed44c6cb3241fbb24a4afac37bdcd623d5fd26d7ebd82e1e3a344",
+      "source_name": "Klaviyo email.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 2
+    },
+    {
+      "title": "Time the browse abandonment delays and use dynamic product blocks",
+      "summary": "Set the send delay by intent level and include a dynamic product block plus recommendations in every browse-abandonment email.",
+      "use_when": "Building the timing and core content of the browse abandonment sequence.",
+      "steps": [
+        "Set the first delay to roughly 30-45 minutes up to 2 hours. The source tests this range, uses 1 hour for demonstration, and notes that closer to the purchase moment you should email sooner.",
+        "Calibrate by flow type: browse abandonment is around 2-4 hours at the loosest, cart abandonment shorter, and checkout abandonment shortest — as early as 15 minutes for the checkout flow.",
+        "Structure as a four-part sequence: email one is a simple reminder, email two builds trust, emails three and four introduce the discount.",
+        "Add a one-day delay between each email.",
+        "Include a dynamic product block in every email, showing the product the person viewed.",
+        "Build the block efficiently: copy a default template's dynamic product block, save it as universal/reusable content, and edit it to match your branding rather than building from scratch — the source says this saves a lot of time."
+      ],
+      "caveats": [
+        "The delay ranges are source heuristics for relative urgency across flow types, not measured optima; test on your own traffic.",
+        "Dynamic product block features and universal content features are ESP-specific; verify availability."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "browse-abandonment",
+        "cadence",
+        "dynamic-content",
+        "automation",
+        "klaviyo",
+        "conversion-optimization"
+      ],
+      "id": "c83fa5e0d0d681ef20a49199",
+      "source_id": "1WQcWqe36XxPolHopi-PTOYh8vY8HC1zr",
+      "source_sha256": "69b3b9e9495ed44c6cb3241fbb24a4afac37bdcd623d5fd26d7ebd82e1e3a344",
+      "source_name": "Klaviyo email.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 2
+    },
+    {
+      "title": "Write browse abandonment email 1 as a light, timely reminder",
+      "summary": "Send a non-aggressive product reminder within hours of the page view, with a dynamic product block, recommendations and social proof.",
+      "use_when": "Drafting the first browse-abandonment email.",
+      "steps": [
+        "Send it while the visit is still fresh — the source's range is 30 minutes to 2 hours after the product page view — so the person still remembers you.",
+        "Keep it non-aggressive and not sales-heavy. A simple 'you were looking at this, are you still interested?' angle is enough.",
+        "Include a dynamic product block showing the viewed product.",
+        "Include a recommendations feed, for example four other products related to the viewed product.",
+        "Add social proof such as reviews or user-generated content.",
+        "Use a clear headline and CTA above the fold with body copy containing the dynamic product block and a second CTA, plus a related-products section.",
+        "Expect this email alone to recover mainly high-intent browsers who simply got distracted — the source says that is what you're capturing at this stage."
+      ],
+      "caveats": [
+        "The source's claim about what share of intent this recovers is qualitative, not measured.",
+        "Timing must be feasible with your ESP's trigger and delay configuration."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "browse-abandonment",
+        "email-copywriting",
+        "dynamic-content",
+        "social-proof",
+        "timing",
+        "conversion-optimization"
+      ],
+      "id": "9d0646c87a39aca65fae7696",
+      "source_id": "1WQcWqe36XxPolHopi-PTOYh8vY8HC1zr",
+      "source_sha256": "69b3b9e9495ed44c6cb3241fbb24a4afac37bdcd623d5fd26d7ebd82e1e3a344",
+      "source_name": "Klaviyo email.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 2
+    },
+    {
+      "title": "Write browse abandonment email 2 to remove friction, not add pressure",
+      "summary": "Lead with risk reversals, social proof and product guidance to address hesitation for comparison shoppers.",
+      "use_when": "Writing the second browse-abandonment email for viewers who ignored the first reminder.",
+      "steps": [
+        "Assume the non-conversion reflects hesitation, which the source calls completely normal in browse abandonment.",
+        "Think like the buyer and address the questions they have: is this worth the price, is this legit, what if it doesn't fit or work or last, is there a better alternative.",
+        "Do not sell harder. Reduce uncertainty.",
+        "Lead with risk reversals if you have them: guarantees, trials, free shipping, free returns.",
+        "If you lack strong risk reversals, lean on social proof instead.",
+        "Include a dynamic product block to guide them back to the viewed product.",
+        "Add a brand-level reason to buy where you have one — the source's example uses a mission-based reason ('every tea they buy feeds five rescue dogs') with a supporting review.",
+        "Treat this email as especially important for higher AOV brands, which need more convincing before a first purchase."
+      ],
+      "caveats": [
+        "The higher-AOV emphasis is the presenter's reasoning, not measured by AOV band.",
+        "Mission-based angles only fit brands that genuinely have them."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "browse-abandonment",
+        "objection-handling",
+        "risk-reversal",
+        "social-proof",
+        "email-copywriting",
+        "conversion-optimization"
+      ],
+      "id": "aaef1103dc77dc13deb4e693",
+      "source_id": "1WQcWqe36XxPolHopi-PTOYh8vY8HC1zr",
+      "source_sha256": "69b3b9e9495ed44c6cb3241fbb24a4afac37bdcd623d5fd26d7ebd82e1e3a344",
+      "source_name": "Klaviyo email.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 2
+    },
+    {
+      "title": "Browse abandonment email 3: diagnose hesitation type before escalating with a discount",
+      "summary": "Classify remaining hesitation as price sensitivity, comparison shopping, or procrastination and escalate the offer intelligently.",
+      "use_when": "Writing the third browse-abandonment email, where the audience has ignored both the reminder and the trust-building email.",
+      "steps": [
+        "Accept the interpretation: after two ignored emails, non-conversion is hesitation rather than forgetfulness — they are not sure they should buy from your store.",
+        "Diagnose which of the three hesitation categories applies: price sensitivity, comparison shopping, or 'I'll buy later' procrastination.",
+        "Escalate with an offer only at this stage, not before. The source structures the flow so discounts appear in emails three and four, after the reminder and trust emails.",
+        "Match the escalation to the hesitation type rather than sending the same incentive to everyone.",
+        "For returning customers specifically, the source suggests the same escalation logic: a small incentive, a subscription option where applicable, a bundle angle, or a compelling reason to act now.",
+        "Aim to convert low intent into action rather than protecting loyalty perception — this is the source's stated goal for browse-abandonment sending."
+      ],
+      "caveats": [
+        "The three hesitation categories are the source's framework, not a measured taxonomy.",
+        "Escalating discounts in browse abandonment can erode margin; the source accepts this trade-off for volume brands but notes the tight-margin exception."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "browse-abandonment",
+        "offer-design",
+        "objection-handling",
+        "segmentation",
+        "conversion-optimization",
+        "retention"
+      ],
+      "id": "890a5c97d555e5397c05cc64",
+      "source_id": "1WQcWqe36XxPolHopi-PTOYh8vY8HC1zr",
+      "source_sha256": "69b3b9e9495ed44c6cb3241fbb24a4afac37bdcd623d5fd26d7ebd82e1e3a344",
+      "source_name": "Klaviyo email.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 2
+    }
+  ],
+  "request_id": "75ff6d149a5c004e9ce28584456282e66ee7842dc81f54fd35383087f78d978f",
+  "ecommerce_scope_version": 1
+}

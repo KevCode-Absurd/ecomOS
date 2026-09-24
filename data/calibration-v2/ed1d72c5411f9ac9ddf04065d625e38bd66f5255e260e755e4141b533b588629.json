@@ -1,0 +1,61 @@
+{
+  "request_id": "ed1d72c5411f9ac9ddf04065d625e38bd66f5255e260e755e4141b533b588629",
+  "provider": "openai",
+  "model": "gpt-5.6-terra",
+  "effort": "high",
+  "completion_limit": 8192,
+  "usage": {
+    "prompt_tokens": 245,
+    "completion_tokens": 394,
+    "total_tokens": 639,
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "audio_tokens": 0
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 0,
+      "audio_tokens": 0,
+      "accepted_prediction_tokens": 0,
+      "rejected_prediction_tokens": 0
+    }
+  },
+  "booked_cost_usd": 0.0053405,
+  "seconds": 9.84,
+  "finish_reason": "stop",
+  "output": {
+    "decision": "Do not launch a single multivariate test across hero, offer, and checkout this month. The traffic volume is substantial, but simultaneous changes would make results difficult to attribute and may create interaction effects across funnel stages. Run a prioritized sequence of controlled experiments instead; reserve a multivariate design only if the goal is explicitly to estimate interactions and sufficient variants, runtime, and guardrails are approved.",
+    "next_steps": [
+      "Prioritize one hypothesis by expected impact, implementation risk, and reversibility; start with the hero or offer before checkout unless checkout has a known material friction issue.",
+      "Run a conventional A/B test with purchase conversion as the primary metric and revenue per session, checkout completion, refund/cancellation rate, and page performance as guardrails.",
+      "Pre-register the hypothesis, variants, eligibility, primary metric, minimum detectable effect, significance approach, and stopping rules before launch.",
+      "Validate experiment assignment, purchase-event deduplication, revenue capture, and segment reporting in a QA/staging pass.",
+      "Plan the next test only after the first reaches its predetermined decision threshold; consider a factorial test later if interaction measurement is required."
+    ],
+    "missing_inputs": [
+      "Proposed hero, offer, and checkout variants, including discount economics and operational constraints.",
+      "Target minimum detectable effect, statistical method, desired confidence/power, and maximum acceptable test duration.",
+      "Current funnel rates by step, device, channel, geography, and new versus returning customers.",
+      "Checkout-change scope and risk assessment, including payment, compliance, fulfillment, and customer-support implications."
+    ],
+    "evidence_used": [],
+    "assumptions": [
+      "General experimentation practice is used because no library evidence was supplied.",
+      "Validated tracking supports measurement but does not by itself confirm experiment-platform assignment quality or metric integrity.",
+      "Monthly sessions and a 2% baseline imply meaningful order volume, but sample adequacy depends on traffic allocation, number of variants, target effect size, and runtime.",
+      "The request seeks a decision about experimental design rather than a permanent site rollout."
+    ]
+  },
+  "raw_content": "{\"decision\":\"Do not launch a single multivariate test across hero, offer, and checkout this month. The traffic volume is substantial, but simultaneous changes would make results difficult to attribute and may create interaction effects across funnel stages. Run a prioritized sequence of controlled experiments instead; reserve a multivariate design only if the goal is explicitly to estimate interactions and sufficient variants, runtime, and guardrails are approved.\",\"next_steps\":[\"Prioritize one hypothesis by expected impact, implementation risk, and reversibility; start with the hero or offer before checkout unless checkout has a known material friction issue.\",\"Run a conventional A/B test with purchase conversion as the primary metric and revenue per session, checkout completion, refund/cancellation rate, and page performance as guardrails.\",\"Pre-register the hypothesis, variants, eligibility, primary metric, minimum detectable effect, significance approach, and stopping rules before launch.\",\"Validate experiment assignment, purchase-event deduplication, revenue capture, and segment reporting in a QA/staging pass.\",\"Plan the next test only after the first reaches its predetermined decision threshold; consider a factorial test later if interaction measurement is required.\"],\"missing_inputs\":[\"Proposed hero, offer, and checkout variants, including discount economics and operational constraints.\",\"Target minimum detectable effect, statistical method, desired confidence/power, and maximum acceptable test duration.\",\"Current funnel rates by step, device, channel, geography, and new versus returning customers.\",\"Checkout-change scope and risk assessment, including payment, compliance, fulfillment, and customer-support implications.\"],\"evidence_used\":[],\"assumptions\":[\"General experimentation practice is used because no library evidence was supplied.\",\"Validated tracking supports measurement but does not by itself confirm experiment-platform assignment quality or metric integrity.\",\"Monthly sessions and a 2% baseline imply meaningful order volume, but sample adequacy depends on traffic allocation, number of variants, target effect size, and runtime.\",\"The request seeks a decision about experimental design rather than a permanent site rollout.\"]}",
+  "input": {
+    "question": "Should we launch a multivariate test changing the hero, offer and checkout this month?",
+    "brand_facts": {
+      "business": "skincare ecommerce",
+      "tracking_validated": true,
+      "baseline_purchase_conversion": 0.02,
+      "monthly_sessions": 600000
+    },
+    "library": []
+  },
+  "system_prompt_sha256": "7dc3dfaec961d2e1bf4d87e8f0024baecfafc5c2fe9e49fd3d0c323e298c7ef4"
+}

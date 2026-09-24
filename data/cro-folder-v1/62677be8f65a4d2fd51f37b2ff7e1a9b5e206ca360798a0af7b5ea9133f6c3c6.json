@@ -1,0 +1,501 @@
+{
+  "request_id": "62677be8f65a4d2fd51f37b2ff7e1a9b5e206ca360798a0af7b5ea9133f6c3c6",
+  "provider": "deepseek",
+  "model": "deepseek-flash",
+  "effort": "high",
+  "completion_limit": 32768,
+  "usage": {
+    "prompt_tokens": 4274,
+    "completion_tokens": 21116,
+    "total_tokens": 25390,
+    "prompt_tokens_details": {
+      "cached_tokens": 3584
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 18382
+    },
+    "prompt_cache_hit_tokens": 3584,
+    "prompt_cache_miss_tokens": 690
+  },
+  "booked_cost_usd": 0.0266214,
+  "seconds": 73.7,
+  "finish_reason": "stop",
+  "output": {
+    "units": [
+      {
+        "id": "u1",
+        "kind": "principle",
+        "title": "Shoppers require trust signals and social proof",
+        "claim": {
+          "text": "The source reports that 86% of shoppers require trust signals and social proof to make a purchase decision.",
+          "quote": "The percentage of shoppers who require trust signals and social proof to make a purchase decision: 86%."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No specific trust signal types or placement are stated in this passage."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u2",
+        "kind": "warning",
+        "title": "A/B winners do not compound linearly",
+        "claim": {
+          "text": "The source warns that shipping all 20 A/B test winners will not make conversion rate 20x better.",
+          "quote": "Run 20 A/B tests. Ship all 20 winners. Your conversion rate should be 20x better, right? Not even close."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No method for quantifying interaction effects or cumulative drift is provided."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u3",
+        "kind": "principle",
+        "title": "Holdout measures cumulative program impact",
+        "claim": {
+          "text": "The source states that a holdout group measures the real, net cumulative impact of everything you've shipped.",
+          "quote": "A holdout group measures the **real, net cumulative impact of everything you've shipped**."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": []
+      },
+      {
+        "id": "u4",
+        "kind": "action",
+        "title": "Test popup conversion impact with a holdout",
+        "claim": {
+          "text": "The source recommends using a holdout rather than a standard A/B test to properly test the belief that popups hurt conversion.",
+          "quote": "To test this properly, you need a holdout, not a standard A/B test."
+        },
+        "action": {
+          "text": "To test whether popups hurt conversion, use a holdout, not a standard A/B test.",
+          "quote": "To test this properly, you need a holdout, not a standard A/B test."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "A persistent belief in ecommerce is that popups hurt conversion.",
+              "quote": "A persistent belief in ecommerce is that popups hurt conversion."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No sample size or duration stated for popup holdout beyond the 90/10 split."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u5",
+        "kind": "principle",
+        "title": "Popup holdout measures net incremental revenue",
+        "claim": {
+          "text": "The source says a popup holdout reveals not just whether popups increase opt-ins but whether they generate net incremental revenue after accounting for any conversion suppression.",
+          "quote": "Not just whether popups increase opt-ins, but whether they generate net incremental revenue after accounting for any conversion suppression."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u4"
+          }
+        ]
+      },
+      {
+        "id": "u6",
+        "kind": "warning",
+        "title": "Do not attribute full email lift",
+        "claim": {
+          "text": "The source warns that attributing the full 3.8% to email may cause over-investment in email at the expense of other channels that could generate more incremental value.",
+          "quote": "If you attribute the full 3.8% to email, you may over-invest in email at the expense of other channels that could generate more incremental value."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "An email promotional campaign shows a promotional group purchase rate of 3.8% and a true incremental lift of 1.7 percentage points.",
+              "quote": "The true incremental lift of the campaign is **1.7 percentage points**—not the full 3.8%."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": []
+      },
+      {
+        "id": "u7",
+        "kind": "principle",
+        "title": "Incrementality is a leading KPI",
+        "claim": {
+          "text": "According to IAB research cited by the source, 71% of advertisers now recognize incrementality as their most important KPI.",
+          "quote": "According to IAB research, **71% of advertisers now recognize incrementality as their most important KPI**."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "IAB research citation details are not provided."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u8",
+        "kind": "principle",
+        "title": "Core incrementality question",
+        "claim": {
+          "text": "The source states the core question of incrementality testing is what would happen to total revenue if a channel were turned off for two weeks.",
+          "quote": "If we turned this channel off for two weeks, what would actually happen to total revenue?"
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": []
+      },
+      {
+        "id": "u9",
+        "kind": "warning",
+        "title": "Retargeting may not be incremental",
+        "claim": {
+          "text": "The source warns that 70% of retargeting-attributed conversions would have happened without the ad spend, meaning the brand was paying to intercept a journey that was already complete.",
+          "quote": "70% of retargeting-attributed conversions would have happened without the ad spend."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "A D2C brand's retargeting campaigns report the highest ROAS in their media mix.",
+              "quote": "A D2C brand runs retargeting campaigns that report the highest ROAS in their media mix."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": []
+      },
+      {
+        "id": "u10",
+        "kind": "example",
+        "title": "Hourglass Meta geo holdout",
+        "claim": {
+          "text": "The source describes Hourglass, a luxury beauty brand with retail presence through Sephora, using a 10-DMA holdout to measure Meta's overall incremental impact across the country, with the ten DMAs showing correlations of 0.96–0.99 with control markets for conversions and revenue.",
+          "quote": "10 DMA holdout to measure Meta's overall impact across the country. The ten DMAs had correlations of **0.96–0.99** with control markets for conversions and revenue, resulting in a very high-powered test."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The passage is cut off after 'very high-powered test'; the test result and conclusions are missing."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u11",
+        "kind": "action",
+        "title": "Skip advanced causal inference and off-site incrementality",
+        "claim": {
+          "text": "The source instructs to skip advanced causal inference modeling techniques and off-site incrementality testing setups.",
+          "quote": "Skip. Advanced causal inference modeling techniques (e.g., Bayesian Structural Time Series, Propensity Score Matching) and off-site incrementality testing setups."
+        },
+        "action": {
+          "text": "Skip advanced causal inference modeling techniques and off-site incrementality testing setups.",
+          "quote": "Skip. Advanced causal inference modeling techniques (e.g., Bayesian Structural Time Series, Propensity Score Matching) and off-site incrementality testing setups."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "This scope instruction applies to the CRO playbook's coverage, not necessarily to all CRO programs."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u12",
+        "kind": "example",
+        "title": "User-level holdout",
+        "claim": {
+          "text": "The source describes a user-level holdout as randomizing individual logged-in users or devices, best for email campaigns, loyalty programs, and personalization, such as holding back 10% of an email list from a promotional campaign to measure true incremental lift.",
+          "quote": "| **User-level holdout** | Individual logged-in users or devices | Email campaigns, loyalty programs, personalization | Hold back 10% of email list from a promotional campaign; measure true incremental lift |"
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": []
+      },
+      {
+        "id": "u13",
+        "kind": "example",
+        "title": "Geo holdout",
+        "claim": {
+          "text": "The source describes a geo holdout as randomizing geographic regions (DMAs, cities, countries), best for ad spend and channel-level incrementality, such as pausing Meta ads in 10 matched DMAs for 6 weeks and comparing conversions to control regions.",
+          "quote": "| **Geo holdout** | Geographic regions (DMAs, cities, countries) | Ad spend, channel-level incrementality | Pause Meta ads in 10 matched DMAs for 6 weeks; compare conversions to control regions |"
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": []
+      },
+      {
+        "id": "u14",
+        "kind": "example",
+        "title": "Feature-specific holdout",
+        "claim": {
+          "text": "The source describes a feature-specific holdout as randomizing users within a specific feature, best for recommendation engines, popups, and personalization, such as holding back 5% of users from seeing product recommendations to measure incremental revenue.",
+          "quote": "| **Feature-specific holdout** | Users within a specific feature | Recommendation engines, popups, personalization | Hold back 5% of users from seeing product recommendations; measure incremental revenue |"
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": []
+      },
+      {
+        "id": "u15",
+        "kind": "principle",
+        "title": "Holdout proves program revenue",
+        "claim": {
+          "text": "The source states that without a holdout, you could only say you ran tests and some won, and could not prove that the program as a whole generated revenue.",
+          "quote": "Without a holdout, you would only be able to say \"we ran tests and some won\"—you could not prove that the program as a whole generated revenue."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": []
+      },
+      {
+        "id": "u16",
+        "kind": "principle",
+        "title": "Winners and losers can behave differently in combination",
+        "claim": {
+          "text": "The source states that some winners add no incremental value after previous changes, and some that lost individually might perform better in combination.",
+          "quote": "Some winners add no incremental value after previous changes. Some that lost individually might perform better in combination."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": []
+      }
+    ],
+    "more_units": true,
+    "unresolved": [
+      "The source text is cut off mid-example after 'resulting in a very high-powered test'; the Hourglass geo holdout results and conclusions are missing.",
+      "Additional distinct units were omitted due to the 16-unit cap: interaction effects example, cumulative drift example, attribution confusion example, and the retargeting alternative of using the channel only for specific deal announcements.",
+      "The requested output schema omits a separate coverage field; omitted-unit notes are placed in unresolved."
+    ]
+  },
+  "raw_content": "{\"units\":[{\"id\":\"u1\",\"kind\":\"principle\",\"title\":\"Shoppers require trust signals and social proof\",\"claim\":{\"text\":\"The source reports that 86% of shoppers require trust signals and social proof to make a purchase decision.\",\"quote\":\"The percentage of shoppers who require trust signals and social proof to make a purchase decision: 86%.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"No specific trust signal types or placement are stated in this passage.\"],\"relations\":[]},{\"id\":\"u2\",\"kind\":\"warning\",\"title\":\"A/B winners do not compound linearly\",\"claim\":{\"text\":\"The source warns that shipping all 20 A/B test winners will not make conversion rate 20x better.\",\"quote\":\"Run 20 A/B tests. Ship all 20 winners. Your conversion rate should be 20x better, right? Not even close.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"No method for quantifying interaction effects or cumulative drift is provided.\"],\"relations\":[]},{\"id\":\"u3\",\"kind\":\"principle\",\"title\":\"Holdout measures cumulative program impact\",\"claim\":{\"text\":\"The source states that a holdout group measures the real, net cumulative impact of everything you've shipped.\",\"quote\":\"A holdout group measures the **real, net cumulative impact of everything you've shipped**.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[],\"relations\":[]},{\"id\":\"u4\",\"kind\":\"action\",\"title\":\"Test popup conversion impact with a holdout\",\"claim\":{\"text\":\"The source recommends using a holdout rather than a standard A/B test to properly test the belief that popups hurt conversion.\",\"quote\":\"To test this properly, you need a holdout, not a standard A/B test.\"},\"action\":{\"text\":\"To test whether popups hurt conversion, use a holdout, not a standard A/B test.\",\"quote\":\"To test this properly, you need a holdout, not a standard A/B test.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"A persistent belief in ecommerce is that popups hurt conversion.\",\"quote\":\"A persistent belief in ecommerce is that popups hurt conversion.\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"No sample size or duration stated for popup holdout beyond the 90/10 split.\"],\"relations\":[]},{\"id\":\"u5\",\"kind\":\"principle\",\"title\":\"Popup holdout measures net incremental revenue\",\"claim\":{\"text\":\"The source says a popup holdout reveals not just whether popups increase opt-ins but whether they generate net incremental revenue after accounting for any conversion suppression.\",\"quote\":\"Not just whether popups increase opt-ins, but whether they generate net incremental revenue after accounting for any conversion suppression.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u4\"}]},{\"id\":\"u6\",\"kind\":\"warning\",\"title\":\"Do not attribute full email lift\",\"claim\":{\"text\":\"The source warns that attributing the full 3.8% to email may cause over-investment in email at the expense of other channels that could generate more incremental value.\",\"quote\":\"If you attribute the full 3.8% to email, you may over-invest in email at the expense of other channels that could generate more incremental value.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"An email promotional campaign shows a promotional group purchase rate of 3.8% and a true incremental lift of 1.7 percentage points.\",\"quote\":\"The true incremental lift of the campaign is **1.7 percentage points**—not the full 3.8%.\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[],\"relations\":[]},{\"id\":\"u7\",\"kind\":\"principle\",\"title\":\"Incrementality is a leading KPI\",\"claim\":{\"text\":\"According to IAB research cited by the source, 71% of advertisers now recognize incrementality as their most important KPI.\",\"quote\":\"According to IAB research, **71% of advertisers now recognize incrementality as their most important KPI**.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"IAB research citation details are not provided.\"],\"relations\":[]},{\"id\":\"u8\",\"kind\":\"principle\",\"title\":\"Core incrementality question\",\"claim\":{\"text\":\"The source states the core question of incrementality testing is what would happen to total revenue if a channel were turned off for two weeks.\",\"quote\":\"If we turned this channel off for two weeks, what would actually happen to total revenue?\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[],\"relations\":[]},{\"id\":\"u9\",\"kind\":\"warning\",\"title\":\"Retargeting may not be incremental\",\"claim\":{\"text\":\"The source warns that 70% of retargeting-attributed conversions would have happened without the ad spend, meaning the brand was paying to intercept a journey that was already complete.\",\"quote\":\"70% of retargeting-attributed conversions would have happened without the ad spend.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"A D2C brand's retargeting campaigns report the highest ROAS in their media mix.\",\"quote\":\"A D2C brand runs retargeting campaigns that report the highest ROAS in their media mix.\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[],\"relations\":[]},{\"id\":\"u10\",\"kind\":\"example\",\"title\":\"Hourglass Meta geo holdout\",\"claim\":{\"text\":\"The source describes Hourglass, a luxury beauty brand with retail presence through Sephora, using a 10-DMA holdout to measure Meta's overall incremental impact across the country, with the ten DMAs showing correlations of 0.96–0.99 with control markets for conversions and revenue.\",\"quote\":\"10 DMA holdout to measure Meta's overall impact across the country. The ten DMAs had correlations of **0.96–0.99** with control markets for conversions and revenue, resulting in a very high-powered test.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The passage is cut off after 'very high-powered test'; the test result and conclusions are missing.\"],\"relations\":[]},{\"id\":\"u11\",\"kind\":\"action\",\"title\":\"Skip advanced causal inference and off-site incrementality\",\"claim\":{\"text\":\"The source instructs to skip advanced causal inference modeling techniques and off-site incrementality testing setups.\",\"quote\":\"Skip. Advanced causal inference modeling techniques (e.g., Bayesian Structural Time Series, Propensity Score Matching) and off-site incrementality testing setups.\"},\"action\":{\"text\":\"Skip advanced causal inference modeling techniques and off-site incrementality testing setups.\",\"quote\":\"Skip. Advanced causal inference modeling techniques (e.g., Bayesian Structural Time Series, Propensity Score Matching) and off-site incrementality testing setups.\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"This scope instruction applies to the CRO playbook's coverage, not necessarily to all CRO programs.\"],\"relations\":[]},{\"id\":\"u12\",\"kind\":\"example\",\"title\":\"User-level holdout\",\"claim\":{\"text\":\"The source describes a user-level holdout as randomizing individual logged-in users or devices, best for email campaigns, loyalty programs, and personalization, such as holding back 10% of an email list from a promotional campaign to measure true incremental lift.\",\"quote\":\"| **User-level holdout** | Individual logged-in users or devices | Email campaigns, loyalty programs, personalization | Hold back 10% of email list from a promotional campaign; measure true incremental lift |\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[],\"relations\":[]},{\"id\":\"u13\",\"kind\":\"example\",\"title\":\"Geo holdout\",\"claim\":{\"text\":\"The source describes a geo holdout as randomizing geographic regions (DMAs, cities, countries), best for ad spend and channel-level incrementality, such as pausing Meta ads in 10 matched DMAs for 6 weeks and comparing conversions to control regions.\",\"quote\":\"| **Geo holdout** | Geographic regions (DMAs, cities, countries) | Ad spend, channel-level incrementality | Pause Meta ads in 10 matched DMAs for 6 weeks; compare conversions to control regions |\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[],\"relations\":[]},{\"id\":\"u14\",\"kind\":\"example\",\"title\":\"Feature-specific holdout\",\"claim\":{\"text\":\"The source describes a feature-specific holdout as randomizing users within a specific feature, best for recommendation engines, popups, and personalization, such as holding back 5% of users from seeing product recommendations to measure incremental revenue.\",\"quote\":\"| **Feature-specific holdout** | Users within a specific feature | Recommendation engines, popups, personalization | Hold back 5% of users from seeing product recommendations; measure incremental revenue |\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[],\"relations\":[]},{\"id\":\"u15\",\"kind\":\"principle\",\"title\":\"Holdout proves program revenue\",\"claim\":{\"text\":\"The source states that without a holdout, you could only say you ran tests and some won, and could not prove that the program as a whole generated revenue.\",\"quote\":\"Without a holdout, you would only be able to say \\\"we ran tests and some won\\\"—you could not prove that the program as a whole generated revenue.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[],\"relations\":[]},{\"id\":\"u16\",\"kind\":\"principle\",\"title\":\"Winners and losers can behave differently in combination\",\"claim\":{\"text\":\"The source states that some winners add no incremental value after previous changes, and some that lost individually might perform better in combination.\",\"quote\":\"Some winners add no incremental value after previous changes. Some that lost individually might perform better in combination.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[],\"relations\":[]}],\"more_units\":true,\"unresolved\":[\"The source text is cut off mid-example after 'resulting in a very high-powered test'; the Hourglass geo holdout results and conclusions are missing.\",\"Additional distinct units were omitted due to the 16-unit cap: interaction effects example, cumulative drift example, attribution confusion example, and the retargeting alternative of using the channel only for specific deal announcements.\",\"The requested output schema omits a separate coverage field; omitted-unit notes are placed in unresolved.\"]}",
+  "input": {
+    "source": {
+      "source_id": "13xcmKLUtePPNdWOs5tNDQCnQJxcH3vGJ",
+      "source_sha256": "9cdaed43cd0bc6ed00726991891fa1bd4ffe07c547fa616e4ee05e29a9e790e4",
+      "locator": "batch",
+      "start": 0,
+      "text": "06-MEA / measurement and analytics\n\nGoes here. Website and business analytics, measuring organic and paid traffic, Google Analytics, Shopify reporting, root cause analysis frameworks, multi-touch attribution (MTA), post-purchase surveys, marketing mix modeling (MMM), conversion rate optimization (CRO) methodologies, quiz funnel psychology, heatmaps, causal inference methods, incrementality testing, and general marketing/business performance dashboards.\n\nNot here.\n\nPaid advertising performance metrics, ROAS, scaling rules, bidding, or ad-platform specific attribution -> 11-ADC\n\nFinancial modeling or accounting -> 20-FIN\n\nHeader. url: rights: public_reference why: Details a comprehensive, stage-by-stage Conversion Rate Optimization (CRO) playbook for e-commerce, outlining industry benchmarks, funnel friction points, core conversion levers, and structured A/B testing methodologies to maximize revenue from existing traffic. modules: [MEA] topics: [conversion rate optimization] tier: 2 scope_hint: core\n\nTopics. conversion rate optimization / Deconstructing the e-commerce conversion funnel stage-by-stage to identify and eliminate friction points, from homepage personalization and category page filtering to product detail page (PDP) trust signals and checkout UX. Highlighting critical optimizations such as prioritizing guest checkout, speeding up mobile load times (aiming for under 2 seconds LCP to prevent drastic conversion drops), and addressing the 70% cart abandonment rate through transparent pricing and diverse payment options. Establishing a structured CRO testing methodology, emphasizing the need for rigorous A/B testing, hypothesis frameworks (like PIE or ICE), and adequate sample sizes to achieve a high experiment win rate.\n\nLook for. The average e-commerce cart abandonment rate: 70.22%, with the primary cause (39%) being extra costs like shipping or taxes appearing too late in checkout. The financial impact of a 100ms delay in page load time: a 3.5% to 7% drop in conversion rate. The percentage of shoppers who require trust signals and social proof to make a purchase decision: 86%. The best practice for category pages: avoiding premature \"Add to Cart\" buttons to prevent decision conflict during the browsing and exploration phase.\n\nSkip. Advanced causal inference modeling techniques (e.g., Bayesian Structural Time Series, Propensity Score Matching) and off-site incrementality testing setups.\n\nScope mix. Almost all core.\n\nVolume. 15 to 20.\n\nBelow is a detailed breakdown of the causal measurement concepts you asked about—holdouts, incrementality, and causal inference methods—applied specifically to ecommerce CRO, with concrete examples from real brands.\n\n---\n\n# Deep Dive: Holdouts, Incrementality, and Causal Inference in Ecommerce CRO\n\n---\n\n## 1. The Core Problem: Why A/B Tests Alone Are Not Enough\n\nA standard A/B test answers a narrow question: *Did Variant B outperform Variant A for the users who saw it during this specific test window?* That is useful, but it does not answer the questions that actually determine whether your CRO program is creating business value:\n\n1. **Would these conversions have happened anyway?** If you retarget a user who already has a cart full of items, did your ad cause the purchase, or would they have come back regardless?\n\n2. **What is the cumulative effect of shipping 20 winners?** Individual tests cannot capture interaction effects, cumulative drift, or attribution confusion.\n\n3. **What happens when you turn a channel off?** Does total revenue drop, or does it just shift to another channel?\n\nThis is where **holdouts**, **incrementality testing**, and **causal inference methods** come in.\n\n---\n\n## 2. Holdout Groups: The Foundation of Causal Measurement\n\n### 2.1 What a Holdout Group Is\n\nA **holdout group** is a randomly selected segment of users who are deliberately excluded from an intervention—whether that intervention is a single campaign, a set of site changes, or an entire CRO program. The holdout continues to see the original experience while everyone else receives the change. The difference in outcomes between the two groups is the **true incremental effect** of the intervention.\n\nThe critical distinction from a standard A/B test control group is **duration and scope**. An A/B test control exists for the duration of one test. A holdout group can persist for weeks or months and is excluded from *all* improvements, not just one variant.\n\n### 2.2 Why Holdouts Matter More Than A/B Tests for Program Value\n\nRun 20 A/B tests. Ship all 20 winners. Your conversion rate should be 20x better, right? Not even close.\n\nThe problem is **interaction effects and cumulative drift**:\n\n- **Interaction effects**: A new CTA button color that won in isolation might not work when combined with a new homepage layout that also won. Buyers' attention patterns have shifted.\n\n- **Cumulative drift**: Your buyer population changes, competitive context shifts, and seasonal patterns move. A winner from January may not represent a true improvement by December.\n\n- **Attribution confusion**: If you shipped 20 changes and conversion rate improved 8%, which changes drove the improvement? Some winners add no incremental value after previous changes. Some that lost individually might perform better in combination.\n\nA holdout group measures the **real, net cumulative impact of everything you've shipped**.\n\n### 2.3 Ecommerce Example: Measuring CRO Program ROI\n\nImagine an ecommerce brand running continuous optimization:\n\n- **Setup**: 5% of all traffic is randomly assigned to a permanent holdout group. These users see the site as it existed before the CRO program began.\n\n- **Duration**: 90 days.\n\n- **Measurement**: At the end of the period, the holdout group converts at **2.5%**. Optimized users convert at **2.9%**.\n\n- **Conclusion**: The CRO program generated a **0.4 percentage point improvement** (16% relative lift) that would not exist without the program.\n\nThis is the most honest proof of program value available. Without a holdout, you would only be able to say \"we ran tests and some won\"—you could not prove that the program as a whole generated revenue.\n\n### 2.4 Types of Holdouts in Ecommerce\n\n| Holdout Type | Unit of Randomization | Best For | Example |\n\n|---|---|---|---|\n\n| **User-level holdout** | Individual logged-in users or devices | Email campaigns, loyalty programs, personalization | Hold back 10% of email list from a promotional campaign; measure true incremental lift |\n\n| **Geo holdout** | Geographic regions (DMAs, cities, countries) | Ad spend, channel-level incrementality | Pause Meta ads in 10 matched DMAs for 6 weeks; compare conversions to control regions |\n\n| **CRO program holdout** | Random sample of all traffic | Proving cumulative CRO program value | 5% of traffic sees the \"old\" site for 90 days while everyone else gets all shipped winners |\n\n| **Feature-specific holdout** | Users within a specific feature | Recommendation engines, popups, personalization | Hold back 5% of users from seeing product recommendations; measure incremental revenue |\n\n### 2.5 Popup Holdout Example\n\nA persistent belief in ecommerce is that popups hurt conversion. To test this properly, you need a holdout, not a standard A/B test.\n\n**Setup**: \n\n- Group A (90%): Sees the popup\n\n- Group B (10% holdout): Does not see any popup\n\n- Both groups are tagged and tracked through their entire customer journey\n\n- Measurement: Revenue per visitor (RPV), AOV, conversion rate, and email/SMS opt-in rates\n\n**What you learn**: Not just whether popups increase opt-ins, but whether they generate net incremental revenue after accounting for any conversion suppression.\n\n### 2.6 Email Marketing Holdout Example\n\nAn ecommerce brand holds back **10% of their email list** from receiving a promotional campaign. The control group purchases at a baseline rate of **2.1%**, while the promotional group purchases at **3.8%**. The true incremental lift of the campaign is **1.7 percentage points**—not the full 3.8%. The rest would have happened organically.\n\nThis distinction is critical for budget allocation. If you attribute the full 3.8% to email, you may over-invest in email at the expense of other channels that could generate more incremental value.\n\n---\n\n## 3. Incrementality Testing: The Business Application of Holdouts\n\n### 3.1 What Incrementality Testing Is\n\n**Incrementality testing** uses holdout methodologies to measure the **net sales uplift that would not have occurred without the campaign**. According to IAB research, **71% of advertisers now recognize incrementality as their most important KPI**.\n\nThe core question: *If we turned this channel off for two weeks, what would actually happen to total revenue?*\n\n### 3.2 Ecommerce Example: Retargeting Incrementality\n\nA D2C brand runs retargeting campaigns that report the highest ROAS in their media mix. Users who visited the store are served ads, click, and convert at high rates. On paper, this looks like a top-performing channel.\n\nThen they run an incrementality test:\n\n- **Method**: Take the retargeting audience (users who visited in the last 30 days but did not purchase). Split them **80/20**.\n\n- **Treatment**: Run retargeting ads to the 80%.\n\n- **Holdout**: Suppress all retargeting to the 20%.\n\n- **Duration**: 14 days.\n\n- **Result**: The holdout group converts at **70% of the rate** of the exposed group. True incrementality is **30%**.\n\n**Interpretation**: 70% of retargeting-attributed conversions would have happened without the ad spend. The brand was paying to intercept a journey that was already complete. They stopped running standard retargeting offers and only used the channel for specific deal announcements.\n\n### 3.3 Geo Holdout Example: Hourglass Cosmetics\n\nHourglass, a luxury beauty brand with significant retail presence through Sephora, needed to measure Meta's true incremental impact.\n\n- **Design**: 10 DMA holdout to measure Meta's overall impact across the country. The ten DMAs had correlations of **0.96–0.99** with control markets for conversions and revenue, resulting in a very high-powered test."
+    },
+    "already_extracted_claims": [
+      "The source recommends deconstructing the e-commerce conversion funnel stage-by-stage to identify and eliminate friction points.",
+      "The source recommends prioritizing guest checkout.",
+      "The source recommends speeding up mobile load times with a target under 2 seconds LCP to prevent drastic conversion drops.",
+      "The source recommends addressing the 70% cart abandonment rate through transparent pricing and diverse payment options.",
+      "The source recommends establishing a structured CRO testing methodology emphasizing rigorous A/B testing, hypothesis frameworks like PIE or ICE, and adequate sample sizes to achieve a high experiment win rate.",
+      "The source says the best practice for category pages is to avoid premature \"Add to Cart\" buttons to prevent decision conflict during the browsing and exploration phase.",
+      "The source defines a holdout group as a randomly selected segment deliberately excluded from an intervention, with outcome differences between groups representing the true incremental effect.",
+      "The source says the critical distinction from a standard A/B test control group is duration and scope: an A/B test control exists for one test, while a holdout can persist for weeks or months and is excluded from all improvements, not just one variant.",
+      "The source says a standard A/B test answers a narrow question and does not answer the questions that determine whether the CRO program is creating business value.",
+      "The source reports an average e-commerce cart abandonment rate of 70.22%, with the primary cause (39%) being extra costs like shipping or taxes appearing too late in checkout.",
+      "The source reports that a 100ms delay in page load time causes a 3.5% to 7% drop in conversion rate.",
+      "The source defines incrementality testing as using holdout methodologies to measure the net sales uplift that would not have occurred without the campaign.",
+      "The source gives an example where 5% of all traffic is randomly assigned to a permanent holdout group for 90 days; the holdout converts at 2.5% and optimized users at 2.9%, a 0.4 percentage point (16% relative) lift.",
+      "The source gives a popup holdout setup: Group A (90%) sees the popup and Group B (10% holdout) does not see any popup; both are tracked to measure RPV, AOV, conversion rate, and email/SMS opt-in rates.",
+      "The source gives an email holdout example where 10% of the email list is held back from a promotional campaign; control purchases at 2.1%, promotional group at 3.8%, and true incremental lift is 1.7 percentage points.",
+      "The source gives a D2C retargeting example: the retargeting audience is split 80/20, the 80% receives retargeting ads, the 20% is suppressed for 14 days; the holdout converts at 70% of the exposed rate, so true incrementality is 30%, and the brand stopped standard retargeting offers."
+    ],
+    "instruction": "Extract remaining distinct task-sized units. Do not repeat already extracted claims."
+  },
+  "system_prompt_sha256": "f23d9572f5bf1b93a5822a96b30f4ea85c0469c454d5ce80d227418df3d2e25e"
+}

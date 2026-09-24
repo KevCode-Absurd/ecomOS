@@ -1,0 +1,183 @@
+{
+  "status": "complete",
+  "mapping": {
+    "A": "cheap_without",
+    "B": "frontier_with",
+    "C": "cheap_with",
+    "D": "frontier_without"
+  },
+  "judge_model": "deepseek-flash",
+  "output": {
+    "reviews": [
+      {
+        "label": "A",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 4,
+          "prioritization": 4
+        },
+        "strengths": [
+          "Correctly calculates full-price and discounted waterfalls, including payment fees on discounted revenue.",
+          "Adds correct break-even CAC/ROAS and maximum supportable discount at $30 CAC.",
+          "Uses TrailFold inventory, cash constraint and owner-approval policy to reinforce the no recommendation.",
+          "Clear recommendation with prioritized next steps and appropriate caveats."
+        ],
+        "issues": [
+          "Adds inventory/PDP/email and return-rate discussion beyond the narrow per-order cost comparison; useful but extra.",
+          "Asks about return/refund treatment even though the task says to use only listed item costs; does not include returns in the math."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Full price pre-ad 39.60, after-ad 9.60, break-even ROAS about 2.02.",
+            "met": true,
+            "reason": "Shows $80 - $28 - $2 - $8 - $2.40 = $39.60; after CAC $9.60; 80/39.60 = 2.02."
+          },
+          {
+            "criterion": "Discount price 64, pre-ad 24.08, after-ad -5.92, break-even ROAS about 2.66.",
+            "met": true,
+            "reason": "Shows $64 - $28 - $2 - $8 - $1.92 = $24.08; after CAC -$5.92; 64/24.08 = 2.66."
+          },
+          {
+            "criterion": "Do not treat a discount as automatically profitable or rely on unknown LTV.",
+            "met": true,
+            "reason": "Recommends no at $30 CAC, frames conversion lift as hypothesis, and excludes LTV/other products."
+          }
+        ]
+      },
+      {
+        "label": "B",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 4,
+          "prioritization": 4
+        },
+        "strengths": [
+          "Accurate, focused waterfall and clear no recommendation.",
+          "Defines pre-ad and after-ad contribution and gives required CAC thresholds.",
+          "Explicitly excludes LTV, other products, and unlisted costs.",
+          "Notes that a conversion-driven CAC improvement is a hypothesis, not established."
+        ],
+        "issues": [
+          "No questions or missing-facts list; less explicit about unresolved inputs such as incremental CAC.",
+          "Does not mention inventory/cash constraint, though this was not required by the task."
+        ],
+        "critical_errors": [],
+        "questions_useful": false,
+        "criterion_results": [
+          {
+            "criterion": "Full price pre-ad 39.60, after-ad 9.60, break-even ROAS about 2.02.",
+            "met": true,
+            "reason": "Shows $80 - $28 - $2 - $8 - $2.40 = $39.60; after CAC $9.60; 80/39.60 = 2.02."
+          },
+          {
+            "criterion": "Discount price 64, pre-ad 24.08, after-ad -5.92, break-even ROAS about 2.66.",
+            "met": true,
+            "reason": "Shows $64 - $28 - $2 - $8 - $1.92 = $24.08; after CAC -$5.92; 64/24.08 = 2.66."
+          },
+          {
+            "criterion": "Do not treat a discount as automatically profitable or rely on unknown LTV.",
+            "met": true,
+            "reason": "Rejects the offer at $30 CAC and states no LTV or other-product revenue is assumed."
+          }
+        ]
+      },
+      {
+        "label": "C",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 4,
+          "prioritization": 4
+        },
+        "strengths": [
+          "Correct calculations, including required CAC reductions and maximum supportable discount.",
+          "Uses owner approval, cash constraint and attribution caveat appropriately.",
+          "Separates hypotheses from supplied facts and does not rely on LTV.",
+          "Clear no recommendation with practical next steps."
+        ],
+        "issues": [
+          "Suggests bundle/loyalty/other-product alternatives, slightly outside the task's no-other-products calculation scope.",
+          "Multiple alternatives are less tightly prioritized than a single next step, though the main recommendation is clear."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Full price pre-ad 39.60, after-ad 9.60, break-even ROAS about 2.02.",
+            "met": true,
+            "reason": "Shows $80 - $28 - $2 - $8 - $2.40 = $39.60; after CAC $9.60; 80/39.60 = 2.02."
+          },
+          {
+            "criterion": "Discount price 64, pre-ad 24.08, after-ad -5.92, break-even ROAS about 2.66.",
+            "met": true,
+            "reason": "Shows $64 - $28 - $2 - $8 - $1.92 = $24.08; after CAC -$5.92; 64/24.08 = 2.66."
+          },
+          {
+            "criterion": "Do not treat a discount as automatically profitable or rely on unknown LTV.",
+            "met": true,
+            "reason": "Recommends no at $30 CAC and treats conversion lift/bundle effects as unproven hypotheses."
+          }
+        ]
+      },
+      {
+        "label": "D",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 4,
+          "prioritization": 4
+        },
+        "strengths": [
+          "Accurate, compact comparison and clear no recommendation.",
+          "Correctly gives break-even CAC thresholds and preserves full-price contribution comparison.",
+          "Excludes LTV, other products and unlisted costs as requested.",
+          "Notes the discount would not fix economics at unchanged CAC."
+        ],
+        "issues": [
+          "No questions or missing-facts section; less explicit about unverified inputs.",
+          "Omits inventory/cash context, though this was not required by the task."
+        ],
+        "critical_errors": [],
+        "questions_useful": false,
+        "criterion_results": [
+          {
+            "criterion": "Full price pre-ad 39.60, after-ad 9.60, break-even ROAS about 2.02.",
+            "met": true,
+            "reason": "Shows $80 - $28 - $2 - $8 - $2.40 = $39.60; after CAC $9.60; 80/39.60 = 2.02."
+          },
+          {
+            "criterion": "Discount price 64, pre-ad 24.08, after-ad -5.92, break-even ROAS about 2.66.",
+            "met": true,
+            "reason": "Shows $64 - $28 - $2 - $8 - $1.92 = $24.08; after CAC -$5.92; 64/24.08 = 2.66."
+          },
+          {
+            "criterion": "Do not treat a discount as automatically profitable or rely on unknown LTV.",
+            "met": true,
+            "reason": "Keeps full price at stated CAC and explicitly excludes LTV/other products."
+          }
+        ]
+      }
+    ],
+    "ranking": [
+      "A",
+      "C",
+      "B",
+      "D"
+    ],
+    "summary": "All four correctly compute full-price pre-ad $39.60, after-ad $9.60, break-even ROAS 2.02; discounted pre-ad $24.08, after-ad -$5.92, break-even ROAS 2.66, and recommend no at $30 CAC. A is strongest overall because it adds correct inventory/cash guardrails and prioritized next steps; C is close with strong brand and attribution caveats; B and D are concise and accurate but less context-rich."
+  },
+  "request_id": "73ef3a73544b54387b05083d58dafbe514d558d85787314e41bfdda985b67c15",
+  "cost_upper_estimate_usd": 0.021389699999999998
+}

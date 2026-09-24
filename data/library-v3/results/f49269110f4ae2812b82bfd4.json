@@ -1,0 +1,257 @@
+{
+  "cards": [
+    {
+      "title": "Prevent command injection with argument arrays, not string templates",
+      "summary": "Use language APIs that accept a program plus an argument list so escaping is handled by the runtime, and never build shell strings from user input.",
+      "use_when": "You are building storefront features that shell out to a tool — image resizing, PDF generation, label printing, inventory export scripts, or any admin automation that runs a program on user-supplied values.",
+      "steps": [
+        "Identify every place in the store backend where a user-controlled value (filename, SKU, uploaded asset name, search term) is concatenated into a command string.",
+        "Replace string concatenation with the API that takes the program name plus an array of arguments; in Node-style runtimes the source used spawnSync with an argument array, and equivalent functions exist in Python, Ruby and other languages — verify the current API for your runtime version.",
+        "Rely on the runtime to escape each argument so quotes, semicolons and other attacker-controlled characters are treated as literal data, not shell syntax.",
+        "Confirm the semantics: the call should run exactly the named program with those arguments and nothing else, and should reject attempts to append a second command.",
+        "Check the return shape — the source found the API returns a child-process object rather than stdout, so inspect the exit status and read the captured stdout on success and stderr on failure, and surface the failure to the operator instead of silently continuing.",
+        "Treat escaping as only one control: if the command itself is dangerous because the user can choose any file, path or target, fix that separately with an allowlist of permitted files/directories and an authorization check on the requesting account.",
+        "Validate on your own staging environment with benign but tricky inputs such as a filename containing a semicolon and a filename containing quote characters, and confirm no second process runs.",
+        "For admin or agent automation, require that the tool allowlist is defined by the brand, log every invocation with the requesting user, and treat any retrieved text or document as data that cannot expand the allowed command set."
+      ],
+      "caveats": [
+        "Escaping alone does not make an inherently dangerous command safe — the source explicitly notes that if the produced command is one you don't want to run, nothing protects you.",
+        "The source presentation is a classroom demonstration on a deliberately vulnerable app; do not test injection strings against third-party or production systems you do not own.",
+        "Argument-array APIs and their exact behavior differ across languages and versions; verify the current interface rather than assuming.",
+        "Do not claim that using argument arrays guarantees security — it removes one class of injection but not path traversal, authorization gaps or bad command design."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "code-injection",
+        "input-validation",
+        "admin-automation",
+        "agent-tools",
+        "least-privilege",
+        "logging"
+      ],
+      "id": "f4b6df714ffd84d19fb5ed09",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 13
+    },
+    {
+      "title": "Recognize and close SQL injection in store login and lookup queries",
+      "summary": "Any query that concatenates user input into SQL can be manipulated to bypass login, enumerate the customer table, or delete data — parameterize queries and constrain what the query is allowed to return.",
+      "use_when": "You are reviewing or building store account login, order lookup, coupon validation, search filters, inventory reports or any admin query that embeds form input or URL parameters into SQL.",
+      "steps": [
+        "Map every query that mixes a literal template with request values — login forms and any 'find by email/SKU/coupon' route are the highest-value targets.",
+        "Understand the failure modes you are defending against: an attacker who can change the query can read any table, modify rows, run administrative operations such as dropping tables, and in some database configurations execute operating-system commands, which is effectively full server takeover.",
+        "Replace string interpolation with parameterized queries or prepared statements that bind values separately from the query structure, so user input can never alter the query's shape.",
+        "Where the schema permits it, tighten the query's intent: the source's login example uses a get-style call intended to return at most one user row, which also rejects multiple statements in that API — but the source warns that other APIs in the same library (an exec-style call that supports multiple statements) do not give you that protection, so never rely on it.",
+        "Do not store or compare plaintext passwords; the classroom example kept them in plain text for demonstration only. Hash with a current password-hashing algorithm and verify credentials through the hash, and verify current recommended parameters for your platform.",
+        "Restrict database credentials so the application account cannot drop tables or run administrative statements, and separate read paths from write paths.",
+        "Log failed login and lookup attempts for anomaly detection, but write the log with a parameterized insert — the source shows a logging insert as an attack vector when it is built from string concatenation.",
+        "Validate on your own environment: submit a benign value containing a single quote to the login and search fields and confirm it is treated as ordinary text with no error page or behavioral change."
+      ],
+      "caveats": [
+        "Single-quote testing is a diagnostic signal, not a proof of absence — a quote causing a different response suggests vulnerability, but a normal response does not by itself prove safety.",
+        "The source's examples are classroom demonstrations on an intentionally vulnerable bank app; do not run these strings against systems you do not own, and do not include working payload recipes in team documentation.",
+        "WAFs, input sanitizers or ORM usage do not by themselves guarantee safety; parameterization plus least-privilege database accounts is the durable control.",
+        "Verify current database driver and ORM behavior rather than assuming a specific API's protections."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "sql-injection",
+        "input-validation",
+        "authentication",
+        "customer-accounts",
+        "least-privilege",
+        "logging"
+      ],
+      "id": "00899c6e9eb7ec7962209580",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 13
+    },
+    {
+      "title": "Understand and bound blind SQL injection as an operational risk",
+      "summary": "When an injection point does not echo query output, an attacker can still extract data by asking true/false questions through error behavior or response timing, so detection must not depend on visible output.",
+      "use_when": "You are assessing the risk profile of a store search, filter, order-status lookup or API endpoint that returns a generic success/failure response, and deciding how much effort detection and parameterization deserve.",
+      "steps": [
+        "Accept that absence of echoed query results does not mean an injection point is low risk; the source describes two blind variants.",
+        "Variant one, boolean/error-based: the attacker constructs a condition and learns the answer because the page responds differently — for example a matched row returns an array where the code expected a single value and the handler crashes — so an observable difference between error and non-error states becomes a yes/no oracle.",
+        "Variant two, time-based: the attacker embeds an expression that deliberately runs slowly (the source's example builds a large blob, converts it to a hex string and uppercases it, costing roughly a third of a second) inside a conditional, so a slow response means true and an immediate response means false, and measurement of response time answers the question.",
+        "Recognize that the attacker can iterate character by character — the source's script tested each letter of a password by checking a substring condition and assembled the whole password regardless of password complexity, because only a timing difference was needed per character.",
+        "Defend by parameterizing queries so the injected condition never executes, by adding rate limiting and anomaly alerts on repeated near-identical requests or unusual response-time variance, and by keeping error pages generic so error/non-error is not a clean oracle.",
+        "Validate only on your own systems using timing measurement and error-message inspection to confirm parameterized queries produce uniform behavior; do not attempt randomized extraction against third parties.",
+        "Note that timing-based defenses are probabilistic — network jitter and load affect measurement, so treat timing anomalies as a signal for investigation, not as proof."
+      ],
+      "caveats": [
+        "The timing values in the source are demonstration artifacts of a specific query on a specific machine, not a benchmark for detection thresholds.",
+        "Blind extraction is described as requiring creativity and patience; the source notes it is harder than visible-output injection, so prioritization should still weight visible-output endpoints higher.",
+        "Do not present error-page suppression or a WAF as a guarantee — both reduce signal for attackers but do not fix the underlying injection.",
+        "Time-based detection is noisy in real traffic; confirm before acting on alerts."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "sql-injection",
+        "measurement",
+        "api-security",
+        "monitoring",
+        "input-validation"
+      ],
+      "id": "976966f18f9b5137031d9349",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 13
+    },
+    {
+      "title": "Layer safe-browsing-style URL reputation using local hash prefixes",
+      "summary": "Download a locally cached list of hash prefixes for known-malicious URLs so most checks happen offline, then confirm only on prefix matches to limit what you disclose.",
+      "use_when": "You are evaluating or implementing a link-safety or phishing-warning feature for a storefront — for example scanning user-submitted review links, affiliate URLs, supplier links or outbound links in marketing content before they are shown or clicked.",
+      "steps": [
+        "Understand the naive design and its two costs: querying a reputation service in real time for every URL sends your full browsing or link data to a third party and adds latency because nothing loads until the answer returns.",
+        "Downloading the entire malicious-URL list locally removes the latency and privacy problem but the list is constantly changing and very large, so a full download is impractical for repeated refresh.",
+        "Adopt the prefix approach: the provider hashes each known-malicious URL, truncates each hash to a prefix, and distributes only the prefix set, which the client caches locally.",
+        "To check a URL, hash it with the same algorithm (the source describes SHA-256) using the same transformations the provider uses, truncate to the same prefix length, and look the prefix up in the local set; a miss means the URL is safe with respect to that list and can proceed immediately with no network round trip.",
+        "On a prefix hit, the URL may or may not be malicious, so send only the prefix — not the full URL — to the service and receive the set of full hashes sharing that prefix, then compare your full hash against that returned set. If your full hash is present the URL is known-bad and you should warn; if not, it is safe.",
+        "Implement URL variant checking the way the provider's algorithm does, because attackers randomize query parameters: the source says roughly ten to twenty variants are checked, including progressively shortened paths and the site's home page. A reported malicious home page blocks the whole site and forces an attacker onto new domains that cost money to register.",
+        "Verify the current algorithm, prefix length and variant rules against the provider's live documentation before implementing, and log block events for review."
+      ],
+      "caveats": [
+        "This is a blacklist approach and is guaranteed to miss cases — newly registered domains, unseen URLs with unique tokens such as private document links, and dynamic query parameters will not be listed. The source presents this as a trade-off: a whitelist would be unusable for the open web but may suit highly paranoid, narrow contexts.",
+        "Prefix truncation leaks some information: a provider can learn that you visited a URL matching a given prefix and could correlate requests over time by IP.",
+        "Always treat safe browsing as an additional layer of defense, not a replacement for browser protections or for your own link and content review.",
+        "List sources include user reports and automated crawling in sandboxed environments; coverage is not guaranteed and current behavior should be confirmed with the provider."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "phishing-defense",
+        "url-reputation",
+        "hashing",
+        "upstream-workflows",
+        "caching",
+        "content-moderation"
+      ],
+      "id": "39c19437bd53e493457b92f6",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 13
+    },
+    {
+      "title": "Understand side-channel leakage as a class of risk to storefront logic",
+      "summary": "A system can behave exactly as designed and still leak secrets through timing, power or visual emissions, so security review must consider what observable differences reveal about hidden state.",
+      "use_when": "You are designing storefront or API logic that must not reveal whether a customer, coupon, account or inventory condition is true — for example email-enumeration checks in password reset, coupon validity endpoints, or stock lookups on a product page.",
+      "steps": [
+        "Accept the definitional point from the source: a side channel exists when the implementation is correct — no code bug — yet an attacker can learn information they should not, because the system behaves observably differently between cases it is trying to hide.",
+        "Enumerate the observables in your own stack: response time, response size, error text, HTTP status, and the order in which your server performs work.",
+        "Identify secrets whose value is being compared or looked up: whether an email is registered, whether a password guess matched a prefix, whether a coupon code exists, whether a given SKU is in stock at a specific warehouse.",
+        "For each, design the response so the observable is identical in both cases — same status code, same generic message, same approximate duration — and where comparison itself is the secret, use constant-time comparison for secrets such as tokens and password-derived values rather than short-circuiting on the first mismatched character.",
+        "Rate-limit and monitor for repeated near-identical probing patterns, since side-channel extraction works by asking many small questions and observing answers over time.",
+        "Validate on your own environment by measuring response-time variance and comparing response bodies for the true case and false case of each question, then confirm the two distributions are not trivially separable.",
+        "Treat timing variance as noisy: network conditions and server load blur measurements, so a timing difference is a signal to investigate, not proof of exploitability."
+      ],
+      "caveats": [
+        "The source's vivid examples — recovering speech from high-speed video of a chip bag or plant leaves, and extracting keys from power-line monitoring — are research results in physical settings; they illustrate the general principle, not a threat model for an online store.",
+        "Do not present constant-time comparison, uniform error messages or rate limiting as a guarantee against all side channels; they remove specific observables.",
+        "Measurement-based validation on shared infrastructure is approximate and should not be treated as a certified threshold."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "side-channel",
+        "timing-attack",
+        "api-security",
+        "customer-accounts",
+        "measurement",
+        "privacy"
+      ],
+      "id": "ec15a57caac841bbf3c653bb",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 13
+    },
+    {
+      "title": "Browser history disclosure via CSS :visited and the whitelist trade-off",
+      "summary": "Links styled by :visited once let any page read a visitor's browsing history, and the durable fix is restricting which CSS properties can apply to visited links rather than trying to hide the difference.",
+      "use_when": "You are reviewing a storefront's CSS or third-party scripts embedded on PDP, checkout or content pages, and deciding whether any styling rule could reveal a visitor's prior browsing behavior to that page.",
+      "steps": [
+        "Understand the historical vulnerability: browsers rendered visited links in a different default color than unvisited links, and scripts could read a link's rendered color to determine whether the visitor had been to a URL. Enumerating a large array of URLs would reveal the visitor's interests and history.",
+        "Recognize that the leak is not limited to color: the source notes CSS can also load a background image from an attacker's server when a link is visited, giving the attacker a server-side request as the signal, and can alter a visited link's position or size, which JavaScript can detect via layout changes.",
+        "Note the attempted alternatives and why they were rejected: only marking visited when the user clicked from that same site was considered but dropped for usability reasons because users would be confused by inconsistent styling, and simply making the color unreadable does not address the other CSS channels.",
+        "Apply the principle of the 2010-era mitigation: restrict the set of CSS properties that can apply to :visited links to a small whitelist of text-level changes such as color, underline, bold and italic, removing background images, positioning and sizing so layout-based detection is impossible.",
+        "Apply the accompanying performance-based defense: slow down the rate at which a page can probe history, making bulk enumeration impractically slow rather than impossible — the source frames this explicitly as accepting that the issue cannot be fully fixed and raising the attacker's cost instead.",
+        "For your own storefront, audit every third-party script and stylesheet on customer-facing pages for use of :visited selectors and layout-changing rules, and remove or isolate anything that reads computed styles of links.",
+        "Verify the current browser implementations rather than relying on the historical description — modern browsers continue to restrict :visited styling, so check current behavior before assuming a specific fix."
+      ],
+      "caveats": [
+        "The source describes a 2010 change, attributed in the lecture to Mozilla/Firefox; browser behavior has evolved since, so treat the specific implementation as historical context and verify the current state.",
+        "This is a privacy leak of browsing history, not a data breach of your store's own records; the primary harm is to visitors.",
+        "Style restrictions do not make visited-link state invisible in principle — they reduce the channels through which it can be read.",
+        "Do not claim that removing a selector or a script guarantees no history disclosure, since other techniques may exist."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "privacy",
+        "css",
+        "browser-security",
+        "third-party-scripts",
+        "content-security"
+      ],
+      "id": "1a0f2ec23665c65763e44e76",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 13
+    },
+    {
+      "title": "Secure handling of retrieved documents and tool output in agent workflows",
+      "summary": "Text fetched from the web, uploaded by users, or returned by a tool is untrusted data and must never be treated as authorization to change an agent's targets or expand its permissions.",
+      "use_when": "You are deploying an ecommerce automation agent that reads supplier pages, review content, uploaded CSVs, order notes or API responses and then acts — for example updating prices, drafting replies, creating orders or running scripts.",
+      "steps": [
+        "Classify every input the agent processes into trusted configuration versus untrusted content, where untrusted includes scraped pages, user-uploaded files, email bodies, third-party API responses and any tool output that carries external text.",
+        "Define the agent's permitted scope explicitly by brand and task — which store, which tables, which tools, which files — as configuration the model cannot alter from content it reads.",
+        "Never let instructions found inside retrieved content change the target, destination, data range or command that will be executed; if a document appears to contain directives, treat that as content to report, not to obey.",
+        "Restrict tool permissions to the minimum needed for the task: read-only query access where writes are not required, an allowlist of programs the automation may run, and no shell string construction from fetched values.",
+        "Require human approval for irreversible or high-impact actions such as bulk price changes, refunds, order cancellations, credential changes or any operation that deletes data, and log the approval with the actor identity.",
+        "Handle secrets outside of content: keep API keys and database credentials in a secret store that the agent can use through a scoped interface but cannot read back into its context or write into a file, and rotate them on a schedule.",
+        "Log every tool invocation with the requesting identity, the exact parameters, the retrieved content hash and the outcome, so an anomalous action can be traced and replayed.",
+        "Validate on a staging store by feeding a document containing injected directive-like text and confirming the agent takes no action outside its configured scope and instead surfaces the anomaly."
+      ],
+      "caveats": [
+        "Do not claim that prompt filtering, a WAF or content sanitization alone guarantees safety against injected instructions in retrieved content.",
+        "Distinguish authorization from data handling: seeing a credential or an instruction is not permission to use it, and encryption protects data at rest or in transit, not the decision to act.",
+        "This card adapts the source's injection principle to agent inputs; the source does not present an agent-specific benchmark or outcome."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "agent-tools",
+        "prompt-injection",
+        "least-privilege",
+        "approvals",
+        "secret-management",
+        "logging"
+      ],
+      "id": "cda7d4680b56665b6fd1dc8c",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 13
+    }
+  ],
+  "request_id": "46e520047abe46ceb4aae6484d18a8d6c8cc77ffa936c4cbee1dbbc3164a91f8",
+  "ecommerce_scope_version": 1
+}

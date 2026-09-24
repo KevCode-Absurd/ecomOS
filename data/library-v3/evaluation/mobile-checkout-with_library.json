@@ -1,0 +1,156 @@
+{
+  "case": {
+    "name": "mobile-checkout",
+    "query": "Build a prioritized investigation and action plan for mobile checkout abandonment using session recordings.",
+    "brand": "Apparel store; 80% mobile traffic; desktop purchase conversion is 3%, mobile is 0.8%; no checkout-step data supplied.",
+    "complexity": "broad"
+  },
+  "variant": "with_library",
+  "model": "gpt-5.6-terra",
+  "answer": {
+    "diagnosis": {
+      "primary": "Mobile conversion (0.8%) is materially lower than desktop conversion (3%) while mobile supplies 80% of traffic. This warrants a mobile-first checkout investigation, but the supplied data cannot yet establish whether the loss occurs before checkout, within a specific checkout step, at payment, or because of tracking differences.",
+      "working_hypotheses_to_validate_in_recordings": [
+        "Mobile-specific usability failures: obstructive cookie banners, chat widgets, exit pop-ups, sticky elements, keyboard overlap, small tap targets, broken or unresponsive controls, or layout shifts.",
+        "Unexpected shipping, taxes, duties, fees, delivery timing, or return-policy uncertainty appearing late in the path.",
+        "Guest checkout is absent, visually subordinate, or account creation/password steps create friction.",
+        "Address, phone, size/fit, promo-code, or payment fields create excessive effort or validation failures.",
+        "Mobile shoppers lack a preferred accelerated payment option, encounter payment redirects/context switches, or see wallet buttons fail.",
+        "Trust concerns at checkout: unclear returns/exchanges for apparel, inadequate security reassurance, or reviews/policies not visible when needed.",
+        "Performance problems or third-party scripts delay input, button response, wallet loading, or payment completion."
+      ],
+      "interpretation": "Do not treat session-recording behaviors alone as proof of cause. Rage taps, repeated field edits, exits, and backtracking are leads that require confirmation with funnel events, error logs, device/browser segmentation, and real-device reproduction."
+    },
+    "actions": [
+      {
+        "priority": "P0",
+        "action": "Instrument the mobile checkout funnel before deciding what to redesign.",
+        "details": [
+          "Capture distinct events for cart viewed, checkout started, each checkout step viewed, contact submitted, shipping address submitted, shipping method selected, payment method selected, payment submitted, payment error, order completed, and checkout exit.",
+          "Attach non-sensitive context: device type, browser/OS, viewport, traffic source, new versus returning customer, logged-in versus guest, payment method shown/selected, coupon use, cart value band, shipping destination region, and page-performance metrics.",
+          "Record structured error reasons where available: required-field, address validation, inventory, shipping-method, payment-decline, payment-provider, and technical errors. Do not expose card data, passwords, or other sensitive inputs in recordings or analytics.",
+          "Validate event order and deduplication with test purchases on mobile and desktop."
+        ],
+        "why": "No checkout-step data is supplied. Without it, recordings can identify friction patterns but cannot quantify the largest leakage point or distinguish checkout failure from upstream abandonment."
+      },
+      {
+        "priority": "P0",
+        "action": "Create a controlled mobile session-recording review set.",
+        "details": [
+          "Use a recent, representative time window and review completed mobile orders alongside abandoned mobile checkout sessions; do not review abandoners only.",
+          "Segment abandoners by last observed stage, browser/OS, viewport, traffic source, new/returning status, cart value band, discount use, destination region, and payment method availability where captured.",
+          "Oversample high-risk cohorts: sessions with payment errors, repeated form errors, long checkout dwell time, multiple backtracks, repeated taps, reloads, and exits immediately after shipping cost or payment details appear.",
+          "Keep desktop as a comparison cohort. Review the same checkout path on desktop to separate general checkout friction from mobile-only friction.",
+          "Use a consistent review sample and scoring sheet; expand a cohort only when a pattern appears, rather than relying on memorable individual sessions."
+        ],
+        "why": "The conversion gap is device-specific, so aggregate recordings can conceal concentrated technical or UX failures in a browser, payment method, source, or checkout stage."
+      },
+      {
+        "priority": "P0",
+        "action": "Code recordings into a repeatable friction taxonomy and quantify each pattern.",
+        "details": [
+          "Classify: overlays blocking controls; CTA/tap failure; slow or unresponsive UI; form-field confusion; keyboard covering fields or CTA; autofill failure; validation error; address lookup failure; account/guest friction; coupon distraction; shipping-cost or delivery surprise; return/fit uncertainty; payment-method absence; wallet/payment redirect failure; trust hesitation; stock or variant mismatch; and unexplained exit.",
+          "For each coded session, capture the last stage, specific UI element, observed behavior, approximate delay, error text, device/browser, and recording link or session ID.",
+          "Report both count and share of reviewed sessions per code, split by step and cohort. Mark evidence strength as observed, reproduced, or only hypothesized.",
+          "Separate user reconsideration from apparent product defects. An exit without friction should not automatically become a checkout UX ticket."
+        ],
+        "why": "A taxonomy turns recordings into an auditable evidence base and prevents isolated anecdotes from driving the roadmap."
+      },
+      {
+        "priority": "P0",
+        "action": "Immediately reproduce and fix verified blockers.",
+        "details": [
+          "Run complete purchase attempts on representative iOS and Android devices, major browsers, narrow viewports, and relevant payment methods. Include a guest checkout and a returning-customer path.",
+          "Check specifically for cookie/consent bars, chat, and exit-intent overlays covering cart or checkout controls; invalid or poorly visible error messages; disabled buttons with no explanation; keyboard occlusion; address/autofill failures; and payment redirects that do not return correctly.",
+          "Treat broken controls, errors preventing completion, and overlays that obstruct checkout as production defects. Deploy fixes after QA rather than waiting for a broad CRO test.",
+          "Recheck the complete transaction after releases and monitor error events and step completion."
+        ],
+        "why": "Session recordings are particularly effective at finding unforced errors that can be reproduced and corrected directly."
+      },
+      {
+        "priority": "P1",
+        "action": "Prioritize the first non-blocker improvements by combined evidence, not by generic best practice alone.",
+        "details": [
+          "Score each issue using: affected-session share, severity (blocker versus hesitation), concentration in the mobile-versus-desktop gap, reproducibility, engineering effort/risk, and expected impact on revenue per session as well as conversion.",
+          "If recordings show late cost surprise, expose an accurate shipping/tax/fee estimate and delivery expectation earlier, ideally before checkout begins when feasible.",
+          "If account friction appears, make guest checkout prominent and defer account creation until after purchase; collect the email required for order communication during guest checkout.",
+          "If form effort dominates, remove nonessential fields, enable appropriate mobile autofill and address lookup, use correct input types, retain entered values after errors, and make errors adjacent and understandable.",
+          "If payment friction dominates, confirm that the payment methods shown match the store's audience and that supported mobile wallets work without unnecessary redirects or context switches.",
+          "If shoppers pause around apparel risk, make returns/exchanges, sizing help, delivery information, and credible reviews easy to access in checkout without forcing them away from the flow.",
+          "If speed or interaction lag appears, use real-user performance data to identify slow checkout pages and third-party scripts; then reduce noncritical JavaScript, optimize images, and defer nonessential work where technically appropriate."
+        ],
+        "why": "Known checkout risks include late costs, complex flows, and forced account creation, but recordings and step data must determine which is actually material for this store."
+      },
+      {
+        "priority": "P1",
+        "action": "Deploy changes with a measurement and rollback plan.",
+        "details": [
+          "For clear defects, compare pre/post mobile step completion, error rates, checkout completion, order conversion, revenue per session, and payment-method success rates, while checking desktop for regressions.",
+          "For discretionary UX changes, use an appropriate controlled experiment where traffic and implementation allow; otherwise document the release date and concurrent marketing, merchandising, pricing, and site changes that could confound results.",
+          "Monitor by browser/OS and checkout stage after launch. A total conversion improvement can hide a new failure in a smaller mobile cohort.",
+          "Keep recordings active after changes and review both successful and abandoned sessions to confirm the intended behavior."
+        ],
+        "why": "Overall conversion alone cannot show whether a change solved the targeted checkout failure or simply shifted behavior elsewhere."
+      },
+      {
+        "priority": "P2",
+        "action": "Add recovery only after preserving the on-site checkout opportunity.",
+        "details": [
+          "For consented, identifiable abandoners, consider a timed email/SMS recovery sequence beginning soon after abandonment and extending over roughly 72 hours, with timing and incentives tested for this audience.",
+          "Use messages to answer observed objections such as shipping cost, delivery timing, returns, fit, or payment options rather than applying indiscriminate discounts.",
+          "Use exit-intent capture cautiously on mobile and ensure it cannot obstruct checkout controls or create the very friction under investigation."
+        ],
+        "why": "Recovery can recapture some departures, but it does not replace correction of mobile checkout defects. Repeated discounts can condition shoppers to abandon for an offer."
+      }
+    ],
+    "missing_information": [
+      "Mobile funnel volumes and rates for product view to add-to-cart, cart to checkout start, each checkout step, payment submission, and completed order.",
+      "Definitions and date range for the stated 3% desktop and 0.8% mobile conversion rates, including whether they use sessions, users, orders, and bot/internal-traffic filtering.",
+      "Whether mobile and desktop traffic mixes differ by channel, country, new/returning customer, product, price, promotion, and landing page.",
+      "Checkout platform and configuration: one-page or multi-step, guest checkout availability, account requirements, address validation, shipping calculation timing, tax/duty handling, and promo-code behavior.",
+      "Payment methods offered and their success/decline/error rates by device, browser, provider, and region.",
+      "Session-recording coverage, privacy masking, sampling rules, consent implementation, and whether recordings include checkout or exclude sensitive payment fields.",
+      "Real-user mobile performance data for checkout pages, including LCP, INP, JavaScript errors, API failures, and third-party-script impact.",
+      "Top support contacts, refund reasons, and survey responses related to shipping, returns, fit, payment, promo codes, or checkout errors.",
+      "A list of recent releases, promotions, pricing/shipping-policy changes, and known incidents that overlap the analysis period."
+    ],
+    "caveats": [
+      "The desktop/mobile conversion gap is a prioritization signal, not proof that checkout is the sole cause. Mobile traffic may differ substantially in intent and source mix.",
+      "The supplied 0.8% mobile conversion rate is below the provided general overall-conversion context, but benchmarks vary by measurement definition, channel, geography, and apparel mix; they should not be used as targets.",
+      "Session recordings may be sampled, incomplete, consent-biased, or unable to capture sensitive payment interactions. They should be combined with event telemetry and QA.",
+      "Avoid recording or exposing payment card data, passwords, full addresses, and other sensitive personal data; configure masking and retention according to applicable privacy obligations.",
+      "General recommendations such as early cost transparency, prominent guest checkout, wallets, reviews, and recovery timing are hypotheses or established design practices, not guaranteed lifts for this store.",
+      "Do not infer a conversion effect from the timing of a release alone when promotions, traffic mix, inventory, or pricing also changed."
+    ]
+  },
+  "usage": {
+    "prompt_tokens": 3143,
+    "completion_tokens": 2452,
+    "total_tokens": 5595,
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 3140,
+      "audio_tokens": 0
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 39,
+      "audio_tokens": 0,
+      "accepted_prediction_tokens": 0,
+      "rejected_prediction_tokens": 0
+    }
+  },
+  "estimated_cost_usd": 0.0372815,
+  "knowledge_tokens": 2909,
+  "retrieved_titles": [
+    "Recover abandoned carts with a timed multi-channel sequence",
+    "Prioritise checkout fixes before other CRO work",
+    "Answer four above-the-fold questions on every PDP",
+    "Avoid the ten recurring ecommerce CRO pitfalls",
+    "Use dashboards and device checks to find friction bugs",
+    "Prioritise the eight high-leverage CRO moves",
+    "Optimise mobile category pages for thumb and speed",
+    "Cut mobile load time toward a sub-2s LCP target",
+    "Track the right funnel metrics at each stage",
+    "Run big swings instead of micro-tests on small stores"
+  ]
+}

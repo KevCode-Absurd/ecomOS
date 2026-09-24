@@ -1,0 +1,784 @@
+{
+  "request_id": "bdc4d0556bc19f6aede396877eac172e97953f9c11507082c7a0db280029e9c6",
+  "provider": "openai",
+  "model": "gpt-5.6-terra",
+  "effort": "medium",
+  "completion_limit": 12288,
+  "usage": {
+    "prompt_tokens": 19865,
+    "completion_tokens": 3357,
+    "total_tokens": 23222,
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 19862,
+      "audio_tokens": 0
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 1099,
+      "audio_tokens": 0,
+      "accepted_prediction_tokens": 0,
+      "rejected_prediction_tokens": 0
+    }
+  },
+  "booked_cost_usd": 0.0899465,
+  "seconds": 39.38,
+  "finish_reason": "stop",
+  "output": {
+    "reviews": [
+      {
+        "label": "A",
+        "scores": {
+          "usefulness": 3,
+          "brand_fit": 4,
+          "correctness": 3,
+          "clarity": 4,
+          "handoff_readiness": 3
+        },
+        "owner_verdict": "edit",
+        "editing_burden": "minor",
+        "specific_value": [
+          "Correctly selects only c1 and c8 and explains each exclusion.",
+          "Copy is plain, policy-accurate, and keeps DAY18 claims conditional in Email 3.",
+          "Clear purchase suppression, checkout-link instruction, and draft-only status."
+        ],
+        "critical_errors": [],
+        "remaining_work": [
+          "Shorten the final cadence: Email 3 is scheduled 48 hours after Email 2, placing it roughly 74 hours after checkout for a standard entrant.",
+          "Resolve and document the exact 24-hour boundary in the actual Klaviyo implementation, not only in prose."
+        ],
+        "evidence": "The flow specifies Email 1 at two hours, Email 2 24 hours later, and Email 3 48 hours after Email 2; the latter is unnecessarily late for a checkout-recovery sequence."
+      },
+      {
+        "label": "B",
+        "scores": {
+          "usefulness": 2,
+          "brand_fit": 4,
+          "correctness": 3,
+          "clarity": 4,
+          "handoff_readiness": 2
+        },
+        "owner_verdict": "edit",
+        "editing_burden": "substantial",
+        "specific_value": [
+          "Correct fixture selection and sensible inclusive-boundary interpretation for c8.",
+          "The generic copy is concise, accurate, and does not invent urgency or discounts.",
+          "It includes deduplication and verification items that are useful before activation."
+        ],
+        "critical_errors": [],
+        "remaining_work": [
+          "Move Email 3 forward; it is 48 hours after Email 2, creating a roughly 74-hour post-checkout send.",
+          "Specify actual flow-priority behavior rather than saying to apply a configured priority rule.",
+          "Add dynamic checkout-item blocks to Emails 2 and 3, or explicitly identify them as required template modules."
+        ],
+        "evidence": "The actions list delays of [0, 24, 48] after flow entry, while the narrative does not define the priority rule for welcome-flow collisions."
+      },
+      {
+        "label": "C",
+        "scores": {
+          "usefulness": 3,
+          "brand_fit": 4,
+          "correctness": 3,
+          "clarity": 4,
+          "handoff_readiness": 3
+        },
+        "owner_verdict": "edit",
+        "editing_burden": "minor",
+        "specific_value": [
+          "Correctly selects c1 and c8 and handles both boundary cases explicitly.",
+          "Conditional DAY18 content is accurate and avoids claiming 15-inch compatibility or waterproofing.",
+          "Pre-send checks, event-level recovery links, and clear no-discount copy are practical."
+        ],
+        "critical_errors": [],
+        "remaining_work": [
+          "Clarify whether checkout recovery or Welcome has priority. The draft blocks active Welcome at entry but also says to make Welcome exit when checkout starts.",
+          "Decide whether a third message at hour 50 is acceptable under the 48-hour rule, and state that rule consistently in build settings.",
+          "Validate that a three-day re-entry limit suits the account; it is an unsupported configuration choice."
+        ],
+        "evidence": "The configuration sets Email 3 24 hours after Email 2, following a two-hour first delay, but only describes the 48-hour condition as an entry gate."
+      },
+      {
+        "label": "D",
+        "scores": {
+          "usefulness": 4,
+          "brand_fit": 4,
+          "correctness": 4,
+          "clarity": 4,
+          "handoff_readiness": 4
+        },
+        "owner_verdict": "use",
+        "editing_burden": "minor",
+        "specific_value": [
+          "It explicitly identifies the key timing ambiguity: a three-email sequence at 2, 26, and 50 hours cannot meet a 48-hour send-time cutoff.",
+          "Correctly selects c1 and c8, with clear exclusion logic.",
+          "Copy is concise, checkout-specific, accurate on laptop sizing and water resistance, and uses conditional DAY18 content.",
+          "Collision behavior is actionable: skip, do not bunch, and use event-level recovery links."
+        ],
+        "critical_errors": [],
+        "remaining_work": [
+          "Owner should confirm that the 48-hour cap is an entry requirement rather than a send-time cutoff.",
+          "Confirm whether exiting Welcome on checkout start is desired; it changes the stated treatment of currently active Welcome recipients."
+        ],
+        "evidence": "Unlike most drafts, it directly states that Email 3 occurs at hour 50 and asks for an owner decision rather than silently treating the 48-hour requirement as both an entry and send rule."
+      },
+      {
+        "label": "E",
+        "scores": {
+          "usefulness": 3,
+          "brand_fit": 4,
+          "correctness": 3,
+          "clarity": 4,
+          "handoff_readiness": 3
+        },
+        "owner_verdict": "edit",
+        "editing_burden": "minor",
+        "specific_value": [
+          "Correct audience selection, purchase suppression, and no-discount implementation.",
+          "The copy is useful and restrained, with a conditional DAY18 module and accurate policy language.",
+          "It correctly says not to imply inventory is reserved and to use the event recovery URL."
+        ],
+        "critical_errors": [],
+        "remaining_work": [
+          "Make explicit that the 48-hour maximum is entry-only if Email 3 is intended to send at hour 50.",
+          "Add a defined re-entry behavior for a new checkout during the seven-day cooldown; the cooldown is otherwise arbitrary.",
+          "Confirm that operational emails are intentionally included in the 24-hour collision rule."
+        ],
+        "evidence": "The configuration calls the age rule 'Entry/send-one eligibility' while Email 3 is scheduled 24 hours after Email 2, so the implementation needs an unambiguous build rule."
+      },
+      {
+        "label": "F",
+        "scores": {
+          "usefulness": 3,
+          "brand_fit": 3,
+          "correctness": 3,
+          "clarity": 4,
+          "handoff_readiness": 3
+        },
+        "owner_verdict": "edit",
+        "editing_burden": "minor",
+        "specific_value": [
+          "Correctly selects c1 and c8 and explains the exclusions.",
+          "Strong practical directions for dynamic event-level checkout links, purchase suppression, consent, and re-entry.",
+          "It sensibly treats the planned recovery messages at exactly 24-hour intervals as not colliding with one another."
+        ],
+        "critical_errors": [
+          "Email 3 gives Daypack 18L laptop and water-resistance details to every checkout recipient, including shoppers who may only have a pouch or bottle."
+        ],
+        "remaining_work": [
+          "Make all DAY18 product claims conditional on DAY18 being in the triggering checkout.",
+          "Clarify that the 48-hour requirement is entry-only, since Email 3 sends at hour 50.",
+          "Confirm the proposed seven-day cooldown against the existing one-message checkout flow and contact-frequency policy."
+        ],
+        "evidence": "Email 2 uses 'If your checkout includes the Daypack 18L,' but Email 3 unconditionally states Daypack laptop-fit and water-resistance details."
+      },
+      {
+        "label": "G",
+        "scores": {
+          "usefulness": 2,
+          "brand_fit": 3,
+          "correctness": 2,
+          "clarity": 4,
+          "handoff_readiness": 2
+        },
+        "owner_verdict": "edit",
+        "editing_burden": "substantial",
+        "specific_value": [
+          "Correct fixture audience and clear point-in-time exclusions.",
+          "Good event-source explanation, purchase suppression, and recovery-link requirement.",
+          "The 2-, 20-, and 38-hour cadence keeps all sends within a 48-hour post-checkout window."
+        ],
+        "critical_errors": [
+          "Email 2 presents DAY18 features to all abandonment recipients, even if their checkout does not contain DAY18.",
+          "Email 2 is scheduled only 18 hours after Email 1, conflicting with the stated rule of no email in the preceding 24 hours unless the sequence is specially exempted; no such exemption is stated."
+        ],
+        "remaining_work": [
+          "Make product-specific content conditional on checkout line items.",
+          "Use at least a 24-hour interval between recovery sends, or explicitly define and justify an exemption from the requested frequency rule.",
+          "Resolve the stated priority: the flow excludes Welcome at entry but later says a recovery recipient who enters Welcome exits recovery."
+        ],
+        "evidence": "The timing table places Email 1 at 2 hours and Email 2 at 20 hours, and Email 2 lists Daypack capacity, sleeve, and fabric details without a conditional block."
+      },
+      {
+        "label": "H",
+        "scores": {
+          "usefulness": 2,
+          "brand_fit": 3,
+          "correctness": 2,
+          "clarity": 4,
+          "handoff_readiness": 3
+        },
+        "owner_verdict": "edit",
+        "editing_burden": "substantial",
+        "specific_value": [
+          "Correctly selects c1 and c8 and gives usable suppression instructions.",
+          "Email 1 is concise, product-first, and correctly uses the recovery URL.",
+          "The copy is generally plain-spoken and accurate about policy terms."
+        ],
+        "critical_errors": [
+          "Email 2 gives Daypack 18L and 15-inch-laptop guidance to all checkout recipients instead of only DAY18 shoppers.",
+          "Email 2 is set 20 hours after Email 1, which breaches the requested no-email-in-the-prior-24-hours condition unless recovery emails are exempted, but the draft says the rule applies before each send."
+        ],
+        "remaining_work": [
+          "Condition all DAY18 details on the triggering checkout contents.",
+          "Move Email 2 to at least 24 hours after Email 1, or revise and explicitly approve the frequency-rule interpretation.",
+          "Set a clear re-entry cooldown rather than only preventing re-entry while the current sequence is active."
+        ],
+        "evidence": "The email body says 'Daypack 18L' details without a conditional block, and its stated send timing is 20 hours after Email 1 despite requiring no email in the preceding 24 hours before every send."
+      },
+      {
+        "label": "I",
+        "scores": {
+          "usefulness": 4,
+          "brand_fit": 4,
+          "correctness": 4,
+          "clarity": 4,
+          "handoff_readiness": 4
+        },
+        "owner_verdict": "use",
+        "editing_burden": "minor",
+        "specific_value": [
+          "Correctly selects c1 and c8 and distinguishes the fixture decision from retroactive sending.",
+          "Most complete operational draft: entry filters, dynamic checkout variables, DAY18 conditional and fallback copy, pre-send suppression, and defined collision behavior.",
+          "It identifies the existing one-message checkout-abandonment flow as a duplicate-send risk and requires it be replaced or disabled.",
+          "It clearly defines the 48-hour limit as entry eligibility, making the hour-50 final message internally consistent."
+        ],
+        "critical_errors": [],
+        "remaining_work": [
+          "Confirm owner approval of the entry-only interpretation of the 48-hour rule.",
+          "Verify the actual Shopify/Klaviyo checkout URL and line-item variables and whether the current one-email flow can be safely replaced."
+        ],
+        "evidence": "It explicitly says the existing one-message checkout flow must be disabled or replaced, uses a DAY18-only branch plus a non-DAY18 fallback, and explains why Email 3 can send at hour 50."
+      }
+    ],
+    "ranking": [
+      "I",
+      "D",
+      "C",
+      "E",
+      "A",
+      "F",
+      "B",
+      "H",
+      "G"
+    ],
+    "summary": "I and D are the most usable drafts because they make the 48-hour timing issue explicit rather than hiding it, while I also catches the existing checkout-flow duplication risk. Most drafts correctly select c1 and c8, maintain no-discount policy, and use accurate product and shipping claims. The main recurring implementation risks are late third sends, unresolved interpretation of the 48-hour cap, and product-specific DAY18 copy shown to non-DAY18 checkout recipients. G and H additionally schedule the second email less than 24 hours after the first despite applying a 24-hour recent-email rule."
+  },
+  "raw_content": "{\"reviews\":[{\"label\":\"A\",\"scores\":{\"usefulness\":3,\"brand_fit\":4,\"correctness\":3,\"clarity\":4,\"handoff_readiness\":3},\"owner_verdict\":\"edit\",\"editing_burden\":\"minor\",\"specific_value\":[\"Correctly selects only c1 and c8 and explains each exclusion.\",\"Copy is plain, policy-accurate, and keeps DAY18 claims conditional in Email 3.\",\"Clear purchase suppression, checkout-link instruction, and draft-only status.\"],\"critical_errors\":[],\"remaining_work\":[\"Shorten the final cadence: Email 3 is scheduled 48 hours after Email 2, placing it roughly 74 hours after checkout for a standard entrant.\",\"Resolve and document the exact 24-hour boundary in the actual Klaviyo implementation, not only in prose.\"],\"evidence\":\"The flow specifies Email 1 at two hours, Email 2 24 hours later, and Email 3 48 hours after Email 2; the latter is unnecessarily late for a checkout-recovery sequence.\"},{\"label\":\"B\",\"scores\":{\"usefulness\":2,\"brand_fit\":4,\"correctness\":3,\"clarity\":4,\"handoff_readiness\":2},\"owner_verdict\":\"edit\",\"editing_burden\":\"substantial\",\"specific_value\":[\"Correct fixture selection and sensible inclusive-boundary interpretation for c8.\",\"The generic copy is concise, accurate, and does not invent urgency or discounts.\",\"It includes deduplication and verification items that are useful before activation.\"],\"critical_errors\":[],\"remaining_work\":[\"Move Email 3 forward; it is 48 hours after Email 2, creating a roughly 74-hour post-checkout send.\",\"Specify actual flow-priority behavior rather than saying to apply a configured priority rule.\",\"Add dynamic checkout-item blocks to Emails 2 and 3, or explicitly identify them as required template modules.\"],\"evidence\":\"The actions list delays of [0, 24, 48] after flow entry, while the narrative does not define the priority rule for welcome-flow collisions.\"},{\"label\":\"C\",\"scores\":{\"usefulness\":3,\"brand_fit\":4,\"correctness\":3,\"clarity\":4,\"handoff_readiness\":3},\"owner_verdict\":\"edit\",\"editing_burden\":\"minor\",\"specific_value\":[\"Correctly selects c1 and c8 and handles both boundary cases explicitly.\",\"Conditional DAY18 content is accurate and avoids claiming 15-inch compatibility or waterproofing.\",\"Pre-send checks, event-level recovery links, and clear no-discount copy are practical.\"],\"critical_errors\":[],\"remaining_work\":[\"Clarify whether checkout recovery or Welcome has priority. The draft blocks active Welcome at entry but also says to make Welcome exit when checkout starts.\",\"Decide whether a third message at hour 50 is acceptable under the 48-hour rule, and state that rule consistently in build settings.\",\"Validate that a three-day re-entry limit suits the account; it is an unsupported configuration choice.\"],\"evidence\":\"The configuration sets Email 3 24 hours after Email 2, following a two-hour first delay, but only describes the 48-hour condition as an entry gate.\"},{\"label\":\"D\",\"scores\":{\"usefulness\":4,\"brand_fit\":4,\"correctness\":4,\"clarity\":4,\"handoff_readiness\":4},\"owner_verdict\":\"use\",\"editing_burden\":\"minor\",\"specific_value\":[\"It explicitly identifies the key timing ambiguity: a three-email sequence at 2, 26, and 50 hours cannot meet a 48-hour send-time cutoff.\",\"Correctly selects c1 and c8, with clear exclusion logic.\",\"Copy is concise, checkout-specific, accurate on laptop sizing and water resistance, and uses conditional DAY18 content.\",\"Collision behavior is actionable: skip, do not bunch, and use event-level recovery links.\"],\"critical_errors\":[],\"remaining_work\":[\"Owner should confirm that the 48-hour cap is an entry requirement rather than a send-time cutoff.\",\"Confirm whether exiting Welcome on checkout start is desired; it changes the stated treatment of currently active Welcome recipients.\"],\"evidence\":\"Unlike most drafts, it directly states that Email 3 occurs at hour 50 and asks for an owner decision rather than silently treating the 48-hour requirement as both an entry and send rule.\"},{\"label\":\"E\",\"scores\":{\"usefulness\":3,\"brand_fit\":4,\"correctness\":3,\"clarity\":4,\"handoff_readiness\":3},\"owner_verdict\":\"edit\",\"editing_burden\":\"minor\",\"specific_value\":[\"Correct audience selection, purchase suppression, and no-discount implementation.\",\"The copy is useful and restrained, with a conditional DAY18 module and accurate policy language.\",\"It correctly says not to imply inventory is reserved and to use the event recovery URL.\"],\"critical_errors\":[],\"remaining_work\":[\"Make explicit that the 48-hour maximum is entry-only if Email 3 is intended to send at hour 50.\",\"Add a defined re-entry behavior for a new checkout during the seven-day cooldown; the cooldown is otherwise arbitrary.\",\"Confirm that operational emails are intentionally included in the 24-hour collision rule.\"],\"evidence\":\"The configuration calls the age rule 'Entry/send-one eligibility' while Email 3 is scheduled 24 hours after Email 2, so the implementation needs an unambiguous build rule.\"},{\"label\":\"F\",\"scores\":{\"usefulness\":3,\"brand_fit\":3,\"correctness\":3,\"clarity\":4,\"handoff_readiness\":3},\"owner_verdict\":\"edit\",\"editing_burden\":\"minor\",\"specific_value\":[\"Correctly selects c1 and c8 and explains the exclusions.\",\"Strong practical directions for dynamic event-level checkout links, purchase suppression, consent, and re-entry.\",\"It sensibly treats the planned recovery messages at exactly 24-hour intervals as not colliding with one another.\"],\"critical_errors\":[\"Email 3 gives Daypack 18L laptop and water-resistance details to every checkout recipient, including shoppers who may only have a pouch or bottle.\"],\"remaining_work\":[\"Make all DAY18 product claims conditional on DAY18 being in the triggering checkout.\",\"Clarify that the 48-hour requirement is entry-only, since Email 3 sends at hour 50.\",\"Confirm the proposed seven-day cooldown against the existing one-message checkout flow and contact-frequency policy.\"],\"evidence\":\"Email 2 uses 'If your checkout includes the Daypack 18L,' but Email 3 unconditionally states Daypack laptop-fit and water-resistance details.\"},{\"label\":\"G\",\"scores\":{\"usefulness\":2,\"brand_fit\":3,\"correctness\":2,\"clarity\":4,\"handoff_readiness\":2},\"owner_verdict\":\"edit\",\"editing_burden\":\"substantial\",\"specific_value\":[\"Correct fixture audience and clear point-in-time exclusions.\",\"Good event-source explanation, purchase suppression, and recovery-link requirement.\",\"The 2-, 20-, and 38-hour cadence keeps all sends within a 48-hour post-checkout window.\"],\"critical_errors\":[\"Email 2 presents DAY18 features to all abandonment recipients, even if their checkout does not contain DAY18.\",\"Email 2 is scheduled only 18 hours after Email 1, conflicting with the stated rule of no email in the preceding 24 hours unless the sequence is specially exempted; no such exemption is stated.\"],\"remaining_work\":[\"Make product-specific content conditional on checkout line items.\",\"Use at least a 24-hour interval between recovery sends, or explicitly define and justify an exemption from the requested frequency rule.\",\"Resolve the stated priority: the flow excludes Welcome at entry but later says a recovery recipient who enters Welcome exits recovery.\"],\"evidence\":\"The timing table places Email 1 at 2 hours and Email 2 at 20 hours, and Email 2 lists Daypack capacity, sleeve, and fabric details without a conditional block.\"},{\"label\":\"H\",\"scores\":{\"usefulness\":2,\"brand_fit\":3,\"correctness\":2,\"clarity\":4,\"handoff_readiness\":3},\"owner_verdict\":\"edit\",\"editing_burden\":\"substantial\",\"specific_value\":[\"Correctly selects c1 and c8 and gives usable suppression instructions.\",\"Email 1 is concise, product-first, and correctly uses the recovery URL.\",\"The copy is generally plain-spoken and accurate about policy terms.\"],\"critical_errors\":[\"Email 2 gives Daypack 18L and 15-inch-laptop guidance to all checkout recipients instead of only DAY18 shoppers.\",\"Email 2 is set 20 hours after Email 1, which breaches the requested no-email-in-the-prior-24-hours condition unless recovery emails are exempted, but the draft says the rule applies before each send.\"],\"remaining_work\":[\"Condition all DAY18 details on the triggering checkout contents.\",\"Move Email 2 to at least 24 hours after Email 1, or revise and explicitly approve the frequency-rule interpretation.\",\"Set a clear re-entry cooldown rather than only preventing re-entry while the current sequence is active.\"],\"evidence\":\"The email body says 'Daypack 18L' details without a conditional block, and its stated send timing is 20 hours after Email 1 despite requiring no email in the preceding 24 hours before every send.\"},{\"label\":\"I\",\"scores\":{\"usefulness\":4,\"brand_fit\":4,\"correctness\":4,\"clarity\":4,\"handoff_readiness\":4},\"owner_verdict\":\"use\",\"editing_burden\":\"minor\",\"specific_value\":[\"Correctly selects c1 and c8 and distinguishes the fixture decision from retroactive sending.\",\"Most complete operational draft: entry filters, dynamic checkout variables, DAY18 conditional and fallback copy, pre-send suppression, and defined collision behavior.\",\"It identifies the existing one-message checkout-abandonment flow as a duplicate-send risk and requires it be replaced or disabled.\",\"It clearly defines the 48-hour limit as entry eligibility, making the hour-50 final message internally consistent.\"],\"critical_errors\":[],\"remaining_work\":[\"Confirm owner approval of the entry-only interpretation of the 48-hour rule.\",\"Verify the actual Shopify/Klaviyo checkout URL and line-item variables and whether the current one-email flow can be safely replaced.\"],\"evidence\":\"It explicitly says the existing one-message checkout flow must be disabled or replaced, uses a DAY18-only branch plus a non-DAY18 fallback, and explains why Email 3 can send at hour 50.\"}],\"ranking\":[\"I\",\"D\",\"C\",\"E\",\"A\",\"F\",\"B\",\"H\",\"G\"],\"summary\":\"I and D are the most usable drafts because they make the 48-hour timing issue explicit rather than hiding it, while I also catches the existing checkout-flow duplication risk. Most drafts correctly select c1 and c8, maintain no-discount policy, and use accurate product and shipping claims. The main recurring implementation risks are late third sends, unresolved interpretation of the 48-hour cap, and product-specific DAY18 copy shown to non-DAY18 checkout recipients. G and H additionally schedule the second email less than 24 hours after the first despite applying a 24-hour recent-email rule.\"}",
+  "input": {
+    "lens": "agency-owner",
+    "brand": {
+      "fictional": true,
+      "name": "TrailFold",
+      "market": "US",
+      "currency": "USD",
+      "platforms": [
+        "Shopify",
+        "Meta Ads",
+        "Klaviyo"
+      ],
+      "positioning": "Practical lightweight bags for commuters who take short weekend trips; restrained, useful, plain-spoken voice.",
+      "products": [
+        {
+          "sku": "DAY18",
+          "name": "Daypack 18L",
+          "price": 80,
+          "landed_cogs": 28,
+          "pick_pack": 2,
+          "merchant_shipping_cost": 8,
+          "payment_fee_percent": 3,
+          "features": [
+            "18L capacity",
+            "padded 13-inch laptop sleeve",
+            "water-resistant fabric, not waterproof",
+            "external bottle pocket"
+          ],
+          "stock": 210,
+          "daily_units_sold": 8,
+          "confirmed_replenishment_units": 500,
+          "replenishment_arrival_days": 35
+        },
+        {
+          "sku": "POUCH",
+          "name": "Cable pouch",
+          "price": 20,
+          "landed_cogs": 5,
+          "stock": 800
+        },
+        {
+          "sku": "BOTTLE",
+          "name": "Steel bottle",
+          "price": 32,
+          "landed_cogs": 9,
+          "stock": 600
+        }
+      ],
+      "policies": {
+        "shipping": "Free US shipping; delivery estimate 4-7 business days",
+        "returns": "30-day returns for unused products; return shipping paid by customer",
+        "discounts": "No current discount. Any new discount needs owner approval."
+      },
+      "claim_constraints": [
+        "No evidence for waterproof, medical, sustainability or lifetime-durability claims.",
+        "No verified competitor performance data.",
+        "No clinical or controlled product test results."
+      ],
+      "customer_themes": {
+        "simulated_review_count": 120,
+        "themes": [
+          "fits daily commute",
+          "customers ask whether a 15-inch laptop fits",
+          "customers ask whether rain protection means waterproof"
+        ],
+        "support_tickets_last_30_days": {
+          "delivery_date_questions": 42,
+          "15_inch_laptop_fit": 28,
+          "waterproof_questions": 18
+        },
+        "note": "Themes, not verbatim licensed testimonials; no fabricated quotes or endorsements."
+      },
+      "website_snapshot": {
+        "pdp_headline": "Adventure starts here",
+        "first_image": "product on plain background",
+        "pdp_details": "Laptop sizing and delivery window are below reviews; CTA says Buy now. No field speed or session-recording data."
+      },
+      "shopify": {
+        "previous_30_days": {
+          "sessions": 20000,
+          "orders": 600,
+          "net_product_revenue": 54000,
+          "mobile_sessions": 15000,
+          "mobile_orders": 400,
+          "desktop_sessions": 5000,
+          "desktop_orders": 200,
+          "add_to_cart_sessions": 2000,
+          "checkout_started_sessions": 1200
+        },
+        "current_30_days": {
+          "sessions": 25000,
+          "orders": 500,
+          "net_product_revenue": 45000,
+          "mobile_sessions": 20000,
+          "mobile_orders": 300,
+          "desktop_sessions": 5000,
+          "desktop_orders": 200,
+          "add_to_cart_sessions": 2000,
+          "checkout_started_sessions": 1000
+        },
+        "definitions": "Revenue excludes tax/shipping; periods equal length. Funnel counts are session-based and internally consistent, but no controlled attribution experiment.",
+        "new_customer_share_current": 0.72,
+        "cohort_90_day_repeat_rate": 0.14
+      },
+      "meta": {
+        "previous_30_days": {
+          "spend": 18000,
+          "reported_purchase_value": 54000,
+          "cpm": 12,
+          "link_ctr_percent": 1.5
+        },
+        "current_30_days": {
+          "spend": 22000,
+          "reported_purchase_value": 70400,
+          "cpm": 15,
+          "link_ctr_percent": 1.2
+        },
+        "settings": "7-day click plus 1-day view; no incremental lift study. Meta reported value not reconciled to Shopify orders.",
+        "creative_history": [
+          {
+            "name": "Desk-to-trail demonstration",
+            "spend_share": 0.55,
+            "observed_result": "Largest spend recipient; mature creative. No asset-level contribution data."
+          },
+          {
+            "name": "Laptop-fit comparison",
+            "spend_share": 0.25,
+            "observed_result": "Higher CTR in small test; conversion sample not supplied."
+          },
+          {
+            "name": "Minimal product still",
+            "spend_share": 0.2,
+            "observed_result": "No reliable lift estimate."
+          }
+        ]
+      },
+      "klaviyo": {
+        "marketable_profiles": 12000,
+        "reported_attributed_revenue_current": 14000,
+        "attribution_window": "5-day click plus 5-day open",
+        "flows": [
+          {
+            "name": "welcome",
+            "messages": 1,
+            "offer": "none"
+          },
+          {
+            "name": "checkout abandonment",
+            "trigger": "Started Checkout",
+            "messages": 1,
+            "delay_hours": 24,
+            "observed_gap": "No Added to Cart flow; filters not audited."
+          }
+        ],
+        "campaigns_per_week": 3,
+        "reported_open_rate_percent": 52,
+        "click_rate_percent": 1.1,
+        "order_rate_percent": 0.18,
+        "note": "Revenue attribution overlaps other systems; no holdout or recent deliverability audit."
+      },
+      "resources": {
+        "weekly_designer_hours": 8,
+        "weekly_developer_hours": 4,
+        "owner_hours": 4,
+        "next_14_day_test_budget": 3000,
+        "cash_constraint": "Protect replenishment payments; no additional inventory purchase approved."
+      },
+      "unavailable": [
+        "GA4 breakdowns",
+        "Clarity/Hotjar recordings",
+        "field Core Web Vitals",
+        "SKU-level ad acquisition cost",
+        "cohort contribution LTV",
+        "creative-level conversion sample sizes",
+        "channel incrementality",
+        "email holdout data"
+      ]
+    },
+    "task": {
+      "id": "E2",
+      "title": "Build and test an abandonment audience",
+      "request": "Build a three-email checkout recovery draft and select exactly the eligible customer IDs from the event fixtures. Today is 2026-09-23T12:00:00Z. Eligibility: consent true; checkout at least 2 hours but no more than 48 hours ago; no subsequent purchase; not in welcome flow; no email in last 24h. No discount approved. Provide subjects, actual body copy, delays, purchase suppression, collision handling, and selected_customer_ids. Explain how Shopify events and Klaviyo eligibility interact. Draft only.",
+      "fixtures": [
+        {
+          "id": "c1",
+          "consent": true,
+          "checkout_hours_ago": 5,
+          "purchased_after": false,
+          "welcome_active": false,
+          "last_email_hours_ago": 50
+        },
+        {
+          "id": "c2",
+          "consent": true,
+          "checkout_hours_ago": 8,
+          "purchased_after": true,
+          "welcome_active": false,
+          "last_email_hours_ago": 50
+        },
+        {
+          "id": "c3",
+          "consent": false,
+          "checkout_hours_ago": 8,
+          "purchased_after": false,
+          "welcome_active": false,
+          "last_email_hours_ago": 50
+        },
+        {
+          "id": "c4",
+          "consent": true,
+          "checkout_hours_ago": 8,
+          "purchased_after": false,
+          "welcome_active": true,
+          "last_email_hours_ago": 50
+        },
+        {
+          "id": "c5",
+          "consent": true,
+          "checkout_hours_ago": 8,
+          "purchased_after": false,
+          "welcome_active": false,
+          "last_email_hours_ago": 12
+        },
+        {
+          "id": "c6",
+          "consent": true,
+          "checkout_hours_ago": 1,
+          "purchased_after": false,
+          "welcome_active": false,
+          "last_email_hours_ago": 50
+        },
+        {
+          "id": "c7",
+          "consent": true,
+          "checkout_hours_ago": 60,
+          "purchased_after": false,
+          "welcome_active": false,
+          "last_email_hours_ago": 50
+        },
+        {
+          "id": "c8",
+          "consent": true,
+          "checkout_hours_ago": 48,
+          "purchased_after": false,
+          "welcome_active": false,
+          "last_email_hours_ago": 24
+        }
+      ],
+      "queries": [
+        "Klaviyo checkout abandonment purchase suppression flow filters consent",
+        "ecommerce abandoned checkout email copy sequence objections"
+      ]
+    },
+    "rubric_weights": {
+      "usefulness": 30,
+      "brand_fit": 20,
+      "correctness": 20,
+      "clarity": 15,
+      "handoff_readiness": 15
+    },
+    "answers": {
+      "A": {
+        "answer_markdown": "## TrailFold checkout recovery — draft\n\n**Launch status: Draft.** No discount is included. Any offer requires owner approval.\n\n### Selected customers\n**selected_customer_ids: c1, c8**\n\n- **c1:** Eligible: consent true, checkout 5 hours ago, no subsequent purchase, not in welcome, and last email was 50 hours ago.\n- **c8:** Eligible: consent true, checkout exactly 48 hours ago, no subsequent purchase, not in welcome, and last email was exactly 24 hours ago. This draft treats “in the last 24 hours” as strictly less than 24 elapsed hours, so the exact boundary qualifies.\n\nExcluded: c2 purchased after checkout; c3 lacks consent; c4 is active in welcome; c5 received an email 12 hours ago; c6 is under the 2-hour minimum; c7 is beyond the 48-hour maximum.\n\n### Flow and collision handling\n\n- **Trigger:** Shopify `Checkout Started`, received in Klaviyo as the checkout-started metric. Confirm the current Klaviyo event name before publishing.\n- **Backfill:** Use the two selected IDs only for this draft review. Do not send to the broader historical checkout population without reapplying every eligibility rule.\n- **Future entrants:** Evaluate checkout age, consent, purchase status, welcome-flow status, and recent-email status before enrollment. For a new checkout event, wait 2 hours before Email 1; do not enroll events outside the 2–48-hour eligibility window for this requested audience.\n- **Purchase suppression:** Add a flow filter for zero orders since entering the flow and check purchase status before every message. If Shopify reports a subsequent purchase, remove the profile from the flow and cancel all queued messages.\n- **Collision handling:** Exclude profiles active in the welcome flow. Suppress anyone emailed within the previous 24 hours. Keep this checkout flow separate from any added-to-cart flow; shoppers who only add to cart need a separate trigger and audited exclusion logic.\n- **Links:** Use the checkout URL from the triggering event for every CTA and product image, so the customer returns to the existing checkout. Verify the current Klaviyo event-property syntax in a real event preview.\n\nFor the selected backfill, send Email 1 on enrollment, Email 2 24 hours later, and Email 3 48 hours after Email 2. Re-check purchase, consent, welcome-flow, and recent-email conditions immediately before each send.\n\n### Email 1 — reminder\n**Subject:** Your TrailFold checkout is still open\n\nHi {{ first_name|default:'there' }},\n\nYou recently started checking out with TrailFold. The item or items you selected are still in your checkout.\n\nUS shipping is free, with an estimated delivery time of 4–7 business days. Use the button below to return to the checkout you started.\n\n**CTA:** Return to checkout\n\n**Dynamic product block:** Show the exact products from the checkout, with each item name, image, price, and link to the checkout URL.\n\n### Email 2 — practical check-in\n**Subject:** Did you run into a question about your order?\n\nHi {{ first_name|default:'there' }},\n\nYou recently started checking out with TrailFold. I wanted to make sure you had the details needed to decide.\n\nTrailFold offers free US shipping and 30-day returns for unused products; return shipping is paid by the customer. If you are ready, your checkout is waiting below.\n\n**CTA:** Return to your checkout\n\n### Email 3 — objection handling\n**Subject:** A few practical details before you decide\n\nBefore you complete your order, here are the details to check:\n\n- **Delivery:** Free US shipping; estimated delivery is 4–7 business days.\n- **Returns:** Unused products can be returned within 30 days. Return shipping is paid by the customer.\n- **Daypack 18L:** 18L capacity, padded sleeve for laptops up to 13 inches, external bottle pocket, and water-resistant fabric. It is not waterproof.\n\nIf the item in your checkout fits what you need, use the button below to finish your order.\n\n**CTA:** Return to checkout\n\n**Dynamic product block:** Show the exact checkout contents and link directly to the checkout URL. Do not display Daypack-specific details unless the Daypack 18L is present in the checkout.\n\n### Shopify–Klaviyo interaction\nShopify supplies the checkout-started event and subsequent order events. Klaviyo uses those events plus profile consent and flow/profile filters to decide eligibility. Shopify is the source event system for checkout and order activity; Klaviyo handles audience evaluation, delays, suppression, and message delivery. Audit event receipt, consent state, welcome-flow membership, and filter behavior before enabling this draft.",
+        "actions": {
+          "launch_status": "draft",
+          "selected_customer_ids": [
+            "c1",
+            "c8"
+          ],
+          "trigger": "Shopify Checkout Started / Klaviyo checkout-started metric",
+          "emails": [
+            {
+              "sequence": 1,
+              "delay_hours_backfill": 0,
+              "delay_hours_future_event": 2,
+              "subject": "Your TrailFold checkout is still open",
+              "cta": "Return to checkout",
+              "discount": false,
+              "body": "Hi {{ first_name|default:'there' }},\n\nYou recently started checking out with TrailFold. The item or items you selected are still in your checkout.\n\nUS shipping is free, with an estimated delivery time of 4–7 business days. Use the button below to return to the checkout you started.\n\nDynamic product block: show the exact checkout contents.\n\nCTA: Return to checkout"
+            },
+            {
+              "sequence": 2,
+              "delay_hours_after_previous": 24,
+              "subject": "Did you run into a question about your order?",
+              "cta": "Return to your checkout",
+              "discount": false,
+              "body": "Hi {{ first_name|default:'there' }},\n\nYou recently started checking out with TrailFold. I wanted to make sure you had the details needed to decide.\n\nTrailFold offers free US shipping and 30-day returns for unused products; return shipping is paid by the customer. If you are ready, your checkout is waiting below.\n\nCTA: Return to your checkout"
+            },
+            {
+              "sequence": 3,
+              "delay_hours_after_previous": 48,
+              "subject": "A few practical details before you decide",
+              "cta": "Return to checkout",
+              "discount": false,
+              "body": "Before you complete your order, here are the details to check:\n\n- Delivery: Free US shipping; estimated delivery is 4–7 business days.\n- Returns: Unused products can be returned within 30 days. Return shipping is paid by the customer.\n- Daypack 18L: 18L capacity, padded sleeve for laptops up to 13 inches, external bottle pocket, and water-resistant fabric. It is not waterproof.\n\nShow Daypack-specific details only when the Daypack 18L is present in the checkout.\n\nCTA: Return to checkout"
+            }
+          ],
+          "purchase_suppression": "Remove the profile and cancel queued messages immediately when a subsequent Shopify purchase is detected; re-check before every send.",
+          "collision_handling": [
+            "Exclude profiles active in the welcome flow.",
+            "Suppress profiles with an email sent in the previous 24 hours.",
+            "Keep checkout recovery separate from added-to-cart recovery.",
+            "Use the triggering checkout URL for all recovery links.",
+            "Re-check consent, purchase status, welcome status, and recent-email status before every message."
+          ],
+          "eligibility_rules": {
+            "consent": true,
+            "checkout_age_min_hours": 2,
+            "checkout_age_max_hours": 48,
+            "purchased_after": false,
+            "welcome_active": false,
+            "last_email_older_than_hours": 24
+          }
+        },
+        "questions": [
+          "Should the exact 24-hour boundary remain eligible, or should “last 24 hours” include the boundary and exclude c8?",
+          "Is there an existing added-to-cart flow whose trigger and exclusions should be audited before this draft is enabled?",
+          "Which current Klaviyo event property exposes the shopper’s checkout URL in this account?"
+        ]
+      },
+      "B": {
+        "answer_markdown": "## Draft checkout-recovery flow\n\n**Launch status: Draft only.** No discount is included or implied.\n\n### Eligible customers\nSelected customer IDs:\n\n```json\n[\"c1\", \"c8\"]\n```\n\nEligibility uses inclusive checkout-age boundaries: at least 2 hours and no more than 48 hours old. Customer `c8` qualifies because an email sent exactly 24 hours ago is outside the “last 24 hours” exclusion for this draft.\n\nExcluded customers: `c2` purchased after checkout; `c3` lacks consent; `c4` is active in the welcome flow; `c5` received an email 12 hours ago; `c6` checked out 1 hour ago; and `c7` checked out 60 hours ago.\n\n### Email 1 — immediately after flow entry\n**Subject:** Your TrailFold checkout is waiting\n\nYou were close to checking out at TrailFold.\n\nYour selected items are still in your checkout. If you’re ready, you can pick up where you left off here:\n\n**[Return to checkout]**\n\nTrailFold makes practical, lightweight bags for everyday commutes and short weekend trips. US shipping is free, with an estimated delivery time of 4–7 business days.\n\nHave a question about fit, delivery, or an item in your checkout? Reply to this email and we’ll help.\n\n— TrailFold\n\n### Email 2 — 24 hours after Email 1\n**Subject:** Still considering your TrailFold order?\n\nA quick reminder about the items you left in your TrailFold checkout.\n\nIf they’re still right for your commute or next short trip, your checkout is here:\n\n**[Return to checkout]**\n\nBefore ordering, you can review our 30-day return policy for unused products. Return shipping is paid by the customer. You can also reply to this email with a question.\n\n— TrailFold\n\n### Email 3 — 48 hours after Email 2\n**Subject:** Last reminder about your TrailFold checkout\n\nThis is our last reminder about the TrailFold items in your checkout.\n\nIf you’d like to complete your order, use the link below:\n\n**[Return to checkout]**\n\nNo discount is being offered. If you’re not ready, there’s nothing else you need to do.\n\n— TrailFold\n\n### Purchase suppression and collision handling\n- Check for a subsequent Shopify purchase before entry and immediately before every email. Suppress the profile and cancel all remaining messages when a purchase is received.\n- Permit only one active checkout-recovery sequence per customer. Deduplicate using the stable Shopify customer ID mapped to the Klaviyo profile ID.\n- If a customer starts another checkout while already enrolled, retain one active sequence and do not create duplicate recovery messages. Use the current checkout URL only if Klaviyo can update it reliably; otherwise, stop and re-qualify the customer through a new audited event.\n- Do not enter customers who are in the welcome flow. If the welcome flow becomes active after entry, prevent overlapping sends according to the configured flow-priority rule.\n- Re-check consent, purchase status, welcome-flow status, and the 24-hour recent-email rule before each send. Apply Klaviyo Smart Sending and campaign/flow collision limits; skip a message rather than sending immediately after another email.\n- Do not send to profiles whose consent status is missing or false.\n\n### Shopify and Klaviyo interaction\nShopify provides the checkout-started event, customer identity, checkout timestamp, checkout URL, and subsequent order event. Klaviyo uses the synced checkout event to trigger this draft flow, then applies the consent, age, welcome-flow, purchase, and recent-email rules.\n\nShopify is the event source for checkout and order completion; Klaviyo handles audience filtering, scheduling, suppression, and delivery. Before any launch, verify customer/profile ID matching, checkout-link rendering, purchase-event latency, consent synchronization, Smart Sending behavior, and welcome-flow collision rules using internal or draft profiles only.",
+        "actions": {
+          "launch_status": "draft",
+          "selected_customer_ids": [
+            "c1",
+            "c8"
+          ],
+          "email_count": 3,
+          "delays_hours_after_previous_email": [
+            0,
+            24,
+            48
+          ],
+          "eligibility_min_checkout_age_hours": 2,
+          "eligibility_max_checkout_age_hours": 48,
+          "recent_email_exclusion_hours": 24,
+          "discount_percent": 0,
+          "purchase_suppression": true,
+          "welcome_flow_exclusion": true,
+          "deduplicate_active_recovery_per_customer": true
+        },
+        "questions": []
+      },
+      "C": {
+        "answer_markdown": "## TrailFold checkout recovery — draft only\n\n**Selected audience at 2026-09-23 12:00 UTC:** `c1`, `c8`.\n\nBoth meet every entry condition: consent is true; checkout age is 2–48 hours inclusive; no purchase followed the checkout; Welcome is not active; and no email was sent in the prior 24 hours. The inclusive boundaries make `c8` eligible at exactly 48 hours since checkout and exactly 24 hours since the prior email.\n\n**Excluded:** `c2` purchased; `c3` lacks consent; `c4` is active in Welcome; `c5` received email 12 hours ago; `c6` is only one hour post-checkout; `c7` is 60 hours post-checkout.\n\n### Draft flow configuration\n- **Trigger:** Shopify-synced `Checkout Started` metric in Klaviyo. Confirm the current account’s metric label and event properties before build.\n- **Entry gate:** delay/qualify until checkout is at least 2 hours old, then allow entry only through 48 hours after checkout.\n- **Required flow filters:** marketing email consent = true; has placed order zero times since starting the flow; is not actively in Welcome; and has not received a marketing email in the prior 24 hours.\n- **Re-entry:** suppress a new checkout-recovery entry for **3 days** after entry.\n- **Send-time checks:** immediately before each email, re-check purchase status, consent, Welcome status, and recent-email suppression. If the profile fails a check, skip that message rather than queueing it after the recovery sequence.\n- **Dynamic content/linking:** show the products from the triggering checkout. Every CTA and product image must use the event-level return-to-checkout URL, verified in a real Klaviyo event preview.\n\n### Email 1 — send on eligible flow entry\n**Subject:** Your TrailFold checkout is still open\n\nHi {{ first_name|default:'there' }},\n\nYour checkout is saved if you’re ready to pick up where you left off.\n\n[Dynamic checkout product block]\n\nYour order ships free within the US. Delivery is estimated in 4–7 business days.\n\n**CTA:** Return to checkout\n\n### Email 2 — 24 hours after Email 1\n**Subject:** Need a hand finishing your order?\n\nHi {{ first_name|default:'there' }},\n\nJust checking in in case a question got in the way.\n\nYour checkout is still ready, with free US shipping and an estimated 4–7 business day delivery window.\n\n[Conditional DAY18 block, only if Daypack 18L is in the checkout: The Daypack 18L has an 18L capacity, a padded sleeve for laptops up to 13 inches, and an external bottle pocket. Its fabric is water-resistant, not waterproof.]\n\n**CTA:** Return to checkout\n\n### Email 3 — 24 hours after Email 2\n**Subject:** A few practical details before you decide\n\nHi {{ first_name|default:'there' }},\n\nA few details that may help:\n\n- US shipping is free; delivery is estimated in 4–7 business days.\n- Unused products can be returned within 30 days. Return shipping is paid by the customer.\n- [Conditional DAY18 block: The Daypack 18L laptop sleeve fits up to a 13-inch laptop. The fabric is water-resistant, not waterproof.]\n\n[Dynamic checkout product block]\n\n**CTA:** Return to checkout\n\nNo discount is included or implied.\n\n### Purchase suppression and collision handling\nA Shopify `Placed Order` event must immediately end this flow and suppress all remaining recovery emails. Do not use a click, cart update, or checkout status as purchase proof.\n\nCheckout recovery takes priority over Welcome: prevent entry when Welcome is active, and configure Welcome to exit/suppress when a checkout starts or an order is placed. Suppress campaign sends to active recovery profiles. If another marketing email is sent during recovery, hold the next recovery email until 24 hours have elapsed; if that creates a conflict with another priority flow, skip the recovery email rather than sending two marketing emails within 24 hours.\n\n### Shopify → Klaviyo interaction\nShopify provides the checkout-started event, checkout line items, return-to-checkout URL, and placed-order event. Klaviyo uses the checkout event to trigger the flow and populate the dynamic product block/link, but Klaviyo must enforce consent, Welcome membership, email-frequency controls, and purchase suppression at entry and before each send. This is a draft; do not activate until the event payload, existing Welcome logic, and campaign suppression settings are audited.",
+        "actions": {
+          "launch_status": "draft",
+          "selected_customer_ids": [
+            "c1",
+            "c8"
+          ],
+          "selected_customer_count": 2,
+          "email_count": 3,
+          "entry_delay_hours": 2,
+          "second_email_delay_hours": 24,
+          "third_email_delay_hours": 24,
+          "reentry_suppression_days": 3,
+          "discount_percent": 0
+        },
+        "questions": [
+          "What profile property, segment, or flow-status method currently identifies an active Welcome recipient?",
+          "Can the existing Shopify Checkout Started event preview confirm the exact return-to-checkout URL field and line-item fields?",
+          "Should recovery emails be suppressed when transactional order/shipping messages are sent, or only when other marketing emails are sent?"
+        ]
+      },
+      "D": {
+        "answer_markdown": "## TrailFold checkout recovery flow\n\n**Status:** Draft only; no discount. Build from Shopify’s synced **Started Checkout** event in Klaviyo. The 2–48 hour rule is used for audience entry. The three sends are spaced 24 hours apart at 2, 26, and 50 hours after checkout; therefore, Email 3 requires the 48-hour maximum to be an **entry rule**, not a send-time age limit. If checkout age must remain no more than 48 hours at every send, three emails cannot also satisfy a 24-hour email-collision window.\n\n### Email 1 — reminder\n**Delay:** 2 hours after checkout  \n**Subject:** You left checkout open  \n**Preview text:** Your items are still one click away.\n\nHi {{ first_name|default:'there' }},\n\nYou left something in checkout. Your items are below if you’d like to pick up where you stopped.\n\n{{ dynamic_checkout_items }}\n\n**[Return to checkout]**\n\nYour order ships free within the US. Estimated delivery is 4–7 business days.\n\n— TrailFold\n\n### Email 2 — practical check-in\n**Delay:** 26 hours after checkout  \n**Subject:** Any questions before you finish?\n**Preview text:** A quick check-in from TrailFold.\n\nHi {{ first_name|default:'there' }},\n\nWe noticed you started checkout and wanted to make sure a product or delivery question didn’t get in the way. US shipping is free, with estimated delivery in 4–7 business days.\n\n{% if checkout_contains_DAY18 %}If you’re considering the Daypack 18L, its padded sleeve is designed for a 13-inch laptop. The fabric is water-resistant, not waterproof. We do not promise fit for a 15-inch laptop.{% endif %}\n\n**[Return to your checkout]**\n\n— The TrailFold team\n\n### Email 3 — decision details\n**Delay:** 50 hours after checkout  \n**Subject:** The practical details before you decide\n**Preview text:** Shipping, returns, and product information.\n\nHi {{ first_name|default:'there' }},\n\nHere are a few details that may help you decide:\n\n{{ dynamic_checkout_items }}\n\n- Free US shipping\n- Estimated delivery in 4–7 business days\n- Unused products may be returned within 30 days\n- Return shipping is paid by the customer\n\n{% if checkout_contains_DAY18 %}The Daypack has 18L capacity, a padded 13-inch laptop sleeve, an external bottle pocket, and water-resistant—not waterproof—fabric.{% endif %}\n\n**[Return to checkout]**\n\n— TrailFold\n\n## Eligibility, suppression, and collisions\n\nEnter a profile only when consent is true, the checkout occurred **2–48 hours ago inclusive**, no purchase occurred after that checkout, the profile is not active in the welcome flow, and no email was sent during the preceding 24 hours.\n\nAdd **Placed Order zero times since starting this flow** and recheck purchase status immediately before every message. Also recheck consent. When Started Checkout occurs, suppress or exit the profile from the welcome flow so the sequences do not compete.\n\nTreat campaigns and other flows as collisions. If another message was sent in the preceding 24 hours, skip the affected recovery email rather than bunching messages together. The planned recovery emails are themselves 24 hours apart. Link every CTA, product image, and item name to the checkout-recovery URL from the triggering event; confirm the current Klaviyo event-property name with a real event preview before activation.\n\n## Selected fixture audience\n\nAt **2026-09-23 12:00 UTC**, the exact eligible IDs are **c1** and **c8**. The boundaries are inclusive: c8’s checkout is exactly 48 hours old, and an email sent exactly 24 hours ago is not considered within the preceding 24 hours.\n\nExcluded: c2 purchased after checkout; c3 lacks consent; c4 is in welcome; c5 received an email 12 hours ago; c6 checked out only 1 hour ago; c7 checked out 60 hours ago.\n\nShopify supplies Started Checkout and Placed Order events. Klaviyo combines those events with consent, welcome-flow membership, and message history to determine entry and send eligibility. Selecting c1 and c8 for the fixture does not imply retroactive delivery of messages whose scheduled checkout-relative times have already passed.",
+        "actions": {
+          "launch_status": "draft",
+          "flow_name": "TrailFold | Checkout Recovery | 3 Email | No Offer",
+          "trigger": "Started Checkout",
+          "delays_hours_after_checkout": [
+            2,
+            26,
+            50
+          ],
+          "minimum_entry_checkout_age_hours": 2,
+          "maximum_entry_checkout_age_hours": 48,
+          "email_collision_window_hours": 24,
+          "discount_percent": 0,
+          "purchase_suppression": "Placed Order zero times since starting flow; recheck immediately before every send",
+          "consent_handling": "Require consent true at entry and recheck before each send",
+          "welcome_collision_handling": "Require welcome_active false at entry; suppress or exit the welcome flow when Started Checkout occurs",
+          "recent_email_collision_handling": "At entry and before each send, skip when another campaign or flow email was sent in the preceding 24 hours; do not bunch or catch up skipped messages",
+          "checkout_link_configuration": "Link every CTA and dynamic product element to the checkout URL property from the triggering Started Checkout event; verify the property using a real event preview",
+          "selected_customer_ids": [
+            "c1",
+            "c8"
+          ],
+          "excluded_customer_ids": [
+            "c2",
+            "c3",
+            "c4",
+            "c5",
+            "c6",
+            "c7"
+          ]
+        },
+        "questions": [
+          "Please confirm that the 48-hour checkout-age maximum is an entry rule. If it must be rechecked before every send, a three-email sequence cannot also maintain a full 24-hour gap between messages."
+        ]
+      },
+      "E": {
+        "answer_markdown": "## Draft: Checkout Recovery — 3 emails, no discount\n\n### Flow configuration\n- **Trigger:** Shopify `Checkout Started`, synced to Klaviyo.\n- **Entry/send-one eligibility:** Marketing consent is true; checkout is **2–48 hours old, inclusive**; no order was placed after that checkout; profile is not active in the welcome flow; and no email was sent during the prior 24 hours.\n- **Purchase suppression:** Before every email, require `Placed Order = 0 times since starting this flow`. A subsequent Shopify order suppresses all remaining messages, regardless of attribution.\n- **Other continued checks:** Recheck consent and the 24-hour email-collision rule before each send.\n- **Checkout recovery link:** Link every CTA and dynamic product image to the recovery URL from the triggering checkout event. Verify the exact event property against a real Klaviyo event preview before implementation.\n- **Content:** Show the triggering checkout’s products and prices. Do not imply that inventory is reserved.\n- **Offer:** No code or new discount. Free US shipping is an existing policy, not a temporary incentive.\n\n### Email 1 — 2 hours after checkout\n**Subject:** A link back to your checkout\n\n**Preview text:** Pick up where you left off.\n\n**Body:**\n\nYou started a TrailFold checkout but didn’t finish it. Here’s a direct link back to the items you selected.\n\n[Dynamic checkout items]\n\n**[RETURN TO CHECKOUT]**\n\nYour order ships free within the US. Estimated delivery is 4–7 business days.\n\nIf something went wrong during checkout, reply to this email and we’ll help.\n\n— TrailFold\n\n### Email 2 — 24 hours after Email 1\n**Subject:** Did you run into a checkout problem?\n\n**Preview text:** A quick note about shipping and returns.\n\n**Body:**\n\nHi,\n\nWe noticed you didn’t complete your TrailFold checkout. If a product question or checkout issue is holding things up, reply and tell us what you need to know.\n\nA few practical details:\n- US shipping is free.\n- Estimated delivery is 4–7 business days.\n- Unused products can be returned within 30 days.\n- Return shipping is paid by the customer.\n\n[Dynamic checkout items]\n\n**[CONTINUE CHECKOUT]**\n\n— The TrailFold team\n\n### Email 3 — 24 hours after Email 2\n**Subject:** Your final checkout reminder\n\n**Preview text:** Product details and your checkout link, in one place.\n\n**Body:**\n\nThis is the last reminder about the checkout you started.\n\n[Dynamic checkout items]\n\n[If checkout contains DAY18, show:]\n\nA few details about the Daypack 18L:\n- 18L capacity\n- Padded sleeve designed for a 13-inch laptop\n- External bottle pocket\n- Water-resistant fabric; it is not waterproof\n\nWe do not claim that a 15-inch laptop fits.\n\n**[FINISH CHECKOUT]**\n\nQuestions before deciding? Reply and we’ll help.\n\n— TrailFold\n\n## Collision handling\nCheckout recovery takes priority over promotional campaigns. Exclude profiles active in this flow from regular Klaviyo campaigns. Exclude anyone currently active in the welcome flow at entry; separately update the welcome flow so future profiles exit it when `Checkout Started` occurs, preventing simultaneous sequences.\n\nImmediately before each recovery email, suppress a profile if they purchased, withdrew consent, or received any email during the rolling prior 24 hours. If another campaign or operational message creates a collision, skip that recovery email rather than delaying and bunching messages. An email sent exactly 24 hours earlier is outside the stated “last 24 hours” window; confirm Klaviyo’s boundary handling before activation.\n\n## Fixture selection\n**Selected customer IDs:** `c1`, `c8`.\n\n- `c1`: eligible at five hours after checkout.\n- `c8`: eligible at both inclusive boundaries—checkout exactly 48 hours ago and last email exactly 24 hours ago.\n- Excluded: `c2` purchased; `c3` lacks consent; `c4` is in welcome; `c5` received email within 24 hours; `c6` is under two hours; `c7` is over 48 hours.\n\nShopify supplies checkout and order events. Klaviyo combines those events with consent, welcome status, and send history. A Shopify checkout event establishes intent but does not override Klaviyo eligibility or suppression rules. The 2–48-hour rule governs entry/send one; later emails remain subject to purchase, consent, and collision checks.",
+        "actions": {
+          "launch_status": "draft",
+          "flow_name": "Checkout Recovery — 3 Email — No Discount",
+          "trigger": "Checkout Started",
+          "email_count": 3,
+          "first_delay_hours": 2,
+          "second_delay_hours_after_previous": 24,
+          "third_delay_hours_after_previous": 24,
+          "checkout_min_age_hours": 2,
+          "checkout_max_age_hours": 48,
+          "email_collision_window_hours": 24,
+          "reentry_cooldown_days": 7,
+          "selected_customer_ids": [
+            "c1",
+            "c8"
+          ],
+          "purchase_suppression": "Placed Order = 0 times since starting this flow; recheck before every send",
+          "discount_percent": 0
+        },
+        "questions": []
+      },
+      "F": {
+        "answer_markdown": "## TrailFold checkout recovery — draft only\n\n**Flow name:** Checkout Recovery | 3 emails | no offer  \n**Trigger:** Shopify **Checkout Started** event synced into Klaviyo. Use the event’s dynamic checkout-item block and event-level return-to-checkout URL for every product image and CTA. This is separate from any future Added to Cart recovery flow.\n\n### Entry and audience rules\nAt entry, require: marketing email consent; a Checkout Started event; no **Placed Order** since flow start; not active in welcome; and no other email sent in the prior 24 hours. Add a **7-day** re-entry suppression for this checkout flow.\n\nThe sequence begins **2 hours after Checkout Started**. For the requested point-in-time audience (2026-09-23 12:00 UTC), include checkout events aged **2–48 hours inclusive**. The “no email in 24 hours” boundary is also inclusive at 24 hours.\n\n### Email 1 — 2 hours after Checkout Started\n**Subject:** Your TrailFold checkout is ready  \n**Preheader:** Pick up where you left off.\n\nHi,\n\nYou left items at checkout. Use the link below to return to your order.\n\n[Dynamic checkout items]\n\nUS shipping is free. Delivery is estimated in 4–7 business days.\n\n**Button:** Return to checkout\n\nNeed help before you finish? Reply to this email.\n\n— TrailFold\n\n### Email 2 — 24 hours after Email 1\n**Subject:** Any question before you place your order?  \n**Preheader:** Shipping and practical product details.\n\nHi,\n\nJust checking in in case something interrupted checkout.\n\nUS shipping is free, with delivery estimated in 4–7 business days. Unused products can be returned within 30 days; return shipping is paid by the customer.\n\nIf your checkout includes the Daypack 18L: it has 18L of capacity, a padded sleeve for laptops up to 13 inches, and an external bottle pocket. Its fabric is water-resistant, not waterproof.\n\n[Dynamic checkout items]\n\n**Button:** Return to checkout\n\nReply if you need a hand.\n\n— TrailFold\n\n### Email 3 — 24 hours after Email 2\n**Subject:** A final practical note on your order  \n**Preheader:** Confirm the details before you check out.\n\nHi,\n\nBefore you decide, here are the key details:\n\n- Free US shipping; estimated delivery in 4–7 business days.\n- Unused products may be returned within 30 days. Return shipping is paid by the customer.\n- The Daypack 18L laptop sleeve is specified for laptops up to 13 inches. We cannot confirm fit for a 15-inch laptop.\n- The Daypack fabric is water-resistant, not waterproof.\n\n[Dynamic checkout items]\n\n**Button:** Return to checkout\n\nIf delivery timing or product fit is unclear, reply before ordering and we’ll help.\n\n— TrailFold\n\n### Purchase suppression and collision handling\nImmediately before **every** message, check **Placed Order = 0 since starting this flow**. A Shopify order that syncs as Klaviyo’s Placed Order event exits the profile and cancels all pending recovery emails.\n\nAlso suppress profiles that lose consent or enter the welcome flow. The 24-hour collision rule applies to **other** campaigns and flows, not an earlier email in this same recovery sequence; the recovery messages are intentionally spaced exactly 24 hours apart. If another email is sent inside that window, hold the recovery message until the window clears, then re-check purchase, consent, welcome status, and checkout-link validity before sending. If checkout is restarted, do not create overlapping journeys during the 7-day cooldown. Configure welcome to exit when Checkout Started occurs, giving checkout recovery priority.\n\n### Shopify → Klaviyo interaction\nShopify supplies the behavioral events: Checkout Started provides the triggering checkout, line items, and return URL; Placed Order supplies the conversion event that suppresses sends. Klaviyo applies consent, welcome exclusion, cooldown, delays, collision logic, and message-level suppression. Verify the exact synced metric names and the checkout URL variable against a real event preview before configuration.\n\n### Fixture decision\n**Selected now:** `c1`, `c8`.\n\nExcluded: `c2` purchased after checkout; `c3` lacks consent; `c4` is active in welcome; `c5` received another email 12 hours ago; `c6` is only 1 hour from checkout; `c7` is 60 hours from checkout. `c8` qualifies at both inclusive boundaries: 48 hours since checkout and 24 hours since the last email.\n\nNo discount, artificial urgency, testimonials, or unsupported performance claims are included.",
+        "actions": {
+          "selected_customer_ids": [
+            "c1",
+            "c8"
+          ],
+          "email_count": 3,
+          "first_email_delay_hours": 2,
+          "subsequent_email_delay_hours": 24,
+          "entry_checkout_min_hours": 2,
+          "entry_checkout_max_hours": 48,
+          "email_collision_window_hours": 24,
+          "reentry_suppression_days": 7,
+          "launch_status": "draft"
+        },
+        "questions": [
+          "Can the welcome flow be configured to exit immediately when Checkout Started is received?",
+          "Should the 7-day checkout-recovery cooldown be retained after initial monitoring, or is a different contact-frequency policy required?"
+        ]
+      },
+      "G": {
+        "answer_markdown": "## TrailFold checkout recovery — draft\n\n**Status:** Draft only. No discount is included. This flow is for consented checkout recovery and should not be activated until Shopify event mapping, consent properties, and flow filters are audited.\n\n### Eligible audience at 2026-09-23 12:00 UTC\n**Selected customer IDs:** `c1`, `c8`\n\nBoth meet every stated rule: consent is true; checkout age is within the inclusive 2–48 hour range; no purchase followed checkout; Welcome is not active; and no email was sent in the preceding 24 hours. `c8` qualifies at both inclusive boundaries: checkout exactly 48 hours ago and last email exactly 24 hours ago.\n\n| Excluded ID | Reason |\n|---|---|\n| `c2` | Purchased after checkout |\n| `c3` | No consent |\n| `c4` | Active in Welcome |\n| `c5` | Email sent 12 hours ago |\n| `c6` | Checkout only 1 hour ago |\n| `c7` | Checkout 60 hours ago |\n\n### Klaviyo flow configuration\n**Trigger:** Shopify `Started Checkout` event.\n\n**Initial delay:** Wait until **2 hours after the triggering checkout** before evaluating send eligibility.\n\n**Required flow filters at entry and immediately before every email:**\n- Email marketing consent is true.\n- The triggering checkout is at least 2 and no more than 48 hours old at initial entry.\n- No Shopify/Klaviyo `Placed Order` event occurred after the triggering checkout.\n- Profile is not active in the Welcome flow.\n- No marketing email was delivered in the preceding 24 hours.\n- Profile is not unsubscribed, suppressed, bounced, or consent-revoked.\n\n| Email | Timing from checkout | Subject | Preview text |\n|---|---:|---|---|\n| 1 | 2 hours | Your TrailFold checkout is still open | Return when you’re ready. |\n| 2 | 20 hours | A few practical details before you decide | Laptop fit, rain expectations, and delivery details. |\n| 3 | 38 hours | Still deciding? Here are the essentials | Free US shipping and 30-day unused returns. |\n\n### Email 1 — 2 hours\n**Headline:** Your checkout is still open\n\nYou left items in your TrailFold checkout. If you are still comparing options for the commute or a short weekend trip, you can pick up where you left off.\n\n**[Return to checkout]**\n\nFree US shipping. Delivery is estimated at **4–7 business days**.\n\n### Email 2 — 20 hours\n**Headline:** A few practical details\n\nBefore you return to your checkout, here are a few details to keep in mind:\n\n- Daypack 18L has an **18L capacity** and a padded sleeve for a **13-inch laptop**.\n- The fabric is **water-resistant, not waterproof**.\n- There is an external bottle pocket for easier access on the move.\n\nYour checkout is ready when you are.\n\n**[Return to checkout]**\n\n### Email 3 — 38 hours\n**Headline:** The essentials, in one place\n\nFor weekday commutes and short weekend trips, TrailFold keeps the details straightforward.\n\nYour order includes free US shipping, with delivery estimated at **4–7 business days**. If it is not right for you, unused products may be returned within 30 days. Return shipping is paid by the customer.\n\n**[Return to checkout]**\n\n### Purchase suppression and collision handling\nA `Placed Order` after the triggering checkout must remove the profile from all remaining recovery messages immediately. Re-check this condition directly before each send, rather than relying only on an entry filter.\n\nApply a cross-flow **24-hour marketing-email collision rule**. If another campaign or flow email was delivered during that period, do not send the scheduled recovery email at that time. Hold it only until the 24-hour window clears and only if the message can still send before the 48-hour checkout-age limit; otherwise skip it. Welcome takes priority: profiles active in Welcome are excluded, and a recovery recipient who enters Welcome exits recovery.\n\n### Shopify and Klaviyo interaction\nShopify is the source of behavioral events: `Started Checkout` supplies the event timestamp and restored-checkout link; `Placed Order` supplies purchase suppression. Klaviyo uses those events alongside profile consent, suppression status, flow membership, and recent-email activity to determine entry and continued eligibility. The CTA must use the event-specific checkout restoration URL, not a generic product page. Before any activation, verify event naming, timestamp order, duplicate-event handling, the definition of “delivered,” and whether the Welcome-status property updates in time for suppression.",
+        "actions": {
+          "launch_status": "draft",
+          "selected_customer_ids": [
+            "c1",
+            "c8"
+          ],
+          "selected_customer_count": 2,
+          "email_1_delay_hours": 2,
+          "email_2_delay_hours": 20,
+          "email_3_delay_hours": 38,
+          "eligibility_min_checkout_hours": 2,
+          "eligibility_max_checkout_hours": 48,
+          "email_collision_window_hours": 24
+        },
+        "questions": []
+      },
+      "H": {
+        "answer_markdown": "## TrailFold checkout-recovery flow — draft\n\n**Flow name:** Checkout Recovery — TrailFold — Draft  \n**Trigger:** Shopify `Checkout Started` synced to Klaviyo\n\n### Eligible customers from the fixtures\n\nSelected IDs: **`c1`, `c8`**\n\nBoth have consent, a checkout age between 2 and 48 hours inclusive, no subsequent purchase, no active Welcome flow, and no email within the previous 24 hours. `c2` purchased, `c3` lacks consent, `c4` is in Welcome, `c5` received an email 12 hours ago, `c6` is too recent, and `c7` is beyond the 48-hour limit. `c8` is exactly 24 hours since the last email and qualifies under “no email in the last 24 hours.”\n\n### Email 1 — checkout reminder\n\n**Send:** 0 hours after the profile passes the eligibility check  \n**Subject:** Your TrailFold checkout is still ready  \n**Preview text:** Finish your order when you are ready.\n\n**Body:**\n\nHi {{ first_name|default:'there' }},\n\nYou left an item in your TrailFold checkout. If it is still what you need, you can pick up where you left off below.\n\n**[Dynamic abandoned-checkout product block]**\n\nYour order includes free US shipping, with delivery estimated in 4–7 business days.\n\n**[Return to checkout]**\n\nTrailFold\n\nUse the individual checkout URL from the triggering Shopify event for the button and product image. Verify the current Klaviyo event variable in preview before publishing.\n\n### Email 2 — practical answers\n\n**Send:** 20 hours after Email 1  \n**Subject:** A few useful details before you decide  \n**Preview text:** Delivery, returns, and product details in plain English.\n\n**Body:**\n\nHi {{ first_name|default:'there' }},\n\nA few details that may help before you finish your order:\n\n- **Shipping:** Free US shipping.\n- **Delivery:** Estimated arrival is 4–7 business days.\n- **Returns:** Unused products can be returned within 30 days. Return shipping is paid by the customer.\n- **Daypack 18L:** 18L capacity, a padded sleeve for a 13-inch laptop, water-resistant fabric, and an external bottle pocket.\n- **Rain protection:** The fabric is water-resistant, not waterproof.\n- **15-inch laptops:** We do not currently have verified fit information to promise compatibility with a 15-inch laptop.\n\nIf you have a question about the item or your checkout, reply to this email and we will help with the details we can verify.\n\n**[Return to checkout]**\n\nTrailFold\n\n### Email 3 — final factual reminder\n\n**Send:** 24 hours after Email 2  \n**Subject:** Last reminder about your TrailFold checkout  \n**Preview text:** Your saved checkout link is below.\n\n**Body:**\n\nHi {{ first_name|default:'there' }},\n\nThis is our last reminder about the item in your TrailFold checkout.\n\nIf it fits your commute and short weekend-trip needs, your saved checkout is here:\n\n**[Dynamic abandoned-checkout product block]**\n\nFree US shipping is included, with delivery estimated in 4–7 business days. There is no discount in this sequence because no discount has been approved.\n\n**[Return to checkout]**\n\nIf it is not the right fit, that is okay. We would rather you have the information you need before ordering.\n\nTrailFold\n\n## Suppression and collision handling\n\n- Add the Klaviyo flow filter equivalent to **Placed Order = zero times since starting this flow**. Re-check purchase status immediately before every email and exit the profile after any Shopify order event.\n- Exclude profiles with an active Welcome flow at entry. Add a pre-send conditional check as well; if Welcome is active, skip the recovery email rather than sending both flows.\n- Apply the requested **no email in the previous 24 hours** rule at entry and immediately before each send. If another campaign or flow email was sent during that window, skip the recovery email; do not stack messages.\n- Prevent re-entry into this recovery flow while the same recovery sequence is active. Verify the account’s current Klaviyo re-entry and smart-sending settings before implementation.\n- Use the triggering Shopify checkout URL dynamically for every CTA and abandoned-product image link. Do not use a generic homepage or product-page link.\n\n## Shopify–Klaviyo interaction\n\nShopify provides the `Checkout Started` event, checkout timestamp, checkout URL, product data, consent-related customer information, and later order events. Klaviyo receives that event and applies the consent, age, Welcome-flow, email-frequency, and purchase conditions before sending. Shopify remains the transaction source for whether checkout became an order; Klaviyo orchestrates eligibility, delays, suppression, and delivery. Preview a real synced event to confirm the checkout URL, customer consent mapping, and order suppression before activation.\n\n**Launch status: Draft only.**",
+        "actions": {
+          "launch_status": "draft",
+          "flow_name": "Checkout Recovery — TrailFold — Draft",
+          "trigger": "Checkout Started",
+          "selected_customer_ids": [
+            "c1",
+            "c8"
+          ],
+          "email_count": 3,
+          "delays_hours": [
+            0,
+            20,
+            24
+          ],
+          "purchase_suppression": "Placed Order = 0 times since starting this flow; re-check before every send and exit after any subsequent purchase",
+          "welcome_collision_handling": "Exclude active Welcome profiles at entry and skip any recovery email if Welcome is active at send time",
+          "email_frequency_collision_handling": "Require no email in the prior 24 hours at entry and before each send; skip rather than stack messages",
+          "discount": "none",
+          "checkout_link": "Use the triggering Shopify Checkout Started event URL dynamically after verifying the current Klaviyo event field"
+        },
+        "questions": []
+      },
+      "I": {
+        "answer_markdown": "## Three-email checkout recovery draft\n\n**Status:** Draft only. No messages will be launched, and no discount is offered or implied.\n\n### Eligible fixture audience\n\n**Selected customer IDs: `c1`, `c8`**\n\nBoth profiles have consent, checked out between 2 and 48 hours ago inclusive, did not subsequently purchase, are not active in welcome, and have not received an email within the preceding 24 hours. `c8` qualifies at the inclusive boundaries: exactly 48 hours since checkout and exactly 24 hours since the last email.\n\nExcluded: `c2` purchased after checkout; `c3` lacks consent; `c4` is active in welcome; `c5` received an email 12 hours ago; `c6` checked out only 1 hour ago; and `c7` checked out 60 hours ago.\n\n## Flow configuration\n\n**Trigger:** Shopify **Started Checkout** event synced to Klaviyo.\n\n**Entry timing:** Wait until 2 hours after checkout, then require the checkout event to be no more than 48 hours old.\n\n**Entry filters:**\n- Email marketing consent is true and the profile is not suppressed.\n- No Shopify **Placed Order** event occurred after the qualifying checkout.\n- Profile is not active in the welcome flow.\n- Profile received zero marketing emails in the previous 24 hours.\n- Permit one entry per distinct checkout event.\n\nThe existing one-message checkout abandonment flow must be disabled or replaced before this flow is approved for launch. Otherwise, customers could receive duplicate recovery messages.\n\n### Email 1 — 2 hours after checkout\n\n**Subject:** You left items at checkout\n\n**Preview text:** Return to your checkout when you’re ready.\n\n**Body:**\n\nHi {{ first_name|default:'there' }},\n\nYou left these items at checkout:\n\n{{ dynamic_checkout_items }}\n\n**Return to checkout:** {{ checkout_url }}\n\nUS shipping is free. Estimated delivery is 4–7 business days.\n\n— TrailFold\n\n### Email 2 — 26 hours after checkout\n\n**Subject:** A few details before you decide\n\n**Preview text:** Clear information about shipping, laptop fit, and rain protection.\n\n**Body — when the checkout contains DAY18:**\n\nHi {{ first_name|default:'there' }},\n\nIf a product detail is holding up your order, here are a few useful facts about the Daypack 18L:\n\n- The padded laptop sleeve is designed for a 13-inch laptop. We do not claim that it fits a 15-inch laptop.\n- The fabric is water-resistant, not waterproof.\n- US shipping is free, with estimated delivery in 4–7 business days.\n\n{{ dynamic_checkout_items }}\n\n**Review your checkout:** {{ checkout_url }}\n\n— TrailFold\n\n**Fallback body — when DAY18 is not in the checkout:**\n\nHi {{ first_name|default:'there' }},\n\nYour checkout is still available if you would like to take another look.\n\n{{ dynamic_checkout_items }}\n\nUS shipping is free, with estimated delivery in 4–7 business days. Unused products may be returned within 30 days; return shipping is paid by the customer.\n\n**Review your checkout:** {{ checkout_url }}\n\n— TrailFold\n\n### Email 3 — 50 hours after checkout\n\n**Subject:** One last checkout reminder\n\n**Preview text:** Review the items you left behind.\n\n**Body:**\n\nHi {{ first_name|default:'there' }},\n\nThis is the last reminder about the items you left at checkout.\n\n{{ dynamic_checkout_items }}\n\n**Return to checkout:** {{ checkout_url }}\n\nUS shipping is free, with estimated delivery in 4–7 business days. Unused products may be returned within 30 days; return shipping is paid by the customer.\n\nIf you no longer need these items, no action is required.\n\n— TrailFold\n\n## Purchase suppression and collision handling\n\nImmediately before **every** email, re-check consent, profile suppression status, and Shopify purchase activity. If a **Placed Order** occurred after the qualifying checkout, exit the customer from the flow so later messages cannot send.\n\nAlso check for any marketing campaign or flow email received during the preceding 24 hours. If there is a collision, skip that recovery email rather than delaying it; evaluate the customer again at the next scheduled checkpoint. Do not compress messages together. Transactional emails are not part of this marketing collision rule. Welcome has priority, so an active welcome participant must not enter; re-checking welcome status before each send is recommended.\n\nShopify supplies the commerce facts—checkout creation and subsequent purchase—while Klaviyo applies consent, suppression, welcome participation, recent-email, and timing rules. The 2–48-hour requirement is an **entry eligibility rule**; Email 3 may therefore send at hour 50 if the customer remains eligible. The fixture selection is a point-in-time eligibility validation, not an instruction to retroactively send overdue emails. In particular, Klaviyo will not automatically enroll historical checkout events unless a controlled backfill is explicitly configured and approved.",
+        "actions": {
+          "launch_status": "draft",
+          "selected_customer_ids": [
+            "c1",
+            "c8"
+          ],
+          "email_count": 3,
+          "entry_min_checkout_age_hours": 2,
+          "entry_max_checkout_age_hours": 48,
+          "marketing_collision_window_hours": 24,
+          "email_delays_hours_after_checkout": [
+            2,
+            26,
+            50
+          ],
+          "discount_percent": 0,
+          "purchase_suppression_before_each_send": true,
+          "consent_recheck_before_each_send": true,
+          "welcome_flow_exclusion": true,
+          "existing_checkout_flow_must_be_disabled_or_replaced": true
+        },
+        "questions": []
+      }
+    },
+    "optional_sources": "[393737091e3eff28f945fc98] Checkout abandonment flow: same structure, different objections\nApplies when: Recovering shoppers who started checkout but did not complete the purchase on an ecommerce store.\n- Clone the abandoned cart flow and change its trigger to 'checkout started'.\n- Remove the 'checkout started 0 times' profile filter (no longer relevant); keep 'placed order 0 times since starting this flow' and the flow-suppression window.\n- Reuse the cart sequence structure but tailor copy to checkout-stage objections — the source cites surprise shipping costs as a common blocker.\n- Consider offering free shipping instead of a percentage discount when shipping is the likely objection; source argues free shipping can cost less (for a $200 AOV) while converting the customer.\n- Adjust reviews, USP content, and discount amounts to the later stage; these customers are one step closer to purchase.\n- Keep discount timing late in the sequence (around email 5) and use urgency with any discount.\nCondition: The free-shipping-vs-discount trade-off depends on your margins and AOV; source gives a $200 AOV example, not a universal rule.\nCondition: Separate cart and checkout flows are both needed; do not rely on a single 'abandoned cart' template for both.\n\n[85117c7d09108698841362fb] Trigger Abandoned Checkout on checkout started With Order Filtering\nApplies when: Building the abandoned checkout flow in Klaviyo and setting the trigger and flow filters.\n- In Klaviyo flow templates, search 'checkout'; the abandoned cart reminder template is actually triggered by the checkout started metric — Klaviyo names it cart but it fires on checkout.\n- Confirm both an abandoned cart flow (added to cart trigger) and an abandoned checkout flow (checkout started trigger) exist, since a shopper who adds to cart without starting checkout will not enter the checkout flow.\n- Add filter: placed order zero times since starting this flow, so Klaviyo checks they haven't already purchased before sending.\n- Optionally add 'has not been in flow in the last X days' — the source keeps this at 2–3 days for clients so returning shoppers who restart checkout still get reminded, arguing interest justifies more sends.\nCondition: Flow filter windows (2–3 days vs. longer suppression) are a source opinion, not a benchmark; longer windows avoid over-messaging but the source believes shorter windows make more money.\nCondition: Verify current Klaviyo template naming and filter options in your account, as interface and labels can change.\n\n[0a53b00daef33a60cc378037] Clone the Core Pre-Purchase Flows Instead of Building from Scratch\nApplies when: Standing up pre-purchase automation for a store from zero, or when you need to ship cart/checkout abandonment emails quickly without redesigning content for each.\n- Establish one pre-purchase flow as your structural template (commonly the abandoned cart flow). It holds the general email structure, delays, and offer logic you'll reuse.\n- Clone it and rename for the next flow. Change the trigger to the matching event — for a checkout abandonment flow, the trigger is 'Checkout Started'.\n- Add or remove profile filters so the flow only targets people who haven't already bought. For abandoned cart/checkout, a common filter is 'Placed Order zero times since starting this flow' so buyers don't get further abandon emails.\n- Keep an additional filter such as 'has not been in this flow in the last 7 days' to avoid re-enrolling people too soon.\n- Keep the general content structure but rewrite the copy toward the specific objection — for checkout abandonment the reason is different (usually payment/logistics friction) than for cart abandonment.\n- Note the source positions the welcome, site abandon, browse abandon, cart abandon, and checkout abandon flows as the essential pre-purchase set.\nCondition: The filter logic and trigger names are platform-specific (Klaviyo/Shopify) — verify the current interface before building.\nCondition: Cloning is a starting point; you must tailor the content, not just the trigger.\n\n[fbfeb91636ecfdd4100008ea] Test email and SMS sequencing in abandonment flows\nApplies when: Configuring the channel logic in an abandoned checkout or abandoned cart flow when you have both email and SMS.\n- Review Klaviyo's default template split, which sends SMS if reachable and only sends email 4 hours later if SMS is not possible.\n- Test the source simultaneous-send idea only for eligible recipients and within channel send-time and frequency rules; compare against a staggered sequence.\n- Reason: you cannot know whether a given shopper converts from SMS or email; email carries advantages like visuals that SMS lacks, and after an abandoned checkout every hour counts.\n- A/B test time delays (e.g., 4-hour vs. 2-hour first delay) for your own list rather than adopting a fixed default.\n- Recheck purchase exclusions before messages and keep SMS quiet-hour settings enabled. https://help.klaviyo.com/hc/en-us/articles/9352115400219\nCondition: Source opinion that simultaneously sending beats SMS-first fallback; not backed by a cited benchmark.\nCondition: Shorter time delays 'typically convert better' is the source's testing observation, and they say to A/B test per client.\n\n[fac642b0957bb2c89c031107] Abandoned cart flow: trigger distinction and 6–8 email structure\nApplies when: Setting up or fixing the abandoned cart sequence for an ecommerce store in Klaviyo.\n- Select a Klaviyo template whose trigger is 'added to cart' — the popular 'abandoned cart' template actually uses 'checkout started', so verify the trigger before building.\n- Add profile filters: 'checkout started 0 times', 'placed order 0 times', and 'has not been in flow for the last X days' (Klaviyo defaults to 7 days; source prefers ~14 days, adjusting for repurchase frequency).\n- Set the first-email delay to 30 minutes–2 hours (Klaviyo default 4 hours is described as long), and A/B test 30 minutes vs 2 hours.\n- Email 1: short reminder that the item is still in cart.\n- Email 2 (~1 day later): reviews/UGC/press — the more specific to the exact product, the better.\n- Email 3: objection handling — address reasons someone might hesitate to finish the purchase.\n- Email 4: specific USPs of the product/brand.\n- Email 5 (~1 day later): first discount (e.g. X% off) with 48-hour urgency, because a discount without urgency gives no reason to buy now.\n- Email 6 (~1 day later): 24-hour deadline reminder.\n- Emails 7–8 options: raise the discount, or send a plain-text founder email offering an extended 24-hour sale.\n- Monitor spam-complaint, unsubscribe, and open rates as you lengthen the sequence; source warns long sequences (14–20+ emails) become annoying.\nCondition: Sources disagree on sequence length and suppression windows; treat 6–8 emails and 14 days as source preferences, not industry standards.\nCondition: Discounts should reflect margin realities; the source explicitly ties higher discounts to margins.\nCondition: Adding a post-purchase branch inside the cart flow is described as a common but not recommended pattern — the source prefers separate flows.\n\n[8d43aac071299466c10cca61] Cart abandon and checkout abandon are two separate flows\nApplies when: Auditing or building cart and checkout recovery automations.\n- Recognize the difference: adding to cart is a different event from entering the payment/shipping checkout page, so each needs its own flow.\n- Cart abandon trigger: added to cart; exit filters should include 'placed order 0 times' and 'checkout started' so anyone further down the funnel enters checkout abandon instead.\n- Checkout abandon triggers on checkout start with its own exit filter on purchase.\n- Reuse the same email content across both flows — the source uses identical content with different triggers.\n- Source claims roughly 90% of brands audited lack a proper cart-abandon flow; verify your platform actually fires an abandoned-cart trigger (the source says Klaviyo added it via Shopify integration around September 2024) or build a custom trigger.\n- Run 6-8 emails; first email ~30 minutes after the trigger (source's recommendation, test it), then 1-2 day gaps.\nCondition: Platform trigger availability changes — verify the current interface and event names in your platform before assuming it exists.\n\n[5aad4467fa44b01bb19b1fc0] Browse abandonment flow: trigger, filters, and review-led emails\nApplies when: Re-engaging shoppers who viewed a product but never added to cart on an ecommerce store.\n- Use the 'viewed product' trigger.\n- Add profile filters: 'checkout started 0 times', 'placed order 0 times', 'added to cart 0 times since starting this flow', and 'has not been in flow for the last 30 days'.\n- Set the first-email delay — Klaviyo defaults to 2 hours; test 1 hour vs 3 hours and narrow down.\n- Email 1: simple 'Did you see something you like?' reminder of the viewed product.\n- Email 2 (~1 day later): reviews, UGC, press mentions to build confidence in the specific product.\n- Use trigger filters to build product- or collection-specific browse flows, and make USP/review content specific to the viewed product — the source says specificity converts better.\n- Delay any discount until around email 4–5; source argues giving discounts immediately trains shoppers to wait for codes.\n- Aim for a 4–6 email sequence; turn off smart sending and enable UTM tracking.\nCondition: 'Wait to discount' is the source's opinion, not a tested benchmark across all stores.\nCondition: The 30-day flow suppression window is a default recommendation; your repurchase cycle and catalog should guide the choice.\n\n[5ad3da1bdb3a5774dcbee3a8] Set browse abandonment trigger filters and a 30-day cooldown\nApplies when: Building or auditing the browse abandonment flow in your ESP so it fires only for genuinely unconverted browsers.\n- Trigger the flow on viewed product.\n- Add profile filters so the email only sends if the person has placed order zero times since starting this flow, has checkout started zero times since starting this flow, and has added to cart zero times since starting this flow.\n- Allow re-entry after a 30-day time period to create a cooldown window.\n- If you run Shopify, use the Shopify added-to-cart trigger rather than the API added-to-cart trigger. The source flags this as important.\n- Do not split the browse abandonment flow between new and returning customers in most cases. Rationale: browse abandoners are low-intent window shoppers, and even previous buyers are re-evaluating and comparing you against alternatives.\n- Exception: if margins are extremely tight and you truly cannot afford an incentive for returning buyers, consider a conditional split. The source argues that for most brands doing serious volume, the incremental revenue outweighs the marginal discount cost precisely because these visitors were not high-intent to begin with.\n- Note the contrast with cart abandonment, where the source does recommend splitting returning customers from non-buyers because intent is higher.\nCondition: Filter and trigger names differ by ESP and change over time; verify in your current account.\nCondition: The no-split recommendation is the source's general preference with a stated margin-based exception, not an absolute rule.\n\n[d94eb68e5e18ee978a13d588] Abandoned cart vs abandoned checkout: build side by side\nApplies when: Setting up abandoned cart and abandoned checkout flows inside Klaviyo (verify current interface).\n- In Klaviyo, go to Flows > Create flow, search 'cart' to find the cart flow (it may not appear in the Essentials list — verify current UI).\n- If your store is on Shopify, use the Shopify 'added to cart' trigger, not the generic one. Build the abandoned cart version first.\n- Set flow filters: checkout started zero times since starting this flow, placed order zero times since starting this flow, and (via 'has not been in the flow in the last 30 days') no recent re-entry.\n- Add the first time delay. Klaviyo defaults to 4 hours; the source says this is too long and recommends testing 15 minutes to 1 hour, e.g., 30 minutes. The principle: the closer to purchase intent, the sooner the email.\n- Send email 1 at ~30 minutes, email 2 one day later, email 3 one day later.\n- Add a conditional split: 'has placed order at least once (all time)' — yes = returning customer, no = non-buyer/first-time buyer.\n- Non-buyers get two further emails: email 4 with discount (48-hour deadline) and email 5 one day later with a final discount reminder (24-hour deadline).\n- Returning customers get the founder check-in email. Then clone the whole flow, rename to abandoned checkout, change the trigger to 'checkout started', and remove the 'checkout started zero times' filter since the trigger is now checkout started.\nCondition: Exact Klaviyo menus, defaults and filter names may have changed — verify the current interface before implementing.\nCondition: The 15-60 minute timing is a recommended starting point the presenter says to A/B test; it is not a proven benchmark.\nCondition: Only apply the discount branch if your margins allow it.\n\n[dfc548f661d230535e9993aa] Flow structure and profile filters in Klaviyo\nApplies when: Building or auditing Klaviyo flows for an ecommerce store so customers don't receive conflicting sequences.\n- Pick a trigger based on customer journey stage: active on site, viewed product, added to cart, checkout started, placed order, or added to list/segment.\n- After confirming a trigger, note it cannot be changed without duplicating the flow.\n- Add profile filters under the trigger, e.g. 'has placed order 0 times since starting this flow', 'has checkout started 0 times since starting this flow', 'has added to cart 0 times since starting this flow'.\n- For welcome series, add 'placed order 0 times', 'checkout started 0 times', and 'added to cart 0 times since starting this flow' so buyers and cart/checkout abandoners exit the welcome sequence.\n- Consider excluding 'viewed product' and 'active on site' as well, but source prefers not to exclude those from welcome since browse/site abandonment flows are short and early in the journey.\n- Use profile property updates (e.g. set 'in_welcome_series = true' at flow start, false at end) to segment flow participants in or out of regular campaigns.\n- Use conditional splits with 'placed order since starting flow' to route buyers to a post-purchase email vs continuing the welcome series, or use a random 50/50 split to A/B test flow strategies.\nCondition: Trigger choice is locked after confirmation; you must duplicate the flow to change it.\nCondition: Excluding checkout-started and added-to-cart from a welcome series is the source's preferred approach but is presented as a judgment call.\n\n[b6389565ed83cc169d986be1] Separate cart and checkout flows to avoid double-messaging\nApplies when: Configuring the triggers and filters of both recovery flows in Klaviyo.\n- Build two flows: one triggered by 'Added to Cart', one triggered by 'Checkout Started'. Duplicate the same content into both so you maintain one set of emails.\n- On the added-to-cart flow, add filters: 'Checkout Started = 0 times since starting this flow' (so anyone who moves to checkout exits and enters the checkout flow instead), 'Placed Order = 0 times since starting this flow', and 'has not been in this flow in the last 30 days'.\n- On the checkout-started flow, use the same 'Placed Order = 0 times since starting this flow' and 'not in this flow in the last 30 days' filters, without the checkout exclusion (it's the trigger itself).\n- Confirm both flows fire correctly and that a person who adds to cart then proceeds to checkout doesn't receive both sequences simultaneously.\nCondition: The 'last 30 days' re-entry window is the source's reset choice; adjust to your purchase frequency.\nCondition: Exclusion logic depends on trigger direction; verify in Klaviyo that your filters behave as intended.\n\n[5f42a553bc222f955d31880c] A/B test abandonment flow timing with conditional splits\nApplies when: Optimizing abandoned cart, abandoned checkout, or browse abandonment flow timing to lift placed orders while watching spam complaint rate.\n- Add a conditional split at the top of the flow and set the condition to a random sample of 50%.\n- Set the 'yes' path to one delay (for example 2 hours) and the 'no' path to another (for example 1 hour) so the difference at the start is meaningful.\n- Duplicate every email so each path carries the full sequence rather than rejoining after the first email; the source prefers this because email 1 may perform worse at the longer delay while emails 2-3 perform better, and you want the full picture.\n- After results come in, narrow the comparison (for example test 2 hours versus 3 hours) to pinpoint the ideal delay.\n- Monitor spam complaint rate alongside placed order rate, since timing changes affect both.\n- Repeat the same conditional-split approach for browse abandonment, starting with a wider gap such as 1 hour versus 3 hours.\nCondition: Splitting every email into two paths multiplies maintenance work; the source prefers it for full-sequence visibility, but it is a tradeoff.\nCondition: Ideal delays are store-specific; the 1/2/3/4-hour values are illustrative test values, not benchmarks.\n\n[bdbde349add0546ce9c3f6f8] Abandoned cart/checkout email content: 3-stage objection sequence\nApplies when: Writing the copy for abandoned cart and abandoned checkout emails before any discount is offered.\n- Email 1 (30 min-1 hour after abandonment): simple reminder only. No discount, no overselling. Most abandonment is distraction ('phone, a thousand things going on'), not a 'no'. Include a dynamic product block and your risk reversals (guarantees, trials, free shipping, free returns). Example: 'You left something tasty behind — complete my order — why spice fans love us — complete my order.'\n- Email 2 (1 day later): plain-text personalized check-in from the founder. Tone should feel like a one-to-one email. Angle: 'Noticed you were checking out this product — wanted to make sure you didn't run into issues. By the way, here's why people love us.' Keep it 2-3 short paragraphs max, end with a simple CTA and a link back to their cart. This also performs well with Gmail's AI inbox prioritizing conversational email (source's 2026 claim).\n- Email 3 (1 day later): objection handling, not 'our brand is awesome'. Address the real frictions: is it worth the price, shipping time, what if it doesn't fit, what if it doesn't work, what if it's not as good as the photos. Frame strongest USPs/products as answers to those objections (durability/warranty for price, certifications/press for trust, clear differentiation for comparison shopping). Include a dynamic product block.\n- Example of objection handling from a vape brand: 'British made quality' (addresses trust/offshore concerns), '8X cheaper than cigarettes' (price concern), '100% BPA free' (safety concern), 'highly rated service' (social proof).\nCondition: This sequence deliberately holds discounts until escalation; the source argues giving discounts in email one destroys margins and trains customers to wait for discounts.\nCondition: The claim that this structure is 'the highest converting' is the presenter's opinion, not a measured benchmark.\n\n[abb2fb64e79c352922b4d261] Write plain, item-first recovery copy that overcomes objections\nApplies when: Writing copy for any abandoned cart or checkout email.\n- Make the item the number-one feature. Showing the exact product they left behind via dynamic product sections is described as carrying ~80% of the selling, so don't bury it under graphics or long copy.\n- Keep copy short and to the point; the source states too many words or graphics distract the customer from completing the order.\n- Focus copy on overcoming objections only: quick points on shipping, product use, customer reviews, and answers to FAQs.\n- Use second-person, item-specific wording ('your order ships free') rather than generic broadcast copy ('all orders ship free') so it reads as addressed to them.\n- Answer the questions a hesitant buyer would ask (is it healthy, how long does it last, when will it arrive) with concise facts, not a blog article.\n- The source's stated purpose of every recovery email is narrow: remind, give the specific info needed to decide, and remove uncertainty about the buying process.\nCondition: The '80% carried by the item' figure is the presenter's estimate, not a measured benchmark.\nCondition: Tone can flex (one example uses playful copy), but the source still keeps product-specific substance central.\n\n[e502966b22d7930ce4becfe8] Cart/checkout abandon content sequence\nApplies when: Writing the emails inside cart-abandon and checkout-abandon flows.\n- Email 1: simple reminder of the abandoned product with a shop-now CTA and dynamic block showing the item.\n- Email 2: text-based nudge from the founder — informal, personal, 'you left something behind'.\n- Email 3: brand USPs and why to choose you over other stores the shopper is likely comparing.\n- Email 4: customer testimonials plus dynamic abandoned content.\n- Email 5: last-chance urgency — 'your order is expiring, we can't hold it much longer'.\n- Branch the final email: returning buyers get a founder check-in with support offer, no discount; first-time buyers get a discount opener (e.g., '15% off if you buy within 48 hours') followed by a founder 'everything okay?' discount closer.\n- Place the dynamic abandoned-product block at the top of every email and add cross-sell recommendations at the bottom.\nCondition: The 15% / 48-hour figures are examples from the source, not calibrated thresholds for your store.\nCondition: Discounting checkout abandoners can train customers to abandon deliberately — consider testing versus a no-discount branch.\n\n[f147a186a98db1c32de933fd] Branch Abandonment Flows by Prospect vs. Existing Customer\nApplies when: Writing content and setting up conditional splits inside abandoned checkout and abandoned cart flows.\n- Add a conditional split on 'has someone placed an order at least once over all time' — yes = existing customer, no = prospect.\n- For prospects: remind them of the welcome offer they're still eligible for, show their abandoned products via Klaviyo dynamic cart content, and restate why they should buy from you (USPs).\n- Use roughly a 20-hour delay between prospect emails as a starting point, then remind them of the offer and cart contents again and address 1–2 common objections (e.g., price, perceived value) using relevant customer reviews.\n- Include a minimum of three abandoned cart emails for prospects, with the third addressing another objection.\n- For existing customers: they are past the acquisition offer, so instead focus on other incentives — subscribe-and-save, loyalty programs, or other reasons to repurchase.\nCondition: The ~20-hour delay is a starting point the source says varies by brand.\nCondition: The three-email minimum is the source's stated floor, not a measured optimum.\n\n[073d27caa4b0e55dc04a3c61] Close with Situational Urgency and a Dropdown FAQ\nApplies when: Finishing a landing page or email sequence with a closing CTA and handling last objections.\n- Use the closing block to make acting now feel like forward motion — example copy: 'you can't afford to wait... in a world driven by progress, standing still is not an option'.\n- Prefer situational urgency/scarcity (the source's stated best form) over generic 'act now' hype; tie it to a real circumstance the buyer recognizes, like a genuine shipping deadline or limited production run.\n- Place an FAQ at the very bottom in dropdown format for people who scroll straight to the end and want bare facts without being marketed to.\n- Write each FAQ as a question plus concise answer so scanning is easy — concise answers get read more readily.\n- Mirror this at the end of PDPs and cart-recovery emails: real deadline or stock condition plus short objection-handling answers.\nCondition: Fake countdowns and phantom scarcity can breach platform rules and erode trust; the source favors situational urgency precisely for this reason.\nCondition: The FAQ rationale that some visitors only read the end is the source's observation, not a measured behavior study.\n\n[84ab96a56baad6b8deb5a003] Risk reversal and urgency placement in sequence\nApplies when: Ordering content in welcome, browse, cart and checkout abandonment sequences.\n- In the welcome flow, deliver the incentive first, then USPs/product education, then social proof, then urgency ('discount expiring soon') with risk reversal (30-day guarantee, shipping promise), then heavy proof, then last chance.\n- In browse abandon, keep email 1 as a pure reminder, put risk reversal in email 2, and put the discount in email 4 with a 48-hour framing.\n- In cart/checkout abandon, keep the last chance email separate from the discount branch, giving returning buyers a no-discount founder note instead.\n- In win-back, reserve the unique discount for email 2 and the last-chance founder note for email 3.\n- Use short, specific urgency ('expires in 24 hours') rather than vague pressure.\nCondition: Aggressive urgency in the last email may cost list goodwill; the source recommends testing timing and tone.\n\n[e46b405d55df11eae11a8889] Recover cart abandonment without making discounts the only answer\nApplies when: Building or auditing cart- and browse-abandonment email and SMS flows for shoppers who began but did not complete a purchase.\n- Trigger the first recovery contact quickly after abandonment; the source recommends acting within the first hour rather than waiting until the next day.\n- Build a sequence across roughly 72 hours that escalates from product and objection resolution to urgency and, where justified, an incentive.\n- Lead with the objections most likely to block completion: total cost, delivery timing, return policy, fit, compatibility, or product suitability.\n- Ensure the checkout itself displays fees transparently; recovery messages cannot fully compensate for a recurring late-cost surprise.\n- Use reviews and credibility signals near checkout and in recovery content when trust is the likely barrier.\n- Use real-time intent signals where available to tailor reassurance, such as sizing help, shipping estimates, or compatibility information.\n- Reserve free shipping or time-limited discounts for situations where their incremental order value outweighs margin loss, and compare recovery revenue with a holdout when possible.\nCondition: The source’s first-hour and 72-hour timings are a framework to test, not proven universal optima.\nCondition: Frequent recovery discounts can train shoppers to abandon intentionally; evaluate net margin and future behavior, not recovered-order count alone.\n\n[79cdac8bb86eba4c7cf16b77] Link Abandonment Emails Directly Back to Checkout\nApplies when: Setting up links in abandoned checkout/cart email images and buttons so shoppers don't have to re-add products.\n- On all image slices in the abandoned checkout flow, set the link address to the curly-bracket event variable event.extra.checkout URL.\n- You can copy this link from the 'back to my cart' button that Klaviyo already includes in its abandoned cart template.\n- This directs each specific person back to the checkout they started, with their products ready so they only need to place the order.\n- For browse abandonment, do the equivalent: preview/test the email, open the event properties (product name, ID, price, URL), copy the product URL property, and paste it as the link on 'shop now' slices instead of Klaviyo's default organization URL.\nCondition: Dynamic variable names are Klaviyo-specific and may change — verify in the current template and event preview.\nCondition: Copying event properties requires previewing a real triggering event to see the field names.\n\n[0c6041550953ada78b5ad4a1] Build testimonial and FAQ emails around objections\nApplies when: Filling launch sequence gaps with social proof and objection handling for a store offer.\n- For the success email, choose format to fit industry and sales model: either one long, powerful testimonial or case study, or several testimonials.\n- Select testimonials by objection, not by general praise. The source stresses it is especially powerful when you understand the angles of objection people have and choose testimonials that speak directly to each one.\n- For the FAQ email, gather real questions from chat features on your site, emails to you, Facebook messages and page comments. The source says review this material for ideas if you do not already know what to include.\n- Open the FAQ email by acknowledging the questions, e.g. 'over the last few days I've been telling you about my product and you sent in so many great questions I wanted to address them all at once', then answer each question in turn.\n- End both emails with a reminder that you are selling and a CTA. The source keeps repeated crutch CTAs like 'reminder' and 'what's next'.\nCondition: Objection mapping requires you to already know what blocks purchase; do the customer-research step if not.\nCondition: The presenter's phrasing examples are templates to adapt, not scripts to clone."
+  },
+  "system_prompt_sha256": "1cb127f89ed59d4d67294c1882fe14f86d3e995b68d977f500280540ce490cd5"
+}

@@ -1,0 +1,428 @@
+{
+  "request_id": "e01c28e32f0cf912b04277d0cc0c062366a2ad3a8005ead0cd1ce80d3cdb1914",
+  "provider": "deepseek",
+  "model": "deepseek-flash",
+  "effort": "high",
+  "completion_limit": 32768,
+  "usage": {
+    "prompt_tokens": 12961,
+    "completion_tokens": 18708,
+    "total_tokens": 31669,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 16744
+    },
+    "prompt_cache_hit_tokens": 0,
+    "prompt_cache_miss_tokens": 12961
+  },
+  "booked_cost_usd": 0.026337899999999997,
+  "seconds": 85.28,
+  "finish_reason": "stop",
+  "output": {
+    "reviews": [
+      {
+        "label": "A",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 4,
+          "prioritization": 4
+        },
+        "strengths": [
+          "Correctly computes Meta ROAS 3.00→3.20 and Shopify revenue ÷ Meta spend 3.00→2.05.",
+          "Separates Shopify transactions, Meta attributed value and Klaviyo attributed value; explicitly warns against adding them or treating either as incremental.",
+          "Adds DAY18 contribution/breakeven and inventory-replenishment stockout analysis, which are relevant to scaling.",
+          "Strong uncertainty handling: hypotheses vs findings, caveats on new-customer share, and a warning that 14 days may not resolve lift.",
+          "Prioritized phased plan with owner/developer constraints and a spending gate."
+        ],
+        "issues": [
+          "Some ancillary external commentary is unnecessary; 'click-only vs click-plus-view' is less precise than the current engaged-view recommendation.",
+          "Length is high, though not merely repetitive."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Meta ROAS 3 to 3.2 while Shopify revenue/spend falls 3 to about 2.045.",
+            "met": true,
+            "reason": "States 3.00→3.20 Meta ROAS and 3.00→2.05 Shopify revenue ÷ Meta spend."
+          },
+          {
+            "criterion": "Do not add Meta and email attributed revenue or call either incremental.",
+            "met": true,
+            "reason": "Explicitly says not to add $70,400 + $14,000 and calls both overlapping/non-incremental."
+          },
+          {
+            "criterion": "Require order/window reconciliation and contribution before scaling.",
+            "met": true,
+            "reason": "Requires reconciliation, DAY18 contribution/breakeven, and an inventory gate before scaling."
+          }
+        ],
+        "ranking": [
+          "A",
+          "B",
+          "D",
+          "C"
+        ],
+        "summary": "A is the strongest overall: accurate, cautious, complete, and practical. B is concise and accurate with inventory economics but less specific on attribution diagnostics. D has strong attribution-testing actions but omits the inventory stockout constraint and has a minor MER-label issue. C has good arithmetic and brand-specific fixes but overstates the feasibility of a 14-day geo holdout for this small account."
+      },
+      {
+        "label": "B",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 4,
+          "prioritization": 4
+        },
+        "strengths": [
+          "Accurate core arithmetic: Meta ROAS 3.00→3.20; Shopify revenue ÷ Meta spend 3.00→2.05; mobile conversion drop isolated.",
+          "Clearly distinguishes store-wide efficiency from Meta ROAS and refuses to add Meta + Klaviyo attributed revenue as additive.",
+          "Includes DAY18 contribution/breakeven and the 210-unit vs 35-day replenishment stockout gap.",
+          "Cautious conclusions: cannot infer incremental sales, contribution, or return on next dollar from headline ROAS.",
+          "Useful reconciliation questions and clear next decision steps."
+        ],
+        "issues": [
+          "Omits the supplied 72% new-customer share and a new-customer revenue/order readout, which could help evaluate acquisition value.",
+          "Less specific than D on Meta attribution-setting and audience-breakdown actions."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Meta ROAS 3 to 3.2 while Shopify revenue/spend falls 3 to about 2.045.",
+            "met": true,
+            "reason": "States 3.00→3.20 and 3.00→2.05."
+          },
+          {
+            "criterion": "Do not add Meta and email attributed revenue or call either incremental.",
+            "met": true,
+            "reason": "Says adding $70,400 + $14,000 would overstate commerce and that neither is proven incremental."
+          },
+          {
+            "criterion": "Require order/window reconciliation and contribution before scaling.",
+            "met": true,
+            "reason": "Requires order/event reconciliation, contribution economics, and inventory feasibility before scaling."
+          }
+        ],
+        "ranking": [
+          "A",
+          "B",
+          "D",
+          "C"
+        ],
+        "summary": "B is a tight, accurate answer with the key economics and inventory constraint. It is less diagnostic than D on attribution mechanics and less detailed than A on new-customer and phased testing, but it is very reliable."
+      },
+      {
+        "label": "C",
+        "scores": {
+          "factual_accuracy": 3,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 3,
+          "uncertainty_and_questions": 3,
+          "prioritization": 3
+        },
+        "strengths": [
+          "Core reconciliation arithmetic is correct: Meta ROAS 3.00→3.20 and Shopify revenue ÷ Meta spend 3.00→2.05.",
+          "Explains overlap between Meta and Klaviyo and correctly refuses to treat the $84,400 combined figure as additive.",
+          "Includes inventory stockout risk and brand-specific PDP/support-ticket fixes.",
+          "Good what-can-and-cannot-conclude section, including limits on creative and Klaviyo incrementality."
+        ],
+        "issues": [
+          "Recommends a 14-day $3,000 geo holdout as the way to resolve incrementality without noting likely power limitations for this account size.",
+          "Some phrasing is overconfident or imprecise, e.g. 'actual Shopify revenue per Meta dollar' and 'at best at breakeven'; the Daypack-only breakeven analogy mixes SKU economics with store AOV.",
+          "Action priority is somewhat mixed: the holdout recommendation and PDP-fix recommendation compete as first steps."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Meta ROAS 3 to 3.2 while Shopify revenue/spend falls 3 to about 2.045.",
+            "met": true,
+            "reason": "States 3.00→3.20 and Shopify revenue per Meta dollar 3.00→2.05."
+          },
+          {
+            "criterion": "Do not add Meta and email attributed revenue or call either incremental.",
+            "met": true,
+            "reason": "Shows the $84,400 sum but explicitly calls it overlapping/non-additive and not proven incremental."
+          },
+          {
+            "criterion": "Require order/window reconciliation and contribution before scaling.",
+            "met": true,
+            "reason": "Requires reconciliation and contribution/breakeven checks before spending more."
+          }
+        ],
+        "ranking": [
+          "A",
+          "B",
+          "D",
+          "C"
+        ],
+        "summary": "C has strong arithmetic and useful brand-specific fixes, but it is less careful than A/B/D on test feasibility and uncertainty. It should be revised to caveat geo-holdout power and clean up some breakeven phrasing."
+      },
+      {
+        "label": "D",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 4,
+          "prioritization": 4
+        },
+        "strengths": [
+          "Correctly identifies Meta ROAS 3.00→3.20 versus Shopify revenue ÷ Meta spend 3.00→2.05.",
+          "Clearly separates observation, hypothesis, and cannot-conclude statements.",
+          "Strong attribution-specific actions: re-report Meta on tighter settings, inspect audience breakdowns, read SKU-level new-customer sales, audit Klaviyo flows, and triangulate with surveys/tests.",
+          "Includes DAY18 contribution/breakeven and creative-history context.",
+          "Explicitly refuses to add Meta + Klaviyo revenue or treat either as incremental."
+        ],
+        "issues": [
+          "Omits the supplied inventory/replenishment stockout constraint, which is relevant to whether spending should be raised.",
+          "Labels Shopify revenue ÷ Meta spend as 'blended Meta-attributed MER' in the short answer; the ratio is not Meta-attributed, though the formula is defined.",
+          "Derived impression/click estimates are calculated correctly but are not necessary to the decision."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Meta ROAS 3 to 3.2 while Shopify revenue/spend falls 3 to about 2.045.",
+            "met": true,
+            "reason": "States 3.00→3.20 and 3.00→2.05."
+          },
+          {
+            "criterion": "Do not add Meta and email attributed revenue or call either incremental.",
+            "met": true,
+            "reason": "Shows the $84,400 overlap sum but explicitly says it is not valid/additive."
+          },
+          {
+            "criterion": "Require order/window reconciliation and contribution before scaling.",
+            "met": true,
+            "reason": "Requires reconciliation, contribution/breakeven, and attribution testing before scaling."
+          }
+        ],
+        "ranking": [
+          "A",
+          "B",
+          "D",
+          "C"
+        ],
+        "summary": "D is highly actionable on attribution diagnostics and uncertainty, but it misses the inventory constraint and has a minor MER-label issue. It is still stronger than C because it avoids overconfident test prescriptions and uses source-aligned attribution checks carefully."
+      }
+    ],
+    "ranking": [
+      "A",
+      "B",
+      "D",
+      "C"
+    ],
+    "summary": "A and B are the most accurate and decision-ready; A is more comprehensive on new-customer and inventory implications, while B is concise and reliable. D has excellent attribution-testing actions but omits inventory stockout analysis. C has good core math and brand fixes but overstates what a 14-day $3,000 geo holdout can resolve and is less cautious in places."
+  },
+  "raw_content": "{\"reviews\":[{\"label\":\"A\",\"scores\":{\"factual_accuracy\":4,\"brand_fit\":4,\"task_completion\":4,\"actionability\":4,\"uncertainty_and_questions\":4,\"prioritization\":4},\"strengths\":[\"Correctly computes Meta ROAS 3.00→3.20 and Shopify revenue ÷ Meta spend 3.00→2.05.\",\"Separates Shopify transactions, Meta attributed value and Klaviyo attributed value; explicitly warns against adding them or treating either as incremental.\",\"Adds DAY18 contribution/breakeven and inventory-replenishment stockout analysis, which are relevant to scaling.\",\"Strong uncertainty handling: hypotheses vs findings, caveats on new-customer share, and a warning that 14 days may not resolve lift.\",\"Prioritized phased plan with owner/developer constraints and a spending gate.\"],\"issues\":[\"Some ancillary external commentary is unnecessary; 'click-only vs click-plus-view' is less precise than the current engaged-view recommendation.\",\"Length is high, though not merely repetitive.\"],\"critical_errors\":[],\"questions_useful\":true,\"criterion_results\":[{\"criterion\":\"Meta ROAS 3 to 3.2 while Shopify revenue/spend falls 3 to about 2.045.\",\"met\":true,\"reason\":\"States 3.00→3.20 Meta ROAS and 3.00→2.05 Shopify revenue ÷ Meta spend.\"},{\"criterion\":\"Do not add Meta and email attributed revenue or call either incremental.\",\"met\":true,\"reason\":\"Explicitly says not to add $70,400 + $14,000 and calls both overlapping/non-incremental.\"},{\"criterion\":\"Require order/window reconciliation and contribution before scaling.\",\"met\":true,\"reason\":\"Requires reconciliation, DAY18 contribution/breakeven, and an inventory gate before scaling.\"}],\"ranking\":[\"A\",\"B\",\"D\",\"C\"],\"summary\":\"A is the strongest overall: accurate, cautious, complete, and practical. B is concise and accurate with inventory economics but less specific on attribution diagnostics. D has strong attribution-testing actions but omits the inventory stockout constraint and has a minor MER-label issue. C has good arithmetic and brand-specific fixes but overstates the feasibility of a 14-day geo holdout for this small account.\"},{\"label\":\"B\",\"scores\":{\"factual_accuracy\":4,\"brand_fit\":4,\"task_completion\":4,\"actionability\":4,\"uncertainty_and_questions\":4,\"prioritization\":4},\"strengths\":[\"Accurate core arithmetic: Meta ROAS 3.00→3.20; Shopify revenue ÷ Meta spend 3.00→2.05; mobile conversion drop isolated.\",\"Clearly distinguishes store-wide efficiency from Meta ROAS and refuses to add Meta + Klaviyo attributed revenue as additive.\",\"Includes DAY18 contribution/breakeven and the 210-unit vs 35-day replenishment stockout gap.\",\"Cautious conclusions: cannot infer incremental sales, contribution, or return on next dollar from headline ROAS.\",\"Useful reconciliation questions and clear next decision steps.\"],\"issues\":[\"Omits the supplied 72% new-customer share and a new-customer revenue/order readout, which could help evaluate acquisition value.\",\"Less specific than D on Meta attribution-setting and audience-breakdown actions.\"],\"critical_errors\":[],\"questions_useful\":true,\"criterion_results\":[{\"criterion\":\"Meta ROAS 3 to 3.2 while Shopify revenue/spend falls 3 to about 2.045.\",\"met\":true,\"reason\":\"States 3.00→3.20 and 3.00→2.05.\"},{\"criterion\":\"Do not add Meta and email attributed revenue or call either incremental.\",\"met\":true,\"reason\":\"Says adding $70,400 + $14,000 would overstate commerce and that neither is proven incremental.\"},{\"criterion\":\"Require order/window reconciliation and contribution before scaling.\",\"met\":true,\"reason\":\"Requires order/event reconciliation, contribution economics, and inventory feasibility before scaling.\"}],\"ranking\":[\"A\",\"B\",\"D\",\"C\"],\"summary\":\"B is a tight, accurate answer with the key economics and inventory constraint. It is less diagnostic than D on attribution mechanics and less detailed than A on new-customer and phased testing, but it is very reliable.\"},{\"label\":\"C\",\"scores\":{\"factual_accuracy\":3,\"brand_fit\":4,\"task_completion\":4,\"actionability\":3,\"uncertainty_and_questions\":3,\"prioritization\":3},\"strengths\":[\"Core reconciliation arithmetic is correct: Meta ROAS 3.00→3.20 and Shopify revenue ÷ Meta spend 3.00→2.05.\",\"Explains overlap between Meta and Klaviyo and correctly refuses to treat the $84,400 combined figure as additive.\",\"Includes inventory stockout risk and brand-specific PDP/support-ticket fixes.\",\"Good what-can-and-cannot-conclude section, including limits on creative and Klaviyo incrementality.\"],\"issues\":[\"Recommends a 14-day $3,000 geo holdout as the way to resolve incrementality without noting likely power limitations for this account size.\",\"Some phrasing is overconfident or imprecise, e.g. 'actual Shopify revenue per Meta dollar' and 'at best at breakeven'; the Daypack-only breakeven analogy mixes SKU economics with store AOV.\",\"Action priority is somewhat mixed: the holdout recommendation and PDP-fix recommendation compete as first steps.\"],\"critical_errors\":[],\"questions_useful\":true,\"criterion_results\":[{\"criterion\":\"Meta ROAS 3 to 3.2 while Shopify revenue/spend falls 3 to about 2.045.\",\"met\":true,\"reason\":\"States 3.00→3.20 and Shopify revenue per Meta dollar 3.00→2.05.\"},{\"criterion\":\"Do not add Meta and email attributed revenue or call either incremental.\",\"met\":true,\"reason\":\"Shows the $84,400 sum but explicitly calls it overlapping/non-additive and not proven incremental.\"},{\"criterion\":\"Require order/window reconciliation and contribution before scaling.\",\"met\":true,\"reason\":\"Requires reconciliation and contribution/breakeven checks before spending more.\"}],\"ranking\":[\"A\",\"B\",\"D\",\"C\"],\"summary\":\"C has strong arithmetic and useful brand-specific fixes, but it is less careful than A/B/D on test feasibility and uncertainty. It should be revised to caveat geo-holdout power and clean up some breakeven phrasing.\"},{\"label\":\"D\",\"scores\":{\"factual_accuracy\":4,\"brand_fit\":4,\"task_completion\":4,\"actionability\":4,\"uncertainty_and_questions\":4,\"prioritization\":4},\"strengths\":[\"Correctly identifies Meta ROAS 3.00→3.20 versus Shopify revenue ÷ Meta spend 3.00→2.05.\",\"Clearly separates observation, hypothesis, and cannot-conclude statements.\",\"Strong attribution-specific actions: re-report Meta on tighter settings, inspect audience breakdowns, read SKU-level new-customer sales, audit Klaviyo flows, and triangulate with surveys/tests.\",\"Includes DAY18 contribution/breakeven and creative-history context.\",\"Explicitly refuses to add Meta + Klaviyo revenue or treat either as incremental.\"],\"issues\":[\"Omits the supplied inventory/replenishment stockout constraint, which is relevant to whether spending should be raised.\",\"Labels Shopify revenue ÷ Meta spend as 'blended Meta-attributed MER' in the short answer; the ratio is not Meta-attributed, though the formula is defined.\",\"Derived impression/click estimates are calculated correctly but are not necessary to the decision.\"],\"critical_errors\":[],\"questions_useful\":true,\"criterion_results\":[{\"criterion\":\"Meta ROAS 3 to 3.2 while Shopify revenue/spend falls 3 to about 2.045.\",\"met\":true,\"reason\":\"States 3.00→3.20 and 3.00→2.05.\"},{\"criterion\":\"Do not add Meta and email attributed revenue or call either incremental.\",\"met\":true,\"reason\":\"Shows the $84,400 overlap sum but explicitly says it is not valid/additive.\"},{\"criterion\":\"Require order/window reconciliation and contribution before scaling.\",\"met\":true,\"reason\":\"Requires reconciliation, contribution/breakeven, and attribution testing before scaling.\"}],\"ranking\":[\"A\",\"B\",\"D\",\"C\"],\"summary\":\"D is highly actionable on attribution diagnostics and uncertainty, but it misses the inventory constraint and has a minor MER-label issue. It is still stronger than C because it avoids overconfident test prescriptions and uses source-aligned attribution checks carefully.\"}],\"ranking\":[\"A\",\"B\",\"D\",\"C\"],\"summary\":\"A and B are the most accurate and decision-ready; A is more comprehensive on new-customer and inventory implications, while B is concise and reliable. D has excellent attribution-testing actions but omits inventory stockout analysis. C has good core math and brand fixes but overstates what a 14-day $3,000 geo holdout can resolve and is less cautious in places.\"}",
+  "input": {
+    "brand": {
+      "fictional": true,
+      "name": "TrailFold",
+      "market": "US",
+      "currency": "USD",
+      "platforms": [
+        "Shopify",
+        "Meta Ads",
+        "Klaviyo"
+      ],
+      "positioning": "Practical lightweight bags for commuters who take short weekend trips; restrained, useful, plain-spoken voice.",
+      "products": [
+        {
+          "sku": "DAY18",
+          "name": "Daypack 18L",
+          "price": 80,
+          "landed_cogs": 28,
+          "pick_pack": 2,
+          "merchant_shipping_cost": 8,
+          "payment_fee_percent": 3,
+          "features": [
+            "18L capacity",
+            "padded 13-inch laptop sleeve",
+            "water-resistant fabric, not waterproof",
+            "external bottle pocket"
+          ],
+          "stock": 210,
+          "daily_units_sold": 8,
+          "confirmed_replenishment_units": 500,
+          "replenishment_arrival_days": 35
+        },
+        {
+          "sku": "POUCH",
+          "name": "Cable pouch",
+          "price": 20,
+          "landed_cogs": 5,
+          "stock": 800
+        },
+        {
+          "sku": "BOTTLE",
+          "name": "Steel bottle",
+          "price": 32,
+          "landed_cogs": 9,
+          "stock": 600
+        }
+      ],
+      "policies": {
+        "shipping": "Free US shipping; delivery estimate 4-7 business days",
+        "returns": "30-day returns for unused products; return shipping paid by customer",
+        "discounts": "No current discount. Any new discount needs owner approval."
+      },
+      "claim_constraints": [
+        "No evidence for waterproof, medical, sustainability or lifetime-durability claims.",
+        "No verified competitor performance data.",
+        "No clinical or controlled product test results."
+      ],
+      "customer_themes": {
+        "simulated_review_count": 120,
+        "themes": [
+          "fits daily commute",
+          "customers ask whether a 15-inch laptop fits",
+          "customers ask whether rain protection means waterproof"
+        ],
+        "support_tickets_last_30_days": {
+          "delivery_date_questions": 42,
+          "15_inch_laptop_fit": 28,
+          "waterproof_questions": 18
+        },
+        "note": "Themes, not verbatim licensed testimonials; no fabricated quotes or endorsements."
+      },
+      "website_snapshot": {
+        "pdp_headline": "Adventure starts here",
+        "first_image": "product on plain background",
+        "pdp_details": "Laptop sizing and delivery window are below reviews; CTA says Buy now. No field speed or session-recording data."
+      },
+      "shopify": {
+        "previous_30_days": {
+          "sessions": 20000,
+          "orders": 600,
+          "net_product_revenue": 54000,
+          "mobile_sessions": 15000,
+          "mobile_orders": 400,
+          "desktop_sessions": 5000,
+          "desktop_orders": 200,
+          "add_to_cart_sessions": 2000,
+          "checkout_started_sessions": 1200
+        },
+        "current_30_days": {
+          "sessions": 25000,
+          "orders": 500,
+          "net_product_revenue": 45000,
+          "mobile_sessions": 20000,
+          "mobile_orders": 300,
+          "desktop_sessions": 5000,
+          "desktop_orders": 200,
+          "add_to_cart_sessions": 2000,
+          "checkout_started_sessions": 1000
+        },
+        "definitions": "Revenue excludes tax/shipping; periods equal length. Funnel counts are session-based and internally consistent, but no controlled attribution experiment.",
+        "new_customer_share_current": 0.72,
+        "cohort_90_day_repeat_rate": 0.14
+      },
+      "meta": {
+        "previous_30_days": {
+          "spend": 18000,
+          "reported_purchase_value": 54000,
+          "cpm": 12,
+          "link_ctr_percent": 1.5
+        },
+        "current_30_days": {
+          "spend": 22000,
+          "reported_purchase_value": 70400,
+          "cpm": 15,
+          "link_ctr_percent": 1.2
+        },
+        "settings": "7-day click plus 1-day view; no incremental lift study. Meta reported value not reconciled to Shopify orders.",
+        "creative_history": [
+          {
+            "name": "Desk-to-trail demonstration",
+            "spend_share": 0.55,
+            "observed_result": "Largest spend recipient; mature creative. No asset-level contribution data."
+          },
+          {
+            "name": "Laptop-fit comparison",
+            "spend_share": 0.25,
+            "observed_result": "Higher CTR in small test; conversion sample not supplied."
+          },
+          {
+            "name": "Minimal product still",
+            "spend_share": 0.2,
+            "observed_result": "No reliable lift estimate."
+          }
+        ]
+      },
+      "klaviyo": {
+        "marketable_profiles": 12000,
+        "reported_attributed_revenue_current": 14000,
+        "attribution_window": "5-day click plus 5-day open",
+        "flows": [
+          {
+            "name": "welcome",
+            "messages": 1,
+            "offer": "none"
+          },
+          {
+            "name": "checkout abandonment",
+            "trigger": "Started Checkout",
+            "messages": 1,
+            "delay_hours": 24,
+            "observed_gap": "No Added to Cart flow; filters not audited."
+          }
+        ],
+        "campaigns_per_week": 3,
+        "reported_open_rate_percent": 52,
+        "click_rate_percent": 1.1,
+        "order_rate_percent": 0.18,
+        "note": "Revenue attribution overlaps other systems; no holdout or recent deliverability audit."
+      },
+      "resources": {
+        "weekly_designer_hours": 8,
+        "weekly_developer_hours": 4,
+        "owner_hours": 4,
+        "next_14_day_test_budget": 3000,
+        "cash_constraint": "Protect replenishment payments; no additional inventory purchase approved."
+      },
+      "unavailable": [
+        "GA4 breakdowns",
+        "Clarity/Hotjar recordings",
+        "field Core Web Vitals",
+        "SKU-level ad acquisition cost",
+        "cohort contribution LTV",
+        "creative-level conversion sample sizes",
+        "channel incrementality",
+        "email holdout data"
+      ]
+    },
+    "task": "Meta ROAS improved: should we raise spending? Reconcile this with Shopify and Klaviyo and explain what can and cannot be concluded.",
+    "criteria": [
+      "Meta ROAS 3 to 3.2 while Shopify revenue/spend falls 3 to about 2.045.",
+      "Do not add Meta and email attributed revenue or call either incremental.",
+      "Require order/window reconciliation and contribution before scaling."
+    ],
+    "weights": {
+      "factual_accuracy": 30,
+      "brand_fit": 15,
+      "task_completion": 20,
+      "actionability": 15,
+      "uncertainty_and_questions": 10,
+      "prioritization": 10
+    },
+    "answers": {
+      "A": "{\"answer_markdown\": \"# TrailFold attribution reconciliation\\n\\n## Decision: do not raise Meta spending now\\n\\nMeta’s reported ROAS improved, but store-level revenue efficiency deteriorated. That does **not** prove Meta caused the decline or has no incremental value. It does mean the headline ROAS is insufficient evidence for scaling. Freeze increases, reconcile measurement, and set a lower inventory-safe spending ceiling if necessary. Protect replenishment cash.\\n\\n## 1. What the numbers show\\n\\n| Metric | Previous 30 days | Current 30 days | Change |\\n|---|---:|---:|---:|\\n| Meta spend | $18,000 | $22,000 | +22.2% |\\n| Meta-reported purchase value | $54,000 | $70,400 | +30.4% |\\n| Meta-reported ROAS | $54,000 ÷ $18,000 = **3.00x** | $70,400 ÷ $22,000 = **3.20x** | +6.7% |\\n| Shopify net product revenue | $54,000 | $45,000 | −16.7% |\\n| Shopify orders | 600 | 500 | −16.7% |\\n| Shopify revenue ÷ Meta spend | **3.00x** | **2.05x** | −31.8% |\\n| Store conversion rate | 600 ÷ 20,000 = **3.0%** | 500 ÷ 25,000 = **2.0%** | −1 percentage point |\\n| Average order value | **$90** | **$90** | Unchanged |\\n\\n**Interpretation:** TrailFold spent $4,000 more while collecting $9,000 less net product revenue. Revenue less Meta spend fell from $36,000 to $23,000—a $13,000 deterioration **before** product costs, fulfillment, fees, returns and overhead. This is not a profit calculation or a causal estimate.\\n\\nThe 2.05x ratio is a **store-revenue-to-Meta-spend efficiency measure**, not Meta ROAS or acquisition MER. True blended MER requires all relevant marketing spend; acquisition MER requires actual first-time-customer revenue and a consistently defined acquisition-spend denominator.\\n\\nIf the 72% new-customer share means share of orders, current new-customer orders are approximately 500 × 72% = **360**. Then $22,000 ÷ 360 = **$61.11 of Meta spend per store-wide new-customer order**—not Meta-attributed or incremental CAC. New-customer revenue remains unknown; applying 72% to revenue would assume equal new/repeat AOV.\\n\\n## 2. Why the three systems do not reconcile directly\\n\\n- **Shopify records store transactions.** Use its net sales as the financial starting point, while reconciling refunds and reporting dates. It does not establish which marketing caused a purchase.\\n- **Meta assigns credit under 7-day click plus 1-day view.** Its $70,400 is $25,400 above Shopify’s $45,000, or 156.4% of store revenue. This is a material reconciliation flag, not proof that precisely $25,400 is false credit. Attribution dates, revenue definitions, modeling and event errors may contribute.\\n- **Klaviyo assigns $14,000 under 5-day click plus 5-day open.** A purchaser can receive email, see or click an ad, and place one Shopify order that both systems claim.\\n\\nAdding Meta and Klaviyo gives **$84,400**, or **187.6%** of Shopify revenue. Do not add these figures or subtract Klaviyo’s revenue from Meta’s: the overlap and reporting differences are unknown. Klaviyo’s 52% open rate is not proof of sales impact; open-based attribution can also be affected by privacy-related opens.\\n\\n**Hypotheses, not findings:** view-through credit, existing-customer delivery, email overlap, reporting timing or purchase-event problems could explain the divergence. No supplied evidence quantifies any of them.\\n\\n## 3. There is also an observed conversion problem\\n\\nMobile conversion fell from **400 ÷ 15,000 = 2.67%** to **300 ÷ 20,000 = 1.50%**. Desktop stayed at **4.0%**. All 100 lost orders were on mobile, despite 5,000 additional mobile sessions.\\n\\nThe store funnel also weakened:\\n\\n- Add-to-cart rate: **10% → 8%**.\\n- Checkout starts ÷ add-to-cart sessions: **60% → 50%**.\\n- Orders ÷ checkout starts: **50% → 50%**.\\n\\nThese observations support investigating mobile traffic quality and pre-checkout friction, not declaring checkout completion the main problem. Buried laptop sizing and delivery details are plausible friction points. There is no field-speed or session-recording evidence to blame load speed.\\n\\n## 4. Economics and inventory independently argue against scaling\\n\\nFor one full-price DAY18 order:\\n\\n**$80 − $28 COGS − $2 pick/pack − $8 shipping − ($80 × 3%) = $39.60** before advertising, returns and overhead.\\n\\nThat is a **49.5% contribution margin** and a simplified break-even revenue/spend ratio of **$80 ÷ $39.60 = 2.02x**. This is not a store-wide threshold: order mix, accessory fulfillment costs and returns are missing. The current 2.05x store ratio does not establish profitability. Nor does a 14% repeat rate establish contribution LTV.\\n\\nDAY18 stock covers **210 ÷ 8 = 26.25 days**, versus replenishment in 35 days: an **8.75-day gap**, approximately **70 units**. Bridging to arrival requires average sales of no more than **210 ÷ 35 = 6 units/day**, before any safety buffer. Holding current spend may therefore still be too aggressive.\\n\\n## 5. Proposed next steps and spending gate\\n\\n**Days 1–3:** Use up to four owner hours to align dates, time zones, currency, refund treatment and purchase-value definitions. Request Meta click-only versus click-plus-view reporting for matured periods; verify available definitions without changing delivery settings during diagnosis. Inspect new/existing-customer delivery where available. Allocate developer time to purchase-event duplication and browser/server deduplication checks.\\n\\n**Days 4–14:** Build one daily ledger of Shopify net revenue, new-customer revenue/orders, spend, estimated contribution and DAY18 units. Audit Klaviyo attribution overlap and flow filters. Check mobile PDP clarity using existing evidence; avoid simultaneous major creative and attribution changes that would obscure interpretation.\\n\\nTreat the **$3,000 test budget as a ceiling, not mandatory incremental spend**. Reserve it until inventory and measurement gates pass. Before causal testing, assess whether a randomized holdout is feasible and sufficiently powered; 14 days is not guaranteed to resolve lift. A before/after comparison is directional only. Platform “incremental” estimates are not automatically a TrailFold-controlled experiment.\\n\\n**Reconsider a small, capped increase only when** measurement differences are documented, first-order contribution supports the owner’s cash target, and inventory can support demand. Stronger click-only ROAS alone does not satisfy those gates.\", \"questions\": [\"Can you provide order-level Shopify net revenue, refunds and new/repeat status for both periods, plus any marketing spend beyond Meta?\", \"Can you provide matched Meta attribution-window and audience reports, and Klaviyo attributed-order records where available, with reporting dates and purchase-value definitions?\", \"What first-order contribution or cash-payback target must spending meet, and how much DAY18 stock should remain as a replenishment-delay buffer?\"], \"assumptions\": [\"The 72% new-customer share is treated as an order share only for the explicitly conditional 360-order calculation.\", \"DAY18 unit economics assume one full-price unit per order and the supplied shipping, pick/pack and payment costs; they exclude returns, overhead and unlisted costs.\", \"Inventory coverage assumes the supplied eight-unit daily sales rate continues and replenishment arrives in 35 days; no safety stock or additional approved inventory is assumed.\", \"All audits, reporting changes and tests are proposed actions; no platform access or deployment has occurred.\"]}",
+      "B": "{\"answer_markdown\": \"## Recommendation: do not raise Meta spending yet\\n\\nMeta’s reported ROAS improved, but Shopify’s store-wide revenue efficiency deteriorated. That is not proof Meta caused the decline—or that Meta is unprofitable—but it is insufficient evidence to scale. Keep the $3,000 test allowance as a ceiling, not a spending target or automatic addition to current spend. Protect replenishment cash and review inventory pacing before authorizing more acquisition.\\n\\n### What the numbers actually say\\n\\n| Metric | Previous 30 days | Current 30 days | Change |\\n|---|---:|---:|---:|\\n| Meta spend | $18,000 | $22,000 | +22.2% |\\n| Meta-attributed purchase value | $54,000 | $70,400 | +30.4% |\\n| Meta-reported ROAS | 3.00× | 3.20× | +6.7% |\\n| Shopify net product revenue | $54,000 | $45,000 | −16.7% |\\n| Shopify orders | 600 | 500 | −16.7% |\\n| Shopify revenue ÷ Meta spend | 3.00× | 2.05× | −31.8% |\\n| Shopify conversion rate | 600/20,000 = 3.0% | 500/25,000 = 2.0% | −33.3% |\\n| Average order value | $90 | $90 | Unchanged |\\n\\nThe Shopify revenue-to-Meta-spend ratio is a **store-wide efficiency indicator**, not Meta ROAS: its numerator includes sales from every source.\\n\\nTraffic grew 25%, but fewer visits converted. Mobile conversion fell from 400/15,000 = **2.67%** to 300/20,000 = **1.50%**; desktop stayed at **4.00%**. Add-to-cart rate fell from 10% to 8%, while checkout starts per add-to-cart session fell from 60% to 50%. Checkout completion remained 50%.\\n\\nThese observations locate deterioration in the aggregate funnel, especially mobile; they do not establish whether traffic quality, site experience, product uncertainty or another factor caused it.\\n\\n### Reconciling the three reporting systems\\n\\n**Shopify:** Use its $45,000 net product revenue as the supplied commerce total. It measures recorded sales, not which marketing exposure caused them.\\n\\n**Meta:** Its $70,400 uses a seven-day click plus one-day view window. It can claim purchases also credited elsewhere. Its reported value is already **$25,400 above Shopify’s total**. Cross-channel overlap explains why channel totals cannot be added, but does not by itself explain why Meta alone exceeds store revenue. Event duplication, value definitions, reporting dates, refunds and attribution settings need checking; none is a confirmed cause.\\n\\n**Klaviyo:** Its $14,000 uses five-day click plus five-day open attribution. A customer could click an ad, open an email and buy once, with both systems claiming the order. Email-attributed revenue is therefore neither additional revenue nor proven incremental revenue.\\n\\nAdding $70,400 + $14,000 = **$84,400** would overstate the supplied commerce total by $39,400. Previous agreement between Meta and Shopify at $54,000 also did not validate attribution.\\n\\n**Conclusion:** Meta became more efficient under its own attribution rules. We cannot conclude that incremental sales, contribution profit or the return on the next advertising dollar improved.\\n\\n### Two additional scaling constraints\\n\\n- **Margin:** A full-price DAY18 leaves $80 − $28 − $2 − $8 − ($80 × 3%) = **$39.60 before advertising, returns and overhead**. Its simplified break-even ROAS is $80/$39.60 = **2.02×**, not a safe target. This single-SKU calculation cannot establish store-wide profitability; order mix and accessory fulfillment costs are missing.\\n- **Inventory:** DAY18 has 210/8 = **26.25 days** of cover versus replenishment in 35 days. At unchanged demand, the gap is 35 × 8 − 210 = **70 units**. Sustaining stock until arrival requires averaging at most 210/35 = **6 units/day**, before a safety buffer.\\n\\n### Next decision steps\\n\\nPrepare an order/event reconciliation for matching periods, time zones, revenue definitions and refund treatment. Check Meta browser/server deduplication and purchase values; separate click/view attribution and Klaviyo click/open attribution where available. Unmatched records should remain explicitly unresolved.\\n\\nSeparately inspect mobile funnel segments and elevate verified laptop sizing, water-resistance limits and delivery timing. These are plausible friction points, not proven causes.\\n\\nReconsider scaling only after measurement discrepancies are understood, contribution economics support it, and inventory permits it. A controlled holdout or spend test would address incrementality; platform attribution alone cannot.\", \"questions\": [\"Can you supply matching Shopify order/refund exports, Meta purchase-event diagnostics and attribution breakdowns, and Klaviyo conversion exports for both periods?\", \"How much acquisition cash remains available after reserving replenishment payments, and is the $3,000 test budget included in or additional to planned Meta spend?\", \"What are the current order-level SKU mix and accessory fulfillment costs, and how much Meta spending promotes DAY18?\"], \"assumptions\": [\"Shopify’s supplied net product revenue is the commerce reference total; exact alignment with platform purchase values remains unverified.\", \"The DAY18 contribution calculation assumes one full-price unit per order and a 3% fee on its $80 price; it excludes returns and overhead.\", \"Inventory pacing assumes sales continue at eight DAY18 units daily and replenishment becomes sellable on day 35.\", \"All checks and tests are proposed work; no platform access, reconciliation or deployment has occurred.\"]}",
+      "C": "{\"answer_markdown\": \"## Verdict\\nNo. Do not raise Meta spend based on the reported ROAS improvement. The platform number improved, but Shopify does not corroborate it: orders and net product revenue fell while Meta spend rose. The measurement is overlapping, and inventory/cash constraints also point against scaling.\\n\\n## Reconciliation arithmetic\\n**Shopify current vs previous (30-day periods):** sessions rose 20,000 to 25,000 (+25%), orders fell 600 to 500 (-16.7%), and net product revenue fell $54,000 to $45,000 (-16.7%). Conversion fell from 3.0% to 2.0%. Mobile did the damage: 15,000 to 20,000 sessions (+33%), but mobile orders fell 400 to 300 (-25%), so mobile conversion fell 2.67% to 1.50%. Desktop stayed flat at 4.0% (200 orders on 5,000 sessions both periods). Add-to-cart sessions stayed at 2,000 while sessions grew, so ATC rate fell 10% to 8%. Checkout starts fell 1,200 to 1,000. Order/checkout start stayed 50% both periods, so the loss is before checkout completion, not at final payment.\\n\\n**Meta current vs previous:** spend rose $18,000 to $22,000 (+22.2%). Reported purchase value rose $54,000 to $70,400 (+30.4%), so reported ROAS rose 3.00 to 3.20. But CPM rose $12 to $15 (+25%) and link CTR fell 1.5% to 1.2%. More spend bought more expensive, lower-click traffic.\\n\\n**The reconciliation problem:** Meta reported $70,400 in current purchase value, but total Shopify net product revenue was only $45,000. Meta reported value is 156.4% of all Shopify product revenue, so at least $25,400 has no matching Shopify product revenue in aggregate. Adding Klaviyo's reported attributed revenue of $14,000 gives $84,400 claimed by Meta plus Klaviyo against $45,000 of Shopify revenue. The excess is $39,400, or at least 46.7% of combined attributed revenue, before assuming any organic contribution. That is overlapping or non-incremental attribution, not additive sales.\\n\\n**Actual Shopify revenue per Meta dollar:** previous $54,000 / $18,000 = $3.00; current $45,000 / $22,000 = $2.05. Meta's reported ROAS improved, but actual Shopify revenue per Meta dollar fell.\\n\\n**Breakeven sensitivity:** Daypack 18L at $80 has contribution of $80 - $28 COGS - $2 pick/pack - $8 shipping - $2.40 payment fee = $39.60, a 49.5% contribution margin. Breakeven ROAS on net product revenue is 1 / 0.495 = 2.02. Current all-channel Shopify revenue per Meta dollar is 2.05. So even if every Shopify dollar were caused by Meta and every order were a Daypack, Meta is at best at breakeven before fixed costs, returns, apps, email, and other overhead. At the observed $90 AOV, a similar margin rate implies about $44.55 contribution per order; 500 orders is about $22,275, against $22,000 Meta spend alone. That is a sensitivity, not a definitive SKU-level calculation.\\n\\n## What can and cannot be concluded\\n**Can conclude:** The reported Meta ROAS improvement is not a reliable reason to scale. It is not corroborated by Shopify, and it is inconsistent with falling orders, falling AOV-stable revenue, lower CTR, and higher CPM. The simplest reading is attribution inflation or overlap, not suddenly better incremental performance.\\n\\n**Cannot conclude:** We cannot say Meta caused no sales. It may drive new customers, given 72% new-customer share, or assisted conversions. We also cannot say Klaviyo incrementally caused $14,000; its 5-day click plus 5-day open window overlaps Meta and has no holdout. We cannot infer creative-level causality: the laptop-fit comparison had higher CTR in a small test, but no conversion sample was supplied. We cannot claim competitor performance or use waterproof/lifetime claims.\\n\\n## Recommended action\\nHold Meta at current spend, or cut the marginal spend, until a holdout test shows incremental ROAS above roughly 2.0 on net revenue and above a higher target that covers fixed costs. Use the $3,000 test budget for a 14-day geo holdout: matched control region, Shopify orders and revenue as truth, Klaviyo deduped, then compare against Meta reported value. Within current spend, shift some budget to the laptop-fit creative as a test, not as a scale decision.\\n\\nFix the mobile and PDP issues first: 42 delivery-date tickets, 28 15-inch laptop-fit tickets, and 18 waterproof questions. Surface laptop sizing, delivery window, and 'water-resistant, not waterproof' above reviews; align the CTA to practical use. That is higher-confidence than raising spend.\\n\\n**Inventory constraint:** Daypack stock is 210 units at 8/day = 26.25 days of cover. Replenishment is 500 units in 35 days. At the current run rate, 35 days needs 280 units, so stock is short about 70 units and may stock out before replenishment. Raising Meta spend would accelerate that risk and conflicts with the cash constraint to protect replenishment payments.\\n\\n## Missing facts\\nSKU-level contribution mix; whether Meta reported purchase value includes tax/shipping; true incremental ROAS; Klaviyo holdout; mobile funnel diagnostics; creative-level conversion sample.\", \"questions\": [\"What incremental ROAS or contribution-payback threshold must be met before raising Meta spend, and can we run a 14-day geo holdout within the existing $3,000 test budget?\", \"Can we get current SKU mix and confirmation of whether Meta reported purchase value includes tax/shipping, so we can reconcile it to Shopify net product revenue?\", \"Is the 500-unit Daypack replenishment payment committed and non-cancellable, and what is the earliest additional inventory could arrive?\"], \"assumptions\": [\"The 30-day periods are equal length and Shopify session/order counts are internally consistent as stated.\", \"Daypack is used as the contribution-margin anchor because SKU-level mix is unavailable; accessory costs may differ.\", \"Meta reported purchase value includes non-incremental or overlapping conversions such as view-through, modeled, or click-claimed orders and is not reconciled to Shopify.\", \"Free US shipping means the merchant absorbs shipping on Daypack; no additional inventory purchase is approved.\"]}",
+      "D": "{\"answer_markdown\": \"**Short answer: No — do not raise Meta spend yet.** Meta’s reported ROAS improved from 3.00 to 3.20, but that is a platform-reported number, not a reconciled incremental result. In the same 30-day window, Shopify net product revenue fell from $54,000 to $45,000 while Meta spend rose from $18,000 to $22,000. The blended Meta-attributed MER — Shopify net product revenue ÷ Meta spend — fell from 3.00 to 2.05. Headline ROAS and the business result moved in opposite directions.\\n\\n**Arithmetic**\\n- Meta reported ROAS: previous $54,000 ÷ $18,000 = 3.00; current $70,400 ÷ $22,000 = 3.20, up 6.7%. Reported purchase value rose 30.4% while spend rose 22.2%.\\n- Shopify: sessions 20,000 → 25,000 (+25%); orders 600 → 500 (−16.7%); net product revenue $54,000 → $45,000 (−16.7%); AOV constant at $90; conversion 3.0% → 2.0%.\\n- Mobile: 15,000 sessions / 400 orders = 2.67% → 20,000 / 300 = 1.50%. Desktop: 5,000 / 200 = 4.00% in both periods. The decline is concentrated in mobile traffic.\\n- Funnel: add-to-cart sessions flat at 2,000 while sessions grew 25%, so ATC rate fell 10% → 8%; checkout starts 1,200 → 1,000; checkout-to-order held at 50%.\\n- Meta efficiency: CPM $12 → $15; estimated impressions ~1.50M → ~1.47M; link CTR 1.5% → 1.2%; estimated link clicks ~22,500 → ~17,600; CPC $0.80 → $1.25. Meta reported 30.4% more purchase value on 21.8% fewer link clicks.\\n- Overlap: Meta’s current $70,400 reported value is 156.4% of Shopify’s $45,000 net product revenue. Adding Klaviyo’s reported $14,000 attributed revenue gives $84,400, or 187.6% of Shopify. That sum is not a valid reconciliation; it shows overlapping credit.\\n\\n**What can be concluded**\\n- Observation: Meta’s own headline ROAS improved.\\n- Observation: Shopify top-line revenue, orders, conversion, ATC rate, and checkout starts all fell while Meta spend increased.\\n- Hypothesis, not proof: Meta’s improvement may be inflated by 1-day view-through attribution, existing-customer or retargeting delivery, or credit that also overlaps Klaviyo. It may also reflect a genuinely better ad, but the current data cannot separate those.\\n- Hypothesis, not proof: the extra sessions were lower-intent mobile traffic; the PDP or offer may not have converted them. Unresolved laptop-fit and rain-protection questions — 28 and 18 support tickets — plus details placed below reviews could contribute, but there is no session-recording or controlled evidence.\\n\\n**What cannot be concluded**\\n- Cannot conclude Meta caused the Shopify decline.\\n- Cannot conclude Meta is non-incremental or worthless. A 3.2 reported ROAS may still contain new-customer value.\\n- Cannot add Meta and Klaviyo revenue. Klaviyo uses 5-day click plus 5-day open; Meta uses 7-day click plus 1-day view; neither is reconciled to Shopify orders or a holdout.\\n- Cannot justify a budget increase from reported ROAS alone.\\n\\n**What to do before spending more**\\n1. Re-report Meta on 7-day click / 1-day engaged, dropping 1-day view. Compare that with Shopify new-customer revenue. Expect headline ROAS to fall; that is a correction, not a performance collapse.\\n2. Pull the Meta audience breakdown — existing vs engaged vs new — and frequency for top-spend ads. If much of the scaling spend is on existing customers, do not scale. Check creative history too: desk-to-trail is mature at 55% spend; laptop-fit had higher CTR in a small test but no conversion sample.\\n3. Read Shopify new-customer Daypack sales before and after at SKU level, and confirm Daypack was not promoted elsewhere. Total orders fell, so any positive Meta SKU signal would need to overcome that.\\n4. Fix Klaviyo measurement: there is no ATC flow, checkout abandonment fires at 24h, and there is no holdout or deliverability audit. Do not treat the $14,000 as additive proof.\\n5. Triangulate with a post-purchase survey asking first discovery versus final trigger, and if still ambiguous run a small controlled spend holdout or geo test. Given the $3,000 test budget and cash constraint, stage any test; do not permanently raise Meta spend.\\n\\n**Budget implication**\\nUsing DAY18 unit economics: price $80 − COGS $28 − pick/pack $2 − shipping $8 − 3% payment fee $2.40 = $39.60 contribution, or 49.5%. Breakeven product-revenue ROAS is $80 ÷ $39.60 ≈ 2.02. Current blended Meta MER is 2.05 — barely above breakeven before fixed costs and assuming all revenue is Daypack. That is not a cushion for scaling. Hold or trim the weakest ad set until attribution is reconciled.\", \"questions\": [\"Can you provide the current Meta Ads Manager audience breakdown (existing vs engaged vs new), frequency for the top-spend ad, and the same-period 7-day-click / 1-day-engaged view?\", \"What were the previous-period new-customer share and Daypack SKU-level new-customer revenue or units, and were any promotions or other channel pushes active in either 30-day period?\", \"What is the maximum cash available for a 14-day holdout or geo test after protecting the replenishment payment, and can the owner approve a temporary spend hold or reduction?\"], \"assumptions\": [\"Shopify net_product_revenue is the best available top-line product-sales measure; it excludes tax and shipping and is period-consistent.\", \"Meta reported purchase value and Klaviyo attributed revenue are platform-reported and not additive; no incrementality holdout exists in the supplied data.\", \"No concurrent pricing, promotion, site outage, seasonality, or other channel event is known; if one occurred, it could explain part of the Shopify decline.\", \"The 30-day periods are equal length and the funnel counts are session-based and internally consistent, per the supplied definitions.\", \"The Daypack unit-economics calculation applies only to DAY18 and excludes fixed overhead; pouch and bottle costs are incomplete.\", \"Meta audience breakdown, frequency, and incremental-attribution columns are unavailable in the snapshot and would need to be pulled before a final decision.\"]}"
+    },
+    "available_reference_material": "[378c1eb72ff9cb32d0fcc4cf] Reconcile platform ROAS with acquisition MER\nApplies when: You are deciding whether to trust Meta, Google, TikTok, or Pinterest reported ROAS for budget decisions.\n- Pull the account-wide ROAS from each platform and place it next to the acquisition MER from the first-time P&L.\n- If the gap is large (the source's example: P&L says $3–$7 back per dollar, Meta account-wide says 17), suspect one-day-view attribution crediting conversions to people who would have bought anyway, or overspend on existing customers inflating the number.\n- On Meta, click columns, run an attribution-setting breakdown, and inspect 7-day click and 7-day click plus 1-day engaged view, plus incremental attribution.\n- The source says in ~95% of accounts these tighter settings correlate much better with acquisition MER.\n- Choose one: switch all attribution settings to the tightest-correlating option, or keep current settings but judge performance using the breakdown numbers rather than the headline ROAS.\n- On TikTok and Pinterest, pull 7-day-click ROAS; the source says one-day view typically inflates TikTok substantially and 7-day click will drop toward (or below) acquisition MER. Repeat the correlation exercise for every platform.\nCondition: The 17x versus 3–7x and the ~95% figure are source illustrations/assertions, not measured guarantees.\nCondition: Attribution interface labels and available breakdowns change; verify the current platform UI before acting.\n\n[9ede69b02ec762df38f1c4a7] Last-click reality vs. Meta's multi-touch optimization\nApplies when: Deciding which ads to kill or scale, or reconciling an ad's reported ROAS with actually getting spend.\n- Know that the platform shows last-click attribution, giving full credit to the final ad a user clicked before buying.\n- Meta itself optimizes across multi-touch sequences, spreading credit across the chain of impressions and clicks that led to the purchase.\n- Consequence: an ad that looks like a loser on last-click may still be genuinely contributing, and Meta may keep spending on it because it sees earlier or later value in the sequence.\n- Because bidding and optimization are inherited at the adset level (cost caps are set at adset, never ad level), evaluate creative performance and make budget decisions at the adset level, not the ad level.\n- When you see one ad soaking up credit while others look weak, ask whether they are part of a sequence before cutting them.\n- For incrementality you care about, use 7-day-click or incremental attribution views before reallocating budget — the source found an ad showing 7x ROAS that was actually 1.9x incremental.\nCondition: The source's 7x vs 1.9x example is a single case, not a promised ratio.\nCondition: Check current attribution and reporting options in the platform, since interfaces change.\n\n[0e47a816e69693eb1e1ac2b0] Triangulate ecommerce attribution with post-purchase surveys\nApplies when: Reconciling reported ROAS/CAC across Meta, Google, Applovin and other channels, or deciding which channel actually deserves more budget.\n- Ask customers how they discovered the brand with consistent questions.\n- Track response rate and distinguish first discovery from the final purchase trigger.\n- Compare surveys, platform attribution and blended business results.\n- Investigate disagreements and use controlled tests when feasible before major reallocations.\nCondition: Self-reported recall and selection bias prevent surveys from being a universal source of truth.\n\n[d2be5dc4e5fade45fb9ab07c] Understand Incremental Attribution Before Trusting DPA ROAS\nApplies when: When evaluating DPA (dynamic product ad) performance and deciding whether to scale or pull budget.\n- Recognize that dynamic product ads dynamically pull products the user has already visited, so default ROAS is heavily inflated by existing-customer retargeting.\n- Delineate existing customers out of the ROAS figure first; the source states it drops precipitously.\n- In Meta, use the columns button, switch attribution settings to incremental attribution, and review the incremental ROAS split.\n- Understand the mechanism: Meta holds out ~10% of users daily as a control group, compares conversion rates (e.g. 1% control vs 2% treated) and applies a difference-in-difference calculation, yielding the true incremental lift (1%).\n- Apply this to any high-ROAS DPA figure; the source gives an example where a 5 ROAS DPA should be adjusted down by ~50% to 2.5 incremental.\n- Conclude that DPA is generally not a highly scalable cold-audience type; the source says it can spend $1,000/day in some accounts, but not $50,000/day on cold audiences.\nCondition: The 10% holdout and the difference-in-difference figures are the source's simplified explanation; actual platform mechanics may vary.\nCondition: Source says it has never seen an account where DPA is a great scalable cold-audience ad type — this is its observation, not a universal law.\n\n[845571c9595b3c810d9ce475] Isolate a test to resolve attribution ambiguity\nApplies when: You cannot tell whether a platform (Meta, Google, TikTok) is genuinely driving incremental new-customer revenue.\n- Once you have compared platform ROAS to acquisition MER and attribution-setting changes still do not reconcile them, do not keep spending on an assumption — design a test.\n- For eight- and nine-figure brands, the source uses causal geo-lift experiments, typically run over about 25 days, to validate a platform's incrementality.\n- For brand-spend incrementality, use a clustering algorithm to pull brand spend from selected states and measure the effect, if the business believes brand is incremental.\n- Write clear parameters before launching so the result is readable; the output should either confirm performance or confirm a setup problem.\nCondition: ~25 days is the source's typical duration, not a fixed rule.\nCondition: Geo tests require sufficient volume; the source frames this as an eight/nine-figure technique.\n\n[71083548afed377ee687b4c2] Account for Google's halo effect when judging ROAS\nApplies when: You are evaluating a PMax or Google campaign showing very high ROAS and deciding whether to increase spend.\n- Understand the halo effect: Google's reported ROAS looks better than reality because it absorbs credit for what other platforms drove.\n- Do not conclude Google cannot acquire new customers — the source says you can profitably spend $100-200k/month on Google, but only if it is genuinely net incremental.\n- Stress-test the number: if a PMax campaign (even with brand excluded) shows 20x ROAS, skeptically consider putting an extra $1,000 in and checking whether you actually get $20,000 back in topline — likely you will not.\n- Treat Google's incrementality as usually overstated and account for the halo when reporting.\n- Ecommerce application: when deciding to scale Google spend for your store, validate with an incrementality test rather than trusting reported ROAS.\nCondition: High Google ROAS is not proof of no incremental value — it means the reported figure overstates incremental impact.\n\n[b410bffcb50fb25ae35df625] Measure scaling lift on top-line new-customer sales at the SKU level\nApplies when: Deciding whether a Meta TOF scaling campaign actually worked after a budget increase, or when total-revenue-based readouts are too noisy to reach significance in a reasonable test window.\n- Check whether the campaign concentrates on one SKU or a small SKU set. If it does, read sales for that specific SKU before and after the scale-up instead of relying on store-wide totals.\n- Prefer this SKU-level readout because a whole-store test needs either a much larger budget change or a much longer duration to reach statistical relevance — narrowing to one SKU raises signal per dollar of spend.\n- Further narrow to new-customer sales on that SKU, since the stated objective of an Advantage+ TOF scaling campaign is acquiring new customers, not re-acquiring existing ones.\n- Compare in-platform reported ROAS against this Shopify-side new-customer SKU sales movement; divergence means platform attribution is overstating the campaign's acquisition contribution.\n- Confirm the SKU was not simultaneously promoted elsewhere (other channels, promotions, email) so the revenue movement can plausibly be attributed to the scaling change.\n- Recheck Shopify reporting views and any current Meta reporting fields, since both interfaces change.\nCondition: The source example only notes that sales 'might have gone up' — it does not report a confirmed lift, so treat this as method, not evidence of results.\nCondition: SKU-level readout works best when scaling a single SKU; for large SKU-count campaigns, isolate the SKU under test explicitly.\n\n[8c6833a8cd309cffd1bde56b] Diagnose inflated ROAS in Advantage+ scaling campaigns with audience breakdowns\nApplies when: Reviewing a Meta Advantage+ top-of-funnel scaling campaign where a top-spending ad shows a very high platform ROAS and you need to decide whether to scale budget, brief more creative like it, or pull spend.\n- Start with the ad-level report sorted by spend. High frequency on the top ad is the first red flag — the source flags this as a symptom of retargeting-style delivery, not genuine TOF reach.\n- Open the audience breakdown (existing customers / engaged / new) and read how spend distributes across segments. In the source example, roughly half of the budget on a 'scaling' campaign was landing on existing customers.\n- Re-read ROAS within the new-audience segment only. The source example dropped from a 13x blended ROAS to about 5x on new audiences — still positive, but a different decision than the headline implied.\n- Use the gap between blended ROAS and new-customer ROAS as the diagnostic: a large gap means the ad set is over-distributing spend because it performs well on existing customers, not because the creative is a strong acquisition asset.\n- Do not brief more creative in that format or 'double down' on that concept until the breakdown confirms new-customer performance, because scaling a fake winner adds creative production cost against bad data.\n- Verify the current Meta Ads Manager interface for where audience breakdowns live — column layouts and breakdown menus change.\nCondition: Percentages and the 13x-to-5x drop are one account example, not a benchmark; run your own breakdown.\nCondition: A high frequency is a yellow flag, not proof — check it against the audience breakdown before acting.\n\n[21ae950f3d4b9bc199b6c08f] Correcting ROAS Over-Inflation from View-Through, Existing Customers and Halo Effects\nApplies when: Auditing reported ROAS before using it to justify budget increases, or setting attribution windows on Meta and other platforms.\n- Identify view-through conversions as the primary inflation source. Source describes Meta's default 7-day click, 1-day view, 1-day engaged model, where mere viewing without click or interaction within 24 hours lets the platform claim the purchase. The 1-day view is where most over-attribution occurs.\n- Remove one-day view from reporting. Source recommends using 7-day click plus 1-day engaged instead, either by changing campaign settings or by using Columns then Compare Attribution Settings and opening 7-day click reporting; this tightens correlation to P&L efficiency numbers.\n- Note the engaged definition: interactions such as watching more than 3 seconds, liking or commenting without an outbound click now fall under 1-day engaged, because Meta narrowed the 7-day click definition to outbound clicks only. Verify current interface and definitions before applying.\n- Check existing-customer bleed: if existing customers appear in cold campaigns they will often buy anyway and still be credited, and removing user attribution from the model does not fix this because the click itself does not prove a causal relationship.\n- Check the halo effect: offline or out-of-account activations (a pop-up event, a retail store, organic presence) can lift digital performance and make a spend increase look justified when the lift came from elsewhere.\n- Expect inflation to compound with business maturity as customer lists, channel count and organic presence grow.\nCondition: Meta's incremental attribution is described as an estimate derived from competitor lift experiments by niche, not a true real-time holdout in your account; treat it as directional.\nCondition: Do not treat these fixed window settings as permanent; platform definitions and defaults change.\n\n[d233cdfd3b00fb3f0ac8ff03] Set Meta Attribution Windows to 7-Day Click / 1-Day Engaged\nApplies when: You are configuring Meta campaign reporting or diagnosing why Meta ROAS does not reconcile with actual profit.\n- Check the current default: Meta typically reports on 7-day click, 1-day view, 1-day engaged. The view-through component is the main source of over-attribution.\n- Recommendation from source: move campaigns to 7-day click / 1-day engaged and drop 1-day view. You can also do this reporting-only by going to Columns → Compare Attribution Settings → select 7-day click reporting, without changing campaign delivery.\n- Reason to keep 1-day engaged: Meta redefined '7-day click' around March-April 2026 so it now requires an outbound click to the website. Previously, likes, comments, shares or page clicks counted as clicks. Those engagement interactions moved into '1-day engaged.' Including 1-day engaged preserves a click-like signal that likely has a causal relationship.\n- Expect an immediate drop in reported ROAS when you remove view-throughs — the source says 7-day click ROAS numbers got worse overnight after the definition change. This is a correction, not a performance decline. Verify the current Meta interface and definitions before making changes, as these settings change over time.\nCondition: Platform interfaces and attribution definitions change frequently — verify current settings before applying. The source's own dates (early 2026) may already be outdated.\n\n[2dbf871d15aa5d3ec18f710d] One-day view attribution overattribution mistake\nApplies when: You are auditing Meta (or similar) campaign reporting and wondering why reported ROAS looks great but the business results disagree.\n- Check whether one-day view attribution is enabled across all campaigns and being used in reporting.\n- Recognize this causes massive overattribution — the source cites 30-50% of reported ROAS coming from view-throughs.\n- Remove one-day view from reporting to get a more realistic read of what is actually occurring in the business.\n- Ecommerce application: before scaling budget on the strength of reported ROAS, strip view-through attribution and recalculate so your scaling decisions are based on real impact.\nCondition: The 30-50% figure is the source's observation from audits, not a universal benchmark.\n\n[2497f72f8deba3899b1a4c70] Analyze winners with incremental attribution and a spend/ROAS threshold\nApplies when: You are running the analysis step of a creative testing cycle and deciding which ads to iterate or scale.\n- In the prospecting campaign, open the column set, go to Compare Attribution Settings, and select incremental attribution.\n- Sort the account by highest spend to lowest spend. The source notes you may instead break the view into groups by product or category depending on your business.\n- Identify ads that are simultaneously high-spend, above your brand's incremental ROAS threshold, and showing outsized results on that spend. The example brand required an incremental ROAS above ~1.1 for new customers; a standout ad spent $26k (over 25% of campaign spend) at 1.46.\n- Do not touch ads sitting right at the threshold (e.g., 1.13–1.16 in the example) — leave them for now.\n- Take the true standouts and feed them back into the flywheel as concepts to duplicate, vary, and iterate.\n- Set your threshold from your own economics — the source explicitly notes low threshold figures sound crazy but reflect what that brand can function at.\nCondition: The 1.1 threshold, $26k spend, and 1.46 ROAS are one brand's example, not a benchmark to copy.\nCondition: Incremental attribution differs from standard reported ROAS; compare like-for-like before judging.\nCondition: Source is presenter opinion on how analysis should work under current Meta reporting.\n\n[b22aead0c4cf228b304decee] Run post-purchase surveys as your attribution truth source\nApplies when: Auditing ad-channel mix, reconciling platform ROAS against actual profitability, or deciding where to shift budget.\n- Install a post-purchase survey tool (source example: No Commerce — verify current product and interface) so every buyer answers where they first heard about you.\n- Set the expectation check: if roughly half your spend is on Meta, roughly half of survey responses should attribute to Meta. The source frames a mismatch as evidence you're spending into a black hole.\n- Trust the survey over in-platform attribution when the two conflict. The source argues platforms over-attribute and the survey reflects what actual customers say at scale.\n- Use survey data to rebalance the mix rather than to celebrate flattering in-platform ROAS: the source describes seeing great Facebook ROAS while company profitability didn't net out.\n- Use trending survey responses to judge upper-funnel brand investments that are otherwise untrackable, including live events and sponsorships.\nCondition: Survey attribution is self-reported and recall-based; use it as a triangulation source, not a perfect ledger.\nCondition: The '40% of spend should show ~40% of responses' rule is the source's sanity-check heuristic, not a formal calculation.\n\n[d283ca8d4b257e9450027549] One-Day-Click ROAS with Post-Purchase Survey Multiplier\nApplies when: Deciding whether to scale spend on Meta and other channels when multi-touch attribution is judged unreliable, especially for considered-purchase products.\n- Track 1-day click ROAS in a cross-channel tool like Northbeam as your source of truth, since the platform-agnostic number is comparable across time.\n- Run a post-purchase survey asking 'when did you first hear of us' with bins like today, past week, past two weeks, month, six months, a year.\n- Assume the pessimistic case that only 1-day click conversions drove revenue — zero credit to view-through.\n- Multiply the immediate share (e.g., 20–25% for a jewelry brand) into 1-day click ROAS to estimate lifetime ROAS: a 0.5 one-day click implies roughly 2.0 lifetime under that assumption.\n- Compare the extrapolated lifetime ROAS against your breakeven ROAS to decide whether to keep scaling.\nCondition: The percentages cited are sourced from their portfolio and seasons and are not benchmarks.\nCondition: Northbeam's internal LTV calculations were not trusted by the source — they run the math themselves on top of the 1-day-click number.\nCondition: The extrapolation is deliberately conservative (no view-through credit), which can understate performance in some windows.\n\n[fa103e10c7f6d2eea8f1a37f] Incremental attribution: read DPA ROAS correctly before scaling bottom of funnel\nApplies when: Deciding how much budget to put into DPA/carousel retargeting, particularly in fashion, and evaluating whether bottom-of-funnel is scalable on cold audiences.\n- Understand what a DPA is: a carousel ad that dynamically pulls in products the user visited on your site, provided your pixel is passing back page-view data.\n- Remove existing customers from the ROAS view first. The source says when you delineate out existing customers, the DPA ROAS drops precipitously.\n- Then delineate to incremental attribution: in Meta, click Columns → Compare Attribution Settings → Incremental Attribution → Apply. You then get a split of the incremental ROAS for the ad.\n- Understand the calculation conceptually: Meta holds out roughly 10% of the targeted audience daily. If 1% of the holdout converts and 2% of the exposed group converts, the difference-in-difference is 1% — so the ad's real impact is 1%, not 2%. In the source's example, a 5 attributed ROAS should be adjusted down ~50% to ~2.5.\n- Treat DPA ROAS as lower than it appears, particularly on new audiences. The source says they have yet to see an ad account where DPA is a great scalable ad type on cold audiences.\n- The source's limits on DPA scale: it can work on cold audiences and can absorb ~$1,000/day in some accounts, but it cannot be scaled to $50,000/day on cold.\n- Watch for the death spiral: because DPAs sit at the bottom of the funnel with good-looking attributed ROAS, brands pull budget out of top of funnel and into DPAs, which shrinks the top-of-funnel user quantity, scales something non-scalable, and topples the whole funnel with declining ROAS.\nCondition: The 5.0→2.5 conversion is an illustrative example, not a fixed correction factor.\nCondition: Specific Meta interface steps must be verified in the current Ads Manager, as the interface may change.\nCondition: Incrementality methodology via holdouts is Meta's, and the source's description is simplified.\n\n[a0478e430dada6671044c58c] Use attribution-window gaps to detect delayed seasonal conversion\nApplies when: Interpreting your ad platform reporting in late October and early November, and deciding whether weak pre-sale ROAS is real weakness or a lagged signal.\n- Compare available short and longer click windows on consistent cohorts and revenue definitions.\n- Wait for the longer window to mature before estimating how much conversion is delayed.\n- Use the observed lag to inform pacing scenarios, with uncertainty around how this season differs.\n- Separate attribution maturation from incrementality; the same sale being credited later does not prove the ad caused it.\n- Reconcile with net sales, contribution and controlled tests where available.\nCondition: Source percentage gaps and historical reattribution examples are case observations; current platform windows may differ."
+  },
+  "system_prompt_sha256": "037bf431e47512102454c9f08e72091bf1161db527b580244042113b2bbdff32"
+}

@@ -1,0 +1,649 @@
+{
+  "cards": [
+    {
+      "title": "CSRF fundamentals: ambient cookie authority and forged state-changing requests",
+      "summary": "How cookie ambient authority lets attacker sites submit authenticated requests, and why storefront state-changing endpoints (cart, address, payment, admin) need explicit anti-CSRF protection.",
+      "use_when": "Auditing or designing any authenticated storefront action that changes state: add-to-cart, save address, place order, change email/password, refund, or admin config.",
+      "steps": [
+        "Understand the mechanism: browsers automatically attach a site's cookies to requests to that site, so once a shopper logs in, any other page can trigger a request that carries their session — the source calls this 'ambient authority'.",
+        "Identify the vulnerable surface: any endpoint that performs a state change and trusts only the cookie. Classic CSRF examples include transferring money or submitting a form the user did not intend.",
+        "Prefer the browser-level fix first: mark session cookies SameSite so they are not attached to requests initiated by third-party sites. The source notes this is simpler and less error-prone than per-endpoint token logic.",
+        "Keep CSRF tokens where SameSite is insufficient: the source recommends tokens especially when supporting old browsers (e.g. enterprise apps) or where framework or proxy behavior may not enforce SameSite reliably.",
+        "Test your own store before shipping: attempt a cross-site POST to a state-changing endpoint from a separate origin and confirm it is rejected.",
+        "Layer defense-in-depth: SameSite cookies plus tokens plus server-side checks on sensitive operations (order placement, account changes)."
+      ],
+      "caveats": [
+        "SameSite alone does not cover all flows; the source explicitly says tokens remain useful for old-browser support and layered defense.",
+        "Referer-header checks are weak: the source notes attackers can cause the Referer to be omitted, leaving servers unsure whether omission is benign or malicious.",
+        "Do not treat a single control as a guarantee — verify behavior on your actual stack and browser support matrix."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "checkout",
+        "csrf",
+        "session-security",
+        "cookies",
+        "authentication"
+      ],
+      "id": "9a7ac826028be112b75c211a",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 20
+    },
+    {
+      "title": "Implement stateless CSRF tokens with HMAC over the session ID",
+      "summary": "Use an HMAC of the session ID with a server-only secret, instead of storing random per-user tokens, so any number of parallel sessions validate without server-side token storage.",
+      "use_when": "Building or reviewing the anti-CSRF token layer for a storefront or admin panel, especially when you need validation across many open tabs without server-side token state.",
+      "steps": [
+        "Issue a token to the client and require it on subsequent state-changing requests; the source describes a hidden form field (type=hidden, name like csrf_token) echoed back on submission.",
+        "Avoid the naive approach of generating random tokens and remembering every token ever issued — the source warns that a user with many tabs breaks 'last token only' validation and forces unbounded server storage.",
+        "Derive the token deterministically: HMAC the session ID with a secret only the server knows. The server then only needs to remember the single secret, not each token.",
+        "Validate by recomputing the token from the session ID in the incoming request and comparing; mismatches are rejected as invalid.",
+        "Accept that the same token is reused for the life of a session. The source says that is fine because the attacker cannot read it cross-origin and cannot feasibly brute-force a large enough token space.",
+        "Include the token in every state-changing form (cart updates, checkout submission, account edits) so a forgotten endpoint does not silently reopen the hole."
+      ],
+      "caveats": [
+        "Security depends on the secret remaining server-only and the token space being large enough that guessing fails.",
+        "The source notes CSRF tokens are essentially nonces; do not confuse them with CSP nonces, which restrict script execution rather than form submissions.",
+        "A single endpoint that forgets to validate the token can expose the whole application."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "csrf",
+        "session-security",
+        "checkout",
+        "cryptography",
+        "authentication"
+      ],
+      "id": "dd0c8d03e16ce2d8c90e2273",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 20
+    },
+    {
+      "title": "Why the CSRF token defeats a forged request: same-origin policy blocks token theft",
+      "summary": "The CSRF token works because cross-site JavaScript cannot read the token out of your store's page DOM, so a forged request cannot echo it back even though cookies are attached.",
+      "use_when": "Explaining, debugging or threat-modeling why a suspicious request should be rejected on an ecommerce session, and validating a token defense behaves correctly.",
+      "steps": [
+        "Trace the legitimate flow: user logs in, server sets a session cookie and returns HTML containing the CSRF token; every later form submission includes both cookie and token.",
+        "Trace the attack: the attacker's page submits a POST to your store; the browser attaches the victim's cookie but the attacker's JavaScript has no way to read your token value out of your page because that would violate the same-origin policy.",
+        "Confirm the server's decision rule: even though the cookie is valid, a missing or wrong token means reject the request — the source stresses that checking only the cookie would wrongly accept it.",
+        "Sanity-check in a test harness: verify forged cross-site posts are rejected and legitimate in-app submissions succeed, rather than trusting that the token is wired up correctly.",
+        "Note the deeper lesson for all ecommerce integrations: a valid session is not proof that the user authorized the action — treat the token as proof the request originated from your own UI."
+      ],
+      "caveats": [
+        "The protection holds only while the token cannot be read cross-origin; XSS in your own pages defeats it entirely because injected script runs same-origin.",
+        "The source does not claim tokens replace other controls; it presents them as the pre-SameSite solution that remains valid."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "csrf",
+        "same-origin-policy",
+        "session-security",
+        "checkout",
+        "authentication"
+      ],
+      "id": "48d54741b489b3210f08e18d",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 20
+    },
+    {
+      "title": "Validate the method, not just the token, in redirect/callback handlers",
+      "summary": "The GitHub OAuth CSRF bypass hinged on a single URL serving GET (render page) and POST (do action); storefront callbacks and payment returns should branch strictly on HTTP method and re-validate state.",
+      "use_when": "Designing or reviewing login-with-X, OAuth callbacks, payment-gateway return URLs, or any endpoint that both renders a page and performs a state change.",
+      "steps": [
+        "Recognize the design pattern the source describes: the authorize page renders the form on GET and the form posts back to the same URL, so the handler branches on request method.",
+        "Audit your own store for endpoints sharing one route between a safe render and a sensitive action — common in checkout return URLs, account linking, password reset links and any 'login with' flow.",
+        "Treat the CSRF token as necessary but not sufficient: if the underlying state machine lets a request reach the action branch with a valid-but-unintended token, the token check passes while the action is still wrong.",
+        "Require an explicit, server-tracked authorization step (e.g. an approval, a nonce bound to the user's request, or a re-auth) rather than relying solely on the form's hidden field.",
+        "Log and alert on method anomalies (POSTs arriving from unexpected origins, repeated callbacks, unusual sequences) so you can detect bypass attempts.",
+        "Re-test the full flow after any framework or handler refactor, since route-to-controller mapping is exactly where the source's case slipped."
+      ],
+      "caveats": [
+        "This card converts a documented bypass of a third party's OAuth flow into defensive guidance; it does not claim your store's flow is affected.",
+        "Do not attempt these techniques against systems you do not own or have written authorization to test."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "oauth",
+        "csrf",
+        "checkout",
+        "authentication",
+        "integration-security"
+      ],
+      "id": "c339e8db6ce989cd085399ac",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 20
+    },
+    {
+      "title": "Use threat modeling to choose controls, not just to list bugs",
+      "summary": "The node security roadmap shows how to systematically enumerate threats for your runtime environment, rate their severity and map solutions — adaptable to an ecommerce stack's threat environment.",
+      "use_when": "Defining the security posture for a new ecommerce platform, integration or checkout flow, or when deciding which threats warrant investment.",
+      "steps": [
+        "Separate threat environments (server-side vs client-side code) and enumerate classes of threats with their frequency and severity for your own context.",
+        "Make severity context-specific: the source notes severity for a threat model depends on how you run and scale — a control critical for one deployment may be minor for another.",
+        "Include dependency and supply-chain threats, weak cryptography, unsafe deserialization or injection points, and poor developer experience as explicit categories.",
+        "Map each threat to concrete controls (sandboxed builds, network policy, dependency pinning, install-time isolation) rather than vague 'be careful'.",
+        "Write down which threats you are accepting and why, so the decision is visible rather than accidental.",
+        "Review the threat model when architecture changes (new payment provider, new hosting model, new region)."
+      ],
+      "caveats": [
+        "This is a general threat-modeling method, not a node-specific checklist from your environment.",
+        "Severity ratings are context-dependent heuristics, not universal scores."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "threat-modeling",
+        "risk-assessment",
+        "architecture",
+        "integration-security",
+        "security-process"
+      ],
+      "id": "ee5eb9bb739c3c7ed862b706",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 20
+    },
+    {
+      "title": "npm install runs arbitrary code — isolate builds from production hosts",
+      "summary": "Because post-install scripts execute on every module, package installation is effectively remote code execution; build inside disposable isolation, not on a long-lived production VM.",
+      "use_when": "Setting up CI/CD or deployment processes for an ecommerce storefront or custom service, and deciding where dependencies get installed.",
+      "steps": [
+        "Accept the premise: npm install may run post-install scripts, so installing is executing third-party code on that machine.",
+        "Build inside a throwaway container or isolated build environment that is destroyed after the build, so any compromise does not persist.",
+        "If you build on a long-lived VM instead, recognize the elevated risk: the source notes running npm install on a shared or persistent host can compromise the main system.",
+        "Add network egress policy to the build container so it can only reach required registries/domains, cutting off exfiltration paths for compromised packages.",
+        "Promote the built artifact, not the build host: production should receive the reviewed output, not code that was installed on a live server.",
+        "Re-audit after any change to build tooling or the container base image."
+      ],
+      "caveats": [
+        "This is a general risk statement; it does not mean every install is malicious.",
+        "Verification tooling and CI behavior change over time — check the current interface of your package manager and CI before relying on flags or defaults."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "supply-chain",
+        "ci-cd",
+        "dependency-management",
+        "sandboxing",
+        "build-security"
+      ],
+      "id": "6ada3852334a25f9a81ad70b",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 20
+    },
+    {
+      "title": "Keep a live dependency inventory and patch systemically",
+      "summary": "Maintaining a known-current dependency inventory lets you find vulnerable packages, but the source warns audit tools alone won't catch everything.",
+      "use_when": "Running periodic dependency hygiene for an ecommerce platform or custom service, and deciding when to schedule patching.",
+      "steps": [
+        "Run the package manager's audit command to surface known-vulnerable dependencies; the source references npm audit as an example of this class of tool.",
+        "Compare against upstream security advisories and the project's own disclosure lists rather than relying solely on the tool.",
+        "Track which dependency versions are running in production versus development, since only production exposure creates customer risk.",
+        "Schedule patching as regular work, not only after a high-profile incident, so you are not perpetually behind.",
+        "Keep installation in isolated/sandboxed environments (separate card) so installing the fixes doesn't itself introduce risk.",
+        "Document accepted-but-unfixed issues with the reason and revisit them when the package or runtime changes."
+      ],
+      "caveats": [
+        "The source warns audit tools cannot guarantee you'll catch the next attack and warns against assuming one ecosystem is uniquely vulnerable.",
+        "Some tools mentioned by name in the source may have changed ownership or behavior — verify the current product before adopting."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "supply-chain",
+        "dependency-management",
+        "patching",
+        "measurement",
+        "audit"
+      ],
+      "id": "77da8c6db02bfe618990d907",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 20
+    },
+    {
+      "title": "Supply-chain defense: network policy inside the build container",
+      "summary": "The event-stream Bitcoin-wallet attack demonstrates that source review is not enough; limiting a build container's egress to known domains can neutralize install-time payloads.",
+      "use_when": "Hardening the build pipeline for an ecommerce storefront or service that installs third-party packages.",
+      "steps": [
+        "Understand the attack class: the source describes a malicious package that carefully gated its payload to run only inside the victim application's dependency tree, keeping the exploit out of the GitHub source and inside the published package only.",
+        "Accept the implication: since you may review source and still miss the payload, detect and limit by behavior and environment rather than confidence in reading code.",
+        "Apply network policy to the build container so that even a compromised install cannot exfiltrate data or reach unexpected hosts.",
+        "Scope the build container's filesystem access to what's needed; the source notes package installs can otherwise reach unexpected places on the host.",
+        "Keep authentication secrets for registries and deployment out of the build environment where possible, so a compromised install cannot steal them.",
+        "Combine with isolated builds and a dependency inventory as a layered defense rather than any single control."
+      ],
+      "caveats": [
+        "The event-stream case study is a historical example, not a current benchmark or guarantee; treat it as illustration of a pattern.",
+        "No network policy is a complete guarantee, especially if egress rules are broad or misconfigured."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "supply-chain",
+        "network-policy",
+        "sandboxing",
+        "ci-cd",
+        "secret-management"
+      ],
+      "id": "45c07bf122dedc0dea06306c",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 20
+    },
+    {
+      "title": "Never let security process strangle developer velocity",
+      "summary": "The source argues that overly rigid security process pushes people to route around it, which is itself a major vulnerability — balance control with pragmatic, staged gates.",
+      "use_when": "Designing or reforming the security review process for an ecommerce engineering team, especially when balancing shipping speed against compliance.",
+      "steps": [
+        "Recognize the failure mode: if the review process is too burdensome, engineers will bypass it (create their own repos, skip reviews), and the organization ends up less secure.",
+        "Use staged environments: let developers work freely in isolated development/sandbox environments, then run a full dependency review before anything marks production.",
+        "Make the promotion gate specific: at review time, point out the few dependencies that cannot ship, rather than blocking the entire workflow.",
+        "Keep the burden on the machine where possible — automation, templates, pre-checked pipelines — so the human step is quick and targeted.",
+        "Measure friction and revisit rules that cause frequent bypasses; treat bypass as a signal, not only as a violation.",
+        "Communicate why a rule exists so engineers can comply intelligently rather than work around it."
+      ],
+      "caveats": [
+        "This is the source's opinion about balancing security and velocity, not a universal instruction.",
+        "Relaxed isolation still requires that production receives only reviewed artifacts."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "security-process",
+        "ci-cd",
+        "sandboxing",
+        "developer-experience",
+        "governance"
+      ],
+      "id": "09904f300a2590a77b513752",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 20
+    },
+    {
+      "title": "Match your threat model to the hosting/runtime model you actually use",
+      "summary": "Serverless and managed runtimes move the patch burden to the provider but introduce a different threat — an attacker can drain your metered resources instead of taking you down.",
+      "use_when": "Choosing between self-managed VMs, containers and serverless for a storefront or service, and setting cost/abuse guardrails.",
+      "steps": [
+        "Note that in managed function runtimes the provider may patch the underlying runtime and OS image for you, so 'always update the runtime yourself' may not apply the same way.",
+        "Recognize the changed DoS shape: with per-request isolation, a denial of service may only take down the specific instance rather than the whole service, but a resource attack can drive up metered spend.",
+        "Set maximum scale limits and cost alarms on managed functions so anomalous traffic cannot silently drain the budget.",
+        "Map availability concerns differently by deployment model — a DoS against a single VM looks very different from a DoS against a scaled function fleet.",
+        "Track tenancy and scaling assumptions (one tenant per function, shared host, shared container) because they change which attacks are feasible.",
+        "Revisit threat model whenever you migrate hosting models or scale assumptions change."
+      ],
+      "caveats": [
+        "Specific provider behaviors (e.g. which OS image or runtime is used, patching cadence) change over time and must be verified against current documentation.",
+        "The source's example is Google Cloud Functions-era behavior and is illustrative rather than a current vendor fact."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "serverless",
+        "threat-modeling",
+        "cost-control",
+        "availability",
+        "architecture"
+      ],
+      "id": "5a7e2c60485e48232409873e",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 20
+    },
+    {
+      "title": "Stability vs. security: when not to change a component (and what it costs)",
+      "summary": "The source describes holding a known-problematic legacy parser deployed because changing it could break timing assumptions in large systems — a trade-off reminder for storefront platform work.",
+      "use_when": "Deciding whether to swap out a core dependency, parser or subsystem in a running ecommerce platform where behavior and timing matter.",
+      "steps": [
+        "Treat refactors that claim 'semantically equivalent' as risky in large systems: the source describes refusing even a faster parser change because changed performance characteristics could break systems that depend on timing.",
+        "Favor no-behavior-change in maintenance branches: the source says stable/LTS branches avoid changes that could shift performance or timing, even improvements.",
+        "When you must keep a known-imperfect component, document its risk explicitly so future maintainers know it is a conscious decision, and plan how you would respond to a future vulnerability.",
+        "Decide in advance whether you'd patch or replace in an emergency, and flag that such a change may be communicated as a minor while being functionally breaking.",
+        "Weigh maintenance cost: the source explains that teams may end-of-life a version early rather than carry unsupported dependencies.",
+        "Apply the same reasoning to legacy code in a storefront: replacing a component 'just to modernize' without evaluating timing/behavior dependencies can destabilize order flows."
+      ],
+      "caveats": [
+        "This is the source's operational experience with a specific runtime, not a general rule; apply judgment to your own stack.",
+        "Do not use this as justification to ignore known vulnerabilities indefinitely — the source frames it as an informed, documented trade-off with a response plan."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "stability",
+        "dependency-management",
+        "risk-assessment",
+        "platform-engineering",
+        "patching"
+      ],
+      "id": "c3c32eaf50538b2ce0f2396e",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 20
+    },
+    {
+      "title": "Recognize composite attacks and layered defenses",
+      "summary": "The source stresses that attackers chain several vulnerabilities together (e.g. an out-of-bounds write to turn a crash into escalation), so single-layer controls are insufficient.",
+      "use_when": "Reviewing the security posture of an ecommerce stack and deciding how to layer controls across application, runtime and infrastructure.",
+      "steps": [
+        "Expect chaining: the source notes attackers often combine multiple known weaknesses, so an individually 'minor' bug can be a step in a serious attack.",
+        "Treat write-out-of-bounds or memory-safety issues as potentially escalating, not merely as denial-of-service bugs, when reviewing anywhere untrusted data reaches memory-unsafe code.",
+        "Layer controls so a failure of one (e.g. a WAF rule) does not translate directly into a breach.",
+        "Isolate components (build containers, service instances) so an exploit's reach is contained if a layer fails.",
+        "Keep detection breadth: since a carefully timed attack may not produce obvious errors, monitor for slow degradation, unusual resource use and timing anomalies, not just hard failures.",
+        "Re-test defense layers after any component upgrade, since adding a new layer can create unexpected interactions."
+      ],
+      "caveats": [
+        "This is a general principle illustrated with historical examples, not a claim that your store is specifically vulnerable.",
+        "Do not attempt to reproduce these attacks outside systems you own or are authorized to test."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "threat-modeling",
+        "defense-in-depth",
+        "memory-safety",
+        "monitoring",
+        "architecture"
+      ],
+      "id": "05ed141c1cb6a3c6d4531937",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 20
+    },
+    {
+      "title": "Watch for slow, hard-to-detect degradation from abuse",
+      "summary": "The source describes slow-request attacks that gradually leak resources and degrade a service without obvious errors — monitoring should catch gradual decline, not just hard failures.",
+      "use_when": "Setting up monitoring and anomaly detection for an ecommerce backend, especially around request handling, checkout timeouts and resource exhaustion.",
+      "steps": [
+        "Understand the pattern: the source describes requests held open slowly at a measured cadence, gradually leaking resources so the process handles requests orders of magnitude more slowly.",
+        "Note the detection challenge: the source calls this 'really really nasty' because there may be no good way to notice that performance is degrading over time.",
+        "Track trends, not just thresholds: monitor latency, memory and resource use over long windows so slow degradation is visible before users complain.",
+        "Restarting clears the symptom — treat repeated unexplained slowdown followed by restart as a signal, not a routine workaround.",
+        "Apply timeouts to slow-arriving headers or partial requests and cap the resources any single connection can consume.",
+        "Combine with isolation so a degraded instance does not take the whole service down."
+      ],
+      "caveats": [
+        "This is a general pattern from the source; specific timeout values or mitigations may not transfer to your stack.",
+        "Some concrete mitigation details were tied to a specific runtime version and may be outdated."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "monitoring",
+        "availability",
+        "denial-of-service",
+        "performance",
+        "operations"
+      ],
+      "id": "c3fe0bdcd734f84d60ac750b",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 20
+    },
+    {
+      "title": "Treat admin/integration endpoints as high-value attack surface",
+      "summary": "Every system that exposes authentication-adjacent endpoints (OAuth, SSO, webhooks, admin APIs) needs its own review; a fix in one interface does not automatically cover a legacy or parallel one.",
+      "use_when": "Reviewing storefront integration endpoints: login-with-provider flows, webhook receivers, admin APIs and any legacy interface still reachable.",
+      "steps": [
+        "Map all interfaces that can authenticate or authorize action, including legacy or internal ones that may still be reachable from outside.",
+        "When you fix a vulnerability in one interface (e.g. the new inspector/debug interface), explicitly check whether an older or parallel interface shares the same weakness — the source describes cases where the legacy path retained the same vulnerabilities after the new one was patched.",
+        "Require authentication and authorization on every admin or integration endpoint, not just the ones on the main navigation.",
+        "Restrict where these endpoints can be reached from (network policy, VPN, allowlists) to reduce exposure.",
+        "Log and review access to these endpoints and alert on unexpected callers.",
+        "Re-test after any change to authentication or routing, since changes can accidentally re-expose older paths."
+      ],
+      "caveats": [
+        "This is a general defensive principle drawn from case studies; specific interface names and version details from the source may be outdated.",
+        "Do not attempt to exploit authentication interfaces on systems you do not own."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "attack-surface",
+        "authentication",
+        "integration-security",
+        "admin-security",
+        "authorization"
+      ],
+      "id": "1c07798f74377670ee7d9036",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 20
+    },
+    {
+      "title": "General server hardening for ecommerce stacks",
+      "summary": "A practical starter checklist drawn from the source's closing guidance on protecting a node-based service, adaptable to any storefront backend.",
+      "use_when": "Establishing baseline security hygiene for an ecommerce backend before launch or during periodic review.",
+      "steps": [
+        "Assess your build approach: is npm install run on a persistent host or in a disposable sandbox? Prefer isolated builds (see build-isolation card).",
+        "Inventory and audit dependencies regularly and patch them on a schedule.",
+        "Isolate installation and execution: limit network access from where dependencies are installed so compromised packages cannot exfiltrate data.",
+        "Recognize where your code runs determines your defenses: hosting model changes which attacks are realistic (see runtime-model card).",
+        "Keep authentication/authorization strong end-to-end: check both cookie validity and request intent for state-changing operations.",
+        "Remember the source's point that sandboxing supports velocity: strict auditing without sandboxing pushes teams to skip reviews.",
+        "Document the controls in place and who owns them, so each isn't assumed without being verified."
+      ],
+      "caveats": [
+        "A checklist is not a substitute for threat modeling and testing on your specific stack.",
+        "Tool specifics referenced in the source are historical; verify current capabilities of your package manager, CI and hosting provider."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "hardening",
+        "dependency-management",
+        "sandboxing",
+        "authentication",
+        "operations"
+      ],
+      "id": "8460a807236053822d06b8e6",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 20
+    },
+    {
+      "title": "Prefer simple browser-level security over repeated per-app logic",
+      "summary": "The source argues CSRF tokens existed because browsers offered no built-in alternative; once a browser-level feature (SameSite) exists, prefer it because per-app logic is error-prone and easy to miss on one endpoint.",
+      "use_when": "Setting cookie attributes and session policy for a storefront, and deciding what security logic belongs in the browser vs your application code.",
+      "steps": [
+        "Prefer the mechanism the platform can enforce consistently — the source recommends SameSite as the simpler, less error-prone default over hand-rolled token checks.",
+        "Understand why: the source notes that with per-app token logic, forgetting it on one endpoint can make the whole app vulnerable.",
+        "Still keep application-level checks where the platform mechanism is not universally supported — the source mentions old browsers and enterprise contexts as reasons a token remains useful.",
+        "Set explicit cookie attributes (SameSite, Secure, HttpOnly, appropriate scope) rather than relying on defaults.",
+        "Audit across frameworks and proxies: behavior differs, so verify your specific stack honors the attributes you set.",
+        "Revisit policy on browser or framework upgrades, since defaults and support change."
+      ],
+      "caveats": [
+        "SameSite semantics and browser defaults have changed over time; verify current behavior for your audience before relying on it.",
+        "Never claim a single cookie attribute fully prevents CSRF on its own.",
+        "Layer controls on sensitive flows regardless."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "cookies",
+        "csrf",
+        "session-security",
+        "browser-security",
+        "authentication"
+      ],
+      "id": "71d76aebc126a2e69ce427e0",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 20
+    },
+    {
+      "title": "Treat agent/tool instructions and retrieved documents as untrusted data",
+      "summary": "The source's supply-chain and injection themes translate to agent security: content a tool retrieves — including package manifests, web pages and API responses — must not be treated as authorization for agent actions.",
+      "use_when": "Designing or auditing agents that operate on an ecommerce stack (listing changes, pricing updates, support replies) and consume external or user-supplied content.",
+      "steps": [
+        "Separate data from authority: retrieved documents, tool output and user input are data to reason about, not instructions that authorize state-changing actions.",
+        "Scope each agent/tool to the brand and task it was granted, rather than a broad API key covering all operations.",
+        "Require explicit human or system approval for high-impact actions (price changes, refunds, publishing listings, account changes).",
+        "Keep secrets out of the model's reach: use scoped credentials and avoid placing long-lived credentials where an injected instruction could retrieve them.",
+        "Log agent actions and the content that triggered them so anomalous behavior can be investigated.",
+        "Apply input handling equal to the rest of your app: validate and sanitize before acting, since prompt filtering alone is not a guarantee."
+      ],
+      "caveats": [
+        "This adapts general supply-chain and injection themes from the source to agent/tool contexts; the source does not specify agent controls directly.",
+        "No combination of filtering or scoping is a complete guarantee — treat it as layered risk reduction."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "agent-security",
+        "prompt-injection",
+        "authorization",
+        "secret-management",
+        "logging"
+      ],
+      "id": "c459603e420b6e0489ecc439",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 20
+    },
+    {
+      "title": "Security researcher case studies: read disclosed vulnerabilities as learning material",
+      "summary": "Platform vulnerability trackers and disclosure posts catalog real attack patterns (command injection in packages, SQL injection in ORMs) that you can translate into tests and controls for your own store.",
+      "use_when": "Building a security training or testing backlog for an ecommerce engineering team, and turning disclosed bugs into prevention checks.",
+      "steps": [
+        "Use public vulnerability databases and language-specific disclosure boards as a source of realistic test cases.",
+        "Classify findings by weakness type (e.g. command injection, SQL injection, path traversal) so you can look up the general class and understand what qualifies as an instance, rather than only memorizing the single bug.",
+        "For each relevant class, write a defensive test in your own codebase: e.g. if an ORM dependency has a SQL-injection history, verify your queries are parameterized and inputs are validated.",
+        "Note that disclosed issues may be narrowly scoped or low-volume (the source describes a small module with a command-injection issue and low downloads) — matching your stack to a finding matters more than general alarm.",
+        "Prioritize fixes by whether the affected package/route is actually deployed in your production path.",
+        "Re-run these checks when dependencies are updated."
+      ],
+      "caveats": [
+        "Case-study findings are examples of past bugs, not predictions or guarantees about your code.",
+        "Do not replicate attacks against systems you do not own or have written authorization to test."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "vulnerability-management",
+        "dependency-management",
+        "testing",
+        "threat-modeling",
+        "audit"
+      ],
+      "id": "af3509836f1a8c8a44e0e7f0",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 20
+    },
+    {
+      "title": "Avoid brittle input-parsing and URL handling in storefront code",
+      "summary": "The source catalogs parser bugs (out-of-bounds writes, URL/hostname spoofing, request splitting) as reminders that hand-rolled parsing of user input, URLs and headers is a recurring source of exploitable flaws.",
+      "use_when": "Reviewing custom parsing in storefront code: URL rewriting, redirect handling, header parsing, and any code that interprets user-supplied paths or hosts.",
+      "steps": [
+        "Prefer well-maintained parsers/libraries over custom string manipulation for URLs, headers and structured input.",
+        "Treat mismatches between encodings (the source references specific encoding edge cases) as potential out-of-bounds or misinterpretation risks and validate input at boundaries.",
+        "For redirect and URL handling, restrict to allowed destinations rather than trusting user-supplied hosts.",
+        "Be wary of combining user-controlled header sizes or timing — the source describes crafted header patterns causing failures, so cap sizes and timeouts.",
+        "For request splitting or smuggling risks, ensure consistent parsing between proxies/load balancers and your application server.",
+        "Keep runtime and dependencies patched, since many of these are fixed upstream."
+      ],
+      "caveats": [
+        "Specific CVE identifiers and encoder names referenced by the source are historical and may not be current; verify against your runtime's advisory feed.",
+        "This is a general hardening principle, not a claim that your store is affected by these specific bugs."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "input-validation",
+        "url-handling",
+        "parsing",
+        "patching",
+        "application-security"
+      ],
+      "id": "2b590d61e4a35c583e24a3ad",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 20
+    },
+    {
+      "title": "Assign threat owners and triage routes before an incident",
+      "summary": "The source describes a triage model where ecosystem vulnerabilities were routed to third parties rather than the core project — clarify in advance who investigates what, so reports don't fall through.",
+      "use_when": "Setting up vulnerability intake and disclosure handling for an ecommerce platform team or a vendor it depends on.",
+      "steps": [
+        "Define who owns triage for each surface: core platform, third-party dependency, integration or hosting provider.",
+        "Set up a channel for researchers and users to report issues, and document expected response paths.",
+        "Expect false positives — the source notes misrouted reports — so the triage process should check scope before escalating.",
+        "Track vulnerabilities found by internal staff or steering groups, not only external reports, so findings are not lost.",
+        "Decide against a stated policy how you will respond when a vulnerable component cannot be patched immediately (see the stability vs security card).",
+        "Review the process periodically and after any significant incident."
+      ],
+      "caveats": [
+        "The source describes a specific project's triage structure; your organization's intake will differ.",
+        "This does not establish any specific SLA or benchmark."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "vulnerability-management",
+        "incident-response",
+        "security-process",
+        "governance",
+        "triage"
+      ],
+      "id": "6300fb1221aa36cea785031c",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 20
+    }
+  ],
+  "request_id": "f59e3a7543fae5ec3e45e45d66311af261adc20ba7e56217d85903594e397ff5",
+  "ecommerce_scope_version": 1
+}

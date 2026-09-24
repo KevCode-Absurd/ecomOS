@@ -1,0 +1,61 @@
+{
+  "request_id": "c7d36794945f82690c8df7c5d753d77cf49cc8a120ed00cd84f0cd2c3811b1a6",
+  "provider": "openai",
+  "model": "gpt-5.6-terra",
+  "effort": "high",
+  "completion_limit": 8192,
+  "usage": {
+    "prompt_tokens": 245,
+    "completion_tokens": 340,
+    "total_tokens": 585,
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "audio_tokens": 0
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 0,
+      "audio_tokens": 0,
+      "accepted_prediction_tokens": 0,
+      "rejected_prediction_tokens": 0
+    }
+  },
+  "booked_cost_usd": 0.0046925,
+  "seconds": 8.36,
+  "finish_reason": "stop",
+  "output": {
+    "decision": "Do not launch a full multivariate test of hero, offer, and checkout this month. With 3,000 monthly sessions and a 2% purchase conversion rate, expected monthly orders are too limited for a practical, interpretable multivariate purchase-conversion test. Prioritize one high-impact, low-risk test or diagnostic work instead.",
+    "next_steps": [
+      "Choose one primary hypothesis, preferably hero messaging/creative or offer presentation; avoid changing checkout concurrently.",
+      "Run a sample-size and duration calculation using the minimum detectable lift, traffic allocation, and desired confidence before committing.",
+      "Review funnel drop-off, device mix, payment/shipping friction, and qualitative session or customer-feedback evidence to identify the strongest single test candidate.",
+      "Keep checkout changes to QA, usability fixes, or clearly necessary defect remediation unless there is sufficient traffic for a dedicated test.",
+      "Predefine the primary metric (purchase conversion), guardrails (revenue per session, refund rate, checkout errors), eligibility, and stopping rules."
+    ],
+    "missing_inputs": [
+      "Minimum detectable effect and required statistical confidence/power.",
+      "Current funnel conversion by step, device, and channel.",
+      "Whether offer changes affect margin, discounting policy, or returning-customer behavior.",
+      "Expected traffic changes or campaign launches this month."
+    ],
+    "evidence_used": [],
+    "assumptions": [
+      "General ecommerce experimentation guidance is used because no library was supplied.",
+      "The 3,000 monthly sessions are approximately eligible test traffic and the 2% baseline applies to the intended audience.",
+      "Purchase conversion is the decision metric; a different higher-frequency metric could make a narrower test more feasible.",
+      "Simultaneously changing hero, offer, and checkout would make causal interpretation difficult even if traffic were adequate."
+    ]
+  },
+  "raw_content": "{\"decision\":\"Do not launch a full multivariate test of hero, offer, and checkout this month. With 3,000 monthly sessions and a 2% purchase conversion rate, expected monthly orders are too limited for a practical, interpretable multivariate purchase-conversion test. Prioritize one high-impact, low-risk test or diagnostic work instead.\",\"next_steps\":[\"Choose one primary hypothesis, preferably hero messaging/creative or offer presentation; avoid changing checkout concurrently.\",\"Run a sample-size and duration calculation using the minimum detectable lift, traffic allocation, and desired confidence before committing.\",\"Review funnel drop-off, device mix, payment/shipping friction, and qualitative session or customer-feedback evidence to identify the strongest single test candidate.\",\"Keep checkout changes to QA, usability fixes, or clearly necessary defect remediation unless there is sufficient traffic for a dedicated test.\",\"Predefine the primary metric (purchase conversion), guardrails (revenue per session, refund rate, checkout errors), eligibility, and stopping rules.\"],\"missing_inputs\":[\"Minimum detectable effect and required statistical confidence/power.\",\"Current funnel conversion by step, device, and channel.\",\"Whether offer changes affect margin, discounting policy, or returning-customer behavior.\",\"Expected traffic changes or campaign launches this month.\"],\"evidence_used\":[],\"assumptions\":[\"General ecommerce experimentation guidance is used because no library was supplied.\",\"The 3,000 monthly sessions are approximately eligible test traffic and the 2% baseline applies to the intended audience.\",\"Purchase conversion is the decision metric; a different higher-frequency metric could make a narrower test more feasible.\",\"Simultaneously changing hero, offer, and checkout would make causal interpretation difficult even if traffic were adequate.\"]}",
+  "input": {
+    "question": "Should we launch a multivariate test changing the hero, offer and checkout this month?",
+    "brand_facts": {
+      "business": "skincare ecommerce",
+      "tracking_validated": true,
+      "baseline_purchase_conversion": 0.02,
+      "monthly_sessions": 3000
+    },
+    "library": []
+  },
+  "system_prompt_sha256": "7dc3dfaec961d2e1bf4d87e8f0024baecfafc5c2fe9e49fd3d0c323e298c7ef4"
+}

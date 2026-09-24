@@ -1,0 +1,587 @@
+{
+  "request_id": "31dbe4129168791cd2edf570c1b01488407c34d3a7e2986b19cb8c9b68cbf581",
+  "provider": "deepseek",
+  "model": "deepseek-flash",
+  "effort": "high",
+  "completion_limit": 65536,
+  "usage": {
+    "prompt_tokens": 4634,
+    "completion_tokens": 26210,
+    "total_tokens": 30844,
+    "prompt_tokens_details": {
+      "cached_tokens": 3840
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 21936
+    },
+    "prompt_cache_hit_tokens": 3840,
+    "prompt_cache_miss_tokens": 794
+  },
+  "booked_cost_usd": 0.032842199999999995,
+  "seconds": 88.26,
+  "finish_reason": "stop",
+  "output": {
+    "units": [
+      {
+        "id": "u1",
+        "kind": "example",
+        "title": "Base-rate adjustment for significant wins",
+        "claim": {
+          "text": "If only 10% of ideas truly work and testing at 80% power, roughly 1 in 5 significant wins is a false positive.",
+          "quote": "If only 10% of your ideas truly work and you test at 80% power, roughly 1 in 5 of your significant wins is a false positive (nishbhana.com, applying Bayes to your own win rate)."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not state how to estimate the proportion of true ideas in a given programme."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u2",
+        "kind": "action",
+        "title": "Do not extend inconclusive tests; ship or move on",
+        "claim": {
+          "text": "A fully-powered inconclusive test should not be extended hoping for significance; ship neither or the cheaper/simpler version.",
+          "quote": "Do not extend it hoping for significance (that is peeking). Ship neither, or ship the cheaper/simpler version, and move on."
+        },
+        "action": {
+          "text": "Do not extend it hoping for significance (that is peeking); ship neither, or ship the cheaper/simpler version, and move on.",
+          "quote": "Do not extend it hoping for significance (that is peeking). Ship neither, or ship the cheaper/simpler version, and move on."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "A fully-powered test ends inconclusive.",
+              "quote": "A fully-powered test that ends inconclusive"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": [
+            {
+              "text": "Extending the test hoping for significance (peeking).",
+              "quote": "Do not extend it hoping for significance (that is peeking)."
+            }
+          ]
+        },
+        "completion": [
+          {
+            "text": "Ship neither, or ship the cheaper/simpler version, and move on.",
+            "quote": "Ship neither, or ship the cheaper/simpler version, and move on."
+          }
+        ],
+        "unknowns": [],
+        "relations": []
+      },
+      {
+        "id": "u3",
+        "kind": "action",
+        "title": "Use sequential or always-valid engines to monitor without peeking penalties",
+        "claim": {
+          "text": "In Band 3, sequential/always-valid engines can be used so monitoring does not incur peeking penalties.",
+          "quote": "Sequential/always-valid engines (Statsig, GrowthBook, Eppo, Optimizely) so you can monitor without peeking penalties."
+        },
+        "action": {
+          "text": "Use sequential/always-valid engines (Statsig, GrowthBook, Eppo, Optimizely) so you can monitor without peeking penalties.",
+          "quote": "Sequential/always-valid engines (Statsig, GrowthBook, Eppo, Optimizely) so you can monitor without peeking penalties."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Monthly order volume is 300 to 3,000 orders/month.",
+              "quote": "Band 3: 300 to 3,000 orders/month"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not specify which engine to choose or how to configure it."
+        ],
+        "relations": [
+          {
+            "kind": "alternative_to",
+            "target": "u12"
+          }
+        ]
+      },
+      {
+        "id": "u4",
+        "kind": "action",
+        "title": "Band 1 under 30 orders/month: avoid statistical tests; repair and research",
+        "claim": {
+          "text": "Under 30 orders/month, any A/B test, A/B/n, bandits, or before/after with statistical claims is not valid because even a 30% lift cannot be powered (about 120+ conversions per variant needed).",
+          "quote": "Not valid: any A/B test, A/B/n, bandits, or before/after with statistical claims. You cannot power even a 30% lift in a reasonable window (about 120+ conversions per variant needed)."
+        },
+        "action": {
+          "text": "Fix what is broken, apply proven LPG/checkout best practices without testing, build the research habit and an experiment log, and interview customers.",
+          "quote": "Do instead: fix what is broken, apply proven LPG/checkout best practices without testing, build the research habit and an experiment log. Interview customers."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Monthly order volume is under 30 orders/month.",
+              "quote": "Band 1: under 30 orders/month"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": [
+            {
+              "text": "Any A/B test, A/B/n, bandits, or before/after with statistical claims.",
+              "quote": "Not valid: any A/B test, A/B/n, bandits, or before/after with statistical claims."
+            }
+          ]
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not define which fixes are 'broken' or what constitutes 'proven LPG/checkout best practices'."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u5",
+        "kind": "action",
+        "title": "Band 2 30-300 orders/month: avoid tweak tests and some designs; run one big test",
+        "claim": {
+          "text": "At 30-300 orders/month, tweak tests needing small MDE, A/B/n, revenue-per-visitor as primary, and same-SKU price A/B tests are not valid.",
+          "quote": "Not valid: tweak tests (button colour, minor copy) that need a small MDE; A/B/n; revenue-per-visitor as primary metric (needs about 6x traffic); price A/B tests on the same SKU."
+        },
+        "action": {
+          "text": "Do one big test at a time, research-heavy; use a sample-size calculator before every test; accept that most months you learn from research, not from a powered test.",
+          "quote": "Do instead: one big test at a time, research-heavy. Use a sample-size calculator before every test. Accept that most months you learn from research, not from a powered test."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Monthly order volume is 30 to 300 orders/month.",
+              "quote": "Band 2: 30 to 300 orders/month"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": [
+            {
+              "text": "Tweak tests (button colour, minor copy) that need a small MDE; A/B/n; revenue-per-visitor as primary metric (needs about 6x traffic); price A/B tests on the same SKU.",
+              "quote": "Not valid: tweak tests (button colour, minor copy) that need a small MDE; A/B/n; revenue-per-visitor as primary metric (needs about 6x traffic); price A/B tests on the same SKU."
+            }
+          ]
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not specify which highest-traffic page to choose."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u6",
+        "kind": "action",
+        "title": "Band 3 300-3,000 orders/month: borderline methods, invalid tests, and backlog discipline",
+        "claim": {
+          "text": "At 300-3,000 orders/month, revenue-per-visitor as primary is borderline, A/B/n with only 2-3 arms and CUPED with returning identified users are borderline; detecting sub-5% lifts, many simultaneous variants, and same-SKU price tests are not valid.",
+          "quote": "Borderline: revenue-per-visitor as primary (still under-powered unless near the top of the band); A/B/n with only 2-3 arms; CUPED if you have returning identified users.\n\nNot valid: detecting sub-5% lifts; many simultaneous variants; same-SKU price tests."
+        },
+        "action": {
+          "text": "Build a prioritised backlog (PXL or profit-weighted), run one to a few tests, and keep a disciplined experiment log.",
+          "quote": "Do instead: build a prioritised backlog (PXL or profit-weighted), one to a few tests running, disciplined experiment log."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Monthly order volume is 300 to 3,000 orders/month.",
+              "quote": "Band 3: 300 to 3,000 orders/month"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": [
+            {
+              "text": "Detecting sub-5% lifts; many simultaneous variants; same-SKU price tests.",
+              "quote": "Not valid: detecting sub-5% lifts; many simultaneous variants; same-SKU price tests."
+            }
+          ]
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not define PXL or profit-weighted backlog."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u7",
+        "kind": "action",
+        "title": "Band 4 3,000-20,000 orders/month: remaining invalid tests and programme operation",
+        "claim": {
+          "text": "At 3,000-20,000 orders/month, sub-2-3% lifts still cannot be reliably detected without long runtimes, and same-SKU price discrimination is still to be avoided.",
+          "quote": "Not valid: still cannot reliably detect sub-2-3% lifts without long runtimes; still avoid same-SKU price discrimination."
+        },
+        "action": {
+          "text": "Run a proper experimentation programme, server-side for checkout/pricing logic (Plus), hybrid A/B + bandit, formal guardrails and stopping rules.",
+          "quote": "Do instead: run a proper experimentation programme, server-side for checkout/pricing logic (Plus), hybrid A/B + bandit, formal guardrails and stopping rules."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Monthly order volume is 3,000 to 20,000 orders/month.",
+              "quote": "Band 4: 3,000 to 20,000 orders/month"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": [
+            {
+              "text": "Sub-2-3% lifts without long runtimes; same-SKU price discrimination.",
+              "quote": "Not valid: still cannot reliably detect sub-2-3% lifts without long runtimes; still avoid same-SKU price discrimination."
+            }
+          ]
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not define 'Plus' or 'formal guardrails'."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u8",
+        "kind": "action",
+        "title": "Band 5 20,000+ orders/month: invalid practices and full programme operation",
+        "claim": {
+          "text": "At 20,000+ orders/month, naive same-SKU price discrimination (ethics/legal), unplanned peeking, and uncorrected multiple comparisons are not valid.",
+          "quote": "Not valid: naive same-SKU price discrimination (ethics/legal), unplanned peeking, uncorrected multiple comparisons."
+        },
+        "action": {
+          "text": "Operate like Booking/Microsoft in miniature: institutional experiment log, replication of surprising results, A/A tests to validate the platform, culture that expects most tests to fail.",
+          "quote": "Do instead: operate like Booking/Microsoft in miniature: institutional experiment log, replication of surprising results, A/A tests to validate the platform, culture that expects most tests to fail."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Monthly order volume is 20,000+ orders/month.",
+              "quote": "Band 5: 20,000+ orders/month"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": [
+            {
+              "text": "Naive same-SKU price discrimination (ethics/legal), unplanned peeking, uncorrected multiple comparisons.",
+              "quote": "Not valid: naive same-SKU price discrimination (ethics/legal), unplanned peeking, uncorrected multiple comparisons."
+            }
+          ]
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not specify the FDR control method."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u9",
+        "kind": "example",
+        "title": "Published win-rate benchmarks across companies",
+        "claim": {
+          "text": "Google Ads, Booking.com, and Netflix show about 10% win rates; Airbnb Search about 8%; Thomke and Ghosh's meta-analysis of about 20,000 Optimizely experiments found just 10% significant uplift; Optimizely's 127,000 experiments found 12% win on primary metric, with clients averaging about 20% across all experiments but only 10% for revenue-tied tests and a 35-40% conclusive rate; VWO about 14% and CXL/Convert about 20%.",
+          "quote": "Google Ads, Booking.com, Netflix: about 10% (Manzi 2012; Thomke 2020).\n\nAirbnb Search: about 8% (Kohavi).\n\nHarvard's Stefan Thomke and Sourobh Ghosh, meta-analysis of about 20,000 anonymised Optimizely experiments across 1,000+ customers: \"just 10% of experiments had a statistically significant uplift for their primary metric\" (via Oliver Palmer).\n\nOptimizely's own analysis of 127,000 experiments across 1,100 companies found only 12% win on the primary metric; clients average about 20% across all experiments but only 10% for revenue-tied tests, with a 35-40% conclusive rate (Optimizely, \"Get more wins\"). Other platform-published win rates: VWO about 14%, CXL/Convert about 20%."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not provide sample sizes for Google Ads, Booking.com, Netflix, Airbnb, or VWO/CXL benchmarks."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u10",
+        "kind": "example",
+        "title": "DRIP ecommerce experiment database benchmarks",
+        "claim": {
+          "text": "DRIP reports 36.3% win rate, 22.1% loss, 41.6% inconclusive; decisive win rate 62.1%; median winner RPV uplift +2.77%, top quartile +5.21% or higher; higher than industry because DRIP pre-qualifies hypotheses with research.",
+          "quote": "DRIP ecommerce experiment database: 36.3% win rate, 22.1% loss, 41.6% inconclusive; decisive win rate (wins / (wins+losses)) 62.1%; median winner RPV uplift +2.77%, top quartile +5.21% or higher. Higher than industry because DRIP pre-qualifies hypotheses with research."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not state the sample size for the DRIP database."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u11",
+        "kind": "example",
+        "title": "ConversionTeam audited test benchmarks",
+        "claim": {
+          "text": "ConversionTeam audited 2,288 tests: 19.1% statistically significant winners per test, 50.5% raw winners, 61.1% decisive.",
+          "quote": "ConversionTeam, 2,288 audited tests: 19.1% statistically significant winners per test, 50.5% raw winners, 61.1% decisive."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": []
+      },
+      {
+        "id": "u12",
+        "kind": "warning",
+        "title": "Peeking false-positive benchmark from Evan Miller",
+        "claim": {
+          "text": "Evan Miller provides a 26.1% peeking false-positive figure, a peek-count-to-required-significance table, and an n=16 sigma^2/delta^2 sample-size rule.",
+          "quote": "the 26.1% peeking false-positive figure, the peek-count-to-required-significance table, and the n=16 sigma^2/delta^2 sample-size rule."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not reproduce the table or the exact conditions behind the 26.1% figure."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u13",
+        "kind": "warning",
+        "title": "Etsy peeking false-positive simulation",
+        "claim": {
+          "text": "Etsy engineering shows a false positive rate exceeding 50% after 500 observations under continuous checking at a 50% baseline and alpha 0.10, with a concrete simulation.",
+          "quote": "shows false positive rate exceeding 50% after 500 observations under continuous checking at a 50% baseline and alpha 0.10, with a concrete simulation."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not provide the simulation code or full assumptions."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u14",
+        "kind": "principle",
+        "title": "Spotify sequential framework choice: GST vs AVI",
+        "claim": {
+          "text": "Spotify states GST is more powerful when you can estimate sample size, while AVI is safer when you cannot.",
+          "quote": "states GST is more powerful when you can estimate sample size, AVI safer when you cannot."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not define GST, AVI, or the full decision criteria."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u15",
+        "kind": "example",
+        "title": "Kohavi book coverage: SRM, OEC, Twyman's law, novelty/primacy, runtime",
+        "claim": {
+          "text": "The Kohavi book covers SRM at Microsoft ~6%, OEC, Twyman's law, novelty/primacy as external-validity threats, day-of-week runtime, from teams running 20,000+ experiments/year.",
+          "quote": "SRM at Microsoft ~6%, OEC, Twyman's law, novelty/primacy as external-validity threats, day-of-week runtime, from teams running 20,000+ experiments/year."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not summarize the book's specific recommendations for each topic."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u16",
+        "kind": "principle",
+        "title": "Experiment log builds institutional memory",
+        "claim": {
+          "text": "The experiment log builds institutional memory so the same losing idea is not re-run and surprising winners get replicated.",
+          "quote": "This builds institutional memory so the same losing idea is not re-run, and surprising winners get replicated."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": []
+      }
+    ],
+    "more_units": true,
+    "unresolved": [
+      "Omitted due to cap: Booking.com bottleneck principle about not fooling yourself.",
+      "Omitted due to cap: Part C source-list details for CUPED, Seven Rules of Thumb, Five Puzzling Outcomes, Simple Sequential A/B Testing, Always Valid Inference, and Peeking at A/B Tests.",
+      "The source does not define PXL, Plus, formal guardrails, or 'fooling yourself'.",
+      "The source does not state how to estimate the proportion of true ideas for the base-rate calculation.",
+      "The source does not provide sample sizes for several win-rate benchmarks."
+    ]
+  },
+  "raw_content": "{\"units\":[{\"id\":\"u1\",\"kind\":\"example\",\"title\":\"Base-rate adjustment for significant wins\",\"claim\":{\"text\":\"If only 10% of ideas truly work and testing at 80% power, roughly 1 in 5 significant wins is a false positive.\",\"quote\":\"If only 10% of your ideas truly work and you test at 80% power, roughly 1 in 5 of your significant wins is a false positive (nishbhana.com, applying Bayes to your own win rate).\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source does not state how to estimate the proportion of true ideas in a given programme.\"],\"relations\":[]},{\"id\":\"u2\",\"kind\":\"action\",\"title\":\"Do not extend inconclusive tests; ship or move on\",\"claim\":{\"text\":\"A fully-powered inconclusive test should not be extended hoping for significance; ship neither or the cheaper/simpler version.\",\"quote\":\"Do not extend it hoping for significance (that is peeking). Ship neither, or ship the cheaper/simpler version, and move on.\"},\"action\":{\"text\":\"Do not extend it hoping for significance (that is peeking); ship neither, or ship the cheaper/simpler version, and move on.\",\"quote\":\"Do not extend it hoping for significance (that is peeking). Ship neither, or ship the cheaper/simpler version, and move on.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"A fully-powered test ends inconclusive.\",\"quote\":\"A fully-powered test that ends inconclusive\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[{\"text\":\"Extending the test hoping for significance (peeking).\",\"quote\":\"Do not extend it hoping for significance (that is peeking).\"}]},\"completion\":[{\"text\":\"Ship neither, or ship the cheaper/simpler version, and move on.\",\"quote\":\"Ship neither, or ship the cheaper/simpler version, and move on.\"}],\"unknowns\":[],\"relations\":[]},{\"id\":\"u3\",\"kind\":\"action\",\"title\":\"Use sequential or always-valid engines to monitor without peeking penalties\",\"claim\":{\"text\":\"In Band 3, sequential/always-valid engines can be used so monitoring does not incur peeking penalties.\",\"quote\":\"Sequential/always-valid engines (Statsig, GrowthBook, Eppo, Optimizely) so you can monitor without peeking penalties.\"},\"action\":{\"text\":\"Use sequential/always-valid engines (Statsig, GrowthBook, Eppo, Optimizely) so you can monitor without peeking penalties.\",\"quote\":\"Sequential/always-valid engines (Statsig, GrowthBook, Eppo, Optimizely) so you can monitor without peeking penalties.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Monthly order volume is 300 to 3,000 orders/month.\",\"quote\":\"Band 3: 300 to 3,000 orders/month\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source does not specify which engine to choose or how to configure it.\"],\"relations\":[{\"kind\":\"alternative_to\",\"target\":\"u12\"}]},{\"id\":\"u4\",\"kind\":\"action\",\"title\":\"Band 1 under 30 orders/month: avoid statistical tests; repair and research\",\"claim\":{\"text\":\"Under 30 orders/month, any A/B test, A/B/n, bandits, or before/after with statistical claims is not valid because even a 30% lift cannot be powered (about 120+ conversions per variant needed).\",\"quote\":\"Not valid: any A/B test, A/B/n, bandits, or before/after with statistical claims. You cannot power even a 30% lift in a reasonable window (about 120+ conversions per variant needed).\"},\"action\":{\"text\":\"Fix what is broken, apply proven LPG/checkout best practices without testing, build the research habit and an experiment log, and interview customers.\",\"quote\":\"Do instead: fix what is broken, apply proven LPG/checkout best practices without testing, build the research habit and an experiment log. Interview customers.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Monthly order volume is under 30 orders/month.\",\"quote\":\"Band 1: under 30 orders/month\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[{\"text\":\"Any A/B test, A/B/n, bandits, or before/after with statistical claims.\",\"quote\":\"Not valid: any A/B test, A/B/n, bandits, or before/after with statistical claims.\"}]},\"completion\":[],\"unknowns\":[\"The source does not define which fixes are 'broken' or what constitutes 'proven LPG/checkout best practices'.\"],\"relations\":[]},{\"id\":\"u5\",\"kind\":\"action\",\"title\":\"Band 2 30-300 orders/month: avoid tweak tests and some designs; run one big test\",\"claim\":{\"text\":\"At 30-300 orders/month, tweak tests needing small MDE, A/B/n, revenue-per-visitor as primary, and same-SKU price A/B tests are not valid.\",\"quote\":\"Not valid: tweak tests (button colour, minor copy) that need a small MDE; A/B/n; revenue-per-visitor as primary metric (needs about 6x traffic); price A/B tests on the same SKU.\"},\"action\":{\"text\":\"Do one big test at a time, research-heavy; use a sample-size calculator before every test; accept that most months you learn from research, not from a powered test.\",\"quote\":\"Do instead: one big test at a time, research-heavy. Use a sample-size calculator before every test. Accept that most months you learn from research, not from a powered test.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Monthly order volume is 30 to 300 orders/month.\",\"quote\":\"Band 2: 30 to 300 orders/month\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[{\"text\":\"Tweak tests (button colour, minor copy) that need a small MDE; A/B/n; revenue-per-visitor as primary metric (needs about 6x traffic); price A/B tests on the same SKU.\",\"quote\":\"Not valid: tweak tests (button colour, minor copy) that need a small MDE; A/B/n; revenue-per-visitor as primary metric (needs about 6x traffic); price A/B tests on the same SKU.\"}]},\"completion\":[],\"unknowns\":[\"The source does not specify which highest-traffic page to choose.\"],\"relations\":[]},{\"id\":\"u6\",\"kind\":\"action\",\"title\":\"Band 3 300-3,000 orders/month: borderline methods, invalid tests, and backlog discipline\",\"claim\":{\"text\":\"At 300-3,000 orders/month, revenue-per-visitor as primary is borderline, A/B/n with only 2-3 arms and CUPED with returning identified users are borderline; detecting sub-5% lifts, many simultaneous variants, and same-SKU price tests are not valid.\",\"quote\":\"Borderline: revenue-per-visitor as primary (still under-powered unless near the top of the band); A/B/n with only 2-3 arms; CUPED if you have returning identified users.\\n\\nNot valid: detecting sub-5% lifts; many simultaneous variants; same-SKU price tests.\"},\"action\":{\"text\":\"Build a prioritised backlog (PXL or profit-weighted), run one to a few tests, and keep a disciplined experiment log.\",\"quote\":\"Do instead: build a prioritised backlog (PXL or profit-weighted), one to a few tests running, disciplined experiment log.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Monthly order volume is 300 to 3,000 orders/month.\",\"quote\":\"Band 3: 300 to 3,000 orders/month\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[{\"text\":\"Detecting sub-5% lifts; many simultaneous variants; same-SKU price tests.\",\"quote\":\"Not valid: detecting sub-5% lifts; many simultaneous variants; same-SKU price tests.\"}]},\"completion\":[],\"unknowns\":[\"The source does not define PXL or profit-weighted backlog.\"],\"relations\":[]},{\"id\":\"u7\",\"kind\":\"action\",\"title\":\"Band 4 3,000-20,000 orders/month: remaining invalid tests and programme operation\",\"claim\":{\"text\":\"At 3,000-20,000 orders/month, sub-2-3% lifts still cannot be reliably detected without long runtimes, and same-SKU price discrimination is still to be avoided.\",\"quote\":\"Not valid: still cannot reliably detect sub-2-3% lifts without long runtimes; still avoid same-SKU price discrimination.\"},\"action\":{\"text\":\"Run a proper experimentation programme, server-side for checkout/pricing logic (Plus), hybrid A/B + bandit, formal guardrails and stopping rules.\",\"quote\":\"Do instead: run a proper experimentation programme, server-side for checkout/pricing logic (Plus), hybrid A/B + bandit, formal guardrails and stopping rules.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Monthly order volume is 3,000 to 20,000 orders/month.\",\"quote\":\"Band 4: 3,000 to 20,000 orders/month\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[{\"text\":\"Sub-2-3% lifts without long runtimes; same-SKU price discrimination.\",\"quote\":\"Not valid: still cannot reliably detect sub-2-3% lifts without long runtimes; still avoid same-SKU price discrimination.\"}]},\"completion\":[],\"unknowns\":[\"The source does not define 'Plus' or 'formal guardrails'.\"],\"relations\":[]},{\"id\":\"u8\",\"kind\":\"action\",\"title\":\"Band 5 20,000+ orders/month: invalid practices and full programme operation\",\"claim\":{\"text\":\"At 20,000+ orders/month, naive same-SKU price discrimination (ethics/legal), unplanned peeking, and uncorrected multiple comparisons are not valid.\",\"quote\":\"Not valid: naive same-SKU price discrimination (ethics/legal), unplanned peeking, uncorrected multiple comparisons.\"},\"action\":{\"text\":\"Operate like Booking/Microsoft in miniature: institutional experiment log, replication of surprising results, A/A tests to validate the platform, culture that expects most tests to fail.\",\"quote\":\"Do instead: operate like Booking/Microsoft in miniature: institutional experiment log, replication of surprising results, A/A tests to validate the platform, culture that expects most tests to fail.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Monthly order volume is 20,000+ orders/month.\",\"quote\":\"Band 5: 20,000+ orders/month\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[{\"text\":\"Naive same-SKU price discrimination (ethics/legal), unplanned peeking, uncorrected multiple comparisons.\",\"quote\":\"Not valid: naive same-SKU price discrimination (ethics/legal), unplanned peeking, uncorrected multiple comparisons.\"}]},\"completion\":[],\"unknowns\":[\"The source does not specify the FDR control method.\"],\"relations\":[]},{\"id\":\"u9\",\"kind\":\"example\",\"title\":\"Published win-rate benchmarks across companies\",\"claim\":{\"text\":\"Google Ads, Booking.com, and Netflix show about 10% win rates; Airbnb Search about 8%; Thomke and Ghosh's meta-analysis of about 20,000 Optimizely experiments found just 10% significant uplift; Optimizely's 127,000 experiments found 12% win on primary metric, with clients averaging about 20% across all experiments but only 10% for revenue-tied tests and a 35-40% conclusive rate; VWO about 14% and CXL/Convert about 20%.\",\"quote\":\"Google Ads, Booking.com, Netflix: about 10% (Manzi 2012; Thomke 2020).\\n\\nAirbnb Search: about 8% (Kohavi).\\n\\nHarvard's Stefan Thomke and Sourobh Ghosh, meta-analysis of about 20,000 anonymised Optimizely experiments across 1,000+ customers: \\\"just 10% of experiments had a statistically significant uplift for their primary metric\\\" (via Oliver Palmer).\\n\\nOptimizely's own analysis of 127,000 experiments across 1,100 companies found only 12% win on the primary metric; clients average about 20% across all experiments but only 10% for revenue-tied tests, with a 35-40% conclusive rate (Optimizely, \\\"Get more wins\\\"). Other platform-published win rates: VWO about 14%, CXL/Convert about 20%.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source does not provide sample sizes for Google Ads, Booking.com, Netflix, Airbnb, or VWO/CXL benchmarks.\"],\"relations\":[]},{\"id\":\"u10\",\"kind\":\"example\",\"title\":\"DRIP ecommerce experiment database benchmarks\",\"claim\":{\"text\":\"DRIP reports 36.3% win rate, 22.1% loss, 41.6% inconclusive; decisive win rate 62.1%; median winner RPV uplift +2.77%, top quartile +5.21% or higher; higher than industry because DRIP pre-qualifies hypotheses with research.\",\"quote\":\"DRIP ecommerce experiment database: 36.3% win rate, 22.1% loss, 41.6% inconclusive; decisive win rate (wins / (wins+losses)) 62.1%; median winner RPV uplift +2.77%, top quartile +5.21% or higher. Higher than industry because DRIP pre-qualifies hypotheses with research.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source does not state the sample size for the DRIP database.\"],\"relations\":[]},{\"id\":\"u11\",\"kind\":\"example\",\"title\":\"ConversionTeam audited test benchmarks\",\"claim\":{\"text\":\"ConversionTeam audited 2,288 tests: 19.1% statistically significant winners per test, 50.5% raw winners, 61.1% decisive.\",\"quote\":\"ConversionTeam, 2,288 audited tests: 19.1% statistically significant winners per test, 50.5% raw winners, 61.1% decisive.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[],\"relations\":[]},{\"id\":\"u12\",\"kind\":\"warning\",\"title\":\"Peeking false-positive benchmark from Evan Miller\",\"claim\":{\"text\":\"Evan Miller provides a 26.1% peeking false-positive figure, a peek-count-to-required-significance table, and an n=16 sigma^2/delta^2 sample-size rule.\",\"quote\":\"the 26.1% peeking false-positive figure, the peek-count-to-required-significance table, and the n=16 sigma^2/delta^2 sample-size rule.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source does not reproduce the table or the exact conditions behind the 26.1% figure.\"],\"relations\":[]},{\"id\":\"u13\",\"kind\":\"warning\",\"title\":\"Etsy peeking false-positive simulation\",\"claim\":{\"text\":\"Etsy engineering shows a false positive rate exceeding 50% after 500 observations under continuous checking at a 50% baseline and alpha 0.10, with a concrete simulation.\",\"quote\":\"shows false positive rate exceeding 50% after 500 observations under continuous checking at a 50% baseline and alpha 0.10, with a concrete simulation.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source does not provide the simulation code or full assumptions.\"],\"relations\":[]},{\"id\":\"u14\",\"kind\":\"principle\",\"title\":\"Spotify sequential framework choice: GST vs AVI\",\"claim\":{\"text\":\"Spotify states GST is more powerful when you can estimate sample size, while AVI is safer when you cannot.\",\"quote\":\"states GST is more powerful when you can estimate sample size, AVI safer when you cannot.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source does not define GST, AVI, or the full decision criteria.\"],\"relations\":[]},{\"id\":\"u15\",\"kind\":\"example\",\"title\":\"Kohavi book coverage: SRM, OEC, Twyman's law, novelty/primacy, runtime\",\"claim\":{\"text\":\"The Kohavi book covers SRM at Microsoft ~6%, OEC, Twyman's law, novelty/primacy as external-validity threats, day-of-week runtime, from teams running 20,000+ experiments/year.\",\"quote\":\"SRM at Microsoft ~6%, OEC, Twyman's law, novelty/primacy as external-validity threats, day-of-week runtime, from teams running 20,000+ experiments/year.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source does not summarize the book's specific recommendations for each topic.\"],\"relations\":[]},{\"id\":\"u16\",\"kind\":\"principle\",\"title\":\"Experiment log builds institutional memory\",\"claim\":{\"text\":\"The experiment log builds institutional memory so the same losing idea is not re-run and surprising winners get replicated.\",\"quote\":\"This builds institutional memory so the same losing idea is not re-run, and surprising winners get replicated.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[],\"relations\":[]}],\"more_units\":true,\"unresolved\":[\"Omitted due to cap: Booking.com bottleneck principle about not fooling yourself.\",\"Omitted due to cap: Part C source-list details for CUPED, Seven Rules of Thumb, Five Puzzling Outcomes, Simple Sequential A/B Testing, Always Valid Inference, and Peeking at A/B Tests.\",\"The source does not define PXL, Plus, formal guardrails, or 'fooling yourself'.\",\"The source does not state how to estimate the proportion of true ideas for the base-rate calculation.\",\"The source does not provide sample sizes for several win-rate benchmarks.\"]}",
+  "input": {
+    "source": {
+      "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+      "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+      "locator": "batch",
+      "start": 0,
+      "text": "Practical vs statistical significance. A result can be statistically significant but too small to matter, or practically large but not yet significant. Decide against the MDE and the business value, not just p<0.05.\n\nSignificant does not mean 95% likely real. The 5% in alpha is the false-alarm rate among true nulls, not the chance your specific win is false. If only 10% of your ideas truly work and you test at 80% power, roughly 1 in 5 of your significant wins is a false positive (nishbhana.com, applying Bayes to your own win rate).\n\nInconclusive tests. A fully-powered test that ends inconclusive is valid evidence that the effect is smaller than your MDE, not a failure. Do not extend it hoping for significance (that is peeking). Ship neither, or ship the cheaper/simpler version, and move on. Kohavi: it is of little value to extend a test that is significantly negative after two weeks; fail fast.\n\nHonest reporting and the experiment log. Keep an institutional experiment log: hypothesis, evidence, primary and guardrail metrics, MDE, planned sample and dates, actual result with CI, SRM check, decision, and what was learned. This builds institutional memory so the same losing idea is not re-run, and surprising winners get replicated. At Booking.com scale (1,000+ concurrent experiments) the bottleneck is not running tests but not fooling yourself with them.\n\n14. benchmarks with their samples\n\nWin rates (share of tests that produce a statistically significant winner), each with its source and sample:\n\nMicrosoft: about one-third of experiments improved the key metric; in well-optimised domains like Bing 10-20% (Kohavi). Microsoft 33% success, Bing 15% (Kohavi, Crook, Longbotham 2009 / Kohavi, Deng, Longbotham 2014).\n\nGoogle Ads, Booking.com, Netflix: about 10% (Manzi 2012; Thomke 2020).\n\nAirbnb Search: about 8% (Kohavi).\n\nHarvard's Stefan Thomke and Sourobh Ghosh, meta-analysis of about 20,000 anonymised Optimizely experiments across 1,000+ customers: \"just 10% of experiments had a statistically significant uplift for their primary metric\" (via Oliver Palmer).\n\nOptimizely's own analysis of 127,000 experiments across 1,100 companies found only 12% win on the primary metric; clients average about 20% across all experiments but only 10% for revenue-tied tests, with a 35-40% conclusive rate (Optimizely, \"Get more wins\"). Other platform-published win rates: VWO about 14%, CXL/Convert about 20%.\n\nDRIP ecommerce experiment database: 36.3% win rate, 22.1% loss, 41.6% inconclusive; decisive win rate (wins / (wins+losses)) 62.1%; median winner RPV uplift +2.77%, top quartile +5.21% or higher. Higher than industry because DRIP pre-qualifies hypotheses with research.\n\nConversionTeam, 2,288 audited tests: 19.1% statistically significant winners per test, 50.5% raw winners, 61.1% decisive. Realistic lift sizes: for mature, well-optimised pages, 1-5% lifts are realistic; for early-stage or unoptimised pages, 10-20%+ is possible. Claims of 50%+ should be treated with suspicion and re-tested (discoveredlabs.com; Twyman's law). The winner's curse: tests run on small samples (200 conversions instead of 2,000) produce both false positives and inflated lift estimates, so early-stopped big winners regress hard.\n\nPart B: stage-gated decision guide by monthly order volume\n\nAssumptions: DTC ecommerce, roughly 2-3% site conversion rate, mostly new/anonymous traffic. Orders/month is the binding constraint because conversions per variant drive power.\n\nBand 1: under 30 orders/month\n\nValid: qualitative research only (session replay, surveys, user testing, customer interviews, analytics funnel review). Best-practice implementation of known fixes. Repairs.\n\nNot valid: any A/B test, A/B/n, bandits, or before/after with statistical claims. You cannot power even a 30% lift in a reasonable window (about 120+ conversions per variant needed).\n\nDo instead: fix what is broken, apply proven LPG/checkout best practices without testing, build the research habit and an experiment log. Interview customers.\n\nBand 2: 30 to 300 orders/month\n\nValid: bold, big-swing A/B tests on the highest-traffic page (home, hero product, cart), designed to detect 20%+ relative lifts, run 2-4 weeks, fixed sample computed in advance. Micro-conversion primary metrics (add-to-cart, begin-checkout) with purchase as guardrail. Sequential before/after only for large structural changes with conditions held constant.\n\nNot valid: tweak tests (button colour, minor copy) that need a small MDE; A/B/n; revenue-per-visitor as primary metric (needs about 6x traffic); price A/B tests on the same SKU.\n\nDo instead: one big test at a time, research-heavy. Use a sample-size calculator before every test. Accept that most months you learn from research, not from a powered test.\n\nBand 3: 300 to 3,000 orders/month\n\nValid: regular A/B tests targeting 10-20% lifts on high-traffic pages; conversion rate as primary metric; guardrails on AOV/margin/return rate; two-week minimum runtime; SRM checks. Sequential/always-valid engines (Statsig, GrowthBook, Eppo, Optimizely) so you can monitor without peeking penalties.\n\nBorderline: revenue-per-visitor as primary (still under-powered unless near the top of the band); A/B/n with only 2-3 arms; CUPED if you have returning identified users.\n\nNot valid: detecting sub-5% lifts; many simultaneous variants; same-SKU price tests.\n\nDo instead: build a prioritised backlog (PXL or profit-weighted), one to a few tests running, disciplined experiment log.\n\nBand 4: 3,000 to 20,000 orders/month\n\nValid: A/B/n (multi-variant), bandits for short campaigns and tactical high-volume decisions, revenue-per-visitor with winsorization, CUPED, segment analysis (pre-registered), device/source splits. Detecting 5-10% lifts becomes feasible on hero pages.\n\nNot valid: still cannot reliably detect sub-2-3% lifts without long runtimes; still avoid same-SKU price discrimination.\n\nDo instead: run a proper experimentation programme, server-side for checkout/pricing logic (Plus), hybrid A/B + bandit, formal guardrails and stopping rules.\n\nBand 5: 20,000+ orders/month\n\nValid: full programme. Small-MDE tests (2-5%), revenue and gross-profit-per-visitor primaries, CUPED and variance reduction, always-valid sequential monitoring, multiple concurrent experiments with FDR control, bandits for personalisation, holdouts for surprising winners, long-term novelty/primacy analysis.\n\nNot valid: naive same-SKU price discrimination (ethics/legal), unplanned peeking, uncorrected multiple comparisons.\n\nDo instead: operate like Booking/Microsoft in miniature: institutional experiment log, replication of surprising results, A/A tests to validate the platform, culture that expects most tests to fail.\n\nPart C: curated source list\n\nMust-capture sources (Tier 1-2)\n\nTrustworthy Online Controlled Experiments: A Practical Guide to A/B Testing. Ron Kohavi, Diane Tang, Ya Xu. Cambridge University Press, 2020. https://experimentguide.com/ Tier 1/2. Topics: 1,3,6,11,13,14. Why: the canonical text; SRM at Microsoft ~6%, OEC, Twyman's law, novelty/primacy as external-validity threats, day-of-week runtime, from teams running 20,000+ experiments/year.\n\nHow Not To Run an A/B Test. Evan Miller. evanmiller.org, April 18 2010. https://www.evanmiller.org/how-not-to-run-an-ab-test.html Tier 2. Topics: 1,3. Why: the 26.1% peeking false-positive figure, the peek-count-to-required-significance table, and the n=16 sigma^2/delta^2 sample-size rule.\n\nSimple Sequential A/B Testing. Evan Miller. evanmiller.org, October 13 2015. https://www.evanmiller.org/sequential-ab-testing.html Tier 2. Topics: 3,4. Why: a hand-computable sequential stopping procedure for low-conversion settings that ignores failure counts.\n\nAlways Valid Inference: Bringing Sequential Analysis to A/B Testing. Johari, Koomen, Pekelis, Walsh. arXiv 2015; Operations Research 70(3) 2022. https://arxiv.org/pdf/1512.04922 Tier 2. Topics: 3. Why: the mSPRT method behind Optimizely/Netflix/Amplitude always-valid p-values; the peeking-safe alternative to fixed horizons.\n\nChoosing a Sequential Testing Framework. Spotify Engineering (Mårten Schultzberg et al.), March 2023. https://engineering.atspotify.com/2023/03/choosing-sequential-testing-framework-comparisons-and-discussions Tier 1. Topics: 3,5. Why: maps which real tool uses which method (GST/mSPRT/GAVI/CAA) and states GST is more powerful when you can estimate sample size, AVI safer when you cannot.\n\nImproving the Sensitivity of Online Controlled Experiments by Utilizing Pre-Experiment Data (CUPED). Deng, Xu, Kohavi, Walker. Microsoft, WSDM 2013. Tier 2. Topics: 7. Why: the original CUPED paper; variance reduction using pre-period covariates.\n\nSeven Rules of Thumb for Web Site Experimenters. Kohavi, Deng, Longbotham, Xu. KDD 2014. https://www.semanticscholar.org/paper/7950675a13e2c57d79629ce5f0ddf81e3bca3502 Tier 2. Topics: 1,3,6. Why: concrete rules on power, runtime, and trust from large-sample practice.\n\nTrustworthy Online Controlled Experiments: Five Puzzling Outcomes Explained. Kohavi et al. KDD 2012. https://exp-platform.com/Documents/puzzlingOutcomesInControlledExperiments.pdf Tier 2. Topics: 3,6. Why: shows most suspected novelty/primacy trends are statistical artifacts, and when extending a test does and does not help.\n\nPeeking at A/B Tests: Why It Matters, and What To Do About It. Johari, Koomen, Pekelis, Walsh. KDD 2017. https://doi.org/10.1145/3097983.3097992 Tier 2. Topics: 3. Why: formal treatment of the peeking problem and always-valid fix.\n\nHow Etsy Handles Peeking in A/B Testing. Etsy Engineering (Code as Craft), October 3 2018. https://www.etsy.com/codeascraft/how-etsy-handles-peeking-in-a-b-testing Tier 1. Topics: 3. Why: shows false positive rate exceeding 50% after 500 observations under continuous checking at a 50% baseline and alpha 0.10, with a concrete simulation."
+    },
+    "already_extracted_claims": [
+      "The source says a result can be statistically significant but too small to matter, or practically large but not yet significant, so decide against the MDE and business value rather than p<0.05 alone.",
+      "The source states that significant does not mean 95% likely real; the 5% alpha is the false-alarm rate among true nulls, not the chance a specific win is false.",
+      "The source says a fully-powered test that ends inconclusive is valid evidence the effect is smaller than the MDE, not a failure.",
+      "Kohavi is cited saying it is of little value to extend a test that is significantly negative after two weeks; fail fast.",
+      "The source recommends keeping an institutional experiment log with hypothesis, evidence, metrics, MDE, sample and dates, result with CI, SRM check, decision, and learning.",
+      "The source reports Microsoft about one-third of experiments improved the key metric, and Bing 10-20% in well-optimised domains.",
+      "The source says realistic lifts are 1-5% for mature, well-optimised pages and 10-20%+ for early-stage or unoptimised pages, and claims of 50%+ should be treated with suspicion and re-tested.",
+      "The source warns that tests run on small samples produce both false positives and inflated lift estimates, so early-stopped big winners regress hard.",
+      "The stage-gated guide assumes DTC ecommerce with roughly 2-3% site conversion rate and mostly new/anonymous traffic, and says orders per month is the binding constraint because conversions per variant drive power.",
+      "In Band 1, under 30 orders/month, the source says valid work is qualitative research only, best-practice implementation of known fixes, and repairs.",
+      "In Band 2, 30 to 300 orders/month, the source says valid tests are bold, big-swing A/B tests on the highest-traffic page designed to detect 20%+ relative lifts, run 2-4 weeks with fixed sample computed in advance.",
+      "In Band 3, 300 to 3,000 orders/month, the source says valid tests target 10-20% lifts on high-traffic pages, use conversion rate as primary metric, guardrails on AOV/margin/return rate, two-week minimum runtime, and SRM checks.",
+      "In Band 4, 3,000 to 20,000 orders/month, the source says valid methods include A/B/n, bandits for short campaigns and tactical high-volume decisions, revenue-per-visitor with winsorization, CUPED, pre-registered segment analysis, and device/source splits; 5-10% lifts become feasible on hero pages.",
+      "In Band 5, 20,000+ orders/month, the source says valid work is a full programme with small-MDE tests (2-5%), revenue and gross-profit-per-visitor primaries, CUPED and variance reduction, always-valid sequential monitoring, multiple concurrent experiments with FDR control, bandits for personalisation, holdouts for surprising winners, and long-term novelty/primacy analysis.",
+      "The source lists must-capture sources rated Tier 1-2.",
+      "The source presents win rates as the share of tests that produce a statistically significant winner, each with its source and sample."
+    ],
+    "instruction": "Extract remaining distinct task-sized units. Do not repeat already extracted claims."
+  },
+  "system_prompt_sha256": "f23d9572f5bf1b93a5822a96b30f4ea85c0469c454d5ce80d227418df3d2e25e"
+}

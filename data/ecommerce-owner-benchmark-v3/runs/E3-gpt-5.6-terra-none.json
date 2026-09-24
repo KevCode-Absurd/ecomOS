@@ -1,0 +1,836 @@
+{
+  "task": "E3",
+  "model": "gpt-5.6-terra",
+  "method": "none",
+  "first": {
+    "request_id": "2cade904dd5b402ec37519d7795a66daa7bc4d4cfb719b6640af4687cc5e806c",
+    "provider": "openai",
+    "model": "gpt-5.6-terra",
+    "effort": "medium",
+    "completion_limit": 12288,
+    "usage": {
+      "prompt_tokens": 1613,
+      "completion_tokens": 1401,
+      "total_tokens": 3014,
+      "prompt_tokens_details": {
+        "cached_tokens": 0,
+        "cache_write_tokens": 1610,
+        "audio_tokens": 0
+      },
+      "completion_tokens_details": {
+        "reasoning_tokens": 209,
+        "audio_tokens": 0,
+        "accepted_prediction_tokens": 0,
+        "rejected_prediction_tokens": 0
+      }
+    },
+    "booked_cost_usd": 0.0208445,
+    "seconds": 18.52,
+    "finish_reason": "stop",
+    "output": {
+      "answer_markdown": "## TrailFold mobile PDP experiment — DAY18\n\n**Objective:** improve purchase rate on eligible Daypack 18L mobile PDP sessions by making the commute-to-weekend use case, laptop specification, rain limitation, and delivery expectation visible before reviews. This is a draft experiment; do not treat a 14-day read as proof.\n\n### Variant B: mobile PDP section order and copy\n\n1. **Product gallery**  \n   Keep the primary product image. Add a second gallery image or simple graphic showing the laptop sleeve with this on-image label: **“Padded sleeve for laptops up to 13 inches”**. Do not show a 15-inch device or imply it fits.\n\n2. **Product title and price**  \n   **Daypack 18L**  \n   **$80**\n\n3. **Replacement headline (above CTA)**  \n   **A practical 18L bag for weekdays and short weekends.**\n\n4. **Three proof bullets (above CTA)**  \n   - Padded sleeve for laptops up to 13 inches\n   - External bottle pocket for easy access\n   - Water-resistant fabric for light rain—not waterproof\n\n5. **CTA**  \n   Change **“Buy now”** to **“Add to bag”**.\n\n6. **Delivery and returns reassurance directly below CTA**  \n   **Free US shipping · Estimated delivery in 4–7 business days**  \n   **30-day returns on unused products. Return shipping is paid by the customer.**\n\n7. **Use-case section**  \n   **From commute to a short weekend away**  \n   The Daypack 18L is sized for everyday carry, with room for your work essentials and a change of clothes for a short trip. Keep a bottle within reach in the external pocket and your compatible laptop in the padded sleeve.\n\n8. **Details accordion**  \n   **What fits:** 18L capacity; padded laptop sleeve fits laptops up to 13 inches; external bottle pocket.  \n   **Weather note:** Water-resistant fabric helps with light rain. It is not waterproof.  \n   **Shipping & returns:** Free US shipping, estimated 4–7 business days. Unused products may be returned within 30 days; customer pays return shipping.\n\n9. **FAQ accordion, placed before reviews**\n   - **Will a 15-inch laptop fit?** The padded sleeve is specified for laptops up to 13 inches. We cannot confirm fit for a 15-inch laptop.\n   - **Is the bag waterproof?** No. The fabric is water-resistant, not waterproof.\n   - **When will my order arrive?** US orders ship free and are estimated to arrive in 4–7 business days.\n   - **Can I return it?** Yes. Unused products can be returned within 30 days. Return shipping is paid by the customer.\n\n10. **Reviews**, followed by the existing lower-page content.\n\n### Experiment configuration\n\n- **Population:** eligible US mobile sessions to the DAY18 PDP only; exclude bots, staff, preview sessions, and known QA traffic.\n- **Split:** 50/50 persistent, user-level assignment where available; session-level fallback. Control remains the current PDP. Variant B receives the section order and copy above.\n- **Primary metric:** Shopify session-based purchase rate for eligible PDP sessions.\n- **Guardrails:** add-to-cart rate, checkout-start rate, revenue per eligible session, return rate when mature, and support-ticket counts for 15-inch fit, waterproofing, and delivery dates.\n- **Sample and duration:** use the analyst-required **21,000 total eligible sessions**. At 1,200 eligible sessions per week, plan **18 full weeks / 126 days** to reach approximately 21,600 sessions. Do not stop early because Variant B looks favorable.\n- **Significance statement:** no statistical significance is claimed before the pre-set sample is reached and analysis is completed. A 14-day run yields only about 2,400 total eligible sessions and is directional QA/diagnostic evidence only, not a win decision.\n\n### Schedule and dependencies\n\n**Week 1:** Designer completes mobile hierarchy, laptop-sleeve graphic, and copy layout (6 hours). Developer implements Variant B, event validation, and traffic allocation (3 hours). Use the remaining 1 developer hour for device/browser smoke checks and analytics setup review.\n\n**Week 2:** Developer completes formal QA (2 hours): mobile rendering, accordion behavior, CTA/cart path, shipping/return text, split persistence, and event counts. Owner approves final copy and QA checklist before exposure. Launch only after QA passes.\n\n**Weeks 3–20:** run 126 calendar days from launch, monitor guardrails weekly without declaring a winner. Freeze Variant copy, allocation, eligibility rules, and primary metric unless a documented critical defect requires pausing. At completion, analyze the full planned sample once; report absolute conversion-rate difference, uncertainty/significance output, and guardrail outcomes. Meta and Klaviyo attribution must not be used as proof of PDP causality.",
+      "actions": {
+        "test_days": 126,
+        "designer_hours": 6,
+        "developer_hours": 5,
+        "week_1_developer_hours": 4,
+        "week_2_developer_hours": 2,
+        "required_total_sessions": 21000,
+        "planned_total_sessions": 21600,
+        "traffic_split_percent": 50,
+        "claimed_statistical_significance": 0,
+        "launch_status": "draft"
+      },
+      "questions": [],
+      "applied_card_ids": [],
+      "rejected_guidance": []
+    },
+    "raw_content": "{\"answer_markdown\":\"## TrailFold mobile PDP experiment — DAY18\\n\\n**Objective:** improve purchase rate on eligible Daypack 18L mobile PDP sessions by making the commute-to-weekend use case, laptop specification, rain limitation, and delivery expectation visible before reviews. This is a draft experiment; do not treat a 14-day read as proof.\\n\\n### Variant B: mobile PDP section order and copy\\n\\n1. **Product gallery**  \\n   Keep the primary product image. Add a second gallery image or simple graphic showing the laptop sleeve with this on-image label: **“Padded sleeve for laptops up to 13 inches”**. Do not show a 15-inch device or imply it fits.\\n\\n2. **Product title and price**  \\n   **Daypack 18L**  \\n   **$80**\\n\\n3. **Replacement headline (above CTA)**  \\n   **A practical 18L bag for weekdays and short weekends.**\\n\\n4. **Three proof bullets (above CTA)**  \\n   - Padded sleeve for laptops up to 13 inches\\n   - External bottle pocket for easy access\\n   - Water-resistant fabric for light rain—not waterproof\\n\\n5. **CTA**  \\n   Change **“Buy now”** to **“Add to bag”**.\\n\\n6. **Delivery and returns reassurance directly below CTA**  \\n   **Free US shipping · Estimated delivery in 4–7 business days**  \\n   **30-day returns on unused products. Return shipping is paid by the customer.**\\n\\n7. **Use-case section**  \\n   **From commute to a short weekend away**  \\n   The Daypack 18L is sized for everyday carry, with room for your work essentials and a change of clothes for a short trip. Keep a bottle within reach in the external pocket and your compatible laptop in the padded sleeve.\\n\\n8. **Details accordion**  \\n   **What fits:** 18L capacity; padded laptop sleeve fits laptops up to 13 inches; external bottle pocket.  \\n   **Weather note:** Water-resistant fabric helps with light rain. It is not waterproof.  \\n   **Shipping & returns:** Free US shipping, estimated 4–7 business days. Unused products may be returned within 30 days; customer pays return shipping.\\n\\n9. **FAQ accordion, placed before reviews**\\n   - **Will a 15-inch laptop fit?** The padded sleeve is specified for laptops up to 13 inches. We cannot confirm fit for a 15-inch laptop.\\n   - **Is the bag waterproof?** No. The fabric is water-resistant, not waterproof.\\n   - **When will my order arrive?** US orders ship free and are estimated to arrive in 4–7 business days.\\n   - **Can I return it?** Yes. Unused products can be returned within 30 days. Return shipping is paid by the customer.\\n\\n10. **Reviews**, followed by the existing lower-page content.\\n\\n### Experiment configuration\\n\\n- **Population:** eligible US mobile sessions to the DAY18 PDP only; exclude bots, staff, preview sessions, and known QA traffic.\\n- **Split:** 50/50 persistent, user-level assignment where available; session-level fallback. Control remains the current PDP. Variant B receives the section order and copy above.\\n- **Primary metric:** Shopify session-based purchase rate for eligible PDP sessions.\\n- **Guardrails:** add-to-cart rate, checkout-start rate, revenue per eligible session, return rate when mature, and support-ticket counts for 15-inch fit, waterproofing, and delivery dates.\\n- **Sample and duration:** use the analyst-required **21,000 total eligible sessions**. At 1,200 eligible sessions per week, plan **18 full weeks / 126 days** to reach approximately 21,600 sessions. Do not stop early because Variant B looks favorable.\\n- **Significance statement:** no statistical significance is claimed before the pre-set sample is reached and analysis is completed. A 14-day run yields only about 2,400 total eligible sessions and is directional QA/diagnostic evidence only, not a win decision.\\n\\n### Schedule and dependencies\\n\\n**Week 1:** Designer completes mobile hierarchy, laptop-sleeve graphic, and copy layout (6 hours). Developer implements Variant B, event validation, and traffic allocation (3 hours). Use the remaining 1 developer hour for device/browser smoke checks and analytics setup review.\\n\\n**Week 2:** Developer completes formal QA (2 hours): mobile rendering, accordion behavior, CTA/cart path, shipping/return text, split persistence, and event counts. Owner approves final copy and QA checklist before exposure. Launch only after QA passes.\\n\\n**Weeks 3–20:** run 126 calendar days from launch, monitor guardrails weekly without declaring a winner. Freeze Variant copy, allocation, eligibility rules, and primary metric unless a documented critical defect requires pausing. At completion, analyze the full planned sample once; report absolute conversion-rate difference, uncertainty/significance output, and guardrail outcomes. Meta and Klaviyo attribution must not be used as proof of PDP causality.\",\"actions\":{\"test_days\":126,\"designer_hours\":6,\"developer_hours\":5,\"week_1_developer_hours\":4,\"week_2_developer_hours\":2,\"required_total_sessions\":21000,\"planned_total_sessions\":21600,\"traffic_split_percent\":50,\"claimed_statistical_significance\":0,\"launch_status\":\"draft\"},\"questions\":[],\"applied_card_ids\":[],\"rejected_guidance\":[]}",
+    "input": {
+      "experiment": "owner-v3",
+      "brand": {
+        "fictional": true,
+        "name": "TrailFold",
+        "market": "US",
+        "currency": "USD",
+        "platforms": [
+          "Shopify",
+          "Meta Ads",
+          "Klaviyo"
+        ],
+        "positioning": "Practical lightweight bags for commuters who take short weekend trips; restrained, useful, plain-spoken voice.",
+        "products": [
+          {
+            "sku": "DAY18",
+            "name": "Daypack 18L",
+            "price": 80,
+            "landed_cogs": 28,
+            "pick_pack": 2,
+            "merchant_shipping_cost": 8,
+            "payment_fee_percent": 3,
+            "features": [
+              "18L capacity",
+              "padded 13-inch laptop sleeve",
+              "water-resistant fabric, not waterproof",
+              "external bottle pocket"
+            ],
+            "stock": 210,
+            "daily_units_sold": 8,
+            "confirmed_replenishment_units": 500,
+            "replenishment_arrival_days": 35
+          },
+          {
+            "sku": "POUCH",
+            "name": "Cable pouch",
+            "price": 20,
+            "landed_cogs": 5,
+            "stock": 800
+          },
+          {
+            "sku": "BOTTLE",
+            "name": "Steel bottle",
+            "price": 32,
+            "landed_cogs": 9,
+            "stock": 600
+          }
+        ],
+        "policies": {
+          "shipping": "Free US shipping; delivery estimate 4-7 business days",
+          "returns": "30-day returns for unused products; return shipping paid by customer",
+          "discounts": "No current discount. Any new discount needs owner approval."
+        },
+        "claim_constraints": [
+          "No evidence for waterproof, medical, sustainability or lifetime-durability claims.",
+          "No verified competitor performance data.",
+          "No clinical or controlled product test results."
+        ],
+        "customer_themes": {
+          "simulated_review_count": 120,
+          "themes": [
+            "fits daily commute",
+            "customers ask whether a 15-inch laptop fits",
+            "customers ask whether rain protection means waterproof"
+          ],
+          "support_tickets_last_30_days": {
+            "delivery_date_questions": 42,
+            "15_inch_laptop_fit": 28,
+            "waterproof_questions": 18
+          },
+          "note": "Themes, not verbatim licensed testimonials; no fabricated quotes or endorsements."
+        },
+        "website_snapshot": {
+          "pdp_headline": "Adventure starts here",
+          "first_image": "product on plain background",
+          "pdp_details": "Laptop sizing and delivery window are below reviews; CTA says Buy now. No field speed or session-recording data."
+        },
+        "shopify": {
+          "previous_30_days": {
+            "sessions": 20000,
+            "orders": 600,
+            "net_product_revenue": 54000,
+            "mobile_sessions": 15000,
+            "mobile_orders": 400,
+            "desktop_sessions": 5000,
+            "desktop_orders": 200,
+            "add_to_cart_sessions": 2000,
+            "checkout_started_sessions": 1200
+          },
+          "current_30_days": {
+            "sessions": 25000,
+            "orders": 500,
+            "net_product_revenue": 45000,
+            "mobile_sessions": 20000,
+            "mobile_orders": 300,
+            "desktop_sessions": 5000,
+            "desktop_orders": 200,
+            "add_to_cart_sessions": 2000,
+            "checkout_started_sessions": 1000
+          },
+          "definitions": "Revenue excludes tax/shipping; periods equal length. Funnel counts are session-based and internally consistent, but no controlled attribution experiment.",
+          "new_customer_share_current": 0.72,
+          "cohort_90_day_repeat_rate": 0.14
+        },
+        "meta": {
+          "previous_30_days": {
+            "spend": 18000,
+            "reported_purchase_value": 54000,
+            "cpm": 12,
+            "link_ctr_percent": 1.5
+          },
+          "current_30_days": {
+            "spend": 22000,
+            "reported_purchase_value": 70400,
+            "cpm": 15,
+            "link_ctr_percent": 1.2
+          },
+          "settings": "7-day click plus 1-day view; no incremental lift study. Meta reported value not reconciled to Shopify orders.",
+          "creative_history": [
+            {
+              "name": "Desk-to-trail demonstration",
+              "spend_share": 0.55,
+              "observed_result": "Largest spend recipient; mature creative. No asset-level contribution data."
+            },
+            {
+              "name": "Laptop-fit comparison",
+              "spend_share": 0.25,
+              "observed_result": "Higher CTR in small test; conversion sample not supplied."
+            },
+            {
+              "name": "Minimal product still",
+              "spend_share": 0.2,
+              "observed_result": "No reliable lift estimate."
+            }
+          ]
+        },
+        "klaviyo": {
+          "marketable_profiles": 12000,
+          "reported_attributed_revenue_current": 14000,
+          "attribution_window": "5-day click plus 5-day open",
+          "flows": [
+            {
+              "name": "welcome",
+              "messages": 1,
+              "offer": "none"
+            },
+            {
+              "name": "checkout abandonment",
+              "trigger": "Started Checkout",
+              "messages": 1,
+              "delay_hours": 24,
+              "observed_gap": "No Added to Cart flow; filters not audited."
+            }
+          ],
+          "campaigns_per_week": 3,
+          "reported_open_rate_percent": 52,
+          "click_rate_percent": 1.1,
+          "order_rate_percent": 0.18,
+          "note": "Revenue attribution overlaps other systems; no holdout or recent deliverability audit."
+        },
+        "resources": {
+          "weekly_designer_hours": 8,
+          "weekly_developer_hours": 4,
+          "owner_hours": 4,
+          "next_14_day_test_budget": 3000,
+          "cash_constraint": "Protect replenishment payments; no additional inventory purchase approved."
+        },
+        "unavailable": [
+          "GA4 breakdowns",
+          "Clarity/Hotjar recordings",
+          "field Core Web Vitals",
+          "SKU-level ad acquisition cost",
+          "cohort contribution LTV",
+          "creative-level conversion sample sizes",
+          "channel incrementality",
+          "email holdout data"
+        ]
+      },
+      "task": {
+        "id": "E3",
+        "title": "Mobile PDP experiment with resource scheduling",
+        "request": "Produce implementation-ready mobile PDP copy, FAQ, section order, and an experiment configuration. Only 1200 eligible PDP sessions per week exist; baseline purchase rate 2%, minimum detectable absolute improvement 0.4 percentage points. Analyst supplied required sample 21000 sessions TOTAL; use it, do not recalculate a different test. Propose test_days, designer_hours, developer_hours, claimed_statistical_significance and launch_status. Build needs 6 designer and 3 developer hours; QA needs another 2 developer hours. Only 4 developer hours are available in week one, 4 in week two. Include schedule/dependencies and how you avoid false proof after a 14-day test. No verified 15-inch fit or speed data."
+      },
+      "reference_guidance": ""
+    },
+    "system_prompt_sha256": "19fa52d4890cab2fc112e25875ff944d7a1753802461639c43bf7fdafc87d7e8"
+  },
+  "final": {
+    "request_id": "d51dfac8b602abcfc1ca9263070256c44f093318bcfef68a19ce4152348c93dd",
+    "provider": "openai",
+    "model": "gpt-5.6-terra",
+    "effort": "medium",
+    "completion_limit": 12288,
+    "usage": {
+      "prompt_tokens": 2994,
+      "completion_tokens": 1384,
+      "total_tokens": 4378,
+      "prompt_tokens_details": {
+        "cached_tokens": 0,
+        "cache_write_tokens": 2991,
+        "audio_tokens": 0
+      },
+      "completion_tokens_details": {
+        "reasoning_tokens": 204,
+        "audio_tokens": 0,
+        "accepted_prediction_tokens": 0,
+        "rejected_prediction_tokens": 0
+      }
+    },
+    "booked_cost_usd": 0.024093,
+    "seconds": 13.72,
+    "finish_reason": "stop",
+    "output": {
+      "answer_markdown": "## TrailFold DAY18 mobile PDP experiment\n\n**Objective:** improve purchase rate on eligible US mobile Daypack 18L PDP sessions by putting the most frequently needed product limits and purchase expectations above reviews: laptop sizing, water-resistance limitation, delivery estimate, and returns. This is a draft-only plan.\n\n### Variant B: mobile PDP order and implementation copy\n\n1. **Product gallery**  \nKeep the current lead image. Add a gallery graphic showing the laptop sleeve with the on-image label: **“Padded sleeve for laptops up to 13 inches”**. Do not depict or imply 15-inch laptop fit.\n\n2. **Title and price**  \n**Daypack 18L**  \n**$80**\n\n3. **Headline above CTA**  \n**A practical 18L bag for weekdays and short weekends.**\n\n4. **Feature bullets above CTA**  \n- Padded sleeve for laptops up to 13 inches\n- External bottle pocket for easy access\n- Water-resistant fabric for light rain—not waterproof\n\n5. **CTA**  \nReplace **“Buy now”** with **“Add to bag.”**\n\n6. **Reassurance directly below CTA**  \n**Free US shipping · Estimated delivery in 4–7 business days**  \n**30-day returns on unused products. Return shipping is paid by the customer.**\n\n7. **Use-case section**  \n**From commute to a short weekend away**  \nThe Daypack 18L is built for everyday carry and short trips. Keep a bottle within reach in the external pocket and a compatible laptop in the padded sleeve.\n\n8. **Details accordion**  \n**What fits:** 18L capacity; padded laptop sleeve for laptops up to 13 inches; external bottle pocket.  \n**Weather note:** Water-resistant fabric helps with light rain. It is not waterproof.  \n**Shipping & returns:** Free US shipping, estimated delivery in 4–7 business days. Unused products may be returned within 30 days; customer pays return shipping.\n\n9. **FAQ accordion before reviews**  \n**Will a 15-inch laptop fit?** The padded sleeve is specified for laptops up to 13 inches. We cannot confirm fit for a 15-inch laptop.  \n**Is the bag waterproof?** No. The fabric is water-resistant, not waterproof.  \n**When will my order arrive?** US orders ship free and are estimated to arrive in 4–7 business days.  \n**Can I return it?** Yes. Unused products can be returned within 30 days. Return shipping is paid by the customer.\n\n10. **Reviews**, then existing lower-page content.\n\n### Experiment configuration\n\n- **Control:** current DAY18 mobile PDP.\n- **Variant:** the section order and copy above; no other PDP changes during the test.\n- **Population:** eligible US mobile sessions landing on the DAY18 PDP. Exclude staff, bots, preview sessions, and QA traffic.\n- **Allocation:** 50/50 split with persistent user-level assignment where the testing tool supports it; otherwise use session-level assignment and disclose that limitation in readout.\n- **Primary metric:** Shopify session-based purchase rate among eligible PDP sessions.\n- **Guardrails:** add-to-cart rate, checkout-start rate, revenue per eligible session, mature return rate, and support contacts concerning 15-inch fit, waterproofing, or delivery timing.\n- **Planned sample:** use the analyst-supplied requirement of **21,000 total eligible sessions**. At 1,200 eligible sessions weekly, run for **126 days (18 full weeks)**, targeting approximately 21,600 total sessions.\n\n### Schedule, dependencies, and read rules\n\n**Week 1 — 6 design hours / 4 developer hours:** Designer produces the mobile hierarchy, sleeve graphic, and final responsive copy layout (6 hours). Developer implements the variant and split configuration (3 hours), then uses the remaining hour for event mapping review and mobile smoke checks.\n\n**Week 2 — 2 developer hours:** Complete formal QA: iOS/Android rendering, accordions, CTA-to-cart path, policy text, allocation persistence, and eligible-session/event-count validation. Owner approval of final copy and QA checklist is required before exposure. The remaining two available developer hours in week two are unallocated contingency, not required for launch.\n\n**Test period:** Freeze copy, traffic allocation, eligibility, and the primary metric once live. Review guardrails weekly only for defects or customer-harm risks; do not call a winner from interim results.\n\nA 14-day exposure produces only about 2,400 eligible sessions, far below the 21,000-session requirement. It may validate technical delivery and reveal obvious issues, but it is not evidence of a conversion win. At the planned sample, analyze once and report the absolute purchase-rate difference, statistical output, and all guardrails. Do not use Meta or Klaviyo attributed revenue as proof of PDP causality.",
+      "actions": {
+        "test_days": 126,
+        "designer_hours": 6,
+        "developer_hours": 5,
+        "week_1_developer_hours": 4,
+        "week_2_developer_hours": 2,
+        "required_total_sessions": 21000,
+        "planned_total_sessions": 21600,
+        "traffic_split_percent": 50,
+        "claimed_statistical_significance": 0,
+        "launch_status": "draft"
+      },
+      "questions": [],
+      "applied_card_ids": [],
+      "rejected_guidance": []
+    },
+    "raw_content": "{\"answer_markdown\":\"## TrailFold DAY18 mobile PDP experiment\\n\\n**Objective:** improve purchase rate on eligible US mobile Daypack 18L PDP sessions by putting the most frequently needed product limits and purchase expectations above reviews: laptop sizing, water-resistance limitation, delivery estimate, and returns. This is a draft-only plan.\\n\\n### Variant B: mobile PDP order and implementation copy\\n\\n1. **Product gallery**  \\nKeep the current lead image. Add a gallery graphic showing the laptop sleeve with the on-image label: **“Padded sleeve for laptops up to 13 inches”**. Do not depict or imply 15-inch laptop fit.\\n\\n2. **Title and price**  \\n**Daypack 18L**  \\n**$80**\\n\\n3. **Headline above CTA**  \\n**A practical 18L bag for weekdays and short weekends.**\\n\\n4. **Feature bullets above CTA**  \\n- Padded sleeve for laptops up to 13 inches\\n- External bottle pocket for easy access\\n- Water-resistant fabric for light rain—not waterproof\\n\\n5. **CTA**  \\nReplace **“Buy now”** with **“Add to bag.”**\\n\\n6. **Reassurance directly below CTA**  \\n**Free US shipping · Estimated delivery in 4–7 business days**  \\n**30-day returns on unused products. Return shipping is paid by the customer.**\\n\\n7. **Use-case section**  \\n**From commute to a short weekend away**  \\nThe Daypack 18L is built for everyday carry and short trips. Keep a bottle within reach in the external pocket and a compatible laptop in the padded sleeve.\\n\\n8. **Details accordion**  \\n**What fits:** 18L capacity; padded laptop sleeve for laptops up to 13 inches; external bottle pocket.  \\n**Weather note:** Water-resistant fabric helps with light rain. It is not waterproof.  \\n**Shipping & returns:** Free US shipping, estimated delivery in 4–7 business days. Unused products may be returned within 30 days; customer pays return shipping.\\n\\n9. **FAQ accordion before reviews**  \\n**Will a 15-inch laptop fit?** The padded sleeve is specified for laptops up to 13 inches. We cannot confirm fit for a 15-inch laptop.  \\n**Is the bag waterproof?** No. The fabric is water-resistant, not waterproof.  \\n**When will my order arrive?** US orders ship free and are estimated to arrive in 4–7 business days.  \\n**Can I return it?** Yes. Unused products can be returned within 30 days. Return shipping is paid by the customer.\\n\\n10. **Reviews**, then existing lower-page content.\\n\\n### Experiment configuration\\n\\n- **Control:** current DAY18 mobile PDP.\\n- **Variant:** the section order and copy above; no other PDP changes during the test.\\n- **Population:** eligible US mobile sessions landing on the DAY18 PDP. Exclude staff, bots, preview sessions, and QA traffic.\\n- **Allocation:** 50/50 split with persistent user-level assignment where the testing tool supports it; otherwise use session-level assignment and disclose that limitation in readout.\\n- **Primary metric:** Shopify session-based purchase rate among eligible PDP sessions.\\n- **Guardrails:** add-to-cart rate, checkout-start rate, revenue per eligible session, mature return rate, and support contacts concerning 15-inch fit, waterproofing, or delivery timing.\\n- **Planned sample:** use the analyst-supplied requirement of **21,000 total eligible sessions**. At 1,200 eligible sessions weekly, run for **126 days (18 full weeks)**, targeting approximately 21,600 total sessions.\\n\\n### Schedule, dependencies, and read rules\\n\\n**Week 1 — 6 design hours / 4 developer hours:** Designer produces the mobile hierarchy, sleeve graphic, and final responsive copy layout (6 hours). Developer implements the variant and split configuration (3 hours), then uses the remaining hour for event mapping review and mobile smoke checks.\\n\\n**Week 2 — 2 developer hours:** Complete formal QA: iOS/Android rendering, accordions, CTA-to-cart path, policy text, allocation persistence, and eligible-session/event-count validation. Owner approval of final copy and QA checklist is required before exposure. The remaining two available developer hours in week two are unallocated contingency, not required for launch.\\n\\n**Test period:** Freeze copy, traffic allocation, eligibility, and the primary metric once live. Review guardrails weekly only for defects or customer-harm risks; do not call a winner from interim results.\\n\\nA 14-day exposure produces only about 2,400 eligible sessions, far below the 21,000-session requirement. It may validate technical delivery and reveal obvious issues, but it is not evidence of a conversion win. At the planned sample, analyze once and report the absolute purchase-rate difference, statistical output, and all guardrails. Do not use Meta or Klaviyo attributed revenue as proof of PDP causality.\",\"actions\":{\"test_days\":126,\"designer_hours\":6,\"developer_hours\":5,\"week_1_developer_hours\":4,\"week_2_developer_hours\":2,\"required_total_sessions\":21000,\"planned_total_sessions\":21600,\"traffic_split_percent\":50,\"claimed_statistical_significance\":0,\"launch_status\":\"draft\"},\"questions\":[],\"applied_card_ids\":[],\"rejected_guidance\":[]}",
+    "input": {
+      "experiment": "owner-v3",
+      "brand": {
+        "fictional": true,
+        "name": "TrailFold",
+        "market": "US",
+        "currency": "USD",
+        "platforms": [
+          "Shopify",
+          "Meta Ads",
+          "Klaviyo"
+        ],
+        "positioning": "Practical lightweight bags for commuters who take short weekend trips; restrained, useful, plain-spoken voice.",
+        "products": [
+          {
+            "sku": "DAY18",
+            "name": "Daypack 18L",
+            "price": 80,
+            "landed_cogs": 28,
+            "pick_pack": 2,
+            "merchant_shipping_cost": 8,
+            "payment_fee_percent": 3,
+            "features": [
+              "18L capacity",
+              "padded 13-inch laptop sleeve",
+              "water-resistant fabric, not waterproof",
+              "external bottle pocket"
+            ],
+            "stock": 210,
+            "daily_units_sold": 8,
+            "confirmed_replenishment_units": 500,
+            "replenishment_arrival_days": 35
+          },
+          {
+            "sku": "POUCH",
+            "name": "Cable pouch",
+            "price": 20,
+            "landed_cogs": 5,
+            "stock": 800
+          },
+          {
+            "sku": "BOTTLE",
+            "name": "Steel bottle",
+            "price": 32,
+            "landed_cogs": 9,
+            "stock": 600
+          }
+        ],
+        "policies": {
+          "shipping": "Free US shipping; delivery estimate 4-7 business days",
+          "returns": "30-day returns for unused products; return shipping paid by customer",
+          "discounts": "No current discount. Any new discount needs owner approval."
+        },
+        "claim_constraints": [
+          "No evidence for waterproof, medical, sustainability or lifetime-durability claims.",
+          "No verified competitor performance data.",
+          "No clinical or controlled product test results."
+        ],
+        "customer_themes": {
+          "simulated_review_count": 120,
+          "themes": [
+            "fits daily commute",
+            "customers ask whether a 15-inch laptop fits",
+            "customers ask whether rain protection means waterproof"
+          ],
+          "support_tickets_last_30_days": {
+            "delivery_date_questions": 42,
+            "15_inch_laptop_fit": 28,
+            "waterproof_questions": 18
+          },
+          "note": "Themes, not verbatim licensed testimonials; no fabricated quotes or endorsements."
+        },
+        "website_snapshot": {
+          "pdp_headline": "Adventure starts here",
+          "first_image": "product on plain background",
+          "pdp_details": "Laptop sizing and delivery window are below reviews; CTA says Buy now. No field speed or session-recording data."
+        },
+        "shopify": {
+          "previous_30_days": {
+            "sessions": 20000,
+            "orders": 600,
+            "net_product_revenue": 54000,
+            "mobile_sessions": 15000,
+            "mobile_orders": 400,
+            "desktop_sessions": 5000,
+            "desktop_orders": 200,
+            "add_to_cart_sessions": 2000,
+            "checkout_started_sessions": 1200
+          },
+          "current_30_days": {
+            "sessions": 25000,
+            "orders": 500,
+            "net_product_revenue": 45000,
+            "mobile_sessions": 20000,
+            "mobile_orders": 300,
+            "desktop_sessions": 5000,
+            "desktop_orders": 200,
+            "add_to_cart_sessions": 2000,
+            "checkout_started_sessions": 1000
+          },
+          "definitions": "Revenue excludes tax/shipping; periods equal length. Funnel counts are session-based and internally consistent, but no controlled attribution experiment.",
+          "new_customer_share_current": 0.72,
+          "cohort_90_day_repeat_rate": 0.14
+        },
+        "meta": {
+          "previous_30_days": {
+            "spend": 18000,
+            "reported_purchase_value": 54000,
+            "cpm": 12,
+            "link_ctr_percent": 1.5
+          },
+          "current_30_days": {
+            "spend": 22000,
+            "reported_purchase_value": 70400,
+            "cpm": 15,
+            "link_ctr_percent": 1.2
+          },
+          "settings": "7-day click plus 1-day view; no incremental lift study. Meta reported value not reconciled to Shopify orders.",
+          "creative_history": [
+            {
+              "name": "Desk-to-trail demonstration",
+              "spend_share": 0.55,
+              "observed_result": "Largest spend recipient; mature creative. No asset-level contribution data."
+            },
+            {
+              "name": "Laptop-fit comparison",
+              "spend_share": 0.25,
+              "observed_result": "Higher CTR in small test; conversion sample not supplied."
+            },
+            {
+              "name": "Minimal product still",
+              "spend_share": 0.2,
+              "observed_result": "No reliable lift estimate."
+            }
+          ]
+        },
+        "klaviyo": {
+          "marketable_profiles": 12000,
+          "reported_attributed_revenue_current": 14000,
+          "attribution_window": "5-day click plus 5-day open",
+          "flows": [
+            {
+              "name": "welcome",
+              "messages": 1,
+              "offer": "none"
+            },
+            {
+              "name": "checkout abandonment",
+              "trigger": "Started Checkout",
+              "messages": 1,
+              "delay_hours": 24,
+              "observed_gap": "No Added to Cart flow; filters not audited."
+            }
+          ],
+          "campaigns_per_week": 3,
+          "reported_open_rate_percent": 52,
+          "click_rate_percent": 1.1,
+          "order_rate_percent": 0.18,
+          "note": "Revenue attribution overlaps other systems; no holdout or recent deliverability audit."
+        },
+        "resources": {
+          "weekly_designer_hours": 8,
+          "weekly_developer_hours": 4,
+          "owner_hours": 4,
+          "next_14_day_test_budget": 3000,
+          "cash_constraint": "Protect replenishment payments; no additional inventory purchase approved."
+        },
+        "unavailable": [
+          "GA4 breakdowns",
+          "Clarity/Hotjar recordings",
+          "field Core Web Vitals",
+          "SKU-level ad acquisition cost",
+          "cohort contribution LTV",
+          "creative-level conversion sample sizes",
+          "channel incrementality",
+          "email holdout data"
+        ]
+      },
+      "task": {
+        "id": "E3",
+        "title": "Mobile PDP experiment with resource scheduling",
+        "request": "Produce implementation-ready mobile PDP copy, FAQ, section order, and an experiment configuration. Only 1200 eligible PDP sessions per week exist; baseline purchase rate 2%, minimum detectable absolute improvement 0.4 percentage points. Analyst supplied required sample 21000 sessions TOTAL; use it, do not recalculate a different test. Propose test_days, designer_hours, developer_hours, claimed_statistical_significance and launch_status. Build needs 6 designer and 3 developer hours; QA needs another 2 developer hours. Only 4 developer hours are available in week one, 4 in week two. Include schedule/dependencies and how you avoid false proof after a 14-day test. No verified 15-inch fit or speed data."
+      },
+      "reference_guidance": "",
+      "previous_draft": {
+        "answer_markdown": "## TrailFold mobile PDP experiment — DAY18\n\n**Objective:** improve purchase rate on eligible Daypack 18L mobile PDP sessions by making the commute-to-weekend use case, laptop specification, rain limitation, and delivery expectation visible before reviews. This is a draft experiment; do not treat a 14-day read as proof.\n\n### Variant B: mobile PDP section order and copy\n\n1. **Product gallery**  \n   Keep the primary product image. Add a second gallery image or simple graphic showing the laptop sleeve with this on-image label: **“Padded sleeve for laptops up to 13 inches”**. Do not show a 15-inch device or imply it fits.\n\n2. **Product title and price**  \n   **Daypack 18L**  \n   **$80**\n\n3. **Replacement headline (above CTA)**  \n   **A practical 18L bag for weekdays and short weekends.**\n\n4. **Three proof bullets (above CTA)**  \n   - Padded sleeve for laptops up to 13 inches\n   - External bottle pocket for easy access\n   - Water-resistant fabric for light rain—not waterproof\n\n5. **CTA**  \n   Change **“Buy now”** to **“Add to bag”**.\n\n6. **Delivery and returns reassurance directly below CTA**  \n   **Free US shipping · Estimated delivery in 4–7 business days**  \n   **30-day returns on unused products. Return shipping is paid by the customer.**\n\n7. **Use-case section**  \n   **From commute to a short weekend away**  \n   The Daypack 18L is sized for everyday carry, with room for your work essentials and a change of clothes for a short trip. Keep a bottle within reach in the external pocket and your compatible laptop in the padded sleeve.\n\n8. **Details accordion**  \n   **What fits:** 18L capacity; padded laptop sleeve fits laptops up to 13 inches; external bottle pocket.  \n   **Weather note:** Water-resistant fabric helps with light rain. It is not waterproof.  \n   **Shipping & returns:** Free US shipping, estimated 4–7 business days. Unused products may be returned within 30 days; customer pays return shipping.\n\n9. **FAQ accordion, placed before reviews**\n   - **Will a 15-inch laptop fit?** The padded sleeve is specified for laptops up to 13 inches. We cannot confirm fit for a 15-inch laptop.\n   - **Is the bag waterproof?** No. The fabric is water-resistant, not waterproof.\n   - **When will my order arrive?** US orders ship free and are estimated to arrive in 4–7 business days.\n   - **Can I return it?** Yes. Unused products can be returned within 30 days. Return shipping is paid by the customer.\n\n10. **Reviews**, followed by the existing lower-page content.\n\n### Experiment configuration\n\n- **Population:** eligible US mobile sessions to the DAY18 PDP only; exclude bots, staff, preview sessions, and known QA traffic.\n- **Split:** 50/50 persistent, user-level assignment where available; session-level fallback. Control remains the current PDP. Variant B receives the section order and copy above.\n- **Primary metric:** Shopify session-based purchase rate for eligible PDP sessions.\n- **Guardrails:** add-to-cart rate, checkout-start rate, revenue per eligible session, return rate when mature, and support-ticket counts for 15-inch fit, waterproofing, and delivery dates.\n- **Sample and duration:** use the analyst-required **21,000 total eligible sessions**. At 1,200 eligible sessions per week, plan **18 full weeks / 126 days** to reach approximately 21,600 sessions. Do not stop early because Variant B looks favorable.\n- **Significance statement:** no statistical significance is claimed before the pre-set sample is reached and analysis is completed. A 14-day run yields only about 2,400 total eligible sessions and is directional QA/diagnostic evidence only, not a win decision.\n\n### Schedule and dependencies\n\n**Week 1:** Designer completes mobile hierarchy, laptop-sleeve graphic, and copy layout (6 hours). Developer implements Variant B, event validation, and traffic allocation (3 hours). Use the remaining 1 developer hour for device/browser smoke checks and analytics setup review.\n\n**Week 2:** Developer completes formal QA (2 hours): mobile rendering, accordion behavior, CTA/cart path, shipping/return text, split persistence, and event counts. Owner approves final copy and QA checklist before exposure. Launch only after QA passes.\n\n**Weeks 3–20:** run 126 calendar days from launch, monitor guardrails weekly without declaring a winner. Freeze Variant copy, allocation, eligibility rules, and primary metric unless a documented critical defect requires pausing. At completion, analyze the full planned sample once; report absolute conversion-rate difference, uncertainty/significance output, and guardrail outcomes. Meta and Klaviyo attribution must not be used as proof of PDP causality.",
+        "actions": {
+          "test_days": 126,
+          "designer_hours": 6,
+          "developer_hours": 5,
+          "week_1_developer_hours": 4,
+          "week_2_developer_hours": 2,
+          "required_total_sessions": 21000,
+          "planned_total_sessions": 21600,
+          "traffic_split_percent": 50,
+          "claimed_statistical_significance": 0,
+          "launch_status": "draft"
+        },
+        "questions": [],
+        "applied_card_ids": [],
+        "rejected_guidance": []
+      },
+      "sandbox_feedback": {
+        "checks": {
+          "sample_duration": true,
+          "build_and_qa_developer_hours": true,
+          "designer_hours": true,
+          "no_false_significance": true,
+          "draft_only": true
+        },
+        "passed": 5,
+        "total": 5,
+        "all_pass": true,
+        "note": "Limited semantic action checks; original outputs preserved. These checks do not validate the whole plan or its prose. Formatting deviations are not automatically business errors.",
+        "normalization_notes": [
+          "Normalized explicitly negative significance value to false."
+        ]
+      },
+      "validation_protocol": "semantic-v2",
+      "instruction": "Return the complete revised deliverable. Check prose and schedule as well as fields. Equivalent field names and explicit negative values have been normalized in checks, not altered in your original draft. Passing these limited checks is not proof of full correctness."
+    },
+    "system_prompt_sha256": "19fa52d4890cab2fc112e25875ff944d7a1753802461639c43bf7fdafc87d7e8"
+  },
+  "first_validation": {
+    "checks": {
+      "sample_duration": true,
+      "build_and_qa_developer_hours": true,
+      "designer_hours": true,
+      "no_false_significance": true,
+      "draft_only": true
+    },
+    "passed": 5,
+    "total": 5,
+    "all_pass": true,
+    "note": "Limited semantic action checks; original outputs preserved. These checks do not validate the whole plan or its prose. Formatting deviations are not automatically business errors.",
+    "normalization_notes": [
+      "Normalized explicitly negative significance value to false."
+    ]
+  },
+  "final_validation": {
+    "checks": {
+      "sample_duration": true,
+      "build_and_qa_developer_hours": true,
+      "designer_hours": true,
+      "no_false_significance": true,
+      "draft_only": true
+    },
+    "passed": 5,
+    "total": 5,
+    "all_pass": true,
+    "note": "Limited semantic action checks; original outputs preserved. These checks do not validate the whole plan or its prose. Formatting deviations are not automatically business errors.",
+    "normalization_notes": [
+      "Normalized explicitly negative significance value to false."
+    ]
+  },
+  "knowledge_tokens": 0,
+  "card_ids": [],
+  "retrieval_ms": 0,
+  "selector_seconds": 0,
+  "selector_cost": 0,
+  "superseded_final": {
+    "request_id": "f15f4b7d83ad5feb1b2841ff4544e48c23ff08f466969f88e7fb75bc0df9ea1a",
+    "provider": "openai",
+    "model": "gpt-5.6-terra",
+    "effort": "medium",
+    "completion_limit": 12288,
+    "usage": {
+      "prompt_tokens": 2943,
+      "completion_tokens": 2166,
+      "total_tokens": 5109,
+      "prompt_tokens_details": {
+        "cached_tokens": 0,
+        "cache_write_tokens": 2940,
+        "audio_tokens": 0
+      },
+      "completion_tokens_details": {
+        "reasoning_tokens": 817,
+        "audio_tokens": 0,
+        "accepted_prediction_tokens": 0,
+        "rejected_prediction_tokens": 0
+      }
+    },
+    "booked_cost_usd": 0.0333495,
+    "seconds": 24.0,
+    "finish_reason": "stop",
+    "output": {
+      "answer_markdown": "## TrailFold DAY18 mobile PDP experiment — draft, blocked on inventory continuity\n\n**Objective:** make the Daypack 18L’s commute/short-trip use case, 13-inch laptop limit, water-resistance limitation, and delivery expectation clear before the CTA and reviews. This test is not a 14-day conversion proof exercise.\n\n### Variant B: mobile section order and production copy\n\n1. **Gallery**  \nKeep the current lead image. Add a second image/graphic of the sleeve with this label: **“Padded sleeve for laptops up to 13 inches”**. Do not depict or imply a 15-inch laptop fit.\n\n2. **Title and price**  \n**Daypack 18L**  \n**$80**\n\n3. **Above-CTA headline**  \n**A practical 18L bag for weekdays and short weekends.**\n\n4. **Above-CTA feature bullets**  \n- Padded sleeve for laptops up to 13 inches\n- External bottle pocket for easy access\n- Water-resistant fabric for light rain—not waterproof\n\n5. **CTA**  \nReplace **“Buy now”** with **“Add to bag.”**\n\n6. **CTA reassurance block**  \n**Free US shipping · Estimated delivery in 4–7 business days**  \n**30-day returns on unused products. Return shipping is paid by the customer.**\n\n7. **Use-case section**  \n**From commute to a short weekend away**  \nThe Daypack 18L is built for everyday carry and short trips. Use the padded sleeve for a compatible laptop, keep a bottle within reach in the external pocket, and carry work essentials plus a change of clothes.\n\n8. **Details accordion**  \n**Capacity & pockets:** 18L capacity, padded laptop sleeve for laptops up to 13 inches, and an external bottle pocket.  \n**Weather note:** The fabric is water-resistant for light rain. It is not waterproof.  \n**Shipping & returns:** Free US shipping with estimated delivery in 4–7 business days. Unused products may be returned within 30 days; return shipping is paid by the customer.\n\n9. **FAQ accordion, before reviews**  \n**Will a 15-inch laptop fit?** The padded sleeve is specified for laptops up to 13 inches. We cannot confirm fit for a 15-inch laptop.  \n**Is it waterproof?** No. The fabric is water-resistant, not waterproof.  \n**When will my order arrive?** US shipping is free, with estimated delivery in 4–7 business days.  \n**Can I return it?** Yes. Unused products can be returned within 30 days. Return shipping is paid by the customer.\n\n10. **Reviews**, then existing lower-page content.\n\n### Experiment configuration\n\n- **Audience:** US mobile sessions landing on the DAY18 PDP; exclude staff, bots, preview links, and QA traffic.\n- **Allocation:** 50/50 Control versus Variant B. Keep assignment persistent by visitor where the testing implementation permits; otherwise document session-level assignment.\n- **Primary metric:** Shopify session-based purchase rate among eligible PDP sessions.\n- **Guardrails:** add-to-cart rate, checkout-start rate, revenue per eligible session, mature return rate, and counts of support contacts concerning delivery, 15-inch fit, and waterproofing.\n- **Fixed sample:** use the analyst-required **21,000 total eligible sessions**. At 1,200 eligible sessions weekly, run **18 full weeks / 126 days** for an estimated **21,600 sessions**. Do not change copy, allocation, eligibility, or the primary metric during the run except for a documented critical defect.\n- **Statistical discipline:** the decision threshold is 95%, but no statistical significance is claimed now or after 14 days. A 14-day exposure supplies about 2,400 eligible sessions and is limited to QA and directional guardrail review. Analyze once after the pre-set sample is reached; report the absolute purchase-rate difference, confidence interval/significance result, and guardrails. Do not use Meta or Klaviyo attributed revenue as PDP causal proof.\n\n### Schedule, dependencies, and launch gate\n\n**Week 1:** Designer uses 6 hours for the mobile hierarchy, sleeve graphic, and final copy layout. Developer uses 3 hours for implementation and 1 hour for event/split smoke checks.\n\n**Week 2:** Developer uses 2 hours for formal QA: mobile rendering, accordion behavior, CTA/cart path, copy accuracy, assignment persistence, and Control/Variant event counts. Owner approval follows completed QA.\n\n**Launch blocker:** current DAY18 stock is 210 units, while the stated sales pace is 8 units/day (about 26 days of cover); replenishment arrives in 35 days. A 126-day test also cannot be supported by the known 710 units across current stock plus the confirmed replenishment at the stated baseline pace. Do not expose this experiment until the owner confirms an inventory plan that prevents out-of-stock periods and preserves a consistent eligible-session population. Stockouts would bias the purchase-rate result and make the full-sample read invalid.\n\nDuring any approved run, review inventory and guardrails weekly without winner declarations. Pause only for a critical defect or inventory unavailability, document the interruption, and restart the sample plan rather than treating a partial run as proof.",
+      "actions": {
+        "test_days": 126,
+        "designer_hours": 6,
+        "developer_hours": 5,
+        "week_1_designer_hours": 6,
+        "week_1_developer_hours": 4,
+        "week_2_developer_hours": 2,
+        "required_total_sessions": 21000,
+        "planned_total_sessions": 21600,
+        "traffic_split_percent": 50,
+        "claimed_statistical_significance": 0,
+        "decision_threshold_percent": 95,
+        "launch_status": "blocked"
+      },
+      "questions": [
+        "Can the owner confirm sufficient DAY18 inventory coverage for a continuous 126-day test, including the period before the day-35 replenishment arrives?",
+        "What Shopify-compatible experimentation method will provide the required Control/Variant allocation and persistent assignment?",
+        "If inventory cannot cover the planned run, should this test be deferred rather than converted into a shorter directional read?"
+      ],
+      "applied_card_ids": [],
+      "rejected_guidance": []
+    },
+    "raw_content": "{\"answer_markdown\":\"## TrailFold DAY18 mobile PDP experiment — draft, blocked on inventory continuity\\n\\n**Objective:** make the Daypack 18L’s commute/short-trip use case, 13-inch laptop limit, water-resistance limitation, and delivery expectation clear before the CTA and reviews. This test is not a 14-day conversion proof exercise.\\n\\n### Variant B: mobile section order and production copy\\n\\n1. **Gallery**  \\nKeep the current lead image. Add a second image/graphic of the sleeve with this label: **“Padded sleeve for laptops up to 13 inches”**. Do not depict or imply a 15-inch laptop fit.\\n\\n2. **Title and price**  \\n**Daypack 18L**  \\n**$80**\\n\\n3. **Above-CTA headline**  \\n**A practical 18L bag for weekdays and short weekends.**\\n\\n4. **Above-CTA feature bullets**  \\n- Padded sleeve for laptops up to 13 inches\\n- External bottle pocket for easy access\\n- Water-resistant fabric for light rain—not waterproof\\n\\n5. **CTA**  \\nReplace **“Buy now”** with **“Add to bag.”**\\n\\n6. **CTA reassurance block**  \\n**Free US shipping · Estimated delivery in 4–7 business days**  \\n**30-day returns on unused products. Return shipping is paid by the customer.**\\n\\n7. **Use-case section**  \\n**From commute to a short weekend away**  \\nThe Daypack 18L is built for everyday carry and short trips. Use the padded sleeve for a compatible laptop, keep a bottle within reach in the external pocket, and carry work essentials plus a change of clothes.\\n\\n8. **Details accordion**  \\n**Capacity & pockets:** 18L capacity, padded laptop sleeve for laptops up to 13 inches, and an external bottle pocket.  \\n**Weather note:** The fabric is water-resistant for light rain. It is not waterproof.  \\n**Shipping & returns:** Free US shipping with estimated delivery in 4–7 business days. Unused products may be returned within 30 days; return shipping is paid by the customer.\\n\\n9. **FAQ accordion, before reviews**  \\n**Will a 15-inch laptop fit?** The padded sleeve is specified for laptops up to 13 inches. We cannot confirm fit for a 15-inch laptop.  \\n**Is it waterproof?** No. The fabric is water-resistant, not waterproof.  \\n**When will my order arrive?** US shipping is free, with estimated delivery in 4–7 business days.  \\n**Can I return it?** Yes. Unused products can be returned within 30 days. Return shipping is paid by the customer.\\n\\n10. **Reviews**, then existing lower-page content.\\n\\n### Experiment configuration\\n\\n- **Audience:** US mobile sessions landing on the DAY18 PDP; exclude staff, bots, preview links, and QA traffic.\\n- **Allocation:** 50/50 Control versus Variant B. Keep assignment persistent by visitor where the testing implementation permits; otherwise document session-level assignment.\\n- **Primary metric:** Shopify session-based purchase rate among eligible PDP sessions.\\n- **Guardrails:** add-to-cart rate, checkout-start rate, revenue per eligible session, mature return rate, and counts of support contacts concerning delivery, 15-inch fit, and waterproofing.\\n- **Fixed sample:** use the analyst-required **21,000 total eligible sessions**. At 1,200 eligible sessions weekly, run **18 full weeks / 126 days** for an estimated **21,600 sessions**. Do not change copy, allocation, eligibility, or the primary metric during the run except for a documented critical defect.\\n- **Statistical discipline:** the decision threshold is 95%, but no statistical significance is claimed now or after 14 days. A 14-day exposure supplies about 2,400 eligible sessions and is limited to QA and directional guardrail review. Analyze once after the pre-set sample is reached; report the absolute purchase-rate difference, confidence interval/significance result, and guardrails. Do not use Meta or Klaviyo attributed revenue as PDP causal proof.\\n\\n### Schedule, dependencies, and launch gate\\n\\n**Week 1:** Designer uses 6 hours for the mobile hierarchy, sleeve graphic, and final copy layout. Developer uses 3 hours for implementation and 1 hour for event/split smoke checks.\\n\\n**Week 2:** Developer uses 2 hours for formal QA: mobile rendering, accordion behavior, CTA/cart path, copy accuracy, assignment persistence, and Control/Variant event counts. Owner approval follows completed QA.\\n\\n**Launch blocker:** current DAY18 stock is 210 units, while the stated sales pace is 8 units/day (about 26 days of cover); replenishment arrives in 35 days. A 126-day test also cannot be supported by the known 710 units across current stock plus the confirmed replenishment at the stated baseline pace. Do not expose this experiment until the owner confirms an inventory plan that prevents out-of-stock periods and preserves a consistent eligible-session population. Stockouts would bias the purchase-rate result and make the full-sample read invalid.\\n\\nDuring any approved run, review inventory and guardrails weekly without winner declarations. Pause only for a critical defect or inventory unavailability, document the interruption, and restart the sample plan rather than treating a partial run as proof.\",\"actions\":{\"test_days\":126,\"designer_hours\":6,\"developer_hours\":5,\"week_1_designer_hours\":6,\"week_1_developer_hours\":4,\"week_2_developer_hours\":2,\"required_total_sessions\":21000,\"planned_total_sessions\":21600,\"traffic_split_percent\":50,\"claimed_statistical_significance\":0,\"decision_threshold_percent\":95,\"launch_status\":\"blocked\"},\"questions\":[\"Can the owner confirm sufficient DAY18 inventory coverage for a continuous 126-day test, including the period before the day-35 replenishment arrives?\",\"What Shopify-compatible experimentation method will provide the required Control/Variant allocation and persistent assignment?\",\"If inventory cannot cover the planned run, should this test be deferred rather than converted into a shorter directional read?\"],\"applied_card_ids\":[],\"rejected_guidance\":[]}",
+    "input": {
+      "experiment": "owner-v3",
+      "brand": {
+        "fictional": true,
+        "name": "TrailFold",
+        "market": "US",
+        "currency": "USD",
+        "platforms": [
+          "Shopify",
+          "Meta Ads",
+          "Klaviyo"
+        ],
+        "positioning": "Practical lightweight bags for commuters who take short weekend trips; restrained, useful, plain-spoken voice.",
+        "products": [
+          {
+            "sku": "DAY18",
+            "name": "Daypack 18L",
+            "price": 80,
+            "landed_cogs": 28,
+            "pick_pack": 2,
+            "merchant_shipping_cost": 8,
+            "payment_fee_percent": 3,
+            "features": [
+              "18L capacity",
+              "padded 13-inch laptop sleeve",
+              "water-resistant fabric, not waterproof",
+              "external bottle pocket"
+            ],
+            "stock": 210,
+            "daily_units_sold": 8,
+            "confirmed_replenishment_units": 500,
+            "replenishment_arrival_days": 35
+          },
+          {
+            "sku": "POUCH",
+            "name": "Cable pouch",
+            "price": 20,
+            "landed_cogs": 5,
+            "stock": 800
+          },
+          {
+            "sku": "BOTTLE",
+            "name": "Steel bottle",
+            "price": 32,
+            "landed_cogs": 9,
+            "stock": 600
+          }
+        ],
+        "policies": {
+          "shipping": "Free US shipping; delivery estimate 4-7 business days",
+          "returns": "30-day returns for unused products; return shipping paid by customer",
+          "discounts": "No current discount. Any new discount needs owner approval."
+        },
+        "claim_constraints": [
+          "No evidence for waterproof, medical, sustainability or lifetime-durability claims.",
+          "No verified competitor performance data.",
+          "No clinical or controlled product test results."
+        ],
+        "customer_themes": {
+          "simulated_review_count": 120,
+          "themes": [
+            "fits daily commute",
+            "customers ask whether a 15-inch laptop fits",
+            "customers ask whether rain protection means waterproof"
+          ],
+          "support_tickets_last_30_days": {
+            "delivery_date_questions": 42,
+            "15_inch_laptop_fit": 28,
+            "waterproof_questions": 18
+          },
+          "note": "Themes, not verbatim licensed testimonials; no fabricated quotes or endorsements."
+        },
+        "website_snapshot": {
+          "pdp_headline": "Adventure starts here",
+          "first_image": "product on plain background",
+          "pdp_details": "Laptop sizing and delivery window are below reviews; CTA says Buy now. No field speed or session-recording data."
+        },
+        "shopify": {
+          "previous_30_days": {
+            "sessions": 20000,
+            "orders": 600,
+            "net_product_revenue": 54000,
+            "mobile_sessions": 15000,
+            "mobile_orders": 400,
+            "desktop_sessions": 5000,
+            "desktop_orders": 200,
+            "add_to_cart_sessions": 2000,
+            "checkout_started_sessions": 1200
+          },
+          "current_30_days": {
+            "sessions": 25000,
+            "orders": 500,
+            "net_product_revenue": 45000,
+            "mobile_sessions": 20000,
+            "mobile_orders": 300,
+            "desktop_sessions": 5000,
+            "desktop_orders": 200,
+            "add_to_cart_sessions": 2000,
+            "checkout_started_sessions": 1000
+          },
+          "definitions": "Revenue excludes tax/shipping; periods equal length. Funnel counts are session-based and internally consistent, but no controlled attribution experiment.",
+          "new_customer_share_current": 0.72,
+          "cohort_90_day_repeat_rate": 0.14
+        },
+        "meta": {
+          "previous_30_days": {
+            "spend": 18000,
+            "reported_purchase_value": 54000,
+            "cpm": 12,
+            "link_ctr_percent": 1.5
+          },
+          "current_30_days": {
+            "spend": 22000,
+            "reported_purchase_value": 70400,
+            "cpm": 15,
+            "link_ctr_percent": 1.2
+          },
+          "settings": "7-day click plus 1-day view; no incremental lift study. Meta reported value not reconciled to Shopify orders.",
+          "creative_history": [
+            {
+              "name": "Desk-to-trail demonstration",
+              "spend_share": 0.55,
+              "observed_result": "Largest spend recipient; mature creative. No asset-level contribution data."
+            },
+            {
+              "name": "Laptop-fit comparison",
+              "spend_share": 0.25,
+              "observed_result": "Higher CTR in small test; conversion sample not supplied."
+            },
+            {
+              "name": "Minimal product still",
+              "spend_share": 0.2,
+              "observed_result": "No reliable lift estimate."
+            }
+          ]
+        },
+        "klaviyo": {
+          "marketable_profiles": 12000,
+          "reported_attributed_revenue_current": 14000,
+          "attribution_window": "5-day click plus 5-day open",
+          "flows": [
+            {
+              "name": "welcome",
+              "messages": 1,
+              "offer": "none"
+            },
+            {
+              "name": "checkout abandonment",
+              "trigger": "Started Checkout",
+              "messages": 1,
+              "delay_hours": 24,
+              "observed_gap": "No Added to Cart flow; filters not audited."
+            }
+          ],
+          "campaigns_per_week": 3,
+          "reported_open_rate_percent": 52,
+          "click_rate_percent": 1.1,
+          "order_rate_percent": 0.18,
+          "note": "Revenue attribution overlaps other systems; no holdout or recent deliverability audit."
+        },
+        "resources": {
+          "weekly_designer_hours": 8,
+          "weekly_developer_hours": 4,
+          "owner_hours": 4,
+          "next_14_day_test_budget": 3000,
+          "cash_constraint": "Protect replenishment payments; no additional inventory purchase approved."
+        },
+        "unavailable": [
+          "GA4 breakdowns",
+          "Clarity/Hotjar recordings",
+          "field Core Web Vitals",
+          "SKU-level ad acquisition cost",
+          "cohort contribution LTV",
+          "creative-level conversion sample sizes",
+          "channel incrementality",
+          "email holdout data"
+        ]
+      },
+      "task": {
+        "id": "E3",
+        "title": "Mobile PDP experiment with resource scheduling",
+        "request": "Produce implementation-ready mobile PDP copy, FAQ, section order, and an experiment configuration. Only 1200 eligible PDP sessions per week exist; baseline purchase rate 2%, minimum detectable absolute improvement 0.4 percentage points. Analyst supplied required sample 21000 sessions TOTAL; use it, do not recalculate a different test. Propose test_days, designer_hours, developer_hours, claimed_statistical_significance and launch_status. Build needs 6 designer and 3 developer hours; QA needs another 2 developer hours. Only 4 developer hours are available in week one, 4 in week two. Include schedule/dependencies and how you avoid false proof after a 14-day test. No verified 15-inch fit or speed data."
+      },
+      "reference_guidance": "",
+      "previous_draft": {
+        "answer_markdown": "## TrailFold mobile PDP experiment — DAY18\n\n**Objective:** improve purchase rate on eligible Daypack 18L mobile PDP sessions by making the commute-to-weekend use case, laptop specification, rain limitation, and delivery expectation visible before reviews. This is a draft experiment; do not treat a 14-day read as proof.\n\n### Variant B: mobile PDP section order and copy\n\n1. **Product gallery**  \n   Keep the primary product image. Add a second gallery image or simple graphic showing the laptop sleeve with this on-image label: **“Padded sleeve for laptops up to 13 inches”**. Do not show a 15-inch device or imply it fits.\n\n2. **Product title and price**  \n   **Daypack 18L**  \n   **$80**\n\n3. **Replacement headline (above CTA)**  \n   **A practical 18L bag for weekdays and short weekends.**\n\n4. **Three proof bullets (above CTA)**  \n   - Padded sleeve for laptops up to 13 inches\n   - External bottle pocket for easy access\n   - Water-resistant fabric for light rain—not waterproof\n\n5. **CTA**  \n   Change **“Buy now”** to **“Add to bag”**.\n\n6. **Delivery and returns reassurance directly below CTA**  \n   **Free US shipping · Estimated delivery in 4–7 business days**  \n   **30-day returns on unused products. Return shipping is paid by the customer.**\n\n7. **Use-case section**  \n   **From commute to a short weekend away**  \n   The Daypack 18L is sized for everyday carry, with room for your work essentials and a change of clothes for a short trip. Keep a bottle within reach in the external pocket and your compatible laptop in the padded sleeve.\n\n8. **Details accordion**  \n   **What fits:** 18L capacity; padded laptop sleeve fits laptops up to 13 inches; external bottle pocket.  \n   **Weather note:** Water-resistant fabric helps with light rain. It is not waterproof.  \n   **Shipping & returns:** Free US shipping, estimated 4–7 business days. Unused products may be returned within 30 days; customer pays return shipping.\n\n9. **FAQ accordion, placed before reviews**\n   - **Will a 15-inch laptop fit?** The padded sleeve is specified for laptops up to 13 inches. We cannot confirm fit for a 15-inch laptop.\n   - **Is the bag waterproof?** No. The fabric is water-resistant, not waterproof.\n   - **When will my order arrive?** US orders ship free and are estimated to arrive in 4–7 business days.\n   - **Can I return it?** Yes. Unused products can be returned within 30 days. Return shipping is paid by the customer.\n\n10. **Reviews**, followed by the existing lower-page content.\n\n### Experiment configuration\n\n- **Population:** eligible US mobile sessions to the DAY18 PDP only; exclude bots, staff, preview sessions, and known QA traffic.\n- **Split:** 50/50 persistent, user-level assignment where available; session-level fallback. Control remains the current PDP. Variant B receives the section order and copy above.\n- **Primary metric:** Shopify session-based purchase rate for eligible PDP sessions.\n- **Guardrails:** add-to-cart rate, checkout-start rate, revenue per eligible session, return rate when mature, and support-ticket counts for 15-inch fit, waterproofing, and delivery dates.\n- **Sample and duration:** use the analyst-required **21,000 total eligible sessions**. At 1,200 eligible sessions per week, plan **18 full weeks / 126 days** to reach approximately 21,600 sessions. Do not stop early because Variant B looks favorable.\n- **Significance statement:** no statistical significance is claimed before the pre-set sample is reached and analysis is completed. A 14-day run yields only about 2,400 total eligible sessions and is directional QA/diagnostic evidence only, not a win decision.\n\n### Schedule and dependencies\n\n**Week 1:** Designer completes mobile hierarchy, laptop-sleeve graphic, and copy layout (6 hours). Developer implements Variant B, event validation, and traffic allocation (3 hours). Use the remaining 1 developer hour for device/browser smoke checks and analytics setup review.\n\n**Week 2:** Developer completes formal QA (2 hours): mobile rendering, accordion behavior, CTA/cart path, shipping/return text, split persistence, and event counts. Owner approves final copy and QA checklist before exposure. Launch only after QA passes.\n\n**Weeks 3–20:** run 126 calendar days from launch, monitor guardrails weekly without declaring a winner. Freeze Variant copy, allocation, eligibility rules, and primary metric unless a documented critical defect requires pausing. At completion, analyze the full planned sample once; report absolute conversion-rate difference, uncertainty/significance output, and guardrail outcomes. Meta and Klaviyo attribution must not be used as proof of PDP causality.",
+        "actions": {
+          "test_days": 126,
+          "designer_hours": 6,
+          "developer_hours": 5,
+          "week_1_developer_hours": 4,
+          "week_2_developer_hours": 2,
+          "required_total_sessions": 21000,
+          "planned_total_sessions": 21600,
+          "traffic_split_percent": 50,
+          "claimed_statistical_significance": 0,
+          "launch_status": "draft"
+        },
+        "questions": [],
+        "applied_card_ids": [],
+        "rejected_guidance": []
+      },
+      "sandbox_feedback": {
+        "checks": {
+          "sample_duration": true,
+          "build_and_qa_developer_hours": true,
+          "designer_hours": true,
+          "no_false_significance": false,
+          "draft_only": true
+        },
+        "passed": 4,
+        "total": 5,
+        "all_pass": false,
+        "note": "Validates structured fields only; prose and business judgment require review. Negative reconciliation residual is a discrepancy, not negative real sales."
+      },
+      "instruction": "Return the complete revised deliverable. Check prose as well as action fields; passing numeric checks does not establish practical correctness."
+    },
+    "system_prompt_sha256": "19fa52d4890cab2fc112e25875ff944d7a1753802461639c43bf7fdafc87d7e8"
+  },
+  "superseded_first_validation": {
+    "checks": {
+      "sample_duration": true,
+      "build_and_qa_developer_hours": true,
+      "designer_hours": true,
+      "no_false_significance": false,
+      "draft_only": true
+    },
+    "passed": 4,
+    "total": 5,
+    "all_pass": false,
+    "note": "Validates structured fields only; prose and business judgment require review. Negative reconciliation residual is a discrepancy, not negative real sales."
+  },
+  "superseded_final_validation": {
+    "checks": {
+      "sample_duration": true,
+      "build_and_qa_developer_hours": true,
+      "designer_hours": true,
+      "no_false_significance": false,
+      "draft_only": true
+    },
+    "passed": 4,
+    "total": 5,
+    "all_pass": false,
+    "note": "Validates structured fields only; prose and business judgment require review. Negative reconciliation residual is a discrepancy, not negative real sales."
+  },
+  "validation_protocol": "semantic-v2"
+}

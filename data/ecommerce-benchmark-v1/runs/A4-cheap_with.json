@@ -1,0 +1,100 @@
+{
+  "task_id": "A4",
+  "arm": "cheap_with",
+  "requested_model": "deepseek-flash",
+  "returned_model": "deepseek-flash",
+  "effort": "high",
+  "request_id": "cd982daf3d574b119d632e6a750fea0e25c5ce0d374b3c3d9c82e706ee9c9063",
+  "status": "complete",
+  "output": {
+    "answer_markdown": "# TrailFold 14-Day Experiment Plan (Within $3,000 and Team Hours)\n\n## Constraint arithmetic\n- Team hours over 14 days: Designer 8/wk x2 = 16h; Developer 4/wk x2 = 8h; Owner 4/wk x2 = 8h.\n- Budget allocation: Meta creative test $2,200; remote shopper research incentives $500; contingency $300. Total = $3,000.\n- Meta test spend math: $2,200 / $15 CPM = ~146,667 impressions. At current 1.2% link CTR = ~1,760 clicks. At current 2.0% site conversion = ~35 orders. CPA = $2,200 / 35 = ~$62.50. Current blended Meta spend per Shopify order = $22,000 / 500 = $44.00. This test carries a learning premium; it is not proof of significance.\n- PDP ATC sample: current 14-day sessions ~25,000 / 30 x 14 = 11,667. 50/50 arms = ~5,833 sessions each. Baseline ATC = 2,000 / 25,000 = 8.0%. Rough MDE for ATC is sqrt(16 x 0.08 x 0.92 / 5,833) = ~1.4pp absolute, ~18% relative. Purchase CVR baseline = 2.0%; rough MDE is ~0.73pp absolute, ~37% relative. So ATC can be the primary faster signal; purchase CVR and margin stay guardrails.\n- Funnel evidence: CVR fell 3.0% to 2.0%; mobile CVR fell 2.67% to 1.5%; ATC fell 10% to 8%; checkout starts fell 6% to 4%. Support tickets: delivery-date 42, 15-inch laptop fit 28, waterproof 18. PDP sizing and delivery are below reviews. DAY18 contribution margin = 80 - 28 - 2 - 8 - (80 x 3%) = $39.60.\n\n## Backlog\n### 1. PDP clarity block above reviews/CTA\nHypothesis: IF we place laptop-fit facts (padded 13-inch sleeve; 15-inch laptops are not fitted) and delivery window (4-7 business days) above reviews and near CTA, THEN ATC rate will increase, BECAUSE shoppers already ask these questions before purchase.\nOwner: Designer lead; Developer implements; Owner approves copy.\nCost: $0 media; 6h Designer, 4h Developer, 2h Owner.\nPrimary: ATC rate per PDP session.\nGuardrails: purchase CVR, refund/return rate, AOV, page errors. Stop if variant breaks or purchase CVR falls >20% relative for 3 consecutive days.\nPrereq: owner/legal approval of wording: water-resistant, not waterproof; no 15-inch fit claim unless verified.\n\n### 2. Email ATC flow + checkout-abandon audit\nHypothesis: IF we add one ATC abandonment flow and audit checkout-abandon filters, THEN revenue per recipient and checkout completion improve, BECAUSE there is currently no ATC flow and checkout abandonment waits 24h.\nOwner: Owner/Klaviyo lead; Designer supplies one template.\nCost: $0 media; 3h Designer, 2h Developer, 3h Owner.\nPrimary: revenue per recipient in flow vs holdout where feasible; checkout completion as secondary.\nGuardrails: unsubscribe, spam complaints, revenue. Stop if complaints/unsubs exceed the pre-launch baseline. Prereq: deliverability and filter audit first.\nNote: current attribution is 5-day click plus 5-day open and overlaps other systems. Treat as weak evidence unless a clean holdout is possible.\n\n### 3. Meta creative test\nHypothesis: IF we run laptop-fit comparison creative against mature desk-to-trail, THEN CPA or Shopify orders improve, BECAUSE laptop-fit had higher CTR in a small test and matches a top support theme.\nOwner: Owner media; Designer assets.\nCost: $2,200 media; 5h Designer, 2h Owner.\nPrimary: Meta cost per Shopify order, reconciled to Shopify where possible; pre-register CPA ceiling.\nGuardrails: Shopify net revenue, blended CAC, AOV, refunds. Stop if $500 spent per arm with zero ATC, or CPA > $70 for 3 consecutive days, or Shopify orders fall >10% vs prior 14 days while spend holds.\nPrereq: no SKU-level ad cost and no incrementality study; read as directional only.\n\n### 4. Research synthesis\nHypothesis: IF 10 remote shopper tasks observe the PDP/checkout, THEN we will get specific friction evidence for the next backlog.\nOwner: Owner + Designer; Developer supports links.\nCost: $500 incentives; 2h Designer, 2h Developer, 1h Owner.\nPrimary: count of observed barriers; qualitative.\nGuardrails: no PII; no fabricated quotes.\n\n## Calendar\nDay 1: Owner sign-off; pull Klaviyo baseline; launch PDP test; launch ATC flow if audit clean; launch Meta test.\nDays 2-3: Monitor tracking; no winner decisions.\nDay 4: Guardrail-only check: errors, spend pace, complaints.\nDay 7: Interim read: plot daily ATC by arm; compare Meta CPA to ceiling; do not stop for a favorable primary.\nDay 10: Creative/message fatigue check; refresh only within budget.\nDay 14: Stop tests; compile causal-learning log; make go/no-go decisions.\n\n## Go/no-go\n- PDP: if ATC is directionally +10% or more with purchase CVR/refunds stable, roll out clarity block. If flat, keep as support content, not a test winner. If ATC falls, revert and re-test with research.\n- Email: if revenue per recipient improves and complaints are stable, keep ATC flow. If complaints rise, pause and audit.\n- Meta: if CPA is <= $55 and Shopify revenue holds, graduate laptop-fit creative into rotation. If CPA > $70 or no orders at $500/arm, stop and move budget to PDP/CRO. If inconclusive, do not scale.\n- Overall: no significance claim from this sample. Log all results as directional unless a valid holdout or sample-size calculation supports more. No discount, inventory purchase, or unapproved claim is included.",
+    "questions": [
+      "Can we state plainly on the PDP that the padded sleeve fits up to 13-inch laptops and that 15-inch laptops do not fit it, or is there verified fit testing for larger laptops?",
+      "What are the current Klaviyo unsubscribe, spam-complaint, and deliverability baselines before we add an ATC flow?",
+      "Is the $3,000 incremental test budget on top of existing Meta spend, or is it a total 14-day cap that must replace core spend?"
+    ],
+    "assumptions": [
+      "$3,000 is incremental test budget; core Meta spend continues unless the owner says otherwise.",
+      "Team hours are available as stated: Designer 16h, Developer 8h, Owner 8h over 14 days.",
+      "Product facts are limited to supplied features: 13-inch padded sleeve, water-resistant but not waterproof, 4-7 business day delivery.",
+      "No new discount, inventory purchase, or unapproved claim is required or approved.",
+      "Klaviyo deliverability and filter baselines can be pulled before Day 1.",
+      "No statistical significance is claimed from this plan; all reads are directional unless supported by a valid holdout or sample-size calculation."
+    ]
+  },
+  "raw_output": "{\"answer_markdown\":\"# TrailFold 14-Day Experiment Plan (Within $3,000 and Team Hours)\\n\\n## Constraint arithmetic\\n- Team hours over 14 days: Designer 8/wk x2 = 16h; Developer 4/wk x2 = 8h; Owner 4/wk x2 = 8h.\\n- Budget allocation: Meta creative test $2,200; remote shopper research incentives $500; contingency $300. Total = $3,000.\\n- Meta test spend math: $2,200 / $15 CPM = ~146,667 impressions. At current 1.2% link CTR = ~1,760 clicks. At current 2.0% site conversion = ~35 orders. CPA = $2,200 / 35 = ~$62.50. Current blended Meta spend per Shopify order = $22,000 / 500 = $44.00. This test carries a learning premium; it is not proof of significance.\\n- PDP ATC sample: current 14-day sessions ~25,000 / 30 x 14 = 11,667. 50/50 arms = ~5,833 sessions each. Baseline ATC = 2,000 / 25,000 = 8.0%. Rough MDE for ATC is sqrt(16 x 0.08 x 0.92 / 5,833) = ~1.4pp absolute, ~18% relative. Purchase CVR baseline = 2.0%; rough MDE is ~0.73pp absolute, ~37% relative. So ATC can be the primary faster signal; purchase CVR and margin stay guardrails.\\n- Funnel evidence: CVR fell 3.0% to 2.0%; mobile CVR fell 2.67% to 1.5%; ATC fell 10% to 8%; checkout starts fell 6% to 4%. Support tickets: delivery-date 42, 15-inch laptop fit 28, waterproof 18. PDP sizing and delivery are below reviews. DAY18 contribution margin = 80 - 28 - 2 - 8 - (80 x 3%) = $39.60.\\n\\n## Backlog\\n### 1. PDP clarity block above reviews/CTA\\nHypothesis: IF we place laptop-fit facts (padded 13-inch sleeve; 15-inch laptops are not fitted) and delivery window (4-7 business days) above reviews and near CTA, THEN ATC rate will increase, BECAUSE shoppers already ask these questions before purchase.\\nOwner: Designer lead; Developer implements; Owner approves copy.\\nCost: $0 media; 6h Designer, 4h Developer, 2h Owner.\\nPrimary: ATC rate per PDP session.\\nGuardrails: purchase CVR, refund/return rate, AOV, page errors. Stop if variant breaks or purchase CVR falls >20% relative for 3 consecutive days.\\nPrereq: owner/legal approval of wording: water-resistant, not waterproof; no 15-inch fit claim unless verified.\\n\\n### 2. Email ATC flow + checkout-abandon audit\\nHypothesis: IF we add one ATC abandonment flow and audit checkout-abandon filters, THEN revenue per recipient and checkout completion improve, BECAUSE there is currently no ATC flow and checkout abandonment waits 24h.\\nOwner: Owner/Klaviyo lead; Designer supplies one template.\\nCost: $0 media; 3h Designer, 2h Developer, 3h Owner.\\nPrimary: revenue per recipient in flow vs holdout where feasible; checkout completion as secondary.\\nGuardrails: unsubscribe, spam complaints, revenue. Stop if complaints/unsubs exceed the pre-launch baseline. Prereq: deliverability and filter audit first.\\nNote: current attribution is 5-day click plus 5-day open and overlaps other systems. Treat as weak evidence unless a clean holdout is possible.\\n\\n### 3. Meta creative test\\nHypothesis: IF we run laptop-fit comparison creative against mature desk-to-trail, THEN CPA or Shopify orders improve, BECAUSE laptop-fit had higher CTR in a small test and matches a top support theme.\\nOwner: Owner media; Designer assets.\\nCost: $2,200 media; 5h Designer, 2h Owner.\\nPrimary: Meta cost per Shopify order, reconciled to Shopify where possible; pre-register CPA ceiling.\\nGuardrails: Shopify net revenue, blended CAC, AOV, refunds. Stop if $500 spent per arm with zero ATC, or CPA > $70 for 3 consecutive days, or Shopify orders fall >10% vs prior 14 days while spend holds.\\nPrereq: no SKU-level ad cost and no incrementality study; read as directional only.\\n\\n### 4. Research synthesis\\nHypothesis: IF 10 remote shopper tasks observe the PDP/checkout, THEN we will get specific friction evidence for the next backlog.\\nOwner: Owner + Designer; Developer supports links.\\nCost: $500 incentives; 2h Designer, 2h Developer, 1h Owner.\\nPrimary: count of observed barriers; qualitative.\\nGuardrails: no PII; no fabricated quotes.\\n\\n## Calendar\\nDay 1: Owner sign-off; pull Klaviyo baseline; launch PDP test; launch ATC flow if audit clean; launch Meta test.\\nDays 2-3: Monitor tracking; no winner decisions.\\nDay 4: Guardrail-only check: errors, spend pace, complaints.\\nDay 7: Interim read: plot daily ATC by arm; compare Meta CPA to ceiling; do not stop for a favorable primary.\\nDay 10: Creative/message fatigue check; refresh only within budget.\\nDay 14: Stop tests; compile causal-learning log; make go/no-go decisions.\\n\\n## Go/no-go\\n- PDP: if ATC is directionally +10% or more with purchase CVR/refunds stable, roll out clarity block. If flat, keep as support content, not a test winner. If ATC falls, revert and re-test with research.\\n- Email: if revenue per recipient improves and complaints are stable, keep ATC flow. If complaints rise, pause and audit.\\n- Meta: if CPA is <= $55 and Shopify revenue holds, graduate laptop-fit creative into rotation. If CPA > $70 or no orders at $500/arm, stop and move budget to PDP/CRO. If inconclusive, do not scale.\\n- Overall: no significance claim from this sample. Log all results as directional unless a valid holdout or sample-size calculation supports more. No discount, inventory purchase, or unapproved claim is included.\",\"questions\":[\"Can we state plainly on the PDP that the padded sleeve fits up to 13-inch laptops and that 15-inch laptops do not fit it, or is there verified fit testing for larger laptops?\",\"What are the current Klaviyo unsubscribe, spam-complaint, and deliverability baselines before we add an ATC flow?\",\"Is the $3,000 incremental test budget on top of existing Meta spend, or is it a total 14-day cap that must replace core spend?\"],\"assumptions\":[\"$3,000 is incremental test budget; core Meta spend continues unless the owner says otherwise.\",\"Team hours are available as stated: Designer 16h, Developer 8h, Owner 8h over 14 days.\",\"Product facts are limited to supplied features: 13-inch padded sleeve, water-resistant but not waterproof, 4-7 business day delivery.\",\"No new discount, inventory purchase, or unapproved claim is required or approved.\",\"Klaviyo deliverability and filter baselines can be pulled before Day 1.\",\"No statistical significance is claimed from this plan; all reads are directional unless supported by a valid holdout or sample-size calculation.\"]}",
+  "usage": {
+    "prompt_tokens": 10799,
+    "completion_tokens": 10366,
+    "total_tokens": 21165,
+    "prompt_tokens_details": {
+      "cached_tokens": 10624
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 8694
+    },
+    "prompt_cache_hit_tokens": 10624,
+    "prompt_cache_miss_tokens": 175
+  },
+  "generation_seconds": 93.62,
+  "retrieval_ms": 642.09,
+  "retrieval_warm_ms": 81.65,
+  "estimated_end_to_end_seconds": 94.26209,
+  "generation_cost_upper_estimate_usd": 0.028748999999999997,
+  "finish_reason": "stop",
+  "knowledge_tokens": 8748,
+  "card_ids": [
+    "bb0e6110d983bd015c74f4ad",
+    "4a2e3d77d68e6ab798ea51e8",
+    "487c752833f1d7f6a03beb4b",
+    "71ba87612a01f55f246fcf61",
+    "1bedb6cc775355c355f71e08",
+    "6d6ffaa950ec83d56ebc5c75",
+    "a49dc2d602710cf69e5dabd2",
+    "3d3c12db2fffe8eec6070a14",
+    "1f26cd618e2d059fc9eba5a7",
+    "67f74e89d43e515491135713",
+    "9b3d44f6bf5b1ec5734ebc93",
+    "7f77b49944bcf33d26a883e0",
+    "300b03fc03541fde01ea5ed4",
+    "bc795ed5fe19a0bca719a04f",
+    "6e48c0e74fe77b590f2022ee",
+    "2b951af15841bd9ebd9449d7",
+    "abd37c0371897072a6f8ca16",
+    "aa78ae3a6fe13fde916b837c",
+    "9aef12c19ce2f7fcaed8e46a",
+    "887d2303442c1151eb493e3c",
+    "2b3205ce6a5b383230cd0f6d",
+    "6d2e6fafa7df9f658707accc",
+    "5fae1beab1baca2b9443a544",
+    "3e4696a51c71ad3677c96572",
+    "031ec7c8b2d2fa4e6f48dc53",
+    "88ceb078bd65204014dee2b2",
+    "d70f32fe72f80099071eead4",
+    "6d03d89615867cd5e4a14b3a",
+    "1c683e007b76790275ae9f51",
+    "071715bc72c9a45ad6801940",
+    "e784061fc2ce7c98329f2174",
+    "989150c99446966472653a1a"
+  ],
+  "recorded_at": "2026-09-22T19:36:58.581888+00:00",
+  "recovery_attempted": true,
+  "initial_status": "invalid-or-truncated",
+  "initial_finish_reason": "length",
+  "initial_usage": {
+    "prompt_tokens": 10799,
+    "completion_tokens": 8192,
+    "total_tokens": 18991,
+    "prompt_tokens_details": {
+      "cached_tokens": 1536
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 8192
+    },
+    "prompt_cache_hit_tokens": 1536,
+    "prompt_cache_miss_tokens": 9263
+  },
+  "final_attempt_generation_seconds": 50.81,
+  "effective_completion_limit": 32768,
+  "initial_request_id": "9c601c4c4763cea1a02eb8647dc7aa906c7eafba68b7ee10dbd5797f82ae92d6"
+}

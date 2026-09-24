@@ -1,0 +1,786 @@
+{
+  "cards": [
+    {
+      "title": "Structure a GA4 account and property for your store",
+      "summary": "Set up one GA4 account per business with a property that holds your website data, named and configured to match your store.",
+      "use_when": "You're creating GA4 for your first ecommerce store or onboarding a new store/brand into your existing Google setup.",
+      "steps": [
+        "Sign in at marketingplatform.google.com with the Google account that will own the store's analytics.",
+        "Go to Admin > Create > Account for each distinct business. Accounts organize properties; keep one account per business.",
+        "Create a property inside that account as the container where your store's data actually lives and reports render. One property can collect from a single site or from multiple sites and apps.",
+        "Name the account and property after the store/brand so future you can tell them apart in the property switcher.",
+        "Set the reporting time zone carefully: changing it later produces a gap or overlap in data. Set the currency to the primary currency you actually sell in, since GA4 auto-converts values sent in other currencies.",
+        "Choose 'Other Business Objectives' as the objective — the source recommends it because it loads the fullest set of pre-configured reports, effectively including the other four options.",
+        "Create a Web data stream for the store domain. This is the pipeline that sends data into the property."
+      ],
+      "caveats": [
+        "Changing reporting time zone later causes data gaps or overlaps — decide before you collect.",
+        "The 'Other Business Objectives' recommendation is the presenter's opinion, not a GA4 requirement.",
+        "Interface may change; verify current click paths."
+      ],
+      "tags": [
+        "measurement",
+        "ga4",
+        "analytics-setup",
+        "ecommerce-analytics",
+        "data-stream",
+        "timezone-currency"
+      ],
+      "id": "5c923d97e1f798c83a1c84ad",
+      "source_id": "1_b-LSsXC5eZ2Ul0IHuNkGn0mF7GrFwl0",
+      "source_sha256": "7aa179f413fe698aacb960eaded6eedcabc708f3ea3d17b4ad866a63151df24e",
+      "source_name": "Google Analytics Tutorial For Beginners (2026 Update).docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 0
+    },
+    {
+      "title": "Review enhanced measurement instead of accepting defaults",
+      "summary": "GA4 auto-tracks page views, scrolls, outbound clicks, site search, forms, video and file downloads — audit these against what your store actually needs.",
+      "use_when": "You're finalizing the data stream for a store and deciding which automatic events should feed your reports.",
+      "steps": [
+        "When creating the data stream, open the enhanced measurement settings gear rather than clicking through.",
+        "Confirm which events fire without code: page_views plus scrolls, outbound link clicks, site search, form interactions, embedded YouTube views, and file downloads.",
+        "Disable any event that misrepresents your store's intent. Example: if you don't want form engagement counted, switch forms off and Save.",
+        "Think about store consequences — scroll events are useful engagement signals, but a form-interaction event on every newsletter field blur may inflate engagement metrics you later compare against purchases.",
+        "After creation, note the measurement ID shown top-right of the stream: it's what routes data into your property."
+      ],
+      "caveats": [
+        "Enhanced measurement is on by default and is a good starting point but is not tailored to your store.",
+        "Standard reports can take 12–24 hours to reflect new events."
+      ],
+      "tags": [
+        "measurement",
+        "ga4",
+        "enhanced-measurement",
+        "events",
+        "data-stream",
+        "ecommerce-analytics"
+      ],
+      "id": "d5ffafc2403fffcd8029600b",
+      "source_id": "1_b-LSsXC5eZ2Ul0IHuNkGn0mF7GrFwl0",
+      "source_sha256": "7aa179f413fe698aacb960eaded6eedcabc708f3ea3d17b4ad866a63151df24e",
+      "source_name": "Google Analytics Tutorial For Beginners (2026 Update).docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 0
+    },
+    {
+      "title": "Create a thank-you-page event as a purchase-adjacent key event",
+      "summary": "Turn a confirmation/thank-you URL into a distinct key event without touching code, using GA4's Create Event.",
+      "use_when": "You want to count store conversions like completed lead forms or a thank-you page that isn't already covered by a purchase event.",
+      "steps": [
+        "Go to Admin > Events > Create Event (requires marketer, editor, or admin access).",
+        "Name the new event, e.g. generate_lead for a thank-you page.",
+        "Enable 'Mark as key event' so it counts as a conversion, and optionally set a default dollar value to represent what the action is worth.",
+        "Leave counting at 'Once per event' unless you deliberately want repeated counts.",
+        "Keep 'Create without code' selected and base it on the page_view event, then set the URL condition to match your confirmation page (e.g. URL contains 'thank-you').",
+        "Click Create. The event appears in Realtime immediately; standard reports lag 12–24 hours.",
+        "Note: enabling page_view itself as a key event would count every page view as a conversion — use the dedicated URL event instead."
+      ],
+      "caveats": [
+        "Requires at least marketer-level access; demo properties won't allow it.",
+        "Many stores should rely on the standard purchase ecommerce event instead of a thank-you page event; this is a fallback for non-purchase conversions.",
+        "Verify current GA4 UI paths."
+      ],
+      "tags": [
+        "measurement",
+        "ga4",
+        "key-events",
+        "conversion-tracking",
+        "thank-you-page",
+        "event-contracts"
+      ],
+      "id": "e2bcc61df786bea1bf677f40",
+      "source_id": "1_b-LSsXC5eZ2Ul0IHuNkGn0mF7GrFwl0",
+      "source_sha256": "7aa179f413fe698aacb960eaded6eedcabc708f3ea3d17b4ad866a63151df24e",
+      "source_name": "Google Analytics Tutorial For Beginners (2026 Update).docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 0
+    },
+    {
+      "title": "Deploy the GA4 tag via Google Tag Manager",
+      "summary": "Install GA4 on your store with a GTM Google Tag, a Constant variable for the Measurement ID, and an Initialization trigger.",
+      "use_when": "You're installing or re-installing GA4 tracking on a store site and want flexibility to add more tags later.",
+      "steps": [
+        "Get your measurement ID from Admin > Data Collection and Modification > Data Streams, then click your stream and copy the ID from the top right.",
+        "In GTM, create a new tag named something like 'Google Tag GA4 Page View' and choose 'Google Tag' as the tag type.",
+        "Create a GTM Variable named 'GA4 Measurement ID' of type Constant and paste the ID as its value so you can reuse it across tags.",
+        "Set the trigger to 'Initialization - All Pages' so it fires on every page before other tags.",
+        "Save, then use Preview with your store URL to test, confirming the tag fires in Tag Assistant.",
+        "In GA4, open DebugView to confirm events are arriving from the test session.",
+        "Submit and Publish the GTM version to route live store traffic into GA4.",
+        "The source prefers GTM over the plain Google tag because GTM can manage many tags and track other site actions, not just GA4."
+      ],
+      "caveats": [
+        "Preview/DebugView confirms implementation, not data quality — check for duplicate or missing events over the following day.",
+        "GTM interface and GA4 DebugView location may change; verify."
+      ],
+      "tags": [
+        "measurement",
+        "ga4",
+        "google-tag-manager",
+        "installation",
+        "data-stream",
+        "tracking"
+      ],
+      "id": "9f5dc9b5cd04796e7228a8c0",
+      "source_id": "1_b-LSsXC5eZ2Ul0IHuNkGn0mF7GrFwl0",
+      "source_sha256": "7aa179f413fe698aacb960eaded6eedcabc708f3ea3d17b4ad866a63151df24e",
+      "source_name": "Google Analytics Tutorial For Beginners (2026 Update).docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 0
+    },
+    {
+      "title": "Use Explore funnels for checkout drop-off analysis",
+      "summary": "Build a Funnel Exploration on begin_checkout → add_payment_info → purchase to see where shoppers abandon.",
+      "use_when": "You need to diagnose cart/checkout abandonment and pinpoint the step where shoppers drop out.",
+      "steps": [
+        "Go to Explore > blank report and set the technique to Funnel Exploration.",
+        "Click the pencil to define steps. Add 'Begin Checkout' with condition begin_checkout.",
+        "Add 'Add Payment Info' with condition add_payment_info.",
+        "Add 'Purchase' with condition purchase.",
+        "Choose between 'indirectly followed by' (users can view other pages between steps) and 'directly followed by' (excludes anyone who views another page first). The presenter leaves the default indirect unless he specifically wants to exclude off-path behavior.",
+        "Optionally set a time limit per step so slow shoppers don't count.",
+        "Apply and read the visualization: users through each step and drop-off below.",
+        "Enable Make Open Funnel to let users enter at any step, or use Trended Funnel to see the shape over the date range."
+      ],
+      "caveats": [
+        "Requires the ecommerce events to be implemented on the site — the funnel reflects the events received, not intent.",
+        "The direct/indirect choice materially changes the numbers; pick based on the question you're asking.",
+        "This source attributes the technique to GA4 Explore; the specific step band is one example, not a benchmark."
+      ],
+      "tags": [
+        "measurement",
+        "ga4",
+        "explore",
+        "funnel-analysis",
+        "checkout",
+        "drop-off",
+        "ecommerce-analytics"
+      ],
+      "id": "ac9071a3bbdd11abe6962dbb",
+      "source_id": "1_b-LSsXC5eZ2Ul0IHuNkGn0mF7GrFwl0",
+      "source_sha256": "7aa179f413fe698aacb960eaded6eedcabc708f3ea3d17b4ad866a63151df24e",
+      "source_name": "Google Analytics Tutorial For Beginners (2026 Update).docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 0
+    },
+    {
+      "title": "Filter campaign rows out of a Free Form Explore report",
+      "summary": "Use the regex filter ^\\(.*\\)$ with 'Does Not Match Regex' to strip organic, direct and not-set rows so only named campaigns remain.",
+      "use_when": "You want an exploration report that shows only traffic from named UTM campaigns, without generic default-channel rows muddying the table.",
+      "steps": [
+        "Build a Free Form report with Session Campaign as the row dimension, and metrics like Sessions, Active Users and Key Events.",
+        "Scroll to Filters in the second column and choose Session Campaign.",
+        "Pick 'Does Not Match Regex' and enter ^\\(.*\\)$ — this excludes anything that starts and ends with a parenthesis.",
+        "That removes rows like (organic), (direct) and (not set), leaving only named campaigns.",
+        "Apply the filter and verify the table now lists your campaign names."
+      ],
+      "caveats": [
+        "This is a GA4 exploration report, not a fixed report; the filter regex is specific to this report's purposes.",
+        "It excludes campaigns whose names literally contain parenthetical wrapping — unlikely but possible with odd UTM naming.",
+        "Copy the regex if it's unfamiliar; the presenter explicitly says not to memorize it."
+      ],
+      "tags": [
+        "measurement",
+        "ga4",
+        "explore",
+        "regex",
+        "filters",
+        "utm",
+        "campaign-reporting"
+      ],
+      "id": "8db1bf5fadc7055e04381185",
+      "source_id": "1_b-LSsXC5eZ2Ul0IHuNkGn0mF7GrFwl0",
+      "source_sha256": "7aa179f413fe698aacb960eaded6eedcabc708f3ea3d17b4ad866a63151df24e",
+      "source_name": "Google Analytics Tutorial For Beginners (2026 Update).docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 0
+    },
+    {
+      "title": "Choose User Acquisition vs Traffic Acquisition for the question at hand",
+      "summary": "User Acquisition attributes to the first source a user ever arrived from; Traffic Acquisition attributes to the session's most recent source.",
+      "use_when": "You're reporting on acquisition performance and need to decide whether you're evaluating first-touch brand discovery or per-session channel mix.",
+      "steps": [
+        "Open Reports > Acquisition > User Acquisition to see how people first found the store, with metrics broken down by first-user dimension.",
+        "Switch to Traffic Acquisition to see how people found the store at the start of each session, with session-based metrics.",
+        "Use the dimension dropdown to change what you're looking at (Channel Group, Medium, Source, etc.), and add a second dimension like Landing Page to see whether a specific paid page is pulling in the sessions.",
+        "Apply this when evaluating store channel decisions: first-touch is the right lens for brand and lifetime-value discussions, last-touch/session for campaign and budget performance."
+      ],
+      "caveats": [
+        "Neither report tells you incrementality — they are attribution slices, not causal measurement.",
+        "Attribution windows and model settings elsewhere in the property affect these reports.",
+        "The default channel groupings can be redefined (Admin > Channel Groups), which changes what you're comparing."
+      ],
+      "tags": [
+        "measurement",
+        "ga4",
+        "acquisition",
+        "attribution",
+        "first-touch",
+        "last-touch",
+        "channel-group"
+      ],
+      "id": "0d831192ef28a72e66bab514",
+      "source_id": "1_b-LSsXC5eZ2Ul0IHuNkGn0mF7GrFwl0",
+      "source_sha256": "7aa179f413fe698aacb960eaded6eedcabc708f3ea3d17b4ad866a63151df24e",
+      "source_name": "Google Analytics Tutorial For Beginners (2026 Update).docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 0
+    },
+    {
+      "title": "Read the Monetization reports for purchase revenue, items, and list/promotion breakdowns",
+      "summary": "Use GA4 ecommerce reports to see purchase revenue, purchasers, items bought, list membership, promotions and coupon revenue.",
+      "use_when": "You're reviewing store revenue performance in GA4 and want to break down purchases by product, list placement or promotion code.",
+      "steps": [
+        "Open Monetization > Overview: Total Revenue is the value from all events; Purchase Revenue is transaction revenue only. They match unless you've assigned dollar values to non-purchase events.",
+        "Note which metrics are user-based (purchasers, first-time purchasers) versus event-based (purchase revenue).",
+        "Check the top items card for the products selling most.",
+        "Scroll to the item list, promotion and coupon code cards to see which collections, promotions and discount codes are driving purchases — these depend on that data being sent to GA4.",
+        "Open Ecommerce Purchases for a more granular item-level table; change the dimension dropdown to slice differently.",
+        "Use the Purchase Journey and Checkout Journey reports for the funnel views, and transaction-ID reports for reconciliation with your platform."
+      ],
+      "caveats": [
+        "Coupon, promotion and list reporting only works if those parameters are implemented on your store's events.",
+        "Revenue metrics depend on correct value/currency parameters being sent, not on GA4 inferring them.",
+        "For attribution of purchased revenue across campaigns, use the Advertising reports rather than the Monetization reports."
+      ],
+      "tags": [
+        "measurement",
+        "ga4",
+        "monetization",
+        "ecommerce-analytics",
+        "purchase-revenue",
+        "coupon-codes",
+        "product-report"
+      ],
+      "id": "2fa8beb663c84c75bab7e12f",
+      "source_id": "1_b-LSsXC5eZ2Ul0IHuNkGn0mF7GrFwl0",
+      "source_sha256": "7aa179f413fe698aacb960eaded6eedcabc708f3ea3d17b4ad866a63151df24e",
+      "source_name": "Google Analytics Tutorial For Beginners (2026 Update).docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 0
+    },
+    {
+      "title": "Analyze landing page performance with the Landing Page report",
+      "summary": "See which pages are your top entry points and how many key events occur after users land on each one.",
+      "use_when": "You're deciding which entry pages to invest in, cross-promote or optimize for conversions.",
+      "steps": [
+        "Open Engagement > Landing Page to see the first page people viewed when starting a session.",
+        "Sort or scan the table to identify the top entry points to your store — these are the pages paid and organic traffic lands on.",
+        "Look at the key events column to see what happens after people land on each page, not just how many arrive.",
+        "Cross-reference with cross-promotion needs: pages with high entrances but low key events are candidates for merchandising or content changes."
+      ],
+      "caveats": [
+        "Counts key events that occur after landing, not strictly on that page — the attribution is landing-page-based.",
+        "Requires key events to be configured; otherwise this column is empty.",
+        "The report shows page paths (URLs); naming conventions in URLs affect readability."
+      ],
+      "tags": [
+        "measurement",
+        "ga4",
+        "landing-page",
+        "engagement",
+        "entry-points",
+        "merchandising"
+      ],
+      "id": "90bd1b325921bd62210e4510",
+      "source_id": "1_b-LSsXC5eZ2Ul0IHuNkGn0mF7GrFwl0",
+      "source_sha256": "7aa179f413fe698aacb960eaded6eedcabc708f3ea3d17b4ad866a63151df24e",
+      "source_name": "Google Analytics Tutorial For Beginners (2026 Update).docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 0
+    },
+    {
+      "title": "Compare Last Click and Data Driven attribution for channel decisions",
+      "summary": "The Key Event Attribution Models report shows each channel's key events and revenue under both Last Click and Data Driven models, plus the gap between them.",
+      "use_when": "You're deciding where to shift budget and need to see which channels last-click undervalues or overvalues.",
+      "steps": [
+        "Open the Key Event Attribution Models report in the Advertising section.",
+        "Read the first set of metrics under Last Click attribution and the second under Data Driven.",
+        "Look at the difference column at the right to see percentage increases and decreases per channel.",
+        "Use the gap as a signal, not a verdict — a channel that receives far more credit under Data Driven than Last Click is being undervalued by the simpler model, which matters when reallocating store acquisition budget.",
+        "Optionally open the Key Event Attribution Paths report to see the touchpoint combinations that lead to a conversion."
+      ],
+      "caveats": [
+        "These reports require key events to be configured; without them they show nothing useful.",
+        "The presenter describes the reports as helping you understand relationships — he does not claim any model is ground truth.",
+        "Attribution models are descriptive, not incremental; budget decisions based on model shifts should be complemented by holdout or incrementality testing where feasible."
+      ],
+      "tags": [
+        "measurement",
+        "ga4",
+        "attribution",
+        "last-click",
+        "data-driven",
+        "budgeting",
+        "advertising-reports"
+      ],
+      "id": "675a952696ecfb6cdb190bae",
+      "source_id": "1_b-LSsXC5eZ2Ul0IHuNkGn0mF7GrFwl0",
+      "source_sha256": "7aa179f413fe698aacb960eaded6eedcabc708f3ea3d17b4ad866a63151df24e",
+      "source_name": "Google Analytics Tutorial For Beginners (2026 Update).docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 0
+    },
+    {
+      "title": "Enable Google Signals and extend data retention",
+      "summary": "Turn on Google Signals for demographics and Google Ads audience use, and extend GA4 data retention from the 2-month default to 14 months.",
+      "use_when": "You're configuring GA4 property settings and want richer audience reporting plus longer lookback in Explore reports.",
+      "steps": [
+        "Go to Admin > Data Collection and Modification > Data Collection and enable Google Signals. Without it, age, gender and interests are missing from User Attributes reports, and audiences cannot be used in linked Google Ads accounts.",
+        "In Data Retention, change the retention period from the default 2 months to 14 months so historical data remains available in Explore reports.",
+        "In Data Filters, configure a filter to exclude internal/employee traffic via IP address so store performance isn't diluted by your own visits.",
+        "Check Consent Settings to confirm consent mode is set up if you serve EU users and want their data usable for Google Ads targeting.",
+        "Link Google Ads and Google Search Console under Product Links for additional reports and insights."
+      ],
+      "caveats": [
+        "Data retention only offers 2 or 14 months depending on the plan setting; the presenter recommends 14 but the choice is yours.",
+        "Enabling Google Signals has privacy implications for user data — check your consent obligations before turning on.",
+        "Consent mode is required for EU data to be used for remarketing; without it, audiences won't be usable for those users."
+      ],
+      "tags": [
+        "measurement",
+        "ga4",
+        "google-signals",
+        "data-retention",
+        "internal-traffic",
+        "consent",
+        "demographics"
+      ],
+      "id": "c01dc627e7b1342d4d25091c",
+      "source_id": "1_b-LSsXC5eZ2Ul0IHuNkGn0mF7GrFwl0",
+      "source_sha256": "7aa179f413fe698aacb960eaded6eedcabc708f3ea3d17b4ad866a63151df24e",
+      "source_name": "Google Analytics Tutorial For Beginners (2026 Update).docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 0
+    },
+    {
+      "title": "Build audiences in GA4 for retention and remarketing segmentation",
+      "summary": "Create custom audiences (e.g. users who haven't triggered a lead event) for reporting and for remarketing in linked Google Ads.",
+      "use_when": "You want to group users such as repeat purchasers or unconverted visitors for reporting, retargeting or lifecycle campaigns.",
+      "steps": [
+        "Go to Admin > Data Display > Audiences. Note the two predefined audiences: All Users and Purchases (the latter is empty if purchase events aren't being sent).",
+        "Click New Audience and choose Create a Custom Audience to build your own.",
+        "For an unconverted-visitor audience, name it clearly (e.g. 'Haven't Generated Lead'), start with the default Include Users When condition, then click 'Add Group to Exclude'.",
+        "Set the exclusion to your conversion event (e.g. generate_lead). Since the event was created recently, it might not be listed — search for it and choose 'Create Event' to add it as a new condition.",
+        "Save. The audience now contains users who did not trigger the event.",
+        "Use it two ways: for reporting to study how that group behaves, and as a targeting source in a linked Google Ads account for remarketing.",
+        "Remember audiences are useful even without Google Ads linkage — you can use them purely as reporting segments."
+      ],
+      "caveats": [
+        "Audiences based on events you just created may take time to populate.",
+        "Audiences must reach minimum list sizes for remarketing use in Google Ads.",
+        "The presenter notes remarketing also requires Google Signals and appropriate consent for EU users."
+      ],
+      "tags": [
+        "measurement",
+        "ga4",
+        "audiences",
+        "retention",
+        "remarketing",
+        "segmentation",
+        "google-ads"
+      ],
+      "id": "7425cd2ae91c468c9312f552",
+      "source_id": "1_b-LSsXC5eZ2Ul0IHuNkGn0mF7GrFwl0",
+      "source_sha256": "7aa179f413fe698aacb960eaded6eedcabc708f3ea3d17b4ad866a63151df24e",
+      "source_name": "Google Analytics Tutorial For Beginners (2026 Update).docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 0
+    },
+    {
+      "title": "Use GA4's realtime reports to sanity-check store launches and campaigns",
+      "summary": "Realtime Reports show pages, sources and events within seconds of arrival, useful for verifying a launch or campaign is landing correctly.",
+      "use_when": "You've just pushed a campaign email, ad or store change and want immediate confirmation that traffic is landing where you expect.",
+      "steps": [
+        "Open Reports > Realtime. The overview shows users in the last 30 minutes (and last 5 minutes).",
+        "Read the bar chart right-to-left: the rightmost bar is the current minute, each bar leftward is an earlier minute in the last 30.",
+        "Check the geography map to confirm the right regions are arriving.",
+        "Scroll to see where people found the site, whether users are matched to audiences, which pages they're viewing, and which events are being collected.",
+        "For a focused view, open Realtime Pages to see the individual pages currently being viewed.",
+        "Use this immediately after sending a campaign email to confirm click-throughs are landing on the expected pages."
+      ],
+      "caveats": [
+        "Realtime data may not persist into standard reports identically due to processing delays (standard reports typically lag 12–24 hours).",
+        "Realtime is a diagnostic, not a performance analysis tool — use Explore and Reports for deeper questions."
+      ],
+      "tags": [
+        "measurement",
+        "ga4",
+        "realtime",
+        "campaign-launch",
+        "diagnostics",
+        "traffic-verification"
+      ],
+      "id": "30843583e84dc6df1c911ece",
+      "source_id": "1_b-LSsXC5eZ2Ul0IHuNkGn0mF7GrFwl0",
+      "source_sha256": "7aa179f413fe698aacb960eaded6eedcabc708f3ea3d17b4ad866a63151df24e",
+      "source_name": "Google Analytics Tutorial For Beginners (2026 Update).docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 0
+    },
+    {
+      "title": "Use Reports for monitoring and Explore for specific store questions",
+      "summary": "GA4 Reports are for ongoing monitoring of standard patterns; Explore is for answering a single analytical question with a custom view.",
+      "use_when": "You're deciding which part of GA4 to open for a given store question — a routine check or a diagnostic analysis.",
+      "steps": [
+        "When monitoring week-to-week store performance, use Reports: Reports snapshot, Acquisition, Engagement, Monetization, User Attributes, Tech and Advertising.",
+        "When you have a specific question — 'which campaigns drove key events?', 'where in checkout do users drop off?', 'how do users' paths diverge before purchase?' — open Explore and choose the technique that matches.",
+        "Available Explore techniques include Free Form (tables/charts), Funnel Exploration (sequential steps), Path Exploration (journeys), Segment Overlap, Cohort Exploration, User Lifetime and User Exploration (own property only).",
+        "Use the compare option in reports to compare current to previous periods, and the predefined/custom date-range selector to frame the analysis.",
+        "In your own property, use Library to customize the reporting menu if you have editor or admin access."
+      ],
+      "caveats": [
+        "Explore reports require you to configure dimensions, metrics and filters yourself — they aren't pre-answered.",
+        "Some techniques (like User Exploration) are only available in your own property, not the demo property.",
+        "The presenter's framing (monitoring vs question-answering) is a mental model, not a GA4 restriction."
+      ],
+      "tags": [
+        "measurement",
+        "ga4",
+        "explore",
+        "reports",
+        "analysis-workflow",
+        "custom-reports"
+      ],
+      "id": "cadc7c2565224d585a250728",
+      "source_id": "1_b-LSsXC5eZ2Ul0IHuNkGn0mF7GrFwl0",
+      "source_sha256": "7aa179f413fe698aacb960eaded6eedcabc708f3ea3d17b4ad866a63151df24e",
+      "source_name": "Google Analytics Tutorial For Beginners (2026 Update).docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 0
+    },
+    {
+      "title": "Distinguish Key Events in GA4 from Conversions in Google Ads",
+      "summary": "Advertising reports show both: Key Events are GA4 important actions, while Conversions are Google Ads conversion actions including imported GA4 events.",
+      "use_when": "You're reviewing advertising performance and trying to reconcile numbers between GA4 and Google Ads.",
+      "steps": [
+        "In the Advertising reports, note there are two separate metrics: Key events (GA4's important actions) and Conversions (Google Ads conversion actions).",
+        "Conversions in the Advertising reports include GA4 key events that were imported into Google Ads, plus any conversion actions created directly inside Google Ads.",
+        "Open Conversion Management to see the full list of conversions configured across GA4 and linked Google Ads accounts, and compare settings between the platforms.",
+        "Use this when comparing paid channel performance in GA4 against what Google Ads optimizes on — the numbers won't necessarily match, and the difference is what's included in each definition."
+      ],
+      "caveats": [
+        "This duplication is a GA4/Google Ads convention, not an error.",
+        "If conversions in Google Ads include additional actions not present as key events in GA4, the Advertising reports will not reconcile simply.",
+        "Requires Google Ads to be linked and conversion tracking to be configured."
+      ],
+      "tags": [
+        "measurement",
+        "ga4",
+        "key-events",
+        "google-ads",
+        "conversions",
+        "attribution",
+        "advertising-reports"
+      ],
+      "id": "a8f35cf35c8e487c577a1646",
+      "source_id": "1_b-LSsXC5eZ2Ul0IHuNkGn0mF7GrFwl0",
+      "source_sha256": "7aa179f413fe698aacb960eaded6eedcabc708f3ea3d17b4ad866a63151df24e",
+      "source_name": "Google Analytics Tutorial For Beginners (2026 Update).docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 0
+    },
+    {
+      "title": "Check audience size and budget projections in the Advertising reports",
+      "summary": "Advertising Segments shows how many users are available for targeting; Budgeting tools forecast conversions and spend under different budgets.",
+      "use_when": "You're planning paid acquisition spend and verifying remarketing audiences are large enough to be usable.",
+      "steps": [
+        "Open Advertising > Advertising Segments to see the number of users available for targeting in Google Ads — use this to check whether an audience meets minimum list sizes for a remarketing campaign.",
+        "Open Advertising > Budgeting > Overview, Projection and Scenario Planner to see forecasts for paid advertising and how budget changes could affect conversions and spend.",
+        "Use these together before committing spend to a channel that depends on a segment that may be too small."
+      ],
+      "caveats": [
+        "Budgeting tools require Google Ads to be linked and may depend on sufficient historical conversion data to forecast meaningfully.",
+        "Forecasts are estimates based on historical patterns, not guarantees of performance.",
+        "Small audiences may not meet remarketing minimums; check before designing a campaign that relies on them."
+      ],
+      "tags": [
+        "measurement",
+        "ga4",
+        "budgeting",
+        "audience-size",
+        "google-ads",
+        "advertising-reports",
+        "forecasting"
+      ],
+      "id": "510ee3226e4dd69c48ac552f",
+      "source_id": "1_b-LSsXC5eZ2Ul0IHuNkGn0mF7GrFwl0",
+      "source_sha256": "7aa179f413fe698aacb960eaded6eedcabc708f3ea3d17b4ad866a63151df24e",
+      "source_name": "Google Analytics Tutorial For Beginners (2026 Update).docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 0
+    },
+    {
+      "title": "Use DebugView to test store event implementation",
+      "summary": "DebugView shows a live feed of events as they're triggered from your site, letting you verify implementation before publishing changes.",
+      "use_when": "You've added or changed event tracking on your store and need to confirm events fire correctly before relying on them.",
+      "steps": [
+        "In GTM, click Preview, enter your store URL and Connect to open Tag Assistant.",
+        "Navigate through your store and perform the actions you're tracking (add to cart, begin checkout, complete purchase).",
+        "In the Tag Assistant tab, confirm the tags you expected actually fired.",
+        "In GA4, open Admin > DebugView to see the live stream of events arriving from the test session.",
+        "Once you're satisfied, return to GTM, click Submit, name the version and Publish so live traffic collects the same events."
+      ],
+      "caveats": [
+        "DebugView tests that events arrive, not that parameters (value, item name, currency) are correct — inspect event parameters if you depend on them.",
+        "Debug sessions may appear in data if left open; standard reports can lag 12–24 hours.",
+        "GTM Preview and DebugView interfaces may change; verify."
+      ],
+      "tags": [
+        "measurement",
+        "ga4",
+        "debugview",
+        "google-tag-manager",
+        "testing",
+        "event-contracts",
+        "implementation"
+      ],
+      "id": "9bedc2d9534e52381946742c",
+      "source_id": "1_b-LSsXC5eZ2Ul0IHuNkGn0mF7GrFwl0",
+      "source_sha256": "7aa179f413fe698aacb960eaded6eedcabc708f3ea3d17b4ad866a63151df24e",
+      "source_name": "Google Analytics Tutorial For Beginners (2026 Update).docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 0
+    },
+    {
+      "title": "Register custom dimensions and metrics for store-specific reporting",
+      "summary": "Custom Definitions let you surface parameters sent with events as usable dimensions or metrics in your GA4 reports.",
+      "use_when": "You're sending store-specific event parameters (e.g. membership tier, loyalty status) and want to slice reports by them.",
+      "steps": [
+        "Go to Admin > Data Display > Custom Definitions.",
+        "Decide which parameters sent with your store's events you want to appear as dimensions or metrics.",
+        "Register each parameter as a custom dimension (text) or custom metric (number) depending on the parameter's nature.",
+        "Once registered, the custom definition becomes available in the standard Reports and Explore dimensions/metrics pickers.",
+        "Use this when the default GA4 dimensions don't capture something that matters to your store, like whether a purchase came from a loyalty member."
+      ],
+      "caveats": [
+        "Only parameters being sent with events can be registered — without the parameter, the definition will be empty.",
+        "Registration limits apply per property (verify current GA4 limits).",
+        "The presenter does not recommend creating custom definitions indiscriminately; add only what you'll report on."
+      ],
+      "tags": [
+        "measurement",
+        "ga4",
+        "custom-definitions",
+        "dimensions",
+        "metrics",
+        "event-parameters"
+      ],
+      "id": "d937030034971911938fea26",
+      "source_id": "1_b-LSsXC5eZ2Ul0IHuNkGn0mF7GrFwl0",
+      "source_sha256": "7aa179f413fe698aacb960eaded6eedcabc708f3ea3d17b4ad866a63151df24e",
+      "source_name": "Google Analytics Tutorial For Beginners (2026 Update).docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 0
+    },
+    {
+      "title": "Create and use Comparisons as segment overlays on Reports",
+      "summary": "Comparisons are segments you apply to standard reports to compare user groups side by side.",
+      "use_when": "You want to see how one store segment performs against another within the same report, e.g. mobile vs desktop conversions.",
+      "steps": [
+        "Open any standard report and use the Comparisons feature (below the report menu).",
+        "Use a pre-configured comparison or create your own.",
+        "Apply it to the report — GA4 will show the metric broken out for each comparison group.",
+        "Use this to isolate the effect of a variable (device, geography, channel) rather than switching between separate reports."
+      ],
+      "caveats": [
+        "Comparisons apply as an overlay on standard reports, not on Explore reports — for Explore you configure segments directly.",
+        "Creating a comparison does not persist as a saved view by default; recreate as needed or use Explore for reusable segmentation."
+      ],
+      "tags": [
+        "measurement",
+        "ga4",
+        "comparisons",
+        "segmentation",
+        "reports",
+        "device-performance"
+      ],
+      "id": "5e2819e7dfec196905116d48",
+      "source_id": "1_b-LSsXC5eZ2Ul0IHuNkGn0mF7GrFwl0",
+      "source_sha256": "7aa179f413fe698aacb960eaded6eedcabc708f3ea3d17b4ad866a63151df24e",
+      "source_name": "Google Analytics Tutorial For Beginners (2026 Update).docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 0
+    },
+    {
+      "title": "Use AI-driven insights and Analytics Advisor as starting points",
+      "summary": "GA4 surfaces automated insights on unusual changes and offers an AI chat interface to query the property's data.",
+      "use_when": "You've opened a store report and want a starting point for what's changed, or want a quick answer without building a report.",
+      "steps": [
+        "On Home, note automated insights that flag unusual changes or trends — these differ per property.",
+        "On reports like Events, the same style of automated insight appears at the top.",
+        "Optionally configure custom insights on metrics/conditions you care about rather than relying entirely on Google's default picks.",
+        "For ad hoc questions, use Analytics Advisor via the icon in the top-right and ask a plain-language question (e.g. 'How is the website performing year on year?').",
+        "Treat the answers as a starting point for further investigation rather than a final analysis."
+      ],
+      "caveats": [
+        "The presenter describes Analytics Advisor as a generic query interface; he does not present it as a substitute for structured reports.",
+        "Automated insights depend on the data available in the property and can miss context you'd recognize.",
+        "AI answers should be verified against the underlying reports before acting on store decisions."
+      ],
+      "tags": [
+        "measurement",
+        "ga4",
+        "insights",
+        "analytics-advisor",
+        "ai",
+        "reporting",
+        "diagnostics"
+      ],
+      "id": "a338f3ce307d89ca2f3978fa",
+      "source_id": "1_b-LSsXC5eZ2Ul0IHuNkGn0mF7GrFwl0",
+      "source_sha256": "7aa179f413fe698aacb960eaded6eedcabc708f3ea3d17b4ad866a63151df24e",
+      "source_name": "Google Analytics Tutorial For Beginners (2026 Update).docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 0
+    },
+    {
+      "title": "Check data freshness expectations before acting on GA4 numbers",
+      "summary": "Realtime reports update within seconds, but standard reports can take 12–24 hours — set expectations on when store changes will be visible.",
+      "use_when": "You've just launched a campaign or event and are checking whether GA4 reports already reflect it.",
+      "steps": [
+        "Verify immediate events in Realtime — data appears within seconds of arrival.",
+        "Do not expect standard reports (Events, Acquisition, Monetization) to update instantly; the presenter states data can take 12 to 24 hours to appear.",
+        "When validating a thank-you-page event in your own property, check Realtime today and re-check the standard events report tomorrow.",
+        "Use this cadence when making changes: it's normal for a new event to be invisible in standard reports for the rest of the day."
+      ],
+      "caveats": [
+        "12–24 hours is the source's described latency; actual latency may vary by property and volume.",
+        "Attribution and aggregation in standard reports will also affect final numbers versus realtime."
+      ],
+      "tags": [
+        "measurement",
+        "ga4",
+        "data-freshness",
+        "realtime",
+        "standard-reports",
+        "monitoring"
+      ],
+      "id": "fbe6ee425691ce363788d0d6",
+      "source_id": "1_b-LSsXC5eZ2Ul0IHuNkGn0mF7GrFwl0",
+      "source_sha256": "7aa179f413fe698aacb960eaded6eedcabc708f3ea3d17b4ad866a63151df24e",
+      "source_name": "Google Analytics Tutorial For Beginners (2026 Update).docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 0
+    },
+    {
+      "title": "Verify the Platform dimension when blending web and app data",
+      "summary": "The Platform dimension shows whether each user came from the Web or App data stream — useful when a store runs both.",
+      "use_when": "Your store has both a website and a mobile app feeding the same property and you need to separate their metrics.",
+      "steps": [
+        "In the Tech Overview report, locate the Platform dimension.",
+        "A web-only property will show 100% Web here; a web-plus-app property will show both.",
+        "Use Platform as a filter or breakdown when you report on behavior so web and app users aren't merged without you knowing.",
+        "Where relevant, add Platform as a secondary dimension in Explore reports to distinguish behavior."
+      ],
+      "caveats": [
+        "The Platform dimension only appears meaningfully when more than one data stream type is configured.",
+        "App-only reports can appear blank in a web-only property (as happened in the demo).",
+        "Verify current GA4 dimension naming; the presenter notes Platform shows data-stream type."
+      ],
+      "tags": [
+        "measurement",
+        "ga4",
+        "platform-dimension",
+        "data-stream",
+        "web-and-app",
+        "tech-reports"
+      ],
+      "id": "f2f53af859491a0ca7bd215c",
+      "source_id": "1_b-LSsXC5eZ2Ul0IHuNkGn0mF7GrFwl0",
+      "source_sha256": "7aa179f413fe698aacb960eaded6eedcabc708f3ea3d17b4ad866a63151df24e",
+      "source_name": "Google Analytics Tutorial For Beginners (2026 Update).docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 0
+    },
+    {
+      "title": "Use User Attributes reports and treat 'not set' as unknown",
+      "summary": "User Attributes and Demographic Details expose country, city, gender, interests, age and language — with 'not set' meaning the value is unknown.",
+      "use_when": "You're profiling your store's audience for merchandising, content or campaign targeting decisions.",
+      "steps": [
+        "Open Reports > User Attributes > Overview to see top-level geographic, gender, interests, age and language summaries.",
+        "Open Demographic Details to change the dimension (e.g. Country to City) and see granular breakdowns.",
+        "When you see 'not set' in a row, read it as 'unknown' — GA4 collected data about the user but can't provide the specific value.",
+        "If age, gender and interests are missing entirely, enable Google Signals in property settings; without it these fields won't populate.",
+        "Use the language dimension as device-based, not as a declared preference, when reasoning about localisation."
+      ],
+      "caveats": [
+        "Demographic data depends on Google Signals being enabled.",
+        "Language in the report reflects the device setting, not a user-declared preference.",
+        "'not set' rows are real and should not be treated as an error."
+      ],
+      "tags": [
+        "measurement",
+        "ga4",
+        "user-attributes",
+        "demographics",
+        "not-set",
+        "google-signals",
+        "audience-profiling"
+      ],
+      "id": "d54ee95e619b4d54c38fd5b2",
+      "source_id": "1_b-LSsXC5eZ2Ul0IHuNkGn0mF7GrFwl0",
+      "source_sha256": "7aa179f413fe698aacb960eaded6eedcabc708f3ea3d17b4ad866a63151df24e",
+      "source_name": "Google Analytics Tutorial For Beginners (2026 Update).docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 0
+    },
+    {
+      "title": "Forecast with Analytics Advisor only as a first-pass input",
+      "summary": "The presenter demonstrates Analytics Advisor answering year-on-year performance questions from GA4 data.",
+      "use_when": "You need a quick baseline on store performance trends without building a report, e.g. before a monthly review.",
+      "steps": [
+        "Open Analytics Advisor via the icon top-right of the GA4 interface.",
+        "Ask a natural language question about your store, e.g. how the website is performing year on year.",
+        "Analytics Advisor analyses the available data in the property and returns a summary — this can take a few moments.",
+        "Use the answer as a starting point for a proper report or Explore investigation rather than as a final answer."
+      ],
+      "caveats": [
+        "The presenter explicitly frames this as a generic query interface and does not present it as an authoritative analysis.",
+        "Accuracy depends on data available in the property and on how the question is phrased.",
+        "Do not base pricing, assortment or budget decisions on an AI summary alone — validate in reports."
+      ],
+      "tags": [
+        "measurement",
+        "ga4",
+        "analytics-advisor",
+        "ai",
+        "yoy",
+        "performance-review"
+      ],
+      "id": "57ce958e92670dec157b6281",
+      "source_id": "1_b-LSsXC5eZ2Ul0IHuNkGn0mF7GrFwl0",
+      "source_sha256": "7aa179f413fe698aacb960eaded6eedcabc708f3ea3d17b4ad866a63151df24e",
+      "source_name": "Google Analytics Tutorial For Beginners (2026 Update).docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 0
+    }
+  ],
+  "request_id": "8fa74d6b877506750aed9d744747be61ebed19bd1b2f44026227436638f098e4",
+  "ecommerce_scope_version": 1
+}

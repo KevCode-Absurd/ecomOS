@@ -1,0 +1,637 @@
+{
+  "cards": [
+    {
+      "title": "GA4 Purchase Journey Funnel Audit and Benchmarks",
+      "summary": "Use GA4's Purchase Journey report to benchmark View Product, Add to Cart, Begin Checkout and Purchase rates and find the weakest funnel stage.",
+      "use_when": "Diagnosing where an online store's funnel leaks before planning any PDP, collection page, navigation or checkout work.",
+      "steps": [
+        "In GA4 open Reports > Monetization > Purchase Journey and filter to a data window large enough to be reliable (the source uses 12 months).",
+        "Read the four step rates: View Product, Add to Cart, Begin Checkout, Purchase, and compare against the source's ecommerce benchmarks: View Product 50-70%, Add to Cart 12-20%, Begin Checkout 40-60%, Purchase 45-60%.",
+        "Treat these bands as source-specific heuristics, not universal rules, and expect them to differ by niche and traffic mix.",
+        "Identify the stage furthest below benchmark; fix the worst leak first rather than spreading effort across all stages.",
+        "Interpret a low View Product rate as a discoverability and navigation problem (weak collection structure, poor internal funneling), not a product problem.",
+        "Attribute a low Purchase rate on a hosted checkout like Shopify mainly to unexpected costs such as shipping, since the checkout UX is largely standardized.",
+        "Note that the source says View Product rate is the most commonly under-indexed stage in its brand audits, so check it first on most stores."
+      ],
+      "caveats": [
+        "The benchmark percentages are the presenter's heuristics, not calculated targets; a niche with high-intent traffic may legitimately sit above them.",
+        "GA4 step definitions depend on your event setup, so verify the report is mapping the events you expect."
+      ],
+      "tags": [
+        "landing-pages",
+        "measurement",
+        "analytics",
+        "ga4",
+        "conversion-optimization",
+        "funnel-analysis",
+        "product-page"
+      ],
+      "id": "f258739c8f9c78339edf3b49",
+      "source_id": "1uPC993KlCT_DuV5jF-dGVTvPImMz7mfh",
+      "source_sha256": "799bda78acc4bb098ca4c436615d2145c6ffc8bb12b95d8cc00e05851ae181a4",
+      "source_name": "The BEST Conversion Rate Optimization Tutorial for Ecommerce in 2025.docx",
+      "folder": "/07-LPG-landing-pages",
+      "domain": "landing-pages",
+      "section": 0
+    },
+    {
+      "title": "Path Exploration for Navigation Loop Detection",
+      "summary": "Use GA4 Path Exploration to trace how users move between homepage and collection pages and spot navigation loops that signal UX friction.",
+      "use_when": "Investigating suspected site navigation, category or collection-page friction when the funnel shows a weak View Product or Add to Cart rate.",
+      "steps": [
+        "In GA4 open Explore > Path Exploration and set a long enough date range.",
+        "Click to break nodes down by event name, then filter by Page path and screen class so each node represents a page.",
+        "Expand the homepage node and see which collection pages receive traffic; then expand those collection pages.",
+        "Look for loops such as homepage to collection back to homepage and back to collection; a return rate of roughly 15% from a collection page to the homepage is an actionable signal in the source example.",
+        "GA4 does not compute these percentages automatically; divide the returning sessions by the originating sessions and multiply by 100.",
+        "Interpret loops as evidence that navigation is unclear or that users cannot find the right products on the collection page, then plan a test on navigation, filters or category labelling."
+      ],
+      "caveats": [
+        "Percentages must be calculated manually, which is error-prone on large trees.",
+        "Path Exploration shows behaviour, not reasons; combine it with qualitative research before committing to a fix."
+      ],
+      "tags": [
+        "landing-pages",
+        "analytics",
+        "ga4",
+        "measurement",
+        "navigation",
+        "conversion-optimization",
+        "customer-research"
+      ],
+      "id": "cbe719818c7a34e52e0a74a9",
+      "source_id": "1uPC993KlCT_DuV5jF-dGVTvPImMz7mfh",
+      "source_sha256": "799bda78acc4bb098ca4c436615d2145c6ffc8bb12b95d8cc00e05851ae181a4",
+      "source_name": "The BEST Conversion Rate Optimization Tutorial for Ecommerce in 2025.docx",
+      "folder": "/07-LPG-landing-pages",
+      "domain": "landing-pages",
+      "section": 0
+    },
+    {
+      "title": "Reverse-Path Analysis Around Add to Cart",
+      "summary": "Run Path Exploration backwards from the Add to Cart event to see which pages and journeys actually produce add-to-carts, then remove steps.",
+      "use_when": "Deciding whether to add quick-add or shortcut functionality to collection pages or PDP entry points.",
+      "steps": [
+        "In GA4 Explore > Path Exploration, switch the view to endpoint mode.",
+        "Filter the endpoint by event name and select the Add to Cart event.",
+        "Filter the intermediate nodes by Page path and screen class so you see the pages users came from.",
+        "Expand the top nodes to see the dominant paths, e.g. many users adding straight from a product page versus adding after arriving from a collection page.",
+        "Where a large share of add-to-carts happen after a collection-to-product path, hypothesise a collection-page quick-add control so users skip the extra page load.",
+        "Feed the hypothesis into your A/B test backlog and validate with a controlled test rather than shipping it outright."
+      ],
+      "caveats": [
+        "Endpoint analysis describes correlation between paths and events, not causation; a path may simply be the most common route.",
+        "Low-traffic stores may not have enough sessions in the tree to draw conclusions."
+      ],
+      "tags": [
+        "landing-pages",
+        "analytics",
+        "ga4",
+        "conversion-optimization",
+        "collection-page",
+        "product-page",
+        "add-to-cart"
+      ],
+      "id": "63a914e978db429b57bff10e",
+      "source_id": "1uPC993KlCT_DuV5jF-dGVTvPImMz7mfh",
+      "source_sha256": "799bda78acc4bb098ca4c436615d2145c6ffc8bb12b95d8cc00e05851ae181a4",
+      "source_name": "The BEST Conversion Rate Optimization Tutorial for Ecommerce in 2025.docx",
+      "folder": "/07-LPG-landing-pages",
+      "domain": "landing-pages",
+      "section": 0
+    },
+    {
+      "title": "Segment Conversion Rate, AOV and RPV by Device",
+      "summary": "Use GA4 Tech Overview to spot gaps between mobile and desktop conversion rate, bounce, engagement time, AOV and revenue per visitor.",
+      "use_when": "Setting a mobile-versus-desktop optimisation priority for a store where most traffic is mobile but most revenue looks like it comes from desktop.",
+      "steps": [
+        "In GA4 open Reports > Technology > Tech Overview and set a 6-12 month window depending on data volume.",
+        "Click View device categories, then Customize report and add: user key event rate, session key event rate, bounce rate, average engagement time per session, average purchase revenue (AOV) and average purchase revenue per active user (revenue per visitor).",
+        "Filter key events or purchases so the conversion columns reflect purchase conversion.",
+        "Compare devices: the source's example site had about 80% mobile traffic but desktop revenue per visitor roughly double mobile, with higher desktop bounce rate and longer desktop sessions.",
+        "Treat a large mobile-versus-desktop gap as evidence that the desktop experience exposes something mobile users never see; form hypotheses about what that element is.",
+        "Remember a user is one unique visitor while sessions can repeat, so session conversion rate and user conversion rate differ; industry practice in the source is to look at session conversion rate first."
+      ],
+      "caveats": [
+        "Metric labels vary by GA4 configuration and may need to be mapped to your own events.",
+        "Device analysis shows the gap, not its cause; use heatmaps and recordings to find the specific element."
+      ],
+      "tags": [
+        "landing-pages",
+        "analytics",
+        "ga4",
+        "measurement",
+        "mobile-optimization",
+        "conversion-optimization",
+        "revenue-per-visitor"
+      ],
+      "id": "50b30a244eb6d2c0d42a7e81",
+      "source_id": "1uPC993KlCT_DuV5jF-dGVTvPImMz7mfh",
+      "source_sha256": "799bda78acc4bb098ca4c436615d2145c6ffc8bb12b95d8cc00e05851ae181a4",
+      "source_name": "The BEST Conversion Rate Optimization Tutorial for Ecommerce in 2025.docx",
+      "folder": "/07-LPG-landing-pages",
+      "domain": "landing-pages",
+      "section": 0
+    },
+    {
+      "title": "Landing Page Report Anomaly Scan",
+      "summary": "Review GA4's Landing Pages report for the top 5-10 entry pages and hunt for anomalies in bounce, engagement time, views per session and conversion.",
+      "use_when": "Prioritising which PDPs, campaign landing pages or entry URLs deserve a CRO test or a copy and layout overhaul.",
+      "steps": [
+        "In GA4 open Reports > Engagement > Landing Pages, click Customize or Metrics and keep bounce rate, average session duration, session key event rate, user key event rate and views per session.",
+        "Filter for purchases so the conversion columns show purchase conversion.",
+        "Examine the top 5-10 pages by traffic rather than the full list.",
+        "Flag anomalies: the source example flagged a high-traffic product page with only 44 seconds of average engagement against roughly 1 minute elsewhere on the site.",
+        "Check duplicate entry points to the same product; in the source example the same product converting from a homepage path converted at 1.53% versus 1.29% from a collection path.",
+        "Form a hypothesis about why the better-performing path performs better (context, pre-selling copy, different traffic intent) and test replicating that advantage on the weaker path."
+      ],
+      "caveats": [
+        "Short engagement time is not automatically bad if the page is a low-friction action page; judge it against the page's purpose.",
+        "Entry-path differences may be driven by traffic source differences rather than page quality."
+      ],
+      "tags": [
+        "landing-pages",
+        "analytics",
+        "ga4",
+        "measurement",
+        "landing-page",
+        "conversion-optimization",
+        "product-page"
+      ],
+      "id": "8f90616b8da50a83da07c460",
+      "source_id": "1uPC993KlCT_DuV5jF-dGVTvPImMz7mfh",
+      "source_sha256": "799bda78acc4bb098ca4c436615d2145c6ffc8bb12b95d8cc00e05851ae181a4",
+      "source_name": "The BEST Conversion Rate Optimization Tutorial for Ecommerce in 2025.docx",
+      "folder": "/07-LPG-landing-pages",
+      "domain": "landing-pages",
+      "section": 0
+    },
+    {
+      "title": "Simplify Heatmap Reading to Clicks Versus Intent",
+      "summary": "Reduce heatmap analysis to one question: are people clicking where you want them to click, and if not, why not.",
+      "use_when": "Reviewing Microsoft Clarity or Hotjar heatmaps and scroll maps for a homepage, collection page or PDP and deciding what to change.",
+      "steps": [
+        "Open the heatmap tool in Clarity and select the highest-traffic page, usually the homepage or a top PDP.",
+        "Prefer area maps over raw click maps: create areas per element and read the percentage of clicks each one earns.",
+        "For each major element, compare actual clicks with desired clicks; elements that get clicks but are not clickable are wasted opportunities, and clickable elements with near-zero clicks are clutter to remove.",
+        "From the source example: a section image took 75% of section clicks, the title 3.2%, and price and reviews none, showing the smaller title deserved more visual prominence.",
+        "In the same example a logo strip looked like buttons because of a grey border and received clicks while linking nowhere; remove the false affordance or make it real.",
+        "For scroll maps, read checkpoints (25%, 50%, average fold, 75%) and ask whether users reach the information you consider essential; the source typically sees about 60% of users never passing the hero section.",
+        "Turn each finding into a hypothesis and a test rather than editing the live page on the heatmap alone."
+      ],
+      "caveats": [
+        "Heatmaps show where clicks happen; they never explain why, so pair them with recordings or surveys.",
+        "Clarity sometimes fails to render images in the editor, which can make areas hard to map accurately."
+      ],
+      "tags": [
+        "landing-pages",
+        "heatmaps",
+        "microsoft-clarity",
+        "conversion-optimization",
+        "visual-hierarchy",
+        "homepage",
+        "product-page"
+      ],
+      "id": "bfbcb883a4149d7a5d29260d",
+      "source_id": "1uPC993KlCT_DuV5jF-dGVTvPImMz7mfh",
+      "source_sha256": "799bda78acc4bb098ca4c436615d2145c6ffc8bb12b95d8cc00e05851ae181a4",
+      "source_name": "The BEST Conversion Rate Optimization Tutorial for Ecommerce in 2025.docx",
+      "folder": "/07-LPG-landing-pages",
+      "domain": "landing-pages",
+      "section": 0
+    },
+    {
+      "title": "Reorder Category Sections Using Click Data and Scroll Reach",
+      "summary": "Rank homepage category blocks by click share, then check scroll reach to decide whether to reorder them or surface them higher on the page.",
+      "use_when": "Merchandising a homepage or collection page that lists multiple product categories or collections and deciding order and placement.",
+      "steps": [
+        "Build area maps in Clarity over each category block and record the click share per block.",
+        "Reorder blocks so the highest-click categories appear first; in the source example one category earned 1.06% of clicks while another earned 9%, indicating the 9% block should lead.",
+        "Check the scroll map to see what share of users reach the section at all; the source example found a category block with very high clicks that only 25% of users ever reached.",
+        "Where a high-click section sits below the fold, consider duplicating its entry points to the top of the page, for example as small clickable category thumbnails near the hero.",
+        "Test the change: the source reports an 18% conversion rate increase from an A/B test that moved these category icons to the top of the site for that brand.",
+        "Treat that 18% figure as a case example, not an expected result for your store."
+      ],
+      "caveats": [
+        "Click share understates categories whose users navigate away by other means.",
+        "Reordering categories affects SEO and internal linking, so confirm the order change does not break important paths."
+      ],
+      "tags": [
+        "landing-pages",
+        "merchandising",
+        "homepage",
+        "heatmaps",
+        "conversion-optimization",
+        "category-pages",
+        "internal-linking"
+      ],
+      "id": "c7160f33c310f354c00c4a01",
+      "source_id": "1uPC993KlCT_DuV5jF-dGVTvPImMz7mfh",
+      "source_sha256": "799bda78acc4bb098ca4c436615d2145c6ffc8bb12b95d8cc00e05851ae181a4",
+      "source_name": "The BEST Conversion Rate Optimization Tutorial for Ecommerce in 2025.docx",
+      "folder": "/07-LPG-landing-pages",
+      "domain": "landing-pages",
+      "section": 0
+    },
+    {
+      "title": "Consolidate Collection Page Filters Using Click Share",
+      "summary": "Use area-map click shares on collection pages to remove unused filter controls and rename confusing ones.",
+      "use_when": "Simplifying a collection or category page with too many filter, sort or view controls.",
+      "steps": [
+        "Build area maps over every filter, sort, view-as and sidebar control on the collection page.",
+        "Record click share per control and flag anything under roughly 1% as a removal candidate.",
+        "Rename controls to match user language; the source example had three separate labels ('sidebar', 'show', 'sort by') that users treated as interchangeable.",
+        "Verify with user testing what users actually want: in the source example users wanted the sidebar filtering experience, while the 'show' button mostly misled them.",
+        "Remove redundant controls rather than restyling them; the source recommends one or two filter layers maximum, not three or four.",
+        "Test the simplified version as an A/B test and watch both filter engagement and conversion."
+      ],
+      "caveats": [
+        "Filter usage varies by catalogue size; a large catalogue may legitimately need more facets than a small one.",
+        "Removing controls that assist a minority of high-value buyers can hurt overall revenue, so segment before deleting."
+      ],
+      "tags": [
+        "landing-pages",
+        "collection-page",
+        "filters",
+        "heatmaps",
+        "merchandising",
+        "conversion-optimization",
+        "user-testing"
+      ],
+      "id": "88fb8838882b3f277dcd9ef0",
+      "source_id": "1uPC993KlCT_DuV5jF-dGVTvPImMz7mfh",
+      "source_sha256": "799bda78acc4bb098ca4c436615d2145c6ffc8bb12b95d8cc00e05851ae181a4",
+      "source_name": "The BEST Conversion Rate Optimization Tutorial for Ecommerce in 2025.docx",
+      "folder": "/07-LPG-landing-pages",
+      "domain": "landing-pages",
+      "section": 0
+    },
+    {
+      "title": "Place Products and Risk-Reducers by Collection Scroll Data",
+      "summary": "Use collection page scroll maps to decide how many products appear above the fold and where to insert reassurance elements between product rows.",
+      "use_when": "Merchandising a long collection or category page and deciding product order, fold content and placement of shipping or guarantee messages.",
+      "steps": [
+        "Open the collection page scroll map in Clarity and read reach percentages at each product row.",
+        "In the source example 88% of users reached the first two products, then about 10% dropped off for every two products shown; use your own curve to find the steepest drops.",
+        "Consolidate above-the-fold content so more products are visible without scrolling; the source found about 20% of users never reached the select-options buttons on the first row.",
+        "Place your best-converting products at the highest-reach positions, since visibility, not preference, decides what most users see.",
+        "Insert fear, uncertainty and doubt reducers such as free shipping or money-back guarantees between product rows at the points where drop-off is steepest, to recapture users before they leave.",
+        "Test the reordered and re-spaced collection page rather than assuming the new layout wins."
+      ],
+      "caveats": [
+        "Scroll reach measures exposure, not purchase intent; a product far down the page can still sell through search or direct links.",
+        "The roughly 10% per two-product drop-off is a single case example, not a benchmark."
+      ],
+      "tags": [
+        "landing-pages",
+        "collection-page",
+        "merchandising",
+        "scroll-map",
+        "microsoft-clarity",
+        "conversion-optimization",
+        "fear-uncertainty-doubt"
+      ],
+      "id": "e03f2284af5eeb7c1e39d0ae",
+      "source_id": "1uPC993KlCT_DuV5jF-dGVTvPImMz7mfh",
+      "source_sha256": "799bda78acc4bb098ca4c436615d2145c6ffc8bb12b95d8cc00e05851ae181a4",
+      "source_name": "The BEST Conversion Rate Optimization Tutorial for Ecommerce in 2025.docx",
+      "folder": "/07-LPG-landing-pages",
+      "domain": "landing-pages",
+      "section": 0
+    },
+    {
+      "title": "Expose Image Thumbnails and Cut Dead PDP Controls",
+      "summary": "Use PDP click maps to surface heavily clicked but hidden elements (image thumbnails, colour selectors) and remove elements nobody clicks.",
+      "use_when": "Redesigning a product page around which controls buyers actually use.",
+      "steps": [
+        "Build area maps on the top PDPs and record click share per element.",
+        "Where image pagination dots take a high click share, expose real thumbnails; the source example had 7.35% of clicks on tiny navigation dots, one of the most clicked PDP elements.",
+        "Where a colour selector takes a high click share (16.68% in the source example), move colour higher in the PDP so buyers see it sooner; note that colour also swaps the product image, which is usually the real reason for the clicks.",
+        "Remove elements with negligible click share, such as a 'call an expert' phone button at 0.36% or an add-to-wishlist button at 0.09% in the source example.",
+        "Check the PDP scroll map: if only about 36% of users reach the add-to-cart button, shorten the description and shrink above-the-fold elements so more users reach the buy control.",
+        "Test each change separately where traffic allows so you can attribute the effect."
+      ],
+      "caveats": [
+        "Low click share on an element does not mean it is worthless; support, sizing and returns content may prevent costly post-purchase problems.",
+        "Very low-traffic PDPs will not yield statistically meaningful click percentages."
+      ],
+      "tags": [
+        "landing-pages",
+        "product-page",
+        "heatmaps",
+        "microsoft-clarity",
+        "pdp",
+        "conversion-optimization",
+        "visual-hierarchy"
+      ],
+      "id": "c6a46a3c896405639f50834f",
+      "source_id": "1uPC993KlCT_DuV5jF-dGVTvPImMz7mfh",
+      "source_sha256": "799bda78acc4bb098ca4c436615d2145c6ffc8bb12b95d8cc00e05851ae181a4",
+      "source_name": "The BEST Conversion Rate Optimization Tutorial for Ecommerce in 2025.docx",
+      "folder": "/07-LPG-landing-pages",
+      "domain": "landing-pages",
+      "section": 0
+    },
+    {
+      "title": "Post-Purchase Survey: What Almost Stopped You",
+      "summary": "Run a two-question post-purchase survey to capture what nearly blocked the sale and what motivated the purchase.",
+      "use_when": "Gathering qualitative friction data for PDP copy, sizing guidance, shipping messaging or guarantee placement.",
+      "steps": [
+        "Trigger the survey immediately after purchase, while the buyer is still in a positive state.",
+        "Ask two questions: 'What motivated you to buy from us today?' and 'Did you have any concerns, doubts or uncertainties that almost stopped you from buying today?'",
+        "Leave the questions open-ended when data volume is low, since buyers often mention reasons you would never have listed.",
+        "Categorise answers into themes such as fit, sizing, vocabulary clarity, trust, delivery and price, and count their frequency.",
+        "Reinject the strongest themes directly into PDP copy, sizing guides, FAQs, benefit bars and risk-reducer messaging, then validate with A/B tests.",
+        "The source reports 85-90% completion on post-purchase surveys with no incentive needed; treat this as a source-specific observation about its own clients."
+      ],
+      "caveats": [
+        "Post-purchase responses describe buyers only, so they miss reasons non-buyers abandoned.",
+        "Completion rates depend on survey length, placement and tool configuration."
+      ],
+      "tags": [
+        "landing-pages",
+        "customer-research",
+        "surveys",
+        "product-page",
+        "conversion-optimization",
+        "copywriting",
+        "voice-of-customer"
+      ],
+      "id": "3b5634f1c703cf603d112814",
+      "source_id": "1uPC993KlCT_DuV5jF-dGVTvPImMz7mfh",
+      "source_sha256": "799bda78acc4bb098ca4c436615d2145c6ffc8bb12b95d8cc00e05851ae181a4",
+      "source_name": "The BEST Conversion Rate Optimization Tutorial for Ecommerce in 2025.docx",
+      "folder": "/07-LPG-landing-pages",
+      "domain": "landing-pages",
+      "section": 0
+    },
+    {
+      "title": "Mid-Session Friction Survey at 60% of Session Duration",
+      "summary": "Fire a mid-session survey asking whether anything is holding the visitor back, timed to about 60% of average session duration.",
+      "use_when": "Collecting abandonment reasons from active shoppers on a PDP or collection page when analytics alone shows the drop but not the cause.",
+      "steps": [
+        "Measure your average session duration (the source example uses 2 minutes) and set the survey to trigger at roughly 60% of that value (about one minute in that example).",
+        "Ask a single yes/no question first: 'Is there anything holding you back from buying this product right now?'",
+        "For visitors who answer yes, ask what the reason is; offer preset reasons plus an open-ended 'other' option that expands for detail.",
+        "Keep the survey short so it does not itself become friction or block the buy path.",
+        "On Shopify, the source uses Okendo, which ships survey capability and preset question templates; verify the current Okendo interface and any plan requirements before setting it up.",
+        "Categorise responses by theme and route them into the same test backlog as heatmap and analytics findings."
+      ],
+      "caveats": [
+        "Timing is based on an average, so it may fire too early for fast sessions or too late for long ones.",
+        "An interruptive survey can suppress conversions; monitor conversion rate while it runs."
+      ],
+      "tags": [
+        "landing-pages",
+        "customer-research",
+        "surveys",
+        "okendo",
+        "product-page",
+        "conversion-optimization",
+        "cart-abandonment"
+      ],
+      "id": "0d65f4f7da9f29f35c10ffa2",
+      "source_id": "1uPC993KlCT_DuV5jF-dGVTvPImMz7mfh",
+      "source_sha256": "799bda78acc4bb098ca4c436615d2145c6ffc8bb12b95d8cc00e05851ae181a4",
+      "source_name": "The BEST Conversion Rate Optimization Tutorial for Ecommerce in 2025.docx",
+      "folder": "/07-LPG-landing-pages",
+      "domain": "landing-pages",
+      "section": 0
+    },
+    {
+      "title": "Small-Sample User Testing with Userbrain",
+      "summary": "Recruit a handful of targeted testers to complete real store tasks out loud and capture usability problems before and after redesigns.",
+      "use_when": "Validating collection navigation, filters or add-to-cart flows on a store, especially with under roughly 50,000-80,000 monthly visitors where quantitative data alone is thin.",
+      "steps": [
+        "Use a moderated or unmoderated testing tool such as Userbrain; set screening filters by device type, country, age range and gender so testers resemble your buyers.",
+        "Write screening questions to exclude people outside the target market.",
+        "Give testers concrete tasks on your live site, such as finding a product and adding it to cart, and ask them to narrate their thinking, including first impressions on landing.",
+        "Run three to five testers; the source considers this enough to surface most usability issues.",
+        "Log every hesitation, navigation failure and drop-off point, and convert them into hypotheses.",
+        "Repeat the same test after shipping changes to get a before-and-after comparison.",
+        "In the source example, testing on one client site surfaced navigation and filtration problems plus a broader lack of confidence in the site and the product."
+      ],
+      "caveats": [
+        "Small samples surface problems but do not measure how widespread they are.",
+        "Review your tester privacy and consent handling before recording real customer journeys."
+      ],
+      "tags": [
+        "landing-pages",
+        "customer-research",
+        "user-testing",
+        "userbrain",
+        "usability",
+        "conversion-optimization",
+        "product-page"
+      ],
+      "id": "75d6c6bbb4208edb858c51b4",
+      "source_id": "1uPC993KlCT_DuV5jF-dGVTvPImMz7mfh",
+      "source_sha256": "799bda78acc4bb098ca4c436615d2145c6ffc8bb12b95d8cc00e05851ae181a4",
+      "source_name": "The BEST Conversion Rate Optimization Tutorial for Ecommerce in 2025.docx",
+      "folder": "/07-LPG-landing-pages",
+      "domain": "landing-pages",
+      "section": 0
+    },
+    {
+      "title": "Review Mining into Motivations, Value and Anxieties",
+      "summary": "Export reviews from all sources, categorise them as motivation, value or anxiety, and pivot the most frequent topics into page copy.",
+      "use_when": "Writing PDP copy, benefit bars, objection-handling content and landing page headlines grounded in real customer language.",
+      "steps": [
+        "Export reviews from your own site plus third-party sources such as Google, Trustpilot and Amazon into one spreadsheet.",
+        "Code each review by its main topic and by whether it expresses a motivation, a value or an anxiety.",
+        "Build a pivot table of topic frequency separately for positive and negative reviews so you see both what wins and what blocks.",
+        "In the source example the most frequent themes included use in fun and social settings, ease of use, product satisfaction and no spills or mess.",
+        "Turn the top themes into copy, headline claims, benefit order and objection-handling modules, then test them against the current page.",
+        "Repeat the mining periodically, since themes shift with product range and audience."
+      ],
+      "caveats": [
+        "Amazon and third-party reviews may describe a different seller's packaging, shipping or fulfilment, so screen out those topics before using them as product insight.",
+        "Frequency counts over-weight whatever product generation has the most reviews."
+      ],
+      "tags": [
+        "landing-pages",
+        "customer-research",
+        "review-mining",
+        "copywriting",
+        "product-page",
+        "voice-of-customer",
+        "landing-page"
+      ],
+      "id": "1f3ae96ccb10e5c4d0aa5df2",
+      "source_id": "1uPC993KlCT_DuV5jF-dGVTvPImMz7mfh",
+      "source_sha256": "799bda78acc4bb098ca4c436615d2145c6ffc8bb12b95d8cc00e05851ae181a4",
+      "source_name": "The BEST Conversion Rate Optimization Tutorial for Ecommerce in 2025.docx",
+      "folder": "/07-LPG-landing-pages",
+      "domain": "landing-pages",
+      "section": 0
+    },
+    {
+      "title": "Mine Session Recordings for Friction Patterns",
+      "summary": "Watch Microsoft Clarity or Hotjar recordings sorted by clicks to find repeated UX disconnects, then fix the layout that causes them.",
+      "use_when": "Finding specific layout or interaction friction on PDPs and collection pages that heatmaps alone cannot explain.",
+      "steps": [
+        "In Clarity open Recordings and sort by clicks high to low or pages high to low to prioritise high-engagement sessions.",
+        "Note device type and country filters so you review sessions that match your main traffic segments.",
+        "Watch for repeated patterns rather than isolated oddities; the source example found users selecting a colour lower on the PDP and then scrolling back to the top image to see the result, over and over.",
+        "Translate the pattern into a layout hypothesis, such as moving the colour selector next to the product image.",
+        "Combine the recording evidence with heatmap and analytics data so the hypothesis rests on multiple sources, which the source calls true data-driven CRO.",
+        "Add the resulting test to your prioritised backlog."
+      ],
+      "caveats": [
+        "Recordings capture behaviour, not intent; ask a user why before assuming a motive.",
+        "Avoid drawing conclusions from one or two sessions when the pattern is absent elsewhere."
+      ],
+      "tags": [
+        "landing-pages",
+        "microsoft-clarity",
+        "session-recordings",
+        "product-page",
+        "usability",
+        "conversion-optimization",
+        "customer-research"
+      ],
+      "id": "63d3f8c37b060468ea175fcc",
+      "source_id": "1uPC993KlCT_DuV5jF-dGVTvPImMz7mfh",
+      "source_sha256": "799bda78acc4bb098ca4c436615d2145c6ffc8bb12b95d8cc00e05851ae181a4",
+      "source_name": "The BEST Conversion Rate Optimization Tutorial for Ecommerce in 2025.docx",
+      "folder": "/07-LPG-landing-pages",
+      "domain": "landing-pages",
+      "section": 0
+    },
+    {
+      "title": "Write Test Hypotheses in If-Then-Because Form",
+      "summary": "Structure every A/B test as: if we do X, we will generate more of KPI Y, because rationale Z, backed by multiple data sources.",
+      "use_when": "Turning analytics, heatmap, recording, survey and review findings into testable change requests for a PDP, homepage or collection page.",
+      "steps": [
+        "State the change explicitly (X), the metric it should move (Y) and the reason you expect the move (Z).",
+        "Support the rationale with at least two or three data points, e.g. a click map, a session recording and a survey response.",
+        "Choose the KPI the test should move, such as view product rate, add-to-cart rate or purchase conversion rate, before building the variant.",
+        "Example from the source: by clarifying the value proposition, introducing social proof and improving above-the-fold visual hierarchy, users will be more motivated to shop product pages, increasing conversion.",
+        "Aim tests at increasing motivation and reducing fear, uncertainty and doubt early in the journey.",
+        "Define the measurement window and success threshold before launch so the result is not interpreted after the fact.",
+        "The source reports a 64% conversion rate increase and 52% revenue-per-visitor increase from one such above-the-fold redesign; treat this as a case example, not a forecast."
+      ],
+      "caveats": [
+        "A single well-designed test on a low-traffic page may take a long time to reach significance.",
+        "Multiple simultaneous changes bundled into one variant make it impossible to attribute the effect."
+      ],
+      "tags": [
+        "landing-pages",
+        "experiment-design",
+        "conversion-optimization",
+        "hypothesis",
+        "ab-testing",
+        "product-page",
+        "above-the-fold"
+      ],
+      "id": "6f6f47a38de3ce77052cc3fc",
+      "source_id": "1uPC993KlCT_DuV5jF-dGVTvPImMz7mfh",
+      "source_sha256": "799bda78acc4bb098ca4c436615d2145c6ffc8bb12b95d8cc00e05851ae181a4",
+      "source_name": "The BEST Conversion Rate Optimization Tutorial for Ecommerce in 2025.docx",
+      "folder": "/07-LPG-landing-pages",
+      "domain": "landing-pages",
+      "section": 0
+    },
+    {
+      "title": "PXL Prioritisation Scoring for the Test Backlog",
+      "summary": "Score each test idea with binary or simple-ordered criteria to rank high-impact, low-effort experiments first.",
+      "use_when": "Choosing which of a large backlog of CRO ideas to run first on an ecommerce site with limited traffic or build capacity.",
+      "steps": [
+        "List every test idea in a spreadsheet with a column per criterion.",
+        "Score criteria such as: is it above the fold (1/0); is it noticeable within 5 seconds (2 if very noticeable, 0 if not); does it add or remove a significant element (2 if removing, 0 if adding something new); does it increase user motivation (1/0); is it on a high-traffic page (1/0); does it address an issue found in user testing (1/0); is it supported by heatmaps or eye-tracking (1/0); is it easy to implement (1/0).",
+        "Total the scores and run the highest-scoring tests first, since they combine this store's evidence with speed of implementation.",
+        "Keep the scoring consistent across the backlog and re-score as new data arrives.",
+        "Verify the exact criteria and weightings against the source's current template before standardising on it, as frameworks like this are often revised."
+      ],
+      "caveats": [
+        "The weighting is the presenter's framework, not a validated industry standard; tailor the criteria to your constraints.",
+        "High-priority easy tests can crowd out larger structural fixes that matter more long term."
+      ],
+      "tags": [
+        "landing-pages",
+        "prioritization",
+        "experiment-design",
+        "ab-testing",
+        "conversion-optimization",
+        "workflow",
+        "pxl"
+      ],
+      "id": "1bedb6cc775355c355f71e08",
+      "source_id": "1uPC993KlCT_DuV5jF-dGVTvPImMz7mfh",
+      "source_sha256": "799bda78acc4bb098ca4c436615d2145c6ffc8bb12b95d8cc00e05851ae181a4",
+      "source_name": "The BEST Conversion Rate Optimization Tutorial for Ecommerce in 2025.docx",
+      "folder": "/07-LPG-landing-pages",
+      "domain": "landing-pages",
+      "section": 0
+    },
+    {
+      "title": "Priorities for an Above-the-Fold Redesign",
+      "summary": "Rebuild the hero around a clear value proposition, prominent primary button, risk reducers and visible products.",
+      "use_when": "Redesigning a homepage, landing page or PDP hero on a store whose View Product rate or overall conversion is underperforming.",
+      "steps": [
+        "Establish a clear visual hierarchy: one dominant value proposition and one dominant primary action, with competing elements removed or demoted.",
+        "Make the main button visually stand out from everything around it so the intended next click is obvious.",
+        "Add a benefits or trust bar above the fold covering concerns surfaced in surveys and reviews, such as shipping terms and 30-day free returns.",
+        "Pull social proof above the fold, since the source treats leading with trust and credibility as a core principle; its scroll-map example showed only 32% of users reaching a logo strip placed too low.",
+        "Expose products and category entry points within the first screen instead of relying on users to scroll.",
+        "Validate with a before-and-after test; the source reports 64% conversion and 52% revenue-per-visitor gains for one such redesign, as a case example."
+      ],
+      "caveats": [
+        "Above-the-fold space is finite; adding risk reducers and social proof can crowd out product imagery if not consolidated first.",
+        "Results from one brand's redesign do not transfer automatically to another niche or traffic mix."
+      ],
+      "tags": [
+        "landing-pages",
+        "above-the-fold",
+        "landing-page",
+        "visual-hierarchy",
+        "conversion-optimization",
+        "social-proof",
+        "value-proposition"
+      ],
+      "id": "ac46f2bf0ebf1f2a6a0e0e8c",
+      "source_id": "1uPC993KlCT_DuV5jF-dGVTvPImMz7mfh",
+      "source_sha256": "799bda78acc4bb098ca4c436615d2145c6ffc8bb12b95d8cc00e05851ae181a4",
+      "source_name": "The BEST Conversion Rate Optimization Tutorial for Ecommerce in 2025.docx",
+      "folder": "/07-LPG-landing-pages",
+      "domain": "landing-pages",
+      "section": 0
+    },
+    {
+      "title": "Storytelling That Moves Quant to Qual to Hypothesis to Test",
+      "summary": "Sequence CRO work: quantitative diagnosis first, qualitative reasons second, then hypothesised changes validated by A/B tests.",
+      "use_when": "Setting up a repeatable CRO operating rhythm for an ecommerce site rather than running one-off page tweaks.",
+      "steps": [
+        "Start with quantitative analysis: GA4 Purchase Journey, Path Exploration, Tech Overview and Landing Pages reports to locate where and on which pages the drops happen.",
+        "Layer in behavioural tools such as Microsoft Clarity or Hotjar for heatmaps and session recordings to see precisely what users do.",
+        "Add qualitative methods to learn why: post-purchase surveys, timed mid-session surveys, small-sample user testing and review mining.",
+        "The source argues qualitative input matters most when a store has under roughly 50,000-80,000 monthly visitors, because quantitative volume alone is insufficient.",
+        "Turn findings into if-then-because hypotheses, prioritise them with a scoring framework such as PXL, and test the top items in controlled A/B experiments.",
+        "Never act on a single data source alone; the source defines true data-driven CRO as two, three or four supporting data points behind each change.",
+        "Re-run user testing after shipping changes to compare before and after."
+      ],
+      "caveats": [
+        "The sequencing is the presenter's recommended process, not a proven universal order; urgent fixes may still precede the full audit.",
+        "Without enough traffic, A/B tests may not reach significance, so some changes may need to be shipped on judgement with clear rollback plans."
+      ],
+      "tags": [
+        "landing-pages",
+        "conversion-optimization",
+        "workflow",
+        "experiment-design",
+        "measurement",
+        "customer-research",
+        "analytics"
+      ],
+      "id": "7d3a4c37853cb0b93449770b",
+      "source_id": "1uPC993KlCT_DuV5jF-dGVTvPImMz7mfh",
+      "source_sha256": "799bda78acc4bb098ca4c436615d2145c6ffc8bb12b95d8cc00e05851ae181a4",
+      "source_name": "The BEST Conversion Rate Optimization Tutorial for Ecommerce in 2025.docx",
+      "folder": "/07-LPG-landing-pages",
+      "domain": "landing-pages",
+      "section": 0
+    }
+  ],
+  "request_id": "0c1a7823a0858f02b21a5f1c4d11ccaceefb525197a2e86c34ffa9dd675a2354",
+  "ecommerce_scope_version": 1
+}

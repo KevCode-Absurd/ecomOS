@@ -1,0 +1,467 @@
+{
+  "cards": [
+    {
+      "title": "Build a 48-month subscription financial model from ad spend down",
+      "summary": "Excel layout for forecasting a DTC subscription business: assumptions tab in blue, customer acquisition tab driving orders, then a monthly P&L out to 48 months.",
+      "use_when": "You need to plan store operations, model a raise, or test whether your ad budget and churn can produce a profitable subscription business before committing spend.",
+      "steps": [
+        "Set a 48-month timeline (M1–M48) across the top; freeze panes so the active cell keeps time labels visible as you scroll right.",
+        "Colour-code inputs: hard-coded assumptions in dark blue, all formulas in black, so anyone editing the file knows which numbers they may change and which are calculated.",
+        "On an acquisition tab, start with monthly advertising spend (e.g. $5,000 ramping to $15,000 by month 7, then growing ~7.5%/month) and a paid CAC assumption.",
+        "Compute new customers = ad spend / paid CAC for each month. Model CAC improving over year 1 (e.g. $35 down to $20) as organic and email list growth lower blended acquisition cost.",
+        "Apply a monthly churn rate (the example uses a flat 15%) to recurring customers: retained = prior total customers x (1 - churn), so total orders = new + recurring.",
+        "Build the P&L from these order volumes: gross revenue = AOV x orders; subtract discounts and refunds (both applied only to new-order revenue) to get net revenue.",
+        "Feed COGS (product, packaging, fulfillment, customer service, merchant fees) and opex (personnel, advertising, other marketing, tech, an unallocated 'unknown' bucket) to land on operating income.",
+        "Add a roll-up summary tab that sums each quarter across years, plus starting cash and cash balance, to calculate runway in months."
+      ],
+      "caveats": [
+        "All figures (CAC, churn, AOV, cost percentages) are illustrative assumptions, not benchmarks; replace them with your own data.",
+        "A flat churn rate is a simplification — real cohorts often churn differently in early vs later months.",
+        "The model is a planning sandbox; it does not predict actual performance."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "financial-modeling",
+        "unit-economics",
+        "subscriptions",
+        "cac",
+        "cohort-analysis",
+        "cash-runway",
+        "excel"
+      ],
+      "id": "111c8bab586412566d4b1a42",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 1
+    },
+    {
+      "title": "Discounts vs CAC: when a discount is mathematically neutral",
+      "summary": "If a discount lifts conversion enough that CAC falls by the same dollar amount, post-marketing per-order contribution margin is unchanged — so discounting is a CAC substitute, not automatically a margin loss.",
+      "use_when": "Deciding whether to run a discount or promo on a PDP, landing page or email flow, and whether the discount is actually cheaper than buying the same customers through paid ads.",
+      "steps": [
+        "Work out your current paid CAC per new customer (total paid marketing / new customer orders).",
+        "Estimate how much the discount lifts first-order conversion, and translate that lift into the implied reduction in cost per acquired customer — a discount effectively subsidises acquisition.",
+        "Compare the discount's dollar cost per incremental new order against the CAC you would otherwise pay for that order.",
+        "If the discount reduces effective acquisition cost by roughly the same dollar amount it gives away, the post-marketing contribution per order is identical — choose on the basis of which produces the volume and quality of customers you want.",
+        "When discounting deeply, attach the discount explicitly to an on-ramp into a loyalty or subscription program so the acquired customer has a path to recurring contribution rather than being a one-off transaction.",
+        "Model several discount scenarios in your financial model and pick the one that maximises total company profit at your fixed ad budget, not the one with the highest conversion."
+      ],
+      "caveats": [
+        "The neutrality claim only holds when the discount changes acquisition cost by the same dollar amount; larger discounts still reduce margin.",
+        "The source explicitly warns against using deep discounts for standard one-off flash sales — they should be tied to a loyalty/subscription on-ramp.",
+        "Conversion lift estimates are assumptions until tested."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "pricing",
+        "offer-design",
+        "cac",
+        "discount-strategy",
+        "retention",
+        "financial-modeling"
+      ],
+      "id": "aa80d087ca61d7cd3b4c263c",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 1
+    },
+    {
+      "title": "Split COGS into product and fulfillment to read ecommerce margins",
+      "summary": "Separate product cost from fulfillment cost instead of lumping them into one COGS line, so you can see product gross profit and fulfillment drag independently.",
+      "use_when": "Reviewing monthly store P&L, diagnosing why margins moved, or deciding whether a shipping, pick-and-pack or packaging decision is eroding profitability.",
+      "steps": [
+        "On your income statement, split COGS into (a) product cost (materials, manufacturing) and (b) fulfillment (shipping, pick and pack, packaging, other delivery charges).",
+        "Calculate product gross profit = revenue - product COGS, and express it as a percentage of revenue (the example shows roughly 73% converting to product gross profit).",
+        "Calculate contribution margin = revenue - product COGS - fulfillment. This is what remains to fund marketing, payroll and other opex.",
+        "Divide each individual fulfillment line by revenue month by month to pinpoint which charge is moving — the example shows pick-and-pack and packaging holding roughly stable while shipping and other charges crept up.",
+        "Track these percentages over several months; stable product and fulfillment percentages indicate predictable margins, while a swing in one line tells you where to intervene.",
+        "Use contribution margin per order (total contribution margin / total orders) as the number to compare against cost per new order."
+      ],
+      "caveats": [
+        "Splitting COGS this way is the presenter's preference for ecommerce analysis; accountants will usually report a single COGS line.",
+        "Percentage shifts can reflect product mix change rather than true cost inflation."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "unit-economics",
+        "contribution-margin",
+        "cogs",
+        "fulfillment",
+        "measurement",
+        "income-statement"
+      ],
+      "id": "4e8e7fd6e6e49d1726eea728",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 1
+    },
+    {
+      "title": "Read a monthly P&L as percent of revenue to spot trajectory and margin drift",
+      "summary": "Lay revenue down through product cost, fulfillment, marketing and opex as percentages of revenue to see growth, margin predictability and where profitability broke.",
+      "use_when": "Monthly or quarterly store review: assessing whether the business is growing, whether margins are stable, and which line caused a profitable month to turn into a loss.",
+      "steps": [
+        "Present the period side by side with a percent-of-revenue column next to every dollar line.",
+        "Order the lines: revenue, product COGS, product gross profit, fulfillment, contribution margin, marketing, post-marketing contribution, opex, operating income.",
+        "Check trajectory first: is revenue increasing month over month and are margins predictable or drifting?",
+        "Compare contribution margin % across months — stable percentages (e.g. ~42–43%) mean cost structure is under control.",
+        "Watch marketing as a percentage of revenue: it will bounce around when scaling, and a jump (e.g. 29% to 39%) can be the single cause of a loss month even when contribution margin held.",
+        "Trace the loss to a line before reacting — in the example, an August marketing spike pushed operating income from +7.5% to -2.2% and back to +6.4%.",
+        "Aim for break-even or better on the first order, since ecommerce repeat behaviour is generally limited; only exceptional stores are strongly profitable on the first order after marketing."
+      ],
+      "caveats": [
+        "Saying ecommerce has 'generally' limited repeat behaviour is the presenter's generalisation; repeat-heavy categories exist.",
+        "Percentages can mask absolute-scale changes; read both."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "measurement",
+        "contribution-margin",
+        "income-statement",
+        "unit-economics",
+        "cac",
+        "store-review"
+      ],
+      "id": "c160135c9bd357c43c70ad13",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 1
+    },
+    {
+      "title": "Compute per-order unit economics: AOV, product cost, fulfillment, contribution",
+      "summary": "Divide each P&L line by total orders to get AOV, product cost per order, fulfillment per order and contribution margin per order.",
+      "use_when": "Diagnosing whether each order is actually profitable before marketing, and comparing month-to-month stability of your order-level economics.",
+      "steps": [
+        "AOV = total revenue / total orders (example: $232).",
+        "Product COGS per order = total product COGS / total orders (example: $62).",
+        "Fulfillment per order = total fulfillment / total orders (example: $71).",
+        "Contribution margin per order = AOV - product cost per order - fulfillment per order (example: $99).",
+        "Drag the formulas across months to see whether per-order economics are consistent; in the example contribution margin per order stayed stable even as revenue grew.",
+        "For noisy months, compute a trailing average: total revenue / total orders, total product COGS / total orders, total fulfillment / total orders across the whole period (example: $238 AOV, $64 product, $74 fulfillment, ~$100 contribution).",
+        "Keep customer counts, order counts and unit counts distinct — orders exceed customers, and units exceed orders when baskets average more than one item."
+      ],
+      "caveats": [
+        "Blended per-order figures hide product-mix differences and seasonality.",
+        "AOV varies by promotion and channel; a trailing average may hide a recent shift."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "unit-economics",
+        "aov",
+        "contribution-margin",
+        "measurement",
+        "reporting"
+      ],
+      "id": "49110942deea1f9c18f4b2e0",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 1
+    },
+    {
+      "title": "Add per-unit product economics to find your most profitable SKU",
+      "summary": "Calculate revenue, product gross profit and contribution margin per unit for each top SKU, because blended per-order numbers hide product-mix differences.",
+      "use_when": "Product selection, pricing and merchandising decisions — deciding which SKUs to push, bundle or drop based on margin per unit rather than revenue share alone.",
+      "steps": [
+        "Pull a report that isolates sales by product; the summary financials report will not give you this.",
+        "For each top SKU, calculate average revenue per unit, product gross profit per unit and contribution margin per unit.",
+        "Compare both absolute dollars and percentages of revenue. Example: Product A (60% of sales) earns $230 revenue, $163 product profit (71% of revenue) and $92 contribution (40% of revenue); Product B (25% of sales) earns $122 revenue, $104 product profit (86% of revenue) and $74 contribution (61% of revenue).",
+        "Note the tension: Product A is more profitable per unit in dollars, Product B is more profitable as a percentage of revenue — the right choice depends on whether you optimise for cash per order or margin rate.",
+        "Compare per-unit contribution to the blended contribution margin per order: in the example the average order has higher contribution than either product alone, because customers buy multiple units.",
+        "Use the result to decide which SKUs to feature on the PDP, which to bundle together, and where a small markup is defensible."
+      ],
+      "caveats": [
+        "Per-unit data requires a separate report; a channel- or order-level report will not produce it.",
+        "Higher margin-rate products can still be worse if their lower absolute contribution does not cover acquisition cost."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "unit-economics",
+        "product-selection",
+        "merchandising",
+        "contribution-margin",
+        "pricing",
+        "sku-analysis"
+      ],
+      "id": "2a88bf14790c16c87b7ed692",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 1
+    },
+    {
+      "title": "Calculate blended CAC from total marketing and new customer orders",
+      "summary": "CAC/CPA is total marketing spend divided by new customer orders only — returning orders are excluded because they carry little paid marketing cost.",
+      "use_when": "Setting or auditing acquisition budgets, and comparing what you pay per new customer against the contribution margin that customer produces.",
+      "steps": [
+        "Pull total new customer orders for the period and total marketing spend for the same period; do not include returning customer orders in the denominator.",
+        "Blended CAC = total marketing / total new customer orders (the example shows $74, $113, $100 across three months, $97 blended).",
+        "Compare blended CAC against contribution margin per new order: in the example, only the month where marketing cost per new order exceeded contribution margin per order was also the loss month.",
+        "To go beyond a blended figure, build the funnel by channel and stage — top-of-funnel exposure and nurturing activities (content), then conversion activities (deals, discounts) — to calculate channel-level CAC for Facebook, Google and other sources.",
+        "Use channel-level CAC to shift budget toward the sources whose CAC sits comfortably below contribution margin, and investigate the ones that do not."
+      ],
+      "caveats": [
+        "Blended CAC mixes channels and is only directionally correct; channel CAC requires funnel-level tracking.",
+        "A single month's CAC can be distorted by campaign timing and seasonality; the source suggests trailing averages for noisy data."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "cac",
+        "acquisition",
+        "measurement",
+        "paid-media",
+        "contribution-margin",
+        "budgeting"
+      ],
+      "id": "6fe6a3b410721c7022d7a851",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 1
+    },
+    {
+      "title": "Build customer retention cohorts to measure true repeat purchase behaviour",
+      "summary": "Group customers by first purchase month and track their orders over subsequent months to see real lifetime purchase frequency, not just first-month averages.",
+      "use_when": "Forecasting LTV, judging whether a subscription or replenishment offer is working, or deciding whether retention spend is justified by actual repeat behaviour.",
+      "steps": [
+        "Define cohorts by the month of a customer's first purchase; anyone repurchasing later stays in their original cohort (e.g. March = 167 first-time customers, April = 436, May = 659).",
+        "For each cohort, record orders in each subsequent month of lifetime (M2, M3, M4...), reading the grid diagonally to reconstruct total orders in a given calendar month.",
+        "Compute orders per customer over the observed window: the March cohort's 167 customers placed 330 orders in six months, about 1.98 orders each — nearly double the ~1.2 orders a customer appears to place in their first month.",
+        "To reconstruct a month's total orders, add that month's new customer orders to the diagonal of prior cohorts' later-lifetime orders (e.g. June new + May's M2 + April's M3 + March's M4 = recurring orders).",
+        "Use cohort order counts, not raw averages of all customers, to estimate LTV and to check whether CAC is recovered over the customer's real lifetime."
+      ],
+      "caveats": [
+        "Cohorts require large data sets and a long enough history to read later months.",
+        "Early months of a cohort are incomplete; do not read M6 counts as that cohort's final behaviour."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "cohort-analysis",
+        "retention",
+        "ltv",
+        "subscriptions",
+        "measurement",
+        "replenishment"
+      ],
+      "id": "9e1b247793083a7bd6dfa29d",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 1
+    },
+    {
+      "title": "Define LTV as lifetime contribution margin and test it against CAC",
+      "summary": "Customer lifetime value is the total contribution margin a customer generates across their whole relationship — compare it to the marketing investment that acquired them to see if the model is profitable.",
+      "use_when": "Deciding whether to scale ad spend, raise prices, launch a subscription, or accept a slower payback in exchange for profitable scale.",
+      "steps": [
+        "Define LTV as cumulative contribution margin (revenue minus product cost minus fulfillment) across all a customer's purchases, not as revenue.",
+        "Derive it from retention cohorts rather than blended averages — the source is explicit that cohorts tell a more exact story.",
+        "Compare LTV against CAC per new customer, and also check whether individual orders cover their own marketing cost, since ecommerce generally shows limited repeat behaviour.",
+        "If first-order contribution margin is below CAC, the business depends on repeat purchases to become profitable — validate that assumption with cohort data before scaling spend.",
+        "Use the split between first-order economics and lifetime economics to decide whether to push for break-even on the first order or accept a payback period across later orders."
+      ],
+      "caveats": [
+        "LTV built on incomplete cohorts will overstate or understate the truth depending on maturity.",
+        "The recommendation to be break-even or better on every order is the presenter's stated preference, not a universal rule."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "ltv",
+        "cac",
+        "unit-economics",
+        "retention",
+        "cohort-analysis",
+        "acquisition"
+      ],
+      "id": "613635831aff23553c4353d0",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 1
+    },
+    {
+      "title": "Simplify a startup payroll model with salary x headcount ÷ 12",
+      "summary": "Forecast personnel cost from role salaries and headcount assumptions, plus a benefits load, instead of building a named-employee payroll.",
+      "use_when": "Building or updating the opex section of a startup or store financial model where you need a defensible payroll line without individual offer letters.",
+      "steps": [
+        "List roles (marketing/sales, merchandising, product, technology, executive/admin) with an average annual salary per role.",
+        "Add benefits as a percentage of payroll — the example uses 25% in the US for healthcare, payroll taxes and 401k matching.",
+        "For each month and role, calculate salary / 12 x number of people in that role; lock the salary cell with F4 (absolute reference) so the formula copies across all 48 columns.",
+        "Lay out headcount as a separate grid of numbers per role per month, so hiring plans (e.g. add one person when revenue hits a milestone, then hold) are explicit and editable.",
+        "Sum all role salaries, multiply by the benefits percentage, and show total personnel as its own bold line.",
+        "Make the hiring plan narratively logical — the point of the model is that an investor can read it and see a plan for spending a round sensibly, not too fast."
+      ],
+      "caveats": [
+        "Average salary per role is a simplification; real payroll varies by seniority and location.",
+        "The 25% benefits load is a US-specific example assumption."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "financial-modeling",
+        "payroll",
+        "opex",
+        "budgeting",
+        "excel",
+        "headcount-planning"
+      ],
+      "id": "66d5d76e9b713ae192932485",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 1
+    },
+    {
+      "title": "Include an unallocated 'unknown' opex bucket",
+      "summary": "Reserve a percentage of revenue in the model for expenses you cannot yet name, so the forecast does not understate cash burn.",
+      "use_when": "Building the opex section of a store financial model or budget, especially pre-launch or when scaling into new channels with uncertain costs.",
+      "steps": [
+        "Create an 'other opex' category calculated as a fixed percentage of revenue (the example uses 10% of revenue in perpetuity).",
+        "Treat it as a deliberate catch-all for known-unknowns — tooling, agency retainers, contractors, one-off costs you have not scoped.",
+        "Keep it separate from the identified lines (advertising, other marketing such as PR or Facebook consultants, technology/hardware/software) so you can still see and edit those individually.",
+        "When actuals arrive, move spend out of the unknown bucket into named categories rather than letting it grow silently."
+      ],
+      "caveats": [
+        "The 10% figure is an illustrative assumption in the source model, not a benchmark.",
+        "A catch-all can mask poor cost discipline if it is never reviewed against actuals."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "financial-modeling",
+        "opex",
+        "budgeting",
+        "cash-runway",
+        "planning"
+      ],
+      "id": "50708132adc1c73ee346d04d",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 1
+    },
+    {
+      "title": "Set up a quarterly roll-up with starting cash to calculate runway",
+      "summary": "A summary tab that sums quarters and years across a starting cash balance shows how long the business can operate before it needs more funding.",
+      "use_when": "Founder or investor reporting: answering how far a raised amount stretches, when cash turns negative, and which year the business becomes profitable.",
+      "steps": [
+        "Create a roll-up tab that only sums cells from the monthly model — do not recalculate anything there.",
+        "Lay quarters across the top (Q1–Q4 with a full-year total) and years down the side.",
+        "Include the key lines only: gross revenue, net revenue, COGS, gross profit, gross margin %, advertising, merchandising, personnel, other opex, total opex, operating income.",
+        "Add starting cash (the amount raised) and calculate each period's cash balance as opening balance plus the period's loss or profit.",
+        "Calculate runway as the number of periods until the cash balance turns negative — in the example, $3M with those assumptions lasted about two years, going negative early in year 3.",
+        "Sanity-check the roll-up against the monthly model: summing the last 12 months of operating profit in both should match (the example checks $508,419)."
+      ],
+      "caveats": [
+        "Runway is only as good as the underlying assumptions; the source stresses that actuals will differ.",
+        "Fundraising takes time, so the source advises knowing the runway well in advance and starting the raise early."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "cash-runway",
+        "financial-modeling",
+        "reporting",
+        "fundraising",
+        "excel",
+        "budgeting"
+      ],
+      "id": "def705c265c26f3095d7ceef",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 1
+    },
+    {
+      "title": "Format a financial model for fast reading: colours, brackets, freeze panes",
+      "summary": "Use consistent colour conventions, accounting format with zero-suppression, and freeze panes so a large model stays readable and auditable.",
+      "use_when": "Building or reviewing any store P&L or financial model that others will read or edit.",
+      "steps": [
+        "Apply the convention: dark blue = hard-coded input, black = formula, so editors instantly see what is safe to change.",
+        "Put a top and double-bottom border around the most important lines — revenue, gross profit, operating profit — so the eye lands on them in a dense sheet.",
+        "Use accounting format on key totals and suppress zeros so the model stays clean without noise.",
+        "Freeze panes so time headers and category labels remain visible while scrolling in both directions.",
+        "Build models without the mouse where possible (absolute cell references, border shortcuts via the keyboard) — the source says this pays back as models grow large.",
+        "Format with restraint: the source notes some people waste time over-formatting, but a little is worth doing."
+      ],
+      "caveats": [
+        "Formatting conventions only help if everyone editing the file follows them.",
+        "The colour convention is a modelling norm, not a technical requirement."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "financial-modeling",
+        "excel",
+        "reporting",
+        "documentation"
+      ],
+      "id": "7b2e56bcad5a2d72322d481d",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 1
+    },
+    {
+      "title": "Build a standard VC-style 4-year model — and know its limits",
+      "summary": "Venture investors typically want about four years of monthly projections; the source demonstrates a 48-month model from a $3M raise for a coffee subscription.",
+      "use_when": "Preparing a data room or investor conversation, or stress-testing whether your store's plan supports the growth story a raise implies.",
+      "steps": [
+        "Extend the monthly model to 48 months (four years) and keep the assumptions on a separate, colour-coded tab.",
+        "Drive the whole model from a handful of core inputs: advertising spend, paid CAC, churn, AOV, discount and refund rates, and cost percentages.",
+        "Show the trajectory explicitly in the roll-up: rising gross margin, revenue growth, and the year of maximum loss versus the year the business reaches operating profit.",
+        "Use the model to test improvements — the source suggests checking whether better packaging or product-cost percentages move your break-even month earlier.",
+        "In the worked example, the business first turns profitable around month 45; that is a property of those assumptions, not a general rule.",
+        "Present both the premise and the fragility: this model is only as credible as the assumptions inside it, so be ready to defend each one."
+      ],
+      "caveats": [
+        "A four-year horizon is the VC convention shown here, not a universal forecasting rule.",
+        "The example's break-even month and $1.9M monthly revenue at month 48 are outputs of the sample assumptions, not targets.",
+        "The source's own caveat: the model exists to test whether the idea can make money at all."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "financial-modeling",
+        "fundraising",
+        "subscriptions",
+        "cash-runway",
+        "planning",
+        "excel"
+      ],
+      "id": "da1cbdf76860c502635ea9ae",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 1
+    }
+  ],
+  "request_id": "5dee83eb6ec5b974e3badd21fcfea1e70c728cc048ffca050a843bc0d6bad89a",
+  "ecommerce_scope_version": 1
+}

@@ -1,0 +1,448 @@
+{
+  "cards": [
+    {
+      "title": "Build a Variable Product with Global Attributes",
+      "summary": "Correct order of operations for creating purchasable WooCommerce variable products with global attributes and generated variations.",
+      "use_when": "Adding a product to the catalog that comes in multiple sizes, weights, colors or option types and must be purchasable per variation.",
+      "steps": [
+        "Create attributes globally first: go to Products > Attributes (not the product-level custom attribute field) and define each attribute such as Weight or Toy Option. Global attributes are reusable across the whole catalog and keep naming consistent, which matters once you have dozens of products.",
+        "Create the product and set its type to Variable product.",
+        "In the Attributes tab, add the existing global attributes, then tick 'Used for variations' on each one. An attribute not marked for variations cannot be used to generate variants.",
+        "Click 'Generate variations' to create the child rows, then assign each variation its own SKU, image and price.",
+        "Verify every variation you want sold has a price; a variation without a price is not purchasable, so it will silently fail at add-to-cart.",
+        "Set stock, weight and dimensions per variation if they differ, then save and test add-to-cart for at least two variations on the front end."
+      ],
+      "caveats": [
+        "Building attributes at product level instead of globally forces you to re-enter them for every new product and causes inconsistent filter/attribute listings later.",
+        "The product type must be set to Variable before the Attributes tab offers the variation options."
+      ],
+      "tags": [
+        "store-setup",
+        "woocommerce",
+        "product-catalog",
+        "variable-products",
+        "attributes",
+        "product-page"
+      ],
+      "id": "a8a1945fe798eb396daa1e03",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 1
+    },
+    {
+      "title": "Install Payment Gateways for Stripe and PayPal",
+      "summary": "Skip default payment plugins and wire dedicated Stripe/PayPal gateway plugins so customers can pay on-site without third-party redirects.",
+      "use_when": "Preparing a store checkout to accept card and PayPal payments directly on your own domain instead of sending buyers off-site.",
+      "steps": [
+        "Decide the principle first: the goal is payment processed inside your store. The source recommends not relying on the default WooCommerce payment options and instead installing dedicated gateway plugins — specifically 'Payment Plugins for Stripe WooCommerce' and 'Payment Plugins for PayPal WooCommerce'.",
+        "Install and activate both plugins from Plugins > Add New, searching the exact plugin names.",
+        "Open the Stripe settings and enter credentials in this order: Stripe API Settings, paste the Publishable Key, paste the Secret Key, then run the Connection Test.",
+        "Only move on to checkout testing after the connection test passes; a failed test means keys were mistyped or copied from the wrong Stripe mode (test vs live).",
+        "Repeat for PayPal with its own credentials, then place a real low-value test order to confirm the charge goes through and the order status updates.",
+        "Keep an offline method (e.g. cash on delivery) enabled if you serve local buyers, and enable local/regional gateways per the store's market."
+      ],
+      "caveats": [
+        "Plugin names, settings paths and key labels change between versions — verify the current plugin interface before following a click path.",
+        "Never publish or share secret keys; rotate them if they are exposed."
+      ],
+      "tags": [
+        "store-setup",
+        "woocommerce",
+        "payments",
+        "checkout",
+        "stripe",
+        "paypal",
+        "ssl"
+      ],
+      "id": "02c7c501d001fb100a47a171",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 1
+    },
+    {
+      "title": "Set Store Address, Selling and Shipping Locations",
+      "summary": "Configure WooCommerce General settings so tax, currency and shipping only apply to the markets you actually serve.",
+      "use_when": "Setting up or restricting which countries and regions your store sells and ships to before launching products.",
+      "steps": [
+        "Go to WooCommerce > Settings > General and set the store address (use your business base if you have no physical store), city, state and postcode. This address feeds tax and shipping logic.",
+        "Under Selling location, choose one of three modes: sell to all countries; sell to specific countries (a whitelist — select each country you serve); or sell to all countries except (a blacklist).",
+        "Pick the shipping location mode. If you sell physical goods, keep 'ship to all countries you sell to' so shipping mirrors your selling whitelist. If the store sells only virtual goods (gift cards, ebooks, digital downloads), choose 'disable shipping and shipping calculations' instead.",
+        "Enable taxes if you will calculate tax rates, and enable coupons if you plan to run discount codes; both add settings tabs you will need afterwards.",
+        "Set the store currency (e.g. USD) — this is the currency all product prices are entered in.",
+        "Save changes, then re-open the settings to confirm the new Taxes/Coupons tabs appeared as expected."
+      ],
+      "caveats": [
+        "Mismatched selling and shipping rules cause checkout errors for valid customers, so review both before launch.",
+        "The disable-shipping option only makes sense when nothing physical is shipped."
+      ],
+      "tags": [
+        "store-setup",
+        "woocommerce",
+        "shipping",
+        "tax",
+        "currency",
+        "checkout"
+      ],
+      "id": "ca2329868be7f9467acfef6d",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 1
+    },
+    {
+      "title": "Set a Catalog Placeholder Image",
+      "summary": "Upload a branded placeholder image so products with missing or broken images still look intentional in the shop grid.",
+      "use_when": "Launching a shop catalog where image uploads may fail or products may lack images, and you do not want empty grey boxes in the grid.",
+      "steps": [
+        "Upload your desired placeholder graphic to WordPress Media Library (a simple branded tile works).",
+        "Click the image and copy its File URL — this is what WooCommerce needs, an attachment ID or URL.",
+        "Go to WooCommerce > Settings > Products and paste the URL into the Placeholder image field, replacing the default numeric value.",
+        "Save changes, then view the shop page and confirm the placeholder renders wherever a product image fails to load."
+      ],
+      "caveats": [
+        "The placeholder is global: it appears for any product whose image is missing or fails to load, so it should look neutral rather than product-specific.",
+        "This does not fix the underlying missing image — flag products lacking real imagery separately."
+      ],
+      "tags": [
+        "store-setup",
+        "woocommerce",
+        "product-catalog",
+        "merchandising",
+        "media",
+        "product-page"
+      ],
+      "id": "2808b33010fcfa573668459a",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 1
+    },
+    {
+      "title": "Choose Tax-Inclusive or Tax-Exclusive Product Pricing",
+      "summary": "Decide whether your entered product prices include tax, since this changes what shoppers see on the shop page versus checkout.",
+      "use_when": "Configuring store tax settings before entering product prices, especially for multi-state or multi-country tax rules.",
+      "steps": [
+        "Open WooCommerce > Settings > Taxes and pick between 'Yes, I will enter prices inclusive of tax' and 'No, I will enter prices exclusive of tax'.",
+        "Understand the consequence with an example: if the intended all-in price is $100 and tax is 5%, inclusive mode means you type 105 as the product price; exclusive mode means you type 100 and the 5% is added at checkout.",
+        "Consider what the shop page shows: inclusive mode displays the tax-included number to shoppers; exclusive mode displays the base price and adds tax later based on the buyer's location.",
+        "Note that the customer's final total is effectively the same either way; only the display and the number you type differ.",
+        "The source prefers exclusive pricing so the store page shows the base price and tax appears at checkout — but this is a presentation choice, so match it to your market convention.",
+        "Set 'calculate tax based on customer shipping address' (the default) if tax should follow where the order ships, then save."
+      ],
+      "caveats": [
+        "Once you have entered many products, switching modes means re-checking every price.",
+        "Tax display conventions differ by country; what looks correct in one market can look misleading in another."
+      ],
+      "tags": [
+        "store-setup",
+        "woocommerce",
+        "tax",
+        "pricing",
+        "checkout",
+        "product-page"
+      ],
+      "id": "f294546e4437fcc8068adfcf",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 1
+    },
+    {
+      "title": "Build Location-Based Tax Rates with State Rows",
+      "summary": "Create per-state tax rules so US customers are charged the correct rate for where they are, with a country-level fallback.",
+      "use_when": "Selling into the US (or any region with sub-region tax rates) and needing checkout to apply the right percentage automatically.",
+      "steps": [
+        "Look up accurate current rates from a sales-tax reference (the source uses TaxJar's sales tax by state page) rather than guessing — for example California 7.25%, New York 4%, Washington 6.5%.",
+        "In WooCommerce > Settings > Taxes, either use the standard rate table or create a new tax class by typing a name into the additional tax classes field and saving; the new tab appears for editing.",
+        "In the rate table, insert rows: enter the country code (US), then the state code (CA, NY), leave postcode and city blank for a whole-state rule, and enter the rate with four decimal places — write 7.25 as 7.2500 and 4 as 4.0000.",
+        "Give each row a tax name (e.g. Tax) and keep priority at 1 unless you need to stack rules.",
+        "Toggle the shipping option per row: enable it if that state taxes shipping, disable it if not — this varies by state, so decide per rule.",
+        "Add a country-level fallback row with country code US and state code left empty (e.g. 5.0000) so customers in states you have not listed still get taxed; save and test checkout with California and a non-listed state address."
+      ],
+      "caveats": [
+        "Rules can overlap — a California customer matches both the CA row and any US-wide row, so understand priority rather than assuming one silently wins.",
+        "Rates change; verify against a current source before relying on any number.",
+        "This covers tax configuration only, not full compliance obligations."
+      ],
+      "tags": [
+        "store-setup",
+        "woocommerce",
+        "tax",
+        "pricing",
+        "checkout",
+        "measurement"
+      ],
+      "id": "efa4821ff9f109e73d3eb934",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 1
+    },
+    {
+      "title": "Set Weight and Dimension Units Before Adding Products",
+      "summary": "Choose store-wide weight and dimension units early so product data and shipping calculations are entered consistently.",
+      "use_when": "Configuring a store that ships physical goods and will rely on weight/dimension data for shipping rates.",
+      "steps": [
+        "Go to WooCommerce > Settings > Products > Measurements.",
+        "Pick a weight unit (kilogram, gram, lbs, oz) — the source chose gram — and a dimension unit (meter, centimeter, millimeter, inches), choosing inches in the example.",
+        "Save changes before creating products; units are store-wide, so changing later means re-entering or converting every product's numeric data.",
+        "When creating products, enter weight and dimensions in these units only, and be consistent across the catalog so shipping rules compute correctly."
+      ],
+      "caveats": [
+        "Mixed units across products silently produce wrong shipping calculations.",
+        "Product-level weight/dimensions won't matter until you configure shipping methods that use them."
+      ],
+      "tags": [
+        "store-setup",
+        "woocommerce",
+        "measurements",
+        "shipping",
+        "product-catalog"
+      ],
+      "id": "6a90a7b59c5c93585742ff09",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 1
+    },
+    {
+      "title": "Enable Customer Registration with Subscriber Role",
+      "summary": "Allow shoppers to create accounts on the store while keeping their permissions limited to subscriber level.",
+      "use_when": "Setting up account-based features such as order history, saved addresses, wishlists and logged-in checkout.",
+      "steps": [
+        "In WordPress Settings > General, tick 'Anyone can register' so shoppers can create accounts.",
+        "Set 'New user default role' to Subscriber, not Administrator, Editor, Author or Contributor. You remain the Administrator; everyone who self-registers gets only subscriber capabilities.",
+        "Save changes, then test by registering a new account and confirming it lands as a subscriber.",
+        "Expect WooCommerce to supply the customer-facing pages — My Account, Cart, Checkout, Shop, Wishlist — after activation; you will customise them rather than build from scratch."
+      ],
+      "caveats": [
+        "Leaving the default role above subscriber is a real security risk — self-registered users could edit or publish content.",
+        "Some stores deliberately allow guest checkout instead of forcing accounts; this setting enables registration but does not obligate it."
+      ],
+      "tags": [
+        "store-setup",
+        "wordpress",
+        "woocommerce",
+        "user-roles",
+        "retention",
+        "checkout"
+      ],
+      "id": "f66e3a4928869b468ae886c1",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 1
+    },
+    {
+      "title": "Set Post Name Permalinks for Clean Product and Page URLs",
+      "summary": "Switch WordPress permalinks to post name so shop, product and post URLs are readable for shoppers and search engines.",
+      "use_when": "Immediately after installing WordPress and before creating shop, product or blog pages that should rank and be shareable.",
+      "steps": [
+        "Go to Settings > Permalinks and review the default structures (plain, day and name, month and name, numeric, or post name).",
+        "Understand the difference: plain produces URLs with random numbers and characters; day-and-name embeds the publish date; post name produces short readable slugs such as domain.com/shop.",
+        "Select 'Post name' and save changes.",
+        "Do this early — the source's recommendation is strong on post name because readable URLs look better to shoppers and support search ranking, but changing structure later can break existing links, so pair it with redirects if you switch after launch."
+      ],
+      "caveats": [
+        "Post name is a general good practice rather than a guaranteed ranking factor; content and site structure still drive SEO.",
+        "Changing permalink structure on a live store requires maintaining redirects so old indexed URLs don't 404."
+      ],
+      "tags": [
+        "store-setup",
+        "wordpress",
+        "seo",
+        "urls",
+        "product-page",
+        "content"
+      ],
+      "id": "284bc4b17ed7811895803e46",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 1
+    },
+    {
+      "title": "Configure Site Title and Tagline as Positioning Statements",
+      "summary": "Use the WordPress site title and tagline to state clearly what the store sells and where, instead of leaving a generic name.",
+      "use_when": "Setting up a new store and choosing the wording that appears in the browser tab, search results and site header.",
+      "steps": [
+        "Go to Settings > General and set the Site Title to your store or brand name — it updates the header instantly.",
+        "Write a tagline that is specific and market-facing rather than generic. The source's example: 'best pet food online store in California' — naming the category and the geography.",
+        "Rationale: a specific phrase matches how a shopper might actually search, so the store has a chance of appearing for that kind of query.",
+        "Keep the tagline meaningful and descriptive; avoid filler that says nothing about what you sell or who you serve.",
+        "Save and check the front end to confirm the title and tagline read correctly in the header and title bar."
+      ],
+      "caveats": [
+        "The tagline is a positioning aid, not a guaranteed ranking mechanism — the source frames it as increasing the chance of appearing, not securing a position.",
+        "Keep it short enough to display cleanly in headers and search snippets."
+      ],
+      "tags": [
+        "store-setup",
+        "wordpress",
+        "positioning",
+        "seo",
+        "copywriting",
+        "landing-page"
+      ],
+      "id": "f7075c8cc1836dd631619870",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 1
+    },
+    {
+      "title": "Choose a Lightweight Ecommerce Theme and Build with a Page Builder",
+      "summary": "Use a lightweight WooCommerce-supporting theme plus a page builder instead of a heavy pre-designed theme for full design control.",
+      "use_when": "Deciding the design stack for a new storefront before you build the homepage, shop and product pages.",
+      "steps": [
+        "Recognise the trade-off: themes change the whole look-and-feel with one activation but constrain design, while a page builder gives control over every element — the source chose the builder route and built from scratch rather than using a template.",
+        "Install a lightweight theme that still brings ecommerce structure. The source used the free Wooify theme, which provides an ecommerce-friendly sidebar for shop widgets and store customisation options.",
+        "Install the page builder (Elementor) plus supporting add-on plugins for extra widgets and forms (the source added Elements Kit and MetForm), a wishlist plugin (MC Wish List / MoreConvert), a variation swatches plugin, and Classic Widgets for widget areas.",
+        "Activate plugins in the correct order: WooCommerce first, then the variation swatches plugin that depends on it. WooCommerce being inactive blocks dependent plugins from activating.",
+        "Expect WooCommerce to auto-create Cart, Checkout, My Account, Shop and Wishlist pages on activation — these are the pages you will design and configure, not replace."
+      ],
+      "caveats": [
+        "A page builder adds weight and its own update surface; the free version omits the theme builder, popups and form widgets that the pro tiers include.",
+        "Plugin slugs and names shift between releases — confirm you are installing the current, actively maintained plugin.",
+        "Build on staging or take a backup before swapping themes on a live store."
+      ],
+      "tags": [
+        "store-setup",
+        "wordpress",
+        "woocommerce",
+        "elementor",
+        "themes",
+        "product-page",
+        "plugins"
+      ],
+      "id": "e91f80fe1721f9b6c9f100ba",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 1
+    },
+    {
+      "title": "Back Up and Clean a Fresh WordPress Install",
+      "summary": "Remove default plugins and dashboard clutter and confirm backups exist before building the store.",
+      "use_when": "Right after installing WordPress and before installing store plugins, to start from a clean, secure base.",
+      "steps": [
+        "Close the welcome popup and either dismiss dashboard widgets individually or use Screen Options to deselect every panel you do not need.",
+        "Go to Plugins, select all default plugins, choose Deactivate from Bulk actions and apply, then select all again and choose Delete — the source deletes the stock plugins as a matter of course.",
+        "Note it is safer to take a backup before bulk deletions; on the recommended hosting plan daily backups are included, so confirm backups are running before you delete.",
+        "Deactivate before deleting — deleting active plugins directly can leave orphaned settings or errors.",
+        "Verify that HTTPS is enforced (Force HTTPS enabled in the hosting panel) so the store serves the secure padlock buyers and search engines expect.",
+        "After installing your store plugin set, reactivate in dependency order, starting with WooCommerce."
+      ],
+      "caveats": [
+        "Some default plugins may be required by the host or by a specific theme; check before deleting.",
+        "Do not delete plugins you have not identified — the source's approach is bulk deletion of known stock plugins, not indiscriminate removal."
+      ],
+      "tags": [
+        "store-setup",
+        "wordpress",
+        "plugins",
+        "security",
+        "backups",
+        "ssl"
+      ],
+      "id": "b44de1f18767c49226326048",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 1
+    },
+    {
+      "title": "Verify Hosting, Domain and SSL Before Building",
+      "summary": "Claim the domain, verify email and enable HTTPS so checkout runs on a secure, controllable foundation.",
+      "use_when": "Commissioning hosting and the domain for a new store, prior to installing WordPress and WooCommerce.",
+      "steps": [
+        "Purchase hosting and claim the included free first-year domain. Choose a term based on budget: the source notes longer terms give bigger discounts and recommends the 48-month lock-in if affordable, but 12 months is fine to start small.",
+        "Register the hosting account with an email you check regularly, because verification codes and domain notices go there.",
+        "Verify the email address for the hosting account and again for the domain registration — the source stresses verification is required to complete domain registration.",
+        "Choose the .com extension for professionalism, checking availability before committing.",
+        "Select the data centre region nearest your target audience when prompted (e.g. a US region for US customers) since this affects site speed for those shoppers.",
+        "Enable Force HTTPS in the hosting panel after WordPress is installed, then log into WordPress admin via the hosting dashboard or by appending /wp-admin to your domain."
+      ],
+      "caveats": [
+        "Term lengths, plan prices and onboarding flows vary and change frequently — treat specific prices or plan names as examples, and verify current terms.",
+        "Rather than relying on an onboarding wizard's layout, the source goes through the host admin panel so the steps remain findable even when onboarding changes."
+      ],
+      "tags": [
+        "store-setup",
+        "hosting",
+        "domain",
+        "ssl",
+        "wordpress",
+        "speed"
+      ],
+      "id": "2946d83f30cb96053794b71d",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 1
+    },
+    {
+      "title": "Build Store Front-End Structure That Mirrors Top Ecommerce Sites",
+      "summary": "Lay out the storefront with the standard components shoppers expect on the homepage, shop and product pages.",
+      "use_when": "Planning homepage and shop-page sections for a new store, so shoppers can search, browse and buy without friction.",
+      "steps": [
+        "Header: logo left, navigation menu centre, and search, account and cart buttons right. Make the cart a mini-cart drawer that opens from the side and links to the full cart page.",
+        "My Account should let customers manage orders, delivery addresses and account details so they self-serve instead of contacting you.",
+        "Homepage order used in the build: banner, call-to-action, best-selling products with add-to-cart, a category section, latest products with a countdown offer, testimonials for trust, blog posts, and a footer.",
+        "Shop page: product grid with add-to-cart and wishlist heart buttons, plus sidebar widgets — product search, price filter, recently viewed products, and category/tag filters.",
+        "Product page: name, description, images, variations, a stock progress bar showing remaining stock, quantity selector, add-to-cart, full description, additional information, reviews and related products.",
+        "Cart and checkout: allow removing items and editing quantities in the cart, then checkout with contact details, billing address, payment method choice, a coupon field that discounts automatically, an order summary showing tax, discount, subtotal and total, and a thank-you page after the order is placed."
+      ],
+      "caveats": [
+        "This is a conventional structure the source copied from large marketplaces, not a validated conversion benchmark — treat each section as a hypothesis to test for your catalog.",
+        "A stock progress bar can create urgency or backfire by discouraging purchase when stock looks low; test it."
+      ],
+      "tags": [
+        "store-setup",
+        "merchandising",
+        "storefront",
+        "product-page",
+        "checkout",
+        "conversion-optimization",
+        "landing-page"
+      ],
+      "id": "c39aeb8d4ca961859a00d1db",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 1
+    }
+  ],
+  "request_id": "da6d593e7fcd1d98313b0abbc961e17927d614d8fb1fc14bc57b52302ab76e20",
+  "ecommerce_scope_version": 1
+}

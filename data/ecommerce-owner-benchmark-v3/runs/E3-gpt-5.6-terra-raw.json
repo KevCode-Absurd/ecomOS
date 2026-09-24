@@ -1,0 +1,942 @@
+{
+  "task": "E3",
+  "model": "gpt-5.6-terra",
+  "method": "raw",
+  "first": {
+    "request_id": "91922e5174a3c703cb420bf1f5cc433cd435b7542b65e0b385fd91cc52fa621f",
+    "provider": "openai",
+    "model": "gpt-5.6-terra",
+    "effort": "medium",
+    "completion_limit": 12288,
+    "usage": {
+      "prompt_tokens": 8577,
+      "completion_tokens": 3231,
+      "total_tokens": 11808,
+      "prompt_tokens_details": {
+        "cached_tokens": 0,
+        "cache_write_tokens": 8574,
+        "audio_tokens": 0
+      },
+      "completion_tokens_details": {
+        "reasoning_tokens": 1822,
+        "audio_tokens": 0,
+        "accepted_prediction_tokens": 0,
+        "rejected_prediction_tokens": 0
+      }
+    },
+    "booked_cost_usd": 0.0602145,
+    "seconds": 39.84,
+    "finish_reason": "stop",
+    "output": {
+      "answer_markdown": "## TrailFold DAY18 mobile PDP experiment — draft build specification\n\n### Treatment: mobile PDP section order and copy\n**1. Product media (first block)**  \nKeep the existing primary product image. Enable image zoom if the theme supports it. Do not add unsupported rain, speed, or 15-inch-laptop visuals.\n\n**2. Product name + price**  \n**Daypack 18L**  \n**$80**\n\n**3. Above-the-fold headline**  \n**A practical daypack for the commute—and a short trip out of town.**\n\n**4. Four-point benefit row**  \n- 18L capacity for daily essentials\n- Padded sleeve for a 13-inch laptop\n- External bottle pocket\n- Water-resistant fabric\n\n**5. Primary CTA**  \n**Add to cart**\n\n**6. Purchase-step reassurance directly below CTA**  \nFree US shipping. Delivery in 4–7 business days.  \n30-day returns on unused products; return shipping is paid by the customer.\n\n**7. Sticky mobile CTA**  \nUse the same CTA label: **Add to cart**. Show price beside or immediately above the button if the theme permits. Do not introduce a discount, countdown, or low-stock message.\n\n**8. Details accordion**  \n**Made for the everyday carry**  \nAn 18L daypack for commuting and short weekend trips, with room for daily essentials, a padded 13-inch laptop sleeve, and an external bottle pocket.\n\n**Key details**  \n- Capacity: 18L  \n- Padded laptop sleeve: fits up to a 13-inch laptop  \n- Fabric: water-resistant, not waterproof  \n- External bottle pocket\n\n**9. FAQ accordion**  \n**Will it fit a 15-inch laptop?**  \nThe padded laptop sleeve is specified for laptops up to 13 inches. We cannot confirm a 15-inch laptop will fit.\n\n**Is it waterproof?**  \nNo. The fabric is water-resistant, not waterproof. It is not designed to keep contents dry in heavy rain or submersion.\n\n**When will my order arrive?**  \nUS orders ship free. Estimated delivery is 4–7 business days.\n\n**What is the return policy?**  \nUnused products can be returned within 30 days. Return shipping is paid by the customer.\n\n### Experiment configuration\n- **Audience:** US mobile visitors to the DAY18 PDP; exclude internal/QA traffic and bots.\n- **Allocation:** 50% current PDP control / 50% treatment, persistent by visitor.\n- **Primary metric:** purchase conversion rate per eligible PDP session.\n- **Secondary metrics:** revenue per eligible PDP session, add-to-cart rate, checkout-start rate.\n- **Guardrails:** error rate, CTA tracking integrity, return/refund rate, and stockouts.\n- **Baseline / MDE:** 2.0% purchase rate; detect a +0.4 percentage-point absolute change (to 2.4%).\n- **Required sample:** 21,000 eligible sessions total, or 10,500 per variant. At 1,200 eligible sessions per week, plan **123 test days** (about 17.5 weeks), assuming traffic remains stable.\n\n### Schedule and dependencies\n**Week 1:** Designer completes the treatment layout/copy (6 hours). Developer builds on a duplicate theme (3 hours) and uses the fourth available hour for event instrumentation and initial device checks.  \n**Week 2:** Developer uses 2 hours for formal QA: iPhone/Android viewport checks, CTA/cart function, sticky CTA behavior, FAQ behavior, analytics event firing, allocation persistence, and control/treatment parity outside the specified modules. Launch only after QA passes and inventory coverage is confirmed.\n\n**Important inventory dependency:** DAY18 has 210 units on hand and sells about 8 units/day, implying stock may run out around day 26 before the confirmed 500-unit replenishment arrives on day 35. The 123-day test also extends well beyond the confirmed replenishment coverage. Do not start the experiment until operations confirms uninterrupted DAY18 availability for the planned run or provides a documented stock-safe traffic/allocation plan.\n\n### No false proof after 14 days\nA 14-day read would produce only about 2,400 eligible sessions—roughly 11% of the required sample. Report it only as an implementation/health check: allocation balance, tracking, errors, and directional funnel movement. Do not call a winner, publish a significance claim, reallocate paid spend based on it, or stop early for an apparent uplift. Decide only after the full 21,000-session sample and pre-specified analysis are complete; document dates, exclusions, traffic-source mix, and any stock interruptions.\n",
+      "actions": {
+        "launch_status": "blocked",
+        "test_days": 123,
+        "designer_hours": 6,
+        "developer_hours": 5,
+        "claimed_statistical_significance": "not claimed",
+        "required_total_sessions": 21000,
+        "required_sessions_per_variant": 10500,
+        "traffic_allocation_control_percent": 50,
+        "traffic_allocation_treatment_percent": 50,
+        "primary_metric_baseline_percent": 2,
+        "minimum_detectable_absolute_improvement_percentage_points": 0.4,
+        "fourteen_day_eligible_sessions_estimate": 2400
+      },
+      "questions": [
+        "Can operations guarantee uninterrupted DAY18 availability for approximately 123 calendar days, or approve a stock-safe alternative before the test starts?",
+        "Does the 1,200 eligible PDP-session estimate already reflect mobile DAY18 PDP traffic after any planned paid-media changes?",
+        "Which experimentation method will provide persistent 50/50 visitor allocation and exportable variant-level purchase sessions?"
+      ],
+      "applied_card_ids": [
+        "bf8e6e41254e4a9f624d369a",
+        "182f13121915fa642c339aff",
+        "fc7c739888fcdf8372969363",
+        "c546525713365ccb5fffcdb4",
+        "4d0785cdcf2b3e6fa3ffcb41",
+        "699a7cd5ac4c6774df818a33"
+      ],
+      "rejected_guidance": [
+        "15-inch-fit reassurance was not added because the product is only specified for a 13-inch laptop sleeve.",
+        "Speed or image-compression claims were not included because no image-weight or field-speed evidence was supplied.",
+        "Generic review/social-proof modules were not added because available customer themes are not licensed verbatim testimonials or verified endorsements."
+      ]
+    },
+    "raw_content": "{\"answer_markdown\":\"## TrailFold DAY18 mobile PDP experiment — draft build specification\\n\\n### Treatment: mobile PDP section order and copy\\n**1. Product media (first block)**  \\nKeep the existing primary product image. Enable image zoom if the theme supports it. Do not add unsupported rain, speed, or 15-inch-laptop visuals.\\n\\n**2. Product name + price**  \\n**Daypack 18L**  \\n**$80**\\n\\n**3. Above-the-fold headline**  \\n**A practical daypack for the commute—and a short trip out of town.**\\n\\n**4. Four-point benefit row**  \\n- 18L capacity for daily essentials\\n- Padded sleeve for a 13-inch laptop\\n- External bottle pocket\\n- Water-resistant fabric\\n\\n**5. Primary CTA**  \\n**Add to cart**\\n\\n**6. Purchase-step reassurance directly below CTA**  \\nFree US shipping. Delivery in 4–7 business days.  \\n30-day returns on unused products; return shipping is paid by the customer.\\n\\n**7. Sticky mobile CTA**  \\nUse the same CTA label: **Add to cart**. Show price beside or immediately above the button if the theme permits. Do not introduce a discount, countdown, or low-stock message.\\n\\n**8. Details accordion**  \\n**Made for the everyday carry**  \\nAn 18L daypack for commuting and short weekend trips, with room for daily essentials, a padded 13-inch laptop sleeve, and an external bottle pocket.\\n\\n**Key details**  \\n- Capacity: 18L  \\n- Padded laptop sleeve: fits up to a 13-inch laptop  \\n- Fabric: water-resistant, not waterproof  \\n- External bottle pocket\\n\\n**9. FAQ accordion**  \\n**Will it fit a 15-inch laptop?**  \\nThe padded laptop sleeve is specified for laptops up to 13 inches. We cannot confirm a 15-inch laptop will fit.\\n\\n**Is it waterproof?**  \\nNo. The fabric is water-resistant, not waterproof. It is not designed to keep contents dry in heavy rain or submersion.\\n\\n**When will my order arrive?**  \\nUS orders ship free. Estimated delivery is 4–7 business days.\\n\\n**What is the return policy?**  \\nUnused products can be returned within 30 days. Return shipping is paid by the customer.\\n\\n### Experiment configuration\\n- **Audience:** US mobile visitors to the DAY18 PDP; exclude internal/QA traffic and bots.\\n- **Allocation:** 50% current PDP control / 50% treatment, persistent by visitor.\\n- **Primary metric:** purchase conversion rate per eligible PDP session.\\n- **Secondary metrics:** revenue per eligible PDP session, add-to-cart rate, checkout-start rate.\\n- **Guardrails:** error rate, CTA tracking integrity, return/refund rate, and stockouts.\\n- **Baseline / MDE:** 2.0% purchase rate; detect a +0.4 percentage-point absolute change (to 2.4%).\\n- **Required sample:** 21,000 eligible sessions total, or 10,500 per variant. At 1,200 eligible sessions per week, plan **123 test days** (about 17.5 weeks), assuming traffic remains stable.\\n\\n### Schedule and dependencies\\n**Week 1:** Designer completes the treatment layout/copy (6 hours). Developer builds on a duplicate theme (3 hours) and uses the fourth available hour for event instrumentation and initial device checks.  \\n**Week 2:** Developer uses 2 hours for formal QA: iPhone/Android viewport checks, CTA/cart function, sticky CTA behavior, FAQ behavior, analytics event firing, allocation persistence, and control/treatment parity outside the specified modules. Launch only after QA passes and inventory coverage is confirmed.\\n\\n**Important inventory dependency:** DAY18 has 210 units on hand and sells about 8 units/day, implying stock may run out around day 26 before the confirmed 500-unit replenishment arrives on day 35. The 123-day test also extends well beyond the confirmed replenishment coverage. Do not start the experiment until operations confirms uninterrupted DAY18 availability for the planned run or provides a documented stock-safe traffic/allocation plan.\\n\\n### No false proof after 14 days\\nA 14-day read would produce only about 2,400 eligible sessions—roughly 11% of the required sample. Report it only as an implementation/health check: allocation balance, tracking, errors, and directional funnel movement. Do not call a winner, publish a significance claim, reallocate paid spend based on it, or stop early for an apparent uplift. Decide only after the full 21,000-session sample and pre-specified analysis are complete; document dates, exclusions, traffic-source mix, and any stock interruptions.\\n\", \"actions\":{\"launch_status\":\"blocked\",\"test_days\":123,\"designer_hours\":6,\"developer_hours\":5,\"claimed_statistical_significance\":\"not claimed\",\"required_total_sessions\":21000,\"required_sessions_per_variant\":10500,\"traffic_allocation_control_percent\":50,\"traffic_allocation_treatment_percent\":50,\"primary_metric_baseline_percent\":2,\"minimum_detectable_absolute_improvement_percentage_points\":0.4,\"fourteen_day_eligible_sessions_estimate\":2400},\"questions\":[\"Can operations guarantee uninterrupted DAY18 availability for approximately 123 calendar days, or approve a stock-safe alternative before the test starts?\",\"Does the 1,200 eligible PDP-session estimate already reflect mobile DAY18 PDP traffic after any planned paid-media changes?\",\"Which experimentation method will provide persistent 50/50 visitor allocation and exportable variant-level purchase sessions?\"],\"applied_card_ids\":[\"bf8e6e41254e4a9f624d369a\",\"182f13121915fa642c339aff\",\"fc7c739888fcdf8372969363\",\"c546525713365ccb5fffcdb4\",\"4d0785cdcf2b3e6fa3ffcb41\",\"699a7cd5ac4c6774df818a33\"],\"rejected_guidance\":[\"15-inch-fit reassurance was not added because the product is only specified for a 13-inch laptop sleeve.\",\"Speed or image-compression claims were not included because no image-weight or field-speed evidence was supplied.\",\"Generic review/social-proof modules were not added because available customer themes are not licensed verbatim testimonials or verified endorsements.\"]}",
+    "input": {
+      "experiment": "owner-v3",
+      "brand": {
+        "fictional": true,
+        "name": "TrailFold",
+        "market": "US",
+        "currency": "USD",
+        "platforms": [
+          "Shopify",
+          "Meta Ads",
+          "Klaviyo"
+        ],
+        "positioning": "Practical lightweight bags for commuters who take short weekend trips; restrained, useful, plain-spoken voice.",
+        "products": [
+          {
+            "sku": "DAY18",
+            "name": "Daypack 18L",
+            "price": 80,
+            "landed_cogs": 28,
+            "pick_pack": 2,
+            "merchant_shipping_cost": 8,
+            "payment_fee_percent": 3,
+            "features": [
+              "18L capacity",
+              "padded 13-inch laptop sleeve",
+              "water-resistant fabric, not waterproof",
+              "external bottle pocket"
+            ],
+            "stock": 210,
+            "daily_units_sold": 8,
+            "confirmed_replenishment_units": 500,
+            "replenishment_arrival_days": 35
+          },
+          {
+            "sku": "POUCH",
+            "name": "Cable pouch",
+            "price": 20,
+            "landed_cogs": 5,
+            "stock": 800
+          },
+          {
+            "sku": "BOTTLE",
+            "name": "Steel bottle",
+            "price": 32,
+            "landed_cogs": 9,
+            "stock": 600
+          }
+        ],
+        "policies": {
+          "shipping": "Free US shipping; delivery estimate 4-7 business days",
+          "returns": "30-day returns for unused products; return shipping paid by customer",
+          "discounts": "No current discount. Any new discount needs owner approval."
+        },
+        "claim_constraints": [
+          "No evidence for waterproof, medical, sustainability or lifetime-durability claims.",
+          "No verified competitor performance data.",
+          "No clinical or controlled product test results."
+        ],
+        "customer_themes": {
+          "simulated_review_count": 120,
+          "themes": [
+            "fits daily commute",
+            "customers ask whether a 15-inch laptop fits",
+            "customers ask whether rain protection means waterproof"
+          ],
+          "support_tickets_last_30_days": {
+            "delivery_date_questions": 42,
+            "15_inch_laptop_fit": 28,
+            "waterproof_questions": 18
+          },
+          "note": "Themes, not verbatim licensed testimonials; no fabricated quotes or endorsements."
+        },
+        "website_snapshot": {
+          "pdp_headline": "Adventure starts here",
+          "first_image": "product on plain background",
+          "pdp_details": "Laptop sizing and delivery window are below reviews; CTA says Buy now. No field speed or session-recording data."
+        },
+        "shopify": {
+          "previous_30_days": {
+            "sessions": 20000,
+            "orders": 600,
+            "net_product_revenue": 54000,
+            "mobile_sessions": 15000,
+            "mobile_orders": 400,
+            "desktop_sessions": 5000,
+            "desktop_orders": 200,
+            "add_to_cart_sessions": 2000,
+            "checkout_started_sessions": 1200
+          },
+          "current_30_days": {
+            "sessions": 25000,
+            "orders": 500,
+            "net_product_revenue": 45000,
+            "mobile_sessions": 20000,
+            "mobile_orders": 300,
+            "desktop_sessions": 5000,
+            "desktop_orders": 200,
+            "add_to_cart_sessions": 2000,
+            "checkout_started_sessions": 1000
+          },
+          "definitions": "Revenue excludes tax/shipping; periods equal length. Funnel counts are session-based and internally consistent, but no controlled attribution experiment.",
+          "new_customer_share_current": 0.72,
+          "cohort_90_day_repeat_rate": 0.14
+        },
+        "meta": {
+          "previous_30_days": {
+            "spend": 18000,
+            "reported_purchase_value": 54000,
+            "cpm": 12,
+            "link_ctr_percent": 1.5
+          },
+          "current_30_days": {
+            "spend": 22000,
+            "reported_purchase_value": 70400,
+            "cpm": 15,
+            "link_ctr_percent": 1.2
+          },
+          "settings": "7-day click plus 1-day view; no incremental lift study. Meta reported value not reconciled to Shopify orders.",
+          "creative_history": [
+            {
+              "name": "Desk-to-trail demonstration",
+              "spend_share": 0.55,
+              "observed_result": "Largest spend recipient; mature creative. No asset-level contribution data."
+            },
+            {
+              "name": "Laptop-fit comparison",
+              "spend_share": 0.25,
+              "observed_result": "Higher CTR in small test; conversion sample not supplied."
+            },
+            {
+              "name": "Minimal product still",
+              "spend_share": 0.2,
+              "observed_result": "No reliable lift estimate."
+            }
+          ]
+        },
+        "klaviyo": {
+          "marketable_profiles": 12000,
+          "reported_attributed_revenue_current": 14000,
+          "attribution_window": "5-day click plus 5-day open",
+          "flows": [
+            {
+              "name": "welcome",
+              "messages": 1,
+              "offer": "none"
+            },
+            {
+              "name": "checkout abandonment",
+              "trigger": "Started Checkout",
+              "messages": 1,
+              "delay_hours": 24,
+              "observed_gap": "No Added to Cart flow; filters not audited."
+            }
+          ],
+          "campaigns_per_week": 3,
+          "reported_open_rate_percent": 52,
+          "click_rate_percent": 1.1,
+          "order_rate_percent": 0.18,
+          "note": "Revenue attribution overlaps other systems; no holdout or recent deliverability audit."
+        },
+        "resources": {
+          "weekly_designer_hours": 8,
+          "weekly_developer_hours": 4,
+          "owner_hours": 4,
+          "next_14_day_test_budget": 3000,
+          "cash_constraint": "Protect replenishment payments; no additional inventory purchase approved."
+        },
+        "unavailable": [
+          "GA4 breakdowns",
+          "Clarity/Hotjar recordings",
+          "field Core Web Vitals",
+          "SKU-level ad acquisition cost",
+          "cohort contribution LTV",
+          "creative-level conversion sample sizes",
+          "channel incrementality",
+          "email holdout data"
+        ]
+      },
+      "task": {
+        "id": "E3",
+        "title": "Mobile PDP experiment with resource scheduling",
+        "request": "Produce implementation-ready mobile PDP copy, FAQ, section order, and an experiment configuration. Only 1200 eligible PDP sessions per week exist; baseline purchase rate 2%, minimum detectable absolute improvement 0.4 percentage points. Analyst supplied required sample 21000 sessions TOTAL; use it, do not recalculate a different test. Propose test_days, designer_hours, developer_hours, claimed_statistical_significance and launch_status. Build needs 6 designer and 3 developer hours; QA needs another 2 developer hours. Only 4 developer hours are available in week one, 4 in week two. Include schedule/dependencies and how you avoid false proof after a 14-day test. No verified 15-inch fit or speed data."
+      },
+      "reference_guidance": "[d1dc0a44255ae0377f186bbb] Answer objections in proportion to price and complexity\nApplies when: Deciding how much content a specific product page needs during PDP build-out.\n- List every objection a buyer could raise: taste, sizing, durability, ethics claims, comfort, shipping, returns.\n- Match each objection to a proof format — reviews and user videos for subjective claims (taste, comfort), spec sheets and certifications for technical claims, comparison tables for price objections.\n- Back abstract claims with evidence: if you say a fabric stretches better, cite the certification; if you say the legging prevents camel toe, show women saying so or photos demonstrating it.\n- If positioning the brand as a new invention or as sustainable, explain why the claim is true and how the product differs, rather than just stating it.\n- Publish a detailed size chart for any apparel product — sizing is the biggest hesitation point in that niche.\n- Add fabric and care information (material benefits, washing instructions, support level for bras and leggings) so buyers don't fear the item degrading.\n- Rule of thumb from the source: the more complicated and the more expensive the product, the more detailed the product page should be.\nCondition: Content depth is a source heuristic, not a tested threshold; a cheap, familiar product does not need a dense page.\n\n[bf8e6e41254e4a9f624d369a] Product page mobile layout: get the add-to-cart within the visible band\nApplies when: Mobile PDP layout work where the buy button sits below a large header, logo, promo text or gallery.\n- Pull a scroll heatmap (the source used Hotjar) for the product page. Read the percentages by depth: everyone in the source's example saw the header and first image, then dropped to 93, 91, 80 and so on, with only 20% of visitors reaching the add-to-cart button.\n- Treat that drop-off as a layout problem: the buy button is effectively invisible to most mobile visitors.\n- Shrink the mobile logo (the source tried values around 120, 110 and even 100px), reduce or single-line the header text, remove oversized gaps, and keep the mobile layout's horizontal real estate working hard.\n- Move variants and quantity directly under the reviews, and try placing the benefit row below the buy button rather than above it — the source suggests testing both orders rather than assuming.\n- Make the add-to-cart button slightly thinner and full page width, and test wording (the source suggests comparing 'add to bag' vs 'add to cart' depending on where your customers are).\n- Make sure the review badge is present on mobile if it's on desktop; in the reviewed store it was missing on mobile.\n- Re-project cost/conversion on a duplicate theme before publishing layout changes.\nCondition: The heatmap percentages are from one reviewed store and are an illustration of reading depth drop-off, not a benchmark.\nCondition: Recommendations such as exact logo pixel size or button thinness are the source's opinions from that review, not universal rules.\nCondition: Layout changes interact: verify the whole PDP after moving blocks.\nCondition: Move variants and quantity directly under the reviews, and try placing the benefit row below the buy button rather than above it — the source suggests testing both orders rather than assuming.\n\n[0c4e0163aff8cea625ae71f6] Compress images to keep files small, especially for mobile shoppers\nApplies when: Your product, banner or section images are still heavy after resizing, and you want faster downloads for mobile visitors.\n- Audit image file weights in your media library or via page inspection; the source's practical threshold is to reduce any image larger than 500KB.\n- Resize first if dimensions are oversized, then run the file through a compression tool — the source names Tiny SEO and Squash as examples.\n- Re-upload the compressed version and confirm the visual result still looks acceptable on the live page.\n- Check that the new file size dropped materially — the source's example went from ~1MB after resize to roughly 100KB when compressed.\n- Treat image compression as user-experience work that can also support conversion rate, per the source, rather than only a technical chore.\nCondition: Compressing too aggressively can visibly degrade image quality; the source does not specify a quality setting.\nCondition: The source presents conversion-rate improvement as a possibility tied to better UX, not a measured benchmark.\nCondition: Compression tools and their interfaces change — verify current options before relying on named tools.\n\n[182f13121915fa642c339aff] Answer purchase-step objections beside Add to Cart and checkout\nApplies when: Shoppers see a clear product offer but abandon at Add to Cart, a bundle selector, a subscription choice, or checkout because the next step feels risky or unclear.\n- Separate product objections from first-step objections. Product objections concern quality, suitability, price, or efficacy. First-step objections concern the act of moving forward: whether checkout is safe, when payment occurs, how delivery works, or whether returns are possible.\n- Identify the dominant uncertainty using support contacts, reviews, session recordings, checkout-abandonment feedback, and shopper interviews.\n- Place a plain-language answer beside the relevant action. Examples include when an order ships, whether a discount is applied automatically, how easy exchanges are, how subscription skips or cancellations work, or why a requested detail is needed to calculate delivery.\n- Explain the purpose of information when it is requested. If location is needed to show delivery dates or product availability, say so before asking rather than leaving shoppers to infer a more intrusive reason.\n- Add relevant social proof around the action where it helps make proceeding feel normal and safe, then measure completed purchases and margin rather than merely CTA clicks.\nCondition: Objections differ by category and shopper segment; do not copy generic reassurance without evidence it addresses the actual hesitation.\nCondition: Clear disclosure cannot compensate for genuinely unattractive shipping, return, pricing, or subscription terms.\n\n[2efef89fb3bf8bc56b2dccd0] Configure Shopify product page section settings\nApplies when: Initial setup of the product page in the theme editor on Shopify.\n- Decide on 'first available variant selected' — the source usually keeps it on, but turns it off when worried customers will add to cart without consciously picking size/color and then request changes.\n- Hide the vendor block unless you stock multiple brands, in which case showing the brand helps buyers.\n- Keep the sticky add-to-cart, especially on mobile — it is user-friendly and eases navigation; you can choose position (center/left/right) and button style.\n- Breadcrumbs are generally recommended and can be kept for SEO.\n- Keep image zoom on if you have good photos, since detail viewing helps buyers.\n- In media settings choose image size and layout: enlarged images suit jewelry/luxury; smaller or collage layouts suit stores that want more images visible, and left-side thumbnails can be awkward if the media isn't scrollable in that theme.\n- Enable 'show all text over image' to display each image's alt text, which you can enter per image in the product admin.\nCondition: Available settings differ by theme — check your theme's options.\nCondition: Test layouts on mobile; the source found some thumbnail arrangements looked broken.\nCondition: Alt-text overlays are cosmetic here, not a substitute for real alt-text SEO.\n\n[f62861431f319d58c0f7e055] Resolve pre-purchase objections beside product, cart and checkout actions\nApplies when: A store has significant PDP or cart abandonment, especially where delivery coverage, returns, fit, subscription terms or post-purchase process are unclear.\n- Separate product objections from first-step inertia. Product objections may concern price or features; first-step objections are the doubts that stop a shopper from adding to cart, starting checkout or entering payment details at all.\n- Use customer-service logs, onsite search, reviews, return reasons, session recordings and survey responses to identify unanswered questions. Common ecommerce examples include delivery area and timing, total cost, duties, stock availability, sizing, compatibility, return process, recurring-charge terms and what happens after purchase.\n- Answer the relevant questions immediately near the associated decision. Put fit and compatibility reassurance near variant selection; delivery and returns near add to cart; payment, fulfilment and support reassurance in cart and checkout.\n- Describe the post-purchase sequence concretely: order confirmation, dispatch timing, tracking, packaging expectations, subscription management and support route. This reduces uncertainty without promising fulfilment standards you cannot meet.\n- Focus optimisation on undecided shoppers rather than only the determined buyers who will purchase despite missing information.\n- Test the content’s effect on add-to-cart, checkout start, purchase completion, cancellation and return rates.\nCondition: The source provides a construction-service example, not a complete ecommerce objection list; validate objections against your own shoppers.\nCondition: More reassurance content can create clutter. Prioritise the questions with demonstrated frequency or commercial impact.\n\n[3d5cfd45530c488dc3ebf2c8] Run Image Compression and Device-Specific Sizing as the First Speed Fix\nApplies when: Improving load time on image-heavy category pages or product detail pages where high-quality product photography is slowing first render.\n- Compress product and lifestyle images while keeping them presentable — the source treats compression as a basic time-saving step, not an optional refinement.\n- Serve dimensions matched to the loading device; an XXL desktop image delivered to a small smartphone is wasted bytes.\n- Generate different image sizes for different pages, usages and devices rather than one master asset for all placements.\n- Combine with a CDN so the correctly sized image is fetched from a server geographically near the shopper.\nCondition: High-quality imagery is a conversion asset for shops, so balance compression against visible quality loss rather than maximizing compression.\nCondition: Do not ship a single downsized master everywhere; the source specifically recommends per-device and per-placement variants.\n\n[41414136b4ab569f361af445] Fix product pages: visuals, descriptions, trust signals and CTA\nApplies when: Your biggest funnel drop is before add-to-cart, or product pages get traffic but don't convert.\n- Visuals: add at least 3–5 real images showing multiple angles with working zoom so buyers can see texture and stitching. Consider a product video or 3D model, which Shopify supports free alongside photos. Example from the source: footwear brand Vessi uses four images per product covering all angles, one lifestyle shot in a puddle, plus a 360-degree video. For anything where size or fit matters, include a scale-reference photo.\n- Descriptions: lead with benefits and support with features ('so soft you'll forget you're wearing it' over 'made with organic cotton'), include sizing and fit information where relevant, and avoid generic copy with no story.\n- Trust: install a review app (the source names Judge.me, Loox and Yotpo) and push for user-generated photos; a murky return policy removes trust — make it clear.\n- Price vs perceived value: if the drop sits here, either strengthen value presentation or reconsider the price, since misalignment is one of the three named conversion killers.\n- CTA: make Add to cart impossible to miss with high contrast and clear text, and test a sticky add-to-cart button that stays visible as mobile shoppers scroll through description and reviews.\n- Consider showing inventory levels when stock is low — 'only three left' creates genuine urgency that can prompt buying now rather than bookmarking.\n- Ask Sidekick: 'Analyze my top product page and suggest improvements' to get recommendations based on your actual content.\nCondition: The claim that product pages cause 60–70% of conversion killers is the presenter's framing, not a measured benchmark.\nCondition: Low-stock urgency only works if stock levels are genuine.\nCondition: Review and UGC use requires customer permission where applicable.\n\n[fc132ec61c87e140858b6ec3] Elementor Responsive Controls for Product and Landing Pages\nApplies when: Your store pages look fine on desktop but cramped, overlapped or unreadable on mobile/tablet, and you need a mobile merchandising fix inside the builder.\n- Open the section/container in Elementor and switch to Mobile or Tablet preview using the responsive device icons at the bottom of the panel.\n- Use the device-specific toggle next to any setting (the little screen icon) so a change applies only to that viewport — this is how you adjust alignment, spacing and sizing per device.\n- Use Advanced > Responsive to hide elements that do not belong on a given device (decorative graphics, wide comparison tables, dense desktop nav).\n- Replace or reposition background images per device so hero imagery stays legible on narrow screens rather than cropping awkwardly.\n- Preview on the actual device or a narrow browser window, not just the builder's preview, before publishing.\nCondition: Hiding content on mobile means that content is gone for mobile buyers — do not hide something they need to make a purchase decision.\nCondition: Per-device overrides multiply settings; document what you changed so later edits do not silently revert.\nCondition: Elementor's panel layout and icon placement change between versions — verify in your current build.\n\n[fc7c739888fcdf8372969363] Make PDPs sales-ready before scaling traffic\nApplies when: Preparing PDPs for paid acquisition, auditing weak add-to-cart performance, or improving merchandising for a product launch.\n- Use accurate, crisp product imagery from multiple angles, supplemented with short demonstrations, lifestyle imagery, or 360-degree views where they genuinely reduce uncertainty.\n- Use clean backgrounds where they help shoppers inspect the item accurately, while retaining contextual imagery that explains use and scale.\n- Write descriptions around the core value proposition, perceived value, benefits, and use cases—not feature lists alone.\n- Make price, shipping cost, delivery expectation, return policy, and warranty details easy to locate without forcing a shopper away from the buying task.\n- Keep the primary Add to Cart action visible without scrolling where the layout permits, and place high-value trust signals near it.\n- Validate product-specific concerns such as sizing, compatibility, ingredients, materials, installation, or care with clear supporting information.\n- Assess changes on add-to-cart rate, conversion rate, revenue per session, and return/refund behavior; a conversion move from 2.0% to 2.5% is materially meaningful at constant traffic.\nCondition: The source cites individual PDP case-study outcomes but provides no universal image count, copy length, or asset specification.\nCondition: More imagery or copy is not automatically better; the useful amount depends on product complexity, mobile layout, and the objections shoppers actually have.\n\n[70af8654d12d6e28d86fb316] Right-Size Images and Pick the Correct Format\nApplies when: Speed tests show images are too large for mobile, or your store's pages load slowly because of oversized image assets.\n- Convert large source images to a full-HD-size JPEG compressed under 1 MB — the source states this is sufficient for any screen size, especially for mobile-majority traffic.\n- Use PNG only when the image needs a transparent background; avoid animated GIFs (unprofessional and heavy) and instead upload a compressed MP4 using an HTML video tag.\n- For above-the-fold assets like the first hero or main product image, do not lazy-load them; they should load immediately.\n- Use preload='none' on videos so they load without blocking other elements.\n- Apply loading='lazy' to images not initially visible; for a carousel, lazy-load the second, third (etc.) images but not the first.\nCondition: 'Under 1 MB JPEG is sufficient for any screen' is the presenter's rule of thumb, not a measurement of your specific catalog.\nCondition: Lazy-loading the first visible image causes layout issues and hurts speed — the source calls this out as a common mistake.\n\n[bb761687ad68b66f17ed0215] Answer four purchase questions above the fold\nApplies when: Auditing the mobile above-the-fold area of a PDP or paid-traffic landing page where shoppers may leave before scrolling.\n- Review the page on a physical phone as well as desktop, because the source emphasizes that ecommerce traffic is predominantly mobile.\n- Make the product and its intended use immediately identifiable; do not require visitors to infer what is being sold.\n- State why this product is the relevant choice through a differentiator or unique mechanism.\n- Give a legitimate reason to purchase now, such as a clearly defined offer, availability consideration, or other substantiated purchase incentive.\n- Show credible trust support in the initial view where feasible, such as relevant review evidence or an outcome-focused proof element.\n- Fix unanswered questions before spending effort on lower-page cosmetics or minor design refinements.\nCondition: The source argues that stock Shopify-style pages commonly fail these questions; assess your actual theme and page rather than assuming it does.\nCondition: It does not specify a mandatory visual order or exact amount of above-fold content.\n\n[bfdcedabc90cc0b41573f7e9] Use an A/B calculator to set test duration on low-traffic stores\nApplies when: Planning how many tests your store can realistically run per month given its traffic and current conversion rate.\n- Enter your current traffic level and baseline conversion rate into an online A/B testing calculator before launching a test. The calculator returns how long the test must run and how many tests are realistically possible at your volume.\n- If you have fewer than roughly 1,000 visitors per week, the source says you realistically cannot run one statistically valid A/B test per week. Do not call a result a win on a sample that small.\n- For low-traffic stores in the range of about 10,000 to 20,000 visitors per month, the source's agency instead reviews objective behavioral data (the source mentions Microsoft Clarity session recordings and heatmaps) and makes changes based on observed friction, then measures what happens over time.\n- With this sequential approach, accept that you cannot attribute the change to a single element the way a 50/50 split would. Treat it as directional evidence and keep the change only if the metric holds after a full business cycle.\n- Re-run the calculator whenever traffic or conversion baseline shifts materially, since the required sample size changes.\nCondition: Statistical significance thresholds and calculator interfaces vary by tool; verify the current tool's assumptions.\nCondition: Sequential before/after changes are confounded by seasonality, promotions and traffic mix; the source explicitly frames them as an alternative to, not equivalent of, a true split test.\n\n[5b56dd4acd8158c16c97a9be] The 25k Visitor A/B Testing Threshold\nApplies when: Deciding whether to invest in an A/B testing tool and program or to focus on research-driven UX fixes first.\n- Estimate monthly visitors to the specific page or funnel you would test, not total site traffic.\n- If the page receives below roughly 25,000–30,000 visitors per month, treat formal A/B tests as unreliable and likely to produce inconclusive or misleading results.\n- Redirect effort to qualitative work in that range: Clarity session recordings, scroll and click maps, and task-based user testing (e.g. UserBrain) to find and fix obvious leaks.\n- Make high-confidence changes — broken elements, unclear headlines, missing proof, distracting navigation — without waiting for statistical proof, since the expected direction is clear.\n- Once a page has enough volume, move to controlled tests (see the FigPii card) and re-verify expected uplift.\nCondition: The 25k–30k figure is the source's heuristic, not a derived calculation; actual required sample size depends on baseline conversion rate and the effect size you want to detect.\nCondition: Running tests below the threshold can still be useful for spotting disasters, but not for declaring winners.\n\n[365c9ff30a244520a723e324] Use big swings rather than micro-tests on low-traffic stores\nApplies when: Building a CRO roadmap for a lower-traffic store that cannot reliably power button-color, small-copy, or image-swap experiments.\n- Avoid spending the roadmap on isolated, low-impact page elements when traffic makes them slow or underpowered.\n- Start with evidence: inspect funnel drop-off and heatmaps, then collect survey and interview feedback to identify the shopper problem a larger redesign should solve.\n- Build substantial variants such as a PDP redesign, a different paid-traffic landing-page concept, a bundle page, or a materially different offer or price point.\n- Evaluate the change by revenue per visitor or session, since an offer or redesign can affect both purchase conversion and average order value.\n- Use the outcome to decide whether to retain the new concept and identify the next structural bottleneck; do not assume a dramatic result merely because the change is large.\nCondition: The source advocates data-based redesigns but does not prescribe what every PDP redesign must include.\nCondition: Claims that large changes can double conversion or revenue per session are presented rhetorically rather than as a general performance expectation.\n\n[91c7b6d064ec5da295da8a88] Choose CRO strategy by monthly session volume\nApplies when: Allocating a store's CRO resources between major redesigns, offer tests, and isolated experiments.\n- Pull monthly sessions and order volume from analytics before choosing a testing model.\n- Treat roughly 300,000 monthly sessions as the source's directional dividing line, not a universal rule. Below it, prioritize big swings: data-informed PDP redesigns, distinct landing-page concepts, and offer or price changes.\n- Above it, if the store also has sufficient orders and a viable conversion rate, invest in comprehensive CRO: audits, quantitative and qualitative research, data analysis, prioritized hypotheses, and isolated AB tests.\n- Check practical test power rather than relying on the traffic threshold alone. If an isolated change cannot receive enough sample, test a larger concept or consolidate changes into a deliberate structural variation.\nCondition: The source does not define a minimum conversion rate, order count, or testable effect size.\nCondition: The 300,000-session line is a source heuristic that the presenter says has changed over time; recalculate feasibility for the individual store.\n\n[3d52bd4930fee9a8577738f6] Choose big swings or comprehensive CRO based on monthly sessions\nApplies when: Choosing a CRO investment approach for a store based on its monthly traffic and ability to generate purchase data.\n- Use the source's internal rule of thumb: below roughly 300,000 monthly sessions, favor bigger changes rather than micro-tests such as button colors or minor copy edits.\n- Prioritize high-impact levers: a data-led PDP or landing-page redesign, monthly offer and price tests, cart/checkout shipping tests, post-purchase upsells and surveys, and tighter ad-to-page message alignment.\n- Above roughly 300,000 sessions, provided order volume is sufficient, build a comprehensive program: qualitative and quantitative research, isolated tests, a roadmap, documented learning loops, and a stack such as GA4, heatmaps, surveys, and session recordings.\n- At higher volume, the source suggests a possible operating pace of four to eight A/B tests monthly; at lower volume, use research to make fewer, larger bets.\nCondition: The 300,000-session line is the source's revised internal benchmark, not a universal cutoff.\nCondition: Assess actual orders, baseline conversion, expected effect size, and required sample size before deciding that a test is viable.\n\n[25979af2691c4a3b80d31a69] Combine quantitative and qualitative research into test hypotheses\nApplies when: Creating a prioritized CRO backlog for a PDP, cart, checkout, or paid-traffic landing page instead of redesigning from preference.\n- Use quantitative evidence first: review funnel drop-off and heatmaps to identify where shoppers hesitate, fail to progress, or never encounter important content.\n- Collect qualitative evidence next through post-purchase surveys, customer interviews, or usability sessions. Ask shoppers what made them buy and what nearly stopped them.\n- Join the two signals into a mechanism-led hypothesis. For example, if visitors do not reach a guarantee section and respondents express risk concerns, test a more visible reassurance treatment.\n- Write the proposed change, affected page, audience, primary metric, and expected shopper behavior before implementation.\n- Prioritize hypotheses only after research is complete, so the team is not merely optimizing the easiest visible page element.\nCondition: The source gives illustrative tools and examples but no sample-size or interview-protocol requirements.\nCondition: A below-the-fold guarantee issue is an example, not evidence that every store should move guarantee content upward.\n\n[c546525713365ccb5fffcdb4] Require statistical power before acting on a test\nApplies when: Deciding whether a PDP, landing-page, cart, checkout, or offer test can produce an actionable result.\n- Define the primary business metric, baseline performance, minimum effect worth detecting, and practical decision deadline before launching the experiment.\n- Calculate the required sample size and planned duration using an appropriate current statistical method or testing platform; do not infer adequacy from a few early conversions.\n- Keep the test running through the planned coverage unless there is a valid operational reason to stop, rather than reacting to one poor day.\n- Check that traffic allocation, tracking, and variant exposure are working as intended before interpreting results.\n- If the required sample is unattainable, do not pretend an underpowered micro-test is conclusive. Test a larger research-led concept, improve traffic volume, or use qualitative evidence to guide a non-experimental change.\nCondition: The source requires statistical power but does not supply a power-calculation method, significance threshold, or minimum detectable effect.\nCondition: A statistically detectable change may still be commercially insignificant; assess revenue and margin impact.\n\n[bc795ed5fe19a0bca719a04f] Run CRO tests with PXL prioritization and two-week minimums\nApplies when: Setting up an A/B testing roadmap for a store or deciding which page experiment to run next.\n- Prioritize with the source's PXL framework: rank hypotheses so the highest-impact, lowest-effort tests run first.\n- Test one element at a time so you know which change drove the result; bundling many changes hides the cause of gains or losses.\n- Run each test for at least two weeks so it covers a full cycle, and confirm the result is statistically significant before acting.\n- Document every test, including losers, and record what you believe made it win or lose; the source says losing tests generated insights that seeded later wins.\n- Keep testing even when you are already above average: the source notes clients converting at 5-6% still test to squeeze more, and cites Amazon running over 12,000 experiments a year.\nCondition: The two-week minimum is the source's rule of thumb; required duration depends on traffic volume and baseline conversion rate.\nCondition: PXL is the source agency's own framework and is not a published standard.\n\n[1bedb6cc775355c355f71e08] PXL Prioritisation Scoring for the Test Backlog\nApplies when: Choosing which of a large backlog of CRO ideas to run first on an ecommerce site with limited traffic or build capacity.\n- List every test idea in a spreadsheet with a column per criterion.\n- Score criteria such as: is it above the fold (1/0); is it noticeable within 5 seconds (2 if very noticeable, 0 if not); does it add or remove a significant element (2 if removing, 0 if adding something new); does it increase user motivation (1/0); is it on a high-traffic page (1/0); does it address an issue found in user testing (1/0); is it supported by heatmaps or eye-tracking (1/0); is it easy to implement (1/0).\n- Total the scores and run the highest-scoring tests first, since they combine this store's evidence with speed of implementation.\n- Keep the scoring consistent across the backlog and re-score as new data arrives.\n- Verify the exact criteria and weightings against the source's current template before standardising on it, as frameworks like this are often revised.\nCondition: The weighting is the presenter's framework, not a validated industry standard; tailor the criteria to your constraints.\nCondition: High-priority easy tests can crowd out larger structural fixes that matter more long term.\n\n[699a7cd5ac4c6774df818a33] Only run A/B tests that can reach valid decisions\nApplies when: Planning a landing-page, PDP, checkout, or offer test—or evaluating a claimed CRO winner from an agency or internal team.\n- Calculate required sample size for the baseline conversion rate, minimum effect worth detecting, confidence level, and statistical power. The source illustrates that detecting a 10–20% lift at a 2.5% conversion rate can require about 1,000 conversions and roughly 40,000 sessions per variant, but calculate the actual requirement for the store.\n- Check whether the relevant page can get that traffic within a sensible period and before seasonality, inventory changes, or campaign shifts invalidate the comparison.\n- Do not inspect results daily and stop as soon as significance appears. The source warns that this practice greatly increases false positives.\n- Prevent contamination: campaign blasts, retention traffic, and other high-intent sources can distort landing-page tests. Where appropriate, route a controlled cold-traffic source to dedicated test pages.\n- Account for repeat clicks and cross-exposure. A shopper who sees more than one variant may dilute or bias a simple split-test comparison.\n- Use primary business metrics such as revenue or contribution per visitor alongside purchase conversion, and document exclusions and test dates.\nCondition: The source's traffic figures are illustrative estimates, not a universal sample-size rule.\nCondition: A/B tests are most feasible where purchase cycles are short and relevant traffic volume is high; lower-volume stores may need stronger qualitative evidence and larger, less frequent changes.\n\n[4d0785cdcf2b3e6fa3ffcb41] Plan A/B tests around calculated sample size, duration, randomization, and QA\nApplies when: Launching a purchase-conversion experiment on a product page, landing page, cart, checkout, or navigation flow.\n- Define the primary purchase metric and calculate the sample size needed from the baseline rate, minimum meaningful effect, confidence requirement, and desired power before launch.\n- The source commonly runs roughly 50,000–100,000 sessions depending on test location and recommends at least two weeks, preferably two to four, so weekday effects repeat.\n- Randomize visitors between control and variation. Use multiple variations or multivariate designs only when traffic is high enough to support them.\n- Distinguish statistical significance from statistical power: a result may look unlikely to be random without having enough data to be reliably repeatable or commercially meaningful.\n- Do not run conflicting tests on the same page area. Separate tests can run on, for example, a homepage and cart, or clearly distinct page regions.\n- QA each experience two or three times before launch; broken tracking, layouts, or CTAs can turn a viable variation into an apparent loser.\nCondition: The source's traffic and duration ranges are operating conventions, not replacements for an actual sample-size calculation.\nCondition: Its preference for above-the-fold, larger changes reflects the source's testing bias rather than a rule for every experiment.\n\n[7d3a4c37853cb0b93449770b] Storytelling That Moves Quant to Qual to Hypothesis to Test\nApplies when: Setting up a repeatable CRO operating rhythm for an ecommerce site rather than running one-off page tweaks.\n- Start with quantitative analysis: GA4 Purchase Journey, Path Exploration, Tech Overview and Landing Pages reports to locate where and on which pages the drops happen.\n- Layer in behavioural tools such as Microsoft Clarity or Hotjar for heatmaps and session recordings to see precisely what users do.\n- Add qualitative methods to learn why: post-purchase surveys, timed mid-session surveys, small-sample user testing and review mining.\n- The source argues qualitative input matters most when a store has under roughly 50,000-80,000 monthly visitors, because quantitative volume alone is insufficient.\n- Turn findings into if-then-because hypotheses, prioritise them with a scoring framework such as PXL, and test the top items in controlled A/B experiments.\n- Never act on a single data source alone; the source defines true data-driven CRO as two, three or four supporting data points behind each change.\n- Re-run user testing after shipping changes to compare before and after.\nCondition: The sequencing is the presenter's recommended process, not a proven universal order; urgent fixes may still precede the full audit.\nCondition: Without enough traffic, A/B tests may not reach significance, so some changes may need to be shipped on judgement with clear rollback plans."
+    },
+    "system_prompt_sha256": "19fa52d4890cab2fc112e25875ff944d7a1753802461639c43bf7fdafc87d7e8"
+  },
+  "final": {
+    "request_id": "24f5792fa6b9267aaf4d2de0750365b845d434753a2e3f7b1a8c0f2c12126c80",
+    "provider": "openai",
+    "model": "gpt-5.6-terra",
+    "effort": "medium",
+    "completion_limit": 12288,
+    "usage": {
+      "prompt_tokens": 10168,
+      "completion_tokens": 1651,
+      "total_tokens": 11819,
+      "prompt_tokens_details": {
+        "cached_tokens": 0,
+        "cache_write_tokens": 10165,
+        "audio_tokens": 0
+      },
+      "completion_tokens_details": {
+        "reasoning_tokens": 198,
+        "audio_tokens": 0,
+        "accepted_prediction_tokens": 0,
+        "rejected_prediction_tokens": 0
+      }
+    },
+    "booked_cost_usd": 0.045232,
+    "seconds": 16.92,
+    "finish_reason": "stop",
+    "output": {
+      "answer_markdown": "## TrailFold DAY18 mobile PDP experiment — draft build specification\n\n### Treatment: mobile PDP order and copy\n**1. Product media**  \nKeep the current first image, with product zoom enabled if the theme supports it. Use the existing product imagery only; do not imply waterproof performance, 15-inch compatibility, or load-speed improvements.\n\n**2. Product name and price**  \n**Daypack 18L**  \n**$80**\n\n**3. Mobile headline**  \n**A practical daypack for the commute—and short trips out of town.**\n\n**4. Benefit row**  \n- 18L capacity for daily essentials  \n- Padded sleeve for a 13-inch laptop  \n- External bottle pocket  \n- Water-resistant fabric\n\n**5. Primary purchase block**  \nFull-width button label: **Add to cart**\n\nDirectly below button:  \n**Free US shipping. Estimated delivery: 4–7 business days.**  \n**30-day returns on unused products. Return shipping is paid by the customer.**\n\nEnable a mobile sticky Add to cart button using the same label. If supported without crowding the viewport, show the $80 price above the sticky button. Do not add discount language, countdowns, or low-stock messages.\n\n**6. Details accordion: Made for everyday carry**  \nAn 18L daypack for commuting and short weekend trips. It includes a padded 13-inch laptop sleeve and an external bottle pocket for daily essentials.\n\n**Key details**  \n- Capacity: 18L  \n- Padded laptop sleeve: specified for laptops up to 13 inches  \n- Fabric: water-resistant, not waterproof  \n- External bottle pocket\n\n**7. FAQ accordion**  \n**Will it fit a 15-inch laptop?**  \nThe padded laptop sleeve is specified for laptops up to 13 inches. We cannot confirm that a 15-inch laptop will fit.\n\n**Is it waterproof?**  \nNo. The fabric is water-resistant, not waterproof. It is not designed to keep contents dry in heavy rain or if submerged.\n\n**When will my order arrive?**  \nUS shipping is free. Estimated delivery is 4–7 business days.\n\n**What is the return policy?**  \nUnused products can be returned within 30 days. Return shipping is paid by the customer.\n\n### Experiment configuration\n- **Audience:** US mobile DAY18 PDP sessions; exclude internal, QA, and bot traffic.\n- **Design:** persistent visitor-level 50/50 split between current PDP control and this bundled treatment. Do not run another DAY18 PDP test during the experiment.\n- **Primary metric:** purchases per eligible PDP session.\n- **Secondary metrics:** revenue per eligible PDP session, add-to-cart rate, and checkout-start rate.\n- **Guardrails:** variant allocation balance, event firing, CTA/cart errors, refund/return rate, stockouts, and traffic-source mix.\n- **Baseline and decision threshold:** 2.0% purchase rate; minimum detectable absolute improvement of 0.4 percentage points.\n- **Required sample:** 21,000 eligible sessions total (10,500 per variant), as supplied. At 1,200 eligible sessions weekly, planned duration is **123 calendar days**. This is a power-based requirement, not a two-week test.\n\n### Schedule, ownership, and launch dependency\n**Week 1:** Designer completes treatment layout and mobile copy in 6 hours. Developer uses 3 hours to build on a duplicate theme and 1 hour to configure experiment events, persistent allocation, and initial device checks.\n\n**Week 2:** Developer uses 2 hours for formal QA: iPhone and Android viewport review, accordion behavior, sticky CTA, add-to-cart/cart flow, purchase-event firing, variant assignment persistence, and control/treatment parity outside the changed blocks. Keep the remaining 2 available developer hours as contingency for QA defects.\n\n**Hard launch dependency — inventory:** DAY18 has 210 units and currently sells about 8 units daily, implying on-hand stock coverage of about 26 days. Confirmed replenishment arrives in 35 days, creating an estimated nine-day availability gap before it arrives. A 123-day experiment also exceeds the coverage supplied by current and confirmed inventory assumptions. Do not launch until operations provides a documented, stock-safe availability plan for the full experiment or the test is redesigned around a feasible traffic and inventory window.\n\n### Preventing false proof after 14 days\nFourteen days yields an estimated 2,400 eligible sessions, only about 11% of the required total. Treat that read solely as an implementation health check: allocation, tracking, errors, stock status, and directional funnel diagnostics. Do not claim significance, name a winner, stop early for apparent uplift, or shift paid spend based on the read. Make a decision only after the pre-specified 21,000-session total is reached and document dates, exclusions, stock interruptions, and traffic-source mix.",
+      "actions": {
+        "launch_status": "blocked",
+        "test_days": 123,
+        "designer_hours": 6,
+        "developer_hours": 5,
+        "claimed_statistical_significance": false,
+        "required_total_sessions": 21000,
+        "required_sessions_per_variant": 10500,
+        "traffic_allocation_control_percent": 50,
+        "traffic_allocation_treatment_percent": 50,
+        "primary_metric_baseline_percent": 2,
+        "minimum_detectable_absolute_improvement_percentage_points": 0.4,
+        "fourteen_day_eligible_sessions_estimate": 2400,
+        "week_one_developer_hours_available": 4,
+        "week_two_developer_hours_available": 4,
+        "week_two_developer_contingency_hours": 2
+      },
+      "questions": [
+        "Can operations commit to uninterrupted DAY18 availability for the full 123-day measurement period, including the estimated gap before replenishment?",
+        "Does the 1,200 weekly eligible-session estimate represent US mobile DAY18 PDP sessions after planned paid-media changes?",
+        "Which testing implementation will provide persistent visitor allocation and variant-level PDP-session and purchase reporting?"
+      ],
+      "applied_card_ids": [
+        "bf8e6e41254e4a9f624d369a",
+        "182f13121915fa642c339aff",
+        "fc7c739888fcdf8372969363",
+        "c546525713365ccb5fffcdb4",
+        "4d0785cdcf2b3e6fa3ffcb41",
+        "699a7cd5ac4c6774df818a33"
+      ],
+      "rejected_guidance": [
+        "No 15-inch laptop-fit reassurance was added because the sleeve is specified only for laptops up to 13 inches.",
+        "No speed or image-compression claim was added because image-weight and field-speed evidence is unavailable.",
+        "No review or testimonial module was added because the supplied themes are not licensed verbatim customer testimonials or verified endorsements."
+      ]
+    },
+    "raw_content": "{\"answer_markdown\":\"## TrailFold DAY18 mobile PDP experiment — draft build specification\\n\\n### Treatment: mobile PDP order and copy\\n**1. Product media**  \\nKeep the current first image, with product zoom enabled if the theme supports it. Use the existing product imagery only; do not imply waterproof performance, 15-inch compatibility, or load-speed improvements.\\n\\n**2. Product name and price**  \\n**Daypack 18L**  \\n**$80**\\n\\n**3. Mobile headline**  \\n**A practical daypack for the commute—and short trips out of town.**\\n\\n**4. Benefit row**  \\n- 18L capacity for daily essentials  \\n- Padded sleeve for a 13-inch laptop  \\n- External bottle pocket  \\n- Water-resistant fabric\\n\\n**5. Primary purchase block**  \\nFull-width button label: **Add to cart**\\n\\nDirectly below button:  \\n**Free US shipping. Estimated delivery: 4–7 business days.**  \\n**30-day returns on unused products. Return shipping is paid by the customer.**\\n\\nEnable a mobile sticky Add to cart button using the same label. If supported without crowding the viewport, show the $80 price above the sticky button. Do not add discount language, countdowns, or low-stock messages.\\n\\n**6. Details accordion: Made for everyday carry**  \\nAn 18L daypack for commuting and short weekend trips. It includes a padded 13-inch laptop sleeve and an external bottle pocket for daily essentials.\\n\\n**Key details**  \\n- Capacity: 18L  \\n- Padded laptop sleeve: specified for laptops up to 13 inches  \\n- Fabric: water-resistant, not waterproof  \\n- External bottle pocket\\n\\n**7. FAQ accordion**  \\n**Will it fit a 15-inch laptop?**  \\nThe padded laptop sleeve is specified for laptops up to 13 inches. We cannot confirm that a 15-inch laptop will fit.\\n\\n**Is it waterproof?**  \\nNo. The fabric is water-resistant, not waterproof. It is not designed to keep contents dry in heavy rain or if submerged.\\n\\n**When will my order arrive?**  \\nUS shipping is free. Estimated delivery is 4–7 business days.\\n\\n**What is the return policy?**  \\nUnused products can be returned within 30 days. Return shipping is paid by the customer.\\n\\n### Experiment configuration\\n- **Audience:** US mobile DAY18 PDP sessions; exclude internal, QA, and bot traffic.\\n- **Design:** persistent visitor-level 50/50 split between current PDP control and this bundled treatment. Do not run another DAY18 PDP test during the experiment.\\n- **Primary metric:** purchases per eligible PDP session.\\n- **Secondary metrics:** revenue per eligible PDP session, add-to-cart rate, and checkout-start rate.\\n- **Guardrails:** variant allocation balance, event firing, CTA/cart errors, refund/return rate, stockouts, and traffic-source mix.\\n- **Baseline and decision threshold:** 2.0% purchase rate; minimum detectable absolute improvement of 0.4 percentage points.\\n- **Required sample:** 21,000 eligible sessions total (10,500 per variant), as supplied. At 1,200 eligible sessions weekly, planned duration is **123 calendar days**. This is a power-based requirement, not a two-week test.\\n\\n### Schedule, ownership, and launch dependency\\n**Week 1:** Designer completes treatment layout and mobile copy in 6 hours. Developer uses 3 hours to build on a duplicate theme and 1 hour to configure experiment events, persistent allocation, and initial device checks.\\n\\n**Week 2:** Developer uses 2 hours for formal QA: iPhone and Android viewport review, accordion behavior, sticky CTA, add-to-cart/cart flow, purchase-event firing, variant assignment persistence, and control/treatment parity outside the changed blocks. Keep the remaining 2 available developer hours as contingency for QA defects.\\n\\n**Hard launch dependency — inventory:** DAY18 has 210 units and currently sells about 8 units daily, implying on-hand stock coverage of about 26 days. Confirmed replenishment arrives in 35 days, creating an estimated nine-day availability gap before it arrives. A 123-day experiment also exceeds the coverage supplied by current and confirmed inventory assumptions. Do not launch until operations provides a documented, stock-safe availability plan for the full experiment or the test is redesigned around a feasible traffic and inventory window.\\n\\n### Preventing false proof after 14 days\\nFourteen days yields an estimated 2,400 eligible sessions, only about 11% of the required total. Treat that read solely as an implementation health check: allocation, tracking, errors, stock status, and directional funnel diagnostics. Do not claim significance, name a winner, stop early for apparent uplift, or shift paid spend based on the read. Make a decision only after the pre-specified 21,000-session total is reached and document dates, exclusions, stock interruptions, and traffic-source mix.\", \"actions\":{\"launch_status\":\"blocked\",\"test_days\":123,\"designer_hours\":6,\"developer_hours\":5,\"claimed_statistical_significance\":false,\"required_total_sessions\":21000,\"required_sessions_per_variant\":10500,\"traffic_allocation_control_percent\":50,\"traffic_allocation_treatment_percent\":50,\"primary_metric_baseline_percent\":2,\"minimum_detectable_absolute_improvement_percentage_points\":0.4,\"fourteen_day_eligible_sessions_estimate\":2400,\"week_one_developer_hours_available\":4,\"week_two_developer_hours_available\":4,\"week_two_developer_contingency_hours\":2},\"questions\":[\"Can operations commit to uninterrupted DAY18 availability for the full 123-day measurement period, including the estimated gap before replenishment?\",\"Does the 1,200 weekly eligible-session estimate represent US mobile DAY18 PDP sessions after planned paid-media changes?\",\"Which testing implementation will provide persistent visitor allocation and variant-level PDP-session and purchase reporting?\"],\"applied_card_ids\":[\"bf8e6e41254e4a9f624d369a\",\"182f13121915fa642c339aff\",\"fc7c739888fcdf8372969363\",\"c546525713365ccb5fffcdb4\",\"4d0785cdcf2b3e6fa3ffcb41\",\"699a7cd5ac4c6774df818a33\"],\"rejected_guidance\":[\"No 15-inch laptop-fit reassurance was added because the sleeve is specified only for laptops up to 13 inches.\",\"No speed or image-compression claim was added because image-weight and field-speed evidence is unavailable.\",\"No review or testimonial module was added because the supplied themes are not licensed verbatim customer testimonials or verified endorsements.\"]}",
+    "input": {
+      "experiment": "owner-v3",
+      "brand": {
+        "fictional": true,
+        "name": "TrailFold",
+        "market": "US",
+        "currency": "USD",
+        "platforms": [
+          "Shopify",
+          "Meta Ads",
+          "Klaviyo"
+        ],
+        "positioning": "Practical lightweight bags for commuters who take short weekend trips; restrained, useful, plain-spoken voice.",
+        "products": [
+          {
+            "sku": "DAY18",
+            "name": "Daypack 18L",
+            "price": 80,
+            "landed_cogs": 28,
+            "pick_pack": 2,
+            "merchant_shipping_cost": 8,
+            "payment_fee_percent": 3,
+            "features": [
+              "18L capacity",
+              "padded 13-inch laptop sleeve",
+              "water-resistant fabric, not waterproof",
+              "external bottle pocket"
+            ],
+            "stock": 210,
+            "daily_units_sold": 8,
+            "confirmed_replenishment_units": 500,
+            "replenishment_arrival_days": 35
+          },
+          {
+            "sku": "POUCH",
+            "name": "Cable pouch",
+            "price": 20,
+            "landed_cogs": 5,
+            "stock": 800
+          },
+          {
+            "sku": "BOTTLE",
+            "name": "Steel bottle",
+            "price": 32,
+            "landed_cogs": 9,
+            "stock": 600
+          }
+        ],
+        "policies": {
+          "shipping": "Free US shipping; delivery estimate 4-7 business days",
+          "returns": "30-day returns for unused products; return shipping paid by customer",
+          "discounts": "No current discount. Any new discount needs owner approval."
+        },
+        "claim_constraints": [
+          "No evidence for waterproof, medical, sustainability or lifetime-durability claims.",
+          "No verified competitor performance data.",
+          "No clinical or controlled product test results."
+        ],
+        "customer_themes": {
+          "simulated_review_count": 120,
+          "themes": [
+            "fits daily commute",
+            "customers ask whether a 15-inch laptop fits",
+            "customers ask whether rain protection means waterproof"
+          ],
+          "support_tickets_last_30_days": {
+            "delivery_date_questions": 42,
+            "15_inch_laptop_fit": 28,
+            "waterproof_questions": 18
+          },
+          "note": "Themes, not verbatim licensed testimonials; no fabricated quotes or endorsements."
+        },
+        "website_snapshot": {
+          "pdp_headline": "Adventure starts here",
+          "first_image": "product on plain background",
+          "pdp_details": "Laptop sizing and delivery window are below reviews; CTA says Buy now. No field speed or session-recording data."
+        },
+        "shopify": {
+          "previous_30_days": {
+            "sessions": 20000,
+            "orders": 600,
+            "net_product_revenue": 54000,
+            "mobile_sessions": 15000,
+            "mobile_orders": 400,
+            "desktop_sessions": 5000,
+            "desktop_orders": 200,
+            "add_to_cart_sessions": 2000,
+            "checkout_started_sessions": 1200
+          },
+          "current_30_days": {
+            "sessions": 25000,
+            "orders": 500,
+            "net_product_revenue": 45000,
+            "mobile_sessions": 20000,
+            "mobile_orders": 300,
+            "desktop_sessions": 5000,
+            "desktop_orders": 200,
+            "add_to_cart_sessions": 2000,
+            "checkout_started_sessions": 1000
+          },
+          "definitions": "Revenue excludes tax/shipping; periods equal length. Funnel counts are session-based and internally consistent, but no controlled attribution experiment.",
+          "new_customer_share_current": 0.72,
+          "cohort_90_day_repeat_rate": 0.14
+        },
+        "meta": {
+          "previous_30_days": {
+            "spend": 18000,
+            "reported_purchase_value": 54000,
+            "cpm": 12,
+            "link_ctr_percent": 1.5
+          },
+          "current_30_days": {
+            "spend": 22000,
+            "reported_purchase_value": 70400,
+            "cpm": 15,
+            "link_ctr_percent": 1.2
+          },
+          "settings": "7-day click plus 1-day view; no incremental lift study. Meta reported value not reconciled to Shopify orders.",
+          "creative_history": [
+            {
+              "name": "Desk-to-trail demonstration",
+              "spend_share": 0.55,
+              "observed_result": "Largest spend recipient; mature creative. No asset-level contribution data."
+            },
+            {
+              "name": "Laptop-fit comparison",
+              "spend_share": 0.25,
+              "observed_result": "Higher CTR in small test; conversion sample not supplied."
+            },
+            {
+              "name": "Minimal product still",
+              "spend_share": 0.2,
+              "observed_result": "No reliable lift estimate."
+            }
+          ]
+        },
+        "klaviyo": {
+          "marketable_profiles": 12000,
+          "reported_attributed_revenue_current": 14000,
+          "attribution_window": "5-day click plus 5-day open",
+          "flows": [
+            {
+              "name": "welcome",
+              "messages": 1,
+              "offer": "none"
+            },
+            {
+              "name": "checkout abandonment",
+              "trigger": "Started Checkout",
+              "messages": 1,
+              "delay_hours": 24,
+              "observed_gap": "No Added to Cart flow; filters not audited."
+            }
+          ],
+          "campaigns_per_week": 3,
+          "reported_open_rate_percent": 52,
+          "click_rate_percent": 1.1,
+          "order_rate_percent": 0.18,
+          "note": "Revenue attribution overlaps other systems; no holdout or recent deliverability audit."
+        },
+        "resources": {
+          "weekly_designer_hours": 8,
+          "weekly_developer_hours": 4,
+          "owner_hours": 4,
+          "next_14_day_test_budget": 3000,
+          "cash_constraint": "Protect replenishment payments; no additional inventory purchase approved."
+        },
+        "unavailable": [
+          "GA4 breakdowns",
+          "Clarity/Hotjar recordings",
+          "field Core Web Vitals",
+          "SKU-level ad acquisition cost",
+          "cohort contribution LTV",
+          "creative-level conversion sample sizes",
+          "channel incrementality",
+          "email holdout data"
+        ]
+      },
+      "task": {
+        "id": "E3",
+        "title": "Mobile PDP experiment with resource scheduling",
+        "request": "Produce implementation-ready mobile PDP copy, FAQ, section order, and an experiment configuration. Only 1200 eligible PDP sessions per week exist; baseline purchase rate 2%, minimum detectable absolute improvement 0.4 percentage points. Analyst supplied required sample 21000 sessions TOTAL; use it, do not recalculate a different test. Propose test_days, designer_hours, developer_hours, claimed_statistical_significance and launch_status. Build needs 6 designer and 3 developer hours; QA needs another 2 developer hours. Only 4 developer hours are available in week one, 4 in week two. Include schedule/dependencies and how you avoid false proof after a 14-day test. No verified 15-inch fit or speed data."
+      },
+      "reference_guidance": "[d1dc0a44255ae0377f186bbb] Answer objections in proportion to price and complexity\nApplies when: Deciding how much content a specific product page needs during PDP build-out.\n- List every objection a buyer could raise: taste, sizing, durability, ethics claims, comfort, shipping, returns.\n- Match each objection to a proof format — reviews and user videos for subjective claims (taste, comfort), spec sheets and certifications for technical claims, comparison tables for price objections.\n- Back abstract claims with evidence: if you say a fabric stretches better, cite the certification; if you say the legging prevents camel toe, show women saying so or photos demonstrating it.\n- If positioning the brand as a new invention or as sustainable, explain why the claim is true and how the product differs, rather than just stating it.\n- Publish a detailed size chart for any apparel product — sizing is the biggest hesitation point in that niche.\n- Add fabric and care information (material benefits, washing instructions, support level for bras and leggings) so buyers don't fear the item degrading.\n- Rule of thumb from the source: the more complicated and the more expensive the product, the more detailed the product page should be.\nCondition: Content depth is a source heuristic, not a tested threshold; a cheap, familiar product does not need a dense page.\n\n[bf8e6e41254e4a9f624d369a] Product page mobile layout: get the add-to-cart within the visible band\nApplies when: Mobile PDP layout work where the buy button sits below a large header, logo, promo text or gallery.\n- Pull a scroll heatmap (the source used Hotjar) for the product page. Read the percentages by depth: everyone in the source's example saw the header and first image, then dropped to 93, 91, 80 and so on, with only 20% of visitors reaching the add-to-cart button.\n- Treat that drop-off as a layout problem: the buy button is effectively invisible to most mobile visitors.\n- Shrink the mobile logo (the source tried values around 120, 110 and even 100px), reduce or single-line the header text, remove oversized gaps, and keep the mobile layout's horizontal real estate working hard.\n- Move variants and quantity directly under the reviews, and try placing the benefit row below the buy button rather than above it — the source suggests testing both orders rather than assuming.\n- Make the add-to-cart button slightly thinner and full page width, and test wording (the source suggests comparing 'add to bag' vs 'add to cart' depending on where your customers are).\n- Make sure the review badge is present on mobile if it's on desktop; in the reviewed store it was missing on mobile.\n- Re-project cost/conversion on a duplicate theme before publishing layout changes.\nCondition: The heatmap percentages are from one reviewed store and are an illustration of reading depth drop-off, not a benchmark.\nCondition: Recommendations such as exact logo pixel size or button thinness are the source's opinions from that review, not universal rules.\nCondition: Layout changes interact: verify the whole PDP after moving blocks.\nCondition: Move variants and quantity directly under the reviews, and try placing the benefit row below the buy button rather than above it — the source suggests testing both orders rather than assuming.\n\n[0c4e0163aff8cea625ae71f6] Compress images to keep files small, especially for mobile shoppers\nApplies when: Your product, banner or section images are still heavy after resizing, and you want faster downloads for mobile visitors.\n- Audit image file weights in your media library or via page inspection; the source's practical threshold is to reduce any image larger than 500KB.\n- Resize first if dimensions are oversized, then run the file through a compression tool — the source names Tiny SEO and Squash as examples.\n- Re-upload the compressed version and confirm the visual result still looks acceptable on the live page.\n- Check that the new file size dropped materially — the source's example went from ~1MB after resize to roughly 100KB when compressed.\n- Treat image compression as user-experience work that can also support conversion rate, per the source, rather than only a technical chore.\nCondition: Compressing too aggressively can visibly degrade image quality; the source does not specify a quality setting.\nCondition: The source presents conversion-rate improvement as a possibility tied to better UX, not a measured benchmark.\nCondition: Compression tools and their interfaces change — verify current options before relying on named tools.\n\n[182f13121915fa642c339aff] Answer purchase-step objections beside Add to Cart and checkout\nApplies when: Shoppers see a clear product offer but abandon at Add to Cart, a bundle selector, a subscription choice, or checkout because the next step feels risky or unclear.\n- Separate product objections from first-step objections. Product objections concern quality, suitability, price, or efficacy. First-step objections concern the act of moving forward: whether checkout is safe, when payment occurs, how delivery works, or whether returns are possible.\n- Identify the dominant uncertainty using support contacts, reviews, session recordings, checkout-abandonment feedback, and shopper interviews.\n- Place a plain-language answer beside the relevant action. Examples include when an order ships, whether a discount is applied automatically, how easy exchanges are, how subscription skips or cancellations work, or why a requested detail is needed to calculate delivery.\n- Explain the purpose of information when it is requested. If location is needed to show delivery dates or product availability, say so before asking rather than leaving shoppers to infer a more intrusive reason.\n- Add relevant social proof around the action where it helps make proceeding feel normal and safe, then measure completed purchases and margin rather than merely CTA clicks.\nCondition: Objections differ by category and shopper segment; do not copy generic reassurance without evidence it addresses the actual hesitation.\nCondition: Clear disclosure cannot compensate for genuinely unattractive shipping, return, pricing, or subscription terms.\n\n[2efef89fb3bf8bc56b2dccd0] Configure Shopify product page section settings\nApplies when: Initial setup of the product page in the theme editor on Shopify.\n- Decide on 'first available variant selected' — the source usually keeps it on, but turns it off when worried customers will add to cart without consciously picking size/color and then request changes.\n- Hide the vendor block unless you stock multiple brands, in which case showing the brand helps buyers.\n- Keep the sticky add-to-cart, especially on mobile — it is user-friendly and eases navigation; you can choose position (center/left/right) and button style.\n- Breadcrumbs are generally recommended and can be kept for SEO.\n- Keep image zoom on if you have good photos, since detail viewing helps buyers.\n- In media settings choose image size and layout: enlarged images suit jewelry/luxury; smaller or collage layouts suit stores that want more images visible, and left-side thumbnails can be awkward if the media isn't scrollable in that theme.\n- Enable 'show all text over image' to display each image's alt text, which you can enter per image in the product admin.\nCondition: Available settings differ by theme — check your theme's options.\nCondition: Test layouts on mobile; the source found some thumbnail arrangements looked broken.\nCondition: Alt-text overlays are cosmetic here, not a substitute for real alt-text SEO.\n\n[f62861431f319d58c0f7e055] Resolve pre-purchase objections beside product, cart and checkout actions\nApplies when: A store has significant PDP or cart abandonment, especially where delivery coverage, returns, fit, subscription terms or post-purchase process are unclear.\n- Separate product objections from first-step inertia. Product objections may concern price or features; first-step objections are the doubts that stop a shopper from adding to cart, starting checkout or entering payment details at all.\n- Use customer-service logs, onsite search, reviews, return reasons, session recordings and survey responses to identify unanswered questions. Common ecommerce examples include delivery area and timing, total cost, duties, stock availability, sizing, compatibility, return process, recurring-charge terms and what happens after purchase.\n- Answer the relevant questions immediately near the associated decision. Put fit and compatibility reassurance near variant selection; delivery and returns near add to cart; payment, fulfilment and support reassurance in cart and checkout.\n- Describe the post-purchase sequence concretely: order confirmation, dispatch timing, tracking, packaging expectations, subscription management and support route. This reduces uncertainty without promising fulfilment standards you cannot meet.\n- Focus optimisation on undecided shoppers rather than only the determined buyers who will purchase despite missing information.\n- Test the content’s effect on add-to-cart, checkout start, purchase completion, cancellation and return rates.\nCondition: The source provides a construction-service example, not a complete ecommerce objection list; validate objections against your own shoppers.\nCondition: More reassurance content can create clutter. Prioritise the questions with demonstrated frequency or commercial impact.\n\n[3d5cfd45530c488dc3ebf2c8] Run Image Compression and Device-Specific Sizing as the First Speed Fix\nApplies when: Improving load time on image-heavy category pages or product detail pages where high-quality product photography is slowing first render.\n- Compress product and lifestyle images while keeping them presentable — the source treats compression as a basic time-saving step, not an optional refinement.\n- Serve dimensions matched to the loading device; an XXL desktop image delivered to a small smartphone is wasted bytes.\n- Generate different image sizes for different pages, usages and devices rather than one master asset for all placements.\n- Combine with a CDN so the correctly sized image is fetched from a server geographically near the shopper.\nCondition: High-quality imagery is a conversion asset for shops, so balance compression against visible quality loss rather than maximizing compression.\nCondition: Do not ship a single downsized master everywhere; the source specifically recommends per-device and per-placement variants.\n\n[41414136b4ab569f361af445] Fix product pages: visuals, descriptions, trust signals and CTA\nApplies when: Your biggest funnel drop is before add-to-cart, or product pages get traffic but don't convert.\n- Visuals: add at least 3–5 real images showing multiple angles with working zoom so buyers can see texture and stitching. Consider a product video or 3D model, which Shopify supports free alongside photos. Example from the source: footwear brand Vessi uses four images per product covering all angles, one lifestyle shot in a puddle, plus a 360-degree video. For anything where size or fit matters, include a scale-reference photo.\n- Descriptions: lead with benefits and support with features ('so soft you'll forget you're wearing it' over 'made with organic cotton'), include sizing and fit information where relevant, and avoid generic copy with no story.\n- Trust: install a review app (the source names Judge.me, Loox and Yotpo) and push for user-generated photos; a murky return policy removes trust — make it clear.\n- Price vs perceived value: if the drop sits here, either strengthen value presentation or reconsider the price, since misalignment is one of the three named conversion killers.\n- CTA: make Add to cart impossible to miss with high contrast and clear text, and test a sticky add-to-cart button that stays visible as mobile shoppers scroll through description and reviews.\n- Consider showing inventory levels when stock is low — 'only three left' creates genuine urgency that can prompt buying now rather than bookmarking.\n- Ask Sidekick: 'Analyze my top product page and suggest improvements' to get recommendations based on your actual content.\nCondition: The claim that product pages cause 60–70% of conversion killers is the presenter's framing, not a measured benchmark.\nCondition: Low-stock urgency only works if stock levels are genuine.\nCondition: Review and UGC use requires customer permission where applicable.\n\n[fc132ec61c87e140858b6ec3] Elementor Responsive Controls for Product and Landing Pages\nApplies when: Your store pages look fine on desktop but cramped, overlapped or unreadable on mobile/tablet, and you need a mobile merchandising fix inside the builder.\n- Open the section/container in Elementor and switch to Mobile or Tablet preview using the responsive device icons at the bottom of the panel.\n- Use the device-specific toggle next to any setting (the little screen icon) so a change applies only to that viewport — this is how you adjust alignment, spacing and sizing per device.\n- Use Advanced > Responsive to hide elements that do not belong on a given device (decorative graphics, wide comparison tables, dense desktop nav).\n- Replace or reposition background images per device so hero imagery stays legible on narrow screens rather than cropping awkwardly.\n- Preview on the actual device or a narrow browser window, not just the builder's preview, before publishing.\nCondition: Hiding content on mobile means that content is gone for mobile buyers — do not hide something they need to make a purchase decision.\nCondition: Per-device overrides multiply settings; document what you changed so later edits do not silently revert.\nCondition: Elementor's panel layout and icon placement change between versions — verify in your current build.\n\n[fc7c739888fcdf8372969363] Make PDPs sales-ready before scaling traffic\nApplies when: Preparing PDPs for paid acquisition, auditing weak add-to-cart performance, or improving merchandising for a product launch.\n- Use accurate, crisp product imagery from multiple angles, supplemented with short demonstrations, lifestyle imagery, or 360-degree views where they genuinely reduce uncertainty.\n- Use clean backgrounds where they help shoppers inspect the item accurately, while retaining contextual imagery that explains use and scale.\n- Write descriptions around the core value proposition, perceived value, benefits, and use cases—not feature lists alone.\n- Make price, shipping cost, delivery expectation, return policy, and warranty details easy to locate without forcing a shopper away from the buying task.\n- Keep the primary Add to Cart action visible without scrolling where the layout permits, and place high-value trust signals near it.\n- Validate product-specific concerns such as sizing, compatibility, ingredients, materials, installation, or care with clear supporting information.\n- Assess changes on add-to-cart rate, conversion rate, revenue per session, and return/refund behavior; a conversion move from 2.0% to 2.5% is materially meaningful at constant traffic.\nCondition: The source cites individual PDP case-study outcomes but provides no universal image count, copy length, or asset specification.\nCondition: More imagery or copy is not automatically better; the useful amount depends on product complexity, mobile layout, and the objections shoppers actually have.\n\n[70af8654d12d6e28d86fb316] Right-Size Images and Pick the Correct Format\nApplies when: Speed tests show images are too large for mobile, or your store's pages load slowly because of oversized image assets.\n- Convert large source images to a full-HD-size JPEG compressed under 1 MB — the source states this is sufficient for any screen size, especially for mobile-majority traffic.\n- Use PNG only when the image needs a transparent background; avoid animated GIFs (unprofessional and heavy) and instead upload a compressed MP4 using an HTML video tag.\n- For above-the-fold assets like the first hero or main product image, do not lazy-load them; they should load immediately.\n- Use preload='none' on videos so they load without blocking other elements.\n- Apply loading='lazy' to images not initially visible; for a carousel, lazy-load the second, third (etc.) images but not the first.\nCondition: 'Under 1 MB JPEG is sufficient for any screen' is the presenter's rule of thumb, not a measurement of your specific catalog.\nCondition: Lazy-loading the first visible image causes layout issues and hurts speed — the source calls this out as a common mistake.\n\n[bb761687ad68b66f17ed0215] Answer four purchase questions above the fold\nApplies when: Auditing the mobile above-the-fold area of a PDP or paid-traffic landing page where shoppers may leave before scrolling.\n- Review the page on a physical phone as well as desktop, because the source emphasizes that ecommerce traffic is predominantly mobile.\n- Make the product and its intended use immediately identifiable; do not require visitors to infer what is being sold.\n- State why this product is the relevant choice through a differentiator or unique mechanism.\n- Give a legitimate reason to purchase now, such as a clearly defined offer, availability consideration, or other substantiated purchase incentive.\n- Show credible trust support in the initial view where feasible, such as relevant review evidence or an outcome-focused proof element.\n- Fix unanswered questions before spending effort on lower-page cosmetics or minor design refinements.\nCondition: The source argues that stock Shopify-style pages commonly fail these questions; assess your actual theme and page rather than assuming it does.\nCondition: It does not specify a mandatory visual order or exact amount of above-fold content.\n\n[bfdcedabc90cc0b41573f7e9] Use an A/B calculator to set test duration on low-traffic stores\nApplies when: Planning how many tests your store can realistically run per month given its traffic and current conversion rate.\n- Enter your current traffic level and baseline conversion rate into an online A/B testing calculator before launching a test. The calculator returns how long the test must run and how many tests are realistically possible at your volume.\n- If you have fewer than roughly 1,000 visitors per week, the source says you realistically cannot run one statistically valid A/B test per week. Do not call a result a win on a sample that small.\n- For low-traffic stores in the range of about 10,000 to 20,000 visitors per month, the source's agency instead reviews objective behavioral data (the source mentions Microsoft Clarity session recordings and heatmaps) and makes changes based on observed friction, then measures what happens over time.\n- With this sequential approach, accept that you cannot attribute the change to a single element the way a 50/50 split would. Treat it as directional evidence and keep the change only if the metric holds after a full business cycle.\n- Re-run the calculator whenever traffic or conversion baseline shifts materially, since the required sample size changes.\nCondition: Statistical significance thresholds and calculator interfaces vary by tool; verify the current tool's assumptions.\nCondition: Sequential before/after changes are confounded by seasonality, promotions and traffic mix; the source explicitly frames them as an alternative to, not equivalent of, a true split test.\n\n[5b56dd4acd8158c16c97a9be] The 25k Visitor A/B Testing Threshold\nApplies when: Deciding whether to invest in an A/B testing tool and program or to focus on research-driven UX fixes first.\n- Estimate monthly visitors to the specific page or funnel you would test, not total site traffic.\n- If the page receives below roughly 25,000–30,000 visitors per month, treat formal A/B tests as unreliable and likely to produce inconclusive or misleading results.\n- Redirect effort to qualitative work in that range: Clarity session recordings, scroll and click maps, and task-based user testing (e.g. UserBrain) to find and fix obvious leaks.\n- Make high-confidence changes — broken elements, unclear headlines, missing proof, distracting navigation — without waiting for statistical proof, since the expected direction is clear.\n- Once a page has enough volume, move to controlled tests (see the FigPii card) and re-verify expected uplift.\nCondition: The 25k–30k figure is the source's heuristic, not a derived calculation; actual required sample size depends on baseline conversion rate and the effect size you want to detect.\nCondition: Running tests below the threshold can still be useful for spotting disasters, but not for declaring winners.\n\n[365c9ff30a244520a723e324] Use big swings rather than micro-tests on low-traffic stores\nApplies when: Building a CRO roadmap for a lower-traffic store that cannot reliably power button-color, small-copy, or image-swap experiments.\n- Avoid spending the roadmap on isolated, low-impact page elements when traffic makes them slow or underpowered.\n- Start with evidence: inspect funnel drop-off and heatmaps, then collect survey and interview feedback to identify the shopper problem a larger redesign should solve.\n- Build substantial variants such as a PDP redesign, a different paid-traffic landing-page concept, a bundle page, or a materially different offer or price point.\n- Evaluate the change by revenue per visitor or session, since an offer or redesign can affect both purchase conversion and average order value.\n- Use the outcome to decide whether to retain the new concept and identify the next structural bottleneck; do not assume a dramatic result merely because the change is large.\nCondition: The source advocates data-based redesigns but does not prescribe what every PDP redesign must include.\nCondition: Claims that large changes can double conversion or revenue per session are presented rhetorically rather than as a general performance expectation.\n\n[91c7b6d064ec5da295da8a88] Choose CRO strategy by monthly session volume\nApplies when: Allocating a store's CRO resources between major redesigns, offer tests, and isolated experiments.\n- Pull monthly sessions and order volume from analytics before choosing a testing model.\n- Treat roughly 300,000 monthly sessions as the source's directional dividing line, not a universal rule. Below it, prioritize big swings: data-informed PDP redesigns, distinct landing-page concepts, and offer or price changes.\n- Above it, if the store also has sufficient orders and a viable conversion rate, invest in comprehensive CRO: audits, quantitative and qualitative research, data analysis, prioritized hypotheses, and isolated AB tests.\n- Check practical test power rather than relying on the traffic threshold alone. If an isolated change cannot receive enough sample, test a larger concept or consolidate changes into a deliberate structural variation.\nCondition: The source does not define a minimum conversion rate, order count, or testable effect size.\nCondition: The 300,000-session line is a source heuristic that the presenter says has changed over time; recalculate feasibility for the individual store.\n\n[3d52bd4930fee9a8577738f6] Choose big swings or comprehensive CRO based on monthly sessions\nApplies when: Choosing a CRO investment approach for a store based on its monthly traffic and ability to generate purchase data.\n- Use the source's internal rule of thumb: below roughly 300,000 monthly sessions, favor bigger changes rather than micro-tests such as button colors or minor copy edits.\n- Prioritize high-impact levers: a data-led PDP or landing-page redesign, monthly offer and price tests, cart/checkout shipping tests, post-purchase upsells and surveys, and tighter ad-to-page message alignment.\n- Above roughly 300,000 sessions, provided order volume is sufficient, build a comprehensive program: qualitative and quantitative research, isolated tests, a roadmap, documented learning loops, and a stack such as GA4, heatmaps, surveys, and session recordings.\n- At higher volume, the source suggests a possible operating pace of four to eight A/B tests monthly; at lower volume, use research to make fewer, larger bets.\nCondition: The 300,000-session line is the source's revised internal benchmark, not a universal cutoff.\nCondition: Assess actual orders, baseline conversion, expected effect size, and required sample size before deciding that a test is viable.\n\n[25979af2691c4a3b80d31a69] Combine quantitative and qualitative research into test hypotheses\nApplies when: Creating a prioritized CRO backlog for a PDP, cart, checkout, or paid-traffic landing page instead of redesigning from preference.\n- Use quantitative evidence first: review funnel drop-off and heatmaps to identify where shoppers hesitate, fail to progress, or never encounter important content.\n- Collect qualitative evidence next through post-purchase surveys, customer interviews, or usability sessions. Ask shoppers what made them buy and what nearly stopped them.\n- Join the two signals into a mechanism-led hypothesis. For example, if visitors do not reach a guarantee section and respondents express risk concerns, test a more visible reassurance treatment.\n- Write the proposed change, affected page, audience, primary metric, and expected shopper behavior before implementation.\n- Prioritize hypotheses only after research is complete, so the team is not merely optimizing the easiest visible page element.\nCondition: The source gives illustrative tools and examples but no sample-size or interview-protocol requirements.\nCondition: A below-the-fold guarantee issue is an example, not evidence that every store should move guarantee content upward.\n\n[c546525713365ccb5fffcdb4] Require statistical power before acting on a test\nApplies when: Deciding whether a PDP, landing-page, cart, checkout, or offer test can produce an actionable result.\n- Define the primary business metric, baseline performance, minimum effect worth detecting, and practical decision deadline before launching the experiment.\n- Calculate the required sample size and planned duration using an appropriate current statistical method or testing platform; do not infer adequacy from a few early conversions.\n- Keep the test running through the planned coverage unless there is a valid operational reason to stop, rather than reacting to one poor day.\n- Check that traffic allocation, tracking, and variant exposure are working as intended before interpreting results.\n- If the required sample is unattainable, do not pretend an underpowered micro-test is conclusive. Test a larger research-led concept, improve traffic volume, or use qualitative evidence to guide a non-experimental change.\nCondition: The source requires statistical power but does not supply a power-calculation method, significance threshold, or minimum detectable effect.\nCondition: A statistically detectable change may still be commercially insignificant; assess revenue and margin impact.\n\n[bc795ed5fe19a0bca719a04f] Run CRO tests with PXL prioritization and two-week minimums\nApplies when: Setting up an A/B testing roadmap for a store or deciding which page experiment to run next.\n- Prioritize with the source's PXL framework: rank hypotheses so the highest-impact, lowest-effort tests run first.\n- Test one element at a time so you know which change drove the result; bundling many changes hides the cause of gains or losses.\n- Run each test for at least two weeks so it covers a full cycle, and confirm the result is statistically significant before acting.\n- Document every test, including losers, and record what you believe made it win or lose; the source says losing tests generated insights that seeded later wins.\n- Keep testing even when you are already above average: the source notes clients converting at 5-6% still test to squeeze more, and cites Amazon running over 12,000 experiments a year.\nCondition: The two-week minimum is the source's rule of thumb; required duration depends on traffic volume and baseline conversion rate.\nCondition: PXL is the source agency's own framework and is not a published standard.\n\n[1bedb6cc775355c355f71e08] PXL Prioritisation Scoring for the Test Backlog\nApplies when: Choosing which of a large backlog of CRO ideas to run first on an ecommerce site with limited traffic or build capacity.\n- List every test idea in a spreadsheet with a column per criterion.\n- Score criteria such as: is it above the fold (1/0); is it noticeable within 5 seconds (2 if very noticeable, 0 if not); does it add or remove a significant element (2 if removing, 0 if adding something new); does it increase user motivation (1/0); is it on a high-traffic page (1/0); does it address an issue found in user testing (1/0); is it supported by heatmaps or eye-tracking (1/0); is it easy to implement (1/0).\n- Total the scores and run the highest-scoring tests first, since they combine this store's evidence with speed of implementation.\n- Keep the scoring consistent across the backlog and re-score as new data arrives.\n- Verify the exact criteria and weightings against the source's current template before standardising on it, as frameworks like this are often revised.\nCondition: The weighting is the presenter's framework, not a validated industry standard; tailor the criteria to your constraints.\nCondition: High-priority easy tests can crowd out larger structural fixes that matter more long term.\n\n[699a7cd5ac4c6774df818a33] Only run A/B tests that can reach valid decisions\nApplies when: Planning a landing-page, PDP, checkout, or offer test—or evaluating a claimed CRO winner from an agency or internal team.\n- Calculate required sample size for the baseline conversion rate, minimum effect worth detecting, confidence level, and statistical power. The source illustrates that detecting a 10–20% lift at a 2.5% conversion rate can require about 1,000 conversions and roughly 40,000 sessions per variant, but calculate the actual requirement for the store.\n- Check whether the relevant page can get that traffic within a sensible period and before seasonality, inventory changes, or campaign shifts invalidate the comparison.\n- Do not inspect results daily and stop as soon as significance appears. The source warns that this practice greatly increases false positives.\n- Prevent contamination: campaign blasts, retention traffic, and other high-intent sources can distort landing-page tests. Where appropriate, route a controlled cold-traffic source to dedicated test pages.\n- Account for repeat clicks and cross-exposure. A shopper who sees more than one variant may dilute or bias a simple split-test comparison.\n- Use primary business metrics such as revenue or contribution per visitor alongside purchase conversion, and document exclusions and test dates.\nCondition: The source's traffic figures are illustrative estimates, not a universal sample-size rule.\nCondition: A/B tests are most feasible where purchase cycles are short and relevant traffic volume is high; lower-volume stores may need stronger qualitative evidence and larger, less frequent changes.\n\n[4d0785cdcf2b3e6fa3ffcb41] Plan A/B tests around calculated sample size, duration, randomization, and QA\nApplies when: Launching a purchase-conversion experiment on a product page, landing page, cart, checkout, or navigation flow.\n- Define the primary purchase metric and calculate the sample size needed from the baseline rate, minimum meaningful effect, confidence requirement, and desired power before launch.\n- The source commonly runs roughly 50,000–100,000 sessions depending on test location and recommends at least two weeks, preferably two to four, so weekday effects repeat.\n- Randomize visitors between control and variation. Use multiple variations or multivariate designs only when traffic is high enough to support them.\n- Distinguish statistical significance from statistical power: a result may look unlikely to be random without having enough data to be reliably repeatable or commercially meaningful.\n- Do not run conflicting tests on the same page area. Separate tests can run on, for example, a homepage and cart, or clearly distinct page regions.\n- QA each experience two or three times before launch; broken tracking, layouts, or CTAs can turn a viable variation into an apparent loser.\nCondition: The source's traffic and duration ranges are operating conventions, not replacements for an actual sample-size calculation.\nCondition: Its preference for above-the-fold, larger changes reflects the source's testing bias rather than a rule for every experiment.\n\n[7d3a4c37853cb0b93449770b] Storytelling That Moves Quant to Qual to Hypothesis to Test\nApplies when: Setting up a repeatable CRO operating rhythm for an ecommerce site rather than running one-off page tweaks.\n- Start with quantitative analysis: GA4 Purchase Journey, Path Exploration, Tech Overview and Landing Pages reports to locate where and on which pages the drops happen.\n- Layer in behavioural tools such as Microsoft Clarity or Hotjar for heatmaps and session recordings to see precisely what users do.\n- Add qualitative methods to learn why: post-purchase surveys, timed mid-session surveys, small-sample user testing and review mining.\n- The source argues qualitative input matters most when a store has under roughly 50,000-80,000 monthly visitors, because quantitative volume alone is insufficient.\n- Turn findings into if-then-because hypotheses, prioritise them with a scoring framework such as PXL, and test the top items in controlled A/B experiments.\n- Never act on a single data source alone; the source defines true data-driven CRO as two, three or four supporting data points behind each change.\n- Re-run user testing after shipping changes to compare before and after.\nCondition: The sequencing is the presenter's recommended process, not a proven universal order; urgent fixes may still precede the full audit.\nCondition: Without enough traffic, A/B tests may not reach significance, so some changes may need to be shipped on judgement with clear rollback plans.",
+      "previous_draft": {
+        "answer_markdown": "## TrailFold DAY18 mobile PDP experiment — draft build specification\n\n### Treatment: mobile PDP section order and copy\n**1. Product media (first block)**  \nKeep the existing primary product image. Enable image zoom if the theme supports it. Do not add unsupported rain, speed, or 15-inch-laptop visuals.\n\n**2. Product name + price**  \n**Daypack 18L**  \n**$80**\n\n**3. Above-the-fold headline**  \n**A practical daypack for the commute—and a short trip out of town.**\n\n**4. Four-point benefit row**  \n- 18L capacity for daily essentials\n- Padded sleeve for a 13-inch laptop\n- External bottle pocket\n- Water-resistant fabric\n\n**5. Primary CTA**  \n**Add to cart**\n\n**6. Purchase-step reassurance directly below CTA**  \nFree US shipping. Delivery in 4–7 business days.  \n30-day returns on unused products; return shipping is paid by the customer.\n\n**7. Sticky mobile CTA**  \nUse the same CTA label: **Add to cart**. Show price beside or immediately above the button if the theme permits. Do not introduce a discount, countdown, or low-stock message.\n\n**8. Details accordion**  \n**Made for the everyday carry**  \nAn 18L daypack for commuting and short weekend trips, with room for daily essentials, a padded 13-inch laptop sleeve, and an external bottle pocket.\n\n**Key details**  \n- Capacity: 18L  \n- Padded laptop sleeve: fits up to a 13-inch laptop  \n- Fabric: water-resistant, not waterproof  \n- External bottle pocket\n\n**9. FAQ accordion**  \n**Will it fit a 15-inch laptop?**  \nThe padded laptop sleeve is specified for laptops up to 13 inches. We cannot confirm a 15-inch laptop will fit.\n\n**Is it waterproof?**  \nNo. The fabric is water-resistant, not waterproof. It is not designed to keep contents dry in heavy rain or submersion.\n\n**When will my order arrive?**  \nUS orders ship free. Estimated delivery is 4–7 business days.\n\n**What is the return policy?**  \nUnused products can be returned within 30 days. Return shipping is paid by the customer.\n\n### Experiment configuration\n- **Audience:** US mobile visitors to the DAY18 PDP; exclude internal/QA traffic and bots.\n- **Allocation:** 50% current PDP control / 50% treatment, persistent by visitor.\n- **Primary metric:** purchase conversion rate per eligible PDP session.\n- **Secondary metrics:** revenue per eligible PDP session, add-to-cart rate, checkout-start rate.\n- **Guardrails:** error rate, CTA tracking integrity, return/refund rate, and stockouts.\n- **Baseline / MDE:** 2.0% purchase rate; detect a +0.4 percentage-point absolute change (to 2.4%).\n- **Required sample:** 21,000 eligible sessions total, or 10,500 per variant. At 1,200 eligible sessions per week, plan **123 test days** (about 17.5 weeks), assuming traffic remains stable.\n\n### Schedule and dependencies\n**Week 1:** Designer completes the treatment layout/copy (6 hours). Developer builds on a duplicate theme (3 hours) and uses the fourth available hour for event instrumentation and initial device checks.  \n**Week 2:** Developer uses 2 hours for formal QA: iPhone/Android viewport checks, CTA/cart function, sticky CTA behavior, FAQ behavior, analytics event firing, allocation persistence, and control/treatment parity outside the specified modules. Launch only after QA passes and inventory coverage is confirmed.\n\n**Important inventory dependency:** DAY18 has 210 units on hand and sells about 8 units/day, implying stock may run out around day 26 before the confirmed 500-unit replenishment arrives on day 35. The 123-day test also extends well beyond the confirmed replenishment coverage. Do not start the experiment until operations confirms uninterrupted DAY18 availability for the planned run or provides a documented stock-safe traffic/allocation plan.\n\n### No false proof after 14 days\nA 14-day read would produce only about 2,400 eligible sessions—roughly 11% of the required sample. Report it only as an implementation/health check: allocation balance, tracking, errors, and directional funnel movement. Do not call a winner, publish a significance claim, reallocate paid spend based on it, or stop early for an apparent uplift. Decide only after the full 21,000-session sample and pre-specified analysis are complete; document dates, exclusions, traffic-source mix, and any stock interruptions.\n",
+        "actions": {
+          "launch_status": "blocked",
+          "test_days": 123,
+          "designer_hours": 6,
+          "developer_hours": 5,
+          "claimed_statistical_significance": "not claimed",
+          "required_total_sessions": 21000,
+          "required_sessions_per_variant": 10500,
+          "traffic_allocation_control_percent": 50,
+          "traffic_allocation_treatment_percent": 50,
+          "primary_metric_baseline_percent": 2,
+          "minimum_detectable_absolute_improvement_percentage_points": 0.4,
+          "fourteen_day_eligible_sessions_estimate": 2400
+        },
+        "questions": [
+          "Can operations guarantee uninterrupted DAY18 availability for approximately 123 calendar days, or approve a stock-safe alternative before the test starts?",
+          "Does the 1,200 eligible PDP-session estimate already reflect mobile DAY18 PDP traffic after any planned paid-media changes?",
+          "Which experimentation method will provide persistent 50/50 visitor allocation and exportable variant-level purchase sessions?"
+        ],
+        "applied_card_ids": [
+          "bf8e6e41254e4a9f624d369a",
+          "182f13121915fa642c339aff",
+          "fc7c739888fcdf8372969363",
+          "c546525713365ccb5fffcdb4",
+          "4d0785cdcf2b3e6fa3ffcb41",
+          "699a7cd5ac4c6774df818a33"
+        ],
+        "rejected_guidance": [
+          "15-inch-fit reassurance was not added because the product is only specified for a 13-inch laptop sleeve.",
+          "Speed or image-compression claims were not included because no image-weight or field-speed evidence was supplied.",
+          "Generic review/social-proof modules were not added because available customer themes are not licensed verbatim testimonials or verified endorsements."
+        ]
+      },
+      "sandbox_feedback": {
+        "checks": {
+          "sample_duration": true,
+          "build_and_qa_developer_hours": true,
+          "designer_hours": true,
+          "no_false_significance": true,
+          "draft_only": true
+        },
+        "passed": 5,
+        "total": 5,
+        "all_pass": true,
+        "note": "Limited semantic action checks; original outputs preserved. These checks do not validate the whole plan or its prose. Formatting deviations are not automatically business errors.",
+        "normalization_notes": [
+          "Normalized explicitly negative significance value to false."
+        ]
+      },
+      "validation_protocol": "semantic-v2",
+      "instruction": "Return the complete revised deliverable. Check prose and schedule as well as fields. Equivalent field names and explicit negative values have been normalized in checks, not altered in your original draft. Passing these limited checks is not proof of full correctness."
+    },
+    "system_prompt_sha256": "19fa52d4890cab2fc112e25875ff944d7a1753802461639c43bf7fdafc87d7e8"
+  },
+  "first_validation": {
+    "checks": {
+      "sample_duration": true,
+      "build_and_qa_developer_hours": true,
+      "designer_hours": true,
+      "no_false_significance": true,
+      "draft_only": true
+    },
+    "passed": 5,
+    "total": 5,
+    "all_pass": true,
+    "note": "Limited semantic action checks; original outputs preserved. These checks do not validate the whole plan or its prose. Formatting deviations are not automatically business errors.",
+    "normalization_notes": [
+      "Normalized explicitly negative significance value to false."
+    ]
+  },
+  "final_validation": {
+    "checks": {
+      "sample_duration": true,
+      "build_and_qa_developer_hours": true,
+      "designer_hours": true,
+      "no_false_significance": true,
+      "draft_only": true
+    },
+    "passed": 5,
+    "total": 5,
+    "all_pass": true,
+    "note": "Limited semantic action checks; original outputs preserved. These checks do not validate the whole plan or its prose. Formatting deviations are not automatically business errors.",
+    "normalization_notes": []
+  },
+  "knowledge_tokens": 6732,
+  "card_ids": [
+    "d1dc0a44255ae0377f186bbb",
+    "bf8e6e41254e4a9f624d369a",
+    "0c4e0163aff8cea625ae71f6",
+    "182f13121915fa642c339aff",
+    "2efef89fb3bf8bc56b2dccd0",
+    "f62861431f319d58c0f7e055",
+    "3d5cfd45530c488dc3ebf2c8",
+    "41414136b4ab569f361af445",
+    "fc132ec61c87e140858b6ec3",
+    "fc7c739888fcdf8372969363",
+    "70af8654d12d6e28d86fb316",
+    "bb761687ad68b66f17ed0215",
+    "bfdcedabc90cc0b41573f7e9",
+    "5b56dd4acd8158c16c97a9be",
+    "365c9ff30a244520a723e324",
+    "91c7b6d064ec5da295da8a88",
+    "3d52bd4930fee9a8577738f6",
+    "25979af2691c4a3b80d31a69",
+    "c546525713365ccb5fffcdb4",
+    "bc795ed5fe19a0bca719a04f",
+    "1bedb6cc775355c355f71e08",
+    "699a7cd5ac4c6774df818a33",
+    "4d0785cdcf2b3e6fa3ffcb41",
+    "7d3a4c37853cb0b93449770b"
+  ],
+  "retrieval_ms": 1217.2702999960165,
+  "selector_seconds": 0,
+  "selector_cost": 0,
+  "superseded_final": {
+    "request_id": "bc199da01029809cdefda74e8e56bb721e2e4e81a2e8d6f0162b9f6dd22053b0",
+    "provider": "openai",
+    "model": "gpt-5.6-terra",
+    "effort": "medium",
+    "completion_limit": 12288,
+    "usage": {
+      "prompt_tokens": 10117,
+      "completion_tokens": 2059,
+      "total_tokens": 12176,
+      "prompt_tokens_details": {
+        "cached_tokens": 0,
+        "cache_write_tokens": 10114,
+        "audio_tokens": 0
+      },
+      "completion_tokens_details": {
+        "reasoning_tokens": 512,
+        "audio_tokens": 0,
+        "accepted_prediction_tokens": 0,
+        "rejected_prediction_tokens": 0
+      }
+    },
+    "booked_cost_usd": 0.0500005,
+    "seconds": 22.25,
+    "finish_reason": "stop",
+    "output": {
+      "answer_markdown": "## TrailFold DAY18 mobile PDP experiment — draft build specification\n\n### Treatment: mobile section order and exact copy\n**1. Product media**  \nRetain the existing product image as the first media item. Keep image zoom if supported. Do not add imagery implying waterproof performance, 15-inch compatibility, or speed claims.\n\n**2. Product name and price**  \n**Daypack 18L**  \n**$80**\n\n**3. Above-the-fold value statement**  \n**A practical daypack for the commute—and a short trip out of town.**\n\n**4. Key details, directly below the headline**  \n- 18L capacity for daily essentials\n- Padded sleeve for a 13-inch laptop\n- External bottle pocket\n- Water-resistant fabric\n\n**5. Primary purchase action**  \nButton label: **Add to cart**\n\n**6. Reassurance directly below Add to cart**  \nFree US shipping. Estimated delivery in 4–7 business days.  \n30-day returns on unused products; return shipping is paid by the customer.\n\n**7. Sticky mobile purchase action**  \nEnable a sticky **Add to cart** button if the theme supports it. Use the same label and show the $80 price adjacent to it where the theme allows. Do not add a discount, countdown, or low-stock message.\n\n**8. Details accordion**  \n**Made for the everyday carry**  \nAn 18L daypack for commuting and short weekend trips, with room for daily essentials, a padded 13-inch laptop sleeve, and an external bottle pocket.\n\n**Key details**  \n- Capacity: 18L\n- Padded laptop sleeve: fits up to a 13-inch laptop\n- Fabric: water-resistant, not waterproof\n- External bottle pocket\n\n**9. FAQ accordion**  \n**Will it fit a 15-inch laptop?**  \nThe padded laptop sleeve is specified for laptops up to 13 inches. We cannot confirm that a 15-inch laptop will fit.\n\n**Is it waterproof?**  \nNo. The fabric is water-resistant, not waterproof. It is not designed to keep contents dry in heavy rain or submersion.\n\n**When will my order arrive?**  \nUS orders ship free. Estimated delivery is 4–7 business days.\n\n**What is the return policy?**  \nUnused products can be returned within 30 days. Return shipping is paid by the customer.\n\n### Experiment configuration\n- **Audience:** US mobile visitors to the DAY18 PDP; exclude internal and QA traffic and known bots.\n- **Design:** persistent 50/50 visitor-level allocation between the current PDP (control) and this full mobile treatment. Do not run other DAY18 PDP tests concurrently.\n- **Primary metric:** purchase conversion rate per eligible PDP session.\n- **Secondary metrics:** revenue per eligible PDP session, add-to-cart rate, and checkout-start rate.\n- **Guardrails:** variant allocation balance, purchase-event integrity, errors, stockouts, and post-purchase return/refund rate.\n- **Baseline / decision threshold:** 2.0% purchase rate; minimum detectable absolute improvement of 0.4 percentage points.\n- **Required sample:** 21,000 eligible sessions total (10,500 per variant), as supplied.\n- **Planned duration:** 123 calendar days at 1,200 eligible sessions per week. This is a planning estimate, not a promise of a valid result if traffic mix, availability, or tracking changes.\n\n### Resource schedule and dependencies\n**Week 1 — 6 designer hours; 4 developer hours**  \nDesigner completes mobile layout, copy placement, accordion states, and sticky-CTA specification (6 hours). Developer builds the variation on a duplicate theme (3 hours) and configures/validates required exposure, PDP, cart, checkout-start, and purchase tracking (1 hour).\n\n**Week 2 — 1 developer hour used; 3 hours reserve**  \nDeveloper completes formal QA (2 hours total across available capacity; use the remaining required hour in week 2): iPhone/Android viewport review, CTA/cart behavior, sticky CTA, FAQ operation, allocation persistence, and control/treatment parity outside the planned modules. Keep remaining week-two capacity as defect reserve. Launch remains blocked until QA passes and inventory continuity is confirmed.\n\n**Inventory dependency:** At the stated eight DAY18 units sold per day, current stock covers about 26 days, while replenishment arrives in 35 days. Current plus confirmed replenishment is 710 units, materially short of roughly 984 units needed across 123 days at that run rate. No additional inventory is approved. Do not start this experiment without an operations-approved, stock-safe plan that prevents stockouts and documents how inventory changes will be handled.\n\n### Preventing false proof after 14 days\nFourteen days yields about 2,400 eligible sessions, only about 11% of the required 21,000. Treat that read as a health check only: allocation balance, event firing, defects, traffic-source mix, and obvious guardrail failures. Do not claim statistical significance, name a winner, shift paid spend, or stop early based on apparent movement. Only analyze the pre-specified purchase metric after the full sample is reached; log dates, exclusions, stock interruptions, and material campaign or site changes. If uninterrupted inventory or stable test conditions cannot be maintained, close the test as inconclusive rather than inferring causality.\n",
+      "actions": {
+        "launch_status": "blocked",
+        "test_days": 123,
+        "designer_hours": 6,
+        "developer_hours": 5,
+        "claimed_statistical_significance": false,
+        "required_total_sessions": 21000,
+        "required_sessions_per_variant": 10500,
+        "traffic_allocation_control_percent": 50,
+        "traffic_allocation_treatment_percent": 50,
+        "primary_metric_baseline_percent": 2,
+        "minimum_detectable_absolute_improvement_percentage_points": 0.4,
+        "fourteen_day_eligible_sessions_estimate": 2400
+      },
+      "questions": [
+        "Can operations approve a documented inventory plan that maintains DAY18 availability for the full 123-day measurement period?",
+        "Does the 1,200 eligible-session weekly forecast represent US mobile DAY18 PDP traffic after planned paid-media activity and exclusions?",
+        "Which testing tool will enforce persistent 50/50 assignment and export variant-level eligible sessions and purchase events?"
+      ],
+      "applied_card_ids": [
+        "bf8e6e41254e4a9f624d369a",
+        "182f13121915fa642c339aff",
+        "fc7c739888fcdf8372969363",
+        "c546525713365ccb5fffcdb4",
+        "4d0785cdcf2b3e6fa3ffcb41",
+        "699a7cd5ac4c6774df818a33"
+      ],
+      "rejected_guidance": [
+        "No 15-inch-fit reassurance was added because DAY18 is specified only for a 13-inch laptop sleeve.",
+        "No speed or image-compression claim was added because image-weight and field-speed evidence is unavailable.",
+        "No reviews, testimonials, or endorsement module was added because the supplied customer themes are not licensed verbatim customer statements.",
+        "No urgency message was added because the planned test cannot rely on inventory scarcity while stock continuity is unresolved."
+      ]
+    },
+    "raw_content": "{\"answer_markdown\":\"## TrailFold DAY18 mobile PDP experiment — draft build specification\\n\\n### Treatment: mobile section order and exact copy\\n**1. Product media**  \\nRetain the existing product image as the first media item. Keep image zoom if supported. Do not add imagery implying waterproof performance, 15-inch compatibility, or speed claims.\\n\\n**2. Product name and price**  \\n**Daypack 18L**  \\n**$80**\\n\\n**3. Above-the-fold value statement**  \\n**A practical daypack for the commute—and a short trip out of town.**\\n\\n**4. Key details, directly below the headline**  \\n- 18L capacity for daily essentials\\n- Padded sleeve for a 13-inch laptop\\n- External bottle pocket\\n- Water-resistant fabric\\n\\n**5. Primary purchase action**  \\nButton label: **Add to cart**\\n\\n**6. Reassurance directly below Add to cart**  \\nFree US shipping. Estimated delivery in 4–7 business days.  \\n30-day returns on unused products; return shipping is paid by the customer.\\n\\n**7. Sticky mobile purchase action**  \\nEnable a sticky **Add to cart** button if the theme supports it. Use the same label and show the $80 price adjacent to it where the theme allows. Do not add a discount, countdown, or low-stock message.\\n\\n**8. Details accordion**  \\n**Made for the everyday carry**  \\nAn 18L daypack for commuting and short weekend trips, with room for daily essentials, a padded 13-inch laptop sleeve, and an external bottle pocket.\\n\\n**Key details**  \\n- Capacity: 18L\\n- Padded laptop sleeve: fits up to a 13-inch laptop\\n- Fabric: water-resistant, not waterproof\\n- External bottle pocket\\n\\n**9. FAQ accordion**  \\n**Will it fit a 15-inch laptop?**  \\nThe padded laptop sleeve is specified for laptops up to 13 inches. We cannot confirm that a 15-inch laptop will fit.\\n\\n**Is it waterproof?**  \\nNo. The fabric is water-resistant, not waterproof. It is not designed to keep contents dry in heavy rain or submersion.\\n\\n**When will my order arrive?**  \\nUS orders ship free. Estimated delivery is 4–7 business days.\\n\\n**What is the return policy?**  \\nUnused products can be returned within 30 days. Return shipping is paid by the customer.\\n\\n### Experiment configuration\\n- **Audience:** US mobile visitors to the DAY18 PDP; exclude internal and QA traffic and known bots.\\n- **Design:** persistent 50/50 visitor-level allocation between the current PDP (control) and this full mobile treatment. Do not run other DAY18 PDP tests concurrently.\\n- **Primary metric:** purchase conversion rate per eligible PDP session.\\n- **Secondary metrics:** revenue per eligible PDP session, add-to-cart rate, and checkout-start rate.\\n- **Guardrails:** variant allocation balance, purchase-event integrity, errors, stockouts, and post-purchase return/refund rate.\\n- **Baseline / decision threshold:** 2.0% purchase rate; minimum detectable absolute improvement of 0.4 percentage points.\\n- **Required sample:** 21,000 eligible sessions total (10,500 per variant), as supplied.\\n- **Planned duration:** 123 calendar days at 1,200 eligible sessions per week. This is a planning estimate, not a promise of a valid result if traffic mix, availability, or tracking changes.\\n\\n### Resource schedule and dependencies\\n**Week 1 — 6 designer hours; 4 developer hours**  \\nDesigner completes mobile layout, copy placement, accordion states, and sticky-CTA specification (6 hours). Developer builds the variation on a duplicate theme (3 hours) and configures/validates required exposure, PDP, cart, checkout-start, and purchase tracking (1 hour).\\n\\n**Week 2 — 1 developer hour used; 3 hours reserve**  \\nDeveloper completes formal QA (2 hours total across available capacity; use the remaining required hour in week 2): iPhone/Android viewport review, CTA/cart behavior, sticky CTA, FAQ operation, allocation persistence, and control/treatment parity outside the planned modules. Keep remaining week-two capacity as defect reserve. Launch remains blocked until QA passes and inventory continuity is confirmed.\\n\\n**Inventory dependency:** At the stated eight DAY18 units sold per day, current stock covers about 26 days, while replenishment arrives in 35 days. Current plus confirmed replenishment is 710 units, materially short of roughly 984 units needed across 123 days at that run rate. No additional inventory is approved. Do not start this experiment without an operations-approved, stock-safe plan that prevents stockouts and documents how inventory changes will be handled.\\n\\n### Preventing false proof after 14 days\\nFourteen days yields about 2,400 eligible sessions, only about 11% of the required 21,000. Treat that read as a health check only: allocation balance, event firing, defects, traffic-source mix, and obvious guardrail failures. Do not claim statistical significance, name a winner, shift paid spend, or stop early based on apparent movement. Only analyze the pre-specified purchase metric after the full sample is reached; log dates, exclusions, stock interruptions, and material campaign or site changes. If uninterrupted inventory or stable test conditions cannot be maintained, close the test as inconclusive rather than inferring causality.\\n\", \"actions\":{\"launch_status\":\"blocked\",\"test_days\":123,\"designer_hours\":6,\"developer_hours\":5,\"claimed_statistical_significance\":false,\"required_total_sessions\":21000,\"required_sessions_per_variant\":10500,\"traffic_allocation_control_percent\":50,\"traffic_allocation_treatment_percent\":50,\"primary_metric_baseline_percent\":2,\"minimum_detectable_absolute_improvement_percentage_points\":0.4,\"fourteen_day_eligible_sessions_estimate\":2400},\"questions\":[\"Can operations approve a documented inventory plan that maintains DAY18 availability for the full 123-day measurement period?\",\"Does the 1,200 eligible-session weekly forecast represent US mobile DAY18 PDP traffic after planned paid-media activity and exclusions?\",\"Which testing tool will enforce persistent 50/50 assignment and export variant-level eligible sessions and purchase events?\"],\"applied_card_ids\":[\"bf8e6e41254e4a9f624d369a\",\"182f13121915fa642c339aff\",\"fc7c739888fcdf8372969363\",\"c546525713365ccb5fffcdb4\",\"4d0785cdcf2b3e6fa3ffcb41\",\"699a7cd5ac4c6774df818a33\"],\"rejected_guidance\":[\"No 15-inch-fit reassurance was added because DAY18 is specified only for a 13-inch laptop sleeve.\",\"No speed or image-compression claim was added because image-weight and field-speed evidence is unavailable.\",\"No reviews, testimonials, or endorsement module was added because the supplied customer themes are not licensed verbatim customer statements.\",\"No urgency message was added because the planned test cannot rely on inventory scarcity while stock continuity is unresolved.\"]}",
+    "input": {
+      "experiment": "owner-v3",
+      "brand": {
+        "fictional": true,
+        "name": "TrailFold",
+        "market": "US",
+        "currency": "USD",
+        "platforms": [
+          "Shopify",
+          "Meta Ads",
+          "Klaviyo"
+        ],
+        "positioning": "Practical lightweight bags for commuters who take short weekend trips; restrained, useful, plain-spoken voice.",
+        "products": [
+          {
+            "sku": "DAY18",
+            "name": "Daypack 18L",
+            "price": 80,
+            "landed_cogs": 28,
+            "pick_pack": 2,
+            "merchant_shipping_cost": 8,
+            "payment_fee_percent": 3,
+            "features": [
+              "18L capacity",
+              "padded 13-inch laptop sleeve",
+              "water-resistant fabric, not waterproof",
+              "external bottle pocket"
+            ],
+            "stock": 210,
+            "daily_units_sold": 8,
+            "confirmed_replenishment_units": 500,
+            "replenishment_arrival_days": 35
+          },
+          {
+            "sku": "POUCH",
+            "name": "Cable pouch",
+            "price": 20,
+            "landed_cogs": 5,
+            "stock": 800
+          },
+          {
+            "sku": "BOTTLE",
+            "name": "Steel bottle",
+            "price": 32,
+            "landed_cogs": 9,
+            "stock": 600
+          }
+        ],
+        "policies": {
+          "shipping": "Free US shipping; delivery estimate 4-7 business days",
+          "returns": "30-day returns for unused products; return shipping paid by customer",
+          "discounts": "No current discount. Any new discount needs owner approval."
+        },
+        "claim_constraints": [
+          "No evidence for waterproof, medical, sustainability or lifetime-durability claims.",
+          "No verified competitor performance data.",
+          "No clinical or controlled product test results."
+        ],
+        "customer_themes": {
+          "simulated_review_count": 120,
+          "themes": [
+            "fits daily commute",
+            "customers ask whether a 15-inch laptop fits",
+            "customers ask whether rain protection means waterproof"
+          ],
+          "support_tickets_last_30_days": {
+            "delivery_date_questions": 42,
+            "15_inch_laptop_fit": 28,
+            "waterproof_questions": 18
+          },
+          "note": "Themes, not verbatim licensed testimonials; no fabricated quotes or endorsements."
+        },
+        "website_snapshot": {
+          "pdp_headline": "Adventure starts here",
+          "first_image": "product on plain background",
+          "pdp_details": "Laptop sizing and delivery window are below reviews; CTA says Buy now. No field speed or session-recording data."
+        },
+        "shopify": {
+          "previous_30_days": {
+            "sessions": 20000,
+            "orders": 600,
+            "net_product_revenue": 54000,
+            "mobile_sessions": 15000,
+            "mobile_orders": 400,
+            "desktop_sessions": 5000,
+            "desktop_orders": 200,
+            "add_to_cart_sessions": 2000,
+            "checkout_started_sessions": 1200
+          },
+          "current_30_days": {
+            "sessions": 25000,
+            "orders": 500,
+            "net_product_revenue": 45000,
+            "mobile_sessions": 20000,
+            "mobile_orders": 300,
+            "desktop_sessions": 5000,
+            "desktop_orders": 200,
+            "add_to_cart_sessions": 2000,
+            "checkout_started_sessions": 1000
+          },
+          "definitions": "Revenue excludes tax/shipping; periods equal length. Funnel counts are session-based and internally consistent, but no controlled attribution experiment.",
+          "new_customer_share_current": 0.72,
+          "cohort_90_day_repeat_rate": 0.14
+        },
+        "meta": {
+          "previous_30_days": {
+            "spend": 18000,
+            "reported_purchase_value": 54000,
+            "cpm": 12,
+            "link_ctr_percent": 1.5
+          },
+          "current_30_days": {
+            "spend": 22000,
+            "reported_purchase_value": 70400,
+            "cpm": 15,
+            "link_ctr_percent": 1.2
+          },
+          "settings": "7-day click plus 1-day view; no incremental lift study. Meta reported value not reconciled to Shopify orders.",
+          "creative_history": [
+            {
+              "name": "Desk-to-trail demonstration",
+              "spend_share": 0.55,
+              "observed_result": "Largest spend recipient; mature creative. No asset-level contribution data."
+            },
+            {
+              "name": "Laptop-fit comparison",
+              "spend_share": 0.25,
+              "observed_result": "Higher CTR in small test; conversion sample not supplied."
+            },
+            {
+              "name": "Minimal product still",
+              "spend_share": 0.2,
+              "observed_result": "No reliable lift estimate."
+            }
+          ]
+        },
+        "klaviyo": {
+          "marketable_profiles": 12000,
+          "reported_attributed_revenue_current": 14000,
+          "attribution_window": "5-day click plus 5-day open",
+          "flows": [
+            {
+              "name": "welcome",
+              "messages": 1,
+              "offer": "none"
+            },
+            {
+              "name": "checkout abandonment",
+              "trigger": "Started Checkout",
+              "messages": 1,
+              "delay_hours": 24,
+              "observed_gap": "No Added to Cart flow; filters not audited."
+            }
+          ],
+          "campaigns_per_week": 3,
+          "reported_open_rate_percent": 52,
+          "click_rate_percent": 1.1,
+          "order_rate_percent": 0.18,
+          "note": "Revenue attribution overlaps other systems; no holdout or recent deliverability audit."
+        },
+        "resources": {
+          "weekly_designer_hours": 8,
+          "weekly_developer_hours": 4,
+          "owner_hours": 4,
+          "next_14_day_test_budget": 3000,
+          "cash_constraint": "Protect replenishment payments; no additional inventory purchase approved."
+        },
+        "unavailable": [
+          "GA4 breakdowns",
+          "Clarity/Hotjar recordings",
+          "field Core Web Vitals",
+          "SKU-level ad acquisition cost",
+          "cohort contribution LTV",
+          "creative-level conversion sample sizes",
+          "channel incrementality",
+          "email holdout data"
+        ]
+      },
+      "task": {
+        "id": "E3",
+        "title": "Mobile PDP experiment with resource scheduling",
+        "request": "Produce implementation-ready mobile PDP copy, FAQ, section order, and an experiment configuration. Only 1200 eligible PDP sessions per week exist; baseline purchase rate 2%, minimum detectable absolute improvement 0.4 percentage points. Analyst supplied required sample 21000 sessions TOTAL; use it, do not recalculate a different test. Propose test_days, designer_hours, developer_hours, claimed_statistical_significance and launch_status. Build needs 6 designer and 3 developer hours; QA needs another 2 developer hours. Only 4 developer hours are available in week one, 4 in week two. Include schedule/dependencies and how you avoid false proof after a 14-day test. No verified 15-inch fit or speed data."
+      },
+      "reference_guidance": "[d1dc0a44255ae0377f186bbb] Answer objections in proportion to price and complexity\nApplies when: Deciding how much content a specific product page needs during PDP build-out.\n- List every objection a buyer could raise: taste, sizing, durability, ethics claims, comfort, shipping, returns.\n- Match each objection to a proof format — reviews and user videos for subjective claims (taste, comfort), spec sheets and certifications for technical claims, comparison tables for price objections.\n- Back abstract claims with evidence: if you say a fabric stretches better, cite the certification; if you say the legging prevents camel toe, show women saying so or photos demonstrating it.\n- If positioning the brand as a new invention or as sustainable, explain why the claim is true and how the product differs, rather than just stating it.\n- Publish a detailed size chart for any apparel product — sizing is the biggest hesitation point in that niche.\n- Add fabric and care information (material benefits, washing instructions, support level for bras and leggings) so buyers don't fear the item degrading.\n- Rule of thumb from the source: the more complicated and the more expensive the product, the more detailed the product page should be.\nCondition: Content depth is a source heuristic, not a tested threshold; a cheap, familiar product does not need a dense page.\n\n[bf8e6e41254e4a9f624d369a] Product page mobile layout: get the add-to-cart within the visible band\nApplies when: Mobile PDP layout work where the buy button sits below a large header, logo, promo text or gallery.\n- Pull a scroll heatmap (the source used Hotjar) for the product page. Read the percentages by depth: everyone in the source's example saw the header and first image, then dropped to 93, 91, 80 and so on, with only 20% of visitors reaching the add-to-cart button.\n- Treat that drop-off as a layout problem: the buy button is effectively invisible to most mobile visitors.\n- Shrink the mobile logo (the source tried values around 120, 110 and even 100px), reduce or single-line the header text, remove oversized gaps, and keep the mobile layout's horizontal real estate working hard.\n- Move variants and quantity directly under the reviews, and try placing the benefit row below the buy button rather than above it — the source suggests testing both orders rather than assuming.\n- Make the add-to-cart button slightly thinner and full page width, and test wording (the source suggests comparing 'add to bag' vs 'add to cart' depending on where your customers are).\n- Make sure the review badge is present on mobile if it's on desktop; in the reviewed store it was missing on mobile.\n- Re-project cost/conversion on a duplicate theme before publishing layout changes.\nCondition: The heatmap percentages are from one reviewed store and are an illustration of reading depth drop-off, not a benchmark.\nCondition: Recommendations such as exact logo pixel size or button thinness are the source's opinions from that review, not universal rules.\nCondition: Layout changes interact: verify the whole PDP after moving blocks.\nCondition: Move variants and quantity directly under the reviews, and try placing the benefit row below the buy button rather than above it — the source suggests testing both orders rather than assuming.\n\n[0c4e0163aff8cea625ae71f6] Compress images to keep files small, especially for mobile shoppers\nApplies when: Your product, banner or section images are still heavy after resizing, and you want faster downloads for mobile visitors.\n- Audit image file weights in your media library or via page inspection; the source's practical threshold is to reduce any image larger than 500KB.\n- Resize first if dimensions are oversized, then run the file through a compression tool — the source names Tiny SEO and Squash as examples.\n- Re-upload the compressed version and confirm the visual result still looks acceptable on the live page.\n- Check that the new file size dropped materially — the source's example went from ~1MB after resize to roughly 100KB when compressed.\n- Treat image compression as user-experience work that can also support conversion rate, per the source, rather than only a technical chore.\nCondition: Compressing too aggressively can visibly degrade image quality; the source does not specify a quality setting.\nCondition: The source presents conversion-rate improvement as a possibility tied to better UX, not a measured benchmark.\nCondition: Compression tools and their interfaces change — verify current options before relying on named tools.\n\n[182f13121915fa642c339aff] Answer purchase-step objections beside Add to Cart and checkout\nApplies when: Shoppers see a clear product offer but abandon at Add to Cart, a bundle selector, a subscription choice, or checkout because the next step feels risky or unclear.\n- Separate product objections from first-step objections. Product objections concern quality, suitability, price, or efficacy. First-step objections concern the act of moving forward: whether checkout is safe, when payment occurs, how delivery works, or whether returns are possible.\n- Identify the dominant uncertainty using support contacts, reviews, session recordings, checkout-abandonment feedback, and shopper interviews.\n- Place a plain-language answer beside the relevant action. Examples include when an order ships, whether a discount is applied automatically, how easy exchanges are, how subscription skips or cancellations work, or why a requested detail is needed to calculate delivery.\n- Explain the purpose of information when it is requested. If location is needed to show delivery dates or product availability, say so before asking rather than leaving shoppers to infer a more intrusive reason.\n- Add relevant social proof around the action where it helps make proceeding feel normal and safe, then measure completed purchases and margin rather than merely CTA clicks.\nCondition: Objections differ by category and shopper segment; do not copy generic reassurance without evidence it addresses the actual hesitation.\nCondition: Clear disclosure cannot compensate for genuinely unattractive shipping, return, pricing, or subscription terms.\n\n[2efef89fb3bf8bc56b2dccd0] Configure Shopify product page section settings\nApplies when: Initial setup of the product page in the theme editor on Shopify.\n- Decide on 'first available variant selected' — the source usually keeps it on, but turns it off when worried customers will add to cart without consciously picking size/color and then request changes.\n- Hide the vendor block unless you stock multiple brands, in which case showing the brand helps buyers.\n- Keep the sticky add-to-cart, especially on mobile — it is user-friendly and eases navigation; you can choose position (center/left/right) and button style.\n- Breadcrumbs are generally recommended and can be kept for SEO.\n- Keep image zoom on if you have good photos, since detail viewing helps buyers.\n- In media settings choose image size and layout: enlarged images suit jewelry/luxury; smaller or collage layouts suit stores that want more images visible, and left-side thumbnails can be awkward if the media isn't scrollable in that theme.\n- Enable 'show all text over image' to display each image's alt text, which you can enter per image in the product admin.\nCondition: Available settings differ by theme — check your theme's options.\nCondition: Test layouts on mobile; the source found some thumbnail arrangements looked broken.\nCondition: Alt-text overlays are cosmetic here, not a substitute for real alt-text SEO.\n\n[f62861431f319d58c0f7e055] Resolve pre-purchase objections beside product, cart and checkout actions\nApplies when: A store has significant PDP or cart abandonment, especially where delivery coverage, returns, fit, subscription terms or post-purchase process are unclear.\n- Separate product objections from first-step inertia. Product objections may concern price or features; first-step objections are the doubts that stop a shopper from adding to cart, starting checkout or entering payment details at all.\n- Use customer-service logs, onsite search, reviews, return reasons, session recordings and survey responses to identify unanswered questions. Common ecommerce examples include delivery area and timing, total cost, duties, stock availability, sizing, compatibility, return process, recurring-charge terms and what happens after purchase.\n- Answer the relevant questions immediately near the associated decision. Put fit and compatibility reassurance near variant selection; delivery and returns near add to cart; payment, fulfilment and support reassurance in cart and checkout.\n- Describe the post-purchase sequence concretely: order confirmation, dispatch timing, tracking, packaging expectations, subscription management and support route. This reduces uncertainty without promising fulfilment standards you cannot meet.\n- Focus optimisation on undecided shoppers rather than only the determined buyers who will purchase despite missing information.\n- Test the content’s effect on add-to-cart, checkout start, purchase completion, cancellation and return rates.\nCondition: The source provides a construction-service example, not a complete ecommerce objection list; validate objections against your own shoppers.\nCondition: More reassurance content can create clutter. Prioritise the questions with demonstrated frequency or commercial impact.\n\n[3d5cfd45530c488dc3ebf2c8] Run Image Compression and Device-Specific Sizing as the First Speed Fix\nApplies when: Improving load time on image-heavy category pages or product detail pages where high-quality product photography is slowing first render.\n- Compress product and lifestyle images while keeping them presentable — the source treats compression as a basic time-saving step, not an optional refinement.\n- Serve dimensions matched to the loading device; an XXL desktop image delivered to a small smartphone is wasted bytes.\n- Generate different image sizes for different pages, usages and devices rather than one master asset for all placements.\n- Combine with a CDN so the correctly sized image is fetched from a server geographically near the shopper.\nCondition: High-quality imagery is a conversion asset for shops, so balance compression against visible quality loss rather than maximizing compression.\nCondition: Do not ship a single downsized master everywhere; the source specifically recommends per-device and per-placement variants.\n\n[41414136b4ab569f361af445] Fix product pages: visuals, descriptions, trust signals and CTA\nApplies when: Your biggest funnel drop is before add-to-cart, or product pages get traffic but don't convert.\n- Visuals: add at least 3–5 real images showing multiple angles with working zoom so buyers can see texture and stitching. Consider a product video or 3D model, which Shopify supports free alongside photos. Example from the source: footwear brand Vessi uses four images per product covering all angles, one lifestyle shot in a puddle, plus a 360-degree video. For anything where size or fit matters, include a scale-reference photo.\n- Descriptions: lead with benefits and support with features ('so soft you'll forget you're wearing it' over 'made with organic cotton'), include sizing and fit information where relevant, and avoid generic copy with no story.\n- Trust: install a review app (the source names Judge.me, Loox and Yotpo) and push for user-generated photos; a murky return policy removes trust — make it clear.\n- Price vs perceived value: if the drop sits here, either strengthen value presentation or reconsider the price, since misalignment is one of the three named conversion killers.\n- CTA: make Add to cart impossible to miss with high contrast and clear text, and test a sticky add-to-cart button that stays visible as mobile shoppers scroll through description and reviews.\n- Consider showing inventory levels when stock is low — 'only three left' creates genuine urgency that can prompt buying now rather than bookmarking.\n- Ask Sidekick: 'Analyze my top product page and suggest improvements' to get recommendations based on your actual content.\nCondition: The claim that product pages cause 60–70% of conversion killers is the presenter's framing, not a measured benchmark.\nCondition: Low-stock urgency only works if stock levels are genuine.\nCondition: Review and UGC use requires customer permission where applicable.\n\n[fc132ec61c87e140858b6ec3] Elementor Responsive Controls for Product and Landing Pages\nApplies when: Your store pages look fine on desktop but cramped, overlapped or unreadable on mobile/tablet, and you need a mobile merchandising fix inside the builder.\n- Open the section/container in Elementor and switch to Mobile or Tablet preview using the responsive device icons at the bottom of the panel.\n- Use the device-specific toggle next to any setting (the little screen icon) so a change applies only to that viewport — this is how you adjust alignment, spacing and sizing per device.\n- Use Advanced > Responsive to hide elements that do not belong on a given device (decorative graphics, wide comparison tables, dense desktop nav).\n- Replace or reposition background images per device so hero imagery stays legible on narrow screens rather than cropping awkwardly.\n- Preview on the actual device or a narrow browser window, not just the builder's preview, before publishing.\nCondition: Hiding content on mobile means that content is gone for mobile buyers — do not hide something they need to make a purchase decision.\nCondition: Per-device overrides multiply settings; document what you changed so later edits do not silently revert.\nCondition: Elementor's panel layout and icon placement change between versions — verify in your current build.\n\n[fc7c739888fcdf8372969363] Make PDPs sales-ready before scaling traffic\nApplies when: Preparing PDPs for paid acquisition, auditing weak add-to-cart performance, or improving merchandising for a product launch.\n- Use accurate, crisp product imagery from multiple angles, supplemented with short demonstrations, lifestyle imagery, or 360-degree views where they genuinely reduce uncertainty.\n- Use clean backgrounds where they help shoppers inspect the item accurately, while retaining contextual imagery that explains use and scale.\n- Write descriptions around the core value proposition, perceived value, benefits, and use cases—not feature lists alone.\n- Make price, shipping cost, delivery expectation, return policy, and warranty details easy to locate without forcing a shopper away from the buying task.\n- Keep the primary Add to Cart action visible without scrolling where the layout permits, and place high-value trust signals near it.\n- Validate product-specific concerns such as sizing, compatibility, ingredients, materials, installation, or care with clear supporting information.\n- Assess changes on add-to-cart rate, conversion rate, revenue per session, and return/refund behavior; a conversion move from 2.0% to 2.5% is materially meaningful at constant traffic.\nCondition: The source cites individual PDP case-study outcomes but provides no universal image count, copy length, or asset specification.\nCondition: More imagery or copy is not automatically better; the useful amount depends on product complexity, mobile layout, and the objections shoppers actually have.\n\n[70af8654d12d6e28d86fb316] Right-Size Images and Pick the Correct Format\nApplies when: Speed tests show images are too large for mobile, or your store's pages load slowly because of oversized image assets.\n- Convert large source images to a full-HD-size JPEG compressed under 1 MB — the source states this is sufficient for any screen size, especially for mobile-majority traffic.\n- Use PNG only when the image needs a transparent background; avoid animated GIFs (unprofessional and heavy) and instead upload a compressed MP4 using an HTML video tag.\n- For above-the-fold assets like the first hero or main product image, do not lazy-load them; they should load immediately.\n- Use preload='none' on videos so they load without blocking other elements.\n- Apply loading='lazy' to images not initially visible; for a carousel, lazy-load the second, third (etc.) images but not the first.\nCondition: 'Under 1 MB JPEG is sufficient for any screen' is the presenter's rule of thumb, not a measurement of your specific catalog.\nCondition: Lazy-loading the first visible image causes layout issues and hurts speed — the source calls this out as a common mistake.\n\n[bb761687ad68b66f17ed0215] Answer four purchase questions above the fold\nApplies when: Auditing the mobile above-the-fold area of a PDP or paid-traffic landing page where shoppers may leave before scrolling.\n- Review the page on a physical phone as well as desktop, because the source emphasizes that ecommerce traffic is predominantly mobile.\n- Make the product and its intended use immediately identifiable; do not require visitors to infer what is being sold.\n- State why this product is the relevant choice through a differentiator or unique mechanism.\n- Give a legitimate reason to purchase now, such as a clearly defined offer, availability consideration, or other substantiated purchase incentive.\n- Show credible trust support in the initial view where feasible, such as relevant review evidence or an outcome-focused proof element.\n- Fix unanswered questions before spending effort on lower-page cosmetics or minor design refinements.\nCondition: The source argues that stock Shopify-style pages commonly fail these questions; assess your actual theme and page rather than assuming it does.\nCondition: It does not specify a mandatory visual order or exact amount of above-fold content.\n\n[bfdcedabc90cc0b41573f7e9] Use an A/B calculator to set test duration on low-traffic stores\nApplies when: Planning how many tests your store can realistically run per month given its traffic and current conversion rate.\n- Enter your current traffic level and baseline conversion rate into an online A/B testing calculator before launching a test. The calculator returns how long the test must run and how many tests are realistically possible at your volume.\n- If you have fewer than roughly 1,000 visitors per week, the source says you realistically cannot run one statistically valid A/B test per week. Do not call a result a win on a sample that small.\n- For low-traffic stores in the range of about 10,000 to 20,000 visitors per month, the source's agency instead reviews objective behavioral data (the source mentions Microsoft Clarity session recordings and heatmaps) and makes changes based on observed friction, then measures what happens over time.\n- With this sequential approach, accept that you cannot attribute the change to a single element the way a 50/50 split would. Treat it as directional evidence and keep the change only if the metric holds after a full business cycle.\n- Re-run the calculator whenever traffic or conversion baseline shifts materially, since the required sample size changes.\nCondition: Statistical significance thresholds and calculator interfaces vary by tool; verify the current tool's assumptions.\nCondition: Sequential before/after changes are confounded by seasonality, promotions and traffic mix; the source explicitly frames them as an alternative to, not equivalent of, a true split test.\n\n[5b56dd4acd8158c16c97a9be] The 25k Visitor A/B Testing Threshold\nApplies when: Deciding whether to invest in an A/B testing tool and program or to focus on research-driven UX fixes first.\n- Estimate monthly visitors to the specific page or funnel you would test, not total site traffic.\n- If the page receives below roughly 25,000–30,000 visitors per month, treat formal A/B tests as unreliable and likely to produce inconclusive or misleading results.\n- Redirect effort to qualitative work in that range: Clarity session recordings, scroll and click maps, and task-based user testing (e.g. UserBrain) to find and fix obvious leaks.\n- Make high-confidence changes — broken elements, unclear headlines, missing proof, distracting navigation — without waiting for statistical proof, since the expected direction is clear.\n- Once a page has enough volume, move to controlled tests (see the FigPii card) and re-verify expected uplift.\nCondition: The 25k–30k figure is the source's heuristic, not a derived calculation; actual required sample size depends on baseline conversion rate and the effect size you want to detect.\nCondition: Running tests below the threshold can still be useful for spotting disasters, but not for declaring winners.\n\n[365c9ff30a244520a723e324] Use big swings rather than micro-tests on low-traffic stores\nApplies when: Building a CRO roadmap for a lower-traffic store that cannot reliably power button-color, small-copy, or image-swap experiments.\n- Avoid spending the roadmap on isolated, low-impact page elements when traffic makes them slow or underpowered.\n- Start with evidence: inspect funnel drop-off and heatmaps, then collect survey and interview feedback to identify the shopper problem a larger redesign should solve.\n- Build substantial variants such as a PDP redesign, a different paid-traffic landing-page concept, a bundle page, or a materially different offer or price point.\n- Evaluate the change by revenue per visitor or session, since an offer or redesign can affect both purchase conversion and average order value.\n- Use the outcome to decide whether to retain the new concept and identify the next structural bottleneck; do not assume a dramatic result merely because the change is large.\nCondition: The source advocates data-based redesigns but does not prescribe what every PDP redesign must include.\nCondition: Claims that large changes can double conversion or revenue per session are presented rhetorically rather than as a general performance expectation.\n\n[91c7b6d064ec5da295da8a88] Choose CRO strategy by monthly session volume\nApplies when: Allocating a store's CRO resources between major redesigns, offer tests, and isolated experiments.\n- Pull monthly sessions and order volume from analytics before choosing a testing model.\n- Treat roughly 300,000 monthly sessions as the source's directional dividing line, not a universal rule. Below it, prioritize big swings: data-informed PDP redesigns, distinct landing-page concepts, and offer or price changes.\n- Above it, if the store also has sufficient orders and a viable conversion rate, invest in comprehensive CRO: audits, quantitative and qualitative research, data analysis, prioritized hypotheses, and isolated AB tests.\n- Check practical test power rather than relying on the traffic threshold alone. If an isolated change cannot receive enough sample, test a larger concept or consolidate changes into a deliberate structural variation.\nCondition: The source does not define a minimum conversion rate, order count, or testable effect size.\nCondition: The 300,000-session line is a source heuristic that the presenter says has changed over time; recalculate feasibility for the individual store.\n\n[3d52bd4930fee9a8577738f6] Choose big swings or comprehensive CRO based on monthly sessions\nApplies when: Choosing a CRO investment approach for a store based on its monthly traffic and ability to generate purchase data.\n- Use the source's internal rule of thumb: below roughly 300,000 monthly sessions, favor bigger changes rather than micro-tests such as button colors or minor copy edits.\n- Prioritize high-impact levers: a data-led PDP or landing-page redesign, monthly offer and price tests, cart/checkout shipping tests, post-purchase upsells and surveys, and tighter ad-to-page message alignment.\n- Above roughly 300,000 sessions, provided order volume is sufficient, build a comprehensive program: qualitative and quantitative research, isolated tests, a roadmap, documented learning loops, and a stack such as GA4, heatmaps, surveys, and session recordings.\n- At higher volume, the source suggests a possible operating pace of four to eight A/B tests monthly; at lower volume, use research to make fewer, larger bets.\nCondition: The 300,000-session line is the source's revised internal benchmark, not a universal cutoff.\nCondition: Assess actual orders, baseline conversion, expected effect size, and required sample size before deciding that a test is viable.\n\n[25979af2691c4a3b80d31a69] Combine quantitative and qualitative research into test hypotheses\nApplies when: Creating a prioritized CRO backlog for a PDP, cart, checkout, or paid-traffic landing page instead of redesigning from preference.\n- Use quantitative evidence first: review funnel drop-off and heatmaps to identify where shoppers hesitate, fail to progress, or never encounter important content.\n- Collect qualitative evidence next through post-purchase surveys, customer interviews, or usability sessions. Ask shoppers what made them buy and what nearly stopped them.\n- Join the two signals into a mechanism-led hypothesis. For example, if visitors do not reach a guarantee section and respondents express risk concerns, test a more visible reassurance treatment.\n- Write the proposed change, affected page, audience, primary metric, and expected shopper behavior before implementation.\n- Prioritize hypotheses only after research is complete, so the team is not merely optimizing the easiest visible page element.\nCondition: The source gives illustrative tools and examples but no sample-size or interview-protocol requirements.\nCondition: A below-the-fold guarantee issue is an example, not evidence that every store should move guarantee content upward.\n\n[c546525713365ccb5fffcdb4] Require statistical power before acting on a test\nApplies when: Deciding whether a PDP, landing-page, cart, checkout, or offer test can produce an actionable result.\n- Define the primary business metric, baseline performance, minimum effect worth detecting, and practical decision deadline before launching the experiment.\n- Calculate the required sample size and planned duration using an appropriate current statistical method or testing platform; do not infer adequacy from a few early conversions.\n- Keep the test running through the planned coverage unless there is a valid operational reason to stop, rather than reacting to one poor day.\n- Check that traffic allocation, tracking, and variant exposure are working as intended before interpreting results.\n- If the required sample is unattainable, do not pretend an underpowered micro-test is conclusive. Test a larger research-led concept, improve traffic volume, or use qualitative evidence to guide a non-experimental change.\nCondition: The source requires statistical power but does not supply a power-calculation method, significance threshold, or minimum detectable effect.\nCondition: A statistically detectable change may still be commercially insignificant; assess revenue and margin impact.\n\n[bc795ed5fe19a0bca719a04f] Run CRO tests with PXL prioritization and two-week minimums\nApplies when: Setting up an A/B testing roadmap for a store or deciding which page experiment to run next.\n- Prioritize with the source's PXL framework: rank hypotheses so the highest-impact, lowest-effort tests run first.\n- Test one element at a time so you know which change drove the result; bundling many changes hides the cause of gains or losses.\n- Run each test for at least two weeks so it covers a full cycle, and confirm the result is statistically significant before acting.\n- Document every test, including losers, and record what you believe made it win or lose; the source says losing tests generated insights that seeded later wins.\n- Keep testing even when you are already above average: the source notes clients converting at 5-6% still test to squeeze more, and cites Amazon running over 12,000 experiments a year.\nCondition: The two-week minimum is the source's rule of thumb; required duration depends on traffic volume and baseline conversion rate.\nCondition: PXL is the source agency's own framework and is not a published standard.\n\n[1bedb6cc775355c355f71e08] PXL Prioritisation Scoring for the Test Backlog\nApplies when: Choosing which of a large backlog of CRO ideas to run first on an ecommerce site with limited traffic or build capacity.\n- List every test idea in a spreadsheet with a column per criterion.\n- Score criteria such as: is it above the fold (1/0); is it noticeable within 5 seconds (2 if very noticeable, 0 if not); does it add or remove a significant element (2 if removing, 0 if adding something new); does it increase user motivation (1/0); is it on a high-traffic page (1/0); does it address an issue found in user testing (1/0); is it supported by heatmaps or eye-tracking (1/0); is it easy to implement (1/0).\n- Total the scores and run the highest-scoring tests first, since they combine this store's evidence with speed of implementation.\n- Keep the scoring consistent across the backlog and re-score as new data arrives.\n- Verify the exact criteria and weightings against the source's current template before standardising on it, as frameworks like this are often revised.\nCondition: The weighting is the presenter's framework, not a validated industry standard; tailor the criteria to your constraints.\nCondition: High-priority easy tests can crowd out larger structural fixes that matter more long term.\n\n[699a7cd5ac4c6774df818a33] Only run A/B tests that can reach valid decisions\nApplies when: Planning a landing-page, PDP, checkout, or offer test—or evaluating a claimed CRO winner from an agency or internal team.\n- Calculate required sample size for the baseline conversion rate, minimum effect worth detecting, confidence level, and statistical power. The source illustrates that detecting a 10–20% lift at a 2.5% conversion rate can require about 1,000 conversions and roughly 40,000 sessions per variant, but calculate the actual requirement for the store.\n- Check whether the relevant page can get that traffic within a sensible period and before seasonality, inventory changes, or campaign shifts invalidate the comparison.\n- Do not inspect results daily and stop as soon as significance appears. The source warns that this practice greatly increases false positives.\n- Prevent contamination: campaign blasts, retention traffic, and other high-intent sources can distort landing-page tests. Where appropriate, route a controlled cold-traffic source to dedicated test pages.\n- Account for repeat clicks and cross-exposure. A shopper who sees more than one variant may dilute or bias a simple split-test comparison.\n- Use primary business metrics such as revenue or contribution per visitor alongside purchase conversion, and document exclusions and test dates.\nCondition: The source's traffic figures are illustrative estimates, not a universal sample-size rule.\nCondition: A/B tests are most feasible where purchase cycles are short and relevant traffic volume is high; lower-volume stores may need stronger qualitative evidence and larger, less frequent changes.\n\n[4d0785cdcf2b3e6fa3ffcb41] Plan A/B tests around calculated sample size, duration, randomization, and QA\nApplies when: Launching a purchase-conversion experiment on a product page, landing page, cart, checkout, or navigation flow.\n- Define the primary purchase metric and calculate the sample size needed from the baseline rate, minimum meaningful effect, confidence requirement, and desired power before launch.\n- The source commonly runs roughly 50,000–100,000 sessions depending on test location and recommends at least two weeks, preferably two to four, so weekday effects repeat.\n- Randomize visitors between control and variation. Use multiple variations or multivariate designs only when traffic is high enough to support them.\n- Distinguish statistical significance from statistical power: a result may look unlikely to be random without having enough data to be reliably repeatable or commercially meaningful.\n- Do not run conflicting tests on the same page area. Separate tests can run on, for example, a homepage and cart, or clearly distinct page regions.\n- QA each experience two or three times before launch; broken tracking, layouts, or CTAs can turn a viable variation into an apparent loser.\nCondition: The source's traffic and duration ranges are operating conventions, not replacements for an actual sample-size calculation.\nCondition: Its preference for above-the-fold, larger changes reflects the source's testing bias rather than a rule for every experiment.\n\n[7d3a4c37853cb0b93449770b] Storytelling That Moves Quant to Qual to Hypothesis to Test\nApplies when: Setting up a repeatable CRO operating rhythm for an ecommerce site rather than running one-off page tweaks.\n- Start with quantitative analysis: GA4 Purchase Journey, Path Exploration, Tech Overview and Landing Pages reports to locate where and on which pages the drops happen.\n- Layer in behavioural tools such as Microsoft Clarity or Hotjar for heatmaps and session recordings to see precisely what users do.\n- Add qualitative methods to learn why: post-purchase surveys, timed mid-session surveys, small-sample user testing and review mining.\n- The source argues qualitative input matters most when a store has under roughly 50,000-80,000 monthly visitors, because quantitative volume alone is insufficient.\n- Turn findings into if-then-because hypotheses, prioritise them with a scoring framework such as PXL, and test the top items in controlled A/B experiments.\n- Never act on a single data source alone; the source defines true data-driven CRO as two, three or four supporting data points behind each change.\n- Re-run user testing after shipping changes to compare before and after.\nCondition: The sequencing is the presenter's recommended process, not a proven universal order; urgent fixes may still precede the full audit.\nCondition: Without enough traffic, A/B tests may not reach significance, so some changes may need to be shipped on judgement with clear rollback plans.",
+      "previous_draft": {
+        "answer_markdown": "## TrailFold DAY18 mobile PDP experiment — draft build specification\n\n### Treatment: mobile PDP section order and copy\n**1. Product media (first block)**  \nKeep the existing primary product image. Enable image zoom if the theme supports it. Do not add unsupported rain, speed, or 15-inch-laptop visuals.\n\n**2. Product name + price**  \n**Daypack 18L**  \n**$80**\n\n**3. Above-the-fold headline**  \n**A practical daypack for the commute—and a short trip out of town.**\n\n**4. Four-point benefit row**  \n- 18L capacity for daily essentials\n- Padded sleeve for a 13-inch laptop\n- External bottle pocket\n- Water-resistant fabric\n\n**5. Primary CTA**  \n**Add to cart**\n\n**6. Purchase-step reassurance directly below CTA**  \nFree US shipping. Delivery in 4–7 business days.  \n30-day returns on unused products; return shipping is paid by the customer.\n\n**7. Sticky mobile CTA**  \nUse the same CTA label: **Add to cart**. Show price beside or immediately above the button if the theme permits. Do not introduce a discount, countdown, or low-stock message.\n\n**8. Details accordion**  \n**Made for the everyday carry**  \nAn 18L daypack for commuting and short weekend trips, with room for daily essentials, a padded 13-inch laptop sleeve, and an external bottle pocket.\n\n**Key details**  \n- Capacity: 18L  \n- Padded laptop sleeve: fits up to a 13-inch laptop  \n- Fabric: water-resistant, not waterproof  \n- External bottle pocket\n\n**9. FAQ accordion**  \n**Will it fit a 15-inch laptop?**  \nThe padded laptop sleeve is specified for laptops up to 13 inches. We cannot confirm a 15-inch laptop will fit.\n\n**Is it waterproof?**  \nNo. The fabric is water-resistant, not waterproof. It is not designed to keep contents dry in heavy rain or submersion.\n\n**When will my order arrive?**  \nUS orders ship free. Estimated delivery is 4–7 business days.\n\n**What is the return policy?**  \nUnused products can be returned within 30 days. Return shipping is paid by the customer.\n\n### Experiment configuration\n- **Audience:** US mobile visitors to the DAY18 PDP; exclude internal/QA traffic and bots.\n- **Allocation:** 50% current PDP control / 50% treatment, persistent by visitor.\n- **Primary metric:** purchase conversion rate per eligible PDP session.\n- **Secondary metrics:** revenue per eligible PDP session, add-to-cart rate, checkout-start rate.\n- **Guardrails:** error rate, CTA tracking integrity, return/refund rate, and stockouts.\n- **Baseline / MDE:** 2.0% purchase rate; detect a +0.4 percentage-point absolute change (to 2.4%).\n- **Required sample:** 21,000 eligible sessions total, or 10,500 per variant. At 1,200 eligible sessions per week, plan **123 test days** (about 17.5 weeks), assuming traffic remains stable.\n\n### Schedule and dependencies\n**Week 1:** Designer completes the treatment layout/copy (6 hours). Developer builds on a duplicate theme (3 hours) and uses the fourth available hour for event instrumentation and initial device checks.  \n**Week 2:** Developer uses 2 hours for formal QA: iPhone/Android viewport checks, CTA/cart function, sticky CTA behavior, FAQ behavior, analytics event firing, allocation persistence, and control/treatment parity outside the specified modules. Launch only after QA passes and inventory coverage is confirmed.\n\n**Important inventory dependency:** DAY18 has 210 units on hand and sells about 8 units/day, implying stock may run out around day 26 before the confirmed 500-unit replenishment arrives on day 35. The 123-day test also extends well beyond the confirmed replenishment coverage. Do not start the experiment until operations confirms uninterrupted DAY18 availability for the planned run or provides a documented stock-safe traffic/allocation plan.\n\n### No false proof after 14 days\nA 14-day read would produce only about 2,400 eligible sessions—roughly 11% of the required sample. Report it only as an implementation/health check: allocation balance, tracking, errors, and directional funnel movement. Do not call a winner, publish a significance claim, reallocate paid spend based on it, or stop early for an apparent uplift. Decide only after the full 21,000-session sample and pre-specified analysis are complete; document dates, exclusions, traffic-source mix, and any stock interruptions.\n",
+        "actions": {
+          "launch_status": "blocked",
+          "test_days": 123,
+          "designer_hours": 6,
+          "developer_hours": 5,
+          "claimed_statistical_significance": "not claimed",
+          "required_total_sessions": 21000,
+          "required_sessions_per_variant": 10500,
+          "traffic_allocation_control_percent": 50,
+          "traffic_allocation_treatment_percent": 50,
+          "primary_metric_baseline_percent": 2,
+          "minimum_detectable_absolute_improvement_percentage_points": 0.4,
+          "fourteen_day_eligible_sessions_estimate": 2400
+        },
+        "questions": [
+          "Can operations guarantee uninterrupted DAY18 availability for approximately 123 calendar days, or approve a stock-safe alternative before the test starts?",
+          "Does the 1,200 eligible PDP-session estimate already reflect mobile DAY18 PDP traffic after any planned paid-media changes?",
+          "Which experimentation method will provide persistent 50/50 visitor allocation and exportable variant-level purchase sessions?"
+        ],
+        "applied_card_ids": [
+          "bf8e6e41254e4a9f624d369a",
+          "182f13121915fa642c339aff",
+          "fc7c739888fcdf8372969363",
+          "c546525713365ccb5fffcdb4",
+          "4d0785cdcf2b3e6fa3ffcb41",
+          "699a7cd5ac4c6774df818a33"
+        ],
+        "rejected_guidance": [
+          "15-inch-fit reassurance was not added because the product is only specified for a 13-inch laptop sleeve.",
+          "Speed or image-compression claims were not included because no image-weight or field-speed evidence was supplied.",
+          "Generic review/social-proof modules were not added because available customer themes are not licensed verbatim testimonials or verified endorsements."
+        ]
+      },
+      "sandbox_feedback": {
+        "checks": {
+          "sample_duration": true,
+          "build_and_qa_developer_hours": true,
+          "designer_hours": true,
+          "no_false_significance": false,
+          "draft_only": true
+        },
+        "passed": 4,
+        "total": 5,
+        "all_pass": false,
+        "note": "Validates structured fields only; prose and business judgment require review. Negative reconciliation residual is a discrepancy, not negative real sales."
+      },
+      "instruction": "Return the complete revised deliverable. Check prose as well as action fields; passing numeric checks does not establish practical correctness."
+    },
+    "system_prompt_sha256": "19fa52d4890cab2fc112e25875ff944d7a1753802461639c43bf7fdafc87d7e8"
+  },
+  "superseded_first_validation": {
+    "checks": {
+      "sample_duration": true,
+      "build_and_qa_developer_hours": true,
+      "designer_hours": true,
+      "no_false_significance": false,
+      "draft_only": true
+    },
+    "passed": 4,
+    "total": 5,
+    "all_pass": false,
+    "note": "Validates structured fields only; prose and business judgment require review. Negative reconciliation residual is a discrepancy, not negative real sales."
+  },
+  "superseded_final_validation": {
+    "checks": {
+      "sample_duration": true,
+      "build_and_qa_developer_hours": true,
+      "designer_hours": true,
+      "no_false_significance": true,
+      "draft_only": true
+    },
+    "passed": 5,
+    "total": 5,
+    "all_pass": true,
+    "note": "Validates structured fields only; prose and business judgment require review. Negative reconciliation residual is a discrepancy, not negative real sales."
+  },
+  "validation_protocol": "semantic-v2"
+}

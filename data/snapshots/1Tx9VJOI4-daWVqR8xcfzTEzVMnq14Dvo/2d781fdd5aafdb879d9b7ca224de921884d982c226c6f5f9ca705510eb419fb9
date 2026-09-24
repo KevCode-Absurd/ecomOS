@@ -1,0 +1,98 @@
+# 06-MEA / measurement and economics
+
+**Goes here.** Whether any number can be trusted, and what the numbers mean. Event
+contracts, deduplication, match quality, attribution windows and restatement, profit
+and contribution formulas, landed cost, return rate, incrementality, consent, UTM
+integrity.
+
+## Why this folder comes first
+
+Every ranking the system produces is a function of gross profit per purchase. A
+library built on top of broken numbers fills the outcome ledger with garbage that
+will mislead the system for years. Collect this before the wedge.
+
+This module also produces the **trust gate**: if gross profit per purchase is not
+computable for a brand, the system must refuse to rank anything and name the missing
+input rather than ranking on a number it cannot stand behind.
+
+## Not here
+
+- Whether a difference between 2 variants is real -> 09-CRO
+- Cash, accounting, tax and how the business is financed -> 20-FIN
+- How to install the pixel -> 05-SET
+- Retention and repeat rate -> 17-CXP
+- Ranking in search, or being cited by an answer engine -> 15-SEO and 16-AEO
+- Bot traffic polluting the numbers -> 23-SEC
+
+MEA asks: is the number real. CRO asks: is the difference real. FIN asks: can the
+business afford it. SEC asks: is something falsifying it. All 4 fail differently.
+
+**A warning from experience.** 11 SEO and GEO files were dropped into this folder in
+one session. Analytics tools and search tools look similar and are not. If the source
+is about ranking or citation, it is SEO or AEO. If it is about whether a reported
+number is correct, it is MEA.
+
+## The MEA and FIN boundary, which is the one people get wrong
+
+**MEA is per-order economics feeding a decision. FIN is business-level money over
+time.**
+
+```
+gross profit per purchase                    -> MEA
+the landed cost formula                      -> MEA
+what counts inside COGS                      -> MEA and FIN, tag both
+when COGS is recognised, and under which
+  inventory method                           -> FIN
+cash conversion cycle                        -> FIN
+chargeback reserves and payout timing        -> FIN
+```
+
+The middle row matters. Which costs count as COGS, whether freight and duty and
+platform fees and returns are inside or outside, IS the gross profit formula the
+ranking engine runs on. A source about it should carry `modules: [FIN, MEA]` so the
+measurement agents can retrieve it. Tagged `[FIN]` alone, they never will.
+
+## Header
+
+```
+---
+url:                   # REQUIRED. Never leave blank. Use offline if there is none.
+rights: public_reference
+why:
+modules: [MEA]         # add a second module where the source genuinely covers it
+topics: []
+tier: 1                # prefer platform documentation here
+scope_hint: baseline
+---
+```
+
+## Topics
+
+event contracts, deduplication, match quality, attribution windows and restatement,
+profit and contribution formulas, landed cost, return rate, incrementality and
+holdouts, consent and tracking loss, UTM integrity.
+
+## Look for
+
+Exact event names and required parameters. What breaks deduplication. Match quality
+thresholds and what moves them. Attribution window behaviour and when numbers
+restate. **Formulas with every term defined, including whether tax and shipping are
+in or out.** That last clause is the whole module in one line.
+
+Prefer platform documentation, which is tier 1 and the only thing that can be.
+
+## Skip
+
+Attribution vendor comparisons. Anything selling a tool without explaining the
+mechanic. Dashboard tours that do not define the metrics. Near-identical beginner
+tutorials for the same analytics product, of which this folder already has 3.
+
+## Scope mix
+
+Almost all baseline. Most of the roughly 100 baseline cards in the whole library
+come from this folder.
+
+## Done when
+
+You can write the exact list of things that must be true before the system trusts a
+number, and every item has a source behind it.

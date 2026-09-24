@@ -1,0 +1,397 @@
+{
+  "cards": [
+    {
+      "title": "Connect Shopify to Google Ads via the Google & YouTube App",
+      "summary": "Centralize your Google account and link Shopify to Google Ads so Shopify API conversion actions import automatically.",
+      "use_when": "Initial Google Ads setup or account audit for a Shopify store that has no working conversion tracking.",
+      "steps": [
+        "Set up a single master Google account that owns your Google Ads, Merchant Center, and Analytics accounts, and use it to sign in to the Google & YouTube app in Shopify under Sales Channels; a fragmented account structure makes linking far harder.",
+        "Open the app settings and select your existing Google Ads account from the drop-down (it may appear as a name or an ID number).",
+        "Accept that this connection automatically imports Shopify's API conversion actions — including purchase, add to cart, begin checkout, page view, item view, and on-site search — along with conversion value and conversion count.",
+        "If you already have conversions set up manually via Google Tag Manager or imported from GA4, audit your actions immediately: the only change the Shopify connection should make is adding actions as secondary, not creating a second primary purchase action.",
+        "Turn on enhanced conversions and confirm your Google tag is firing.",
+        "Expect a delay: allow a couple of hours for the first purchase to fire, and up to a day or two for actions to populate. If no existing Google Ads conversions exist, you will not see anything fire until real purchases occur.",
+        "Identify the imported purchase action by its label, which appears as the Google shopping app purchase."
+      ],
+      "caveats": [
+        "Recommendation for beginners is to connect everything via the Shopify app; more seasoned advertisers wanting more robust tracking are advised to use FeedArmy's pixel instead.",
+        "The app interface and menu labels may change over time — verify the current layout in Shopify before following exact click paths."
+      ],
+      "tags": [
+        "google-ads",
+        "shopify",
+        "conversion-tracking",
+        "measurement",
+        "merchant-center",
+        "setup"
+      ],
+      "id": "93f8e8d5725181a9018acfdc",
+      "source_id": "1EOpXnuoFKBJtNAVVfYuVfvZnIbC2XRrj",
+      "source_sha256": "739c9cd0b8cf9c1e56df1be47dbdb4df15b4052509e4084f0ccc4febf9dc9bd3",
+      "source_name": "Ecommerce Google Ads 2026 Free Course.docx",
+      "folder": "/12-GAD-google-ads",
+      "domain": "google-ads",
+      "section": 2
+    },
+    {
+      "title": "Set Exactly One Primary Purchase Action",
+      "summary": "Avoid double-counted revenue from having two primary purchase actions, and fix action optimization settings.",
+      "use_when": "Auditing or setting up conversion tracking, or when your reported ROAS and revenue look implausibly strong.",
+      "steps": [
+        "Recognize that primary conversion actions are used for bidding optimization and shown in reports, while secondary actions are observation-only and do not influence bidding.",
+        "For an ecommerce store, set purchases as the sole primary action; set everything else (add to cart, begin checkout, page views, view item, search) to secondary.",
+        "To change a setting, click into the conversion action, then open Settings, and locate action optimization; set it to primary or secondary as appropriate.",
+        "Check for the first cardinal mistake: two purchase actions both marked primary. This typically happens when a Shopify-imported purchase, a Google Tag Manager purchase, and a GA4-imported purchase all exist — normally one is primary and the rest secondary, but if two are primary, revenue and ROAS are counted twice and look roughly double the truth. If an agency runs this while two primaries are live, the source advises firing them immediately.",
+        "Check the second mistake: GA4 set as your primary purchase action. GA4 under-reports Google Ads conversions by around 20% versus Google Tag Manager or the Shopify action, giving the algorithm less data to optimize on. Prefer the Shopify action or a direct Google Tag Manager setup.",
+        "Check the third mistake: non-purchase actions such as add to cart or begin checkout set as primary, or set as account default goals across campaigns. Set them to secondary."
+      ],
+      "caveats": [
+        "The source's ~20% GA4 under-report figure is their working estimate, not a guaranteed benchmark.",
+        "Micro-conversion bidding is an exception the source attributes to very select high-ticket cases: a $10–15k product with only 8–20 conversions a month may not generate enough volume for smart bidding, so bidding could target add to cart with heavy remarketing. The source considers this appropriate for roughly 1% of advertisers, not the default."
+      ],
+      "tags": [
+        "google-ads",
+        "conversion-tracking",
+        "measurement",
+        "bidding",
+        "account-audit",
+        "ga4"
+      ],
+      "id": "30fdf39203d6dfcc822f6f84",
+      "source_id": "1EOpXnuoFKBJtNAVVfYuVfvZnIbC2XRrj",
+      "source_sha256": "739c9cd0b8cf9c1e56df1be47dbdb4df15b4052509e4084f0ccc4febf9dc9bd3",
+      "source_name": "Ecommerce Google Ads 2026 Free Course.docx",
+      "folder": "/12-GAD-google-ads",
+      "domain": "google-ads",
+      "section": 2
+    },
+    {
+      "title": "Use Cart Abandoners as a Remarketing Audience",
+      "summary": "Build a GA4 cart-abandoner audience that excludes buyers, import it into Google Ads, and only launch it once list size qualifies.",
+      "use_when": "Setting up remarketing for potential buyers who added to cart but did not purchase, especially for retention and checkout-stage recovery.",
+      "steps": [
+        "In GA4, go to Admin, then Audiences, and create a new audience named for cart abandoners.",
+        "Include users when they complete the add-to-cart action.",
+        "Exclude users when a purchase has been made — without this you will serve ads to people who already bought.",
+        "Set the membership window based on traffic volume: the source's example brand used 60 days because a 30-day window would not yield enough reach. Confirm Google Ads and GA4 are connected, then import the audience into Google Ads.",
+        "Check current list eligibility for the intended campaign type in the account before launch. The source 1,000-1,500 figure is not a universal remarketing minimum.",
+        "Target the imported list in remarketing campaigns focused on completing the purchase."
+      ],
+      "caveats": [
+        "A 60-day window is broad; the source used it solely because of low site traffic, so set windows from your own list-size data, not as a rule.",
+        "Cart-abandoner audiences require GA4-to-Google Ads connectivity to import."
+      ],
+      "tags": [
+        "google-ads",
+        "remarketing",
+        "retention",
+        "cart-abandonment",
+        "ga4",
+        "audience-targeting"
+      ],
+      "id": "8573a3074cc2a2b351adcfd9",
+      "source_id": "1EOpXnuoFKBJtNAVVfYuVfvZnIbC2XRrj",
+      "source_sha256": "739c9cd0b8cf9c1e56df1be47dbdb4df15b4052509e4084f0ccc4febf9dc9bd3",
+      "source_name": "Ecommerce Google Ads 2026 Free Course.docx",
+      "folder": "/12-GAD-google-ads",
+      "domain": "google-ads",
+      "section": 2
+    },
+    {
+      "title": "Create Website Visitor Remarketing Lists by Page Depth",
+      "summary": "Build Google Ads website-visitor audiences in Audience Manager and decide whether to target all pages or specific product and collection URLs.",
+      "use_when": "Creating remarketing audiences for abandoned-browse recovery, dynamic remarketing, or any retargeting by page intent.",
+      "steps": [
+        "In Google Ads, go to Tools, then Audience Manager, then Data Segments, and click the plus button. Choose website visitors.",
+        "Name the segment clearly, e.g. '30-day website visitors, all pages'.",
+        "Set segment members by default to 'visited a web page in the past 30 days'.",
+        "Optional: refine by URL. Use 'URL contains' for a specific product or collection to build page-level intent lists.",
+        "Choose depth by traffic: the source suggests six- and seven-figure stores may not have enough traffic to filter by individual products, so keep it open to all visitors; eight- and nine-figure brands generally have enough traffic to build specific product and PDP lists that support more relevant dynamic remarketing.",
+        "On duration, the source normally lowers lists to 3-day to 7-day visitors, treating longer windows as broad and less recommended — but again, this depends on traffic level.",
+        "Wait up to a day for the list to populate, then check list size and eligibility for Search, Display, and YouTube under the data source."
+      ],
+      "caveats": [
+        "The 6/7-figure versus 8/9-figure traffic bands are the source's rule-of-thumb, not a calculated threshold.",
+        "The 3–7 day preference is an opinion, contingent on volume; low-traffic stores may need broader windows to reach remarketing eligibility."
+      ],
+      "tags": [
+        "google-ads",
+        "remarketing",
+        "audience-targeting",
+        "product-page",
+        "merchandising",
+        "setup"
+      ],
+      "id": "4bba31df42c64e0ff79de3d7",
+      "source_id": "1EOpXnuoFKBJtNAVVfYuVfvZnIbC2XRrj",
+      "source_sha256": "739c9cd0b8cf9c1e56df1be47dbdb4df15b4052509e4084f0ccc4febf9dc9bd3",
+      "source_name": "Ecommerce Google Ads 2026 Free Course.docx",
+      "folder": "/12-GAD-google-ads",
+      "domain": "google-ads",
+      "section": 2
+    },
+    {
+      "title": "Build YouTube Interactor Lists to Sequence Education into Direct Response",
+      "summary": "Create YouTube user remarketing segments based on specific videos watched, then remarket educational top-of-funnel viewers with direct-response creative.",
+      "use_when": "Designing acquisition creative strategy that sequences YouTube awareness content into purchase-driven retargeting.",
+      "steps": [
+        "In Google Ads Audience Manager, click the plus for a new data segment and choose YouTube users.",
+        "Name the segment, set customer type, and select your brand's YouTube channel.",
+        "Pick an interaction level from the available options: viewed any video on the channel, viewed certain videos, viewed certain video ads, subscribed, visited the channel page, or liked any video.",
+        "The source's preferred approach is to select 'viewed certain videos as ads' for top-of-funnel educational content, then remarket those viewers with more direct-response creatives.",
+        "This builds a funnel: paid top-of-funnel YouTube education creates the audience, and later direct-response ads convert that warmed audience."
+      ],
+      "caveats": [
+        "Applies when you actually run YouTube content or video ads; with no channel activity there is no audience.",
+        "The option set in Audience Manager should be verified, as Google updates the interface."
+      ],
+      "tags": [
+        "google-ads",
+        "youtube",
+        "remarketing",
+        "acquisition",
+        "creative-strategy",
+        "funnel-sequencing"
+      ],
+      "id": "061764977d039a672925af36",
+      "source_id": "1EOpXnuoFKBJtNAVVfYuVfvZnIbC2XRrj",
+      "source_sha256": "739c9cd0b8cf9c1e56df1be47dbdb4df15b4052509e4084f0ccc4febf9dc9bd3",
+      "source_name": "Ecommerce Google Ads 2026 Free Course.docx",
+      "folder": "/12-GAD-google-ads",
+      "domain": "google-ads",
+      "section": 2
+    },
+    {
+      "title": "Upload Customer Lists for Signals, Lookalikes and Exclusion",
+      "summary": "Upload a hashed customer CSV to Google Ads to feed audience signals, build lookalikes in Demand Gen, and exclude existing buyers from campaigns.",
+      "use_when": "Acquisition expansion, lookalike targeting, or excluding existing customers from non-branded and general campaigns.",
+      "steps": [
+        "In Audience Manager, Data Segments, click plus and choose customer list.",
+        "Name the segment with the definition and upload date, e.g. all customers up to a certain date plus the date it was uploaded, if you upload manually.",
+        "Choose customer type: all customers, or a segment of most valuable customers — the source suggests customers with three or more purchases, or the top 5% of revenue spent in your store.",
+        "Upload a CSV including email, phone, first name, last name, zip, and country wherever available.",
+        "Allow roughly a day for the list to fully populate.",
+        "Use it in three ways: as an audience signal telling Google what your customers look like demographically and behaviorally so it can find similar cohorts; as the base for lookalike audiences inside Demand Gen; and as an exclusion list applied to non-branded campaigns and often to all campaigns.",
+        "The source does not typically use uploaded customer lists to remarket directly to the customers themselves — the primary value is signal, lookalike and exclusion."
+      ],
+      "caveats": [
+        "Three-plus purchases and top 5% of revenue are the source's example definitions of valuable customers, adaptable to your data.",
+        "Exclusions depend on matching emails, phones or addresses, so list completeness affects coverage."
+      ],
+      "tags": [
+        "google-ads",
+        "customer-list",
+        "audience-targeting",
+        "lookalike",
+        "acquisition",
+        "retention"
+      ],
+      "id": "ce4012235cdc0b35a5f17bf0",
+      "source_id": "1EOpXnuoFKBJtNAVVfYuVfvZnIbC2XRrj",
+      "source_sha256": "739c9cd0b8cf9c1e56df1be47dbdb4df15b4052509e4084f0ccc4febf9dc9bd3",
+      "source_name": "Ecommerce Google Ads 2026 Free Course.docx",
+      "folder": "/12-GAD-google-ads",
+      "domain": "google-ads",
+      "section": 2
+    },
+    {
+      "title": "Build Custom Segments from Search Terms to Find New Demand Pockets",
+      "summary": "Use Google Ads custom segments based on searched terms, competitor or similar websites, and overlapping interest to dial in targeting and scale into new audiences.",
+      "use_when": "Opening new prospecting pockets, tuning acquisition targeting, or reaching problem-aware shoppers before they search your category terms.",
+      "steps": [
+        "In Audience Manager, go to custom segments (not data segments) and create a new one; you can name it at the end.",
+        "Choose what to include: people with specific interests or purchase intentions, people who searched any of your listed terms on Google, and/or people who browse websites similar to listed sites.",
+        "For search-term segments, enter queries that describe the customer's problem and solution language. The source's collagen example lists 'why is my hair thinning', 'perimenopausal joint problems', 'best collagens', 'should I take liquid collagen or powder collagen' — treating the first as problem-aware and the last as solution-aware. The source cautions against spanning that broad a range in one segment, but it illustrates the query types available.",
+        "For website segments, use 'similar to our own website' or 'similar to competitor websites' to concentrate Google's attention on an audience pocket matching your customer's browsing behavior.",
+        "What works best for the source in 2025 is a custom segment using only searched terms, with no websites and no apps included.",
+        "Rename and save; combine custom segments with campaign targeting to scale into markets your remarketing lists cannot reach."
+      ],
+      "caveats": [
+        "The example terms are illustrative, not validated performers — derive terms from your own customer language.",
+        "The 'searched terms only' preference is the source's current working finding, not a universal rule."
+      ],
+      "tags": [
+        "google-ads",
+        "custom-segments",
+        "audience-targeting",
+        "acquisition",
+        "keyword-research",
+        "competitor-research"
+      ],
+      "id": "f2925b7ac7a4c96c8e331ab9",
+      "source_id": "1EOpXnuoFKBJtNAVVfYuVfvZnIbC2XRrj",
+      "source_sha256": "739c9cd0b8cf9c1e56df1be47dbdb4df15b4052509e4084f0ccc4febf9dc9bd3",
+      "source_name": "Ecommerce Google Ads 2026 Free Course.docx",
+      "folder": "/12-GAD-google-ads",
+      "domain": "google-ads",
+      "section": 2
+    },
+    {
+      "title": "Set Up Google Merchant Center and Sync Products for Shopping Ads",
+      "summary": "Create or link a Merchant Center account through the Shopify app, sync products, and connect it to Google Ads to unlock Shopping ads, free listings and local inventory ads.",
+      "use_when": "Before launching Shopping campaigns, or when your Shopify products are not feeding into Google Ads.",
+      "steps": [
+        "Install the Google & YouTube app from Shopify's sales channel list and sign in with the same master Google account that owns your Google Ads and Analytics accounts.",
+        "In app settings, connect your Google Ads account first, then connect Merchant Center: select an existing Merchant Center account from the drop-down, or follow the prompted setup.",
+        "If creating a new account, provide business information, claim and verify your website, supply shipping and returns details, tax info, and add your products.",
+        "For product upload, the source recommends the Shopify-to-Merchant-Center sync for the majority of ecommerce brand owners spending roughly 10–30k a month who are relatively new to Google Ads; manual Google Sheets or file uploads and third-party tools such as Simprosys or Feedonomics are alternatives. Feedonomics is described as good but optional.",
+        "Once syncing, monitor the product statuses — approved, pending, not approved — expecting most products to sit pending until approved, and use diagnostics to investigate disapprovals.",
+        "Link Merchant Center to Google Ads: in Merchant Center settings, go to Apps and services (under the settings cog), choose Add a service, select Google Ads, pick your ad account, and confirm. Having everything under one Google account makes this far simpler.",
+        "After linking, products feed through and you can build Shopping campaigns using the product card format — image, title, price, and store and delivery information."
+      ],
+      "caveats": [
+        "The source calls Shopping ads the highest-performing campaign type for ecommerce and says skipping Merchant Center means leaving money on the table; other campaign types may fit differently depending on your store, and free listings and local inventory ads are additional benefits, the latter being relevant for brick-and-mortar stores.",
+        "Setup time is quoted as around 20 minutes, but approval and feed processing add delay.",
+        "Skipping Merchant Center also forfeits free listings; product approval status must be monitored for disapprovals."
+      ],
+      "tags": [
+        "google-ads",
+        "merchant-center",
+        "shopping-ads",
+        "product-feed",
+        "shopify",
+        "setup"
+      ],
+      "id": "911db04602d6d54e8f19263c",
+      "source_id": "1EOpXnuoFKBJtNAVVfYuVfvZnIbC2XRrj",
+      "source_sha256": "739c9cd0b8cf9c1e56df1be47dbdb4df15b4052509e4084f0ccc4febf9dc9bd3",
+      "source_name": "Ecommerce Google Ads 2026 Free Course.docx",
+      "folder": "/12-GAD-google-ads",
+      "domain": "google-ads",
+      "section": 2
+    },
+    {
+      "title": "Map Product Feed Attributes to Search Intent in Shopping Campaigns",
+      "summary": "Because Shopping campaigns have no keyword targeting, improve the five highest-impact feed attributes — price, title, images, descriptions and GTINs — so products serve on the closest-match queries.",
+      "use_when": "Feed optimization for Shopping campaigns, especially when products serve on irrelevant queries or conversions lag.",
+      "steps": [
+        "Understand the mechanism: Shopping ads trigger on how closely your product data matches user search intent, not keywords. A search such as 'men's running shoes, size 10' serves listings whose data reflects men's, running shoe, and size 10.",
+        "Prioritize five attributes that move the needle: price, product title, product images, product description, and GTINs. Titles, price and images are visible in listings; description and GTINs are not but help Google match the most relevant products.",
+        "Treat price as the most important attribute because Google Shopping is fundamentally a comparison surface where shoppers compare price first. Accurate, fair and competitive pricing wins click share; a visible sale reduction (e.g. $30 to $15) is likely to capture more click share from deal-seeking shoppers.",
+        "Work around price if you cannot compete on it: lead with a single-unit pack that shows the lowest headline price then upsell on the landing page, or promote a high-volume pack using unit pricing, or justify a premium price through quality and luxury positioning. Remember you only pay for clicks that actually occur, so a filtered-out shopper costs nothing.",
+        "Install the remaining attributes by rewriting titles (see the dedicated title card), using sharp high-resolution images, writing useful descriptions, and populating accurate GTINs."
+      ],
+      "caveats": [
+        "The source notes price is often difficult for a brand owner to change, since they have usually already chosen an offer — treat the workarounds as mitigations, not fixes.",
+        "The 'lowest price tends to win' observation is the source's characterization of Shopping as a comparison site, not a guaranteed outcome."
+      ],
+      "tags": [
+        "google-ads",
+        "product-feed",
+        "shopping-ads",
+        "pricing",
+        "product-page",
+        "merchandising"
+      ],
+      "id": "21229935ad814d174cbecf02",
+      "source_id": "1EOpXnuoFKBJtNAVVfYuVfvZnIbC2XRrj",
+      "source_sha256": "739c9cd0b8cf9c1e56df1be47dbdb4df15b4052509e4084f0ccc4febf9dc9bd3",
+      "source_name": "Ecommerce Google Ads 2026 Free Course.docx",
+      "folder": "/12-GAD-google-ads",
+      "domain": "google-ads",
+      "section": 2
+    },
+    {
+      "title": "Rewrite Product Titles for the First 70 Characters",
+      "summary": "Structure Shopping product titles with core product type first, then features, then specifics, and put the brand name last unless you are a market leader.",
+      "use_when": "Feed title optimization for any Shopping campaign, especially for cold-traffic acquisition where brand recognition is low.",
+      "steps": [
+        "Work within the 150-character maximum but optimize for the first 70 characters, which are what shoppers actually see before Google truncates the title with an ellipsis.",
+        "Decide brand placement by asking whether you are a market leader. If you are, leading with the brand (the Nike example) earns recognition and clicks. If you are not a market leader or have low brand awareness, lead with brand is wasted space for cold traffic; leave the brand at the end, or omit it if no space remains.",
+        "Use this general structure: core product type first, then key features or benefits, then specifics such as quantity, size, material or use case, and finally the brand if space allows.",
+        "Apparel example: replace a repetitive 'Zavari denim jacket for men, blue, Zavari clothing' with 'men's classic denim jacket, stretch fit, sharp, aligned blue, Zavari' — product type leads, features follow, specifics then brand.",
+        "Consumer electronics example: replace 'Technova wireless earbuds, Technova Bluetooth headphones' with 'wireless earbuds with charging case, noise cancelling, Bluetooth 5.3, Technova' — front-load the details that matter to information-hungry shoppers in a longer consideration cycle.",
+        "Do not let organic titles flow straight into the feed unchanged, since they often lead with the brand.",
+        "Adapt the structure to your niche; the source notes it varies and that brand stuffing at the front is a common beauty and skincare problem."
+      ],
+      "caveats": [
+        "The 70-character visible limit and 150-character cap are Google's feed constraints as described by the source; verify current limits before bulk rewriting.",
+        "The structure is a source heuristic — test titles against your own query data and conversion rates."
+      ],
+      "tags": [
+        "google-ads",
+        "product-feed",
+        "shopping-ads",
+        "product-page",
+        "conversion-optimization",
+        "copywriting"
+      ],
+      "id": "b5af5e150e67a5501e485e7a",
+      "source_id": "1EOpXnuoFKBJtNAVVfYuVfvZnIbC2XRrj",
+      "source_sha256": "739c9cd0b8cf9c1e56df1be47dbdb4df15b4052509e4084f0ccc4febf9dc9bd3",
+      "source_name": "Ecommerce Google Ads 2026 Free Course.docx",
+      "folder": "/12-GAD-google-ads",
+      "domain": "google-ads",
+      "section": 2
+    },
+    {
+      "title": "Enable Product Ratings to Lift Shopping CTR",
+      "summary": "Sign up for product ratings, meet the review thresholds, and let star ratings and review counts differentiate your listings pre-click.",
+      "use_when": "Shopping ads appear alongside competitors and you want higher click-through rate without extra spend.",
+      "steps": [
+        "Submit the product ratings interest form to signal to Google you want product ratings in Merchant Center, and answer the qualification questions, including whether you work with a third-party review aggregator (common Shopify brands use Trustpilot or Judge.me).",
+        "Choose an implementation route: Google's own customer reviews program, where Google collects the reviews; an official aggregator integration (the source says there are around 33 official aggregator platforms, including Trustpilot and Stamped); or a non-official aggregator.",
+        "For Judge.me — used by roughly 70–80% of the brands the source partners with, low-cost and user-friendly — note there is no direct Merchant Center integration, so product ratings are uploaded manually via Shopify. Follow Judge.me's own guide: set up Judge.me, connect it to Shopify, ensure Shopify is connected to Merchant Center, and sync the ratings.",
+        "Meet the eligibility thresholds: a total of at least 50 reviews to be eligible for the program, and at least three reviews on any single product to serve ratings for that product.",
+        "Allow two to four weeks from submitting the interest form before product ratings actually serve on ads.",
+        "Once live, ratings appear as a star score plus review count on your Shopping listings, drawing attention, raising CTR and building trust before the click."
+      ],
+      "caveats": [
+        "The source describes only positive effects on CTR, clicks and sales in their experience, and says it costs nothing — but results are their observation, not a guaranteed uplift.",
+        "Trustpilot and Stamped are named official integrators; Judge.me is non-official and requires manual upload, which adds maintenance work.",
+        "Threshold counts and aggregator integration status should be verified with Google, as programs change."
+      ],
+      "tags": [
+        "google-ads",
+        "merchant-center",
+        "shopping-ads",
+        "social-proof",
+        "conversion-optimization",
+        "reviews"
+      ],
+      "id": "69bd2ba35622826e1ce6937a",
+      "source_id": "1EOpXnuoFKBJtNAVVfYuVfvZnIbC2XRrj",
+      "source_sha256": "739c9cd0b8cf9c1e56df1be47dbdb4df15b4052509e4084f0ccc4febf9dc9bd3",
+      "source_name": "Ecommerce Google Ads 2026 Free Course.docx",
+      "folder": "/12-GAD-google-ads",
+      "domain": "google-ads",
+      "section": 2
+    },
+    {
+      "title": "Chase the Top Quality Store Badge by Fixing Five Experience Categories",
+      "summary": "Improve browsing, purchase, shipping, returns and store rating to earn Google's top quality store badge, which the source associates with higher Shopping ranking and a ~20% performance lift.",
+      "use_when": "Merchant Center store-level optimization to raise Shopping ad ranking and CTR without increasing ad spend.",
+      "steps": [
+        "Understand what the badge signals: Google indicates you rank highly across user-experience categories (browsing, purchase, shipping, returns, store rating), benchmarked against other stores in your country, and says badged stores rank higher in Shopping results. The badge can display on listings and on your website.",
+        "Browsing experience: use only high-resolution images, never blurry ones; show many images per listing — the source recommends a high-quality primary image plus 8 to 10 additional images showing angles, lifestyle and product uses; and keep landing page load speed under 2 seconds on both desktop and mobile.",
+        "Purchase experience: keep Merchant Center promotions consistent with site promotions in detail, dates and coupon codes, since mismatched promotions are disliked by Google and can be rejected; and offer multiple payment options such as Apple Pay, Google Wallet, PayPal and Amazon Pay, as more options are read as a better purchase experience.",
+        "Shipping experience: keep delivery time to a minimum and shipping cost as low as possible, recognizing you are often constrained by regulations and carrier costs.",
+        "Returns experience: give a fair and broad return window — at least 30 days, if not more — and reduce the customer's return cost.",
+        "Store rating: collect post-purchase reviews at product and store level. Store ratings differ from product ratings and can serve in text/search ads as well as Shopping ads, helping CTR and trust. The source adds that collecting post-purchase reviews is good practice regardless of the badge."
+      ],
+      "caveats": [
+        "The ~20% performance lift is the source's claim from their own client experience, not a Google-published benchmark, and it takes time along with product ratings.",
+        "Shipping and returns constraints may limit how far a brand can move these categories in practice.",
+        "Benchmarks are relative to other stores in your country, so the bar shifts."
+      ],
+      "tags": [
+        "google-ads",
+        "merchant-center",
+        "shopping-ads",
+        "conversion-optimization",
+        "product-page",
+        "trust-signals"
+      ],
+      "id": "c9b580a81edffcda9cfacd92",
+      "source_id": "1EOpXnuoFKBJtNAVVfYuVfvZnIbC2XRrj",
+      "source_sha256": "739c9cd0b8cf9c1e56df1be47dbdb4df15b4052509e4084f0ccc4febf9dc9bd3",
+      "source_name": "Ecommerce Google Ads 2026 Free Course.docx",
+      "folder": "/12-GAD-google-ads",
+      "domain": "google-ads",
+      "section": 2
+    }
+  ],
+  "request_id": "5ccaa3d89ffae2f5e1f7cef81a77cee06fbf0cabfb71435b68ec6d8c5800ba07",
+  "ecommerce_scope_version": 1,
+  "editorial_review": "Removed routing-only material and corrected feed-only PMax audience/placement assumptions."
+}

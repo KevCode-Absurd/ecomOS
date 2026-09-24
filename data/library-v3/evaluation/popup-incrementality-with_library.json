@@ -1,0 +1,89 @@
+{
+  "case": {
+    "name": "popup-incrementality",
+    "query": "Our popup increased email signups. How do we decide whether to keep it?",
+    "brand": "DTC coffee brand; email signups rose 40% after adding a discount popup; revenue impact and margin impact are unknown.",
+    "complexity": "focused"
+  },
+  "variant": "with_library",
+  "model": "gpt-5.6-terra",
+  "answer": {
+    "diagnosis": "A 40% increase in email signups is not sufficient evidence to keep the discount popup. The popup may create incremental customer value through email capture, but it may also suppress immediate conversion, reduce AOV, or reduce gross profit through the discount. The decision should be based on incremental gross profit per visitor over the full customer journey, not opt-in rate alone.",
+    "actions": [
+      {
+        "step": 1,
+        "action": "Run a randomized holdout test: expose most eligible visitors to the popup and withhold it from a smaller control group. A 90% exposed / 10% holdout split is a practical example, not a required allocation."
+      },
+      {
+        "step": 2,
+        "action": "Persist the experiment assignment at visitor level and tag both groups in analytics, ecommerce, and email systems. Follow visitors from first session through purchase and subsequent email-attributed purchases."
+      },
+      {
+        "step": 3,
+        "action": "Set gross profit per visitor as the decision metric if product, discount, shipping/fulfilment, and payment-cost data are available. Calculate revenue net of the popup discount and subtract relevant variable costs. If that is not currently feasible, use revenue per visitor as an interim outcome and explicitly treat margin as unresolved."
+      },
+      {
+        "step": 4,
+        "action": "Measure supporting outcomes by test group: purchase conversion rate, revenue per visitor, AOV, gross margin or gross profit per order, discount redemption, email opt-in rate, unsubscribe rate, repeat purchase revenue, refund/return rate, and email-driven revenue."
+      },
+      {
+        "step": 5,
+        "action": "Use guardrails to identify harm that opt-in growth can hide: immediate conversion rate, AOV, gross profit per visitor, site performance, refund rate, and unsubscribe rate. A higher signup rate should not override deterioration in these commercial outcomes."
+      },
+      {
+        "step": 6,
+        "action": "Predefine the keep/modify/remove rule before reading results. Keep the popup only if the exposed group shows a credible positive net commercial result without unacceptable guardrail deterioration. Remove or redesign it if signup gains are offset by lower conversion, lower order value, or discount-driven margin loss."
+      },
+      {
+        "step": 7,
+        "action": "If the current popup is not profitable, test alternatives rather than assuming popups should be removed: later trigger timing, exit-intent display, fewer impressions, a non-discount value proposition, a smaller or different incentive, or targeting only new visitors. Test one major change at a time against an appropriate control."
+      },
+      {
+        "step": 8,
+        "action": "For analysis, recognize that revenue and profit per visitor are noisy because most visitors spend nothing and a small number place large orders. Consider capping/winsorizing extreme order values or reporting a threshold purchase metric alongside the primary metric. If your testing platform supports CUPED and you have stable pre-experiment user identifiers, enable it; it may offer limited benefit for mostly new anonymous visitors."
+      }
+    ],
+    "missing_information": [
+      "Popup eligibility and trigger rules: entry, time delay, scroll depth, exit intent, frequency cap, device, geography, traffic source, and whether existing subscribers are excluded.",
+      "The exact discount: amount or percentage, minimum spend, product exclusions, stackability, expiry, and redemption rate.",
+      "Baseline and post-popup conversion rate, AOV, revenue per visitor, and their changes by traffic source and device.",
+      "Product-level gross margins and variable costs, including the cost of the discount, shipping subsidy, fulfilment, payment fees, free gifts, and expected refunds/returns.",
+      "Whether the popup captures email only or SMS as well, and the downstream email program: welcome sequence, deliverability, unsubscribe rate, and purchase attribution window.",
+      "Visitor identity and tracking capability across sessions and email clicks, including consent requirements and how test assignment will be retained.",
+      "Traffic volume, expected test duration, and the business-relevant minimum effect needed to make a decision.",
+      "Whether the popup affects repeat purchase behavior, customer support burden, brand perception, or discount dependence."
+    ],
+    "caveats": [
+      "Do not infer incremental revenue or profitability from the reported 40% signup lift.",
+      "The 90/10 holdout split is an example from the supplied guidance; the appropriate allocation and duration depend on traffic, outcome variability, and risk tolerance.",
+      "Gross profit per visitor is the most decision-relevant metric here, but it is noisier than conversion rate and requires accurate cost data.",
+      "Email-attributed revenue alone can overstate value if it ignores purchases that would have happened without the popup or if attribution rules differ between groups.",
+      "Avoid ending the test based only on an early opt-in result; evaluate the prespecified full-funnel outcomes after sufficient follow-up for the discount and email sequence to operate."
+    ]
+  },
+  "usage": {
+    "prompt_tokens": 1772,
+    "completion_tokens": 931,
+    "total_tokens": 2703,
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 1769,
+      "audio_tokens": 0
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 0,
+      "audio_tokens": 0,
+      "accepted_prediction_tokens": 0,
+      "rejected_prediction_tokens": 0
+    }
+  },
+  "estimated_cost_usd": 0.015602,
+  "knowledge_tokens": 1601,
+  "retrieved_titles": [
+    "Test popups and features with a holdout to capture net revenue",
+    "Use a positioned bundle and threshold to raise revenue per visitor",
+    "Use threshold and post-purchase upsells instead of discounting everything",
+    "CUPED variance reduction and its ceiling on DTC traffic",
+    "Choosing a primary metric: conversion rate, RPV, or gross profit per visitor"
+  ]
+}

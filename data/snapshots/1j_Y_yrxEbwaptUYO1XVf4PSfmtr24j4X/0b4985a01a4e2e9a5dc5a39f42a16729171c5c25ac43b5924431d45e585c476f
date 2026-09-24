@@ -1,0 +1,77 @@
+# 09-CRO / testing and experiments
+
+**Goes here.** Whether a difference is real. Sample size and power, stopping rules,
+what to do below the traffic threshold, prioritisation frameworks, test design, common
+invalidations, session replay and qualitative research method, and the repair versus
+test distinction.
+
+## The anchor source
+
+**CRO as testing and experimentation for DTC ecommerce** is the research document for
+this folder. It covers sample size tables, the peeking problem, sequential methods,
+Bayesian versus frequentist, CUPED, bandits, prioritisation, Shopify checkout limits,
+and a stage-gated guide by monthly order volume. It carries a 38-source list with
+tiers. Tag it `rights: owned`. Most other sources here should be checked against it.
+
+## The test for whether a source belongs here
+
+**Does it mention sample size, significance, or a stopping rule?**
+
+If yes, it is CRO. If it is a list of page changes, it is 07-LPG however loudly the
+title says "CRO". Most YouTube CRO content is page tactics with no statistics in it.
+
+## Numbers every card here should respect
+
+At a 2% baseline conversion rate, 95% confidence, 80% power:
+
+```
+detect a 20% lift    ~21,000 visitors per variant    ~260 conversions
+detect a 10% lift    ~80,000 visitors per variant    ~1,000 conversions
+detect a  5% lift    ~315,000 visitors per variant   ~3,800 conversions
+```
+
+A source that claims a meaningful test result below these volumes is either reporting
+a very large effect or reporting noise. Usually noise.
+
+## Not here
+
+- What to change on the page -> 07-LPG
+- Whether the underlying number is trustworthy -> 06-MEA
+- Ad account structure and audits -> 11-ADC
+
+## Header
+
+```
+---
+url:                   # REQUIRED. Never blank.
+rights: public_reference   # owned for the research doc
+why:
+modules: [CRO]
+topics: []
+tier: 2                # statistics sources are often tier 2
+scope_hint: growth
+---
+```
+
+## Topics
+
+sample size and power, stopping rules and peeking, sequential testing, low traffic
+methods, bayesian versus frequentist, variance reduction, bandits, prioritisation
+frameworks, test design and metrics, common invalidations, repair versus test,
+research methods that generate hypotheses.
+
+## Skip
+
+Case studies claiming a lift with no sample size, duration and baseline. That is the
+single most common source of library poison, and this field is full of it. Apply
+Twyman's law: any figure that looks surprising is usually wrong.
+
+## Scope mix
+
+Mostly growth, because testing is gated on volume. The one baseline: broken things
+get repaired, never tested.
+
+## A note on value
+
+Statistics sources age slowly. A good one here is still good in 5 years, which makes
+this high return per source compared with MCR.

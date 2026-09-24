@@ -1,0 +1,627 @@
+{
+  "request_id": "f678ee373f83427dcaa4bb92e6c0c7197a8808130901fb4345973254fd02198c",
+  "provider": "deepseek",
+  "model": "deepseek-flash",
+  "effort": "high",
+  "completion_limit": 65536,
+  "usage": {
+    "prompt_tokens": 3594,
+    "completion_tokens": 17260,
+    "total_tokens": 20854,
+    "prompt_tokens_details": {
+      "cached_tokens": 1152
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 13598
+    },
+    "prompt_cache_hit_tokens": 1152,
+    "prompt_cache_miss_tokens": 2442
+  },
+  "booked_cost_usd": 0.0217902,
+  "seconds": 62.08,
+  "finish_reason": "stop",
+  "output": {
+    "units": [
+      {
+        "id": "u1",
+        "kind": "principle",
+        "title": "Invert the lead's biggest fear",
+        "claim": {
+          "text": "The source advises identifying what leads are most afraid of and then immediately doing the opposite of that fear.",
+          "quote": "what are they most scared of? And then how can you immediately do the opposite of that thing?"
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Leads remain scared after becoming a lead, fearing a pitch or a wrong decision.",
+              "quote": "They're really scared that you're going to pitch them or that they're going to make the wrong decision."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No method is given for discovering a specific lead's fear."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u2",
+        "kind": "example",
+        "title": "Email offering email-frequency choice to counter spam fear",
+        "claim": {
+          "text": "As an illustration of inverting fears, the source describes emailing leads who fear spam with an email that lets them choose their email frequency.",
+          "quote": "If they're worried about being spammed, well, send them an email that says,"
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "The lead is worried about being spammed.",
+              "quote": "If they're worried about being spammed"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source reports no measured outcome of the frequency-choice email."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u1"
+          }
+        ]
+      },
+      {
+        "id": "u3",
+        "kind": "action",
+        "title": "Script every lead phone call",
+        "claim": {
+          "text": "The source states that reports, consultations and calls need a clear structure, and that a phone call has to be a script.",
+          "quote": "it's really important that you have a clear structure to this. And if it's a phone call, it has to be a script."
+        },
+        "action": {
+          "text": "Script every phone call with leads; a script can be as simple as five questions that must be answered at some point during the call in order to proceed.",
+          "quote": "You need these five questions answered at some point during the call in order to proceed."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "You are interacting with leads on a phone call or via a report or consultation.",
+              "quote": "If you're on a phone call or you're um providing some kind of report or consultation"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The five questions themselves are never listed."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u4",
+        "kind": "warning",
+        "title": "A script is not a rigid straightjacket",
+        "claim": {
+          "text": "The source warns that having a script does not mean folding when a lead asks something off-script.",
+          "quote": "a script doesn't mean when they ask you something off ball, you completely fold because you're sticking to the script."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "A lead asks an off-script question during a scripted call.",
+              "quote": "when they ask you something off ball"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u3"
+          }
+        ]
+      },
+      {
+        "id": "u5",
+        "kind": "action",
+        "title": "Run the sales process yourself before delegating to a team",
+        "claim": {
+          "text": "The source recommends that when building the process for a team you do the sales process yourself first, to test what works and learn the format and script.",
+          "quote": "if you're building this for your team, it's a good idea to do the sales process yourself first. So you can test what works best. Then once you know the format and you know the script that works, you can then give that to your team."
+        },
+        "action": {
+          "text": "Do the sales process yourself first, then give the tested format and script to your team.",
+          "quote": "if you're building this for your team, it's a good idea to do the sales process yourself first. So you can test what works best. Then once you know the format and you know the script that works, you can then give that to your team."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "You are creating a sales or consultation process for a team.",
+              "quote": "if you're building this for your team"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [
+          {
+            "text": "You know the format and the script that works and can hand it to the team.",
+            "quote": "Then once you know the format and you know the script that works"
+          }
+        ],
+        "unknowns": [
+          "How much testing counts as enough is not stated."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u3"
+          }
+        ]
+      },
+      {
+        "id": "u6",
+        "kind": "action",
+        "title": "Seed your product or service throughout the consultation",
+        "claim": {
+          "text": "The source advises seeding your product or service throughout the thing that you are giving the lead.",
+          "quote": "You're going to be seeding your product or service throughout the thing that you're giving them."
+        },
+        "action": {
+          "text": "Seed your product or service throughout the consultation or resource you give the lead.",
+          "quote": "You're going to be seeding your product or service throughout the thing that you're giving them."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Consultations end without you mentioning that you sell the service the lead needs.",
+              "quote": "We haven't actually been mentioning the fact that we sell this."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not state which channels besides consultations this applies to; its example is an emailed website and marketing review."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u7",
+        "kind": "action",
+        "title": "Sequence the seeding: early, threaded through, and at the end",
+        "claim": {
+          "text": "The source describes the seeding order: mention early what you do for people so they have context, thread through with case studies, and mention the next step at the end.",
+          "quote": "So you want to mention early on that this is what you do for people just so they have it set up in their heads. They've got context to the situation. Then thread through with case studies and then mention of course at the end that this is um this is the next step."
+        },
+        "action": {
+          "text": "Mention your service early, thread case studies through the consultation, and state the next step at the end.",
+          "quote": "So you want to mention early on that this is what you do for people just so they have it set up in their heads. They've got context to the situation. Then thread through with case studies and then mention of course at the end that this is um this is the next step."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u6"
+          }
+        ]
+      },
+      {
+        "id": "u8",
+        "kind": "warning",
+        "title": "A 100% sales conversion rate is a red flag",
+        "claim": {
+          "text": "The source warns that a 100%, or very high, sales conversion rate means the marketing funnel is not wide enough.",
+          "quote": "if you're getting a 100% conversion rate or you're getting a really high conversion rate on your sales leads, your marketing funnel is not wide enough."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "You are not getting objections from prospects.",
+              "quote": "if you're not getting objections"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No target conversion rate is given; only that 100% is a problem."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u9",
+        "kind": "action",
+        "title": "Have a plan B for unqualified leads",
+        "claim": {
+          "text": "The source says you will get unqualified leads, especially when widening the funnel, and that you should have a plan B for them.",
+          "quote": "Now you're going to get unqualified leads. Have a plan B."
+        },
+        "action": {
+          "text": "Prepare a plan B for the unqualified leads you will receive.",
+          "quote": "Now you're going to get unqualified leads. Have a plan B."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "You are casting a wider lead funnel.",
+              "quote": "Particularly if you are casting a wider funnel."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source gives no quantified expectation for how many unqualified leads to expect."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u10",
+        "kind": "action",
+        "title": "Build another offering to monetise leads you cannot serve",
+        "claim": {
+          "text": "The source suggests building something else in your business, such as another service or a training package, to monetise leads you cannot serve directly.",
+          "quote": "You might build something else in your business. You might build another service for them. You might build a training package for them."
+        },
+        "action": {
+          "text": "Build another service or training package that leads you cannot serve directly can buy.",
+          "quote": "You might build something else in your business. You might build another service for them. You might build a training package for them."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Leads cannot afford or are not suited to your main offering.",
+              "quote": "we get a lot of people that we just can't serve because they can't afford our done for you marketing work"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u9"
+          },
+          {
+            "kind": "alternative_to",
+            "target": "u11"
+          }
+        ]
+      },
+      {
+        "id": "u11",
+        "kind": "action",
+        "title": "Refer unqualified leads to competitors for commission",
+        "claim": {
+          "text": "The source suggests sending unqualified leads to competitors and working on an affiliate or referral commission basis.",
+          "quote": "you might send them to competitors and work on an affiliate or referral commission basis."
+        },
+        "action": {
+          "text": "Send leads you cannot serve to competitors on an affiliate or referral commission basis.",
+          "quote": "you might send them to competitors and work on an affiliate or referral commission basis."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "A lead is low budget, outside your area, or asking for something you do not offer.",
+              "quote": "If they're low budget or they're outside your area or they're asking for something that you don't offer"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "Commission rates and referral terms are not stated."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u9"
+          },
+          {
+            "kind": "alternative_to",
+            "target": "u10"
+          }
+        ]
+      },
+      {
+        "id": "u12",
+        "kind": "action",
+        "title": "Run a long-term email indoctrination sequence",
+        "claim": {
+          "text": "The source describes an indoctrination sequence - an email sequence run over days, weeks, months or potentially years that moves people toward seeing you as the best logical choice.",
+          "quote": "We call it an indoctrination sequence which over the course of days, weeks, months, potentially years, encourages people to um come to the realization that you are the best logical choice for them."
+        },
+        "action": {
+          "text": "Send an ongoing email sequence to your lead list.",
+          "quote": "some kind of email sequence that goes out to people"
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Leads are not ready to buy now.",
+              "quote": "Not everyone is ready to go now."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "Sequence content, cadence and length are not specified; the source only gives anecdotal 5-year and 6-year lag examples."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u9"
+          }
+        ]
+      },
+      {
+        "id": "u13",
+        "kind": "action",
+        "title": "Map out your post-capture sales process",
+        "claim": {
+          "text": "The source says you are going to map out what your process needs to look like to convert people into an actual sale, rather than only building a high-converting website.",
+          "quote": "you're going to map out what your process needs to look like in order to convert people into an actual sale."
+        },
+        "action": {
+          "text": "Map out the process that turns captured leads into sales.",
+          "quote": "you're going to map out what your process needs to look like in order to convert people into an actual sale."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "You have a high-converting website but do not know how to turn the leads into sales.",
+              "quote": "What we don't want to do is just create a high converting website that you actually don't know how to turn the leads into sales."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": []
+      },
+      {
+        "id": "u14",
+        "kind": "action",
+        "title": "Start the process with an assessment",
+        "claim": {
+          "text": "The source's first generic step is an assessment that understands the scale of the lead's problem and helps them identify a possible solution.",
+          "quote": "So first step will be some kind of assessment basically understanding what the scale of the problem is for people and helping them identify what their solution might look like."
+        },
+        "action": {
+          "text": "Run an assessment as the first step of the post-capture process.",
+          "quote": "So first step will be some kind of assessment basically understanding what the scale of the problem is for people and helping them identify what their solution might look like."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not describe how the assessment is delivered."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u13"
+          }
+        ]
+      },
+      {
+        "id": "u15",
+        "kind": "action",
+        "title": "Follow the assessment with a check-in",
+        "claim": {
+          "text": "The source's second generic step is a check-in that gathers feedback on the assessment, answers questions, checks expectations and starts identifying later objections.",
+          "quote": "You then have a check-in with them. So getting some feedback on how they found the assessment, any questions that they had, did it match their expectations, and starting to identify what their objections further down the line might be."
+        },
+        "action": {
+          "text": "Run a check-in after the assessment to gather feedback and surface objections.",
+          "quote": "You then have a check-in with them. So getting some feedback on how they found the assessment, any questions that they had, did it match their expectations, and starting to identify what their objections further down the line might be."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u14"
+          }
+        ]
+      },
+      {
+        "id": "u16",
+        "kind": "action",
+        "title": "Present a proposal",
+        "claim": {
+          "text": "The source's third generic step is a proposal - a suggestion of something the lead can do with you.",
+          "quote": "The next step will be some kind of proposal. So you're making a suggestion of um something that they can do with you."
+        },
+        "action": {
+          "text": "Make a proposal suggesting what the lead can do with you.",
+          "quote": "The next step will be some kind of proposal. So you're making a suggestion of um something that they can do with you."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The proposal's format is not detailed; the source only comments that 'pitch is a horrendous word'."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u15"
+          }
+        ]
+      }
+    ],
+    "more_units": true,
+    "unresolved": [
+      "The transcript is cut off mid-sentence at 'some kind of plan and then a' immediately after the proposal step, so any sales-process steps following the proposal are missing.",
+      "The 'five questions' that constitute the call script are referenced but never listed.",
+      "The source mentions the sales-conversion-rate drop experienced by an IT support company it helped as an example, but no separate unit was extracted for it within the cap."
+    ]
+  },
+  "raw_content": "{\"units\":[{\"id\":\"u1\",\"kind\":\"principle\",\"title\":\"Invert the lead's biggest fear\",\"claim\":{\"text\":\"The source advises identifying what leads are most afraid of and then immediately doing the opposite of that fear.\",\"quote\":\"what are they most scared of? And then how can you immediately do the opposite of that thing?\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Leads remain scared after becoming a lead, fearing a pitch or a wrong decision.\",\"quote\":\"They're really scared that you're going to pitch them or that they're going to make the wrong decision.\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"No method is given for discovering a specific lead's fear.\"],\"relations\":[]},{\"id\":\"u2\",\"kind\":\"example\",\"title\":\"Email offering email-frequency choice to counter spam fear\",\"claim\":{\"text\":\"As an illustration of inverting fears, the source describes emailing leads who fear spam with an email that lets them choose their email frequency.\",\"quote\":\"If they're worried about being spammed, well, send them an email that says,\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"The lead is worried about being spammed.\",\"quote\":\"If they're worried about being spammed\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source reports no measured outcome of the frequency-choice email.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u1\"}]},{\"id\":\"u3\",\"kind\":\"action\",\"title\":\"Script every lead phone call\",\"claim\":{\"text\":\"The source states that reports, consultations and calls need a clear structure, and that a phone call has to be a script.\",\"quote\":\"it's really important that you have a clear structure to this. And if it's a phone call, it has to be a script.\"},\"action\":{\"text\":\"Script every phone call with leads; a script can be as simple as five questions that must be answered at some point during the call in order to proceed.\",\"quote\":\"You need these five questions answered at some point during the call in order to proceed.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"You are interacting with leads on a phone call or via a report or consultation.\",\"quote\":\"If you're on a phone call or you're um providing some kind of report or consultation\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The five questions themselves are never listed.\"],\"relations\":[]},{\"id\":\"u4\",\"kind\":\"warning\",\"title\":\"A script is not a rigid straightjacket\",\"claim\":{\"text\":\"The source warns that having a script does not mean folding when a lead asks something off-script.\",\"quote\":\"a script doesn't mean when they ask you something off ball, you completely fold because you're sticking to the script.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"A lead asks an off-script question during a scripted call.\",\"quote\":\"when they ask you something off ball\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u3\"}]},{\"id\":\"u5\",\"kind\":\"action\",\"title\":\"Run the sales process yourself before delegating to a team\",\"claim\":{\"text\":\"The source recommends that when building the process for a team you do the sales process yourself first, to test what works and learn the format and script.\",\"quote\":\"if you're building this for your team, it's a good idea to do the sales process yourself first. So you can test what works best. Then once you know the format and you know the script that works, you can then give that to your team.\"},\"action\":{\"text\":\"Do the sales process yourself first, then give the tested format and script to your team.\",\"quote\":\"if you're building this for your team, it's a good idea to do the sales process yourself first. So you can test what works best. Then once you know the format and you know the script that works, you can then give that to your team.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"You are creating a sales or consultation process for a team.\",\"quote\":\"if you're building this for your team\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[{\"text\":\"You know the format and the script that works and can hand it to the team.\",\"quote\":\"Then once you know the format and you know the script that works\"}],\"unknowns\":[\"How much testing counts as enough is not stated.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u3\"}]},{\"id\":\"u6\",\"kind\":\"action\",\"title\":\"Seed your product or service throughout the consultation\",\"claim\":{\"text\":\"The source advises seeding your product or service throughout the thing that you are giving the lead.\",\"quote\":\"You're going to be seeding your product or service throughout the thing that you're giving them.\"},\"action\":{\"text\":\"Seed your product or service throughout the consultation or resource you give the lead.\",\"quote\":\"You're going to be seeding your product or service throughout the thing that you're giving them.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Consultations end without you mentioning that you sell the service the lead needs.\",\"quote\":\"We haven't actually been mentioning the fact that we sell this.\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source does not state which channels besides consultations this applies to; its example is an emailed website and marketing review.\"],\"relations\":[]},{\"id\":\"u7\",\"kind\":\"action\",\"title\":\"Sequence the seeding: early, threaded through, and at the end\",\"claim\":{\"text\":\"The source describes the seeding order: mention early what you do for people so they have context, thread through with case studies, and mention the next step at the end.\",\"quote\":\"So you want to mention early on that this is what you do for people just so they have it set up in their heads. They've got context to the situation. Then thread through with case studies and then mention of course at the end that this is um this is the next step.\"},\"action\":{\"text\":\"Mention your service early, thread case studies through the consultation, and state the next step at the end.\",\"quote\":\"So you want to mention early on that this is what you do for people just so they have it set up in their heads. They've got context to the situation. Then thread through with case studies and then mention of course at the end that this is um this is the next step.\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u6\"}]},{\"id\":\"u8\",\"kind\":\"warning\",\"title\":\"A 100% sales conversion rate is a red flag\",\"claim\":{\"text\":\"The source warns that a 100%, or very high, sales conversion rate means the marketing funnel is not wide enough.\",\"quote\":\"if you're getting a 100% conversion rate or you're getting a really high conversion rate on your sales leads, your marketing funnel is not wide enough.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"You are not getting objections from prospects.\",\"quote\":\"if you're not getting objections\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"No target conversion rate is given; only that 100% is a problem.\"],\"relations\":[]},{\"id\":\"u9\",\"kind\":\"action\",\"title\":\"Have a plan B for unqualified leads\",\"claim\":{\"text\":\"The source says you will get unqualified leads, especially when widening the funnel, and that you should have a plan B for them.\",\"quote\":\"Now you're going to get unqualified leads. Have a plan B.\"},\"action\":{\"text\":\"Prepare a plan B for the unqualified leads you will receive.\",\"quote\":\"Now you're going to get unqualified leads. Have a plan B.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"You are casting a wider lead funnel.\",\"quote\":\"Particularly if you are casting a wider funnel.\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source gives no quantified expectation for how many unqualified leads to expect.\"],\"relations\":[]},{\"id\":\"u10\",\"kind\":\"action\",\"title\":\"Build another offering to monetise leads you cannot serve\",\"claim\":{\"text\":\"The source suggests building something else in your business, such as another service or a training package, to monetise leads you cannot serve directly.\",\"quote\":\"You might build something else in your business. You might build another service for them. You might build a training package for them.\"},\"action\":{\"text\":\"Build another service or training package that leads you cannot serve directly can buy.\",\"quote\":\"You might build something else in your business. You might build another service for them. You might build a training package for them.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Leads cannot afford or are not suited to your main offering.\",\"quote\":\"we get a lot of people that we just can't serve because they can't afford our done for you marketing work\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u9\"},{\"kind\":\"alternative_to\",\"target\":\"u11\"}]},{\"id\":\"u11\",\"kind\":\"action\",\"title\":\"Refer unqualified leads to competitors for commission\",\"claim\":{\"text\":\"The source suggests sending unqualified leads to competitors and working on an affiliate or referral commission basis.\",\"quote\":\"you might send them to competitors and work on an affiliate or referral commission basis.\"},\"action\":{\"text\":\"Send leads you cannot serve to competitors on an affiliate or referral commission basis.\",\"quote\":\"you might send them to competitors and work on an affiliate or referral commission basis.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"A lead is low budget, outside your area, or asking for something you do not offer.\",\"quote\":\"If they're low budget or they're outside your area or they're asking for something that you don't offer\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"Commission rates and referral terms are not stated.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u9\"},{\"kind\":\"alternative_to\",\"target\":\"u10\"}]},{\"id\":\"u12\",\"kind\":\"action\",\"title\":\"Run a long-term email indoctrination sequence\",\"claim\":{\"text\":\"The source describes an indoctrination sequence - an email sequence run over days, weeks, months or potentially years that moves people toward seeing you as the best logical choice.\",\"quote\":\"We call it an indoctrination sequence which over the course of days, weeks, months, potentially years, encourages people to um come to the realization that you are the best logical choice for them.\"},\"action\":{\"text\":\"Send an ongoing email sequence to your lead list.\",\"quote\":\"some kind of email sequence that goes out to people\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Leads are not ready to buy now.\",\"quote\":\"Not everyone is ready to go now.\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"Sequence content, cadence and length are not specified; the source only gives anecdotal 5-year and 6-year lag examples.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u9\"}]},{\"id\":\"u13\",\"kind\":\"action\",\"title\":\"Map out your post-capture sales process\",\"claim\":{\"text\":\"The source says you are going to map out what your process needs to look like to convert people into an actual sale, rather than only building a high-converting website.\",\"quote\":\"you're going to map out what your process needs to look like in order to convert people into an actual sale.\"},\"action\":{\"text\":\"Map out the process that turns captured leads into sales.\",\"quote\":\"you're going to map out what your process needs to look like in order to convert people into an actual sale.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"You have a high-converting website but do not know how to turn the leads into sales.\",\"quote\":\"What we don't want to do is just create a high converting website that you actually don't know how to turn the leads into sales.\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[],\"relations\":[]},{\"id\":\"u14\",\"kind\":\"action\",\"title\":\"Start the process with an assessment\",\"claim\":{\"text\":\"The source's first generic step is an assessment that understands the scale of the lead's problem and helps them identify a possible solution.\",\"quote\":\"So first step will be some kind of assessment basically understanding what the scale of the problem is for people and helping them identify what their solution might look like.\"},\"action\":{\"text\":\"Run an assessment as the first step of the post-capture process.\",\"quote\":\"So first step will be some kind of assessment basically understanding what the scale of the problem is for people and helping them identify what their solution might look like.\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source does not describe how the assessment is delivered.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u13\"}]},{\"id\":\"u15\",\"kind\":\"action\",\"title\":\"Follow the assessment with a check-in\",\"claim\":{\"text\":\"The source's second generic step is a check-in that gathers feedback on the assessment, answers questions, checks expectations and starts identifying later objections.\",\"quote\":\"You then have a check-in with them. So getting some feedback on how they found the assessment, any questions that they had, did it match their expectations, and starting to identify what their objections further down the line might be.\"},\"action\":{\"text\":\"Run a check-in after the assessment to gather feedback and surface objections.\",\"quote\":\"You then have a check-in with them. So getting some feedback on how they found the assessment, any questions that they had, did it match their expectations, and starting to identify what their objections further down the line might be.\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u14\"}]},{\"id\":\"u16\",\"kind\":\"action\",\"title\":\"Present a proposal\",\"claim\":{\"text\":\"The source's third generic step is a proposal - a suggestion of something the lead can do with you.\",\"quote\":\"The next step will be some kind of proposal. So you're making a suggestion of um something that they can do with you.\"},\"action\":{\"text\":\"Make a proposal suggesting what the lead can do with you.\",\"quote\":\"The next step will be some kind of proposal. So you're making a suggestion of um something that they can do with you.\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The proposal's format is not detailed; the source only comments that 'pitch is a horrendous word'.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u15\"}]}],\"more_units\":true,\"unresolved\":[\"The transcript is cut off mid-sentence at 'some kind of plan and then a' immediately after the proposal step, so any sales-process steps following the proposal are missing.\",\"The 'five questions' that constitute the call script are referenced but never listed.\",\"The source mentions the sales-conversion-rate drop experienced by an IT support company it helped as an example, but no separate unit was extracted for it within the cap.\"]}",
+  "input": {
+    "source": {
+      "source_id": "1Rhe979-e16InGIMPR6o6U6pkj2AGimCM",
+      "source_sha256": "c232e6ea18e30f6a87acb9437114264b7f9e7f18c9a1de8a60a9bb6ccee060b0",
+      "locator": "batch",
+      "start": 0,
+      "text": "ome a lead doesn't mean they're not scared still. They're really scared. They're really, really scared. Not like existentially, but they're really scared that you're going to pitch them or that they're going to make the wrong decision. So, what are they most scared of? And then how can you immediately do the opposite of that thing? If they're worried about being spammed, well, send them an email that says, \"Hey, we don't want to spam you. Click the link to choose which frequency of emails you'd prefer. Well, immediately that's just removed my worst fear. If you're on a phone call or you're um providing some kind of report or consultation, it's really important that you have a clear structure to this. And if it's a phone call, it has to be a script. In fact, every phone call that you have with your leads should be scripted. Now, a script doesn't mean when they ask you something off ball, you completely fold because you're sticking to the script. A script might be as simple as what we tell our sales team. You need these five questions answered at some point during the call in order to proceed. Okay, so that's a script. Even though we're not telling people exactly what to say in every step, if you're building this for your team, it's a good idea to do the sales process yourself first. So you can test what works best. Then once you know the format and you know the script that works, you can then give that to your team. If you just say to your team, hey, we're doing these free consultations. Uh your free consultations are going to book in your calendar, so just give them a call on Skype and then talk about, you know, whatever and then see if they want to sign up. That's going to go really badly. Okay? You need some structure to it and you need to come up with a script. So we're going to talk about, you know, whatever. Here are the five questions to ask them during the first call. And here's the next step. Right? That's enough structure for them for now, but you need some kind of script thing for this uh for this thing that you're doing. You're going to be seeding your product or service throughout the thing that you're giving them. Okay? using the website and marketing review that we offer as a as a kind of case study here. We will start the review by saying thank you for requesting your review and we'll give you a bit of an introduction to Exposure Ninja saying we've worked with hundred of clients in every imaginable market helping them with their websites, SEO, pay-per-click, social media, email marketing to generate more leads and sales. So, we're seeding the fact that we offer this as a service. We'll do that at the start. We'll do that throughout. So, we'll use, for example, case studies. Um, we'll mention case studies as we're going. So, hey, you know, your website needs a bit of SEO here. Here's one business that we did this SEO for. And look at what happened to their business. So, again, we're seeding that we offer this as a service. And at the end, we'll also recede again. So, saying if you're interested in working further, this is the next step. So, the reason that we're doing this is we don't want We used to have people saying, \"Great, thanks for the free review. Um, by the way, do you actually do this stuff for people?\" We're like, \"Oh my gosh, all we've been doing is we've been talking about how we can help, like what they can do to help themselves. We haven't actually been mentioning the fact that we sell this.\" So, we've been through various iterations and seeding throughout is the best option without a doubt. So you want to mention early on that this is what you do for people just so they have it set up in their heads. They've got context to the situation. Then thread through with case studies and then mention of course at the end that this is um this is the next step. This is what they need to do now. You're going to get unqualified leads. Have a plan B. So, you're going to get people coming through your lead capture on your email list that aren't right for you. Okay? Particularly if you are casting a wider funnel. Um, I remember having a talk with a an IT support company and we helped them with this. We helped them come up with an audit that they could run and they came back and said, \"Great, we've got loads more leads. This is really good. We're converting much more people from our website. The challenge is our sales conversion rate has gone down because we're getting more leads. Some of these aren't qualified, so actually converting a smaller percentage.\" And my answer was that is exactly what you would expect to happen. That is perfect. The trouble is, if you're getting a 100% conversion rate or you're getting a really high conversion rate on your sales leads, your marketing funnel is not wide enough. You're only getting the people that have already qualified themselves. And very few people actually have the energy and the tenacity to qualify themselves. So, if you're not getting objections, if you're not getting people saying, \"No, sorry, you're not right for me.\" Your marketing funnel is not wide enough. So, you need to expand it, right? You don't want a 100% conversion rate. 100% sales conversion rate is a massive red flag screaming on flyer spurting blood marketing issue. I.e., we're not persuading enough people to become a lead. If we're converting all of them, there's a whole bunch of people out there that should be coming into our list that aren't. Okay? So, you're going to have unqualified leads. You're going to get more unqualified leads the more attractive you make your lure. That's fine because you'll also get more qualified leads. So, you'll sell more as a result, but you will increase the number of unqualified people that you get. That is just a fact of life. So, a plan B is another method of monetizing these people. You might build something else in your business. You might build another service for them. You might build a training package for them. For example, at Exposure Ninja, we get a lot of people that we just can't serve because they can't afford our done for you marketing work. So, we created a training site called Marketing You, which shows people how to do this stuff for themselves, which they can buy into. We created these training courses so that we can sell people who can't afford to work with us directly a way of learning this stuff for themselves. Okay? So, it's another way of monetizing that audience so you can help them grow and then they can get to a stage where they can work with you. So, think about what your plan for monetizing is. You might send them to competitors. If they're low budget or they're outside your area or they're asking for something that you don't offer, you might send them to competitors and work on an affiliate or referral commission basis. We have other marketing agencies that send their clients to us. If a lead comes in and they're too big for the agency or that agency doesn't serve that particular thing that they do or that agency simply says, you know what, Exposure Ninja would do a better job of it than we would, they will send it to us and we will pay them a commission on that. So, it's about how else do you monetize the leads that you're getting to come in. And of course, the other plan B that you're going to have is some kind of email sequence that goes out to people. We call it an indoctrination sequence which over the course of days, weeks, months, potentially years, encourages people to um come to the realization that you are the best logical choice for them. We've had people that have been on our email list for 6 years before they've become a client. Right? In fact, our biggest client at the moment has been in our world for about I'm going to say 5 years. We didn't sell them anything. We did a marketing review for them and then nothing happened. Five years later, they came back and it's everything, right? But only because we've had that constant email sequence going out. They've been getting an email from us like every week for the last 5 years. So, that's the plan B for that side of things. Not everyone is ready to go now. Um, so that more attractive you make your law, the more unqualified people you're going to get and the more people you're going to get who aren't necessarily ready now, but will be at some point. So you need a plan for those ones and it's usually an email marketing list as well as some other ways of monetizing them as well. So what we're going to talk through now is different examples of sales process on the back end of this lead capture. So imagine someone's been onto a website, they've filled in a form, and we're going to look through some different examples of what happens now. And then you're going to map out what your process needs to look like in order to convert people into an actual sale. What we don't want to do is just create a high converting website that you actually don't know how to turn the leads into sales. That's not much good. That just makes it a bit stressful for you and can be quite frustrating. So um here's the first example. Uh this is the exposure ninja sales process. So um we've got these different steps along the way. So the first thing that happens is an assessment. So this is the uh well in fact this is a kind of generic process that you can use. So first step will be some kind of assessment basically understanding what the scale of the problem is for people and helping them identify what their solution might look like. You then have a check-in with them. So getting some feedback on how they found the assessment, any questions that they had, did it match their expectations, and starting to identify what their objections further down the line might be. The next step will be some kind of proposal. So you're making a suggestion of um something that they can do with you. So this is the kind of pitch if you like, although pitch is a horrendous word. uh some kind of plan and then a "
+    },
+    "already_extracted_claims": [],
+    "instruction": "Extract remaining distinct task-sized units. Do not repeat already extracted claims."
+  },
+  "system_prompt_sha256": "f23d9572f5bf1b93a5822a96b30f4ea85c0469c454d5ce80d227418df3d2e25e"
+}

@@ -1,0 +1,1117 @@
+{
+  "request_id": "80a4dcfe959f0e905560dc2505ef01025346214a1227e8d8f7ff66547b5a1efc",
+  "provider": "deepseek",
+  "model": "deepseek-flash",
+  "effort": "none",
+  "completion_limit": 16384,
+  "usage": {
+    "prompt_tokens": 16073,
+    "completion_tokens": 6106,
+    "total_tokens": 22179,
+    "prompt_tokens_details": {
+      "cached_tokens": 384
+    },
+    "prompt_cache_hit_tokens": 384,
+    "prompt_cache_miss_tokens": 15689
+  },
+  "booked_cost_usd": 0.012149099999999998,
+  "seconds": 31.08,
+  "finish_reason": "stop",
+  "output": {
+    "cards": [
+      {
+        "title": "Set up Clarity analysis with a 6-month sample window",
+        "summary": "Start any Clarity review by setting a sample period of roughly the last 6 months, or 90 days if setup limits you, and focus on the Insights block rather than baseline KPIs.",
+        "use_when": "Beginning a session-recording/heatmap review of a site in Microsoft Clarity and deciding which date range and dashboard panel to work from.",
+        "steps": [
+          "Open the main Clarity dashboard and set the date range to roughly the last 6 months of data; the source uses that as a general sample (it does not have to be exact).",
+          "If Clarity was only recently installed, fall back to the longest available window such as last 90 days.",
+          "Treat the top-line metrics — scroll depth, active time, pages per session, total sessions, smart events, referrer/channel, campaign, browser, device and popular-pages data — as baseline KPIs you can already get from Google Analytics.",
+          "Concentrate attention on the Insights block: rage clicks, dead clicks, excessive scrolling, quick backs, since those are what makes Clarity distinctive.",
+          "Watch the matching recordings behind any insight that warrants a change rather than acting on the percentage alone."
+        ],
+        "caveats": [
+          "The 6-month window is the presenter's habit and may not be possible depending on when tracking was installed.",
+          "The dashboard overlap metrics remain useful as context — their inclusion does not mean they are unusable."
+        ],
+        "tags": [
+          "testing",
+          "session-recordings",
+          "heatmaps",
+          "measurement",
+          "microsoft-clarity",
+          "qualitative-research"
+        ]
+      },
+      {
+        "title": "Interpret rage clicks as failed exits",
+        "summary": "Rage clicks are repeated clicks on an element, usually to escape a popup, chat widget or blocked action; they are a friction signal worth watching even when the rate looks low.",
+        "use_when": "Triaging the Clarity Insights block or filtering recordings for frustration before forming a test hypothesis.",
+        "steps": [
+          "Read rage clicks as people clicking an element multiple times, typically trying to exit an experience.",
+          "Check common triggers: a popup that lands in the first 3-5 seconds before the visitor has scrolled, or a chat bot/interstitial blocking an add-to-cart or form submit (especially on B2B sites).",
+          "Click the camera icon beside the rage-click insight to open the recordings page and watch the sessions that produced them.",
+          "Judge the rate against the presenter's heuristic: under roughly 1-2% is generally considered good; the source's example was 0.2%.",
+          "Resolve fundamental usability issues regardless of percentage — a low rate does not excuse a broken exit path."
+        ],
+        "caveats": [
+          "The 1-2% good rate is a presenter heuristic, not a benchmark with evidence.",
+          "Low rates do not mean there is nothing to fix; the source explicitly says metrics matter less than fundamental usability."
+        ],
+        "tags": [
+          "testing",
+          "session-recordings",
+          "microsoft-clarity",
+          "conversion-optimization",
+          "friction-analysis"
+        ]
+      },
+      {
+        "title": "Classify dead clicks and decide which to keep",
+        "summary": "Dead clicks are clicks on elements that are not clickable; some are acceptable (logos you deliberately don't link out) while others signal missing functionality that blocks conversion.",
+        "use_when": "Reviewing dead-click insights or heatmaps and deciding whether an element should become clickable.",
+        "steps": [
+          "Understand a dead click as a click on an element that is not clickable — e.g. 'As Seen On' or 'As Featured In' logos, informational checkmarks, or a non-clickable site logo.",
+          "Accept some dead clicks deliberately: if linking out would send people away from the conversion path, keeping 'As Seen On' logos non-clickable can be a reasonable choice.",
+          "Treat other dead clicks as defects: if clicking would genuinely help the user proceed (pricing details, product information, returning to the homepage from checkout or a product page), the missing link is a conversion barrier.",
+          "Investigate with the click map, then validate with recordings before changing anything — the source saw logo clicks from both checkout and product pages."
+        ],
+        "caveats": [
+          "The source gives no threshold for an acceptable dead-click rate; whether to act depends on whether the element would help conversion.",
+          "Deciding which elements 'should' be clickable is a judgement call beyond the examples given."
+        ],
+        "tags": [
+          "testing",
+          "heatmaps",
+          "session-recordings",
+          "microsoft-clarity",
+          "conversion-optimization",
+          "friction-analysis"
+        ]
+      },
+      {
+        "title": "Read excessive scrolling as search behaviour",
+        "summary": "Excessive scrolling means users skim rapidly top-to-bottom, usually because they cannot find reviews, price, a CTA, or because a text block is too long.",
+        "use_when": "Interpreting Clarity's 'excessive scrolling' insight or watching recordings where users move through a page unusually fast.",
+        "steps": [
+          "Treat excessive scrolling as a symptom that the user is hunting for something they cannot find.",
+          "Check the candidate causes the source lists: looking for reviews, looking for the add-to-cart button or the price, or skimming past a long undifferentiated block of text.",
+          "Cross-check with the scroll map: if engagement drops sharply after a specific long paragraph, the block itself is likely the cause.",
+          "Cross-check with the click map to see whether the missing element (price, CTA, review score) is drawing attention elsewhere.",
+          "Act when the underlying issue is real even if the excessive-scrolling percentage is tiny — the source's example sat under 0.01%."
+        ],
+        "caveats": [
+          "Different causes require different fixes; do not assume one; the source does not state a rule for distinguishing them.",
+          "A sub-0.01% rate was not treated as a priority in the source's example, but usability defects are still resolved."
+        ],
+        "tags": [
+          "testing",
+          "heatmaps",
+          "session-recordings",
+          "microsoft-clarity",
+          "friction-analysis"
+        ]
+      },
+      {
+        "title": "Read quick backs as missing expected information",
+        "summary": "Quick backs are visits that immediately return to the previous page, usually because the page did not contain the information the user went there to find.",
+        "use_when": "Reviewing quick-back insights, especially on product pages, or diagnosing back-and-forth navigation in recordings.",
+        "steps": [
+          "Define a quick back as a user going to a page and then rapidly returning to the previous one.",
+          "Derive the likely cause: the user expected specific information on that page and could not find it immediately, so they bounce back and forth.",
+          "Apply it most often to product pages, where shoppers look for a specific detail and leave if it is absent.",
+          "Watch the recordings for quick backs, since Clarity can open the matching sessions from the insight.",
+          "If the same page accumulates quick backs, treat the missing information as the hypothesis to test rather than redesigning on the metric alone."
+        ],
+        "caveats": [
+          "The source gives no numeric threshold for quick backs and prescribes no specific fix.",
+          "Quick backs can also reflect honest comparison shopping between pages, not necessarily a defect."
+        ],
+        "tags": [
+          "testing",
+          "session-recordings",
+          "microsoft-clarity",
+          "product-page",
+          "friction-analysis"
+        ]
+      },
+      {
+        "title": "Change the Clarity screenshot before reading heatmaps",
+        "summary": "Heatmaps sometimes render a popup or broken layout; use the change-screenshot control to pick the design variation you actually want to analyse.",
+        "use_when": "Opening the heatmap tab in Clarity and finding the screenshot does not match the page you expected.",
+        "steps": [
+          "Open the heatmap tab and pick a page from the popular-pages list (typically the 5-10 highest-traffic pages are listed).",
+          "If the screenshot shows a popup, an interstitial, or a misconfigured section, click the change screenshot button in the top right.",
+          "Browse the list of design variations on the left and select the version that matches the real page experience — for example the version without the popup, or a version that includes the navigation menu.",
+          "Use a navigation-inclusive screenshot when you specifically want to see where clicks go within the menu.",
+          "Then choose the device filter — desktop, tablet, mobile — based on which source drives the most traffic for the site."
+        ],
+        "caveats": [
+          "The source gives no criteria beyond matching the actual experience or deliberately inspecting navigation clicks.",
+          "The source's example account only listed two pages, which it notes is not typical."
+        ],
+        "tags": [
+          "testing",
+          "heatmaps",
+          "microsoft-clarity",
+          "device-segmentation",
+          "qualitative-research"
+        ]
+      },
+      {
+        "title": "Use click and scroll maps to test the core action",
+        "summary": "When reading a click map, first identify the one core action the page wants, then check whether users reach and click it; low CTA click-through signals a hero or layout problem.",
+        "use_when": "Analysing a homepage, landing page or product page heatmap and deciding what to test first.",
+        "steps": [
+          "Name the single core action the page is for (e.g. sign-up, add to cart, booking) before looking at the data.",
+          "Check what share of clicks lands on that CTA. The source's rough benchmark: 5-7% click-through is what they like to see; the Clarity example totalled around 4-5% across the button area, described as average-to-good; they have seen client sites below 1-3%.",
+          "Note clicks landing where nothing exists, or on non-interactive elements — e.g. informational checkmarks, headline and body text, or an image that is not a control. Those are candidate features to add (the source hypothesises an explanatory video where an image attracts clicks).",
+          "Switch to the scroll map and read the 75%/50%/25% checkpoints plus the top of page to see where people drop off.",
+          "State the hypothesis in terms of the goal: if people are not reaching the CTA, what fundamental change would get them there?"
+        ],
+        "caveats": [
+          "5-7% is the presenter's preference, not an evidence-based standard; 4-5% was still called good.",
+          "Do not redesign from heatmap data alone — the source's own workflow combines maps and recordings, with copy/UI changes handled outside this step."
+        ],
+        "tags": [
+          "testing",
+          "heatmaps",
+          "conversion-optimization",
+          "experiment-design",
+          "microsoft-clarity",
+          "landing-page"
+        ]
+      },
+      {
+        "title": "Use the 60% no-scroll rule to prioritise above the fold",
+        "summary": "Most visitors never scroll past the top section, so value proposition and social proof must be established in the first five seconds and higher-value content moved up.",
+        "use_when": "Deciding what content belongs above the fold, or justifying moving testimonials, reviews or key information up the page.",
+        "steps": [
+          "Work from the presenter's statistical rule of thumb: about 60% of people never scroll past the very top section, so most of your services, case studies, testimonials or product detail below it will never be seen.",
+          "Apply it to your own scroll map: if only about 30% of people reach the testimonials, treat that as a placement problem.",
+          "Move important proof higher — the source's conclusion from 30% reach on testimonials was to bring that content up the page experience.",
+          "Ensure the hero explains who you are, what you do, and what is in it for me in five seconds or less; the source warns that without it you see a large drop-off immediately after the hero (the healthy alternative being roughly 93-95% continuing).",
+          "Give cold users a reason to trust you early: the source's principle is that a cold visitor knows nothing about you, so social proof above the fold is what makes them scroll."
+        ],
+        "caveats": [
+          "The 60% figure is presented as a general statistic, not measured from every account; verify against your own scroll map.",
+          "The 93-95% continuation figure came from a demo account and is illustrative, not a target."
+        ],
+        "tags": [
+          "testing",
+          "heatmaps",
+          "conversion-optimization",
+          "landing-page",
+          "positioning",
+          "social-proof"
+        ]
+      },
+      {
+        "title": "Use social proof examples to design above-the-fold trust",
+        "summary": "Reviews, ratings, buyer counts and featured-in placements are the proof patterns the source shows working above the fold for DTC and B2B sites.",
+        "use_when": "Designing or auditing the hero section's trust signals for ecommerce, SaaS or B2B.",
+        "steps": [
+          "Put review counts and ratings in or near the hero. Source examples: Mudwater with 49,000+ reviews plus a testimonial and featured-in placements; Iris (laser device) with 26,000+ reviews, 4.6 star rating, 'most trusted' positioning and a 365-day trial with free shipping; ZoomInfo with 8,000+ G2 reviews and 35,000+ businesses; Clarity with a 4.8/5 G2 rating.",
+          "Pair volume proof with risk reduction where possible — the source highlights Iris's 365-day trial and free shipping as fear-reduction and certainty elements.",
+          "For B2B, third-party review platforms such as G2 and buyer counts performed the same role as DTC review counts.",
+          "Check whether proof is actually above the fold: use the scroll map to see whether the proof section is reached by a large share, and move it up if not.",
+          "Treat all named figures as the source's examples of well-known brands, not benchmarks you must match."
+        ],
+        "caveats": [
+          "The external ratings and review counts in the source are not independently verified and will age.",
+          "The source does not specify minimum volumes or exact placement beyond above the fold."
+        ],
+        "tags": [
+          "testing",
+          "social-proof",
+          "landing-page",
+          "conversion-optimization",
+          "saas",
+          "b2b"
+        ]
+      },
+      {
+        "title": "Use Area Maps to quantify clicks per element",
+        "summary": "Clarity's Area Map breaks the page into named regions and reports the share of clicks each receives, making redundant and misleading elements visible.",
+        "use_when": "Deciding which page elements to keep, move or remove, or investigating a UI element that looks interactive.",
+        "steps": [
+          "Open the Area view, then click edit areas and draw the regions you want to compare (e.g. two menu options side by side, a sticky filter, the top navigation, a banner).",
+          "Read the click share per area. Source example: 'on demand' (immediate delivery) took 4% of clicks versus 1.74% for a non-immediate full-menu option, which matched expectations but quantified the gap.",
+          "Flag any element with a large click share that is not interactive — the source's example was a 'your browsing' banner that looked like a button, absorbed 46% of clicks, and caused users to leave in frustration once they realised it did nothing.",
+          "Flag redundant elements with very few clicks and remove them; the source's stated principle is that less is more in UX for conversion.",
+          "Note useful benchmarks from the source's example: 8.48% of clicks on the top navigation and 5.58% on a sticky filter in the bottom right.",
+          "Confirm any suspected issue with recordings or user testing before changing the design."
+        ],
+        "caveats": [
+          "The click-share percentages come from individual unnamed client sites and vary by page and traffic.",
+          "The source does not define a threshold for 'very few clicks'; removal is a judgement call."
+        ],
+        "tags": [
+          "testing",
+          "heatmaps",
+          "area-map",
+          "microsoft-clarity",
+          "conversion-optimization",
+          "ux"
+        ]
+      },
+      {
+        "title": "Diagnose sharp scroll drop-offs after long text blocks",
+        "summary": "Scroll-map checkpoints reveal where readers abandon, and the source's product-page example shows a long paragraph cutting reach from the high 80s/90s down to around 25%.",
+        "use_when": "Analysing a product page or any content-heavy page where you suspect a wall of text is suppressing reach.",
+        "steps": [
+          "Read the scroll map's checkpoints rather than just the single average fold line, so you can locate the step change.",
+          "In the source's product-page example, roughly 93% reached one point, then about a 30% drop followed a long paragraph, and only about 25% reached the add-to-cart area.",
+          "Interpret a step drop immediately after a text block as that block intimidating or overwhelming readers; the recommended action is to cut the text down substantially.",
+          "Check that the drop is not simply the natural decay of the page by comparing the shape to the content section it falls after.",
+          "Do the same analysis on other high-traffic pages: homepage, product, checkout for ecommerce; homepage, contact, get-a-quote, service pages for B2B.",
+          "Combine the scroll evidence with recordings before rewriting, so the cut is aimed at what readers were actually looking for."
+        ],
+        "caveats": [
+          "The 93%-to-25% figures are from one client example, not a benchmark.",
+          "A drop at a checkpoint is not automatically a defect — it can reflect the natural end of useful content."
+        ],
+        "tags": [
+          "testing",
+          "heatmaps",
+          "product-page",
+          "conversion-optimization",
+          "content-strategy",
+          "microsoft-clarity"
+        ]
+      },
+      {
+        "title": "Move forms above redundant 'Contact Us' headings on B2B pages",
+        "summary": "A generic 'Contact Us' or 'Get Started' headline at the top of a B2B contact page wastes the fold and was associated with roughly 25% immediate drop-off before the form was seen.",
+        "use_when": "Auditing a B2B contact, get-a-quote or demo page where the form sits below the first screen.",
+        "steps": [
+          "Check the scroll/heat data for the contact page: the source's example showed approximately 25% of visitors dropping off immediately, never reaching the form because a large 'Contact Us' headline occupied the top of the page.",
+          "Recognise the pattern as recurring across B2B sites: headlines like contact us, get started, sign up now, partner with us at the very top, which the source calls redundant because the visitor already knows they are on the contact page.",
+          "Test a layout where the form is moved up into the space currently spent on the redundant heading.",
+          "Use the reclaimed space for a compelling value proposition instead of restating the page purpose.",
+          "Validate by re-checking scroll reach of the form field area and by watching recordings of the new version."
+        ],
+        "caveats": [
+          "The source does not state the outcome of moving the form up; this is a proposed test, not a proven result.",
+          "The 25% drop-off came from one unnamed B2B client example."
+        ],
+        "tags": [
+          "testing",
+          "b2b",
+          "landing-page",
+          "forms",
+          "conversion-optimization",
+          "scroll-depth"
+        ]
+      },
+      {
+        "title": "Simplify forms and reduce phone-number requests",
+        "summary": "The source's form guidance is four fields or fewer, no phone number unless sales genuinely needs it, and a check of where in the form people abandon.",
+        "use_when": "Reviewing a lead form, demo-request or wholesale enquiry form that is underperforming.",
+        "steps": [
+          "Audit the number of fields. The source commonly sees 8-10 fields, and observes that most users do not get past the third or fourth.",
+          "Cut to four fields or fewer, which the source calls the typical sweet spot.",
+          "Remove the phone number field unless it is absolutely necessary to the sales team — the source attributes substantial drop-off specifically to phone-number requests, including for ecommerce businesses with a wholesale enquiry flow.",
+          "Find the field where abandonment happens and treat that field as the suspect.",
+          "Analyse how people actually reach the form page, not just what happens once they are on it, so the journey to the form is also part of the diagnosis."
+        ],
+        "caveats": [
+          "Four fields or fewer is described as 'typically' the sweet spot, not a universal rule; a genuinely qualified B2B lead may need more.",
+          "The phone-number finding is based on the source's repeated observation, not on a controlled test."
+        ],
+        "tags": [
+          "testing",
+          "forms",
+          "conversion-optimization",
+          "b2b",
+          "lead-generation",
+          "friction-analysis"
+        ]
+      },
+      {
+        "title": "Apply heatmap and area-map use cases for ecommerce and B2B",
+        "summary": "The source catalogues the specific analysis jobs heatmaps and scroll maps support: content engagement, navigation, CTA placement, form completion, journey flow and visual hierarchy.",
+        "use_when": "Planning what to extract from Clarity for an ecommerce store, a B2B site, or a hybrid with a wholesale arm.",
+        "steps": [
+          "Content engagement: identify which products, images, case studies, white papers or service descriptions draw the most attention and clicks; if a frequently clicked section sits low, consider bringing it higher.",
+          "Navigation: find the most-clicked navigation elements and product or collection pages, then use that to optimise site structure. For SaaS clients the pricing page is frequently the most visited and often the most under-leveraged — tailor it to reduce fear and uncertainty and explain what happens after sign-up.",
+          "Action placement: check whether people click the core CTAs at all (add to cart, buy now, sign up, book a demo). If clicks are low, consider more emphasis, a higher position, or different placement and design.",
+          "Form completion: trace how users reach the form and where they drop off within it.",
+          "User journey and flow: track how people move from homepage to product or service page and through to checkout.",
+          "Visual hierarchy: check whether banners, promotional sections and badges are organised clearly top to bottom and actually guide the eye."
+        ],
+        "caveats": [
+          "These are candidate use cases, not ranked priorities; the source does not say which to do first.",
+          "No specific metric thresholds are offered for each use case."
+        ],
+        "tags": [
+          "testing",
+          "heatmaps",
+          "ecommerce",
+          "b2b",
+          "site-structure",
+          "call-to-action",
+          "conversion-optimization"
+        ]
+      },
+      {
+        "title": "Run a Clarity recording review with a why mindset",
+        "summary": "Block one to two hours, watch recordings uninterrupted, and interrogate each behaviour with 'why did they do that' rather than cataloguing clicks.",
+        "use_when": "Sitting down to work through session recordings before forming test hypotheses.",
+        "steps": [
+          "Remove distractions for the next one to two hours and commit to watching recordings only.",
+          "Watch with an explicit 'why' mindset: why did this person do this, why did they click here, what could be the possible reasons — this is what turns a recording into an insight.",
+          "Start from the crucial pages: for ecommerce, homepage, product and checkout; for B2B, homepage, contact, get-a-quote and service pages.",
+          "Watch for friction patterns across recordings: clicks on non-clickable elements, repeated navigation loops, rapid clicking, excessive scrolling and content skimming.",
+          "Track navigation flow — did users reach the product via the nav, a CTA button, or by scrolling and then clicking a CTA?",
+          "Compare engagement time on sections and look for conversion leaks such as the source's example of a user switching menus, losing their cart despite a warning popup, and leaving after 21 minutes.",
+          "Take notes as you go, then combine the recording findings with the heat and scroll maps to build the fuller picture."
+        ],
+        "caveats": [
+          "The 1-2 hour focus block is a working habit, not a guarantee of insight.",
+          "The cart-loss case study is one client example from an on-demand delivery flow, not a general rule."
+        ],
+        "tags": [
+          "testing",
+          "session-recordings",
+          "microsoft-clarity",
+          "qualitative-research",
+          "friction-analysis",
+          "ecommerce"
+        ]
+      },
+      {
+        "title": "Decide how many recordings to watch and when to stop",
+        "summary": "Watch until the main friction pattern is clear — some accounts need about 100 recordings, others 400-450 — then stop, because further viewing becomes repetitive.",
+        "use_when": "Scoping a session-recording review and deciding when sufficient evidence has been gathered.",
+        "steps": [
+          "Do not fix a target number in advance; the source's practice ranges from about 100 recordings for some clients to 400-450 watched rapidly for others.",
+          "Define your stopping rule as the point at which you understand the main patterns — what the main issues and friction points are.",
+          "Once that pattern is identified, stop; the source says continued watching gets repetitive at that point.",
+          "After shipping site changes, restart the loop and watch recordings of the new version to find further improvements; the source calls this a never-ending game.",
+          "Classify behaviour with the available filters (time frame, device, user action, scroll depth, landing page, performance/speed, page duration) so each session you watch answers a question rather than being watched blind."
+        ],
+        "caveats": [
+          "100 and 400-450 are examples, not thresholds, and sample needs vary by traffic and question.",
+          "The source does not define a quantitative criterion for 'the main pattern'."
+        ],
+        "tags": [
+          "testing",
+          "session-recordings",
+          "microsoft-clarity",
+          "experiment-design",
+          "research"
+        ]
+      },
+      {
+        "title": "Triangulate engaged vs unengaged users with recording sorts",
+        "summary": "Sort recordings by clicks and pages high-to-low and then low-to-high to compare the most active visitors with the least active ones and see both sides of the behaviour.",
+        "use_when": "Building a recording sample that reveals both successful and failing sessions rather than only extremes of one kind.",
+        "steps": [
+          "In the recordings screen, open sort and choose clicks high-to-low, then pages high-to-low, to see your most active sessions.",
+          "Then reverse both: clicks low-to-high and pages low-to-high, to see the least active sessions.",
+          "Compare the two groups to understand what engaged behaviour looks like versus disengaged behaviour on the same pages.",
+          "Use the skip-inactivity option when speed-reading a very long session for quick insight; leave it off when you are new to Clarity or need to see the periods where users are not moving at all.",
+          "Note that a long session duration is itself a signal of high intent — the source's example was a one-hour mobile session.",
+          "Filter by speed when reviewing extremely long recordings so playback is manageable."
+        ],
+        "caveats": [
+          "Exact filter names such as the skip-inactivity label and the speed option may differ in the current Clarity interface — verify in the product.",
+          "Sorting by clicks favours page complexity as well as intent, so interpret alongside the page in question."
+        ],
+        "tags": [
+          "testing",
+          "session-recordings",
+          "microsoft-clarity",
+          "research",
+          "qualitative-research"
+        ]
+      },
+      {
+        "title": "Spot non-sticky filters from repeated scroll-back in recordings",
+        "summary": "When recording after recording shows users scrolling to the bottom and back to the top to reach a filter, the filter's placement is the usability problem, not the copy.",
+        "use_when": "Reviewing ecommerce or catalogue recordings where users bounce up and down a listing page.",
+        "steps": [
+          "Watch a recording and note repeated cycles of scrolling down through products and back to the top of the page.",
+          "Check what the user is returning for — in the source's on-demand delivery example it was a menu filter (on demand versus full menu) that existed only at the top of the page.",
+          "Diagnose the cause as a visibility issue: the control the user needs is not reachable from where they are browsing.",
+          "Consider making the filter sticky so it remains available while scrolling; the source frames this as a plausible improvement rather than a mandatory fix.",
+          "Confirm the pattern across several recordings before treating a single scroll-back as evidence, then validate the change with new recordings after shipping."
+        ],
+        "caveats": [
+          "Making the filter sticky is one proposed remedy; the source does not test or confirm its effect.",
+          "The example came from an on-demand delivery client, so copy the reasoning rather than the specific fix."
+        ],
+        "tags": [
+          "testing",
+          "session-recordings",
+          "ecommerce",
+          "filters",
+          "site-structure",
+          "microsoft-clarity"
+        ]
+      },
+      {
+        "title": "Sequence from behavioural data to a testable hypothesis",
+        "summary": "This workflow turns Clarity evidence into a specific layout hypothesis: identify the goal, find where reach and clicks fall, watch the matching recordings, then state the change to test.",
+        "use_when": "Converting heatmap, scroll and recording findings into a concrete CRO test rather than a vibe-based redesign.",
+        "steps": [
+          "Set the sample window and identify the page's single core action or goal.",
+          "Check whether people reach that section and click that element using the click map and the 75%/50%/25% scroll checkpoints.",
+          "Locate the specific blocker: a redundant heading occupying the top of a B2B contact page, a long text block before the add-to-cart, a misplaced CTA, or a filter only available at the top.",
+          "Watch the recordings behind the relevant insight to confirm the behaviour and understand the user's intent, using a why mindset.",
+          "Write the hypothesis as a change with a reason, e.g. the source's example: a 'Contact Us' header takes too much fold real estate, about 25% of B2B visitors drop off before seeing the form, so test a layout with the form moved up.",
+          "State the expected effect on reach or click share so the test can be judged, then combine heatmap, scroll and recording evidence before shipping."
+        ],
+        "caveats": [
+          "The source demonstrates the diagnostic loop but does not report test outcomes or statistical designs for these examples.",
+          "Copy and UI changes belong to a different stage than the behavioural diagnosis shown here, so hand off once the hypothesis is set."
+        ],
+        "tags": [
+          "testing",
+          "experiment-design",
+          "conversion-optimization",
+          "heatmaps",
+          "session-recordings",
+          "hypothesis"
+        ]
+      }
+    ]
+  },
+  "raw_content": "{\"cards\":[{\"title\":\"Set up Clarity analysis with a 6-month sample window\",\"summary\":\"Start any Clarity review by setting a sample period of roughly the last 6 months, or 90 days if setup limits you, and focus on the Insights block rather than baseline KPIs.\",\"use_when\":\"Beginning a session-recording/heatmap review of a site in Microsoft Clarity and deciding which date range and dashboard panel to work from.\",\"steps\":[\"Open the main Clarity dashboard and set the date range to roughly the last 6 months of data; the source uses that as a general sample (it does not have to be exact).\",\"If Clarity was only recently installed, fall back to the longest available window such as last 90 days.\",\"Treat the top-line metrics — scroll depth, active time, pages per session, total sessions, smart events, referrer/channel, campaign, browser, device and popular-pages data — as baseline KPIs you can already get from Google Analytics.\",\"Concentrate attention on the Insights block: rage clicks, dead clicks, excessive scrolling, quick backs, since those are what makes Clarity distinctive.\",\"Watch the matching recordings behind any insight that warrants a change rather than acting on the percentage alone.\"],\"caveats\":[\"The 6-month window is the presenter's habit and may not be possible depending on when tracking was installed.\",\"The dashboard overlap metrics remain useful as context — their inclusion does not mean they are unusable.\"],\"tags\":[\"testing\",\"session-recordings\",\"heatmaps\",\"measurement\",\"microsoft-clarity\",\"qualitative-research\"]},{\"title\":\"Interpret rage clicks as failed exits\",\"summary\":\"Rage clicks are repeated clicks on an element, usually to escape a popup, chat widget or blocked action; they are a friction signal worth watching even when the rate looks low.\",\"use_when\":\"Triaging the Clarity Insights block or filtering recordings for frustration before forming a test hypothesis.\",\"steps\":[\"Read rage clicks as people clicking an element multiple times, typically trying to exit an experience.\",\"Check common triggers: a popup that lands in the first 3-5 seconds before the visitor has scrolled, or a chat bot/interstitial blocking an add-to-cart or form submit (especially on B2B sites).\",\"Click the camera icon beside the rage-click insight to open the recordings page and watch the sessions that produced them.\",\"Judge the rate against the presenter's heuristic: under roughly 1-2% is generally considered good; the source's example was 0.2%.\",\"Resolve fundamental usability issues regardless of percentage — a low rate does not excuse a broken exit path.\"],\"caveats\":[\"The 1-2% good rate is a presenter heuristic, not a benchmark with evidence.\",\"Low rates do not mean there is nothing to fix; the source explicitly says metrics matter less than fundamental usability.\"],\"tags\":[\"testing\",\"session-recordings\",\"microsoft-clarity\",\"conversion-optimization\",\"friction-analysis\"]},{\"title\":\"Classify dead clicks and decide which to keep\",\"summary\":\"Dead clicks are clicks on elements that are not clickable; some are acceptable (logos you deliberately don't link out) while others signal missing functionality that blocks conversion.\",\"use_when\":\"Reviewing dead-click insights or heatmaps and deciding whether an element should become clickable.\",\"steps\":[\"Understand a dead click as a click on an element that is not clickable — e.g. 'As Seen On' or 'As Featured In' logos, informational checkmarks, or a non-clickable site logo.\",\"Accept some dead clicks deliberately: if linking out would send people away from the conversion path, keeping 'As Seen On' logos non-clickable can be a reasonable choice.\",\"Treat other dead clicks as defects: if clicking would genuinely help the user proceed (pricing details, product information, returning to the homepage from checkout or a product page), the missing link is a conversion barrier.\",\"Investigate with the click map, then validate with recordings before changing anything — the source saw logo clicks from both checkout and product pages.\"],\"caveats\":[\"The source gives no threshold for an acceptable dead-click rate; whether to act depends on whether the element would help conversion.\",\"Deciding which elements 'should' be clickable is a judgement call beyond the examples given.\"],\"tags\":[\"testing\",\"heatmaps\",\"session-recordings\",\"microsoft-clarity\",\"conversion-optimization\",\"friction-analysis\"]},{\"title\":\"Read excessive scrolling as search behaviour\",\"summary\":\"Excessive scrolling means users skim rapidly top-to-bottom, usually because they cannot find reviews, price, a CTA, or because a text block is too long.\",\"use_when\":\"Interpreting Clarity's 'excessive scrolling' insight or watching recordings where users move through a page unusually fast.\",\"steps\":[\"Treat excessive scrolling as a symptom that the user is hunting for something they cannot find.\",\"Check the candidate causes the source lists: looking for reviews, looking for the add-to-cart button or the price, or skimming past a long undifferentiated block of text.\",\"Cross-check with the scroll map: if engagement drops sharply after a specific long paragraph, the block itself is likely the cause.\",\"Cross-check with the click map to see whether the missing element (price, CTA, review score) is drawing attention elsewhere.\",\"Act when the underlying issue is real even if the excessive-scrolling percentage is tiny — the source's example sat under 0.01%.\"],\"caveats\":[\"Different causes require different fixes; do not assume one; the source does not state a rule for distinguishing them.\",\"A sub-0.01% rate was not treated as a priority in the source's example, but usability defects are still resolved.\"],\"tags\":[\"testing\",\"heatmaps\",\"session-recordings\",\"microsoft-clarity\",\"friction-analysis\"]},{\"title\":\"Read quick backs as missing expected information\",\"summary\":\"Quick backs are visits that immediately return to the previous page, usually because the page did not contain the information the user went there to find.\",\"use_when\":\"Reviewing quick-back insights, especially on product pages, or diagnosing back-and-forth navigation in recordings.\",\"steps\":[\"Define a quick back as a user going to a page and then rapidly returning to the previous one.\",\"Derive the likely cause: the user expected specific information on that page and could not find it immediately, so they bounce back and forth.\",\"Apply it most often to product pages, where shoppers look for a specific detail and leave if it is absent.\",\"Watch the recordings for quick backs, since Clarity can open the matching sessions from the insight.\",\"If the same page accumulates quick backs, treat the missing information as the hypothesis to test rather than redesigning on the metric alone.\"],\"caveats\":[\"The source gives no numeric threshold for quick backs and prescribes no specific fix.\",\"Quick backs can also reflect honest comparison shopping between pages, not necessarily a defect.\"],\"tags\":[\"testing\",\"session-recordings\",\"microsoft-clarity\",\"product-page\",\"friction-analysis\"]},{\"title\":\"Change the Clarity screenshot before reading heatmaps\",\"summary\":\"Heatmaps sometimes render a popup or broken layout; use the change-screenshot control to pick the design variation you actually want to analyse.\",\"use_when\":\"Opening the heatmap tab in Clarity and finding the screenshot does not match the page you expected.\",\"steps\":[\"Open the heatmap tab and pick a page from the popular-pages list (typically the 5-10 highest-traffic pages are listed).\",\"If the screenshot shows a popup, an interstitial, or a misconfigured section, click the change screenshot button in the top right.\",\"Browse the list of design variations on the left and select the version that matches the real page experience — for example the version without the popup, or a version that includes the navigation menu.\",\"Use a navigation-inclusive screenshot when you specifically want to see where clicks go within the menu.\",\"Then choose the device filter — desktop, tablet, mobile — based on which source drives the most traffic for the site.\"],\"caveats\":[\"The source gives no criteria beyond matching the actual experience or deliberately inspecting navigation clicks.\",\"The source's example account only listed two pages, which it notes is not typical.\"],\"tags\":[\"testing\",\"heatmaps\",\"microsoft-clarity\",\"device-segmentation\",\"qualitative-research\"]},{\"title\":\"Use click and scroll maps to test the core action\",\"summary\":\"When reading a click map, first identify the one core action the page wants, then check whether users reach and click it; low CTA click-through signals a hero or layout problem.\",\"use_when\":\"Analysing a homepage, landing page or product page heatmap and deciding what to test first.\",\"steps\":[\"Name the single core action the page is for (e.g. sign-up, add to cart, booking) before looking at the data.\",\"Check what share of clicks lands on that CTA. The source's rough benchmark: 5-7% click-through is what they like to see; the Clarity example totalled around 4-5% across the button area, described as average-to-good; they have seen client sites below 1-3%.\",\"Note clicks landing where nothing exists, or on non-interactive elements — e.g. informational checkmarks, headline and body text, or an image that is not a control. Those are candidate features to add (the source hypothesises an explanatory video where an image attracts clicks).\",\"Switch to the scroll map and read the 75%/50%/25% checkpoints plus the top of page to see where people drop off.\",\"State the hypothesis in terms of the goal: if people are not reaching the CTA, what fundamental change would get them there?\"],\"caveats\":[\"5-7% is the presenter's preference, not an evidence-based standard; 4-5% was still called good.\",\"Do not redesign from heatmap data alone — the source's own workflow combines maps and recordings, with copy/UI changes handled outside this step.\"],\"tags\":[\"testing\",\"heatmaps\",\"conversion-optimization\",\"experiment-design\",\"microsoft-clarity\",\"landing-page\"]},{\"title\":\"Use the 60% no-scroll rule to prioritise above the fold\",\"summary\":\"Most visitors never scroll past the top section, so value proposition and social proof must be established in the first five seconds and higher-value content moved up.\",\"use_when\":\"Deciding what content belongs above the fold, or justifying moving testimonials, reviews or key information up the page.\",\"steps\":[\"Work from the presenter's statistical rule of thumb: about 60% of people never scroll past the very top section, so most of your services, case studies, testimonials or product detail below it will never be seen.\",\"Apply it to your own scroll map: if only about 30% of people reach the testimonials, treat that as a placement problem.\",\"Move important proof higher — the source's conclusion from 30% reach on testimonials was to bring that content up the page experience.\",\"Ensure the hero explains who you are, what you do, and what is in it for me in five seconds or less; the source warns that without it you see a large drop-off immediately after the hero (the healthy alternative being roughly 93-95% continuing).\",\"Give cold users a reason to trust you early: the source's principle is that a cold visitor knows nothing about you, so social proof above the fold is what makes them scroll.\"],\"caveats\":[\"The 60% figure is presented as a general statistic, not measured from every account; verify against your own scroll map.\",\"The 93-95% continuation figure came from a demo account and is illustrative, not a target.\"],\"tags\":[\"testing\",\"heatmaps\",\"conversion-optimization\",\"landing-page\",\"positioning\",\"social-proof\"]},{\"title\":\"Use social proof examples to design above-the-fold trust\",\"summary\":\"Reviews, ratings, buyer counts and featured-in placements are the proof patterns the source shows working above the fold for DTC and B2B sites.\",\"use_when\":\"Designing or auditing the hero section's trust signals for ecommerce, SaaS or B2B.\",\"steps\":[\"Put review counts and ratings in or near the hero. Source examples: Mudwater with 49,000+ reviews plus a testimonial and featured-in placements; Iris (laser device) with 26,000+ reviews, 4.6 star rating, 'most trusted' positioning and a 365-day trial with free shipping; ZoomInfo with 8,000+ G2 reviews and 35,000+ businesses; Clarity with a 4.8/5 G2 rating.\",\"Pair volume proof with risk reduction where possible — the source highlights Iris's 365-day trial and free shipping as fear-reduction and certainty elements.\",\"For B2B, third-party review platforms such as G2 and buyer counts performed the same role as DTC review counts.\",\"Check whether proof is actually above the fold: use the scroll map to see whether the proof section is reached by a large share, and move it up if not.\",\"Treat all named figures as the source's examples of well-known brands, not benchmarks you must match.\"],\"caveats\":[\"The external ratings and review counts in the source are not independently verified and will age.\",\"The source does not specify minimum volumes or exact placement beyond above the fold.\"],\"tags\":[\"testing\",\"social-proof\",\"landing-page\",\"conversion-optimization\",\"saas\",\"b2b\"]},{\"title\":\"Use Area Maps to quantify clicks per element\",\"summary\":\"Clarity's Area Map breaks the page into named regions and reports the share of clicks each receives, making redundant and misleading elements visible.\",\"use_when\":\"Deciding which page elements to keep, move or remove, or investigating a UI element that looks interactive.\",\"steps\":[\"Open the Area view, then click edit areas and draw the regions you want to compare (e.g. two menu options side by side, a sticky filter, the top navigation, a banner).\",\"Read the click share per area. Source example: 'on demand' (immediate delivery) took 4% of clicks versus 1.74% for a non-immediate full-menu option, which matched expectations but quantified the gap.\",\"Flag any element with a large click share that is not interactive — the source's example was a 'your browsing' banner that looked like a button, absorbed 46% of clicks, and caused users to leave in frustration once they realised it did nothing.\",\"Flag redundant elements with very few clicks and remove them; the source's stated principle is that less is more in UX for conversion.\",\"Note useful benchmarks from the source's example: 8.48% of clicks on the top navigation and 5.58% on a sticky filter in the bottom right.\",\"Confirm any suspected issue with recordings or user testing before changing the design.\"],\"caveats\":[\"The click-share percentages come from individual unnamed client sites and vary by page and traffic.\",\"The source does not define a threshold for 'very few clicks'; removal is a judgement call.\"],\"tags\":[\"testing\",\"heatmaps\",\"area-map\",\"microsoft-clarity\",\"conversion-optimization\",\"ux\"]},{\"title\":\"Diagnose sharp scroll drop-offs after long text blocks\",\"summary\":\"Scroll-map checkpoints reveal where readers abandon, and the source's product-page example shows a long paragraph cutting reach from the high 80s/90s down to around 25%.\",\"use_when\":\"Analysing a product page or any content-heavy page where you suspect a wall of text is suppressing reach.\",\"steps\":[\"Read the scroll map's checkpoints rather than just the single average fold line, so you can locate the step change.\",\"In the source's product-page example, roughly 93% reached one point, then about a 30% drop followed a long paragraph, and only about 25% reached the add-to-cart area.\",\"Interpret a step drop immediately after a text block as that block intimidating or overwhelming readers; the recommended action is to cut the text down substantially.\",\"Check that the drop is not simply the natural decay of the page by comparing the shape to the content section it falls after.\",\"Do the same analysis on other high-traffic pages: homepage, product, checkout for ecommerce; homepage, contact, get-a-quote, service pages for B2B.\",\"Combine the scroll evidence with recordings before rewriting, so the cut is aimed at what readers were actually looking for.\"],\"caveats\":[\"The 93%-to-25% figures are from one client example, not a benchmark.\",\"A drop at a checkpoint is not automatically a defect — it can reflect the natural end of useful content.\"],\"tags\":[\"testing\",\"heatmaps\",\"product-page\",\"conversion-optimization\",\"content-strategy\",\"microsoft-clarity\"]},{\"title\":\"Move forms above redundant 'Contact Us' headings on B2B pages\",\"summary\":\"A generic 'Contact Us' or 'Get Started' headline at the top of a B2B contact page wastes the fold and was associated with roughly 25% immediate drop-off before the form was seen.\",\"use_when\":\"Auditing a B2B contact, get-a-quote or demo page where the form sits below the first screen.\",\"steps\":[\"Check the scroll/heat data for the contact page: the source's example showed approximately 25% of visitors dropping off immediately, never reaching the form because a large 'Contact Us' headline occupied the top of the page.\",\"Recognise the pattern as recurring across B2B sites: headlines like contact us, get started, sign up now, partner with us at the very top, which the source calls redundant because the visitor already knows they are on the contact page.\",\"Test a layout where the form is moved up into the space currently spent on the redundant heading.\",\"Use the reclaimed space for a compelling value proposition instead of restating the page purpose.\",\"Validate by re-checking scroll reach of the form field area and by watching recordings of the new version.\"],\"caveats\":[\"The source does not state the outcome of moving the form up; this is a proposed test, not a proven result.\",\"The 25% drop-off came from one unnamed B2B client example.\"],\"tags\":[\"testing\",\"b2b\",\"landing-page\",\"forms\",\"conversion-optimization\",\"scroll-depth\"]},{\"title\":\"Simplify forms and reduce phone-number requests\",\"summary\":\"The source's form guidance is four fields or fewer, no phone number unless sales genuinely needs it, and a check of where in the form people abandon.\",\"use_when\":\"Reviewing a lead form, demo-request or wholesale enquiry form that is underperforming.\",\"steps\":[\"Audit the number of fields. The source commonly sees 8-10 fields, and observes that most users do not get past the third or fourth.\",\"Cut to four fields or fewer, which the source calls the typical sweet spot.\",\"Remove the phone number field unless it is absolutely necessary to the sales team — the source attributes substantial drop-off specifically to phone-number requests, including for ecommerce businesses with a wholesale enquiry flow.\",\"Find the field where abandonment happens and treat that field as the suspect.\",\"Analyse how people actually reach the form page, not just what happens once they are on it, so the journey to the form is also part of the diagnosis.\"],\"caveats\":[\"Four fields or fewer is described as 'typically' the sweet spot, not a universal rule; a genuinely qualified B2B lead may need more.\",\"The phone-number finding is based on the source's repeated observation, not on a controlled test.\"],\"tags\":[\"testing\",\"forms\",\"conversion-optimization\",\"b2b\",\"lead-generation\",\"friction-analysis\"]},{\"title\":\"Apply heatmap and area-map use cases for ecommerce and B2B\",\"summary\":\"The source catalogues the specific analysis jobs heatmaps and scroll maps support: content engagement, navigation, CTA placement, form completion, journey flow and visual hierarchy.\",\"use_when\":\"Planning what to extract from Clarity for an ecommerce store, a B2B site, or a hybrid with a wholesale arm.\",\"steps\":[\"Content engagement: identify which products, images, case studies, white papers or service descriptions draw the most attention and clicks; if a frequently clicked section sits low, consider bringing it higher.\",\"Navigation: find the most-clicked navigation elements and product or collection pages, then use that to optimise site structure. For SaaS clients the pricing page is frequently the most visited and often the most under-leveraged — tailor it to reduce fear and uncertainty and explain what happens after sign-up.\",\"Action placement: check whether people click the core CTAs at all (add to cart, buy now, sign up, book a demo). If clicks are low, consider more emphasis, a higher position, or different placement and design.\",\"Form completion: trace how users reach the form and where they drop off within it.\",\"User journey and flow: track how people move from homepage to product or service page and through to checkout.\",\"Visual hierarchy: check whether banners, promotional sections and badges are organised clearly top to bottom and actually guide the eye.\"],\"caveats\":[\"These are candidate use cases, not ranked priorities; the source does not say which to do first.\",\"No specific metric thresholds are offered for each use case.\"],\"tags\":[\"testing\",\"heatmaps\",\"ecommerce\",\"b2b\",\"site-structure\",\"call-to-action\",\"conversion-optimization\"]},{\"title\":\"Run a Clarity recording review with a why mindset\",\"summary\":\"Block one to two hours, watch recordings uninterrupted, and interrogate each behaviour with 'why did they do that' rather than cataloguing clicks.\",\"use_when\":\"Sitting down to work through session recordings before forming test hypotheses.\",\"steps\":[\"Remove distractions for the next one to two hours and commit to watching recordings only.\",\"Watch with an explicit 'why' mindset: why did this person do this, why did they click here, what could be the possible reasons — this is what turns a recording into an insight.\",\"Start from the crucial pages: for ecommerce, homepage, product and checkout; for B2B, homepage, contact, get-a-quote and service pages.\",\"Watch for friction patterns across recordings: clicks on non-clickable elements, repeated navigation loops, rapid clicking, excessive scrolling and content skimming.\",\"Track navigation flow — did users reach the product via the nav, a CTA button, or by scrolling and then clicking a CTA?\",\"Compare engagement time on sections and look for conversion leaks such as the source's example of a user switching menus, losing their cart despite a warning popup, and leaving after 21 minutes.\",\"Take notes as you go, then combine the recording findings with the heat and scroll maps to build the fuller picture.\"],\"caveats\":[\"The 1-2 hour focus block is a working habit, not a guarantee of insight.\",\"The cart-loss case study is one client example from an on-demand delivery flow, not a general rule.\"],\"tags\":[\"testing\",\"session-recordings\",\"microsoft-clarity\",\"qualitative-research\",\"friction-analysis\",\"ecommerce\"]},{\"title\":\"Decide how many recordings to watch and when to stop\",\"summary\":\"Watch until the main friction pattern is clear — some accounts need about 100 recordings, others 400-450 — then stop, because further viewing becomes repetitive.\",\"use_when\":\"Scoping a session-recording review and deciding when sufficient evidence has been gathered.\",\"steps\":[\"Do not fix a target number in advance; the source's practice ranges from about 100 recordings for some clients to 400-450 watched rapidly for others.\",\"Define your stopping rule as the point at which you understand the main patterns — what the main issues and friction points are.\",\"Once that pattern is identified, stop; the source says continued watching gets repetitive at that point.\",\"After shipping site changes, restart the loop and watch recordings of the new version to find further improvements; the source calls this a never-ending game.\",\"Classify behaviour with the available filters (time frame, device, user action, scroll depth, landing page, performance/speed, page duration) so each session you watch answers a question rather than being watched blind.\"],\"caveats\":[\"100 and 400-450 are examples, not thresholds, and sample needs vary by traffic and question.\",\"The source does not define a quantitative criterion for 'the main pattern'.\"],\"tags\":[\"testing\",\"session-recordings\",\"microsoft-clarity\",\"experiment-design\",\"research\"]},{\"title\":\"Triangulate engaged vs unengaged users with recording sorts\",\"summary\":\"Sort recordings by clicks and pages high-to-low and then low-to-high to compare the most active visitors with the least active ones and see both sides of the behaviour.\",\"use_when\":\"Building a recording sample that reveals both successful and failing sessions rather than only extremes of one kind.\",\"steps\":[\"In the recordings screen, open sort and choose clicks high-to-low, then pages high-to-low, to see your most active sessions.\",\"Then reverse both: clicks low-to-high and pages low-to-high, to see the least active sessions.\",\"Compare the two groups to understand what engaged behaviour looks like versus disengaged behaviour on the same pages.\",\"Use the skip-inactivity option when speed-reading a very long session for quick insight; leave it off when you are new to Clarity or need to see the periods where users are not moving at all.\",\"Note that a long session duration is itself a signal of high intent — the source's example was a one-hour mobile session.\",\"Filter by speed when reviewing extremely long recordings so playback is manageable.\"],\"caveats\":[\"Exact filter names such as the skip-inactivity label and the speed option may differ in the current Clarity interface — verify in the product.\",\"Sorting by clicks favours page complexity as well as intent, so interpret alongside the page in question.\"],\"tags\":[\"testing\",\"session-recordings\",\"microsoft-clarity\",\"research\",\"qualitative-research\"]},{\"title\":\"Spot non-sticky filters from repeated scroll-back in recordings\",\"summary\":\"When recording after recording shows users scrolling to the bottom and back to the top to reach a filter, the filter's placement is the usability problem, not the copy.\",\"use_when\":\"Reviewing ecommerce or catalogue recordings where users bounce up and down a listing page.\",\"steps\":[\"Watch a recording and note repeated cycles of scrolling down through products and back to the top of the page.\",\"Check what the user is returning for — in the source's on-demand delivery example it was a menu filter (on demand versus full menu) that existed only at the top of the page.\",\"Diagnose the cause as a visibility issue: the control the user needs is not reachable from where they are browsing.\",\"Consider making the filter sticky so it remains available while scrolling; the source frames this as a plausible improvement rather than a mandatory fix.\",\"Confirm the pattern across several recordings before treating a single scroll-back as evidence, then validate the change with new recordings after shipping.\"],\"caveats\":[\"Making the filter sticky is one proposed remedy; the source does not test or confirm its effect.\",\"The example came from an on-demand delivery client, so copy the reasoning rather than the specific fix.\"],\"tags\":[\"testing\",\"session-recordings\",\"ecommerce\",\"filters\",\"site-structure\",\"microsoft-clarity\"]},{\"title\":\"Sequence from behavioural data to a testable hypothesis\",\"summary\":\"This workflow turns Clarity evidence into a specific layout hypothesis: identify the goal, find where reach and clicks fall, watch the matching recordings, then state the change to test.\",\"use_when\":\"Converting heatmap, scroll and recording findings into a concrete CRO test rather than a vibe-based redesign.\",\"steps\":[\"Set the sample window and identify the page's single core action or goal.\",\"Check whether people reach that section and click that element using the click map and the 75%/50%/25% scroll checkpoints.\",\"Locate the specific blocker: a redundant heading occupying the top of a B2B contact page, a long text block before the add-to-cart, a misplaced CTA, or a filter only available at the top.\",\"Watch the recordings behind the relevant insight to confirm the behaviour and understand the user's intent, using a why mindset.\",\"Write the hypothesis as a change with a reason, e.g. the source's example: a 'Contact Us' header takes too much fold real estate, about 25% of B2B visitors drop off before seeing the form, so test a layout with the form moved up.\",\"State the expected effect on reach or click share so the test can be judged, then combine heatmap, scroll and recording evidence before shipping.\"],\"caveats\":[\"The source demonstrates the diagnostic loop but does not report test outcomes or statistical designs for these examples.\",\"Copy and UI changes belong to a different stage than the behavioural diagnosis shown here, so hand off once the hypothesis is set.\"],\"tags\":[\"testing\",\"experiment-design\",\"conversion-optimization\",\"heatmaps\",\"session-recordings\",\"hypothesis\"]}]}",
+  "input": {
+    "source_id": "1codPdK-qaL_2SoPf_nmftxOcUIzNczWB",
+    "source_sha256": "e90e771f91c35367be3e31ee5a6d6c7d4137d599fdc8b78c4865c1d6673569bb",
+    "source_name": "Microsoft Clarity COMPLETE Tutorial in 2026 to Skyrocket Conversions.docx",
+    "folder": "/09-CRO-testing",
+    "domain": "testing",
+    "section": 0,
+    "section_count": 1,
+    "text": "09-CRO / testing and experiments\n\nGoes here. Gathering qualitative and quantitative behavioral data to formulate test hypotheses. Heatmaps, session recordings, area maps, user testing platforms, and on-site surveys.\n\nNot here.\n\nSetting up custom event funnels and path explorations in Google Analytics 4 -> 06-MEA\n\nRedesigning the landing page UI or changing copywriting based on the data -> 07-LPG\n\nHeader. url: rights: public_reference why: Details the exact mechanics of Microsoft Clarity, explaining how to interpret rage clicks, dead clicks, excessive scrolling, and quick backs, and how to use Area Maps to design conversion rate tests. modules: [CRO] topics: [test design, session recordings, heatmaps] tier: 3 scope_hint: baseline\n\nTopics. heatmaps / using Area Maps to see the exact percentage of clicks diverted to different page elements (e.g., specific navigation items, sticky filters, or non-clickable images). Analyzing scroll depth checkpoints (75%, 50%, 25%) to identify massive drop-offs caused by large text blocks or misplaced CTAs. Differentiating between the behaviors of cold traffic (needing social proof above the fold) and warm traffic. session recordings / isolating user frustration by filtering recordings for \"rage clicks\" (repeatedly clicking a non-clickable element or trying to close an immediate popup), \"dead clicks\" (clicking elements that look like links but aren't, such as \"As Seen On\" logos), \"excessive scrolling\" (skimming past long text blocks or frantically searching for a missing CTA), and \"quick backs\" (bouncing immediately from a product page because expected information is missing). Sort filtering by highest clicks to lowest, and lowest clicks to highest, to compare highly engaged users against unengaged users. test design / forming hypotheses based on behavioral data. For example, identifying that a \"Contact Us\" header takes up too much real estate, causing 25% of B2B users to drop off before seeing the actual form below the fold, and testing a layout where the form is moved up.\n\nLook for. The definition of \"rage clicks\": rapidly clicking an element to exit an experience, such as a 5-second popup. The definition of \"quick backs\": navigating to a page and immediately returning, indicating the expected information was missing. The specific filtering method for recordings: sorting by Clicks High-to-Low and Pages High-to-Low, then comparing against the inverse (Low-to-High) to understand engaged vs. unengaged behavior. The rule for stopping recording review: stop watching once the main pattern of friction is identified, whether that takes 100 or 400 recordings. The 60% rule: acknowledging that statistically, 60% of people will never scroll past the hero section, meaning value props and social proof must be established in the first 5 seconds.\n\nSkip. General promotion for the agency's audit services. Basic definitions of what e-commerce or B2B means.\n\nScope mix. Almost all baseline.\n\nVolume. 10 to 15.\n\nin this video I'm going to show you a complete in-depth tutorial on how to use Microsoft Clarity and all of the features available within the platform I'll show you not only how to use all of the features but also a complete tutorial on how to actually interpret the data within Clarity and if you stick towards the end of the video I'll show you real life examples and case studies of how we've used Clarity at our agency for our clients to increase their conversion rates getting right into it we have the main Clarity dashboard open up here so the first thing that I like to do when looking at the main dashboard is trying to filter for a good enough sample size or good enough sample period right so typically that's going to be the last 6 months of data it could also be last 90 days of data you know depending on when you set up Clarity you may or may not have the ability to go that far back so this might vary but you know 6 months is generally a good time period so I'm going to go back to January 2024 today's July 29th 2024 so roughly 6 months doesn't have to be exact and now I have all of the data available here so a lot of the metrics on the main Clarity dashboard you can actually pull directly from Google analytics so things like the scroll depth for example active time spent pages per session the total number of sessions these are all kind of Baseline kpis that you know doesn't really make Clarity unique in any regard like you can get this from other data sources the part that I find is important to focus on on the main dashboard is really this insights block here so we're looking at rage clicks dead clicks sucessive scrolling and then quick backs so rage clicks is the first one here which sits at 0 2% so this is actually people that are you know rage clicking or clicking multiple times on an element typically to kind of exit that experience so if you think about a like a website and you have a popup that lands immediately on the first 5 Seconds somebody's barely even scrolled on the site and they're just rage clicking trying to get rid of that popup you know that's where you'll typically find a lot of rage clicks right another use case might be where you know you're on a page and you're trying to exit a chat bot that's preventing you from adding to card or filling out a form and clicking the submit button if it's a B2B site right so again you know people are just trying to exit that and that's you know generally low hanging fruit opportunity what I like about Clarity is that you can actually click on this little camera icon and it's going to open up the recordings page where you can watch the actual recordings of people that experienced the rage clicks and later in the video we'll do a more in-depth walkth through of how to do recordings but for now we're just focusing on the main kpis so 0. 2% you know that's typically a pretty good rate I would say anything really under 1 to two% is good um but obviously these are low hanging food opportunities so if the rage clicks actually warrant particular change then it's worth watching those recordings to see you know where people experiencing frustration or friction the next thing is dead clicks so dead clicks is where somebody tries to click on an element then what happens is that element is actually not clickable hence the word dead right so normally what we see on client sites is you might have logos demonstrated on your your website and people think that those logos are clickable but they're actually not clickable right like if you have a ass featured on or ass seen on and people are trying to click on the logos right so that's an example of a dead click now in some scenarios dead clicks are fine because you might not want to send people outside right like the argument for as scen on or ass featured logos where you have places you've been featured in you might not necessarily want to send people outbound and outside of the website because your main goal is ultimately conversions if you're sending people outside they're not going to complete the the main action you want them to complete um so that's a scenario in which dead clicks are okay now there's the other scenario in which elements that should be clickable and that actually help people in their journey to complete a conversion is is not clickable so a good example of this would be this is uh actually an audit report that we do for our clients and this was an example where this is a SAS client so on their pricing section of their website they had a lot of clicks and movement registered around their pricing if you can see that on the right right so people thought that these elements were clickable but the only element that was actually clickable was the button that said get X number of free credits but you can see all of the other clicks that are registered in and around this area right and we'll get into this in the heat map part as well but this is an example of of dead clicks right where people think something's clickable it would actually benefit the the user a lot if they were clickable because people want to get the price but they're just clicking on things that you know are not designed to be clickable in the first place and hence that's going to increase the dead click rate another example of dead clicks would be this website here so when we went to the heat map tab uh what we noticed was that people were actually clicking on this logo uh in the center of the site and the logo wasn't even clickable like typically when you go on a website and you click on a logo it'll take you back to the homepage right most websites these days follow that convention but for some reason on the site the logo was not clickable and people were trying to click there from the checkout page from the product page to get back to the home but hence you know they couldn't and they were kind of Rage clicking and basically going through that dead click where it increased that percentage substantially and we noticed that on the main dashboard and we actually saw recordings of people as well right so dead clicks are super important uh and they're very useful okay so the next metric here is now excessive scrolling so excessive scrolling is when somebody is on a website and they're just scrolling very excessively on a particular page right so that just means they're going from top to bottom like very quickly um Clarity has certain metrics to identify this and typically what you can derive from this Insight is a couple different things it could be the fact that they're the user is trying to find information on the site but they can't find it right so for example they might be trying to look for reviews and you know they're just quickly scrolling through to try and find that information um another example might be they're trying to find a like a call to action Buton like the button to add to cart or the price of the product and it's nowhere to be found and they have to just scroll quickly to find it other use case might be you might have a long block of text that uh is just going throughout the entire page and I've seen examples of this so people are just completely skimming by it and going through the entire site uh to skip through it right so that's that's common use cases of excessive scrolling in this use case right now in this particular scenario it's less than 0.01% so it's not really a major concern and the last thing is Qui cck back so this is people where they're going to a page as cler saying right here and then they're quickly returning back to the previous one so this is normally derived the the Insight that can be derived from this is that you know people are looking for information on a page but they're not able to find it immediately right so they have to constantly bounce back and forth we'll typically notice this where somebody goes to like a page on the site and they're expecting certain information right for example a product page you'd expect to find certain information about the product but if you can't find it you're going to immediately go back right so that's also super important to understand and again I would consider watching the recordings of all of these um I know I kind of gave Baseline metrics for them but it doesn't really matter what the metrics are if there's usability issues fundamental that exist on the site ultimately you want to resolve them regardless of what the percentage is then as I scroll down there's a lot of different metrics here so you have Smart event so you can see different stages of the funnel this is a e-commerce site so I can see you know people that act to cart you can check out again you can do all of this inside of Google analytics and a much better job at that as well so I would really spend too much time there you can also see things like the refer the channel breakdown campaign Source again most of this you can do in uh GA and then you can see your browser data device Etc most popular Pages again a lot of this you can pretty much find inside of Google analytics so really the main piece of insight is the insights part of the dashboard okay so now we're going to segue over to the heat map portion of clarity I have a live demo count open up here for demonstration purposes where I'll actually walk through the data for the clarity website and this will give you a good idea of how to actually interpret the data that you're seeing so what I'll do is I'll click on the heat map tab up there and then I'll be presented with the most popular Pages since this is an example account you know there's only two pages that are listed here but typically you'll have 5 to 10 of the most popular Pages segmented by the volume of traffic that is coming to those pages but let's just click on the homepage here so the first thing I'm just going to mention is you might have a screenshot here that might not look exactly like what you anticipated for some of our clients where they have pop-ups under website that pop up immediately within you know 3 to 5 seconds upon Landing that might actually be the first thing that pops up uh in other cases you might have some weird you know misconfigured section or layout so just as a heads up you want to click on the change screenshot button on the top right and then what will happen is you'll get presented with all of the different variations of the design just like this over here on the left right so you can see there's a couple different versions again sometimes if you have a popup you might want to swap it out with what the actual website should look like uh in other cases might want to see your navigation menu and where the percentage of clicks are going within there that's a pretty good use case so you can actually change the screenshot to you know modify what you want to look at in terms of the data and what screenshot you want to look at but right now we have the main hero section here so on the left hand side you can see that you can filter by desktop which is a current view I can filter by tablet uh and then I can filter by mobile view right so depending on what's your most dominant form of traffic you might want to filter accordingly just to visualize what users are actually experiencing then I can filter by click data which is what's selected now I can filter by how far people scroll and then I can see the area which is one of my favorite features of clarity where you can see the percentage of people that are clicking on different elements of your website uh but actually dissecting it by different areas so we'll dive into all of these just just starting with the click map here so the first thing that immediately stands out is there's kind of a equal number of clicks that's equally dispersed throughout this hero section right I can see clicks a lot of clicks registered on the main top navigation I can see a decent percentage of clicks that is diverted towards the text of the website so I can see the headline is you know getting a lot of clicks the body text is getting a lot of clicks see a lot of clicks registered in and around the check marks of the site which again is meant to be informational in nature it's not designed to be clickable so that might be a potential area of enhancement and then eventually I make my way down to the core call to action button and I can see the percentage of clicks that are registered on this one here versus this button on the right so I want to try and simplify the interpretation of data as much as possible for you right it doesn't matter if you're an e-commerce site or you're a B2B company fundamentally all you're trying to dissect when looking at this heat map and looking at the scroll Maps is what is the core action or goal that I want people to take on my site are people reaching that section or taking that core action and if not what are some fundamental ways to get them and strategically get them to pursue that action on your site so if I'm looking at this example here Microsoft Clarity is a SAS company right fundamentally what they're trying to do is to get people to actually sign up for their platform so the first thing I'm going to look at is the percentage of clicks that are actually going to this this cord button over here right I can see 0.19% of clicks are here another 0.91% of clicks go here and then 3.93% because there's kind of a bunch of Clicks in and around this button area right but collectively as a rough estimate we're looking at four to 5% click through on this button so right off the bat this is a pretty good clickthrough rate right uh typically we like to see the The Click through be 5 to 7% um but this is in and around the average rate so there's opportunity to improve it but it's also not bad I've seen a lot of client sites where it's less than 1% or 3% so this is a good rate right then what I'm looking at is the Clicks in and around this area so typically I want to look at what are the most navigated to uh navigation elements right where do people click on this main naav right now I can see that there's a lot of clicks registered towards the right side of the page and the left side of the page so let me actually pull up the live page so you have a reference point here so this is actually the live Clarity page that we're looking at so basically what we can see is that there's a lot of clicks being registered in and around the right hand side a lot on the left hand side but there's also a fair number of clicks that are being registered towards the middle part of the page where there's actually nothing even there right so that might be something we want to investigate further the other thing I'm looking at is there's a lot of clicks on the actual image on the right people are actually clicking within the image itself not specifically the ones within this image where it says 1 2 3 4 5 that's actually part of the Image Design itself but the one's right above it right so this hypothesis that could be derived from this could maybe be perhaps we want to illustrate a video here that kind of explains you know more about the platform how it works if we're seeing that a lot of clicks are registered here maybe people are not really understanding what the platform is just based off this headline alone which better your business is honestly not that impactful and the value prop is kind of missing right now what I want to look at is the second part of this which is actually the scroll data so I can see that 96% of people reach this far 87% of people reach here and as I go down the page obviously the scroll rate is going down substantially but this is pretty good right majority of people are still sticking throughout the page I can tell you that normally statistically 60% of people 60 will never scroll past the most top section of the website right so on average 60% of people will never see all of the information about your services your case studies your testimonials that you have further down the page majority of people will never even reach that section same goes for if you're an e-commerce company right majority of people will never even see your products and all of the information you have underneath the site now that said there's certain ways to mitigate that and that's what Clarity is actually doing in this case and that's why people are actually scrolling down the page and they have a pretty good scroll through rate so fundamentally what we look at in any High converting website you'll always notice that they have a couple of things the first thing is they will always put social proof above the fold so social proof are things like reviews testimonials feature Publications if you look at mudwater they have 49,000 Plus reviews and a testimonial and as seen on all these different places if you look at Iris store laser they have 26,000 Plus reviews 4.6 star rating most trusted laser device brand on Amazon and Google and they have some reduction of fear and and certainty with this 365 day trial and free shipping if you look at Zoom info this is a B2B example 8,000 plus G2 reviews and trusted by 35,000 plus businesses now if we go back to Clarity you can see the exact same thing is being done here because they have the .8 out of five star reviews on Capa and the 4.5 out of five on G2 so again the psychology behind this is that if I'm a cold user coming to the website I know nothing about your company at all right you have to give me a reason to actually scroll down on your page and actually trust your company assuming I know nothing about it right so that's what Clarity is doing here and that's probably contributing to why you know a large percentage of people are actually scrolling down the page even though this is a demo count but that's kind of the the fundamental Theory the other thing I want to look at and this is for any High site is explain who you are what you do and what's in it for me right and that should ideally be conveyed in 5 seconds or less if that's not fundamentally conveyed in the top hero section it doesn't matter how much Social proof you have I'm not going to continue scrolling down on your site right so I need to understand what the core differentiator of your company is and what your value prop is and that should be communicated in 5 seconds or less if you don't have that communicated you'll typically find a huge drop off right after the hero section and you won't really see this 93% 95% rate right the next thing that we typically like to look at is the 75% checkpoint the 50% checkpoint and the 25% checkpoint right in terms of percentage of people that scroll to these areas so if I'm looking at Clarity here I can see you know most people stick throughout the page but they pretty much reach the bottom of the page but typically what you'll find is like there will be a 50% checkpoint that's going to be denoted in Clarity and there's also going to be a 25% checkpoint it'll look something like this where it says average fold logically just think about what information is is important to you and your customers right do some surveys get some feedback at this point you'll probably also have a good grasp of your business and you'll understand you know what do I know like customers want to see right again going back to the social proof example we know that statistically all customers want to see what other people are saying right now if I have the testimonials on the middle of my site or at the bottom of my site and only 30% of people are reaching there well obviously that's going to be an issue right I want to bring that up higher up in the page experience so you're just trying to think about what do I want to present and put that up higher on the page knowing that that's going to get more visibility on your website right sounds very simple and it's because it is right people have very low attention spans so the further they go down the page the the less they're going to see information but now you can actually use Microsoft Clarity to validate your assumptions and validate your hypothesis as well so now I want to take this a step further and show you one of my favorite features within Clarity which is referred to as the area map so I have an actual example here so I'm going to click on area and now I can see the percentage of clicks that is diverted to all of the different elements within the page right so on the left hand side what I can do here is click on edit areas and now I can select my own areas that I want to see so for example I want to see the clicks that go here versus here so immediately what I know now right this is for a delivery service the on demand gets 4% of clicks versus the full menu which is not immediate service gets 1.74% of clicks right pretty interesting I already know that on demand is you know typically going to convert higher but it's actually interesting to see the data discrepancy here as well then I want to look at this button here the year browsing so this gets 46% of clicks so this is actually a live example where we saw on the area map that this little your browsing menu which looks like a button is actually not a button right but it was getting 46% of clicks which translates into a th clicks right which is pretty substantial if you think about it we actually saw user recordings and did user test where people thought the button was clickable realize it's not clickable and they experien a lot of frustration with the overall user experience as a result and they pretty much left the website immediately after right they were trying to switch the menu through that button realizing that it's actually not a button and it's simply informational and it's just a banner so that's an example of a real life use case where you can take the data from the area map and actually dissect where people clicking how should I reorganize my information accordingly right I can also see that 8.48% of clicks on the page all go towards the top navigation I can see that 5.58% of clicks go towards the sticky filter on the bottom right so now I can start thinking about how do I want to reorganize my information are there any redundant elements that you know are getting very few clicks and can I get rid of those sections cuz less is always more when it comes to user experience design and making things as simplified as possible for conversions here's another example right so I have a product page here and I have all of the scroll data available and what I can see here is that as I scroll down there's this huge block of text right huge block of Tex right here and check this out right there's only 25% of people reach this point meaning 25% of people reach the atart bet in right so what we're seeing is that a huge percentage of people are dropping off and kind of getting intimidated and overwhelmed by this large block of Tex right we can actually see precisely where people are dropping off so 93% of people reach here and then it looks like there's approximately like a 30% drop off right after that paragraph and then it goes from 60% to 25% and then only 25% of people are still reach the after cart right so obviously the Insight that can be derived from this is that this text is way too long and needs to be cut down substantially right to actually get people to scroll down and complete the main action you want them to here's another example right this is for a B2B website and basically this is their contact form of the site so what you can see here is that at the top of the contact form you have in big letters written contact and then you have the actual form further down the page so I see this issue all the time when auditing sites where B2B companies will put something like contact us get started sign up now you know partner with us right at the very top of the site and that's not really a compelling value prop right I already know that I'm on the contact page so it's redundant in a bunch of wasted real estate to just put contact us or something simple like get started and it's redundant to just put it back at the top right and you can actually validate that through the scroll data here where you can see that because this website has contact us and the form is all the way further down the page approximately 25 % of people immediately drop off and don't even see the form simply because contact us is taken up by such big letters and wasted real estate at the top of the site so I put together this list of all of the other use cases since we obviously can't get through everything as to where heat maps and scroll Maps could be applicable and different use cases for both e-commerce and B2B right so for e-commerce we have things like content engagement so you're effectively looking at what products or images or contact sections receive the most attention right are people stop scrolling at a particular product Right Where do they kind of drop off as they reading Big Blocks of text like the example we just went through right and then you can consider reorganizing content accordingly based on what you want people to actually see on the site the other big thing that you can do for both B2B and e-commerce is navigation right what elements are people clicking on the navigation the most what product pages what collection Pages if you're e-commerce are they clicking on are they actually clicking on the call to action buttons in the first place right what are the most frequently clicked on elements within the navigation and then this can help you optimize your site structure right the next thing you want to look at is called the action placement so are people even clicking on your fundamental ctas like at toart buy now sign up and if not can you consider emphasizing those elements more can you consider placing those elements higher up in the page or even different placements or designs to help increase conversions right then you want to look at things like your form completion conversion so you know even if you're a e-commerce customer or e-commerce company rather and you have kind of like a wholesale Department of your business how do people get to that form page right this is more applicable for B2B uh you want to look at the user journey and flow so how do they kind of get to the apart how do they get to the checkout what does that user journey and flow look like and overall visual hierarchy right are elements organized in a clear manner from top to bottom and does it kind of guide the user as to where they should look right things like banners promotional sections badges how are people viewing those sections and are those sections actually being effectively designed for B2B it's very similar so content engagement we're looking at things like you know case studies white papers service descriptions right which ones are most engaging which ones receive the most clicks if they are frequently clicked right can we bring those up higher in the page do people even reach those sections in the first place the next thing is your navigation and menu usage so typically for SAS clients we'll see that the most visited page is the pricing page and people frequently just click on that on the heat Maps right we see a ton of clicks getting diverted just to that page but it's often the most underutilized page p and most under leverage page as well so can you optimize the user Journey based on where people are visiting and then hyper tailor those pages accordingly based on what users want to see so reducing you know fear and uncertainty on the pricing page what you can expect if you sign up things like that right uh likewise what services pages are receiving the most click right then you want to look at call to action placement so again similar to e-commerce are people clicking on the sign up a demo button are they clicking on the contact button and if they're not getting enough clicks can you experiment with different layouts how do they get to your form right and where do they drop off in your form so typically I'll see a lot of sites where they'll have like 8 to 10 form fields and the vast majority of people won't even get past the third or fourth right so simplify your form Fields four form fields or less is typically the sweet point we see a lot of examples where people include phone number and it's not absolutely necessary for the sales team and we see a substantial drop off after people ask for phone number because people statistically hate giving their phone number out to other people uh you have your user journey and flow and then again visual hierarchy and design so the last important part of clarity is the recording data so you can actually watch recordings of users on your site and get a ton of insight from that so what you want to do is click on recordings and it'll be presented with a screen like this and now I have all of the recordings on the left hand side so you can actually see how long the person spends where they're coming from are they visiting on mobile versus desktop all of that data so if I click on filters here I can actually see you know I can filter by the time frame the device I can do it by the user action so dead clicks rage clicks excessive scrolling I can do it based on how far they scroll what page they land on right their performance like the the website speed if I want to see people that are coming from low speed experiences versus high speed how do they interact differently page duration all of these different filters right typically what I like to do click on sort and then go by clicks high to low Pages high to low and then also do the opposite so clicks low to high and then Pages low to high because what I'm trying to identify is people that are very active on the site what are they doing and then people that are not as active what are they doing right and then that gives me both sides of the coin and both sides of the perspective right so I'm going to actually show you a live recording here so this is a recording this person spent a whopping one hour on the site right so obviously very high intent H gaug user and this is on their mobile phone so just one thing I always like to do is I like to skip in activities sometimes you know if you're watching this for the first time or you're new to Clarity you can keep that off because it's going to show you the parts where people aren't moving at all but right now I'm just trying to get you show you guys like how to get quick Insight from this and you can also filter for the speed so I'm going to just put it on Forex speed because it's a super long recording so we're seeing somebody go on the site this is for AC CBD delivery company so they're sending their delivery address so what I'm noticing is they're going down right and they're adding to cart if you can see that there and they're adding to cart and they're constantly clicking back on the navigation menu right and they're clicking on different Navigation items but what's interesting is they continuously scroll back up just to access the on demand menu so you can see there's on demand and full menu and what we actually noticed and this is one example of the recording so they're they have to scroll down for all the products then they have to scroll all the way back up just to access the filter because the filter is only on the top of the site it's not anywhere else it's not like a sticky filter so this is obviously a huge visability issue that I just identified in like 2 minutes of watching this recording where they're just going down and going all the way back up right so it's subtle things like you won't just identify very obvious things you have to kind of apply a little bit of critical thinking to think why are people doing this why are people going here what can I do better to improve the experience so here's one more example I'm going to start this recording and just speed it up a little bit 1.5x so this person's on the checkout page they're going back now and now you can see they switch to On Demand okay right so they went from full menu they were selected on that and they switched to on demand now what's interesting is they go back to shop by category so they were already in their checkout they were already ready to buy but now they're they're second guessing so they went back to On Demand which basically means they want the order quicker they're adding a few products to their cart right they're going to still go through this we'll speed it up a little bit no products are available in the category so that was an error page that they saw and now like they basically just don't know where to go right and now they're just stuck here and now they they literally left the site after spending 21 minutes on the site they just left it the reason why is because we' identified a usability issue in which when people switch from on demand to sorry full menu to on demand it actually removed their cart it gave them a warning in a popup but by the time they saw that warning it already removed their cart so what happened with this user is they were they switched the menu they had already been to check up but they decided to switch last minute and as soon as they switched they lost all their products so again this is just a prime example of how we identified this through a recording where people experience friction and you know obviously this is something that had to get fixed straight away so just a quick recap these are my top tips for user testing or rather user recordings um you know try and remove all your distractions for the next one to two hours just focus on the recordings and really try and go in with the mindset of why right like ask yourself why and everything why did someone do this why did someone click here what could be the possible reasons the one question I always get is how many recordings should I watch there's no set number for some people we like some clients we watch like 100 recordings for others we watch like 400 450 like rapid fire and really what you're just trying to look for and the the true number is however many recordings it takes you to understand the main pattern that people are going through like what are the main issues what are the main friction points once you identify those you don't need to continue watching any more recordings it gets repetitive after a certain point that said though it's always a never-ending game so if you make changes to your site then you want to re-watch the recordings of the new changes right and then identify more improvements but my top tips for e-commerce you want to look at crucial Pages like homepage product and checkout uh for B2B that would be things like homepage contact get a quote service pages right to understand the core user interactions again you want to look for common patterns so what are frequent clicks on non- click elements what are repeated navigation patterns like the example I showed you where somebody's just going all the way back up top just to access a filter that could very much be sticky on the page pay attention to signals of of user frustration rapid clicking accessive scrolling are people skimming by content look at the navigation flow right how are people going from the homepage to your product page or to your service page are they going through the navigation are they going through the the call to action button are they scrolling down and then clicking a call to action right how are they navigating because then you can identify uh and make improvements cross those key interaction points as well look for conversion issues and and engagement time like how long are people spending on certain sections versus other sections um and is there anything you can derive from that and then really just try to take notes on all of your key findings as well and the big one is comp you know combining this with all the other data so combining user recordings with your heat maps with your scroll Maps because that is where you're going to get the biggest level of understanding of the full bigger picture so hopefully this deep dive tutorial was helpful wanted to make sure to go through all of the different features and also some different case studies as well you know it does take a bit of a learning curve but once you start just approaching it from a very logical mindset and strategic mindset of you know what do I want people to do are they doing it and looking at the data to validate it it really helps to reduce that learning curve and make things more simplified if you're interested in a detailed audit of our team actually using Clarity similar to how I did today to actually interpret your insights feel free to schedule a call in the link below in the description uh and we'll do basically a free website audit we'll go into detail about all the different improvements you can make on your site straight away no strings attached awesome see you in the next video",
+    "prior_notes": [
+      {
+        "title": "Gather behavioral data to formulate test hypotheses",
+        "claim": "The CRO module covers gathering qualitative and quantitative behavioral data to formulate test hypotheses, using heatmaps, session recordings, area maps, user testing platforms, and on-site surveys.",
+        "action": {
+          "text": "Gather qualitative and quantitative behavioral data to formulate test hypotheses.",
+          "quote": "Gathering qualitative and quantitative behavioral data to formulate test hypotheses."
+        },
+        "unknowns": [
+          "Source does not specify how to choose among the listed data-gathering tools.",
+          "Source does not define how to convert behavioral data into hypotheses."
+        ]
+      },
+      {
+        "title": "Analyze scroll depth checkpoints to find drop-offs",
+        "claim": "Scroll depth checkpoints at 75%, 50%, and 25% can identify massive drop-offs caused by large text blocks or misplaced CTAs.",
+        "action": {
+          "text": "Analyze scroll depth checkpoints (75%, 50%, 25%) to identify massive drop-offs caused by large text blocks or misplaced CTAs.",
+          "quote": "Analyzing scroll depth checkpoints (75%, 50%, 25%) to identify massive drop-offs caused by large text blocks or misplaced CTAs."
+        },
+        "unknowns": [
+          "Source does not state what drop-off magnitude is considered massive."
+        ]
+      },
+      {
+        "title": "Filter session recordings for frustration signals",
+        "claim": "Filtering session recordings for rage clicks, dead clicks, excessive scrolling, and quick backs isolates user frustration; the source defines each pattern.",
+        "action": {
+          "text": "Filter session recordings for rage clicks, dead clicks, excessive scrolling, and quick backs to isolate user frustration.",
+          "quote": "isolating user frustration by filtering recordings for \"rage clicks\" (repeatedly clicking a non-clickable element or trying to close an immediate popup), \"dead clicks\" (clicking elements that look like links but aren't, such as \"As Seen On\" logos), \"excessive scrolling\" (skimming past long text blocks or frantically searching for a missing CTA), and \"quick backs\" (bouncing immediately from a product page because expected information is missing)."
+        },
+        "unknowns": [
+          "Source does not specify thresholds for how many occurrences define a pattern."
+        ]
+      },
+      {
+        "title": "Stop recording review once pattern is identified",
+        "claim": "Stop watching recordings once the main pattern of friction is identified, whether that takes 100 or 400 recordings.",
+        "action": {
+          "text": "Stop watching once the main pattern of friction is identified, whether that takes 100 or 400 recordings.",
+          "quote": "stop watching once the main pattern of friction is identified, whether that takes 100 or 400 recordings."
+        },
+        "unknowns": [
+          "Source gives 100 or 400 as examples, not a fixed threshold."
+        ]
+      },
+      {
+        "title": "Contact Us header real estate test",
+        "claim": "The source gives an example of identifying that a 'Contact Us' header takes up too much real estate, causing 25% of B2B users to drop off before seeing the actual form below the fold, and testing a layout where the form is moved up.",
+        "action": null,
+        "unknowns": [
+          "Source does not state the outcome of moving the form up."
+        ]
+      },
+      {
+        "title": "Skip agency promotion and basic e-commerce/B2B definitions",
+        "claim": "The source says to skip general promotion for the agency's audit services and basic definitions of what e-commerce or B2B means.",
+        "action": null,
+        "unknowns": []
+      },
+      {
+        "title": "Definition of quick backs",
+        "claim": "Quick backs are defined as navigating to a page and immediately returning, indicating the expected information was missing.",
+        "action": null,
+        "unknowns": [
+          "Source also describes quick backs in the session-recordings section as bouncing immediately from a product page because expected information is missing."
+        ]
+      },
+      {
+        "title": "Prioritize the Insights block over baseline KPIs on the main dashboard",
+        "claim": "The source identifies the Insights block as the part of the main dashboard that is important to focus on.",
+        "action": null,
+        "unknowns": [
+          "The named baseline KPIs (scroll depth, active time, pages per session, total sessions) are described as obtainable elsewhere, not as unusable."
+        ]
+      },
+      {
+        "title": "Open recordings from the rage-click insight's camera icon and watch them",
+        "claim": "The source says watching the matching recordings is worthwhile when a rage-click metric warrants a particular change, to see where people hit frustration or friction.",
+        "action": {
+          "text": "Click the camera icon next to the rage-click insight to open the recordings page, then watch the recordings of people who experienced rage clicks.",
+          "quote": "you can actually click on this little camera icon and it's going to open up the recordings page where you can watch the actual recordings of people that experienced the rage clicks"
+        },
+        "unknowns": [
+          "The source's fuller recordings walkthrough is promised later in the video and is not in this passage."
+        ]
+      },
+      {
+        "title": "Consider watching recordings across insight types even when metrics look low",
+        "claim": "The source says it does not really matter what the metrics are; fundamental usability issues existing on the site should be resolved regardless of the percentage.",
+        "action": {
+          "text": "Consider watching the recordings behind all of the insight metrics, not only the ones with high rates.",
+          "quote": "again I would consider watching the recordings of all of these"
+        },
+        "unknowns": [
+          "The source does not define what counts as a fundamental usability issue or how resolution is verified."
+        ]
+      },
+      {
+        "title": "Understand dead clicks as clicks on elements that are not clickable",
+        "claim": "Dead clicks are when somebody tries to click an element and that element is actually not clickable, hence the word dead.",
+        "action": null,
+        "unknowns": [
+          "No dead-click rate threshold or benchmark is given in this passage."
+        ]
+      },
+      {
+        "title": "Some dead clicks are acceptable when linking out would cost conversions",
+        "claim": "In some scenarios dead clicks are fine because the site may not want to send people outside.",
+        "action": null,
+        "unknowns": [
+          "The source frames this as an argument for keeping logos non-clickable, i.e. a judgement call rather than a rule."
+        ]
+      },
+      {
+        "title": "Other dead clicks are harmful when clickable elements would help conversion",
+        "claim": "The other scenario is elements that should be clickable and that help people in their journey to conversion actually being not clickable.",
+        "action": null,
+        "unknowns": [
+          "The source does not state how to decide which elements should be clickable beyond the examples given."
+        ]
+      },
+      {
+        "title": "SaaS client pricing section registered dead clicks",
+        "claim": "In a SaaS client audit, people thought pricing elements were clickable, but the only clickable element was the button for getting a number of free credits.",
+        "action": null,
+        "unknowns": [
+          "Client identity, dates, traffic volume and conversion impact are not stated in this passage.",
+          "The source adds that it would benefit users if those elements were clickable because people want the price, but the fix applied is not described."
+        ]
+      },
+      {
+        "title": "Non-clickable site logo produced dead clicks and rage clicks",
+        "claim": "People were clicking the logo in the center of the site and the logo was not clickable.",
+        "action": null,
+        "unknowns": [
+          "The source states the convention that clicking a logo returns you to the homepage, but does not say whether the logo was made clickable or what effect that had.",
+          "Users were trying to reach the homepage from the checkout and product pages; the pages involved are given only in general terms."
+        ]
+      },
+      {
+        "title": "Read excessive scrolling as the user failing to find information",
+        "claim": "Excessive scrolling can mean the user is trying to find information on the site but cannot find it.",
+        "action": null,
+        "unknowns": [
+          "Candidate causes given by the source are users hunting for reviews, hunting for a missing call to action or price, or skimming a long block of text; no rule for distinguishing them is stated.",
+          "The source notes its own example account sat under 0.01 percent for excessive scrolling."
+        ]
+      },
+      {
+        "title": "Advice on time spent on Google-Analytics-overlapping dashboard metrics is garbled",
+        "claim": "The source has a sentence about spending time on dashboard metrics that overlap with Google Analytics, but the clause is garbled and its polarity is unresolved.",
+        "action": null,
+        "unknowns": [
+          "The clause appears garbled, plausibly missing a negation such as wouldn't; its polarity is unresolved and must not be settled from memory.",
+          "The list of duplicative metrics is enumerated only loosely across the preceding sentences."
+        ]
+      },
+      {
+        "title": "Understand rage clicks as repeated clicking on an element to exit an experience",
+        "claim": "The source defines rage clicks as people clicking multiple times on an element, typically to exit that experience.",
+        "action": null,
+        "unknowns": [
+          "The source gives popup and chat-bot examples; no universal rate threshold is defined in this excerpt beyond the speaker's heuristic."
+        ]
+      },
+      {
+        "title": "Popup on first seconds can trigger rage clicks",
+        "claim": "The source gives the example of a popup landing immediately in the first five seconds, when a user has barely scrolled and rage clicks to get rid of it.",
+        "action": null,
+        "unknowns": [
+          "The source does not quantify how often this pattern occurs."
+        ]
+      },
+      {
+        "title": "Understand quick backs as visitors rapidly returning to the previous page",
+        "claim": "The source defines quick backs as people going to a page and then quickly returning to the previous one.",
+        "action": null,
+        "unknowns": [
+          "The source says the insight can indicate users could not find information immediately and are bouncing back and forth."
+        ]
+      },
+      {
+        "title": "Interpret quick backs as users not finding information immediately",
+        "claim": "The source derives that users may be looking for information on a page but cannot find it immediately, so they bounce back and forth.",
+        "action": null,
+        "unknowns": [
+          "The source gives a product page expectation as an example but does not prescribe a fix."
+        ]
+      },
+      {
+        "title": "Resolve fundamental usability issues regardless of the metric percentage",
+        "claim": "The source says it does not really matter what the metrics are; if fundamental usability issues exist on the site, they should ultimately be resolved regardless of the percentage.",
+        "action": {
+          "text": "When a fundamental usability issue is found on the site, resolve it even if the associated metric percentage is low.",
+          "quote": "ultimately you want to resolve them regardless of what the percentage is"
+        },
+        "unknowns": [
+          "The source does not define what counts as a fundamental usability issue or how to verify resolution."
+        ]
+      },
+      {
+        "title": "Adjust Clarity screenshot to match actual page experience",
+        "claim": "The source says a Clarity screenshot may not match what is anticipated because of immediate pop-ups or misconfigured sections, and recommends using the change screenshot button to select a different design variation.",
+        "action": {
+          "text": "Click the change screenshot button on the top right.",
+          "quote": "you want to click on the change screenshot button on the top right"
+        },
+        "unknowns": [
+          "No criteria provided for which variation to choose beyond matching the actual website or viewing navigation clicks."
+        ]
+      },
+      {
+        "title": "Filter Clarity data by dominant device",
+        "claim": "The source says you can filter by desktop, tablet, or mobile, and should filter according to the most dominant traffic source.",
+        "action": {
+          "text": "Filter by desktop, tablet, or mobile according to the most dominant traffic source.",
+          "quote": "depending on what's your most dominant form of traffic you might want to filter accordingly just to visualize what users are actually experiencing"
+        },
+        "unknowns": [
+          "The source does not explain how to determine the most dominant traffic source."
+        ]
+      },
+      {
+        "title": "Use Clarity click and scroll filters and view area feature",
+        "claim": "The source describes filtering by click data and how far people scroll, and being able to see the area feature, which shows the percentage of people clicking on different elements.",
+        "action": {
+          "text": "Filter by click data and scroll depth; view the area feature.",
+          "quote": "I can filter by click data which is what's selected now I can filter by how far people scroll and then I can see the area"
+        },
+        "unknowns": [
+          "The source does not explain the full mechanics of the area feature beyond showing percentage of people clicking on different elements."
+        ]
+      },
+      {
+        "title": "Analyze click map against core action or goal",
+        "claim": "The source says fundamentally analyze what core action or goal people should take and whether they reach or take it, then find ways to get them to pursue it.",
+        "action": {
+          "text": "Identify the core action or goal, check whether people reach or take it, and if not, find fundamental ways to get them to pursue it.",
+          "quote": "what is the core action or goal that I want people to take on my site are people reaching that section or taking that core action and if not what are some fundamental ways to get them and strategically get them to pursue that action on your site"
+        },
+        "unknowns": [
+          "The source does not specify the fundamental ways to get users to pursue the action."
+        ]
+      },
+      {
+        "title": "Scroll data and typical 60% no-scroll-past-top benchmark",
+        "claim": "The source states that normally statistically 60% of people will never scroll past the top section, and that on average 60% will never see further information, services, case studies, testimonials, or products.",
+        "action": null,
+        "unknowns": [
+          "The source says there are ways to mitigate this but does not enumerate them beyond Clarity's effect."
+        ]
+      },
+      {
+        "title": "Put social proof above the fold",
+        "claim": "The source says in any high-converting website they will always put social proof above the fold, such as reviews, testimonials, and featured publications.",
+        "action": null,
+        "unknowns": [
+          "The source does not specify minimum amounts or exact placement beyond above the fold."
+        ]
+      },
+      {
+        "title": "Communicate who, what, and WIIFM in hero within 5 seconds",
+        "claim": "The source says a high site should explain who you are, what you do, and what's in it for me, ideally in 5 seconds or less.",
+        "action": {
+          "text": "Ensure the top hero section explains who you are, what you do, and what's in it for me in 5 seconds or less.",
+          "quote": "explain who you are what you do and what's in it for me right and that should ideally be conveyed in 5 seconds or less"
+        },
+        "unknowns": [
+          "No method is given for testing whether the message is conveyed in 5 seconds."
+        ]
+      },
+      {
+        "title": "Expect drop-off after hero if 5-second value prop is missing",
+        "claim": "The source warns that if who you are, what you do, and WIIFM are not fundamentally conveyed in the top hero section, you will typically find a huge drop off right after the hero and not see a 93%-95% rate.",
+        "action": null,
+        "unknowns": [
+          "The source does not define the exact measurement window for the drop-off."
+        ]
+      },
+      {
+        "title": "Give cold users a reason to scroll and trust",
+        "claim": "The source says the psychology behind social proof is that a cold user knows nothing about the company, so you must give them a reason to scroll down and trust the company.",
+        "action": null,
+        "unknowns": [
+          "The source does not specify which social proof formats work best for which audiences."
+        ]
+      },
+      {
+        "title": "Select homepage in the example walkthrough",
+        "claim": "The source says typically 5 to 10 most popular Pages are segmented by traffic volume; in the example account shown, the presenter clicks the homepage.",
+        "action": {
+          "text": "In the example walkthrough, select the homepage from the popular Pages list.",
+          "quote": "let's just click on the homepage here"
+        },
+        "unknowns": [
+          "The source notes the example account shows only two pages, which is not typical."
+        ]
+      },
+      {
+        "title": "Consider enhancement for clicks on non-clickable check marks",
+        "claim": "The source notes a lot of clicks are registered in and around the check marks, which are meant to be informational and not designed to be clickable, and says that might be a potential area of enhancement.",
+        "action": {
+          "text": "Consider enhancing the informational check mark area.",
+          "quote": "so that might be a potential area of enhancement"
+        },
+        "unknowns": [
+          "The source does not state what enhancement to make."
+        ]
+      },
+      {
+        "title": "Social proof examples from Mudwater, Iris, ZoomInfo, and Clarity",
+        "claim": "The source gives examples of social proof: Mudwater with 49,000+ reviews and a testimonial plus as-seen-on placements; Iris store laser with 26,000+ reviews, 4.6 star rating, most trusted laser device brand on Amazon and Google, a 365-day trial, and free shipping; ZoomInfo with 8,000+ G2 reviews and trusted by 35,000+ businesses; and Clarity with .8 out of five on Capa and 4.5 out of five on G2.",
+        "action": null,
+        "unknowns": [
+          "The excerpt does not independently verify these external ratings, review counts, or claims."
+        ]
+      },
+      {
+        "title": "Gather customer feedback through surveys",
+        "claim": "The source recommends doing surveys and getting feedback to understand what information is important.",
+        "action": {
+          "text": "Do some surveys and get some feedback.",
+          "quote": "do some surveys get some feedback"
+        },
+        "unknowns": [
+          "No survey tool, sample size, question design, or analysis method is stated."
+        ]
+      },
+      {
+        "title": "Use Microsoft Clarity to validate assumptions",
+        "claim": "The source says you can use Microsoft Clarity to validate assumptions and hypotheses.",
+        "action": {
+          "text": "Use Microsoft Clarity to validate assumptions and hypotheses.",
+          "quote": "use Microsoft Clarity to validate your assumptions and validate your hypothesis as well"
+        },
+        "unknowns": [
+          "Source does not state how to set up Clarity or which hypotheses to prioritize."
+        ]
+      },
+      {
+        "title": "Move important content such as testimonials higher when it sits low on the page",
+        "claim": "The source describes an example where testimonials in the middle or bottom of the site are reached by only 30% of people and recommends bringing such content higher up.",
+        "action": {
+          "text": "Bring important content such as testimonials higher up in the page experience.",
+          "quote": "I want to bring that up higher up in the page experience"
+        },
+        "unknowns": [
+          "What qualifies as high enough on the page is not specified."
+        ]
+      },
+      {
+        "title": "Clickable-looking non-button attracted clicks and caused abandonment",
+        "claim": "The source describes a live example where a 'your browsing' menu looked like a button but was not clickable; it received 46% of clicks, and user recordings/tests showed frustration and immediate leaving.",
+        "action": null,
+        "unknowns": [
+          "The source does not state the exact fix for the misleading element."
+        ]
+      },
+      {
+        "title": "Use area map data to reorganize information and remove redundant low-click elements",
+        "claim": "The source recommends using area map click data to identify redundant elements with very few clicks and remove those sections because less is more in UX design.",
+        "action": {
+          "text": "Review area map click shares, identify redundant low-click elements, and remove those sections to simplify the page.",
+          "quote": "are there any redundant elements that you know are getting very few clicks and can I get rid of those sections cuz less is always more when it comes to user experience design"
+        },
+        "unknowns": [
+          "The threshold for 'very few clicks' is not stated."
+        ]
+      },
+      {
+        "title": "Generic top-of-page contact heading wastes real estate in a B2B contact-page example",
+        "claim": "In a B2B contact-page example, a generic top-of-page contact heading with the form further down was redundant and wasted real estate; the source observes approximately 25% immediate drop-off.",
+        "action": null,
+        "unknowns": [
+          "What value proposition should replace the generic heading is not stated."
+        ]
+      },
+      {
+        "title": "Use heat maps and scroll maps to analyze content engagement",
+        "claim": "The source lists content engagement as a heat-map and scroll-map use case: see which products, images, or contact sections receive the most attention.",
+        "action": {
+          "text": "Use heat maps and scroll maps to analyze content engagement and reorganize content based on what you want people to see.",
+          "quote": "you can consider reorganizing content accordingly based on what you want people to actually see on the site"
+        },
+        "unknowns": [
+          "No specific metric thresholds or tools beyond Microsoft Clarity are stated."
+        ]
+      },
+      {
+        "title": "Analyze navigation clicks to optimize site structure",
+        "claim": "The source recommends analyzing which navigation elements are most frequently clicked to help optimize site structure.",
+        "action": {
+          "text": "Analyze the most frequently clicked navigation elements and use the findings to optimize site structure.",
+          "quote": "what are the most frequently clicked on elements within the navigation and then this can help you optimize your site structure"
+        },
+        "unknowns": [
+          "Specific structural changes are not enumerated."
+        ]
+      },
+      {
+        "title": "Check CTA clicks and experiment with emphasis, placement, or design",
+        "claim": "The source lists action placement as a use case: check whether people click fundamental CTAs such as add to cart, buy now, or sign up; if not, consider emphasizing them more.",
+        "action": {
+          "text": "If CTA clicks are low, emphasize the elements, place them higher, or test different placements or designs.",
+          "quote": "can you consider placing those elements higher up in the page or even different placements or designs"
+        },
+        "unknowns": [
+          "Source does not specify how long or how to measure whether CTA clicks are low."
+        ]
+      },
+      {
+        "title": "Consider simplifying forms and phone-number fields",
+        "claim": "The source says many sites have 8 to 10 form fields, most people do not get past the third or fourth, four form fields or less is typically the sweet point, and there is substantial drop-off when phone number is requested but not absolutely necessary for the sales team.",
+        "action": {
+          "text": "Consider simplifying form fields to four or fewer, and consider omitting phone number when it is not absolutely necessary for the sales team.",
+          "quote": "simplify your form Fields four form fields or less is typically the sweet point we see a lot of examples where people include phone number and it's not absolutely necessary for the sales team and we see a substantial drop off after people ask for phone number because people statistically hate giving their phone number out"
+        },
+        "unknowns": [
+          "What counts as a field and other form design details are not stated.",
+          "The source says four fields or fewer is typically the sweet point, not a universal rule."
+        ]
+      },
+      {
+        "title": "Review visual hierarchy and supporting elements",
+        "claim": "The source lists visual hierarchy and design as a use case: check whether elements are organized clearly from top to bottom and guide the user.",
+        "action": {
+          "text": "Review visual hierarchy and how banners, promotional sections, and badges guide the user.",
+          "quote": "things like banners promotional sections badges how are people viewing those sections"
+        },
+        "unknowns": [
+          "Specific design standards are not stated."
+        ]
+      },
+      {
+        "title": "Watch Clarity recordings to observe user sessions",
+        "claim": "The source says to click on recordings in Clarity to watch user sessions and see how long the person spends and where they are coming from.",
+        "action": {
+          "text": "Click recordings in Clarity and observe session duration and source.",
+          "quote": "click on recordings and it'll be presented with a screen like this and now I have all of the recordings on the left hand side so you can actually see how long the person spends where they're coming from"
+        },
+        "unknowns": [
+          "The passage cuts off mid-sentence at 'are they '; the full list of what to inspect in recordings is missing."
+        ]
+      },
+      {
+        "title": "Analyze form completion conversion and how users reach the form",
+        "claim": "The source lists form completion conversion as a use case: analyze how people get to the form page and where they drop off in the form.",
+        "action": {
+          "text": "Analyze how people get to the form page and where they drop off in the form.",
+          "quote": "where do they drop off in your form"
+        },
+        "unknowns": [
+          "No specific drop-off metric or target is stated."
+        ]
+      },
+      {
+        "title": "Tailor frequently visited pages such as pricing pages for SaaS clients",
+        "claim": "The source says that for SaaS clients the pricing page is often the most visited page and receives many clicks, but it is often underutilized; it recommends optimizing the user journey and tailoring pages to what users want, such as reducing fear and uncertainty on the pricing page.",
+        "action": {
+          "text": "Optimize the user journey based on where people are visiting and hyper tailor those pages to what users want, such as reducing fear and uncertainty on the pricing page and explaining what to expect if they sign up.",
+          "quote": "can you optimize the user Journey based on where people are visiting and then hyper tailor those pages accordingly based on what users want to see so reducing you know fear and uncertainty on the pricing page what you can expect if you sign up things like that right"
+        },
+        "unknowns": [
+          "Source does not specify concrete changes beyond reducing fear/uncertainty and explaining what to expect after signup."
+        ]
+      },
+      {
+        "title": "Watch session recordings for user insight",
+        "claim": "The source says Clarity's recording data lets you watch recordings of users on your site and get a ton of insight.",
+        "action": {
+          "text": "Click on recordings to watch them.",
+          "quote": "what you want to do is click on recordings"
+        },
+        "unknowns": [
+          "Source does not state a required number or duration before insight is gained."
+        ]
+      },
+      {
+        "title": "Filter recordings by behavior and context",
+        "claim": "The source lists filters for time frame, device, user action such as dead clicks, rage clicks, and excessive scrolling, scroll depth, landing page, performance/speed, and page duration.",
+        "action": {
+          "text": "Use the available filters to narrow recordings by time frame, device, user action, scroll depth, landing page, performance/speed, and page duration.",
+          "quote": "I can filter by the time frame the device I can do it by the user action so dead clicks rage clicks excessive scrolling I can do it based on how far they scroll what page they land on right their performance like the the website speed if I want to see people that are coming from low speed experiences versus high speed how do they interact differently page duration all of these different filters"
+        },
+        "unknowns": [
+          "Source does not specify exact filter names or current availability in Clarity."
+        ]
+      },
+      {
+        "title": "Use skip-inactivity setting based on watching goal",
+        "claim": "The source says they like to skip in activities sometimes, new users can keep it off to see parts where people are not moving, and they are using it now to get quick insight from a long recording.",
+        "action": {
+          "text": "Use skip-inactivity sometimes to get quick insight; if watching for the first time or new to Clarity, keep it off to see non-movement periods.",
+          "quote": "I like to skip in activities sometimes you know if you're watching this for the first time or you're new to Clarity you can keep that off because it's going to show you the parts where people aren't moving at all but right now I'm just trying to get you show you guys like how to get quick Insight from this"
+        },
+        "unknowns": [
+          "The source uses the phrase 'skip in activities' and does not clarify whether this is the exact UI label or a transcription variant."
+        ]
+      },
+      {
+        "title": "Consider making filter sticky when users scroll back to top",
+        "claim": "The source observed users repeatedly scrolling back to the top to access a filter that is only at the top and not sticky; it suggests the filter could very much be sticky on the page.",
+        "action": {
+          "text": "Consider making the filter sticky on the page.",
+          "quote": "that could very much be sticky on the page"
+        },
+        "unknowns": [
+          "Source does not specify implementation details for making the filter sticky.",
+          "Source presents a sticky filter as a possible improvement, not a required remedy."
+        ]
+      },
+      {
+        "title": "Focus on recordings with a why mindset",
+        "claim": "The source recommends removing distractions for one to two hours, focusing on recordings, and asking why someone did each action.",
+        "action": {
+          "text": "Remove distractions for one to two hours, focus on recordings, and ask why for each observed behavior.",
+          "quote": "try and remove all your distractions for the next one to two hours just focus on the recordings and really try and go in with the mindset of why right like ask yourself why and everything why did someone do this why did someone click here what could be the possible reasons"
+        },
+        "unknowns": [
+          "Source does not define a minimum number of why questions to ask per recording."
+        ]
+      },
+      {
+        "title": "Watch until main pattern is found, then stop",
+        "claim": "The source says there is no set number of recordings; some watch 100 and others 400-450, but the true number is however many it takes to understand the main pattern and friction points, after which watching becomes repetitive.",
+        "action": {
+          "text": "Watch as many recordings as it takes to understand the main patterns and friction points, then stop once the pattern is identified and further watching becomes repetitive.",
+          "quote": "there's no set number for some people we like some clients we watch like 100 recordings for others we watch like 400 450 like rapid fire and really what you're just trying to look for and the the true number is however many recordings it takes you to understand the main pattern that people are going through like what are the main issues what are the main friction points once you identify those you don't need to continue watching any more recordings it gets repetitive after a certain point"
+        },
+        "unknowns": [
+          "Source does not define a quantitative threshold for the main pattern."
+        ]
+      },
+      {
+        "title": "Re-watch recordings after site changes",
+        "claim": "The source says it is a never-ending game: after making changes to the site, re-watch recordings of the new changes and identify more improvements.",
+        "action": {
+          "text": "After making changes to the site, re-watch recordings of the new changes and identify more improvements.",
+          "quote": "if you make changes to your site then you want to re-watch the recordings of the new changes right and then identify more improvements"
+        },
+        "unknowns": [
+          "Source does not state how soon after changes to re-watch."
+        ]
+      },
+      {
+        "title": "Review crucial pages by business type",
+        "claim": "The source recommends looking at crucial pages: for e-commerce, homepage, product, and checkout; for B2B, homepage, contact, get a quote, and service pages, to understand core user interactions.",
+        "action": {
+          "text": "For e-commerce, review homepage, product, and checkout; for B2B, review homepage, contact, get a quote, and service pages.",
+          "quote": "for e-commerce you want to look at crucial Pages like homepage product and checkout uh for B2B that would be things like homepage contact get a quote service pages right to understand the core user interactions"
+        },
+        "unknowns": [
+          "Source does not state how many recordings to review per page."
+        ]
+      },
+      {
+        "title": "Look for common navigation and click patterns",
+        "claim": "The source says to look for common patterns, including frequent clicks on non-click elements and repeated navigation patterns.",
+        "action": {
+          "text": "Look for common patterns such as frequent clicks on non-click elements and repeated navigation patterns.",
+          "quote": "look for common patterns so what are frequent clicks on non- click elements what are repeated navigation patterns"
+        },
+        "unknowns": [
+          "Source does not define a frequency threshold for a pattern."
+        ]
+      },
+      {
+        "title": "Watch for frustration signals",
+        "claim": "The source says to pay attention to signals of user frustration: rapid clicking, excessive scrolling, and skimming content.",
+        "action": {
+          "text": "Pay attention to rapid clicking, excessive scrolling, and whether people are skimming content.",
+          "quote": "pay attention to signals of of user frustration rapid clicking accessive scrolling are people skimming by content"
+        },
+        "unknowns": [
+          "Source does not specify what counts as excessive scrolling."
+        ]
+      },
+      {
+        "title": "Analyze navigation flow to product or service pages",
+        "claim": "The source says to look at navigation flow from homepage to product or service page and identify whether users use navigation, a call-to-action button, or scroll and then click a call to action.",
+        "action": {
+          "text": "Examine how users go from the homepage to product or service pages, whether through navigation, a call-to-action button, or scrolling then clicking a call to action.",
+          "quote": "look at the navigation flow right how are people going from the homepage to your product page or to your service page are they going through the navigation are they going through the the call to action button are they scrolling down and then clicking a call to action right how are they navigating"
+        },
+        "unknowns": [
+          "Source does not state how to measure navigation efficiency."
+        ]
+      },
+      {
+        "title": "Examine conversion issues and engagement time",
+        "claim": "The source says to look for conversion issues and engagement time, such as how long people spend on certain sections versus others, and derive what you can.",
+        "action": {
+          "text": "Look for conversion issues and compare time spent on certain sections versus others.",
+          "quote": "look for conversion issues and and engagement time like how long are people spending on certain sections versus other sections um and is there anything you can derive from that"
+        },
+        "unknowns": [
+          "Source does not specify which conversion metrics to use."
+        ]
+      },
+      {
+        "title": "Filter for speed on super-long recordings",
+        "claim": "The source says you can also filter for the speed and puts it on Forex speed because it's a super long recording.",
+        "action": {
+          "text": "Use the speed filter or faster playback when reviewing a super-long recording.",
+          "quote": "you can also filter for the speed so I'm going to just put it on Forex speed because it's a super long recording"
+        },
+        "unknowns": [
+          "Source does not clarify whether 'Forex speed' is an exact UI label; the transcript appears ambiguous."
+        ]
+      },
+      {
+        "title": "Use navigation-flow findings to improve key interaction points",
+        "claim": "The source says after examining navigation flow you can identify and make improvements across key interaction points.",
+        "action": {
+          "text": "Use navigation-flow findings to identify and make improvements across key interaction points.",
+          "quote": "because then you can identify uh and make improvements cross those key interaction points as well"
+        },
+        "unknowns": [
+          "Source does not define what counts as key interaction points."
+        ]
+      }
+    ],
+    "id": "843b1a4efd1620ab875b3208"
+  },
+  "system_prompt_sha256": "458942624a5ba73364ec3f25288651f604b915c91776cbe18915311c9c3637ed"
+}

@@ -1,0 +1,267 @@
+{
+  "request_id": "3eee3f282fb1a42a13b4812b8d3fc5f53452e95866932efa540657f4b489b011",
+  "provider": "deepseek",
+  "model": "deepseek-flash",
+  "effort": "none",
+  "completion_limit": 16384,
+  "usage": {
+    "prompt_tokens": 3179,
+    "completion_tokens": 2634,
+    "total_tokens": 5813,
+    "prompt_tokens_details": {
+      "cached_tokens": 512
+    },
+    "prompt_cache_hit_tokens": 512,
+    "prompt_cache_miss_tokens": 2667
+  },
+  "booked_cost_usd": 0.0041145,
+  "seconds": 15.55,
+  "finish_reason": "stop",
+  "output": {
+    "cards": [
+      {
+        "title": "Diagnose Shop Speed With PageSpeed Insights Before Optimizing",
+        "summary": "Run Google PageSpeed Insights for mobile and desktop to find where a shop's latency sits and which fixes the tool projects as highest-value.",
+        "use_when": "Deciding which speed fixes to tackle first on a product listing or product detail page that feels slow or is losing mobile conversions.",
+        "steps": [
+          "Before changing anything, measure the current shop on Google PageSpeed Insights (free) for both desktop and mobile — the source notes results often differ significantly between the two.",
+          "If most of your traffic or revenue comes from mobile shoppers, prioritize the mobile score first.",
+          "Use the tool's good / mediocre / poor classification rather than the raw number alone to decide whether you have a project or a tune-up.",
+          "Read the improvement recommendations and the estimated time savings each fix should deliver, and sequence work by projected saving versus effort.",
+          "Cross-check with a second tool (the source names GTmetrix or Pingdom) so you are not optimizing to one tool's quirks; verify current tool interfaces and scoring before relying on them."
+        ],
+        "caveats": [
+          "Scores are tool-specific and can change with scoring-version updates — treat them as a comparative baseline for your own site over time, not an absolute grade.",
+          "Do not stop at diagnosis: the source warns against generic 'use GTmetrix' advice with no mechanical fix behind it."
+        ],
+        "tags": [
+          "speed",
+          "core-web-vitals",
+          "measurement",
+          "page-speed-insights",
+          "mobile",
+          "conversion-optimization",
+          "audit"
+        ]
+      },
+      {
+        "title": "Map LCP, FCP, TTI and TBT to What Shoppers Actually Experience",
+        "summary": "Translate the four Core Web Vitals-adjacent metrics into shopper-visible moments so speed work targets the metric that blocks browsing and buying.",
+        "use_when": "Interpreting a speed report and choosing whether to fix first paint, interactivity or main-content load on category and product pages.",
+        "steps": [
+          "Read First Contentful Paint (FCP) as when the first visible element — a heading, a product image — appears.",
+          "Read Time to Interactive (TTI) as when the page becomes usable, i.e. the shopper can actually click and buy.",
+          "Read Total Blocking Time (TBT) as the elapsed time between FCP and TTI — in practice the window where the page looks ready but ignores taps on filters, variants or add-to-cart.",
+          "Read Largest Contentful Paint (LCP) as when the main content is fully loaded from the user's point of view, which on a PDP is typically the hero product image.",
+          "Combine: a fast FCP with a long FCP-to-TTI gap tells you scripts are blocking interaction, whereas a slow LCP points at the heavyweight primary image or hero asset."
+        ],
+        "caveats": [
+          "TBT as 'time between FCP and TTI' is the source's definition; some tooling calculates TBT from long tasks, so confirm the definition used in your current report before quoting a number."
+        ],
+        "tags": [
+          "speed",
+          "core-web-vitals",
+          "measurement",
+          "product-page",
+          "mobile",
+          "technical-seo"
+        ]
+      },
+      {
+        "title": "Run Image Compression and Device-Specific Sizing as the First Speed Fix",
+        "summary": "Shrink and right-size product imagery, since oversized images are named as a common cause of slow shop loading.",
+        "use_when": "Improving load time on image-heavy category pages or product detail pages where high-quality product photography is slowing first render.",
+        "steps": [
+          "Compress product and lifestyle images while keeping them presentable — the source treats compression as a basic time-saving step, not an optional refinement.",
+          "Serve dimensions matched to the loading device; an XXL desktop image delivered to a small smartphone is wasted bytes.",
+          "Generate different image sizes for different pages, usages and devices rather than one master asset for all placements.",
+          "Combine with a CDN so the correctly sized image is fetched from a server geographically near the shopper."
+        ],
+        "caveats": [
+          "High-quality imagery is a conversion asset for shops, so balance compression against visible quality loss rather than maximizing compression.",
+          "Do not ship a single downsized master everywhere; the source specifically recommends per-device and per-placement variants."
+        ],
+        "tags": [
+          "speed",
+          "resource-optimization",
+          "images",
+          "product-page",
+          "cdn",
+          "mobile"
+        ]
+      },
+      {
+        "title": "Use Lite Embeds to Stop Video From Killing Page Speed",
+        "summary": "Load only a static thumbnail initially and defer the heavy video player code until the shopper clicks, preserving demo-video merchandising without the load penalty.",
+        "use_when": "A product detail page or landing page embeds demo or how-to videos and the video player code is delaying the rest of the page.",
+        "steps": [
+          "Identify every video embed on the page and check whether the full player loads on page load.",
+          "Replace the default embed with a lite embed: only the thumbnail image loads initially.",
+          "Fetch and initialize the actual video player code only after a user interaction — a click on the thumbnail.",
+          "Apply the same deferral thinking to non-video embeds and integrations that exist purely to add 'additional content and code'."
+        ],
+        "caveats": [
+          "The shopper must click before video plays, so make the thumbnail look clearly interactive and relevant to the product.",
+          "Confirm your current video platform's lite/facade embed option or a lightweight wrapper before implementing, as player APIs change."
+        ],
+        "tags": [
+          "speed",
+          "resource-optimization",
+          "video",
+          "lite-embeds",
+          "product-page",
+          "third-party-scripts"
+        ]
+      },
+      {
+        "title": "Audit Third-Party Scripts and Defer the Survivors",
+        "summary": "Decide which third-party integrations genuinely earn their place, then execute the remaining ones only after the main page has loaded.",
+        "use_when": "Trimming tag-manager, review-widget, chat, tracking or retargeting scripts that are delaying product images and product information from appearing.",
+        "steps": [
+          "Inventory every third-party integration loaded on PDP, category and checkout pages.",
+          "For each, ask whether it is really necessary on that page; remove the ones that are not.",
+          "Load the remaining integrations only after the main page — product images and product info — has fully loaded, so the merchandising content wins the race.",
+          "Re-measure after removing and deferring to confirm the main content actually paints earlier, not just that total page weight fell."
+        ],
+        "caveats": [
+          "Some integrations (payments, fraud, personalization) may need to load earlier than others; the source's rule is about deferring the rest, not removing essential functionality.",
+          "Deferring a script can change how analytics or attribution fire — check reporting accuracy afterward."
+        ],
+        "tags": [
+          "speed",
+          "third-party-scripts",
+          "resource-optimization",
+          "product-page",
+          "measurement"
+        ]
+      },
+      {
+        "title": "Choose SSR or Hybrid Rendering for Faster First Display",
+        "summary": "Render the heavy work on the server so the page displays faster and depends less on the shopper's connection, keeping only light interactions client-side.",
+        "use_when": "Evaluating rendering architecture for a shop whose JavaScript-heavy pages feel slow on mobile connections even after resource fixes.",
+        "steps": [
+          "Recognize the two options: client-side rendering, where the visitor's browser does the main work and performance depends heavily on their internet connection; and server-side rendering (SSR), where the server does that work and the page displays directly and faster.",
+          "Accept the trade-off: SSR demands more power from the server but is more reliable for the shopper.",
+          "Adopt a hybrid approach — the server handles complex, heavy processing; the browser handles lighter, immediate interactions — to reduce server load while keeping responsiveness.",
+          "Re-test FCP, TTI and LCP after switching rendering mode, since the metric that improves may not be the one you assumed."
+        ],
+        "caveats": [
+          "SSR is a fundamental architectural change, not a quick tweak — the source frames it alongside other longer-term adjustments.",
+          "Server capacity and cost must be sized for the added rendering load before committing."
+        ],
+        "tags": [
+          "speed",
+          "rendering",
+          "ssr",
+          "architecture",
+          "mobile",
+          "technical-seo"
+        ]
+      },
+      {
+        "title": "Serve Static Assets From a CDN Close to the Shopper",
+        "summary": "Distribute images and files across globally located servers so shoppers fetch content from the server nearest them.",
+        "use_when": "Serving shoppers across regions or countries where a single-origin host makes image and file delivery slow for distant customers.",
+        "steps": [
+          "Identify static assets — images and files in particular — that are currently served only from your origin.",
+          "Put a content delivery network in front so that content is temporarily stored on globally distributed servers.",
+          "Ensure each shopper is served from the server geographically closest to them.",
+          "Pair the CDN with the device-specific image sizing from your image work so the nearest server is also sending the right-sized file."
+        ],
+        "caveats": [
+          "A CDN improves delivery of cached static content; it does not fix server-side rendering or API logic problems.",
+          "Cache invalidation for frequently changing product images and pricing needs a plan."
+        ],
+        "tags": [
+          "speed",
+          "cdn",
+          "resource-optimization",
+          "images",
+          "infrastructure",
+          "global"
+        ]
+      },
+      {
+        "title": "Layer Caching in Browser and on Server Without Over-Relying On It",
+        "summary": "Temporarily store product data and content so it can be served faster, while keeping the response strategy lean enough that caching is not doing the heavy lifting.",
+        "use_when": "Repeatedly serving the same product data across category listings and product pages where re-fetching is adding latency.",
+        "steps": [
+          "Cache product data and other content so it is available more quickly, both in the user's browser and on the server.",
+          "Treat caching as one layer, not the answer: the source notes that fast, well-structured APIs reduce the amount of caching needed to deliver the same content.",
+          "Measure before and after caching changes to confirm the shopper-visible paint actually moved.",
+          "Review cache lifetimes against how often product data — stock, price, promotions — actually changes."
+        ],
+        "caveats": [
+          "Caching stale product data risks showing wrong prices or availability; set lifetimes against your actual data volatility."
+        ],
+        "tags": [
+          "speed",
+          "caching",
+          "api",
+          "infrastructure",
+          "product-data"
+        ]
+      },
+      {
+        "title": "Structure APIs for Precise Data Selection and Smaller Payloads",
+        "summary": "Design fast, well-structured APIs that let you request exactly the data a page needs, cutting response size and the reliance on caching.",
+        "use_when": "Optimizing the data layer behind category grids, search results or product pages that return more fields per product than the page renders.",
+        "steps": [
+          "Make interfaces quick and efficient first — slow APIs force more caching to compensate.",
+          "Design a clear structure that lets the caller select exactly which data should be loaded for a given page or component.",
+          "Request only the fields a view actually renders, rather than pulling the full product object for a listing tile.",
+          "Track the resulting reduction in response payload and loading time, and expect less caching to be needed once the payload is lean."
+        ],
+        "caveats": [
+          "Field selection requires agreement between front-end views and API contracts; uncoordinated changes can break pages.",
+          "The source presents this as a contributor to page speed, not a standalone fix for a fundamentally slow server."
+        ],
+        "tags": [
+          "speed",
+          "api",
+          "architecture",
+          "resource-optimization",
+          "product-data"
+        ]
+      },
+      {
+        "title": "Prioritize Speed Work With the Latency and Abandonment Evidence",
+        "summary": "Frame the business case for speed investment using the source's latency, load-time-expectation and abandonment figures.",
+        "use_when": "Justifying a speed optimization budget to stakeholders or deciding how aggressively to invest in performance before other store projects.",
+        "steps": [
+          "Lead with the revenue link: per Akamai, a delay of just 100 milliseconds in loading time can reduce the conversion rate by about 7%.",
+          "Present the three-second abandonment threshold: 53% of mobile visitors leave a page immediately if it takes more than three seconds to load.",
+          "Use expectation data to set targets: 47% of online shoppers expect page load in two seconds or less.",
+          "Factor in retention risk: 79% said they would be less likely to shop again on a page they thought was too slow.",
+          "Add the SEO angle — slow shops invite high bounce rates that send negative signals to Google and other search engines, hurting organic ranking, while fast loaders are rated positively."
+        ],
+        "caveats": [
+          "These figures are third-party study statistics (Akamai and survey data) cited by the source, not measured outcomes for any specific store; treat them as direction, not a guaranteed conversion lift.",
+          "Page speed is one ranking factor among many, not the sole determinant of search position."
+        ],
+        "tags": [
+          "speed",
+          "benchmarks",
+          "conversion-optimization",
+          "business-case",
+          "retention",
+          "technical-seo"
+        ]
+      }
+    ]
+  },
+  "raw_content": "{\"cards\":[{\"title\":\"Diagnose Shop Speed With PageSpeed Insights Before Optimizing\",\"summary\":\"Run Google PageSpeed Insights for mobile and desktop to find where a shop's latency sits and which fixes the tool projects as highest-value.\",\"use_when\":\"Deciding which speed fixes to tackle first on a product listing or product detail page that feels slow or is losing mobile conversions.\",\"steps\":[\"Before changing anything, measure the current shop on Google PageSpeed Insights (free) for both desktop and mobile — the source notes results often differ significantly between the two.\",\"If most of your traffic or revenue comes from mobile shoppers, prioritize the mobile score first.\",\"Use the tool's good / mediocre / poor classification rather than the raw number alone to decide whether you have a project or a tune-up.\",\"Read the improvement recommendations and the estimated time savings each fix should deliver, and sequence work by projected saving versus effort.\",\"Cross-check with a second tool (the source names GTmetrix or Pingdom) so you are not optimizing to one tool's quirks; verify current tool interfaces and scoring before relying on them.\"],\"caveats\":[\"Scores are tool-specific and can change with scoring-version updates — treat them as a comparative baseline for your own site over time, not an absolute grade.\",\"Do not stop at diagnosis: the source warns against generic 'use GTmetrix' advice with no mechanical fix behind it.\"],\"tags\":[\"speed\",\"core-web-vitals\",\"measurement\",\"page-speed-insights\",\"mobile\",\"conversion-optimization\",\"audit\"]},{\"title\":\"Map LCP, FCP, TTI and TBT to What Shoppers Actually Experience\",\"summary\":\"Translate the four Core Web Vitals-adjacent metrics into shopper-visible moments so speed work targets the metric that blocks browsing and buying.\",\"use_when\":\"Interpreting a speed report and choosing whether to fix first paint, interactivity or main-content load on category and product pages.\",\"steps\":[\"Read First Contentful Paint (FCP) as when the first visible element — a heading, a product image — appears.\",\"Read Time to Interactive (TTI) as when the page becomes usable, i.e. the shopper can actually click and buy.\",\"Read Total Blocking Time (TBT) as the elapsed time between FCP and TTI — in practice the window where the page looks ready but ignores taps on filters, variants or add-to-cart.\",\"Read Largest Contentful Paint (LCP) as when the main content is fully loaded from the user's point of view, which on a PDP is typically the hero product image.\",\"Combine: a fast FCP with a long FCP-to-TTI gap tells you scripts are blocking interaction, whereas a slow LCP points at the heavyweight primary image or hero asset.\"],\"caveats\":[\"TBT as 'time between FCP and TTI' is the source's definition; some tooling calculates TBT from long tasks, so confirm the definition used in your current report before quoting a number.\"],\"tags\":[\"speed\",\"core-web-vitals\",\"measurement\",\"product-page\",\"mobile\",\"technical-seo\"]},{\"title\":\"Run Image Compression and Device-Specific Sizing as the First Speed Fix\",\"summary\":\"Shrink and right-size product imagery, since oversized images are named as a common cause of slow shop loading.\",\"use_when\":\"Improving load time on image-heavy category pages or product detail pages where high-quality product photography is slowing first render.\",\"steps\":[\"Compress product and lifestyle images while keeping them presentable — the source treats compression as a basic time-saving step, not an optional refinement.\",\"Serve dimensions matched to the loading device; an XXL desktop image delivered to a small smartphone is wasted bytes.\",\"Generate different image sizes for different pages, usages and devices rather than one master asset for all placements.\",\"Combine with a CDN so the correctly sized image is fetched from a server geographically near the shopper.\"],\"caveats\":[\"High-quality imagery is a conversion asset for shops, so balance compression against visible quality loss rather than maximizing compression.\",\"Do not ship a single downsized master everywhere; the source specifically recommends per-device and per-placement variants.\"],\"tags\":[\"speed\",\"resource-optimization\",\"images\",\"product-page\",\"cdn\",\"mobile\"]},{\"title\":\"Use Lite Embeds to Stop Video From Killing Page Speed\",\"summary\":\"Load only a static thumbnail initially and defer the heavy video player code until the shopper clicks, preserving demo-video merchandising without the load penalty.\",\"use_when\":\"A product detail page or landing page embeds demo or how-to videos and the video player code is delaying the rest of the page.\",\"steps\":[\"Identify every video embed on the page and check whether the full player loads on page load.\",\"Replace the default embed with a lite embed: only the thumbnail image loads initially.\",\"Fetch and initialize the actual video player code only after a user interaction — a click on the thumbnail.\",\"Apply the same deferral thinking to non-video embeds and integrations that exist purely to add 'additional content and code'.\"],\"caveats\":[\"The shopper must click before video plays, so make the thumbnail look clearly interactive and relevant to the product.\",\"Confirm your current video platform's lite/facade embed option or a lightweight wrapper before implementing, as player APIs change.\"],\"tags\":[\"speed\",\"resource-optimization\",\"video\",\"lite-embeds\",\"product-page\",\"third-party-scripts\"]},{\"title\":\"Audit Third-Party Scripts and Defer the Survivors\",\"summary\":\"Decide which third-party integrations genuinely earn their place, then execute the remaining ones only after the main page has loaded.\",\"use_when\":\"Trimming tag-manager, review-widget, chat, tracking or retargeting scripts that are delaying product images and product information from appearing.\",\"steps\":[\"Inventory every third-party integration loaded on PDP, category and checkout pages.\",\"For each, ask whether it is really necessary on that page; remove the ones that are not.\",\"Load the remaining integrations only after the main page — product images and product info — has fully loaded, so the merchandising content wins the race.\",\"Re-measure after removing and deferring to confirm the main content actually paints earlier, not just that total page weight fell.\"],\"caveats\":[\"Some integrations (payments, fraud, personalization) may need to load earlier than others; the source's rule is about deferring the rest, not removing essential functionality.\",\"Deferring a script can change how analytics or attribution fire — check reporting accuracy afterward.\"],\"tags\":[\"speed\",\"third-party-scripts\",\"resource-optimization\",\"product-page\",\"measurement\"]},{\"title\":\"Choose SSR or Hybrid Rendering for Faster First Display\",\"summary\":\"Render the heavy work on the server so the page displays faster and depends less on the shopper's connection, keeping only light interactions client-side.\",\"use_when\":\"Evaluating rendering architecture for a shop whose JavaScript-heavy pages feel slow on mobile connections even after resource fixes.\",\"steps\":[\"Recognize the two options: client-side rendering, where the visitor's browser does the main work and performance depends heavily on their internet connection; and server-side rendering (SSR), where the server does that work and the page displays directly and faster.\",\"Accept the trade-off: SSR demands more power from the server but is more reliable for the shopper.\",\"Adopt a hybrid approach — the server handles complex, heavy processing; the browser handles lighter, immediate interactions — to reduce server load while keeping responsiveness.\",\"Re-test FCP, TTI and LCP after switching rendering mode, since the metric that improves may not be the one you assumed.\"],\"caveats\":[\"SSR is a fundamental architectural change, not a quick tweak — the source frames it alongside other longer-term adjustments.\",\"Server capacity and cost must be sized for the added rendering load before committing.\"],\"tags\":[\"speed\",\"rendering\",\"ssr\",\"architecture\",\"mobile\",\"technical-seo\"]},{\"title\":\"Serve Static Assets From a CDN Close to the Shopper\",\"summary\":\"Distribute images and files across globally located servers so shoppers fetch content from the server nearest them.\",\"use_when\":\"Serving shoppers across regions or countries where a single-origin host makes image and file delivery slow for distant customers.\",\"steps\":[\"Identify static assets — images and files in particular — that are currently served only from your origin.\",\"Put a content delivery network in front so that content is temporarily stored on globally distributed servers.\",\"Ensure each shopper is served from the server geographically closest to them.\",\"Pair the CDN with the device-specific image sizing from your image work so the nearest server is also sending the right-sized file.\"],\"caveats\":[\"A CDN improves delivery of cached static content; it does not fix server-side rendering or API logic problems.\",\"Cache invalidation for frequently changing product images and pricing needs a plan.\"],\"tags\":[\"speed\",\"cdn\",\"resource-optimization\",\"images\",\"infrastructure\",\"global\"]},{\"title\":\"Layer Caching in Browser and on Server Without Over-Relying On It\",\"summary\":\"Temporarily store product data and content so it can be served faster, while keeping the response strategy lean enough that caching is not doing the heavy lifting.\",\"use_when\":\"Repeatedly serving the same product data across category listings and product pages where re-fetching is adding latency.\",\"steps\":[\"Cache product data and other content so it is available more quickly, both in the user's browser and on the server.\",\"Treat caching as one layer, not the answer: the source notes that fast, well-structured APIs reduce the amount of caching needed to deliver the same content.\",\"Measure before and after caching changes to confirm the shopper-visible paint actually moved.\",\"Review cache lifetimes against how often product data — stock, price, promotions — actually changes.\"],\"caveats\":[\"Caching stale product data risks showing wrong prices or availability; set lifetimes against your actual data volatility.\"],\"tags\":[\"speed\",\"caching\",\"api\",\"infrastructure\",\"product-data\"]},{\"title\":\"Structure APIs for Precise Data Selection and Smaller Payloads\",\"summary\":\"Design fast, well-structured APIs that let you request exactly the data a page needs, cutting response size and the reliance on caching.\",\"use_when\":\"Optimizing the data layer behind category grids, search results or product pages that return more fields per product than the page renders.\",\"steps\":[\"Make interfaces quick and efficient first — slow APIs force more caching to compensate.\",\"Design a clear structure that lets the caller select exactly which data should be loaded for a given page or component.\",\"Request only the fields a view actually renders, rather than pulling the full product object for a listing tile.\",\"Track the resulting reduction in response payload and loading time, and expect less caching to be needed once the payload is lean.\"],\"caveats\":[\"Field selection requires agreement between front-end views and API contracts; uncoordinated changes can break pages.\",\"The source presents this as a contributor to page speed, not a standalone fix for a fundamentally slow server.\"],\"tags\":[\"speed\",\"api\",\"architecture\",\"resource-optimization\",\"product-data\"]},{\"title\":\"Prioritize Speed Work With the Latency and Abandonment Evidence\",\"summary\":\"Frame the business case for speed investment using the source's latency, load-time-expectation and abandonment figures.\",\"use_when\":\"Justifying a speed optimization budget to stakeholders or deciding how aggressively to invest in performance before other store projects.\",\"steps\":[\"Lead with the revenue link: per Akamai, a delay of just 100 milliseconds in loading time can reduce the conversion rate by about 7%.\",\"Present the three-second abandonment threshold: 53% of mobile visitors leave a page immediately if it takes more than three seconds to load.\",\"Use expectation data to set targets: 47% of online shoppers expect page load in two seconds or less.\",\"Factor in retention risk: 79% said they would be less likely to shop again on a page they thought was too slow.\",\"Add the SEO angle — slow shops invite high bounce rates that send negative signals to Google and other search engines, hurting organic ranking, while fast loaders are rated positively.\"],\"caveats\":[\"These figures are third-party study statistics (Akamai and survey data) cited by the source, not measured outcomes for any specific store; treat them as direction, not a guaranteed conversion lift.\",\"Page speed is one ranking factor among many, not the sole determinant of search position.\"],\"tags\":[\"speed\",\"benchmarks\",\"conversion-optimization\",\"business-case\",\"retention\",\"technical-seo\"]}]}",
+  "input": {
+    "source_id": "1S-GQ3bEp-JK5GQ1HOKSMUk90q2A0--UN",
+    "source_sha256": "521d4191741269e46c05574d7b8eb80d14a98ff90ce44107dbe4902de574a8de",
+    "source_name": "Page Speed Optimization_ How to Improve the Loading Time of Your Online Shop.docx",
+    "folder": "/08-SPD-speed",
+    "domain": "speed",
+    "section": 0,
+    "section_count": 1,
+    "text": "08-SPD / speed and performance\n\nGoes here. Loading performance, perceived performance, Core Web Vitals (CWV) benchmarks, the financial impact of site speed on conversion rates, server-side caching strategies, technical mechanics of shrinking file sizes, rendering architectures (SSR), and API optimization.\n\nNot here.\n\nPaid advertising ROI tracking and bidding strategies -> 11-ADC\n\nDesigning the user interface or UX for checkouts -> 07-LPG\n\nProcuring or setting up standard hosting servers -> 05-SET\n\nHeader. url: rights: public_reference why: Quantifies the conversion impact of latency and outlines foundational speed optimizations, including Core Web Vitals, lite embeds, server-side rendering (SSR), and well-structured APIs. modules: [SPD] topics: [core web vitals, benchmarks, resource optimization, rendering and architecture] tier: 3 scope_hint: baseline\n\nTopics. benchmarks / The financial and behavioral impact of site latency: a 100-millisecond delay can reduce conversion rates by 7% (according to Akamai). The 3-second threshold: 53% of mobile visitors abandon pages taking longer than 3 seconds to load, while 47% of online shoppers expect load times to be 2 seconds or less. core web vitals / Understanding key performance metrics used by Google. First Contentful Paint (FCP): the time required to render the first visible element, such as text or an image. Time to Interactive (TTI): the time until the website is fully interactive and usable. Total Blocking Time (TBT): the elapsed time between First Contentful Paint and Time to Interactive. Largest Contentful Paint (LCP): the time required for the main page content to fully load from the user's perspective. resource optimization / Implementing \"lite embeds\" for videos, which load only a static thumbnail initially and defer the heavy video player code until the user clicks. Delaying third-party scripts and integrations so they only execute after the main page (product images and info) has fully loaded. Compressing images and serving device-specific dimensions (e.g., preventing XXL desktop images from loading on small smartphones). rendering and architecture / Utilizing Server-Side Rendering (SSR) to handle complex rendering tasks directly on the server, reducing the processing burden on the user's browser and reliance on their internet connection speed. Using a hybrid rendering approach where the server handles heavy processing and the client-side browser handles lighter, immediate interactions. Distributing static content via globally distributed Content Delivery Networks (CDNs). Implementing fast, well-structured APIs that allow for precise data selection, thereby reducing response payloads and mitigating over-reliance on caching.\n\nLook for. The exact conversion impact of a 100ms delay: a 7% reduction in conversion rate. The definition of Total Blocking Time (TBT): the time elapsed between First Contentful Paint (FCP) and Time to Interactive (TTI). The specific technique for video optimization: \"lite embeds,\" which only load a thumbnail until the user interacts. The specific API optimization rule: using well-structured APIs to select exactly which data should be loaded, reducing payload sizes and response times.\n\nSkip. Plugs to download the \"Marketing ROI: How to Increase Your Profit Return by Five\" guide. Generic advice to use tools like GTmetrix or Pingdom without explaining the underlying mechanical fixes.\n\nScope mix. Almost all baseline.\n\nVolume. 10 to 15.\n\nKey Takeaways\n\nPage speed directly impacts conversion rates, revenue, and SEO, so slow shops lose customers and visibility fast.\n\nRetailers should measure performance first (mobile and desktop) using tools like PageSpeed Insights and focus on Core Web Vitals.\n\nKey optimizations include image compression, lite embeds, fewer third-party scripts, and CDNs to reduce load times globally.\n\nFast infrastructure, efficient APIs, caching, and server-side rendering help scalable shops deliver consistently fast experiences.\n\nWhy is page speed optimization so important for online retailers? If websites are too slow, customers quickly become impatient. And it’s not just sales that suffer. Search engines such as Google and Ecosia also attach great importance to fast loading times and rate a website’s performance accordingly as good or poor. The result: bad search engine rankings for slow websites. Nor does this necessarily promote sales for online businesses. But how can you tell when you should optimise your page speed? Only a performance check can help. This will give you some initial insights into where your shop’s optimization potential lies. Some changes can be implemented very quickly, others need some time or fundamental adjustments. But they all have one thing in common: They are worth it.\n\nWhy Page Speed Optimization Is Important\n\nSlow sites are a lesson in patience. One of the reasons online shopping is so popular, though, is because it’s fast. At least in theory. It’s not uncommon for potential customers to quickly abandon a site if it’s too slow. So they head off to online shops with higher performance – and make their purchases there. Online retailers are therefore missing out on sales if they do not optimise their page speed. The high bounce rate also sends negative feedback to Google and other search engines. And that ensures a poorer ranking in organic search engine results. In contrast, those who have fast loading times are rated positively. Page speed is not the only ranking factor, of course, but it is an important one.\n\nA three second page load is for many mobile shoppers reason enough to leave your online shop.\n\nWebsite Speed Influences Conversion Rates\n\nStudies show a direct correlation between eCommerce site speed and revenue. Every second counts. A study by Akamai, for example, shows that a delay of just 100 milliseconds in loading time can reduce the conversion rate by seven percent. 53 percent of mobile visitors would leave a page immediately if it took more than three seconds to load. Internet users are often impatient and erratic. And they have high expectations: 47 percent of online shoppers expect a page to load in two seconds or less. 79 percent would be less likely to shop again on a page that they thought was too slow. Reasons enough, then, to prioritise page speed optimization.\n\nA shop system that supports optimized page speeds isn’t just nice to have — it’s essential to your ROI. For more important insights on how to maximize your ROI, download our guide, Marketing ROI: How to Increase Your Profit Return by Five.\n\nGoogle’s PageSpeed Insights help you to check the performance of your site and make adjustments.Content Delivery Networks (CDN) speed up online shops because they provide information where customers actually are.\n\nThe Essentials of Measuring Website Loading Speed\n\nBefore you start optimising, you should check your performance: How fast is the page currently and how many adjustments do you need to make? With Google’s PageSpeed Insights, you can measure the website loading time for free. The result scores can be displayed for desktop and mobile. In many cases, these two types differ significantly. It is therefore worth keeping an eye on both. For example, if you have a lot of customers shopping on mobile, you can focus on mobile page speed optimization first. PageSpeed Insights not only provides the mere figures, but also a classification of which scores are good, mediocre, or poor. What’s particularly practical: The tool directly provides recommendations for improvement and even estimates how much time adjustments can save.\n\nVarious key figures play a role in measuring performance and are weighted differently. These include:\n\nFirst Contentful Paint: Time to get to the first element that a user sees on the website, e.g., text or an image\n\n​​Time to Interactive: Time until the website is interactive, i.e., the user can use it\n\nTotal Blocking Time: Time between First Contentful Paint and Time to Interactive\n\nLargest Contentful Paint: Time until the page is loaded from the user’s point of view\n\nTip: Check your website speed in other tools like GTmetrix or Pingdom’s Website Test to get a reliable, comprehensive overview.\n\nDon’t just rely on Google when optimising your page load. Also take a look at other tools, e.g., GTmetrix.\n\nFirst Steps in Page Speed Optimization\n\nThere are many different ways to improve the loading time of websites. An important basic is, for example, a stable infrastructure with fast and reliable hosting. Online shops in particular want to convince customers with appealing and high-quality images. But big images are often responsible for long loading times. Compressing them saves time. Images should also always be optimised for the device that is currently loading them. It makes little sense to deliver an XXL image to a small smartphone. Different image sizes depending on the page, usage and device are recommended.\n\nEmbeddings and Third-Party Providers as Performance Killers\n\nIf you embed a lot of videos, e.g., to show products in action, you quickly run the risk of losing page speed. So-called lite embeds may be the solution: Only the thumbnail image is loaded, the video player is only loaded when a user actually clicks on it. This approach also works for third-party integrations. They are additional content and code that might cause pages to slow down. So you should always ask yourself if all of them are really necessary and get rid of unnecessary ones. To make the page faster, the remaining integrations are loaded only after the main page has been loaded, e.g., product images and information.\n\nTaking Page Speed Optimization Further\n\nIn addition to these steps, you can also ensure faster loading times by making a few adjustments in the setup of your website:\n\nserver-side rendering (SSR): There are two ways to render JavaScript pages. Either the main work is done in the browser of the page visitor loading and rendering all elements (client-side). Or all this is already done on the server and the page is directly displayed faster. The first one is highly dependent on the user’s internet connection. The second demands more power from the server but is more reliable. Often a combination of both is the best choice. Complex tasks are handled by the server. For anything else, the browser takes over and reduces the load on the server.\n\ncontent delivery networks: A content delivery network (CDN) is a network of globally distributed servers on which content such as images or files are temporarily stored. This way, they can be fetched from the server that is closest to the user. It saves time and makes the website faster.\n\ncaching: During caching, information such as product data and other content is temporarily stored so that it is available more quickly. Caching is possible both in the user’s browser and on the server.\n\nfast and well-structured APIs: interfaces through which information is retrieved and exchanged should work quickly and efficiently. If this is the case, it, in turn, requires less caching to provide all content. A clear structure is also very helpful. It allows you to select exactly which data should be loaded. This reduces response and loading times and thus contributes to page speed optimization.",
+    "prior_notes": [],
+    "id": "db7754023593e986b691e880"
+  },
+  "system_prompt_sha256": "f2341d28186a0dbaee868d37ce33c173f631088eb1754997556740d4905c0f2b"
+}

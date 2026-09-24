@@ -1,0 +1,527 @@
+{
+  "task": "E4",
+  "model": "gpt-5.6-luna",
+  "method": "none",
+  "first": {
+    "request_id": "debeb29660954878a2dd461e030188cfab5deb77319a93db12c164ccc2a66209",
+    "provider": "openai",
+    "model": "gpt-5.6-luna",
+    "effort": "medium",
+    "completion_limit": 12288,
+    "usage": {
+      "prompt_tokens": 1627,
+      "completion_tokens": 1455,
+      "total_tokens": 3082,
+      "prompt_tokens_details": {
+        "cached_tokens": 0,
+        "cache_write_tokens": 1624,
+        "audio_tokens": 0
+      },
+      "completion_tokens_details": {
+        "reasoning_tokens": 298,
+        "audio_tokens": 0,
+        "accepted_prediction_tokens": 0,
+        "rejected_prediction_tokens": 0
+      }
+    },
+    "booked_cost_usd": 0.00215275,
+    "seconds": 11.36,
+    "finish_reason": "stop",
+    "output": {
+      "answer_markdown": "## E4 — Cross-channel reconciliation and next-week plan\n\n### Attribution reconciliation\n\n| Row | Orders | Value (USD) | Treatment |\n|---|---:|---:|---|\n| Shopify in-period reported total | 500 | $45,000 | Net product revenue; the $1,000 refund is already deducted and is not subtracted again |\n| Meta export, outside Shopify period | 80 | $9,600 | Excluded from in-period reconciliation |\n| Meta export, in-period | 320 | $38,400 | $48,000 total export less the outside-period $9,600 |\n| Klaviyo export, in-period | 120 | $14,000 | Included in the in-period attribution comparison |\n| Meta/Klaviyo overlap | — | $6,000 | Deducted once from the attribution union |\n| **Union of in-period attributed value** | — | **$46,400** | $38,400 + $14,000 − $6,000 |\n| **Shopify value less attribution union** | — | **-$1,400** | Attribution exceeds Shopify net revenue by $1,400 |\n\n**Required outputs:**\n\n- `in_period_meta_value`: **$38,400**\n- `union_attributed_value`: **$46,400**\n- `unassigned_shopify_value`: **-$1,400**\n\nThe negative residual is a reconciliation discrepancy, not evidence of negative unassigned sales. It indicates that the Meta/Klaviyo attribution exports collectively exceed Shopify’s net in-period revenue by $1,400. Possible causes include attribution-window differences, duplicate or inconsistent order matching, timing, or revenue-definition differences. These are attribution matches, not incremental sales. Do not scale spend from the $46,400 union or subtract the Shopify refund again.\n\n### Next-week executable audit plan\n\n| Task | Owner | Hours | Acceptance test | Dependency | Decision gate |\n|---|---|---:|---|---|---|\n| Create a shared order-level reconciliation file with order ID, order date, channel labels, gross/order value, refund status, and source system | Analyst | 2 | Every available export row has a stable matching key or an explicit unmatched reason; period boundaries are documented | Obtain raw Meta, Klaviyo, and Shopify order exports | Stop reconciliation if order IDs or date fields are unavailable; report aggregate-only limits |\n| Recalculate in-period Meta, Klaviyo, overlap, union, and Shopify residual from the shared file | Analyst | 1.5 | Totals tie to $38,400 Meta, $14,000 Klaviyo, $6,000 overlap, $46,400 union, and $45,000 Shopify | Completed shared file | If residual is not $-1,400, investigate matching and revenue definitions before any channel decision |\n| Audit attribution windows, timezone, refund handling, and duplicate order treatment in Meta and Klaviyo exports | Analyst | 1.5 | Written variance log identifies each known cause of the $1,400 discrepancy or states what data is missing | Raw exports and platform setting access | No performance comparison using platform-attributed revenue until variance is documented |\n| Add a lightweight reconciliation dashboard or export validator; no production tracking changes | Developer | 2 | A repeatable check flags period mismatch, duplicate order IDs, missing values, and residual variance | Analyst’s field specification and sample exports | Proceed only if checks reproduce the agreed totals |\n| Review findings and approve measurement rule for next week | Owner | 1 | Written approval names Shopify net revenue as the financial source of truth and defines attribution as directional only | Completed variance log and validator output | Approve reporting rule or assign a specific data owner for unresolved variance |\n| Document the weekly operating procedure and handoff | Developer | 2 | One-page procedure states inputs, period dates, formulas, refund treatment, and escalation threshold | Owner-approved measurement rule | Do not automate further until the procedure is approved |\n| Final decision review: pause scaling and set next test criteria | Owner | 1 | Decision records whether to hold spend, what evidence is required, and the maximum test budget available | Reconciled report | No spend increase based solely on blended attribution union |\n\n### Resource totals\n\n- Analyst: **5 hours** of 6 available\n- Developer: **4 hours** of 4 available\n- Owner: **2 hours** of 2 available\n- Unallocated capacity: **1 analyst hour**\n\nUse the remaining analyst hour only for documenting unresolved matches or preparing the owner briefing. Protect replenishment cash and keep any next-week marketing decision within the approved $3,000 test budget; this audit itself does not authorize new spend.",
+      "actions": {
+        "launch_status": "draft",
+        "in_period_meta_value": 38400,
+        "union_attributed_value": 46400,
+        "unassigned_shopify_value": -1400,
+        "analyst_hours": 5,
+        "developer_hours": 4,
+        "owner_hours": 2,
+        "next_week_test_budget": 3000,
+        "scale_decision": "blocked_pending_reconciliation",
+        "shopify_financial_source_of_truth": true,
+        "refund_subtracted_again": false
+      },
+      "questions": [],
+      "applied_card_ids": [],
+      "rejected_guidance": []
+    },
+    "raw_content": "{\n  \"answer_markdown\": \"## E4 — Cross-channel reconciliation and next-week plan\\n\\n### Attribution reconciliation\\n\\n| Row | Orders | Value (USD) | Treatment |\\n|---|---:|---:|---|\\n| Shopify in-period reported total | 500 | $45,000 | Net product revenue; the $1,000 refund is already deducted and is not subtracted again |\\n| Meta export, outside Shopify period | 80 | $9,600 | Excluded from in-period reconciliation |\\n| Meta export, in-period | 320 | $38,400 | $48,000 total export less the outside-period $9,600 |\\n| Klaviyo export, in-period | 120 | $14,000 | Included in the in-period attribution comparison |\\n| Meta/Klaviyo overlap | — | $6,000 | Deducted once from the attribution union |\\n| **Union of in-period attributed value** | — | **$46,400** | $38,400 + $14,000 − $6,000 |\\n| **Shopify value less attribution union** | — | **-$1,400** | Attribution exceeds Shopify net revenue by $1,400 |\\n\\n**Required outputs:**\\n\\n- `in_period_meta_value`: **$38,400**\\n- `union_attributed_value`: **$46,400**\\n- `unassigned_shopify_value`: **-$1,400**\\n\\nThe negative residual is a reconciliation discrepancy, not evidence of negative unassigned sales. It indicates that the Meta/Klaviyo attribution exports collectively exceed Shopify’s net in-period revenue by $1,400. Possible causes include attribution-window differences, duplicate or inconsistent order matching, timing, or revenue-definition differences. These are attribution matches, not incremental sales. Do not scale spend from the $46,400 union or subtract the Shopify refund again.\\n\\n### Next-week executable audit plan\\n\\n| Task | Owner | Hours | Acceptance test | Dependency | Decision gate |\\n|---|---|---:|---|---|---|\\n| Create a shared order-level reconciliation file with order ID, order date, channel labels, gross/order value, refund status, and source system | Analyst | 2 | Every available export row has a stable matching key or an explicit unmatched reason; period boundaries are documented | Obtain raw Meta, Klaviyo, and Shopify order exports | Stop reconciliation if order IDs or date fields are unavailable; report aggregate-only limits |\\n| Recalculate in-period Meta, Klaviyo, overlap, union, and Shopify residual from the shared file | Analyst | 1.5 | Totals tie to $38,400 Meta, $14,000 Klaviyo, $6,000 overlap, $46,400 union, and $45,000 Shopify | Completed shared file | If residual is not $-1,400, investigate matching and revenue definitions before any channel decision |\\n| Audit attribution windows, timezone, refund handling, and duplicate order treatment in Meta and Klaviyo exports | Analyst | 1.5 | Written variance log identifies each known cause of the $1,400 discrepancy or states what data is missing | Raw exports and platform setting access | No performance comparison using platform-attributed revenue until variance is documented |\\n| Add a lightweight reconciliation dashboard or export validator; no production tracking changes | Developer | 2 | A repeatable check flags period mismatch, duplicate order IDs, missing values, and residual variance | Analyst’s field specification and sample exports | Proceed only if checks reproduce the agreed totals |\\n| Review findings and approve measurement rule for next week | Owner | 1 | Written approval names Shopify net revenue as the financial source of truth and defines attribution as directional only | Completed variance log and validator output | Approve reporting rule or assign a specific data owner for unresolved variance |\\n| Document the weekly operating procedure and handoff | Developer | 2 | One-page procedure states inputs, period dates, formulas, refund treatment, and escalation threshold | Owner-approved measurement rule | Do not automate further until the procedure is approved |\\n| Final decision review: pause scaling and set next test criteria | Owner | 1 | Decision records whether to hold spend, what evidence is required, and the maximum test budget available | Reconciled report | No spend increase based solely on blended attribution union |\\n\\n### Resource totals\\n\\n- Analyst: **5 hours** of 6 available\\n- Developer: **4 hours** of 4 available\\n- Owner: **2 hours** of 2 available\\n- Unallocated capacity: **1 analyst hour**\\n\\nUse the remaining analyst hour only for documenting unresolved matches or preparing the owner briefing. Protect replenishment cash and keep any next-week marketing decision within the approved $3,000 test budget; this audit itself does not authorize new spend.\",\n  \"actions\": {\n    \"launch_status\": \"draft\",\n    \"in_period_meta_value\": 38400,\n    \"union_attributed_value\": 46400,\n    \"unassigned_shopify_value\": -1400,\n    \"analyst_hours\": 5,\n    \"developer_hours\": 4,\n    \"owner_hours\": 2,\n    \"next_week_test_budget\": 3000,\n    \"scale_decision\": \"blocked_pending_reconciliation\",\n    \"shopify_financial_source_of_truth\": true,\n    \"refund_subtracted_again\": false\n  },\n  \"questions\": [],\n  \"applied_card_ids\": [],\n  \"rejected_guidance\": []\n}",
+    "input": {
+      "experiment": "owner-v3",
+      "brand": {
+        "fictional": true,
+        "name": "TrailFold",
+        "market": "US",
+        "currency": "USD",
+        "platforms": [
+          "Shopify",
+          "Meta Ads",
+          "Klaviyo"
+        ],
+        "positioning": "Practical lightweight bags for commuters who take short weekend trips; restrained, useful, plain-spoken voice.",
+        "products": [
+          {
+            "sku": "DAY18",
+            "name": "Daypack 18L",
+            "price": 80,
+            "landed_cogs": 28,
+            "pick_pack": 2,
+            "merchant_shipping_cost": 8,
+            "payment_fee_percent": 3,
+            "features": [
+              "18L capacity",
+              "padded 13-inch laptop sleeve",
+              "water-resistant fabric, not waterproof",
+              "external bottle pocket"
+            ],
+            "stock": 210,
+            "daily_units_sold": 8,
+            "confirmed_replenishment_units": 500,
+            "replenishment_arrival_days": 35
+          },
+          {
+            "sku": "POUCH",
+            "name": "Cable pouch",
+            "price": 20,
+            "landed_cogs": 5,
+            "stock": 800
+          },
+          {
+            "sku": "BOTTLE",
+            "name": "Steel bottle",
+            "price": 32,
+            "landed_cogs": 9,
+            "stock": 600
+          }
+        ],
+        "policies": {
+          "shipping": "Free US shipping; delivery estimate 4-7 business days",
+          "returns": "30-day returns for unused products; return shipping paid by customer",
+          "discounts": "No current discount. Any new discount needs owner approval."
+        },
+        "claim_constraints": [
+          "No evidence for waterproof, medical, sustainability or lifetime-durability claims.",
+          "No verified competitor performance data.",
+          "No clinical or controlled product test results."
+        ],
+        "customer_themes": {
+          "simulated_review_count": 120,
+          "themes": [
+            "fits daily commute",
+            "customers ask whether a 15-inch laptop fits",
+            "customers ask whether rain protection means waterproof"
+          ],
+          "support_tickets_last_30_days": {
+            "delivery_date_questions": 42,
+            "15_inch_laptop_fit": 28,
+            "waterproof_questions": 18
+          },
+          "note": "Themes, not verbatim licensed testimonials; no fabricated quotes or endorsements."
+        },
+        "website_snapshot": {
+          "pdp_headline": "Adventure starts here",
+          "first_image": "product on plain background",
+          "pdp_details": "Laptop sizing and delivery window are below reviews; CTA says Buy now. No field speed or session-recording data."
+        },
+        "shopify": {
+          "previous_30_days": {
+            "sessions": 20000,
+            "orders": 600,
+            "net_product_revenue": 54000,
+            "mobile_sessions": 15000,
+            "mobile_orders": 400,
+            "desktop_sessions": 5000,
+            "desktop_orders": 200,
+            "add_to_cart_sessions": 2000,
+            "checkout_started_sessions": 1200
+          },
+          "current_30_days": {
+            "sessions": 25000,
+            "orders": 500,
+            "net_product_revenue": 45000,
+            "mobile_sessions": 20000,
+            "mobile_orders": 300,
+            "desktop_sessions": 5000,
+            "desktop_orders": 200,
+            "add_to_cart_sessions": 2000,
+            "checkout_started_sessions": 1000
+          },
+          "definitions": "Revenue excludes tax/shipping; periods equal length. Funnel counts are session-based and internally consistent, but no controlled attribution experiment.",
+          "new_customer_share_current": 0.72,
+          "cohort_90_day_repeat_rate": 0.14
+        },
+        "meta": {
+          "previous_30_days": {
+            "spend": 18000,
+            "reported_purchase_value": 54000,
+            "cpm": 12,
+            "link_ctr_percent": 1.5
+          },
+          "current_30_days": {
+            "spend": 22000,
+            "reported_purchase_value": 70400,
+            "cpm": 15,
+            "link_ctr_percent": 1.2
+          },
+          "settings": "7-day click plus 1-day view; no incremental lift study. Meta reported value not reconciled to Shopify orders.",
+          "creative_history": [
+            {
+              "name": "Desk-to-trail demonstration",
+              "spend_share": 0.55,
+              "observed_result": "Largest spend recipient; mature creative. No asset-level contribution data."
+            },
+            {
+              "name": "Laptop-fit comparison",
+              "spend_share": 0.25,
+              "observed_result": "Higher CTR in small test; conversion sample not supplied."
+            },
+            {
+              "name": "Minimal product still",
+              "spend_share": 0.2,
+              "observed_result": "No reliable lift estimate."
+            }
+          ]
+        },
+        "klaviyo": {
+          "marketable_profiles": 12000,
+          "reported_attributed_revenue_current": 14000,
+          "attribution_window": "5-day click plus 5-day open",
+          "flows": [
+            {
+              "name": "welcome",
+              "messages": 1,
+              "offer": "none"
+            },
+            {
+              "name": "checkout abandonment",
+              "trigger": "Started Checkout",
+              "messages": 1,
+              "delay_hours": 24,
+              "observed_gap": "No Added to Cart flow; filters not audited."
+            }
+          ],
+          "campaigns_per_week": 3,
+          "reported_open_rate_percent": 52,
+          "click_rate_percent": 1.1,
+          "order_rate_percent": 0.18,
+          "note": "Revenue attribution overlaps other systems; no holdout or recent deliverability audit."
+        },
+        "resources": {
+          "weekly_designer_hours": 8,
+          "weekly_developer_hours": 4,
+          "owner_hours": 4,
+          "next_14_day_test_budget": 3000,
+          "cash_constraint": "Protect replenishment payments; no additional inventory purchase approved."
+        },
+        "unavailable": [
+          "GA4 breakdowns",
+          "Clarity/Hotjar recordings",
+          "field Core Web Vitals",
+          "SKU-level ad acquisition cost",
+          "cohort contribution LTV",
+          "creative-level conversion sample sizes",
+          "channel incrementality",
+          "email holdout data"
+        ]
+      },
+      "task": {
+        "id": "E4",
+        "title": "Cross-channel reconciliation and executable audit",
+        "request": "Create an order-level reconciliation table and a concrete next-week resource plan. Shopify net revenue 45000 includes a $1000 refund already deducted. Meta exported 400 orders totaling 48000; 80 Meta orders totaling 9600 are outside the Shopify reporting period. Klaviyo exported 120 orders totaling 14000, all in-period. Of in-period orders, 50 orders worth 6000 overlap Meta and Klaviyo. Compute in_period_meta_value, union_attributed_value and unassigned_shopify_value. These are attribution matches, not incremental sales. Build an audit task list with owner, acceptance test, dependency, hours and decision gates. Max analyst hours 6, developer 4, owner 2; do not double-subtract the refund or scale based on the blended attribution union."
+      },
+      "reference_guidance": ""
+    },
+    "system_prompt_sha256": "19fa52d4890cab2fc112e25875ff944d7a1753802461639c43bf7fdafc87d7e8"
+  },
+  "final": {
+    "request_id": "71eaf092358d63c02b2adc6ba784bd973c4b15d77f4167e1b7789e7b00f3a06c",
+    "provider": "openai",
+    "model": "gpt-5.6-luna",
+    "effort": "medium",
+    "completion_limit": 12288,
+    "usage": {
+      "prompt_tokens": 2863,
+      "completion_tokens": 1600,
+      "total_tokens": 4463,
+      "prompt_tokens_details": {
+        "cached_tokens": 0,
+        "cache_write_tokens": 2860,
+        "audio_tokens": 0
+      },
+      "completion_tokens_details": {
+        "reasoning_tokens": 483,
+        "audio_tokens": 0,
+        "accepted_prediction_tokens": 0,
+        "rejected_prediction_tokens": 0
+      }
+    },
+    "booked_cost_usd": 0.00263575,
+    "seconds": 13.22,
+    "finish_reason": "stop",
+    "output": {
+      "answer_markdown": "## E4 — Cross-channel reconciliation and next-week resource plan\n\n### Order-level reconciliation\n\nThe supplied data supports an order-population reconciliation, not individual order-ID matching. A true order-level audit requires Shopify, Meta, and Klaviyo exports containing stable order IDs, order dates, values, and refund status.\n\n| Population | Orders | Value | Reconciliation treatment |\n|---|---:|---:|---|\n| Shopify in-period reported orders | 500 | $45,000 | Financial source of truth; net product revenue already includes the $1,000 refund deduction |\n| Meta exported orders, all periods | 400 | $48,000 | Starting export total |\n| Meta orders outside Shopify period | 80 | $9,600 | Excluded from in-period comparison |\n| **Meta orders in Shopify period** | **320** | **$38,400** | $48,000 − $9,600; included once |\n| Klaviyo orders in Shopify period | 120 | $14,000 | Included in attribution comparison |\n| Meta/Klaviyo overlapping in-period orders | 50 | $6,000 | Deducted once from the union |\n| **Deduplicated in-period attributed union** | **390 implied** | **$46,400** | $38,400 + $14,000 − $6,000; attribution matches, not incremental sales |\n| **Shopify value less attributed union** | — | **-$1,400** | Reconciliation discrepancy, not negative real sales |\n\n**Required outputs**\n\n- `in_period_meta_value`: **$38,400**\n- `union_attributed_value`: **$46,400**\n- `unassigned_shopify_value`: **-$1,400**\n\nThe $1,400 negative residual may reflect attribution-window differences, timezone or period boundaries, duplicate or inconsistent matching, order-value definitions, or refund timing. Do not subtract the $1,000 Shopify refund again. Do not scale based on the $46,400 blended attribution union, and do not treat platform-attributed orders as incremental sales.\n\n### Next-week executable plan\n\n| Task | Owner | Hours | Dependency | Acceptance test | Decision gate |\n|---|---|---:|---|---|---|\n| Normalize Shopify, Meta, and Klaviyo exports into one reconciliation file | Analyst | 2 | Raw exports with order IDs, dates, values, and refund fields | Every row has a stable key, period flag, source, and explicit unmatched reason | If IDs or dates are unavailable, label the result aggregate-only and stop order-level matching |\n| Match orders and calculate in-period totals, overlap, union, and residual | Analyst | 2 | Normalized reconciliation file | Reproduces Meta $38,400, Klaviyo $14,000, overlap $6,000, union $46,400, and Shopify $45,000 | Any different total requires investigation before channel decisions |\n| Audit attribution windows, timezone, refund treatment, duplicate IDs, and value definitions | Analyst | 1 | Raw exports plus platform settings | Variance log identifies the source of the $1,400 discrepancy or documents missing evidence | No channel comparison or budget increase while a material variance is unexplained |\n| Produce a repeatable reconciliation validator | Developer | 2 | Analyst field map and sample exports | Flags duplicate IDs, missing values, period mismatches, and residual variance; reproduces agreed totals | Proceed only if the validator passes on the sample data |\n| Document the weekly reconciliation procedure and handoff | Developer | 2 | Validator output and measurement rule | One-page SOP states inputs, formulas, period boundaries, refund handling, and escalation threshold | Do not automate further until the SOP is approved |\n| Review discrepancy and approve reporting rule | Owner | 1 | Variance log and validator | Written approval confirms Shopify net revenue as the financial source of truth and attribution as directional | Approve, assign a data owner, or keep scaling blocked |\n| Make the next-week spend decision | Owner | 1 | Final reconciled report | Decision records hold, reduce, or test spend and names the evidence required for scaling | Keep any approved test within the $3,000 budget; no increase based only on blended attribution |\n\n**Resource allocation:** Analyst **6 hours** of 6; Developer **4 hours** of 4; Owner **2 hours** of 2. The audit authorizes no live changes. Protect replenishment cash and keep the scale decision blocked pending reconciliation.",
+      "actions": {
+        "launch_status": "draft",
+        "in_period_meta_value": 38400,
+        "union_attributed_value": 46400,
+        "unassigned_shopify_value": -1400,
+        "analyst_hours": 6,
+        "developer_hours": 4,
+        "owner_hours": 2,
+        "next_week_test_budget": 3000,
+        "scale_decision": "blocked_pending_reconciliation",
+        "shopify_financial_source_of_truth": true,
+        "refund_subtracted_again": false
+      },
+      "questions": [],
+      "applied_card_ids": [],
+      "rejected_guidance": []
+    },
+    "raw_content": "{\n  \"answer_markdown\": \"## E4 — Cross-channel reconciliation and next-week resource plan\\n\\n### Order-level reconciliation\\n\\nThe supplied data supports an order-population reconciliation, not individual order-ID matching. A true order-level audit requires Shopify, Meta, and Klaviyo exports containing stable order IDs, order dates, values, and refund status.\\n\\n| Population | Orders | Value | Reconciliation treatment |\\n|---|---:|---:|---|\\n| Shopify in-period reported orders | 500 | $45,000 | Financial source of truth; net product revenue already includes the $1,000 refund deduction |\\n| Meta exported orders, all periods | 400 | $48,000 | Starting export total |\\n| Meta orders outside Shopify period | 80 | $9,600 | Excluded from in-period comparison |\\n| **Meta orders in Shopify period** | **320** | **$38,400** | $48,000 − $9,600; included once |\\n| Klaviyo orders in Shopify period | 120 | $14,000 | Included in attribution comparison |\\n| Meta/Klaviyo overlapping in-period orders | 50 | $6,000 | Deducted once from the union |\\n| **Deduplicated in-period attributed union** | **390 implied** | **$46,400** | $38,400 + $14,000 − $6,000; attribution matches, not incremental sales |\\n| **Shopify value less attributed union** | — | **-$1,400** | Reconciliation discrepancy, not negative real sales |\\n\\n**Required outputs**\\n\\n- `in_period_meta_value`: **$38,400**\\n- `union_attributed_value`: **$46,400**\\n- `unassigned_shopify_value`: **-$1,400**\\n\\nThe $1,400 negative residual may reflect attribution-window differences, timezone or period boundaries, duplicate or inconsistent matching, order-value definitions, or refund timing. Do not subtract the $1,000 Shopify refund again. Do not scale based on the $46,400 blended attribution union, and do not treat platform-attributed orders as incremental sales.\\n\\n### Next-week executable plan\\n\\n| Task | Owner | Hours | Dependency | Acceptance test | Decision gate |\\n|---|---|---:|---|---|---|\\n| Normalize Shopify, Meta, and Klaviyo exports into one reconciliation file | Analyst | 2 | Raw exports with order IDs, dates, values, and refund fields | Every row has a stable key, period flag, source, and explicit unmatched reason | If IDs or dates are unavailable, label the result aggregate-only and stop order-level matching |\\n| Match orders and calculate in-period totals, overlap, union, and residual | Analyst | 2 | Normalized reconciliation file | Reproduces Meta $38,400, Klaviyo $14,000, overlap $6,000, union $46,400, and Shopify $45,000 | Any different total requires investigation before channel decisions |\\n| Audit attribution windows, timezone, refund treatment, duplicate IDs, and value definitions | Analyst | 1 | Raw exports plus platform settings | Variance log identifies the source of the $1,400 discrepancy or documents missing evidence | No channel comparison or budget increase while a material variance is unexplained |\\n| Produce a repeatable reconciliation validator | Developer | 2 | Analyst field map and sample exports | Flags duplicate IDs, missing values, period mismatches, and residual variance; reproduces agreed totals | Proceed only if the validator passes on the sample data |\\n| Document the weekly reconciliation procedure and handoff | Developer | 2 | Validator output and measurement rule | One-page SOP states inputs, formulas, period boundaries, refund handling, and escalation threshold | Do not automate further until the SOP is approved |\\n| Review discrepancy and approve reporting rule | Owner | 1 | Variance log and validator | Written approval confirms Shopify net revenue as the financial source of truth and attribution as directional | Approve, assign a data owner, or keep scaling blocked |\\n| Make the next-week spend decision | Owner | 1 | Final reconciled report | Decision records hold, reduce, or test spend and names the evidence required for scaling | Keep any approved test within the $3,000 budget; no increase based only on blended attribution |\\n\\n**Resource allocation:** Analyst **6 hours** of 6; Developer **4 hours** of 4; Owner **2 hours** of 2. The audit authorizes no live changes. Protect replenishment cash and keep the scale decision blocked pending reconciliation.\",\n  \"actions\": {\n    \"launch_status\": \"draft\",\n    \"in_period_meta_value\": 38400,\n    \"union_attributed_value\": 46400,\n    \"unassigned_shopify_value\": -1400,\n    \"analyst_hours\": 6,\n    \"developer_hours\": 4,\n    \"owner_hours\": 2,\n    \"next_week_test_budget\": 3000,\n    \"scale_decision\": \"blocked_pending_reconciliation\",\n    \"shopify_financial_source_of_truth\": true,\n    \"refund_subtracted_again\": false\n  },\n  \"questions\": [],\n  \"applied_card_ids\": [],\n  \"rejected_guidance\": []\n}",
+    "input": {
+      "experiment": "owner-v3",
+      "brand": {
+        "fictional": true,
+        "name": "TrailFold",
+        "market": "US",
+        "currency": "USD",
+        "platforms": [
+          "Shopify",
+          "Meta Ads",
+          "Klaviyo"
+        ],
+        "positioning": "Practical lightweight bags for commuters who take short weekend trips; restrained, useful, plain-spoken voice.",
+        "products": [
+          {
+            "sku": "DAY18",
+            "name": "Daypack 18L",
+            "price": 80,
+            "landed_cogs": 28,
+            "pick_pack": 2,
+            "merchant_shipping_cost": 8,
+            "payment_fee_percent": 3,
+            "features": [
+              "18L capacity",
+              "padded 13-inch laptop sleeve",
+              "water-resistant fabric, not waterproof",
+              "external bottle pocket"
+            ],
+            "stock": 210,
+            "daily_units_sold": 8,
+            "confirmed_replenishment_units": 500,
+            "replenishment_arrival_days": 35
+          },
+          {
+            "sku": "POUCH",
+            "name": "Cable pouch",
+            "price": 20,
+            "landed_cogs": 5,
+            "stock": 800
+          },
+          {
+            "sku": "BOTTLE",
+            "name": "Steel bottle",
+            "price": 32,
+            "landed_cogs": 9,
+            "stock": 600
+          }
+        ],
+        "policies": {
+          "shipping": "Free US shipping; delivery estimate 4-7 business days",
+          "returns": "30-day returns for unused products; return shipping paid by customer",
+          "discounts": "No current discount. Any new discount needs owner approval."
+        },
+        "claim_constraints": [
+          "No evidence for waterproof, medical, sustainability or lifetime-durability claims.",
+          "No verified competitor performance data.",
+          "No clinical or controlled product test results."
+        ],
+        "customer_themes": {
+          "simulated_review_count": 120,
+          "themes": [
+            "fits daily commute",
+            "customers ask whether a 15-inch laptop fits",
+            "customers ask whether rain protection means waterproof"
+          ],
+          "support_tickets_last_30_days": {
+            "delivery_date_questions": 42,
+            "15_inch_laptop_fit": 28,
+            "waterproof_questions": 18
+          },
+          "note": "Themes, not verbatim licensed testimonials; no fabricated quotes or endorsements."
+        },
+        "website_snapshot": {
+          "pdp_headline": "Adventure starts here",
+          "first_image": "product on plain background",
+          "pdp_details": "Laptop sizing and delivery window are below reviews; CTA says Buy now. No field speed or session-recording data."
+        },
+        "shopify": {
+          "previous_30_days": {
+            "sessions": 20000,
+            "orders": 600,
+            "net_product_revenue": 54000,
+            "mobile_sessions": 15000,
+            "mobile_orders": 400,
+            "desktop_sessions": 5000,
+            "desktop_orders": 200,
+            "add_to_cart_sessions": 2000,
+            "checkout_started_sessions": 1200
+          },
+          "current_30_days": {
+            "sessions": 25000,
+            "orders": 500,
+            "net_product_revenue": 45000,
+            "mobile_sessions": 20000,
+            "mobile_orders": 300,
+            "desktop_sessions": 5000,
+            "desktop_orders": 200,
+            "add_to_cart_sessions": 2000,
+            "checkout_started_sessions": 1000
+          },
+          "definitions": "Revenue excludes tax/shipping; periods equal length. Funnel counts are session-based and internally consistent, but no controlled attribution experiment.",
+          "new_customer_share_current": 0.72,
+          "cohort_90_day_repeat_rate": 0.14
+        },
+        "meta": {
+          "previous_30_days": {
+            "spend": 18000,
+            "reported_purchase_value": 54000,
+            "cpm": 12,
+            "link_ctr_percent": 1.5
+          },
+          "current_30_days": {
+            "spend": 22000,
+            "reported_purchase_value": 70400,
+            "cpm": 15,
+            "link_ctr_percent": 1.2
+          },
+          "settings": "7-day click plus 1-day view; no incremental lift study. Meta reported value not reconciled to Shopify orders.",
+          "creative_history": [
+            {
+              "name": "Desk-to-trail demonstration",
+              "spend_share": 0.55,
+              "observed_result": "Largest spend recipient; mature creative. No asset-level contribution data."
+            },
+            {
+              "name": "Laptop-fit comparison",
+              "spend_share": 0.25,
+              "observed_result": "Higher CTR in small test; conversion sample not supplied."
+            },
+            {
+              "name": "Minimal product still",
+              "spend_share": 0.2,
+              "observed_result": "No reliable lift estimate."
+            }
+          ]
+        },
+        "klaviyo": {
+          "marketable_profiles": 12000,
+          "reported_attributed_revenue_current": 14000,
+          "attribution_window": "5-day click plus 5-day open",
+          "flows": [
+            {
+              "name": "welcome",
+              "messages": 1,
+              "offer": "none"
+            },
+            {
+              "name": "checkout abandonment",
+              "trigger": "Started Checkout",
+              "messages": 1,
+              "delay_hours": 24,
+              "observed_gap": "No Added to Cart flow; filters not audited."
+            }
+          ],
+          "campaigns_per_week": 3,
+          "reported_open_rate_percent": 52,
+          "click_rate_percent": 1.1,
+          "order_rate_percent": 0.18,
+          "note": "Revenue attribution overlaps other systems; no holdout or recent deliverability audit."
+        },
+        "resources": {
+          "weekly_designer_hours": 8,
+          "weekly_developer_hours": 4,
+          "owner_hours": 4,
+          "next_14_day_test_budget": 3000,
+          "cash_constraint": "Protect replenishment payments; no additional inventory purchase approved."
+        },
+        "unavailable": [
+          "GA4 breakdowns",
+          "Clarity/Hotjar recordings",
+          "field Core Web Vitals",
+          "SKU-level ad acquisition cost",
+          "cohort contribution LTV",
+          "creative-level conversion sample sizes",
+          "channel incrementality",
+          "email holdout data"
+        ]
+      },
+      "task": {
+        "id": "E4",
+        "title": "Cross-channel reconciliation and executable audit",
+        "request": "Create an order-level reconciliation table and a concrete next-week resource plan. Shopify net revenue 45000 includes a $1000 refund already deducted. Meta exported 400 orders totaling 48000; 80 Meta orders totaling 9600 are outside the Shopify reporting period. Klaviyo exported 120 orders totaling 14000, all in-period. Of in-period orders, 50 orders worth 6000 overlap Meta and Klaviyo. Compute in_period_meta_value, union_attributed_value and unassigned_shopify_value. These are attribution matches, not incremental sales. Build an audit task list with owner, acceptance test, dependency, hours and decision gates. Max analyst hours 6, developer 4, owner 2; do not double-subtract the refund or scale based on the blended attribution union."
+      },
+      "reference_guidance": "",
+      "previous_draft": {
+        "answer_markdown": "## E4 — Cross-channel reconciliation and next-week plan\n\n### Attribution reconciliation\n\n| Row | Orders | Value (USD) | Treatment |\n|---|---:|---:|---|\n| Shopify in-period reported total | 500 | $45,000 | Net product revenue; the $1,000 refund is already deducted and is not subtracted again |\n| Meta export, outside Shopify period | 80 | $9,600 | Excluded from in-period reconciliation |\n| Meta export, in-period | 320 | $38,400 | $48,000 total export less the outside-period $9,600 |\n| Klaviyo export, in-period | 120 | $14,000 | Included in the in-period attribution comparison |\n| Meta/Klaviyo overlap | — | $6,000 | Deducted once from the attribution union |\n| **Union of in-period attributed value** | — | **$46,400** | $38,400 + $14,000 − $6,000 |\n| **Shopify value less attribution union** | — | **-$1,400** | Attribution exceeds Shopify net revenue by $1,400 |\n\n**Required outputs:**\n\n- `in_period_meta_value`: **$38,400**\n- `union_attributed_value`: **$46,400**\n- `unassigned_shopify_value`: **-$1,400**\n\nThe negative residual is a reconciliation discrepancy, not evidence of negative unassigned sales. It indicates that the Meta/Klaviyo attribution exports collectively exceed Shopify’s net in-period revenue by $1,400. Possible causes include attribution-window differences, duplicate or inconsistent order matching, timing, or revenue-definition differences. These are attribution matches, not incremental sales. Do not scale spend from the $46,400 union or subtract the Shopify refund again.\n\n### Next-week executable audit plan\n\n| Task | Owner | Hours | Acceptance test | Dependency | Decision gate |\n|---|---|---:|---|---|---|\n| Create a shared order-level reconciliation file with order ID, order date, channel labels, gross/order value, refund status, and source system | Analyst | 2 | Every available export row has a stable matching key or an explicit unmatched reason; period boundaries are documented | Obtain raw Meta, Klaviyo, and Shopify order exports | Stop reconciliation if order IDs or date fields are unavailable; report aggregate-only limits |\n| Recalculate in-period Meta, Klaviyo, overlap, union, and Shopify residual from the shared file | Analyst | 1.5 | Totals tie to $38,400 Meta, $14,000 Klaviyo, $6,000 overlap, $46,400 union, and $45,000 Shopify | Completed shared file | If residual is not $-1,400, investigate matching and revenue definitions before any channel decision |\n| Audit attribution windows, timezone, refund handling, and duplicate order treatment in Meta and Klaviyo exports | Analyst | 1.5 | Written variance log identifies each known cause of the $1,400 discrepancy or states what data is missing | Raw exports and platform setting access | No performance comparison using platform-attributed revenue until variance is documented |\n| Add a lightweight reconciliation dashboard or export validator; no production tracking changes | Developer | 2 | A repeatable check flags period mismatch, duplicate order IDs, missing values, and residual variance | Analyst’s field specification and sample exports | Proceed only if checks reproduce the agreed totals |\n| Review findings and approve measurement rule for next week | Owner | 1 | Written approval names Shopify net revenue as the financial source of truth and defines attribution as directional only | Completed variance log and validator output | Approve reporting rule or assign a specific data owner for unresolved variance |\n| Document the weekly operating procedure and handoff | Developer | 2 | One-page procedure states inputs, period dates, formulas, refund treatment, and escalation threshold | Owner-approved measurement rule | Do not automate further until the procedure is approved |\n| Final decision review: pause scaling and set next test criteria | Owner | 1 | Decision records whether to hold spend, what evidence is required, and the maximum test budget available | Reconciled report | No spend increase based solely on blended attribution union |\n\n### Resource totals\n\n- Analyst: **5 hours** of 6 available\n- Developer: **4 hours** of 4 available\n- Owner: **2 hours** of 2 available\n- Unallocated capacity: **1 analyst hour**\n\nUse the remaining analyst hour only for documenting unresolved matches or preparing the owner briefing. Protect replenishment cash and keep any next-week marketing decision within the approved $3,000 test budget; this audit itself does not authorize new spend.",
+        "actions": {
+          "launch_status": "draft",
+          "in_period_meta_value": 38400,
+          "union_attributed_value": 46400,
+          "unassigned_shopify_value": -1400,
+          "analyst_hours": 5,
+          "developer_hours": 4,
+          "owner_hours": 2,
+          "next_week_test_budget": 3000,
+          "scale_decision": "blocked_pending_reconciliation",
+          "shopify_financial_source_of_truth": true,
+          "refund_subtracted_again": false
+        },
+        "questions": [],
+        "applied_card_ids": [],
+        "rejected_guidance": []
+      },
+      "sandbox_feedback": {
+        "checks": {
+          "meta_window": true,
+          "deduplicated_union": true,
+          "negative_residual_preserved": true
+        },
+        "passed": 3,
+        "total": 3,
+        "all_pass": true,
+        "note": "Validates structured fields only; prose and business judgment require review. Negative reconciliation residual is a discrepancy, not negative real sales."
+      },
+      "instruction": "Return the complete revised deliverable. Check prose as well as action fields; passing numeric checks does not establish practical correctness."
+    },
+    "system_prompt_sha256": "19fa52d4890cab2fc112e25875ff944d7a1753802461639c43bf7fdafc87d7e8"
+  },
+  "first_validation": {
+    "checks": {
+      "meta_window": true,
+      "deduplicated_union": true,
+      "negative_residual_preserved": true
+    },
+    "passed": 3,
+    "total": 3,
+    "all_pass": true,
+    "note": "Validates structured fields only; prose and business judgment require review. Negative reconciliation residual is a discrepancy, not negative real sales."
+  },
+  "final_validation": {
+    "checks": {
+      "meta_window": true,
+      "deduplicated_union": true,
+      "negative_residual_preserved": true
+    },
+    "passed": 3,
+    "total": 3,
+    "all_pass": true,
+    "note": "Validates structured fields only; prose and business judgment require review. Negative reconciliation residual is a discrepancy, not negative real sales."
+  },
+  "knowledge_tokens": 0,
+  "card_ids": [],
+  "retrieval_ms": 0,
+  "selector_seconds": 0,
+  "selector_cost": 0
+}

@@ -1,0 +1,473 @@
+{
+  "cards": [
+    {
+      "title": "Model the cash cost of scaling inventory before committing to a growth rate",
+      "summary": "Tripling DTC revenue requires cash for inventory far faster than most brands can fund it, and aggressive spend cuts margin via interest and poor efficiency.",
+      "use_when": "Setting a growth target or reorder cadence for a scaling store, or deciding whether to spend more to clear aged stock.",
+      "steps": [
+        "Forecast growth against inventory cash: build a simple monthly model of units sold, COGS, payment terms from suppliers and cash collected from customers, then check whether cash conversion cycle allows the next PO to be paid.",
+        "Recognise the trap the source describes: brands that push spend to force triple-digit growth end up with larger interest repayments and compressed media efficiency, so net margin can fall to near zero even as revenue triples.",
+        "Compare two plans side by side — slower growth at better marketing efficiency versus faster growth at worse efficiency plus higher debt — and choose the plan that maximises retained profit, not the headline revenue number.",
+        "When aged or off-season stock is the constraint, treat it as a cash problem: the source argues for temporarily increasing marketing spend (e.g. from an inflated 30% ME to 35%), deliberately accepting lower efficiency, to convert stock back into cash and restore the revenue base.",
+        "Separate P&L plays from cash plays, and have marketing and finance share the current SKU-level inventory position so campaign strategy reflects what actually needs to move."
+      ],
+      "caveats": [
+        "The source's examples (tripling revenue, ME moving from 30% to 35%) are illustrative brand scenarios, not benchmarks; substitute your own margin, interest and inventory data.",
+        "Cutting media when ME rises can spiral — spend drops, revenue drops, profitability drops further — but the source also does not claim increasing spend always works; it must be justified by sellable inventory and cash."
+      ],
+      "tags": [
+        "multi",
+        "inventory-planning",
+        "cash-flow",
+        "forecasting",
+        "media-spend",
+        "aged-inventory",
+        "margin"
+      ],
+      "id": "eecd54f14ae11c3e8b71b9a1",
+      "source_id": "1Ta2RSp1n8gCTsxoz38HIw1ZHjRtrCjTL",
+      "source_sha256": "19a89cf51ff5bb9e0e5038c8cb1877e1211529b1fa94761ff5b73fce003770d6",
+      "source_name": "How to Scale an eCommerce Brand Profitably in 2026_ The Full System.docx",
+      "folder": "/99-multi",
+      "domain": "multi",
+      "section": 4
+    },
+    {
+      "title": "Forecast new and returning customer revenue separately",
+      "summary": "New-customer revenue is driven by acquisition inputs while returning revenue comes from cohorts, launches and events, so they must be forecast with separate models.",
+      "use_when": "Building a monthly revenue forecast or media budget for an ecommerce brand.",
+      "steps": [
+        "Split the forecast into two buckets: new customer revenue and returning customer revenue, since each is driven by different levers.",
+        "For new customers, model inputs such as ad spend, influencer activations, events and other channels, then derive expected revenue.",
+        "For returning customers, build it from cohorts: take every historical monthly new-customer cohort, apply the observed repeat rate for the month of life the cohort is about to enter (from your cohort analysis), multiply by returning-customer AOV, and sum across all cohorts.",
+        "Improve cohort accuracy in two ways: apply a seasonality factor derived from returning-revenue seasonality over roughly the last three years, and superimpose any marketing events or launches this year that did not exist last year.",
+        "If the resulting number looks unrealistically close to target without reason, treat it as a signal your assumptions are too generous and revisit the repeat-rate and AOV inputs."
+      ],
+      "caveats": [
+        "The source reports cohort-based returning forecasts are typically within about 10% accuracy, tightening to ~1-2% after seasonality and event adjustments — these are the presenter's observed figures, not guaranteed.",
+        "Requires clean cohort data going back far enough to estimate late-month repeat rates."
+      ],
+      "tags": [
+        "multi",
+        "forecasting",
+        "customer-cohorts",
+        "retention",
+        "media-spend",
+        "measurement"
+      ],
+      "id": "2f48255ebfdf731376c502e2",
+      "source_id": "1Ta2RSp1n8gCTsxoz38HIw1ZHjRtrCjTL",
+      "source_sha256": "19a89cf51ff5bb9e0e5038c8cb1877e1211529b1fa94761ff5b73fce003770d6",
+      "source_name": "How to Scale an eCommerce Brand Profitably in 2026_ The Full System.docx",
+      "folder": "/99-multi",
+      "domain": "multi",
+      "section": 4
+    },
+    {
+      "title": "Derive ad spend and efficiency from regression on daily data, excluding outliers",
+      "summary": "Plot daily acquisition ME against spend, fit a regression after removing sale periods and sub-threshold days, and read off expected efficiency at any spend level.",
+      "use_when": "Setting a media budget for the coming month or checking whether a new-customer revenue goal is achievable at target efficiency.",
+      "steps": [
+        "Plot at least ~1 year of daily data with acquisition ME on the y-axis and spend on the x-axis.",
+        "Remove outliers that distort the fit: sale periods, Black Friday/November days that over-inflate efficiency, and any days below a practical minimum spend (the source uses $1,000/day as an example floor).",
+        "Fit a logarithmic or linear regression to the cleaned data — choose whichever fits best — to get expected efficiency at each spend level.",
+        "Back-propagate from the goal: pick the target ME, read across to the spend required, and check whether that spend is plausible within your current structure and channels.",
+        "If the model cannot produce the goal, do not simply assume more spend; the exercise is to identify which input will change next year — a new event, launch, channel, or a step change in creative production — and forecast what that is worth."
+      ],
+      "caveats": [
+        "The $1,000/day floor and one-year window are the source's illustrative choices; adjust to your data volume and spend scale.",
+        "Sale-period removal matters: leaving promo days in will overstate BAU efficiency and produce an unachievable budget.",
+        "This observational fit is not a causal spend-response curve. Define exclusions before fitting, validate on held-out periods, and avoid extrapolating beyond observed spend; seasonality and spend reacting to demand can confound it."
+      ],
+      "tags": [
+        "multi",
+        "forecasting",
+        "media-spend",
+        "experiment-design",
+        "measurement",
+        "creative-strategy"
+      ],
+      "id": "a3b5f20b67e2d82482383c3f",
+      "source_id": "1Ta2RSp1n8gCTsxoz38HIw1ZHjRtrCjTL",
+      "source_sha256": "19a89cf51ff5bb9e0e5038c8cb1877e1211529b1fa94761ff5b73fce003770d6",
+      "source_name": "How to Scale an eCommerce Brand Profitably in 2026_ The Full System.docx",
+      "folder": "/99-multi",
+      "domain": "multi",
+      "section": 4
+    },
+    {
+      "title": "Do not allocate budget by in-platform ROAS across funnel positions",
+      "summary": "Bottom-of-funnel campaigns always show better ROAS, so reading platform ROAS alone systematically over-allocates to retargeting and branded terms.",
+      "use_when": "Deciding where to shift budget across Meta, Google and other campaigns in a store's media plan.",
+      "steps": [
+        "Assume the pattern the source describes: ROAS is highest at the bottom of the funnel (branded search, retargeting) and lowest at the top, regardless of true incremental contribution.",
+        "Before moving budget based on a 2x vs 6x ROAS comparison, note that the higher number likely reflects attribution position rather than incremental impact.",
+        "Test the reallocation rather than assuming it: run a controlled test of increasing spend in the upper-funnel campaign and measure incremental outcome, since the source explicitly says to verify against your own business.",
+        "For day-to-day decisions, the source recommends moving away from daily and weekly ROAS reports toward metrics like acquisition ME, profit contribution and LTV:CAC."
+      ],
+      "caveats": [
+        "The source's claim that top-of-funnel is usually better incremental is a general pattern and must be tested; it is not guaranteed for every account.",
+        "ROAS, MER and contribution metrics all have known attribution gaps; no single platform metric proves incrementality."
+      ],
+      "tags": [
+        "multi",
+        "media-spend",
+        "measurement",
+        "conversion-optimization",
+        "experiment-design",
+        "roas"
+      ],
+      "id": "ae6e998429c53791f4279024",
+      "source_id": "1Ta2RSp1n8gCTsxoz38HIw1ZHjRtrCjTL",
+      "source_sha256": "19a89cf51ff5bb9e0e5038c8cb1877e1211529b1fa94761ff5b73fce003770d6",
+      "source_name": "How to Scale an eCommerce Brand Profitably in 2026_ The Full System.docx",
+      "folder": "/99-multi",
+      "domain": "multi",
+      "section": 4
+    },
+    {
+      "title": "Budget for brand even where it shows no direct ROI",
+      "summary": "Above roughly $30-40k/day in spend, performance marketing alone hits diminishing returns; brand associations outside the ad account improve how the ad account itself performs.",
+      "use_when": "Allocating marketing budget between performance channels and brand-building activity such as events, influencers and sponsorship.",
+      "steps": [
+        "Treat brand activity as a deliberate line item on the P&L rather than an unmeasured extra, since the source argues brand effects become the binding constraint as spend scales.",
+        "Identify where your customers actually spend attention — specific creators, events, clubs, communities — and appear there rather than spraying generic awareness spend.",
+        "Expect brand work to look unprofitable on direct response: the source's examples — buying running gear after following sponsored creators, and buying premium activewear based on perceived quality from campaign imagery — came from associations, not from a coupon-attributed ad click.",
+        "Note the mechanism the source describes using ad-account comparisons: larger, well-known brands can show better CPMs, CTRs and conversion rates than smaller competitors because of associations built outside the ad account, not because scale automatically improves efficiency.",
+        "Track brand indirectly via branded search volume, direct traffic, and new-customer share trends rather than expecting a clean ROAS."
+      ],
+      "caveats": [
+        "These are personal purchases and observations by the presenter, not controlled experiments; the source itself concedes the influencer/brand deals often do not show direct profitable ROI.",
+        "Brand spend cannot be justified without a P&L that can absorb it; smaller brands reliant on performance marketing may need to sequence it later."
+      ],
+      "tags": [
+        "multi",
+        "brand-building",
+        "media-spend",
+        "creative-strategy",
+        "acquisition",
+        "measurement"
+      ],
+      "id": "e08bf0b419e3188459e56f80",
+      "source_id": "1Ta2RSp1n8gCTsxoz38HIw1ZHjRtrCjTL",
+      "source_sha256": "19a89cf51ff5bb9e0e5038c8cb1877e1211529b1fa94761ff5b73fce003770d6",
+      "source_name": "How to Scale an eCommerce Brand Profitably in 2026_ The Full System.docx",
+      "folder": "/99-multi",
+      "domain": "multi",
+      "section": 4
+    },
+    {
+      "title": "Treat the offer, not the ad account, as the primary lever",
+      "summary": "Budget and account structure sit at the base of the hierarchy; creative, offer, brand and product are the bigger but harder levers that actually move performance.",
+      "use_when": "Diagnosing flat performance and deciding whether to rebuild creative, offer or account structure rather than simply raising budget.",
+      "steps": [
+        "Order the variables the source uses: budget (least important, but the fuel), then account structure, then creative, then offer, then brand, then product (why people buy at all).",
+        "Recognise that teams tend to spend most time on the two lowest levers — shuffling budgets and account structure — because they are easy to change.",
+        "When performance stalls, look upward in the hierarchy before adding spend: does the offer give a reason to buy now, does the creative communicate something new, does the brand explain why you rather than a competitor?",
+        "Use the source's framing that most brands think they have an ad problem when they have an offer problem — and that most brands that think they have an offer problem have a discounting problem.",
+        "Reserve budget and structure changes for when the upper levers are already differentiated."
+      ],
+      "caveats": [
+        "The hierarchy is the presenter's opinion; the ordering and the phrase 'most brands think they have an ad problem' are attributed to the source, not a measured finding."
+      ],
+      "tags": [
+        "multi",
+        "offer-design",
+        "creative-strategy",
+        "positioning",
+        "media-spend",
+        "conversion-optimization"
+      ],
+      "id": "f5e39801f58b09600e911895",
+      "source_id": "1Ta2RSp1n8gCTsxoz38HIw1ZHjRtrCjTL",
+      "source_sha256": "19a89cf51ff5bb9e0e5038c8cb1877e1211529b1fa94761ff5b73fce003770d6",
+      "source_name": "How to Scale an eCommerce Brand Profitably in 2026_ The Full System.docx",
+      "folder": "/99-multi",
+      "domain": "multi",
+      "section": 4
+    },
+    {
+      "title": "Define an offer as five mechanics, not just a discount",
+      "summary": "An offer comprises product positioning, price architecture, value mechanic, risk reversal and urgency, of which discounting is only one option.",
+      "use_when": "Designing an evergreen acquisition offer or promo for a store's PDP, landing page or paid ads.",
+      "steps": [
+        "Product positioning: state what problem the product solves, for whom, and why now, then keep the SKU the same and change the persona, headline or problem being addressed.",
+        "Price architecture: choose the structure — threshold offers, units-per-transaction requirements, or bundles that discount but force 3-4 units so gross margin is preserved.",
+        "Value mechanic: add perceived value that drives the consumer toward feeling they are paying near cost of goods — free shipping, free gift, BOGO, samples, a second-order tier, or a subscription unlock.",
+        "Risk reversal: returns, guarantees, trials or sample-first offers to remove purchase risk.",
+        "Urgency: scarce drops, seasonal windows, or limited stock availability.",
+        "Build the offer from these mechanics together rather than defaulting to a flat percentage off, and note when a mechanic can be cost-free: the source's example is a partner — e.g. a GLP-1 provider — giving a discount to your customers at zero COGS to you."
+      ],
+      "caveats": [
+        "The source's GLP-1 partnership example is an illustration and may have regulatory/compliance constraints it acknowledges it does not know.",
+        "Layering too many mechanics can confuse buyers; the source notes that simple scales when it comes to offers."
+      ],
+      "tags": [
+        "multi",
+        "offer-design",
+        "product-positioning",
+        "bundles",
+        "subscriptions",
+        "conversion-optimization"
+      ],
+      "id": "31e28984af3d894a114d7236",
+      "source_id": "1Ta2RSp1n8gCTsxoz38HIw1ZHjRtrCjTL",
+      "source_sha256": "19a89cf51ff5bb9e0e5038c8cb1877e1211529b1fa94761ff5b73fce003770d6",
+      "source_name": "How to Scale an eCommerce Brand Profitably in 2026_ The Full System.docx",
+      "folder": "/99-multi",
+      "domain": "multi",
+      "section": 4
+    },
+    {
+      "title": "Model discount economics through the full waterfall before running a sale",
+      "summary": "A 25% discount lifted AOV via higher UPT but compressed gross margin and required roughly 9x ROAS to hold the same contribution profit versus 6x at full price.",
+      "use_when": "Deciding whether to run a flat percentage-off promotion or how deep to discount in a store.",
+      "steps": [
+        "Start from the full-price waterfall: AOV $100, COGS $40 (assume all variable costs for modelling), gross margin $60, breakeven ROAS = 1 / 0.60 = 1.67, target CPA at 6x ROAS = 100/6 = $16.67, contribution profit per order = $43.33.",
+        "Now model the discount properly: price per unit falls to $75 on a 25% sale, but units per transaction rises (the source's example goes from 1.00 to 1.63), so AOV becomes $122.",
+        "Calculate COGS on the undiscounted retail value, not the discounted AOV: $162 retail × 40% = $65, so gross margin falls to $57 and breakeven ROAS rises to 2.22.",
+        "Work out the CAC needed to hold the same contribution profit: $57 - $43.33 = $13.67, which at $122 AOV equals a required ROAS of about 9x — a ~50% improvement over the 6x at full price.",
+        "Decide whether that efficiency lift is realistic for your brand using historical sale-period data, then proceed or redesign the offer."
+      ],
+      "caveats": [
+        "All figures are the source's illustrative example; the UPT lift of 1.63 and the resulting 9x requirement will not hold for every brand.",
+        "The source reports some clients modelling 70-80% efficiency improvements when a rarely-discounting luxury brand goes on sale, and others modelling only ~5% because their audience is already trained to expect discounts."
+      ],
+      "tags": [
+        "multi",
+        "offer-design",
+        "pricing",
+        "margin",
+        "roas",
+        "units-per-transaction"
+      ],
+      "id": "9ea687d35127e4a7e51a1677",
+      "source_id": "1Ta2RSp1n8gCTsxoz38HIw1ZHjRtrCjTL",
+      "source_sha256": "19a89cf51ff5bb9e0e5038c8cb1877e1211529b1fa94761ff5b73fce003770d6",
+      "source_name": "How to Scale an eCommerce Brand Profitably in 2026_ The Full System.docx",
+      "folder": "/99-multi",
+      "domain": "multi",
+      "section": 4
+    },
+    {
+      "title": "Find the discount depth that maximises contribution profit",
+      "summary": "Small discounts often reduce contribution profit because they don't lift units per transaction, and very deep discounts destroy margin faster than volume can compensate, so an optimum exists.",
+      "use_when": "Choosing the headline discount percentage for a promo or evergreen offer.",
+      "steps": [
+        "Recognise the shape of the curve: at low discount levels (roughly 5-10%), the offer is not compelling enough to lift units per transaction, so average unit retail falls with no upside and contribution profit declines.",
+        "At some point the discount becomes credible and UPT begins rising; contribution profit per order then peaks where the AOV lift from higher UPT outweighs the margin compression.",
+        "At deep discounts (past roughly 30-40%), margin compression outpaces any further UPT gains and contribution profit falls again — the source describes these as effectively not worth running.",
+        "Model your own curve by regressing historical data on units per transaction under different flat discount levels, then pick the discount where modelled contribution profit per order is highest.",
+        "Note the source's related point that required ROAS to hold a contribution target rises exponentially with discount rate, not linearly, so a step from 15% to 25% can move the required ROAS from a plausible figure to one that is never achievable."
+      ],
+      "caveats": [
+        "The 5-10% and 30-40% points are illustrative from the source's graph, not measured universal thresholds; your own data determines where the inflection sits.",
+        "Modelling requires reasonably clean historical data across consistent flat-discount periods."
+      ],
+      "tags": [
+        "multi",
+        "offer-design",
+        "pricing",
+        "margin",
+        "units-per-transaction",
+        "measurement"
+      ],
+      "id": "d7809c576fb8e5b18ea666c8",
+      "source_id": "1Ta2RSp1n8gCTsxoz38HIw1ZHjRtrCjTL",
+      "source_sha256": "19a89cf51ff5bb9e0e5038c8cb1877e1211529b1fa94761ff5b73fce003770d6",
+      "source_name": "How to Scale an eCommerce Brand Profitably in 2026_ The Full System.docx",
+      "folder": "/99-multi",
+      "domain": "multi",
+      "section": 4
+    },
+    {
+      "title": "Build an evergreen acquisition offer with layering that improves efficiency",
+      "summary": "A layered subscription offer (90-day supply, app access, mystery gift, lifetime discount) can cut the required ROAS from 6x to under 3x while raising contribution profit.",
+      "use_when": "Designing an evergreen acquisition offer for a consumable product where a flat discount would be too expensive.",
+      "steps": [
+        "Test whether a flat 25% off compresses COGS-adjusted margin so much it requires roughly 9x ROAS — then consider a layered evergreen alternative.",
+        "Structure the offer around a larger pack size (e.g. buy a 90-day supply for 25% off) to raise AOV; the source's example shows AOV rising from ~$80 for 30 days to ~$190 at a 1.75x average.",
+        "Use shipping and fulfilment economies of scale: the source models $12 to ship one unit, $14 for two, $17 for three, while the price bakes in cost per unit — so the COGS or cost-of-delivery figure falls to about $82 and gross margin rises to about $108.",
+        "Add a zero- or low-cost value mechanic: a mystery gift at $1-3 COGS (samples, water bottles at large PO volumes, or partner-branded samples given free as co-marketing), and a lifetime subscription discount — e.g. 25% instead of the standard 10% — conditional on ticking subscription, which also pulls customers onto a 90-day billing cadence.",
+        "Compute the required efficiency: to hit the same contribution profit as the earlier example, CAC of about $65 against a $190 AOV implies ~2.9x ROAS, allowing aggressive acquisition.",
+        "Run the offer for 90-120 days, then survey customers to identify which layered elements actually drove the purchase, and cut the rest to keep the offer simple."
+      ],
+      "caveats": [
+        "All figures are the source's worked example for a supplement business; substitute your own COGS, shipping and UPT data.",
+        "Free gifts can increase shipping and fulfilment cost, and an element that boosts front-end conversion (like an app) may damage retention if it disappoints — survey both sides."
+      ],
+      "tags": [
+        "multi",
+        "offer-design",
+        "subscriptions",
+        "bundles",
+        "retention",
+        "margin"
+      ],
+      "id": "8aec1db231ba6976b7751a60",
+      "source_id": "1Ta2RSp1n8gCTsxoz38HIw1ZHjRtrCjTL",
+      "source_sha256": "19a89cf51ff5bb9e0e5038c8cb1877e1211529b1fa94761ff5b73fce003770d6",
+      "source_name": "How to Scale an eCommerce Brand Profitably in 2026_ The Full System.docx",
+      "folder": "/99-multi",
+      "domain": "multi",
+      "section": 4
+    },
+    {
+      "title": "Use product repositioning to unlock persona-specific offers at no COGS cost",
+      "summary": "Keeping one SKU but repositioning it into multiple personas lets you create sharper, more congruent offers with essentially zero margin impact.",
+      "use_when": "Building landing pages, prospect audiences or offer variants for a hero product such as a supplement or consumable.",
+      "steps": [
+        "Take one hero SKU and list multiple personas or problems it can credibly address, then test which positionings perform in the ad account — the source cites a daily greens gummy repositioning into gut/bloating, GLP-1 support, fibre, hair health, cognition/focus and multivitamin-for-professionals angles.",
+        "For each winning persona, build a dedicated landing page that carries the repositioning through the product title, headline and imagery.",
+        "Design the offer around that persona's mechanics — for GLP-1, a partner discount at $0 COGS; for hair health, an offer that matches a study timeframe, e.g. a 90-day subscription plus a free 30 days delivered on the second billing so 1 of 3 units in order two is free.",
+        "Where a claim depends on time (e.g. measurable hair-health effects after 90-120 days), state that plainly and align the offer terms to it so the discount reinforces the mechanism.",
+        "Note that the offer architecture uses product repositioning with no margin impact, so it is the most efficient of the offer mechanics."
+      ],
+      "caveats": [
+        "The positioning list is the source's illustration and compliance for health claims varies by market — the source itself flags it does not know the compliance position for the GLP-1 example.",
+        "The free-30-days-on-second-billing mechanic only preserves margin because the extra unit is deferred; delivering four units up front would not."
+      ],
+      "tags": [
+        "multi",
+        "product-positioning",
+        "landing-page",
+        "offer-design",
+        "creative-strategy",
+        "subscriptions"
+      ],
+      "id": "f2929b62a6cb8549eb925021",
+      "source_id": "1Ta2RSp1n8gCTsxoz38HIw1ZHjRtrCjTL",
+      "source_sha256": "19a89cf51ff5bb9e0e5038c8cb1877e1211529b1fa94761ff5b73fce003770d6",
+      "source_name": "How to Scale an eCommerce Brand Profitably in 2026_ The Full System.docx",
+      "folder": "/99-multi",
+      "domain": "multi",
+      "section": 4
+    },
+    {
+      "title": "Use bundles to raise units per transaction and capture fulfilment scale",
+      "summary": "Bundles raise UPT and improve cost-of-delivery through shipping efficiencies, but they're a relatively simple, easy offer compared with other mechanics.",
+      "use_when": "Designing a bundle offer for a multi-SKU store or a consumable single-SKU store.",
+      "steps": [
+        "Build the bundle around units per transaction: the source's example is a bundle discounted 20% that forces UPT to 3-4 units, so gross margin is not compressed in percentage terms.",
+        "Capture cost-of-goods efficiency on shipping and fulfilment, not on the product itself: shipping one unit costs more per unit than shipping three in one parcel, so bundle packaging turns a cost into margin.",
+        "For single-SKU consumables, replicate the effect by offering the same SKU multiple times — for example buy two, get 25% off — rather than assuming you need multiple distinct products.",
+        "Model the bundle through the same waterfall as a discount (UPT, AUR, COGS on retail value, breakeven ROAS, required ROAS) before launching.",
+        "Accept that bundles are a known, well-understood format; the source's point is that teams default to bundles when they could design something with more differentiated positioning."
+      ],
+      "caveats": [
+        "The source comments that bundles are simple and easy, and that many teams stop there; treat a bundle as one option among the five mechanics, not the default.",
+        "Fulfilment savings depend on parcel structure — adding a unit that pushes shipping into a higher tier erodes the benefit."
+      ],
+      "tags": [
+        "multi",
+        "bundles",
+        "offer-design",
+        "units-per-transaction",
+        "margin",
+        "fulfilment"
+      ],
+      "id": "fbf5c852d1d2c52ec661b7bb",
+      "source_id": "1Ta2RSp1n8gCTsxoz38HIw1ZHjRtrCjTL",
+      "source_sha256": "19a89cf51ff5bb9e0e5038c8cb1877e1211529b1fa94761ff5b73fce003770d6",
+      "source_name": "How to Scale an eCommerce Brand Profitably in 2026_ The Full System.docx",
+      "folder": "/99-multi",
+      "domain": "multi",
+      "section": 4
+    },
+    {
+      "title": "Track new and returning customer metrics separately in live dashboards",
+      "summary": "New and returning customer economics have different levers, so dashboard them separately alongside acquisition ME, profit contribution and LTV:CAC rather than relying on ROAS reports.",
+      "use_when": "Setting up weekly reporting or a KPI dashboard for an ecommerce brand.",
+      "steps": [
+        "Build live dashboards that track acquisition ME, profit contribution, and ideally LTV to CAC, alongside gross margin and contribution margin definitions agreed across the team.",
+        "Report new customer metrics separately: acquisition ME, new customer profit contribution, new customer revenue, new cohort size.",
+        "Report returning customer metrics separately: repeat rates by month of life, returning AOV, and returning revenue driven by launches, email, SMS and discount events.",
+        "Move away from daily and weekly ROAS reports as the core decision tool — the source calls daily/weekly ROAS reporting unproductive for core decisions.",
+        "Use the P&L structure as the diagnostic ladder: when a metric falls below KPI, look at the level above in the P&L to identify what changed, then decide which lever to pull."
+      ],
+      "caveats": [
+        "The source separately warns that platform ROAS reads mislead; LTV:CAC is recommended but must be calculated consistently with a defined window.",
+        "Dashboard definitions should be agreed with finance to avoid new/returning classification disputes."
+      ],
+      "tags": [
+        "multi",
+        "measurement",
+        "customer-cohorts",
+        "retention",
+        "ltv-cac",
+        "profit-contribution"
+      ],
+      "id": "975ff246ddd20e5fe0cf8dd6",
+      "source_id": "1Ta2RSp1n8gCTsxoz38HIw1ZHjRtrCjTL",
+      "source_sha256": "19a89cf51ff5bb9e0e5038c8cb1877e1211529b1fa94761ff5b73fce003770d6",
+      "source_name": "How to Scale an eCommerce Brand Profitably in 2026_ The Full System.docx",
+      "folder": "/99-multi",
+      "domain": "multi",
+      "section": 4
+    },
+    {
+      "title": "Know gross margin, product margin and contribution margin precisely",
+      "summary": "Before any offer or budget decision, calculate product margin versus gross margin (including variable costs) and how both flow into contribution margin.",
+      "use_when": "Establishing the financial baseline for pricing, offers, media spend and profitability decisions in a store.",
+      "steps": [
+        "List all variable costs per order: product cost, shipping and fulfilment, transaction fees, and any other cost that scales with each order.",
+        "Distinguish product margin (price minus product cost) from gross margin (price minus all variable costs), since offer modelling changes as variable costs scale.",
+        "Derive contribution margin by subtracting acquisition cost per order from gross margin, so every offer model can be judged on retained profit rather than revenue.",
+        "Accept the source's stated benchmark approach: gross margin determines breakeven ROAS as 1 divided by gross margin — e.g. a 60% gross margin means a 1.67 breakeven ROAS.",
+        "Apply the same waterfall per product and per offer, so discount and bundle models can be compared on contribution profit."
+      ],
+      "caveats": [
+        "The 60% margin/1.67 breakeven ROAS in the source is an example, not a recommended target; use your own margins.",
+        "The source's modelling treats COGS as including all variable expenses for simplicity — do this only for offer modelling, and keep the fuller cost breakdown for P&L."
+      ],
+      "tags": [
+        "multi",
+        "margin",
+        "profit-contribution",
+        "pricing",
+        "measurement",
+        "roas"
+      ],
+      "id": "7d67a42b0d81533bebf6b711",
+      "source_id": "1Ta2RSp1n8gCTsxoz38HIw1ZHjRtrCjTL",
+      "source_sha256": "19a89cf51ff5bb9e0e5038c8cb1877e1211529b1fa94761ff5b73fce003770d6",
+      "source_name": "How to Scale an eCommerce Brand Profitably in 2026_ The Full System.docx",
+      "folder": "/99-multi",
+      "domain": "multi",
+      "section": 4
+    },
+    {
+      "title": "Let the P&L identify the constraint instead of forcing budget growth",
+      "summary": "Read the P&L level by level, KPI each level, and when a metric misses, trace upward to find the actual constraint — which may be cash conversion rather than media.",
+      "use_when": "Deciding whether to increase media spend, cut costs or fix cash/inventory when profitability or growth stalls.",
+      "steps": [
+        "Structure the P&L so each level has a KPI: revenue, gross margin, media efficiency, contribution margin and profit.",
+        "When a KPI falls below target, look at the line above it to see what changed — for example ME rising because revenue fell, rather than a genuine efficiency problem in media.",
+        "Check whether the constraint is the cash conversion cycle rather than marketing: if spare cash cannot fund slowing inventory turnover, pushing spend higher increases interest expense and compresses ME.",
+        "If inventory turnover is the constraint, prioritise moving stock to cash over holding efficiency, and coordinate between marketing and finance on SKU-level inventory positions.",
+        "Only increase budgets when the model shows the spend is funded and the inventory can convert — not simply to hit a revenue target."
+      ],
+      "caveats": [
+        "The source's scenario where marketing drives revenue so cutting spend makes things worse is an example, not a universal rule — the same logic would not apply if ME compression came from genuine audience saturation.",
+        "P&L read depends on accurate allocation of variable costs; poor cost attribution will misidentify the constraint."
+      ],
+      "tags": [
+        "multi",
+        "profit-contribution",
+        "margin",
+        "media-spend",
+        "inventory-planning",
+        "measurement"
+      ],
+      "id": "2ba72747cc86968a74ce2bff",
+      "source_id": "1Ta2RSp1n8gCTsxoz38HIw1ZHjRtrCjTL",
+      "source_sha256": "19a89cf51ff5bb9e0e5038c8cb1877e1211529b1fa94761ff5b73fce003770d6",
+      "source_name": "How to Scale an eCommerce Brand Profitably in 2026_ The Full System.docx",
+      "folder": "/99-multi",
+      "domain": "multi",
+      "section": 4
+    }
+  ],
+  "request_id": "6a5e45b24d99e3384e54e55f37d29073ecb397ca3fae598a877168ef47c787ea",
+  "ecommerce_scope_version": 1
+}

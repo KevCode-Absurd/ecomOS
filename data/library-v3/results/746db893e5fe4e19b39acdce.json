@@ -1,0 +1,184 @@
+{
+  "cards": [
+    {
+      "title": "Adapt the Found–Matched–Chosen framework to AI search",
+      "summary": "Map three checkpoints — discoverability, factual query matching, and external reputation — onto a Shopify store's AI search readiness.",
+      "use_when": "Planning an AI search / GEO roadmap for a Shopify store and deciding which stage to fix first.",
+      "steps": [
+        "Use Found (discoverability), Matched (factual product fit), and Chosen (reputation and relevance) as an audit checklist, not a verified AI ranking pipeline.",
+        "Stage 1 — Found: technical reading. Confirm pages aren't password-protected, robots.txt doesn't block AI agents, and content is server-rendered rather than injected by JS widgets. Also verify schema markup and eligibility for Shopify's global product catalog.",
+        "Stage 2 — Matched: content. Replace vague marketing copy with explicit, hard data facts (size, colour, use case) that an AI can filter against a query and place the product into its candidate shortlist.",
+        "Review independent customer feedback and product experiences to understand reputation; recommendation counts and selection methods vary by engine and query.",
+        "Work stages in order — a product that isn't found or matched can't be chosen, so fix crawlability and copy before investing in reputation building.",
+        "Note that the source presents this as a high-level mental model from a small research effort, not a validated ranking formula; treat stage importance as directional."
+      ],
+      "caveats": [
+        "The framework is the presenter's own three-stage simplification; it has not been published as a verified ranking model.",
+        "Big brands still dominate broad queries; smaller stores should target specific, long-tail queries as in traditional SEO."
+      ],
+      "tags": [
+        "search",
+        "generative-engine-optimization",
+        "ai-search",
+        "technical-seo",
+        "shopify",
+        "content-strategy",
+        "positioning"
+      ],
+      "id": "2a7d0c66c4038a8e19da0f48",
+      "source_id": "1gwkZ_tpNGT2btBydX0cvQFjwVGbcRUQM",
+      "source_sha256": "1a7f7bd900beeb41fdc0495503ba633fd800c6a6bbfadf1d6773095cc36e7353",
+      "source_name": "Get Your Shopify Store AI-SEO-Ready in 5 Minutes.docx",
+      "folder": "/15-SEO-search",
+      "domain": "search",
+      "section": 0
+    },
+    {
+      "title": "Check whether AI crawlers can actually access your store",
+      "summary": "Verify robots.txt and run a crawler-style fetch to confirm AI agents can reach your Shopify pages.",
+      "use_when": "Auditing a Shopify store's crawlability before any AI search content work, or diagnosing why an AI tool can't describe a product.",
+      "steps": [
+        "Open the store's robots.txt by appending /robots.txt to the domain and scan for rules that disallow major AI agents. Shopify auto-generates this file, so problems usually come from manual edits or apps that added rules.",
+        "Do a quick sanity check that common agent user-agents are not blocked or disallowed.",
+        "Fetch a public product URL with a crawler user-agent as a diagnostic; compare the HTTP response and returned content with robots.txt rules and server logs.",
+        "Use actual fetch results and crawler documentation to investigate access; an assistant claiming access is not verification.",
+        "Remove password protection from pages that should be publicly indexed and confirm pages aren't only reachable through client-side navigation.",
+        "Re-check robots.txt after installing apps, since apps can modify the auto-generated file. Verify the current Shopify robots.txt UI and Sidekick behaviour, as interfaces change."
+      ],
+      "caveats": [
+        "A spoofed user-agent fetch does not prove a real crawler can access the site or that it is indexed. Robots.txt compliance, network controls, and crawler purpose differ.",
+        "Enable only crawlers consistent with the store owner's policy; training crawlers and search crawlers are not interchangeable."
+      ],
+      "tags": [
+        "search",
+        "generative-engine-optimization",
+        "crawlability",
+        "robots-txt",
+        "shopify",
+        "technical-seo",
+        "measurement"
+      ],
+      "id": "9ccea10d00bfc53b7bb6066f",
+      "source_id": "1gwkZ_tpNGT2btBydX0cvQFjwVGbcRUQM",
+      "source_sha256": "1a7f7bd900beeb41fdc0495503ba633fd800c6a6bbfadf1d6773095cc36e7353",
+      "source_name": "Get Your Shopify Store AI-SEO-Ready in 5 Minutes.docx",
+      "folder": "/15-SEO-search",
+      "domain": "search",
+      "section": 0
+    },
+    {
+      "title": "See your product page the way a JS-blind crawler sees it",
+      "summary": "Compare initial HTML with rendered product content to identify crawler-dependent visibility gaps.",
+      "use_when": "Diagnosing whether reviews, FAQs or spec content on a Shopify product page is invisible to AI crawlers.",
+      "steps": [
+        "Open the product page in a browser, disable JavaScript, then reload the page.",
+        "Compare the initial HTML and normal rendered page; missing specs, FAQs, or reviews identify dependence on JavaScript, not proof of invisibility to every engine.",
+        "Treat leftover placeholders or snippet stubs where the content should be as a red flag — the agent sees a shell, not the data.",
+        "Fix by moving critical content into server-rendered areas: theme templates, metafields rendered in Liquid, or app blocks that render on load rather than lazy widgets.",
+        "Prioritise the content that drives AI matching — sizing, materials, colour, use cases, and review sentiment — rather than decorative elements.",
+        "Retest after theme or app changes. For Google, use URL Inspection to inspect rendered HTML; Google can render JavaScript, while other crawlers vary."
+      ],
+      "caveats": [
+        "Shopify themes and apps update their rendering behaviour; verify current behaviour on each page type rather than assuming a widget is always JS-only.",
+        "Not every missing element matters — only content an AI needs to match or justify a recommendation."
+      ],
+      "tags": [
+        "search",
+        "generative-engine-optimization",
+        "technical-seo",
+        "shopify",
+        "product-page",
+        "crawlability",
+        "structured-data"
+      ],
+      "id": "f8f8462498cb1d1b4999061d",
+      "source_id": "1gwkZ_tpNGT2btBydX0cvQFjwVGbcRUQM",
+      "source_sha256": "1a7f7bd900beeb41fdc0495503ba633fd800c6a6bbfadf1d6773095cc36e7353",
+      "source_name": "Get Your Shopify Store AI-SEO-Ready in 5 Minutes.docx",
+      "folder": "/15-SEO-search",
+      "domain": "search",
+      "section": 0
+    },
+    {
+      "title": "Publish factual product attributes for specific shopper queries",
+      "summary": "Help search systems match products to explicit customer requirements.",
+      "use_when": "Improving ecommerce product discoverability and accurate product matching in search.",
+      "steps": [
+        "Replace vague product copy with verified material, colour, dimensions, capacity, compatibility and use-case facts.",
+        "Keep titles, descriptions, variant fields and metafields consistent; remove stale app metadata after review.",
+        "Map a specific shopper query to the attributes on the product page and check that each claimed match is supported."
+      ],
+      "caveats": [
+        "This is a readiness check, not a guarantee of ranking or AI recommendations. Verify current platform requirements before implementation."
+      ],
+      "tags": [
+        "ecommerce",
+        "product-data",
+        "shopify",
+        "ai-search"
+      ],
+      "id": "43284bf0e6dd8257101e6aed",
+      "source_id": "1gwkZ_tpNGT2btBydX0cvQFjwVGbcRUQM",
+      "source_sha256": "1a7f7bd900beeb41fdc0495503ba633fd800c6a6bbfadf1d6773095cc36e7353",
+      "source_name": "Get Your Shopify Store AI-SEO-Ready in 5 Minutes.docx",
+      "folder": "/15-SEO-search",
+      "domain": "search",
+      "section": 0
+    },
+    {
+      "title": "Audit Shopify catalog readiness alongside storefront SEO",
+      "summary": "Treat backend catalog data and storefront crawlability as separate distribution checks.",
+      "use_when": "Improving ecommerce product discoverability and accurate product matching in search.",
+      "steps": [
+        "Check current Shopify catalog eligibility and channel settings in the merchant admin or official documentation; use Sidekick for navigation assistance.",
+        "Review product titles, descriptions, valid prices, availability and metafields for completeness and accuracy.",
+        "Compare backend catalog records with visible product details and correct discrepancies."
+      ],
+      "caveats": [
+        "This is a readiness check, not a guarantee of ranking or AI recommendations. Verify current platform requirements before implementation."
+      ],
+      "tags": [
+        "ecommerce",
+        "shopify",
+        "catalog",
+        "product-data"
+      ],
+      "id": "c0a13e75f0120b778f45741e",
+      "source_id": "1gwkZ_tpNGT2btBydX0cvQFjwVGbcRUQM",
+      "source_sha256": "1a7f7bd900beeb41fdc0495503ba633fd800c6a6bbfadf1d6773095cc36e7353",
+      "source_name": "Get Your Shopify Store AI-SEO-Ready in 5 Minutes.docx",
+      "folder": "/15-SEO-search",
+      "domain": "search",
+      "section": 0
+    },
+    {
+      "title": "Validate product structured data against visible store facts",
+      "summary": "Make product facts machine-readable without inventing schema claims.",
+      "use_when": "Improving ecommerce product discoverability and accurate product matching in search.",
+      "steps": [
+        "Inspect Product structured data on representative product and variant pages.",
+        "Validate the markup with the applicable validator and compare price, availability and product identity with visible content.",
+        "Correct theme or app conflicts and recheck after changes."
+      ],
+      "caveats": [
+        "This is a readiness check, not a guarantee of ranking or AI recommendations. Verify current platform requirements before implementation."
+      ],
+      "tags": [
+        "ecommerce",
+        "structured-data",
+        "product-page",
+        "technical-seo"
+      ],
+      "id": "29f83e9997d5cb2ca336e0e0",
+      "source_id": "1gwkZ_tpNGT2btBydX0cvQFjwVGbcRUQM",
+      "source_sha256": "1a7f7bd900beeb41fdc0495503ba633fd800c6a6bbfadf1d6773095cc36e7353",
+      "source_name": "Get Your Shopify Store AI-SEO-Ready in 5 Minutes.docx",
+      "folder": "/15-SEO-search",
+      "domain": "search",
+      "section": 0
+    }
+  ],
+  "request_id": "c925ad4ac1e8f4dbd99b44d6dadd778bf691d944b76a4f29c54f96d7d5e2bc96",
+  "local_recovery": "Recovered complete cards and rebuilt incomplete remainder from source text; corrected crawler claims.",
+  "ecommerce_scope_version": 1
+}

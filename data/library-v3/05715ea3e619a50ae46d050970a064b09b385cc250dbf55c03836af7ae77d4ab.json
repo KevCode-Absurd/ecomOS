@@ -1,0 +1,201 @@
+{
+  "request_id": "05715ea3e619a50ae46d050970a064b09b385cc250dbf55c03836af7ae77d4ab",
+  "provider": "deepseek",
+  "model": "deepseek-flash",
+  "effort": "none",
+  "completion_limit": 16384,
+  "usage": {
+    "prompt_tokens": 2253,
+    "completion_tokens": 2307,
+    "total_tokens": 4560,
+    "prompt_tokens_details": {
+      "cached_tokens": 768
+    },
+    "prompt_cache_hit_tokens": 768,
+    "prompt_cache_miss_tokens": 1485
+  },
+  "booked_cost_usd": 0.0034443,
+  "seconds": 13.89,
+  "finish_reason": "stop",
+  "output": {
+    "cards": [
+      {
+        "title": "Password Storage: Salt, Hash, Prefer bcrypt",
+        "summary": "Store customer and admin credentials as salted hashes via bcrypt rather than reversible or unsalted schemes.",
+        "use_when": "Reviewing how your store platform, custom app or admin panel stores customer and staff login credentials.",
+        "steps": [
+          "Require that passwords are never stored in plaintext or with a reversible encryption method that can be decrypted back to the original password; hashing is one-way by design, whereas encryption is not.",
+          "Salt and hash each password so identical passwords do not produce identical stored values; salting also defeats precomputed lookup tables.",
+          "For the hashing function, the source recommends simply using bcrypt rather than hand-rolling your own scheme — 'just use bcrypt' is called out as the good advice.",
+          "If you build on a framework that offers a built-in password hasher, prefer that maintained implementation over custom code, and verify the current recommended parameters for your framework version.",
+          "Keep authentication (verifying who a user is) separate in your mind from hashing (protecting stored secrets) and encryption (protecting data in transit or at rest) — these solve different problems."
+        ],
+        "caveats": [
+          "bcrypt is the source's recommendation; other modern password-hashing functions also exist and are commonly used. Verify current guidance for your platform rather than treating bcrypt as the only acceptable choice.",
+          "Hashing protects stored passwords, not a compromised or misconfigured login endpoint."
+        ],
+        "tags": [
+          "bot-and-agent-security",
+          "authentication",
+          "password-storage",
+          "cryptography",
+          "customer-accounts",
+          "admin-access"
+        ]
+      },
+      {
+        "title": "Ambient Authority via Cookies: Use SameSite",
+        "summary": "Browsers automatically attach cookies to requests for a site, which lets other origins trigger authenticated actions; SameSite cookies are the source's fix.",
+        "use_when": "Hardening cookie-based sessions for your storefront, customer accounts or admin panel so other sites cannot silently trigger authenticated requests.",
+        "steps": [
+          "Understand 'ambient authority': the browser automatically attaches a site's cookies to requests destined for that site, so a request from another page can arrive already authenticated as your logged-in user.",
+          "This is the mechanism behind cross-site request forgery for state-changing actions — a logged-in shopper or admin visiting another page could have requests fired at your site carrying their session.",
+          "The source's stated solution is SameSite cookies: configure your session cookies with a SameSite attribute (typically Lax or Strict) so the browser withholds them on cross-site requests.",
+          "For state-changing endpoints — add-to-cart changes, address updates, payment or refund actions, admin mutations — consider requiring an explicit per-request token in addition to the session cookie, since SameSite policy and browser behavior can vary. Verify current browser SameSite defaults for your supported browsers.",
+          "Test the flows that legitimately need cross-site cookies (for example a payment provider returning to your site) before tightening the attribute, or you may break checkout."
+        ],
+        "caveats": [
+          "Cookie attributes and browser SameSite defaults have changed over time and between browsers; verify against current browser documentation rather than relying on remembered defaults.",
+          "SameSite cookies reduce one class of cross-site request risk but are not a complete defense by themselves."
+        ],
+        "tags": [
+          "bot-and-agent-security",
+          "cookies",
+          "session-security",
+          "checkout",
+          "admin-access",
+          "cross-site-request-forgery"
+        ]
+      },
+      {
+        "title": "Prefer Explicit Code Over Clever Code in Store Systems",
+        "summary": "In security-relevant store code, choose boring, plain, repetitive and explicit implementations over magical abstractions.",
+        "use_when": "Reviewing or writing code that touches checkout, payments, authentication, refunds or customer data on your store.",
+        "steps": [
+          "Adopt the source's stated preference: take boring, plain, repetitive, explicit code over 'magical' code — even though the clever version is more fun to write.",
+          "Apply this especially to security-relevant paths: authentication, session handling, pricing and discount calculation, refund and payment logic.",
+          "When a framework or library hides behavior behind convention or reflection, spell out the security-relevant behavior explicitly where practical, so a reviewer can see what actually happens.",
+          "This is a tradeoff, not an absolute: a well-maintained framework's built-in auth is often safer than custom code. The claim is specifically that among things you write yourself, explicit beats magical."
+        ],
+        "caveats": [
+          "This is the source's stated opinion, not a measured rule. It should be weighed against using maintained, well-tested library implementations for security primitives."
+        ],
+        "tags": [
+          "bot-and-agent-security",
+          "code-review",
+          "secure-development",
+          "checkout",
+          "maintainability"
+        ]
+      },
+      {
+        "title": "Make Dangerous Code Look Dangerous",
+        "summary": "Risky functions should have alarming names, clear documentation and should not be mixed with benign-looking operations.",
+        "use_when": "Naming and organizing internal APIs in your store platform — especially functions that move money, expose customer data or change account state.",
+        "steps": [
+          "Give genuinely risky operations a scary, unmistakable name rather than a friendly one (a function that irreversibly deletes customer data or force-charges a card should sound like what it does).",
+          "Document the danger properly: what the function assumes, what it can destroy, and what the caller must guarantee before calling it.",
+          "Do not combine dangerous operations with benign ones in the same function or call path — the source explicitly warns against putting the two together, because callers then invoke risk without realizing it.",
+          "Apply this when designing internal tooling and admin actions: an admin 'quick fix' endpoint that can silently issue refunds or export customer data should be clearly labeled and separately permissioned.",
+          "This supports auditability: a reader skimming the code should be able to spot the dangerous operations from the names alone."
+        ],
+        "caveats": [
+          "Naming is a human safeguard, not a technical control — it does not prevent misuse by a caller that ignores the warning."
+        ],
+        "tags": [
+          "bot-and-agent-security",
+          "secure-development",
+          "code-review",
+          "admin-access",
+          "api-design"
+        ]
+      },
+      {
+        "title": "Adopt a Paranoid, Vigilant Security Mindset",
+        "summary": "The source treats constant paranoia and vigilance as a genuine asset when maintaining store security.",
+        "use_when": "Setting expectations and habits for whoever maintains your store's security posture over time — platform owner, in-house dev or agency.",
+        "steps": [
+          "Treat the source's claim that 'you can never be too paranoid in security' as a cultural stance: assume something you depend on can fail or be attacked.",
+          "Translate vigilance into concrete practice rather than anxiety: keep dependency inventories, watch security advisories for your platform and payment stack, and re-check assumptions after major upgrades.",
+          "Assume inputs from customers, webhooks, third-party integrations and other systems are untrusted until validated — this is the practical expression of paranoia in an ecommerce stack.",
+          "Keep a paranoid posture toward your own past decisions too: a control that was adequate a year ago may not be adequate after a replatform or new integration.",
+          "Balance this against change management: constant churn in checkout and payment code carries its own risk, so schedule reviews rather than making unscheduled risky edits during peak trading."
+        ],
+        "caveats": [
+          "Paranoia is a mindset, not a checklist; the source offers no specific procedures or benchmarks behind this advice.",
+          "Vigilance must be bounded — unbounded rewrites of working checkout code during peak season are themselves a risk."
+        ],
+        "tags": [
+          "bot-and-agent-security",
+          "security-culture",
+          "risk-management",
+          "maintainability",
+          "payment-security"
+        ]
+      },
+      {
+        "title": "Smaller Packages Have Enlarged Modern Dependency Trees",
+        "summary": "Modern package managers enable many small packages with conflicting versions installed locally, so dependency trees and ecosystems are far larger than in older ecosystems.",
+        "use_when": "Assessing supply-chain and update risk for the libraries your storefront, checkout or integrations depend on.",
+        "steps": [
+          "Recognize the structural change the source describes: package managers like npm and Rust's ecosystem allow a local dependency model, so conflicting versions can coexist in a folder rather than forcing global resolution.",
+          "That freedom lets authors publish much smaller units of functionality, so a single dependency can pull in a very large tree of transitive packages.",
+          "The source frames this as a security tradeoff: more code arrives from more places, so there are more parties and more maintainers in your dependency graph.",
+          "For your store, maintain an inventory of direct and transitive dependencies in your storefront, checkout and integration code, and check where each package's code actually originates.",
+          "When a dependency or advisory affects you, evaluate the whole path — a tiny package can be the entry point to a deep tree.",
+          "The source does not claim smaller packages are good or bad, only that their proliferation is a major ecosystem shift with more parties involved."
+        ],
+        "caveats": [
+          "The source is describing an ecosystem trend from its own time; package manager behavior and ecosystem norms continue to change, so verify current tooling for your stack.",
+          "Dependency count alone is not a risk score — provenance, maintainership and how deeply a package sits in your checkout matter more."
+        ],
+        "tags": [
+          "bot-and-agent-security",
+          "supply-chain",
+          "dependencies",
+          "npm",
+          "secure-development",
+          "open-source"
+        ]
+      },
+      {
+        "title": "Standardized Collaboration Platforms Accelerated Code Flow",
+        "summary": "GitHub-style standardization means code moves faster and between more hands than in the older, per-project mailing-list era, expanding the trust surface.",
+        "use_when": "Evaluating the risk of third-party code, templates, plugins or themes you pull into your store from public repositories.",
+        "steps": [
+          "The source contrasts older open source — where each project ran its own process, mailing list, version control and access model — with today's standardized platforms where everything is on GitHub.",
+          "The consequence it highlights is scale and velocity: code flies around constantly, more contributors participate, and the review and governance process that used to be project-specific is now often lightweight and uniform.",
+          "Translate this to your store: before adding a theme, app, plugin or library from a public repository, check who actually maintains it, how active it is and whether contributions are reviewed.",
+          "Prefer sources with a visible maintenance process you can inspect over repositories that only look popular.",
+          "When vendoring third-party code into checkout or customer-data paths, treat the speed and openness of the ecosystem as the reason for extra scrutiny, not less."
+        ],
+        "caveats": [
+          "The source is describing the general open-source ecosystem shift, not prescribing a vetting checklist; the specific vetting criteria above are the ecommerce adaptation, not a result the source demonstrated.",
+          "Platform interfaces and repository features change; verify current tooling when checking maintainership signals."
+        ],
+        "tags": [
+          "bot-and-agent-security",
+          "supply-chain",
+          "open-source",
+          "third-party-integrations",
+          "code-review",
+          "risk-management"
+        ]
+      }
+    ]
+  },
+  "raw_content": "{\"cards\": [{\"title\": \"Password Storage: Salt, Hash, Prefer bcrypt\", \"summary\": \"Store customer and admin credentials as salted hashes via bcrypt rather than reversible or unsalted schemes.\", \"use_when\": \"Reviewing how your store platform, custom app or admin panel stores customer and staff login credentials.\", \"steps\": [\"Require that passwords are never stored in plaintext or with a reversible encryption method that can be decrypted back to the original password; hashing is one-way by design, whereas encryption is not.\", \"Salt and hash each password so identical passwords do not produce identical stored values; salting also defeats precomputed lookup tables.\", \"For the hashing function, the source recommends simply using bcrypt rather than hand-rolling your own scheme — 'just use bcrypt' is called out as the good advice.\", \"If you build on a framework that offers a built-in password hasher, prefer that maintained implementation over custom code, and verify the current recommended parameters for your framework version.\", \"Keep authentication (verifying who a user is) separate in your mind from hashing (protecting stored secrets) and encryption (protecting data in transit or at rest) — these solve different problems.\"], \"caveats\": [\"bcrypt is the source's recommendation; other modern password-hashing functions also exist and are commonly used. Verify current guidance for your platform rather than treating bcrypt as the only acceptable choice.\", \"Hashing protects stored passwords, not a compromised or misconfigured login endpoint.\"], \"tags\": [\"bot-and-agent-security\", \"authentication\", \"password-storage\", \"cryptography\", \"customer-accounts\", \"admin-access\"]}, {\"title\": \"Ambient Authority via Cookies: Use SameSite\", \"summary\": \"Browsers automatically attach cookies to requests for a site, which lets other origins trigger authenticated actions; SameSite cookies are the source's fix.\", \"use_when\": \"Hardening cookie-based sessions for your storefront, customer accounts or admin panel so other sites cannot silently trigger authenticated requests.\", \"steps\": [\"Understand 'ambient authority': the browser automatically attaches a site's cookies to requests destined for that site, so a request from another page can arrive already authenticated as your logged-in user.\", \"This is the mechanism behind cross-site request forgery for state-changing actions — a logged-in shopper or admin visiting another page could have requests fired at your site carrying their session.\", \"The source's stated solution is SameSite cookies: configure your session cookies with a SameSite attribute (typically Lax or Strict) so the browser withholds them on cross-site requests.\", \"For state-changing endpoints — add-to-cart changes, address updates, payment or refund actions, admin mutations — consider requiring an explicit per-request token in addition to the session cookie, since SameSite policy and browser behavior can vary. Verify current browser SameSite defaults for your supported browsers.\", \"Test the flows that legitimately need cross-site cookies (for example a payment provider returning to your site) before tightening the attribute, or you may break checkout.\"], \"caveats\": [\"Cookie attributes and browser SameSite defaults have changed over time and between browsers; verify against current browser documentation rather than relying on remembered defaults.\", \"SameSite cookies reduce one class of cross-site request risk but are not a complete defense by themselves.\"], \"tags\": [\"bot-and-agent-security\", \"cookies\", \"session-security\", \"checkout\", \"admin-access\", \"cross-site-request-forgery\"]}, {\"title\": \"Prefer Explicit Code Over Clever Code in Store Systems\", \"summary\": \"In security-relevant store code, choose boring, plain, repetitive and explicit implementations over magical abstractions.\", \"use_when\": \"Reviewing or writing code that touches checkout, payments, authentication, refunds or customer data on your store.\", \"steps\": [\"Adopt the source's stated preference: take boring, plain, repetitive, explicit code over 'magical' code — even though the clever version is more fun to write.\", \"Apply this especially to security-relevant paths: authentication, session handling, pricing and discount calculation, refund and payment logic.\", \"When a framework or library hides behavior behind convention or reflection, spell out the security-relevant behavior explicitly where practical, so a reviewer can see what actually happens.\", \"This is a tradeoff, not an absolute: a well-maintained framework's built-in auth is often safer than custom code. The claim is specifically that among things you write yourself, explicit beats magical.\"], \"caveats\": [\"This is the source's stated opinion, not a measured rule. It should be weighed against using maintained, well-tested library implementations for security primitives.\"], \"tags\": [\"bot-and-agent-security\", \"code-review\", \"secure-development\", \"checkout\", \"maintainability\"]}, {\"title\": \"Make Dangerous Code Look Dangerous\", \"summary\": \"Risky functions should have alarming names, clear documentation and should not be mixed with benign-looking operations.\", \"use_when\": \"Naming and organizing internal APIs in your store platform — especially functions that move money, expose customer data or change account state.\", \"steps\": [\"Give genuinely risky operations a scary, unmistakable name rather than a friendly one (a function that irreversibly deletes customer data or force-charges a card should sound like what it does).\", \"Document the danger properly: what the function assumes, what it can destroy, and what the caller must guarantee before calling it.\", \"Do not combine dangerous operations with benign ones in the same function or call path — the source explicitly warns against putting the two together, because callers then invoke risk without realizing it.\", \"Apply this when designing internal tooling and admin actions: an admin 'quick fix' endpoint that can silently issue refunds or export customer data should be clearly labeled and separately permissioned.\", \"This supports auditability: a reader skimming the code should be able to spot the dangerous operations from the names alone.\"], \"caveats\": [\"Naming is a human safeguard, not a technical control — it does not prevent misuse by a caller that ignores the warning.\"], \"tags\": [\"bot-and-agent-security\", \"secure-development\", \"code-review\", \"admin-access\", \"api-design\"]}, {\"title\": \"Adopt a Paranoid, Vigilant Security Mindset\", \"summary\": \"The source treats constant paranoia and vigilance as a genuine asset when maintaining store security.\", \"use_when\": \"Setting expectations and habits for whoever maintains your store's security posture over time — platform owner, in-house dev or agency.\", \"steps\": [\"Treat the source's claim that 'you can never be too paranoid in security' as a cultural stance: assume something you depend on can fail or be attacked.\", \"Translate vigilance into concrete practice rather than anxiety: keep dependency inventories, watch security advisories for your platform and payment stack, and re-check assumptions after major upgrades.\", \"Assume inputs from customers, webhooks, third-party integrations and other systems are untrusted until validated — this is the practical expression of paranoia in an ecommerce stack.\", \"Keep a paranoid posture toward your own past decisions too: a control that was adequate a year ago may not be adequate after a replatform or new integration.\", \"Balance this against change management: constant churn in checkout and payment code carries its own risk, so schedule reviews rather than making unscheduled risky edits during peak trading.\"], \"caveats\": [\"Paranoia is a mindset, not a checklist; the source offers no specific procedures or benchmarks behind this advice.\", \"Vigilance must be bounded — unbounded rewrites of working checkout code during peak season are themselves a risk.\"], \"tags\": [\"bot-and-agent-security\", \"security-culture\", \"risk-management\", \"maintainability\", \"payment-security\"]}, {\"title\": \"Smaller Packages Have Enlarged Modern Dependency Trees\", \"summary\": \"Modern package managers enable many small packages with conflicting versions installed locally, so dependency trees and ecosystems are far larger than in older ecosystems.\", \"use_when\": \"Assessing supply-chain and update risk for the libraries your storefront, checkout or integrations depend on.\", \"steps\": [\"Recognize the structural change the source describes: package managers like npm and Rust's ecosystem allow a local dependency model, so conflicting versions can coexist in a folder rather than forcing global resolution.\", \"That freedom lets authors publish much smaller units of functionality, so a single dependency can pull in a very large tree of transitive packages.\", \"The source frames this as a security tradeoff: more code arrives from more places, so there are more parties and more maintainers in your dependency graph.\", \"For your store, maintain an inventory of direct and transitive dependencies in your storefront, checkout and integration code, and check where each package's code actually originates.\", \"When a dependency or advisory affects you, evaluate the whole path — a tiny package can be the entry point to a deep tree.\", \"The source does not claim smaller packages are good or bad, only that their proliferation is a major ecosystem shift with more parties involved.\"], \"caveats\": [\"The source is describing an ecosystem trend from its own time; package manager behavior and ecosystem norms continue to change, so verify current tooling for your stack.\", \"Dependency count alone is not a risk score — provenance, maintainership and how deeply a package sits in your checkout matter more.\"], \"tags\": [\"bot-and-agent-security\", \"supply-chain\", \"dependencies\", \"npm\", \"secure-development\", \"open-source\"]}, {\"title\": \"Standardized Collaboration Platforms Accelerated Code Flow\", \"summary\": \"GitHub-style standardization means code moves faster and between more hands than in the older, per-project mailing-list era, expanding the trust surface.\", \"use_when\": \"Evaluating the risk of third-party code, templates, plugins or themes you pull into your store from public repositories.\", \"steps\": [\"The source contrasts older open source — where each project ran its own process, mailing list, version control and access model — with today's standardized platforms where everything is on GitHub.\", \"The consequence it highlights is scale and velocity: code flies around constantly, more contributors participate, and the review and governance process that used to be project-specific is now often lightweight and uniform.\", \"Translate this to your store: before adding a theme, app, plugin or library from a public repository, check who actually maintains it, how active it is and whether contributions are reviewed.\", \"Prefer sources with a visible maintenance process you can inspect over repositories that only look popular.\", \"When vendoring third-party code into checkout or customer-data paths, treat the speed and openness of the ecosystem as the reason for extra scrutiny, not less.\"], \"caveats\": [\"The source is describing the general open-source ecosystem shift, not prescribing a vetting checklist; the specific vetting criteria above are the ecommerce adaptation, not a result the source demonstrated.\", \"Platform interfaces and repository features change; verify current tooling when checking maintainership signals.\"], \"tags\": [\"bot-and-agent-security\", \"supply-chain\", \"open-source\", \"third-party-integrations\", \"code-review\", \"risk-management\"]}]}",
+  "input": {
+    "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+    "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+    "source_name": "Site Security (1).docx",
+    "folder": "/23-SEC-bot-and-agent-security",
+    "domain": "bot-and-agent-security",
+    "section": 27,
+    "section_count": 28,
+    "text": " plan ahead salt and hash your passwords if you don't want to bother doing it yourself just use bcrypt that's the good advice just use bcrypt beware of ambient Authority so that's the that's the that's the the way that the browser will helpfully attach cookies to requests that are destined for a certain site you can solve this with same site cookies be sure to use those don't be overly clever it's better to be explicit than to be magical when you're writing code so I will take boring plain repetitive explicit code any day over magical code even though magical code is fun sometimes but like for security explicit code is usually better um dangerous code should look dangerous so if something very risky to use make sure it has a scary name make sure it's properly documented don't combine it with functions that do benign things don't put those two things together and then of course you can never be too paranoid in security a paranoid mindset is actually very valuable asset so be constantly vigilant I'm cool so um I wanted to well yeah I guess questions about any of anything yeah yeah it's so there's a several things that have changed we can talk I could talk about this forever it's a re\n\nally interesting issue but like one big thing that's changed is that the size of packages that people produce are a lot smaller because modern programming languages like and NPM is made you know relatively recently and didn't have a package manager and you know no didn't have a package manager until like I don't know five years ago or something rust is also just created a new package manager all these new ecosystems have sort of solved the traditional dependency hell that happens in other ecosystems so I know if you've ever tried to install Python package and then it says oh like you have a dependency this conflicts with and it turns out like you know this package needs version one of this one and this one needs version two of this one you can only have one installed on your system right so MPM and and rusts package manager have basically switched at local dependency model where you can just install everything in a folder and then it's okay if you have conflicting versions and that's meant that people are free to sort of produce smaller units of work like sort of smaller units of functionality and so packages have gotten a lot smaller and so dependency trees have gotten a lot bigger and so there's a lots more people involved in the ecosystem now just like a lots more code coming from lots more places that's one really big difference also you have github which has changed the way that people collaborate so it's a lot easier to if things move faster it's a lot easier to get you know code is just flying around all the time in the old days every different open-source project had its own process its own mailing list you had to sign up for its own a coat you know version control people didn't all use git back then now everyone's standardized on github so you have all these more people coming on and the scale is just completely different than it was in in old days of open source yeah there's other those other reasons too but those are the big ones that come to mind yeah okay so I just wanted to recommend a few classes that you might take if you like this class and if you want to do more security so next quarter there's a class called CS 255 it's intro to cryptography it's a really great class I think it's taught by Dan Binet in X quarter it's if you liked the tls part of the lecture you liked you know the signing and encrypting and this kind of stuff great class to take there's also CS 155 which is more similar to this class it's more about sort of implementation and less theoretical and it's a great class I really hope I come in that one and then 355 is the continuation of 255 so if you like 255 in winter you should take 355 in spring this is a graduate level class where you read papers and you do you do P you know so you don't you perceive you um you uh you go really deep into crypto and you it's a piece that class just like 255 is really good class I I really like um in that one and then these ones are you can't take them until next year so 251 is is cryptocurrencies in blockchain which is really fun and has a whole bunch of security aspects to it because of course the blockchain is this trustless you know thing and there's all kinds of security implications and everything in block chains and then this one's in the winter but the deadline to apply for it has already passed so cs193p class but I highly recommend it only 18 people get into it you have to apply and the deadlines already passed for this year but you can apply for for next year it's taught by john ousterhout and this is like really cool class it's like um so first of all it's like a it's almost like a writing class you you literally there's like they put code up on the on the whiteboard that the students have written and everyone in the class it's like a discussion section and you sort of talk about the code you talk about how could be it could have been designed better it's like a writing class but for code you literally learn how to like write beautiful code code that like is understandable and works well and you talk about all kinds of design and architecture issues so it's really great but the prereq for word is CS 140 so it's a it's a it's a writing class that you have to take operating systems first to do basically but you it's really good it's 18 people I recommend applying for it if you're interested yeah so these are these are some classes maybe think about taking and yeah I just wanted to end with I want to say thank you so much for a great quarter it's been an honor to get to know all of you and thanks for being adventurous and taking this class with me and yeah I don't know I think thank you really appreciate it [Applause]",
+    "prior_notes": [],
+    "id": "dcdb9dbc8d3d594b796c7d12"
+  },
+  "system_prompt_sha256": "73b9b3269ca7ebc0cc91e8d1b21d23ade03fee8e9184303165139ea9178b5013"
+}

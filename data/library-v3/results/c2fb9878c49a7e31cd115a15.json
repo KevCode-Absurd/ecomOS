@@ -1,0 +1,315 @@
+{
+  "cards": [
+    {
+      "title": "Build core Klaviyo segments: VIP, winback, suppress, engaged",
+      "summary": "Four baseline segments (VIP, winback potential, suppress, unengaged) cover most lifecycle revenue without over-segmenting.",
+      "use_when": "Setting up or auditing your store's email segmentation and deciding which lists to actually send to and suppress.",
+      "steps": [
+        "VIP: customer can receive marketing and has placed 5+ orders all-time. Source's base definition uses order count because it is simpler and more predictable than combining orders and spend (e.g. 5+ orders AND $500+); try VIPs with a special offer at least once a quarter.",
+        "Winback potential: customer can receive marketing, placed at least 1 order in the last 150 days, and 0 orders in the last 90 days — i.e. their last purchase fell in that 90-150 day window. Trigger a short flow when they enter; later in the flow, consider a discount for those who still haven't repurchased.",
+        "Suppress list (send nothing): opened 0 emails in the past 180 days, OR has ever bounced, OR has ever marked an email as spam. Review it monthly and mark those profiles suppressed in Klaviyo settings to protect deliverability and cut list-based billing costs.",
+        "Unengaged is strictly about email engagement; winback is strictly about past customers — keep them separate.",
+        "Tune the winback window to the average buying cycle: a supplement brand on 30-day servings might start winback around day 45; a hot-tub seller may need years between purchases.",
+        "Don't build dozens of tiny segments. The source's stated priority is to first have the basics done well — e.g. an 8-email abandoned-cart flow and a popup converting better than 3% — before chasing elaborate segmentation that may only add a few percent."
+      ],
+      "caveats": [
+        "All thresholds above are the source's own base definitions, not validated benchmarks; adapt them to your store's order data and buying cycle.",
+        "Source is opinionated that beginners should fix basic flows and popup conversion before advanced segmentation; complex segments were framed as marginal gains."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "segmentation",
+        "klaviyo",
+        "vip",
+        "winback",
+        "deliverability",
+        "retention"
+      ],
+      "id": "c049ecf47935384873afac49",
+      "source_id": "1O7snRnsdSzGQFcGwqLifQRarAjLuQMVy",
+      "source_sha256": "0a590e4b0fb4fe7d3ac7b774f3fa114375aeffa88c529ee1b5b004f6d1d57efd",
+      "source_name": "Ecommerce Email Marketing 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 8
+    },
+    {
+      "title": "Interest and cross-sell segments by product/category",
+      "summary": "Segment by viewed/added/checked-out/purchased product or category to send targeted launches or automated cross-sell flows.",
+      "use_when": "Planning a product drop, category promo, or automated cross-sell (e.g. buyer of one item toward a complementary item).",
+      "steps": [
+        "Interest-in-X segment: customer can receive marketing AND has viewed an item at least once where the category/collection is X, OR added to cart where category is X, OR started checkout where collection is X, OR placed an order where collection is X (all over all time).",
+        "Use this for 1-2 extra sends per month on top of your engaged-list emails when you have a launch or sale tied to that product/category.",
+        "Cross-sell segment: customer can receive marketing AND has placed an order at least once all-time where collection equals the trigger product (e.g. bought white shoes). Then run a flow/email selling the match (white socks) and reference the exact item they bought.",
+        "Add a negative condition to protect the message: e.g. ordered protein at least once all-time AND ordered pre-workout 0 times all-time, so pre-workout buyers never get the pre-workout cross-sell.",
+        "In Klaviyo, viewed/added-to-cart metrics use Klaviyo's category values while Shopify-native triggers (started checkout, placed order) use collections — make sure your products are organized in Shopify so both line up."
+      ],
+      "caveats": [
+        "Confirm current Klaviyo/Shopify metric names and filters in the live interface, as the terminology shifts between platforms and updates."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "segmentation",
+        "klaviyo",
+        "cross-sell",
+        "shopify",
+        "flows",
+        "merchandising"
+      ],
+      "id": "68cf12bbb81356c6c4e4192d",
+      "source_id": "1O7snRnsdSzGQFcGwqLifQRarAjLuQMVy",
+      "source_sha256": "0a590e4b0fb4fe7d3ac7b774f3fa114375aeffa88c529ee1b5b004f6d1d57efd",
+      "source_name": "Ecommerce Email Marketing 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 8
+    },
+    {
+      "title": "Resend unopened important emails with the campaign-ID segment trick",
+      "summary": "Build a 'received X email but didn't open' segment from the campaign message ID, then resend with new subject line and preview text 1-2 days later.",
+      "use_when": "Maximizing reach on high-value sends like Black Friday, a major product release, or a big announcement.",
+      "steps": [
+        "Open the sent campaign in Klaviyo and copy the campaign message ID code from the URL.",
+        "Create a segment with two conditions: received email at least once all-time where message equals that code, AND opened email 0 times all-time where message equals that code. Klaviyo will resolve the campaign name for you.",
+        "Duplicate the original campaign and send it only to that segment, 1-2 days after the original.",
+        "Change the subject line and preview text so the resend doesn't read as a repeat to anyone who saw (but didn't open) the first.",
+        "Source frames this as an 'instant revenue booster' — if the original had e.g. a 60% open rate, 40% never saw it."
+      ],
+      "caveats": [
+        "Treat any specific open-rate figure as an illustrative example, not a benchmark.",
+        "This is a case-by-case tactic, not a permanent dynamic segment — rebuild it per campaign."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "segmentation",
+        "campaigns",
+        "klaviyo",
+        "subject-lines",
+        "deliverability"
+      ],
+      "id": "d11a34c7dc7fb903a9ec4fbc",
+      "source_id": "1O7snRnsdSzGQFcGwqLifQRarAjLuQMVy",
+      "source_sha256": "0a590e4b0fb4fe7d3ac7b774f3fa114375aeffa88c529ee1b5b004f6d1d57efd",
+      "source_name": "Ecommerce Email Marketing 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 8
+    },
+    {
+      "title": "Optimize email copy for the skim, not the read",
+      "summary": "Assume readers skim in seconds; break copy with line breaks, labels and bold main points so the email is understood in under three seconds.",
+      "use_when": "Writing or editing any campaign, welcome, or abandoned-cart email where copy currently appears as long paragraphs.",
+      "steps": [
+        "Shift your mindset: design emails for skimming, not for reading, because inbox attention is short and readers open in bursts between tasks.",
+        "Avoid blocks of text entirely — long paragraphs make the eye skip past; split copy with line breaks, subheaders and distinct sections.",
+        "Bold your main points so the eye is forced to follow them; most people will read only the bolded lines, so those must carry the full message on their own.",
+        "Use body copy underneath each bold point as the supporting justification and proof for those who read further.",
+        "Turn enumerated benefits into short labeled lists or numbers instead of a paragraph — e.g. five points listed out with bolded labels rather than one dense block.",
+        "Use comparison layouts (us vs. them, empty vs. daily) with bold subheads so readers grasp the contrast without reading the details."
+      ],
+      "caveats": [
+        "The specifics of how email clients render bold, formatting and line breaks vary — test appearance across devices before sending."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "copywriting",
+        "skimmable-copy",
+        "email-design",
+        "conversion-optimization",
+        "campaigns"
+      ],
+      "id": "e5a610bd2f19be0ac7335d78",
+      "source_id": "1O7snRnsdSzGQFcGwqLifQRarAjLuQMVy",
+      "source_sha256": "0a590e4b0fb4fe7d3ac7b774f3fa114375aeffa88c529ee1b5b004f6d1d57efd",
+      "source_name": "Ecommerce Email Marketing 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 8
+    },
+    {
+      "title": "Clear and concise email copy: short and sweet, one takeaway",
+      "summary": "Keep emails to one to two scrolls and one clear takeaway; assume readers are overwhelmed and forget multiple points.",
+      "use_when": "Writing campaign or flow copy that risks cramming several benefits or messages into one send.",
+      "steps": [
+        "Keep the email to roughly 1-2 phone scrolls maximum; source's guidance is shorter is better because only a few seconds of attention are available.",
+        "Choose ONE takeaway per email and build the headline around it — e.g. a matcha email solely about 'enhances the benefits of caffeine', or a hair-loss email solely about growth potential.",
+        "Ask yourself before sending: is there one clear thing the customer can take away? If the email tries to give 3+ takeaways, assume readers remember none.",
+        "Split a benefit-stuffed email into a series: instead of one email listing estimator, graphs, alerts, multi-cook view, etc., dedicate a whole email to each feature one at a time.",
+        "Cut implied information. On a welcome email, skip telling subscribers they get exclusive offers/insider access (they already know from the opt-in) and let the discount code sit in the clear space you save.",
+        "Every sentence should move the reader toward a purchase; delete fluff that only fills space."
+      ],
+      "caveats": [
+        "Some emails (e.g. a flowchart or comparison email) are intentionally longer because the format itself is the engagement — length alone isn't the failure, unclear/multi-message copy is."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "copywriting",
+        "welcome-flow",
+        "conversion-optimization",
+        "campaigns",
+        "message-clarity"
+      ],
+      "id": "99679e755f67e645ee972b4e",
+      "source_id": "1O7snRnsdSzGQFcGwqLifQRarAjLuQMVy",
+      "source_sha256": "0a590e4b0fb4fe7d3ac7b774f3fa114375aeffa88c529ee1b5b004f6d1d57efd",
+      "source_name": "Ecommerce Email Marketing 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 8
+    },
+    {
+      "title": "Write engaging copy: punchy, informational, entertaining",
+      "summary": "Trigger dopamine with dense punchy copy, real information, and humor/graphics — repetition kills engagement.",
+      "use_when": "Writing campaign copy that feels flat, corporate, or repetitive and is underperforming on opens and clicks.",
+      "steps": [
+        "Make copy punchy: short but information-dense, evoking emotion. Example structure packs a stat plus a benefit into a tiny space (e.g. a toilet-time stat tied to a digestive product benefit rather than a bland feature list).",
+        "Make copy informational: give facts and education, because people want to make an educated purchase decision. Source's view is that anything that isn't information is fluff — 'highest quality ingredients' should be replaced with actual ingredient facts; aim for the reader to learn something every open.",
+        "Make copy entertaining: use jokes, puns, puzzles and graphics, since TikTok-era dopamine tolerance means new/novel content works and repetition does not.",
+        "Say 'we'll spill the milk' and lead with real facts instead of generic claims — the source's cereal example packs protein content and 'fewer cravings' into a playful, factual line.",
+        "Source's rule of thumb: if a reader can clearly name the one takeaway (e.g. 'golden root is good for you and it's in this product'), the copy is working."
+      ],
+      "caveats": [
+        "Source is deliberately opinionated that copy needs humor and punch; brand-voice fit matters — a corporate/clinical brand may apply 'entertaining' more subtly and should test."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "copywriting",
+        "engagement",
+        "brand-voice",
+        "campaigns",
+        "conversion-optimization"
+      ],
+      "id": "28bbeaa033369b4b99379938",
+      "source_id": "1O7snRnsdSzGQFcGwqLifQRarAjLuQMVy",
+      "source_sha256": "0a590e4b0fb4fe7d3ac7b774f3fa114375aeffa88c529ee1b5b004f6d1d57efd",
+      "source_name": "Ecommerce Email Marketing 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 8
+    },
+    {
+      "title": "Use infographics as email 'secret sauce' to hit all copy principles",
+      "summary": "Infographics simultaneously make email skimmable, clear/concise and engaging — the source's highest-leverage copy ability.",
+      "use_when": "Designing email layouts when deciding how to present benefits, comparisons, or product education beyond plain text.",
+      "steps": [
+        "Map your own copy into one of these infographic formats and hand it to a designer rather than writing blocks of text: checklists, icon graphics, feature diagrams, timelines, numbered lists, comparison charts (us vs. them), tables, flowcharts, and graphs.",
+        "Checklists: present benefits with checks so the reader's eye scoops them up without reading sentences; the designer can interpret the layout creatively.",
+        "Icon graphics: attach simple icons (vegan, gluten-free, soy-free, non-GMO) to the product so a knowledgeable viewer recognizes them without reading labels.",
+        "Feature diagrams: point call-outs at parts of the product image (e.g. 'large glossy violin-shaped leaves', 'upright trunk') to show exactly what the buyer receives.",
+        "Timelines: map when results appear (month 1/2/3) or brand history — useful in post-purchase flows and welcome campaigns.",
+        "Tables and comparison charts: lay out ingredient or plan differences side by side so undecided buyers can self-select; flowcharts demonstrate which product suits which use case.",
+        "Source's practice: include at least one infographic inside every email."
+      ],
+      "caveats": [
+        "More creative formats (flowcharts, custom diagrams) take more production effort; the source notes it's a tradeoff against simply listing benefits."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "email-design",
+        "infographics",
+        "skimmable-copy",
+        "product-page",
+        "conversion-optimization"
+      ],
+      "id": "ddcf74804625d43330cf5e38",
+      "source_id": "1O7snRnsdSzGQFcGwqLifQRarAjLuQMVy",
+      "source_sha256": "0a590e4b0fb4fe7d3ac7b774f3fa114375aeffa88c529ee1b5b004f6d1d57efd",
+      "source_name": "Ecommerce Email Marketing 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 8
+    },
+    {
+      "title": "Outline email copy in a doc against an existing template",
+      "summary": "Write copy by physically mapping layout, spacing and sections in a Google Doc modeled on a real email, then hand it to the designer.",
+      "use_when": "Briefing designers or building any email where you want control over layout placement, not just the words.",
+      "steps": [
+        "Find an existing email you like (source searches sites like reallygoodemails.com or mill.com) and use it as the structural template.",
+        "In a Google Doc, recreate the email's structure visually: label the headline, sub-headline, hero section, body, bullets, tables, and every CTA position ('shop now').",
+        "Describe the visual treatment inline — e.g. 'simple hero section showing this on a GIF', 'try a new graphic style: table', 'fan favorites laid out here'.",
+        "Include notes on layout spacing and ordering rather than dumping all copy in a list, because list-only briefs give you no control over where copy lands (top vs. bottom) and how it affects conversion.",
+        "Keep every element mapped (headline → sub-headline → graphic → image of product → shop now) so the designer can execute without guessing."
+      ],
+      "caveats": [
+        "This is a workflow recommendation from the source, not a tested result; adjust the doc format to your team's handoff process."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "copywriting",
+        "email-design",
+        "workflow",
+        "campaigns",
+        "creative-strategy"
+      ],
+      "id": "95dff9b047736c24ae79c238",
+      "source_id": "1O7snRnsdSzGQFcGwqLifQRarAjLuQMVy",
+      "source_sha256": "0a590e4b0fb4fe7d3ac7b774f3fa114375aeffa88c529ee1b5b004f6d1d57efd",
+      "source_name": "Ecommerce Email Marketing 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 8
+    },
+    {
+      "title": "Prime ChatGPT with your brand, then request punchy hero copy",
+      "summary": "A two-step ChatGPT prompt — prime with brand/customer context, then request headline, sub-headline and CTA — to get a strong starting draft you edit.",
+      "use_when": "Facing a blank page on a campaign, drop, or launch email and needing a fast first draft to refine.",
+      "steps": [
+        "Step 1 — Prime: tell ChatGPT your e-commerce brand, product types, mission/goal, USPs, what makes your products unique, customer demographics and ages, brand voice preference, and customer goals/aspirations. Then ask 'Are you ready to write copy based on the topics I give you?' It retains this context within the same chat window.",
+        "Newer models: paste your website URL and tell it to use the site as additional context (the source notes it can recognize the brand from the site, though this depends on the current interface — verify before relying on it).",
+        "Step 2 — Request: state the email type and topic ('graphic-based email campaign with minimal copy, topic X'), supply the topic details and USPs, then ask for a quick punchy headline, a slightly longer sub-headline, 2-3 sentences of body copy, and a 'shop now' CTA.",
+        "Treat the output as a starting point covering roughly the hero and bridge sections; add your own testimonials and further sections yourself.",
+        "Edit the draft to sound less like ChatGPT and more like your brand before sending."
+      ],
+      "caveats": [
+        "Source's own view: it's always better to write it yourself and use ChatGPT only for a starting point; outputs need editing.",
+        "Prompt behavior and what the model retains can change with ChatGPT versions — re-verify what context it actually holds."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "copywriting",
+        "chatgpt",
+        "ai-tools",
+        "campaigns",
+        "workflow"
+      ],
+      "id": "b33ded12e90b0fbf14601157",
+      "source_id": "1O7snRnsdSzGQFcGwqLifQRarAjLuQMVy",
+      "source_sha256": "0a590e4b0fb4fe7d3ac7b774f3fa114375aeffa88c529ee1b5b004f6d1d57efd",
+      "source_name": "Ecommerce Email Marketing 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 8
+    },
+    {
+      "title": "Prioritize basics before advanced segmentation and copy tricks",
+      "summary": "Audit whether core flows and popup form conversion are healthy before investing in elaborate segmentation.",
+      "use_when": "Deciding where to spend limited email/lifecycle effort when the store's fundamentals are still underperforming.",
+      "steps": [
+        "Check the fundamentals first: does an abandoned-cart flow exist with around 8 emails, and is the popup form converting above 3%?",
+        "If those basics are missing or weak, fix them before building intricate interest/cross-sell segments, since low-hanging fruit usually outperforms fragmentation.",
+        "Source's stance: the fancier segmentation may only add a couple of percent in conversion or a little extra revenue, and shouldn't distract from the priority work.",
+        "Once basics are solid, layer in the more advanced segments (VIP, winback, interest, cross-sell) and copy tactics."
+      ],
+      "caveats": [
+        "These specific figures (8 emails, 3% popup conversion) are the source's heuristics, not universal benchmarks — adapt to your store and test."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "prioritization",
+        "abandoned-cart",
+        "popup",
+        "conversion-optimization",
+        "workflow"
+      ],
+      "id": "b88c44dec23cbbae0147c38a",
+      "source_id": "1O7snRnsdSzGQFcGwqLifQRarAjLuQMVy",
+      "source_sha256": "0a590e4b0fb4fe7d3ac7b774f3fa114375aeffa88c529ee1b5b004f6d1d57efd",
+      "source_name": "Ecommerce Email Marketing 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 8
+    }
+  ],
+  "request_id": "491318420d2e22d1d02f048dfd0f5c4b90ba3c48019544d22c64529a1ce69bfc",
+  "ecommerce_scope_version": 1
+}

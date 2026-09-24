@@ -1,0 +1,142 @@
+{
+  "batch": 5,
+  "request_id": "bfe55b5353a933ab35ce4fafaf0ff54925fada22e370220d3224e9957fbbda50",
+  "errors": [],
+  "review": {
+    "reviews": [
+      {
+        "candidate_id": "aa6bec0d7391ea36ddfaf4e1ef3665ec9b85c9768ac4c0182bd1ee7c16587f6d",
+        "verdict": "supported",
+        "reasons": [
+          "The formula, its per-variant application, the definitions of delta and variance, the 95% two-sided/80%-power assumptions embodied by 16, and the binomial conversion-rate variance are all stated in the substantive sample-size section.",
+          "The dependency on setting an MDE is non-circular and consistent with the source's instruction to set the MDE to the smallest lift worth shipping."
+        ]
+      },
+      {
+        "candidate_id": "4d44a4441ba24d62449cd936a0c5673d55de55df9bedbdca780f10ee8fa19e6d",
+        "verdict": "supported",
+        "reasons": [
+          "The substantive worked table gives 80,682 visitors per variant for a 2% baseline and 10% relative lift under 95% confidence, 80% power, and a two-sided test; the candidate's approximation to 80,000 is supported.",
+          "Its limitation against generalizing this example without recalculation is appropriate."
+        ]
+      },
+      {
+        "candidate_id": "4b0eec88020bf6c6ec1ba2eef989c1c07880b56dfd7d82a7b83c77ea76ab75d2",
+        "verdict": "revise",
+        "reasons": [
+          "The recommended constraints are supported: hold external conditions as constant as possible, compare equal/comparable periods, treat a stable shift as a weak signal rather than proof, use pre-post for big structural changes, and later confirm with randomization when traffic allows.",
+          "The trigger adds that traffic must be too low for a randomized test. The source says pre-post can help at low volume and recommends later confirmation when traffic allows, but does not make inability to run a randomized test an explicit prerequisite for every use of pre-post testing."
+        ]
+      },
+      {
+        "candidate_id": "b388dc419115414255953a5ed21a56c99776acb80b506a7b4570a35661580a8a",
+        "verdict": "revise",
+        "reasons": [
+          "The substantive discussion supports treating 3,000–20,000 monthly orders as a fair volume floor for A/B/n and bandit work.",
+          "The stated exception is specifically that bandits can be used at lower volume for short campaigns focused on minimizing regret rather than obtaining a clean read. The candidate's wording applies the 'not a hard cutoff' qualification generally to both A/B/n and bandit work, which overextends the stated caveat."
+        ]
+      },
+      {
+        "candidate_id": "15b3db87e61cbe202991d504c7c78f82fb619677c887cfe467b00e7d8f1198c3",
+        "verdict": "revise",
+        "reasons": [
+          "The less-than-300-orders threshold and qualitative/big-swing recommendation appear only in the prefatory Topics overview, rather than in the substantive research document. That overview can establish that volume-based experimentation is a topic, but does not substantiate this operational playbook.",
+          "The exclusion broadens the source's wording. The overview reserves 'complex A/B/n testing, multi-armed bandits, and CUPED variance reduction' for 3,000+ orders/month; it does not categorically exclude all 'complex A/B tests' at low volume."
+        ]
+      },
+      {
+        "candidate_id": "424d3d78ee932c2b34f656995f101fa817fd29d8b29032b5e20a1025ee4d3d8e",
+        "verdict": "supported",
+        "reasons": [
+          "The source expressly defines the peeking pattern as continuously checking results and stopping once p < 0.05, and expressly states that it inflates the false-positive rate to over 26%.",
+          "The candidate does not generalize that numerical rate to other alpha levels or stopping rules."
+        ]
+      },
+      {
+        "candidate_id": "dc3a42664fc734fac7b1c580f3ce4bf4f1d0fabb59bd3682566ede1850184599",
+        "verdict": "revise",
+        "reasons": [
+          "SRM, flicker/FOOC, and Twyman's Law are named in the prefatory overview as issues relevant to statistically valid lifts rather than instrumentation artifacts.",
+          "The candidate converts that overview into a mandatory operational check without a substantive procedure or criterion in the supplied research text. It also treats Twyman's Law as equivalent to a specific experiment invalidation, whereas the excerpt's later definition describes it as a warning that surprising figures are usually wrong and may be caused by bugs or SRM."
+        ]
+      },
+      {
+        "candidate_id": "7a89ca36d0c0c5c7b568dd2d824b59ed260a67b8938713256923a652d9d3dbaa",
+        "verdict": "unsupported",
+        "reasons": [
+          "The asserted Shopify platform behavior and named implementation alternatives occur only in the prefatory 'Look for' overview, not in a substantive section of the supplied research document.",
+          "That overview cannot certify the operational claim that client-side checkout testing is prevented or that Shopify Rollouts and Checkout Blocks are the required usable alternatives; the excerpt supplies no implementation conditions, scope, or limitations for either tool."
+        ]
+      },
+      {
+        "candidate_id": "85c0a55a05da3890cab0adfad1b38e8062b1d7f11031e39083bfd2a6977f1919",
+        "verdict": "supported",
+        "reasons": [
+          "The substantive text states that fixed-horizon frequentist testing fixes the sample size in advance and looks once at the end, and that p-values and confidence levels are valid only under that assumption.",
+          "The candidate appropriately leaves non-fixed-horizon adjustments unspecified."
+        ]
+      },
+      {
+        "candidate_id": "d04aab28782ef9a335cf9f2441750003fadf41851c6db9faf86768d5979fdf83",
+        "verdict": "supported",
+        "reasons": [
+          "The substantive multi-variant/bandit discussion expressly states that bandits need volume to learn before they exploit.",
+          "The candidate does not invent a volume threshold that the source does not quantify."
+        ]
+      },
+      {
+        "candidate_id": "0153434ec3091753f378606fd2c4df7eab33768ce4ef79f86d73cf0529cdbff5",
+        "verdict": "supported",
+        "reasons": [
+          "The substantive pre-post discussion explicitly identifies the listed time confounders and states that the central risk is bias, not merely wider variance.",
+          "The candidate's limitation that the source gives no method to fully control every confounder is accurate."
+        ]
+      },
+      {
+        "candidate_id": "e564beea3963e8ddbb39e5f14d42faecaf1d5879a0f52f6ec4024265a9c9bebb",
+        "verdict": "unsupported",
+        "reasons": [
+          "The recommendation to replace ICE with PXL and the assertion that PXL calculates an experiment's 'true expected value' occur only in the prefatory Topics overview.",
+          "The supplied substantive text provides neither the PXL model nor an expected-value method. The overview may identify prioritization as a topic, but does not support this actionable implementation recommendation."
+        ]
+      },
+      {
+        "candidate_id": "001b5d400496c3f09b91874a9b1a23cdb33f2edc1fb53d4e33299c4cc5452ea9",
+        "verdict": "supported",
+        "reasons": [
+          "The prefatory overview expressly identifies personalized price testing as involving ethical/legal landmines. The candidate remains a high-level warning and does not claim specific legal requirements, jurisdictions, or mitigation steps."
+        ]
+      }
+    ],
+    "omissions": [
+      {
+        "description": "The module-boundary guidance distinguishing CRO experimentation from page design and ordinary tracking work is not represented.",
+        "quote": "CRO in this module means \"is the difference real\": statistics, experiment design, experimentation discipline. It is not page design (that is LPG) and not tracking accuracy (that is MEA), except where tracking breakage invalidates an experiment."
+      },
+      {
+        "description": "The specific definition and diagnostic implication of Twyman's Law is not represented; merely naming it as an invalidation does not capture this warning.",
+        "quote": "The definition of Twyman's Law: any figure that looks incredibly interesting or surprising (e.g., a 364% lift) is usually wrong and likely caused by a tracking bug or Sample Ratio Mismatch (SRM)."
+      }
+    ],
+    "source_limitations": [
+      "The excerpt ends immediately after the opening fixed-horizon paragraph, so it does not provide the continuation of the stopping-rules section or substantive procedures for sequential testing alternatives.",
+      "Several claims about Shopify checkout behavior, SRM/flicker/Twyman handling, low-volume playbooks, and PXL appear only in prefatory Topics or Look for summaries rather than in the substantive research section.",
+      "The document is labeled a synthesised research document and cites external sources, but the cited source materials are not included; their calculations, attributions, and any current platform behavior cannot be independently verified from this excerpt."
+    ]
+  },
+  "scope": "changed_cards",
+  "unchanged_inheritance": {
+    "96be82213d4c29e4b28e23f19a714e62c648418f532ab0b740fd42966c924fa4": "fcff61531736fb08895d8d9f2ca33df62d3b2b179f0a44acb01464480f1159f7",
+    "8102d3d563af5eff3b803dc8c0a83ae7df76c39e9154c19433930f9abd01e0cf": "7209097e27bff06d663465461df33512a594e6581b0f705e05f3317aab84bc2d",
+    "cf72a2de44ac4e1e815e138ad93f001cbf14992d2736e367087f4629774344cb": "8a9be98fd973041e8c7adaddc4ddadb8b53cd9c3a79447fd9c7730b483a98ab9",
+    "98d0cad924785c072d1dd0d7fbc1fcd1bc34f18260f26df30e563330ee039e94": "402b6ff394bfe4755e19d399dfa6ddabfd2ebe12cc99675541f4cbd9f0e2f0ef",
+    "ff4e2f756ab1d870d97eabd9ada03ce1ce593b4ba131600a830c76546169843e": "6e84bb128a36f9b0816942e0cfcad6ae9df400328676910a418da9577b9f969e",
+    "050db19211d4d9985dee8becfc9d27f09150cab38599dbad0b686500a8219f73": "0657706f203cb5e7de723ac02be11a5ac7717bf2d651fec9dda9512f4da33537",
+    "ec9d78e928c11938a622c698fdce288772020d143a5731f051dc79bf664a4856": "0540b470033a08b520d864a98f4e96dd3d0bb305245e915c4b95c3b9654c190c",
+    "c54d13fc3a2d68ed4119f7174fdffb1ab12f3e9c881bd88075a9c17fd72a2dde": "1f4e78082a8ee635b0ad4fd6b30f45b6e13a6e3e46d1694a42b5c35fa0fcc08e",
+    "c57c018707402e1ee3408ff74336c15efa870f6fec1ba3aea55f54c7a03b4780": "79a1947da5e4ff18dca6d94f2ddeac427f5c30c33955ca4024016359f841cdad",
+    "6b7056ec4388ca6de50030ecca94f7074d2bfaad27d0d17e57c72cecf5d4ced4": "65c6a2cb9f62f4eb602af3dace33f3967d2fc326931a10c870ae8dcaddd044d6",
+    "141fe52ac9d42efcef8753a785c9ad428b22ced086aeb8618bd511d07b3d3d93": "8fae5d45bdea35428fe29360e8e913ac7c916ff7d2a833ca8b8194d16d5fc2b2"
+  },
+  "publication_allowed": false
+}

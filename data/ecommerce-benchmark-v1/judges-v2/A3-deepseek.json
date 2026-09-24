@@ -1,0 +1,184 @@
+{
+  "status": "complete",
+  "mapping": {
+    "A": "cheap_with",
+    "B": "cheap_without",
+    "C": "frontier_without",
+    "D": "frontier_with"
+  },
+  "judge_model": "deepseek-flash",
+  "output": {
+    "reviews": [
+      {
+        "label": "A",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 3,
+          "actionability": 4,
+          "uncertainty_and_questions": 4,
+          "prioritization": 4
+        },
+        "strengths": [
+          "Accurate funnel math: AOV $90 both periods, conversion 3.0% to 2.0%, checkout completion 50%, mobile decline correctly identified.",
+          "Uses brand facts and constraints well: free shipping is not framed as a new discount, no waterproof/15-inch claims, no fabricated reviews.",
+          "Provides three usable plain-spoken emails with subject lines, body copy, timing, trigger, purchase suppression, consent, and QA.",
+          "Good uncertainty: explicitly says no deployment, notes missing data, and asks useful integration/founder/SMS questions."
+        ],
+        "issues": [
+          "Does not explicitly resolve collision with the existing Klaviyo checkout-abandonment flow (one 24-hour email); duplicates could occur unless that flow is paused or replaced.",
+          "Some analytics commentary is broader than the flow task, though it is factually grounded."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Three actual messages, no unauthorized discount or fake scarcity.",
+            "met": true,
+            "reason": "Three emails with concrete subjects/bodies; states no discount and avoids countdown/reserved-stock claims."
+          },
+          {
+            "criterion": "Started Checkout separate from Added to Cart; purchase suppression and reentry/overlap checks.",
+            "met": true,
+            "reason": "Uses Started Checkout, distinguishes Added to Cart, adds Placed Order suppression and 7-day reentry testing, but does not explicitly retire the existing checkout flow."
+          },
+          {
+            "criterion": "Confirm current integration event names and settings before publication; no claim of deployment.",
+            "met": true,
+            "reason": "Says verify Klaviyo metric name and that no deployment is possible; draft/configuration only."
+          }
+        ]
+      },
+      {
+        "label": "B",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 3,
+          "actionability": 3,
+          "uncertainty_and_questions": 4,
+          "prioritization": 4
+        },
+        "strengths": [
+          "Correctly calculates 500 current checkout-abandon sessions, 600 previous, flat 50% checkout completion, and flat $90 AOV.",
+          "Three actual no-discount emails; addresses fit, rain, delivery, returns without prohibited claims.",
+          "Includes consent eligibility, purchase suppression, reentry suppression, campaign/welcome collision, and a useful QA checklist.",
+          "Marks draft-only status and asks relevant consent/spec/welcome-suppression questions."
+        ],
+        "issues": [
+          "Does not explicitly address the existing checkout-abandonment flow; without pausing/replacing it, duplicate sends are possible.",
+          "Event-name verification is less explicit than A/C/D; it assumes Shopify Started Checkout and Placed Order events are available.",
+          "Email subjects lean on 'cart' rather than checkout, a minor precision issue for a checkout-stage flow."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Three actual messages, no unauthorized discount or fake scarcity.",
+            "met": true,
+            "reason": "Three emails; explicitly says no discount and uses no fake urgency."
+          },
+          {
+            "criterion": "Started Checkout separate from Added to Cart; purchase suppression and reentry/overlap checks.",
+            "met": true,
+            "reason": "Started Checkout trigger, Placed Order suppression, 30-day reentry, Added to Cart noted separately; existing checkout flow overlap is not resolved."
+          },
+          {
+            "criterion": "Confirm current integration event names and settings before publication; no claim of deployment.",
+            "met": true,
+            "reason": "Draft-only warning and seed-test QA; event-name verification is implied via trigger test but not stated as strongly as in C/D."
+          }
+        ]
+      },
+      {
+        "label": "C",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 4,
+          "prioritization": 4
+        },
+        "strengths": [
+          "Three complete, restrained emails with subject lines, conditional DAY18 copy, no discount, and no fake scarcity.",
+          "Correctly handles Started Checkout trigger, purchase suppression, reentry, consent, and flow collisions, including replacing the existing 24-hour checkout reminder.",
+          "Strong QA: tests purchase-before-send, repeat checkout, consent, missing recovery URLs, campaign/welcome exclusions, and inventory coverage.",
+          "Correctly calculates DAY18 cover (210 ÷ 8 = 26.25 days) and the 70-unit gap at 35 days; treats timings as hypotheses."
+        ],
+        "issues": [
+          "Timing wording ('24 hours later: another 22-hour delay') could be read ambiguously, though context indicates delays from the triggering checkout event.",
+          "Includes inventory analysis beyond the strict email-flow ask, but it is relevant to the cash constraint."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Three actual messages, no unauthorized discount or fake scarcity.",
+            "met": true,
+            "reason": "Three emails with real copy; no discount and no fabricated urgency or scarcity."
+          },
+          {
+            "criterion": "Started Checkout separate from Added to Cart; purchase suppression and reentry/overlap checks.",
+            "met": true,
+            "reason": "Started Checkout trigger, Placed Order suppression, reentry checks, and explicit replacement of existing checkout flow/campaign collisions."
+          },
+          {
+            "criterion": "Confirm current integration event names and settings before publication; no claim of deployment.",
+            "met": true,
+            "reason": "Draft for review; instructs confirming actual metric/payload and settings before activation."
+          }
+        ]
+      },
+      {
+        "label": "D",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 4,
+          "prioritization": 4
+        },
+        "strengths": [
+          "Three complete plain-spoken emails with conditional DAY18 copy; no discount, no fabricated testimonials, no scarcity.",
+          "Very precise flow mechanics: Started Checkout trigger, Placed Order suppression before every send, 14-day reentry, consent rechecks, and existing-flow retirement.",
+          "Handles collisions thoroughly: existing checkout reminder, duplicate Shopify automations, campaigns, welcome flow, future cart/browse flows, and frequency guards.",
+          "Correct inventory math: 210 ÷ 8 = 26.25 days, approximately 8.75-day gap versus 35-day replenishment; cautious about attribution and holdout limits."
+        ],
+        "issues": [
+          "Email 3 at +49 hours is a clear starting choice rather than a 72-hour closer; not an error, but it is a timing choice worth testing.",
+          "No major operational gaps identified."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Three actual messages, no unauthorized discount or fake scarcity.",
+            "met": true,
+            "reason": "Three emails with concrete subjects/bodies; explicitly avoids discounts, countdowns, reserved-stock claims, and unapproved incentives."
+          },
+          {
+            "criterion": "Started Checkout separate from Added to Cart; purchase suppression and reentry/overlap checks.",
+            "met": true,
+            "reason": "Explicit Started Checkout trigger, Added to Cart kept separate, Placed Order suppression, 14-day reentry, and existing-flow/campaign collision handling."
+          },
+          {
+            "criterion": "Confirm current integration event names and settings before publication; no claim of deployment.",
+            "met": true,
+            "reason": "Says 'not deployed,' instructs confirming actual metric/payload, and treats recovery links/product fields as unverified."
+          }
+        ]
+      }
+    ],
+    "ranking": [
+      "D",
+      "C",
+      "A",
+      "B"
+    ],
+    "summary": "D and C are the strongest: both provide complete three-email checkout-abandonment drafts with accurate math, no unauthorized discount, explicit purchase suppression, consent eligibility, and—crucially—handling for the existing 24-hour checkout flow and other overlaps. A is factually strong and useful, but misses the explicit existing-checkout-flow replacement; B is also solid but less explicit on event verification and existing-flow collision, and its copy leans slightly cart-oriented."
+  },
+  "request_id": "34bcc8712edec4253930e666a0d6a2ff45db107125d28fad13125008ced875dc",
+  "cost_upper_estimate_usd": 0.0292821
+}

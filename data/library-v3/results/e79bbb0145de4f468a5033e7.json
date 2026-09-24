@@ -1,0 +1,315 @@
+{
+  "cards": [
+    {
+      "title": "Treat Leaky Abstractions as Likely Edge-Case Holes in Store Code",
+      "summary": "An abstraction that hides HTTP method details still forces developers to know them, so unmapped methods like HEAD slip through as unhandled cases.",
+      "use_when": "Reviewing or building shared ecommerce code (library, middleware, internal SDK) that wraps HTTP requests between storefront, checkout, fulfillment or third-party integrations.",
+      "steps": [
+        "Map every case the abstraction claims to handle versus every case the underlying layer can actually deliver. The source's example: the abstraction was written for GET and POST, but HEAD requests still reached the developer's code, which had no case for them and was never told to write one.",
+        "Before releasing a wrapper, enumerate all possible inputs (HTTP methods, parameter types, content types) and confirm each has an explicit branch or an explicit rejection — not an implicit fall-through.",
+        "Treat any abstraction with many edge cases as 'leaky' and prefer exposing the essential cases explicitly rather than one clever catch-all that mostly works.",
+        "If you cannot avoid a leaky wrapper (e.g., a framework's middleware signature), document the hidden requirement loudly in the wrapper so callers don't silently drop it."
+      ],
+      "caveats": [
+        "The source presents this as experience-based taste, not a hard rule; everything here is framed as a trade-off, so apply judgment to each wrapper rather than banning abstraction outright.",
+        "The $25K loss mentioned is an illustrative anecdote, not a benchmark you can rely on."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "code-review",
+        "integrations",
+        "maintainability",
+        "defensive-coding",
+        "checkout"
+      ],
+      "id": "ba831619923db9063190ff35",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 23
+    },
+    {
+      "title": "Reduce Component Interactions, Not Just Component Count",
+      "summary": "Security risk grows with how many things a new component can interact with, not just how many components you add.",
+      "use_when": "Scoping a new storefront integration, payment provider connection, fulfillment hook, or automation connector before adding it to the ecommerce stack.",
+      "steps": [
+        "For each proposed addition, ask 'how many existing components can this interact with?' rather than 'how many components am I adding?'",
+        "If a new store component or third-party integration could reach 500 other services (e.g., a generic webhook or admin API key with broad scope), treat the change as high-risk and isolate it.",
+        "Design the addition so it talks to as few things as possible — e.g., scope a fulfillment or inventory integration to only the endpoints it needs, so a compromise has a limited blast radius.",
+        "Count interaction paths, not surface area: 1 component touching 1 is far less scary than 1 touching everything."
+      ],
+      "caveats": [
+        "The '500 components' figure is the source's illustrative example, not a measured threshold."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "architecture",
+        "integrations",
+        "least-privilege",
+        "fulfillment"
+      ],
+      "id": "47019286e6cf3be2ce9cab62",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 23
+    },
+    {
+      "title": "Use Explicit Code Over Clever Code in Security-Relevant Paths",
+      "summary": "Verbose, dumb-looking code you can still understand months later is safer than a clever one-liner no one can audit.",
+      "use_when": "Writing or reviewing checkout, auth, payment or PII-handling code where future maintainers must be able to verify behavior.",
+      "steps": [
+        "Unroll clever one-liners into plain sequential steps (do this, then this, then this) so the flow is auditable, even if it looks uglier.",
+        "Prefer obvious control flow over packed functionality; the source notes that writing less clever code tends to happen as engineers are bitten by clever code they can't re-read a month later.",
+        "Treat 'hard to understand' as a defect in any code path that touches money, credentials or user data, because obscurity is not security.",
+        "Do not rely on making code hard to read as a defense — the source explicitly rejects security through obscurity."
+      ],
+      "caveats": [
+        "The source treats this as career-acquired taste and a trade-off, not a universal coding mandate."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "code-review",
+        "checkout",
+        "defensive-coding",
+        "maintainability"
+      ],
+      "id": "613fd4e14efdf0fb2d924715",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 23
+    },
+    {
+      "title": "Fail Early on Unexpected State; Handle Expected Errors Gracefully",
+      "summary": "Crash on exceptions you didn't anticipate, but return normal error responses for errors your code explicitly expects.",
+      "use_when": "Deciding how a store's server should behave when errors occur — e.g., product lookups, cart operations, payment callbacks.",
+      "steps": [
+        "Distinguish expected from unexpected errors. Example from the source: a user-typed URL for a nonexistent user ID is an expected failure — return a 404 and keep the server running.",
+        "For unexpected exceptions (e.g., an uncaught exception in the middle of a multi-step process), do not just log and continue; the source argues you can't know what state you left behind and what cleanup was skipped.",
+        "Let the process crash and be restarted by a supervisor, and run multiple instances so crashes don't cause user-visible downtime.",
+        "Verify your server actually restarts on crash (process manager or orchestrator) before relying on this pattern."
+      ],
+      "caveats": [
+        "The source explicitly refines its own earlier advice: crashing is for unexpected errors, not for expected, handled ones like a missing resource."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "error-handling",
+        "availability",
+        "checkout",
+        "defensive-coding"
+      ],
+      "id": "633153c6724dedb4944b5f20",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 23
+    },
+    {
+      "title": "Assume Inputs Are Wrong: Verify Assumptions at the Top of Each Function",
+      "summary": "Code defensively by validating function arguments and request data up front rather than assuming they match what you expect.",
+      "use_when": "Building any store endpoint or handler — product search, discount application, admin actions — that trusts request parameters.",
+      "steps": [
+        "Do not assume a function is called with the correct arguments; validate the arguments and the request payload at the start of the handler.",
+        "Validate type and shape explicitly. In the source demo, the handler checked that a required field existed and that a type field was one of a small allowed set before proceeding.",
+        "After validation, the rest of the handler can proceed on the assumption that inputs are in the expected state (fail fast, then continue confidently).",
+        "For security-relevant values (IDs, amounts, resource names), verify the assumption rather than trusting caller-provided types."
+      ],
+      "caveats": [
+        "Defensive validation reduces but does not remove risk; the source presents it as one of several trade-off-based lessons, not a guarantee."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "input-validation",
+        "defensive-coding",
+        "checkout",
+        "api-design"
+      ],
+      "id": "fbdd4166ffd478219c49b95d",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 23
+    },
+    {
+      "title": "Reject APIs Whose Insecure Path Is the Easy Path",
+      "summary": "If a function only works securely when you pass a pile of options, most callers will be insecure by default.",
+      "use_when": "Choosing or wrapping third-party libraries and SDKs for a store — payment processors, auth providers, encryption helpers, bot-defense tools.",
+      "steps": [
+        "Check the defaults: does calling the function with no options produce secure, sensible behavior? If not, treat it as a footgun.",
+        "If you must use it, wrap it in your own function whose defaults are secure, so store developers can't accidentally invoke the unsafe path.",
+        "Also flag polymorphic signatures — functions that do different things based on argument type or count — as harder to use correctly, especially in loosely typed languages, and prefer explicit alternatives where available."
+      ],
+      "caveats": [
+        "The source presents this as an opinion about good design, not a universal rule; some widely used libraries (jQuery, Node buffers, Express middleware) violate it, so any workaround must be tested against the specific version."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "api-design",
+        "integrations",
+        "secure-defaults",
+        "dependency-review"
+      ],
+      "id": "0021606dab420a68f12673df",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 23
+    },
+    {
+      "title": "Watch for Hidden Behavioral Switches in Function Signatures",
+      "summary": "Some frameworks change a function's entire behavior based on argument count, so an 'unused' argument can be load-bearing.",
+      "use_when": "Reviewing or refactoring middleware, hooks or plugin functions in a store's web framework where behavior depends on signature shape.",
+      "steps": [
+        "Treat argument count as part of the contract in frameworks that use it. The source's example: an Express middleware becomes error-handling middleware specifically when it takes four arguments, including an otherwise-unused error parameter.",
+        "Do not delete 'unused' parameters during cleanup — removing them can silently change a handler from error-handling to a normal middleware, breaking error flow.",
+        "When adding middleware (e.g., CSRF token validation on POST), confirm exactly how the framework routes requests through it and which signature triggers which path.",
+        "Verify behavior against the framework's current documentation, since this interface can change between versions."
+      ],
+      "caveats": [
+        "Express's behavior is described as of the source's version; verify the current interface before relying on the exact argument-count rule."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "api-design",
+        "web-framework",
+        "csrf",
+        "code-review"
+      ],
+      "id": "b7d4c72be09ca227cb516680",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 23
+    },
+    {
+      "title": "Secure Binary/Buffer Encoding Endpoints Against Memory Disclosure",
+      "summary": "Constructing a buffer from a numeric input can allocate uninitialized memory and return stale process data, including secrets.",
+      "use_when": "Building or auditing any store endpoint that handles binary data, encoding/conversion, or user-supplied buffer-like inputs.",
+      "steps": [
+        "Do not build buffers from unvalidated user input where a number could be mistaken for a size. The source demo: passing a JSON number instead of a string caused the process to allocate memory that was never zeroed, and the response contained leftover process memory, potentially including credentials.",
+        "Validate the type and length of encoding inputs explicitly (e.g., allow only string data of bounded length for hex/base64 conversion) and reject unexpected types.",
+        "Prefer current, non-deprecated buffer/typed-array APIs and verify their initialization behavior against current documentation; when in doubt, zero or explicitly fill the buffer.",
+        "Treat this class of bug as a memory-disclosure risk — the source notes it resembles Heartbleed-style leaks, where repeated requests can eventually expose a server's TLS key."
+      ],
+      "caveats": [
+        "The source's demo used a then-current Node Buffer constructor; the specific API may be deprecated now, so confirm against the current runtime.",
+        "Everything here must be validated only on systems you own and are authorized to test."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "memory-safety",
+        "input-validation",
+        "api-design",
+        "testing"
+      ],
+      "id": "e9b008698c7ab582f2c81249",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 23
+    },
+    {
+      "title": "Never Bind Servers to All Interfaces by Default",
+      "summary": "A listen call without an explicit address can expose the service to every machine that can reach the host.",
+      "use_when": "Deploying or configuring any store service — API, admin panel, internal tool — where bind address and exposure matter.",
+      "steps": [
+        "Check every server start: if you omit an address/host argument, the service may listen on all interfaces, meaning anyone who can reach the host's IP can connect.",
+        "For local-only or private services, bind explicitly to localhost/loopback.",
+        "For public services, restrict which interfaces are exposed and combine with network controls (firewall, private subnet, auth) rather than relying on the bind address alone.",
+        "Confirm the current bind and default behavior of your framework and platform, since defaults differ across languages and hosting environments."
+      ],
+      "caveats": [
+        "The source notes the unsafe default surprised it; the specific default depends on runtime and version, so always verify."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "deployment",
+        "network-security",
+        "secure-defaults"
+      ],
+      "id": "c6d9f612cf285de6bc213f9d",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 23
+    },
+    {
+      "title": "Add CSRF Validation Centrally for State-Changing Requests",
+      "summary": "Route-wide middleware that checks CSRF tokens on state-changing methods is the pattern the source cites for validating requests globally.",
+      "use_when": "Securing store forms and state-changing endpoints — checkout submission, cart mutation, account changes, admin actions.",
+      "steps": [
+        "Implement a middleware that runs before every request and validates a CSRF token when the request is a state-changing method (e.g., POST).",
+        "Apply it globally rather than per-route so no new endpoint forgets the check.",
+        "Use the same layer for other cross-cutting checks (logging, token verification) and only pass the request onward when valid.",
+        "Verify current framework guidance on token issuance, SameSite cookies and rotation, since these mechanisms evolve."
+      ],
+      "caveats": [
+        "The source mentions CSRF in passing as an example; it does not provide a complete CSRF implementation, and CSRF protection is one layer and not a full defense."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "csrf",
+        "web-framework",
+        "checkout",
+        "authentication"
+      ],
+      "id": "b8c4d4acd19f74d5b3223745",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 23
+    },
+    {
+      "title": "Use Strongly Typed Checks to Force Exhaustive Case Handling",
+      "summary": "A compiler that errors on unhandled cases prevents the class of bug where a developer handles only some input variants.",
+      "use_when": "Choosing languages or tooling for store components that branch on request type, payment status or order state where missing a case is costly.",
+      "steps": [
+        "Where the risk of an unhandled case is high (e.g., payment callbacks with many statuses), consider a strongly typed language that produces a compile-time error if a case is missed.",
+        "Weigh the trade-off: the source acknowledges stronger typing can slow development and teams often choose loosely typed languages deliberately.",
+        "If you stay in a loosely typed language, compensate with explicit runtime validation and tests covering each branch instead of clever introspection.",
+        "Avoid hacky runtime introspection of source code (e.g., parsing a function's string form to check handling) — the source explicitly does not recommend it."
+      ],
+      "caveats": [
+        "The source frames strong typing as one possible mitigation and a trade-off, not a required choice."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "language-choice",
+        "type-safety",
+        "code-review",
+        "payment-integration"
+      ],
+      "id": "4826df0e2362ffcc30004823",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 23
+    }
+  ],
+  "request_id": "38f5370b6583fb456450bccc32c5ba2a2064d89ae3bd7312e206a7eaa3b47c12",
+  "ecommerce_scope_version": 1
+}

@@ -1,0 +1,285 @@
+{
+  "request_id": "606a934bbd94a0737ab4f50788cacdadda3fef980548e3c4249900e44ef9fae8",
+  "provider": "deepseek",
+  "model": "deepseek-flash",
+  "effort": "none",
+  "completion_limit": 16384,
+  "usage": {
+    "prompt_tokens": 3060,
+    "completion_tokens": 2947,
+    "total_tokens": 6007,
+    "prompt_tokens_details": {
+      "cached_tokens": 512
+    },
+    "prompt_cache_hit_tokens": 512,
+    "prompt_cache_miss_tokens": 2548
+  },
+  "booked_cost_usd": 0.0044544,
+  "seconds": 15.56,
+  "finish_reason": "stop",
+  "output": {
+    "cards": [
+      {
+        "title": "Write descriptive alt text that serves accessibility and image SEO",
+        "summary": "How to write and apply natural-language alt text to product images so visually impaired shoppers and search engines can understand them.",
+        "use_when": "You are finalizing product or lifestyle images on a PDP, collection page or homepage and need to set alt text.",
+        "steps": [
+          "Write alt text that describes exactly what is in the image in natural language, as a screen-reader user would need it: 'Men wearing a black sports backpack outdoors.'",
+          "Include the product category plus visible attributes and the view/angle: 'Closeup of padded shoulder straps on a black sports backpack' or 'Side view of black sports backpack.'",
+          "Avoid stuffing the field with ad copy or keyword strings like 'leather wallet man black buy cheap' — the source says this is the wrong way, though still better than an empty alt field.",
+          "To scale across many images, draft a prompt for an AI tool that takes product name, visible characteristics and a list of angles, then generate one alt text per angle.",
+          "Paste each result into the image's alt text field (in Shopify, open the image in the editor's alt text field, or edit from Content and Files / media library) and save.",
+          "Verify in the live page source that the alt attribute is attached to the image element.",
+          "Applying alt text to every image is optional best practice per the source, not a speed factor — prioritize it when accessibility and image search matter for your catalog."
+        ],
+        "caveats": [
+          "The source frames this as important for visually impaired users and for Google indexing, not as a page-speed win.",
+          "AI-generated alt text must be checked against the actual image; inaccurate descriptions mislead screen-reader users."
+        ],
+        "tags": [
+          "speed",
+          "alt-text",
+          "image-seo",
+          "accessibility",
+          "product-page",
+          "shopify",
+          "image-optimization"
+        ]
+      },
+      {
+        "title": "Match alt text to image angle for multi-image product galleries",
+        "summary": "Generate distinct alt text for each angle in a product gallery rather than repeating one description.",
+        "use_when": "You have several images per product (front, back, detail, lifestyle) and are populating alt fields for a PDP gallery.",
+        "steps": [
+          "List the angles you actually shoot for the product — for a backpack: front view, back view, front detail, top detail, lifestyle on shoulder.",
+          "Supply product name, visible characteristics (color, water resistance) and that angle list to your AI alt-text prompt so each output maps to one image.",
+          "Work through the gallery image by image, pasting the matching alt text into each image and saving.",
+          "Use the same angle-first approach when reordering gallery images so the main image, alternate angle, detail shots and lifestyle shots each carry a suitably descriptive alt string.",
+          "Re-open the live PDP and inspect each image element to confirm every image has its own alt text rather than a duplicated default."
+        ],
+        "caveats": [
+          "The source's angle list is an example for one backpack, not a fixed gallery structure; derive angles from what your own images show.",
+          "Some platforms auto-fill alt text from the filename, so verify overrides actually saved."
+        ],
+        "tags": [
+          "speed",
+          "alt-text",
+          "product-page",
+          "image-optimization",
+          "shopify",
+          "merchandising"
+        ]
+      },
+      {
+        "title": "Resize images to just above their display box",
+        "summary": "Fix oversized images by resizing them to roughly the box they render in plus 100–300px, not the source file's original dimensions.",
+        "use_when": "You inspect a PDP, hero banner or content section and find the image's intrinsic size far exceeds the size it is displayed at.",
+        "steps": [
+          "Right-click the image in the browser and choose Inspect to read its rendered/intrinsic dimensions against the box it occupies.",
+          "Note the display box width — e.g. a section image shown in a 700px box.",
+          "Set the new width to the box size plus 100–300px (e.g. ~1,000px for a 700px box) so the image is neither blurry nor oversized.",
+          "In the theme customizer, open the section holding the image, click Edit on the uploaded asset, use the native editor's resize function, enter the new width and apply.",
+          "Refresh the page and visually confirm the image looks the same as before.",
+          "Use the same logic for hero banners: an image 5,712px wide shown in a site capped around 2,000–3,000px can be resized down with no visible change.",
+          "Target no more than a few hundred KB per image where possible — resizing alone may still leave a 1MB file that needs compression."
+        ],
+        "caveats": [
+          "The native Shopify resize tool reduces dimensions but gives no compression control, so compressing with a separate tool afterward is still required.",
+          "The 100–300px overshoot is the source's rule of thumb to avoid blur, not a tested universal threshold."
+        ],
+        "tags": [
+          "speed",
+          "image-optimization",
+          "product-page",
+          "shopify",
+          "landing-page",
+          "measurement"
+        ]
+      },
+      {
+        "title": "Compress images to keep files small, especially for mobile shoppers",
+        "summary": "Reduce file weight via compression because resizing alone often leaves files too heavy for mobile connections.",
+        "use_when": "Your product, banner or section images are still heavy after resizing, and you want faster downloads for mobile visitors.",
+        "steps": [
+          "Audit image file weights in your media library or via page inspection; the source's practical threshold is to reduce any image larger than 500KB.",
+          "Resize first if dimensions are oversized, then run the file through a compression tool — the source names Tiny SEO and Squash as examples.",
+          "Re-upload the compressed version and confirm the visual result still looks acceptable on the live page.",
+          "Check that the new file size dropped materially — the source's example went from ~1MB after resize to roughly 100KB when compressed.",
+          "Treat image compression as user-experience work that can also support conversion rate, per the source, rather than only a technical chore."
+        ],
+        "caveats": [
+          "Compressing too aggressively can visibly degrade image quality; the source does not specify a quality setting.",
+          "The source presents conversion-rate improvement as a possibility tied to better UX, not a measured benchmark.",
+          "Compression tools and their interfaces change — verify current options before relying on named tools."
+        ],
+        "tags": [
+          "speed",
+          "image-optimization",
+          "compression",
+          "mobile",
+          "product-page",
+          "shopify",
+          "conversion-optimization"
+        ]
+      },
+      {
+        "title": "Pick the right image format and swap GIFs for MP4",
+        "summary": "Use JPEG/PNG for still images and MP4 for animation because they load faster.",
+        "use_when": "You are preparing product, banner or content imagery for upload to a storefront.",
+        "steps": [
+          "Upload stills as JPEG or PNG and let the platform (the source cites Shopify) handle conversion to modern formats like WebP.",
+          "Replace animated GIFs with MP4 video, which the source says are better and load faster.",
+          "Confirm what your platform auto-converts before doing extra format work yourself, since this reduces the value of manual conversion.",
+          "Pair format choice with resizing and compression rather than treating format alone as the fix — the source warns that bad results follow if you upload without resizing or cropping."
+        ],
+        "caveats": [
+          "The source's WebP auto-conversion claim is a Shopify behavior that may not apply to other platforms; verify your own pipeline.",
+          "Format choice will not rescue files that are still huge in dimension or weight."
+        ],
+        "tags": [
+          "speed",
+          "image-optimization",
+          "file-format",
+          "shopify",
+          "product-page",
+          "video"
+        ]
+      },
+      {
+        "title": "Name image files descriptively before upload",
+        "summary": "Give each image a meaningful filename so search engines can categorize it correctly.",
+        "use_when": "You are about to upload product or content images to your store and are naming the files on your computer.",
+        "steps": [
+          "Rename files to describe what is in the image instead of keeping camera-generated or random names.",
+          "Include the product/category and distinguishing attributes (e.g. color or view) so the filename communicates content.",
+          "Upload only after renaming, since post-upload filename changes may not carry through cleanly.",
+          "Pair descriptive filenames with descriptive alt text — the source lists naming, uploading, reordering, alt text and on-site verification as sequential steps."
+        ],
+        "caveats": [
+          "The source treats this as a straightforward SEO benefit without specifying keyword density or length limits.",
+          "Filename alone does not replace alt text for accessibility."
+        ],
+        "tags": [
+          "speed",
+          "image-seo",
+          "image-optimization",
+          "product-page",
+          "shopify"
+        ]
+      },
+      {
+        "title": "Order gallery images to answer customer questions",
+        "summary": "Sequence PDP gallery images — main, alternate angle, details, lifestyle — to match the buyer's questions.",
+        "use_when": "You are uploading and reordering product images in a PDP gallery.",
+        "steps": [
+          "Start with the main image that shows the product clearly.",
+          "Follow with an alternate angle so the buyer can see what the main shot hides.",
+          "Then add detailed shots covering specific features and materials buyers will ask about.",
+          "Finish with lifestyle images showing the product in context — the source suggests generating lifestyle imagery with AI tools like Gemini if your supplier does not provide them.",
+          "Reorder uploaded images so the sequence matches this question-answering flow rather than the order files were captured."
+        ],
+        "caveats": [
+          "The source presents this ordering as its usual convention, not a tested ordering that outperforms alternatives for every category.",
+          "AI-generated lifestyle images should be checked for accuracy against the actual product."
+        ],
+        "tags": [
+          "speed",
+          "product-page",
+          "merchandising",
+          "image-optimization",
+          "creative-strategy",
+          "shopify"
+        ]
+      },
+      {
+        "title": "Run a final image checklist before finishing a store",
+        "summary": "Verify format, size, filenames, alt text and live display before considering product imagery done.",
+        "use_when": "You have finished uploading and editing a batch of store images and want to confirm nothing was missed.",
+        "steps": [
+          "Confirm every image is a JPEG or PNG and that video content is MP4 rather than GIF.",
+          "Confirm each image has been resized and cropped for its layout rather than uploaded straight from a camera.",
+          "Confirm files over 500KB have been compressed through a tool such as Tiny SEO or Squash.",
+          "Confirm filenames are descriptive, alt text has been written, and gallery order follows main → alternate → detail → lifestyle.",
+          "Verify on the live store that images display at the right dimensions and that alt attributes are actually attached, by inspecting image elements.",
+          "Re-check any oversized image found during verification, resize it in the customizer, and refresh the page to confirm it renders identically."
+        ],
+        "caveats": [
+          "This is a workflow checklist from the source, not a guarantee of specific performance gains.",
+          "The 500KB figure is the source's practical threshold for flagging files, not a hard performance ceiling."
+        ],
+        "tags": [
+          "speed",
+          "image-optimization",
+          "quality-assurance",
+          "product-page",
+          "shopify",
+          "measurement"
+        ]
+      },
+      {
+        "title": "Inspect rendered image dimensions to find wasted bandwidth",
+        "summary": "Use browser dev tools to compare an image's intrinsic size to the box it renders in, exposing over-sized assets.",
+        "use_when": "Store pages feel slow or you suspect imagery is heavier than necessary, and you need evidence before optimizing.",
+        "steps": [
+          "Right-click the suspect image on the live page and choose Inspect.",
+          "In the inspector, read the intrinsic dimensions of the image file versus the dimensions of its container.",
+          "Flag large gaps as waste — the source's example found a 5,000px-wide image displayed in a 700px box.",
+          "Also note the file's total weight where visible; the source's example showed a 6MB section image.",
+          "Use the gap to choose the resize target (box width + 100–300px) and then re-check after resizing to confirm the rendered look is unchanged.",
+          "Apply the check beyond hero banners to section images and any repeated visual blocks across the store."
+        ],
+        "caveats": [
+          "Inspector interfaces vary by browser and change over time — verify the current dev tools layout.",
+          "Resizing fixes dimension waste but not compression; a correctly sized file can still be too heavy."
+        ],
+        "tags": [
+          "speed",
+          "measurement",
+          "image-optimization",
+          "product-page",
+          "shopify",
+          "diagnostics"
+        ]
+      },
+      {
+        "title": "Decide whether an image is worth resizing, compressing, or both",
+        "summary": "Separate dimension waste from weight waste so you apply the right fix to each image.",
+        "use_when": "You are triaging a catalog of store images and deciding which optimization each file needs.",
+        "steps": [
+          "If dimensions exceed the display box by a wide margin, resize to roughly box size plus 100–300px.",
+          "After resizing, check the file weight again — the source reduced a hero from 5,000px to 2,700px and still ended near 1MB, which it judged too much.",
+          "If the file remains heavy, compress it; the source estimates the same visual result could come down to about 100KB.",
+          "If a file is already correctly sized but still heavy, skip resizing and compress only.",
+          "If an image is small and correctly sized, leave it and move on to other assets.",
+          "Re-verify visually on the live page after each change so optimization does not degrade the customer's impression of the product."
+        ],
+        "caveats": [
+          "The 100KB estimate is the source's illustration, not a target that every image can or should hit.",
+          "There is no single fix; the source explicitly pairs resizing with compression for the best result."
+        ],
+        "tags": [
+          "speed",
+          "image-optimization",
+          "compression",
+          "diagnostics",
+          "product-page",
+          "shopify"
+        ]
+      }
+    ]
+  },
+  "raw_content": "{\"cards\":[{\"title\": \"Write descriptive alt text that serves accessibility and image SEO\", \"summary\": \"How to write and apply natural-language alt text to product images so visually impaired shoppers and search engines can understand them.\", \"use_when\": \"You are finalizing product or lifestyle images on a PDP, collection page or homepage and need to set alt text.\", \"steps\": [\"Write alt text that describes exactly what is in the image in natural language, as a screen-reader user would need it: 'Men wearing a black sports backpack outdoors.'\", \"Include the product category plus visible attributes and the view/angle: 'Closeup of padded shoulder straps on a black sports backpack' or 'Side view of black sports backpack.'\", \"Avoid stuffing the field with ad copy or keyword strings like 'leather wallet man black buy cheap' — the source says this is the wrong way, though still better than an empty alt field.\", \"To scale across many images, draft a prompt for an AI tool that takes product name, visible characteristics and a list of angles, then generate one alt text per angle.\", \"Paste each result into the image's alt text field (in Shopify, open the image in the editor's alt text field, or edit from Content and Files / media library) and save.\", \"Verify in the live page source that the alt attribute is attached to the image element.\", \"Applying alt text to every image is optional best practice per the source, not a speed factor — prioritize it when accessibility and image search matter for your catalog.\"], \"caveats\": [\"The source frames this as important for visually impaired users and for Google indexing, not as a page-speed win.\", \"AI-generated alt text must be checked against the actual image; inaccurate descriptions mislead screen-reader users.\"], \"tags\": [\"speed\", \"alt-text\", \"image-seo\", \"accessibility\", \"product-page\", \"shopify\", \"image-optimization\"]},{\"title\": \"Match alt text to image angle for multi-image product galleries\", \"summary\": \"Generate distinct alt text for each angle in a product gallery rather than repeating one description.\", \"use_when\": \"You have several images per product (front, back, detail, lifestyle) and are populating alt fields for a PDP gallery.\", \"steps\": [\"List the angles you actually shoot for the product — for a backpack: front view, back view, front detail, top detail, lifestyle on shoulder.\", \"Supply product name, visible characteristics (color, water resistance) and that angle list to your AI alt-text prompt so each output maps to one image.\", \"Work through the gallery image by image, pasting the matching alt text into each image and saving.\", \"Use the same angle-first approach when reordering gallery images so the main image, alternate angle, detail shots and lifestyle shots each carry a suitably descriptive alt string.\", \"Re-open the live PDP and inspect each image element to confirm every image has its own alt text rather than a duplicated default.\"], \"caveats\": [\"The source's angle list is an example for one backpack, not a fixed gallery structure; derive angles from what your own images show.\", \"Some platforms auto-fill alt text from the filename, so verify overrides actually saved.\"], \"tags\": [\"speed\", \"alt-text\", \"product-page\", \"image-optimization\", \"shopify\", \"merchandising\"]},{\"title\": \"Resize images to just above their display box\", \"summary\": \"Fix oversized images by resizing them to roughly the box they render in plus 100–300px, not the source file's original dimensions.\", \"use_when\": \"You inspect a PDP, hero banner or content section and find the image's intrinsic size far exceeds the size it is displayed at.\", \"steps\": [\"Right-click the image in the browser and choose Inspect to read its rendered/intrinsic dimensions against the box it occupies.\", \"Note the display box width — e.g. a section image shown in a 700px box.\", \"Set the new width to the box size plus 100–300px (e.g. ~1,000px for a 700px box) so the image is neither blurry nor oversized.\", \"In the theme customizer, open the section holding the image, click Edit on the uploaded asset, use the native editor's resize function, enter the new width and apply.\", \"Refresh the page and visually confirm the image looks the same as before.\", \"Use the same logic for hero banners: an image 5,712px wide shown in a site capped around 2,000–3,000px can be resized down with no visible change.\", \"Target no more than a few hundred KB per image where possible — resizing alone may still leave a 1MB file that needs compression.\"], \"caveats\": [\"The native Shopify resize tool reduces dimensions but gives no compression control, so compressing with a separate tool afterward is still required.\", \"The 100–300px overshoot is the source's rule of thumb to avoid blur, not a tested universal threshold.\"], \"tags\": [\"speed\", \"image-optimization\", \"product-page\", \"shopify\", \"landing-page\", \"measurement\"]},{\"title\": \"Compress images to keep files small, especially for mobile shoppers\", \"summary\": \"Reduce file weight via compression because resizing alone often leaves files too heavy for mobile connections.\", \"use_when\": \"Your product, banner or section images are still heavy after resizing, and you want faster downloads for mobile visitors.\", \"steps\": [\"Audit image file weights in your media library or via page inspection; the source's practical threshold is to reduce any image larger than 500KB.\", \"Resize first if dimensions are oversized, then run the file through a compression tool — the source names Tiny SEO and Squash as examples.\", \"Re-upload the compressed version and confirm the visual result still looks acceptable on the live page.\", \"Check that the new file size dropped materially — the source's example went from ~1MB after resize to roughly 100KB when compressed.\", \"Treat image compression as user-experience work that can also support conversion rate, per the source, rather than only a technical chore.\"], \"caveats\": [\"Compressing too aggressively can visibly degrade image quality; the source does not specify a quality setting.\", \"The source presents conversion-rate improvement as a possibility tied to better UX, not a measured benchmark.\", \"Compression tools and their interfaces change — verify current options before relying on named tools.\"], \"tags\": [\"speed\", \"image-optimization\", \"compression\", \"mobile\", \"product-page\", \"shopify\", \"conversion-optimization\"]},{\"title\": \"Pick the right image format and swap GIFs for MP4\", \"summary\": \"Use JPEG/PNG for still images and MP4 for animation because they load faster.\", \"use_when\": \"You are preparing product, banner or content imagery for upload to a storefront.\", \"steps\": [\"Upload stills as JPEG or PNG and let the platform (the source cites Shopify) handle conversion to modern formats like WebP.\", \"Replace animated GIFs with MP4 video, which the source says are better and load faster.\", \"Confirm what your platform auto-converts before doing extra format work yourself, since this reduces the value of manual conversion.\", \"Pair format choice with resizing and compression rather than treating format alone as the fix — the source warns that bad results follow if you upload without resizing or cropping.\"], \"caveats\": [\"The source's WebP auto-conversion claim is a Shopify behavior that may not apply to other platforms; verify your own pipeline.\", \"Format choice will not rescue files that are still huge in dimension or weight.\"], \"tags\": [\"speed\", \"image-optimization\", \"file-format\", \"shopify\", \"product-page\", \"video\"]},{\"title\": \"Name image files descriptively before upload\", \"summary\": \"Give each image a meaningful filename so search engines can categorize it correctly.\", \"use_when\": \"You are about to upload product or content images to your store and are naming the files on your computer.\", \"steps\": [\"Rename files to describe what is in the image instead of keeping camera-generated or random names.\", \"Include the product/category and distinguishing attributes (e.g. color or view) so the filename communicates content.\", \"Upload only after renaming, since post-upload filename changes may not carry through cleanly.\", \"Pair descriptive filenames with descriptive alt text — the source lists naming, uploading, reordering, alt text and on-site verification as sequential steps.\"], \"caveats\": [\"The source treats this as a straightforward SEO benefit without specifying keyword density or length limits.\", \"Filename alone does not replace alt text for accessibility.\"], \"tags\": [\"speed\", \"image-seo\", \"image-optimization\", \"product-page\", \"shopify\"]},{\"title\": \"Order gallery images to answer customer questions\", \"summary\": \"Sequence PDP gallery images — main, alternate angle, details, lifestyle — to match the buyer's questions.\", \"use_when\": \"You are uploading and reordering product images in a PDP gallery.\", \"steps\": [\"Start with the main image that shows the product clearly.\", \"Follow with an alternate angle so the buyer can see what the main shot hides.\", \"Then add detailed shots covering specific features and materials buyers will ask about.\", \"Finish with lifestyle images showing the product in context — the source suggests generating lifestyle imagery with AI tools like Gemini if your supplier does not provide them.\", \"Reorder uploaded images so the sequence matches this question-answering flow rather than the order files were captured.\"], \"caveats\": [\"The source presents this ordering as its usual convention, not a tested ordering that outperforms alternatives for every category.\", \"AI-generated lifestyle images should be checked for accuracy against the actual product.\"], \"tags\": [\"speed\", \"product-page\", \"merchandising\", \"image-optimization\", \"creative-strategy\", \"shopify\"]},{\"title\": \"Run a final image checklist before finishing a store\", \"summary\": \"Verify format, size, filenames, alt text and live display before considering product imagery done.\", \"use_when\": \"You have finished uploading and editing a batch of store images and want to confirm nothing was missed.\", \"steps\": [\"Confirm every image is a JPEG or PNG and that video content is MP4 rather than GIF.\", \"Confirm each image has been resized and cropped for its layout rather than uploaded straight from a camera.\", \"Confirm files over 500KB have been compressed through a tool such as Tiny SEO or Squash.\", \"Confirm filenames are descriptive, alt text has been written, and gallery order follows main → alternate → detail → lifestyle.\", \"Verify on the live store that images display at the right dimensions and that alt attributes are actually attached, by inspecting image elements.\", \"Re-check any oversized image found during verification, resize it in the customizer, and refresh the page to confirm it renders identically.\"], \"caveats\": [\"This is a workflow checklist from the source, not a guarantee of specific performance gains.\", \"The 500KB figure is the source's practical threshold for flagging files, not a hard performance ceiling.\"], \"tags\": [\"speed\", \"image-optimization\", \"quality-assurance\", \"product-page\", \"shopify\", \"measurement\"]},{\"title\": \"Inspect rendered image dimensions to find wasted bandwidth\", \"summary\": \"Use browser dev tools to compare an image's intrinsic size to the box it renders in, exposing over-sized assets.\", \"use_when\": \"Store pages feel slow or you suspect imagery is heavier than necessary, and you need evidence before optimizing.\", \"steps\": [\"Right-click the suspect image on the live page and choose Inspect.\", \"In the inspector, read the intrinsic dimensions of the image file versus the dimensions of its container.\", \"Flag large gaps as waste — the source's example found a 5,000px-wide image displayed in a 700px box.\", \"Also note the file's total weight where visible; the source's example showed a 6MB section image.\", \"Use the gap to choose the resize target (box width + 100–300px) and then re-check after resizing to confirm the rendered look is unchanged.\", \"Apply the check beyond hero banners to section images and any repeated visual blocks across the store.\"], \"caveats\": [\"Inspector interfaces vary by browser and change over time — verify the current dev tools layout.\", \"Resizing fixes dimension waste but not compression; a correctly sized file can still be too heavy.\"], \"tags\": [\"speed\", \"measurement\", \"image-optimization\", \"product-page\", \"shopify\", \"diagnostics\"]},{\"title\": \"Decide whether an image is worth resizing, compressing, or both\", \"summary\": \"Separate dimension waste from weight waste so you apply the right fix to each image.\", \"use_when\": \"You are triaging a catalog of store images and deciding which optimization each file needs.\", \"steps\": [\"If dimensions exceed the display box by a wide margin, resize to roughly box size plus 100–300px.\", \"After resizing, check the file weight again — the source reduced a hero from 5,000px to 2,700px and still ended near 1MB, which it judged too much.\", \"If the file remains heavy, compress it; the source estimates the same visual result could come down to about 100KB.\", \"If a file is already correctly sized but still heavy, skip resizing and compress only.\", \"If an image is small and correctly sized, leave it and move on to other assets.\", \"Re-verify visually on the live page after each change so optimization does not degrade the customer's impression of the product.\"], \"caveats\": [\"The 100KB estimate is the source's illustration, not a target that every image can or should hit.\", \"There is no single fix; the source explicitly pairs resizing with compression for the best result.\"], \"tags\": [\"speed\", \"image-optimization\", \"compression\", \"diagnostics\", \"product-page\", \"shopify\"]}]}",
+  "input": {
+    "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+    "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+    "source_name": "Page speed.docx",
+    "folder": "/08-SPD-speed",
+    "domain": "speed",
+    "section": 2,
+    "section_count": 8,
+    "text": "e decide if your image should show in a search result or not. So by not adding alt text to your images, you're making yourself a huge disservice. First of all, people that are visually impaired cannot really navigate your content. Then Google cannot navigate and index your content. And that's a shame because adding alt text is a really simple thing to do. And because some people actually add alt text to their images, I want to show you some bad examples, things that you should not add as alt text to your images. So you should not add advertisements inside the alt text. Leather wallet man black buy cheap. This is not the way your alt text should sound like. But anyway, it is better than not having alt text at all. So this is better than this one. Now let's see some good examples. Your alt text should look something like this. So it should describe exactly what's in the image in a natural way. Men wearing a black sports backpack outdoors. This is something that a person that is visually impaired could use to understand what's in a certain picture. Closeup of padded shoulder straps on a black sports backpack. Also describing what's in the image. side view of black man sports backpack.\n\n So in order to generate alt text like these, I created a prompt that you can use inside chat GPT. This is for five alt text. So I have five images. I want to create five alt text. But if you want to create more, you can change the number here, the number here, and then add the extra image angle that you have. In my case, I'm just going to stick with five. And I'm going to copy this. I'm going to go to Chad GPT with this prompt and I'm going to paste it in here. I'm going to go at the end where I have the variables and inside the variables we have to change the product name. In my case, it would be a sports backpack. Then visible characteristics, we can say black in my case and it can be also water resistant. You can add multiple characteristics in here. Then you're going to add the angles. I'm going to populate my angles now. I have front view, I have back view. I'm going to look at my images and I'm going to populate these. And here are my variables. I have sports backpack. Then I have black and water resistant. And then I have front view, back view, front detail, top detail, and lifestyle on shoulder. These are my images. And now I'm going to just feed this into GPT. And here are my alt text. Now I'm going to copy each of them. This one is for the frontal view. And I'm going to go with it to my Shopify's dashboard. I'm going to click on the image that I want to add the alt text to. And this image editor will pop up where I have this alt text field where I can just pop in the alt text that I've generated. And now I can save. And now this image will be properly described. If I go and I preview the page. Now, if I inspect this image, I'm going to see that it has the alt text attached to it. So, let's find the image element. And inside the image container, we're going to have the alt text sports backpack front view with a black exterior. Now, I'm going to do this for all my other images. So, I'm going to click the next image and I'm going to paste in the next alt text. I'm going to save. And this is how I update alt text for my images. I can do this from over here. I can do this also from content and files here inside the media library. I can click on any of these images and I can modify the alt text there. And now that I've created and added all my alt texts, I'm kind of done with images. We can go through a final checklist to make sure that everything was done correctly. So, first of all, we're going to choose the right format. We're going to upload only JPEGs and PNGs and Shopify will take care that everything gets converted to web. And instead of GIFs, we're going to use MP4s because they are better and they load faster. Now, no matter if we upload JPEGs, if we don't resize and we don't crop our images, then we're going to have bad results. We don't need big images that come directly from DSLRs. Those are good for print, but for websites, we need images that are properly resized and cropped to fit our layouts. Now, even if we've resized our images, we still can save some bandwidth by compressing our images. If we have files that are larger than 500 kilobytes, we should reduce them because that will make the site download faster for users. And we should think about mobile devices that don't have such a fast internet connection. Sometimes by compressing our images with tools like tiny SEO or squash, we are not only improving the user experience on our stores but also improving the conversion rate. Then whenever we upload images, we should firstly name them properly. We should not upload images with random names like this one. which should describe what's in the image so that Google can categorize that image correctly. After naming your files, you can go and you can upload them to your Shopify store and reorder them so that you answer your customers questions. Usually, you have the main image, you have an alternate angle, then detailed shots and lifestyle images. And if you don't have lifestyle images from your supplier, you can generate some with AI using Gemini and Nano Banana. After uploading your images, you're going to add your alt text. And this is important for visually impaired people that navigate your site. This is important for Google to understand your content, your images. And after adding the alt text, you just go and you verify the images on the site. Make sure that they are displayed in the right size and they have their alt text attached to them. Now, let me show you how you can verify if the images on your store display with the right dimensions. I have here this banner which looks good. So, it's a normal banner you would see on a website. If you want to verify the size of this image, you're going to rightclick on it and you're going to click on inspect. And you're going to have this inspector window open. And inside here, you're going to see the dimensions of the image. And obviously, this image is too large. We have 5,712 with 2,93. The maximum width I would need on this site being 3,000 from bezel to bezel. But with 2,000 pixels, we would still get a good experience. And I'm going to show you how you can change this image once you discover that an image is too big. So, you're going to go to your customizer where you have that image. You're going to click on that image and inside the section settings where you have that image uploaded. You're going to click on change or on edit. I'm going to click on edit because I want to resize it. Now, this native editor will pop up and I can here go to resize. And instead of 5,000, I'm going to say 2,000 just to show you that I'm going to get an image that is good enough that it looks exactly the same. So I'm going to click on apply again. You can resize in this way, but you cannot compress them. You don't have control on compression. So by resizing now, I dropped to 1 megabytes. This is still too much. Compression would be necessary here. But this is better than what I had before. So now once I've done this, I can go again to my site. I can refresh the page and I can show you that the image looks exactly the same. So this is the reduced sized image. So if I inspect now and I go to that image, now the intrinsic size is 2,700 pixels and it looks exactly the same as before. So this is how you can reduce the size of an image that is oversized on your store. But again, you would really need to compress this image to get better results. If I go and I compress this image, I would get the same result with probably 100 kilobytes instead of 1 megabyte. And this is not only true for the hero banners. You might have sections on your store like this one for example. So, if I inspect the image again and I go and see the details, the image itself has 6 megabytes, which is huge. And the size is this one over here. This image is 5,000 pixels and the box it's displayed in is 700 pixels. So, I can reduce the size of this image a lot. I can go back to the editor here and scroll to the section. I can click on the image. I can change the image if I want to upload a compressed one where I can edit the image. Now, I'm going to go to resize and instead of 5,000, I'm just going to add 1,000. And I do that because the box's size is 700 pixels and you want to to have an image that is 100 more than the box size. So, if you have a box that is 700 pixels and you add the 700 pixels image, sometimes you can get a blurry image. To avoid that, just upload images that are 100, 200, 300 pixels more than the actual box size. So, I'm just going to say 1,00 and click apply. This will make sure that my image will not be undersized, but will not be oversized. This will reduce the file size to 1 megabyte, but still, if I would upload a different image, I could probably compress this a lot a lot more. So, now here's the effect. If I refresh the page now, the image populated and it looks exactly the same. If I go and I inspect again, I can see that the image is 1,00 pixels wide. And by the way, this bar can be set on the side as well. So, you can see the details here. Okay. Now that you know how to optimize your images, if you want to further optimize your store's performance, you may want to check out my full Shopify speed optimization course link in the description. Otherwise, I think you'll be interested in seeing this video next. Click it and I'll see you there.",
+    "prior_notes": [],
+    "id": "0be9aa45fa2de263c985b19f"
+  },
+  "system_prompt_sha256": "f2341d28186a0dbaee868d37ce33c173f631088eb1754997556740d4905c0f2b"
+}

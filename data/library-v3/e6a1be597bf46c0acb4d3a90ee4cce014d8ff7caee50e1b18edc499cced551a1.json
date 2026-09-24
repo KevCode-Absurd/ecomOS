@@ -1,0 +1,197 @@
+{
+  "request_id": "e6a1be597bf46c0acb4d3a90ee4cce014d8ff7caee50e1b18edc499cced551a1",
+  "provider": "deepseek",
+  "model": "deepseek-flash",
+  "effort": "none",
+  "completion_limit": 16384,
+  "usage": {
+    "prompt_tokens": 3643,
+    "completion_tokens": 2207,
+    "total_tokens": 5850,
+    "prompt_tokens_details": {
+      "cached_tokens": 512
+    },
+    "prompt_cache_hit_tokens": 512,
+    "prompt_cache_miss_tokens": 3131
+  },
+  "booked_cost_usd": 0.0037413000000000004,
+  "seconds": 12.39,
+  "finish_reason": "stop",
+  "output": {
+    "cards": [
+      {
+        "title": "Build a multi-column footer with navigation menus and contact details",
+        "summary": "Assemble a four-column footer (logo/description, quick links, website links, contact info) in a block-based theme editor, then fix column layout problems.",
+        "use_when": "Setting up or fixing a store footer in a block-based theme (e.g., WooCommerce block theme) so navigation, contact details and copyright display correctly.",
+        "steps": [
+          "Add blocks sequentially in a footer column using the block inserter. For the first column, add an image (logo/site icon), then a paragraph block after it for a short store description.",
+          "For the second column, add a Navigation Menu block, set its title (e.g. 'Quick Links') and select the footer menu assigned to it. You can rename the menu title (e.g. change to 'Shop') without changing the underlying menu.",
+          "Repeat the Navigation Menu block in the third column, rename the title (e.g. 'Website') and select a second footer menu.",
+          "For the contact column, add a Heading block ('Contact Us'), then add paragraph blocks after it for email, phone and address, adding each with the 'add after' option.",
+          "If content spreads across the whole footer instead of staying in one column, insert a Columns block with a single column and drag each block into it one by one until all footer content sits in a single vertical column.",
+          "Publish, then check the footer preview. If extra menus appear that you don't want, return to Appearance > Menus, open the relevant footer menu, deselect its footer menu location, save, and reload.",
+          "Verify the current block inserter and menu-location interface in your WordPress/WooCommerce version, as labels may change."
+        ],
+        "caveats": [
+          "Menu location assignment must match the Navigation Menu block's selected menu, or the wrong links appear in the footer.",
+          "Deselecting a menu's footer location removes it from the footer entirely, including any copyright or other links built into that menu."
+        ],
+        "tags": [
+          "store-setup",
+          "woocommerce",
+          "footer",
+          "site-navigation",
+          "block-theme",
+          "store-design"
+        ]
+      },
+      {
+        "title": "Apply a curated custom-CSS set to polish theme design elements",
+        "summary": "Use a provided sequence of custom CSS snippets (buttons, headings, counters, product cards, blog images, cart/checkout) to unify a store's visuals beyond default theme styling.",
+        "use_when": "When default theme styling makes product grids, buttons, counters, blog images or cart/checkout pages look unpolished and you want consistent store-wide design quickly.",
+        "steps": [
+          "Go to Appearance > Customize > Additional CSS (or the theme's Additional CSS panel) and paste each snippet in order after the previous one, leaving spacing between blocks.",
+          "Start with the site default style snippet to establish baseline typography and element styling.",
+          "Add the homepage button style snippet — verify buttons and their icons become larger and more consistent.",
+          "Add the product heading snippet for homepage section headings.",
+          "Add the counter style snippet to fix counter/countdown widgets that break at tablet and smaller widths. After pasting, add the documented class name to the countdown widget's Advanced > Additional CSS Class field, publish, and resize the browser to confirm it holds at all widths.",
+          "Add the blog post image snippet, then add the documented class name to the blog post widget's Advanced > Additional CSS Class field and refresh to confirm images are no longer distorted.",
+          "Add the page header, product card, blog post and cart/checkout snippets. The product card snippet is the one that restyles product archives/shop grids; the cart/checkout snippet only takes effect once the WooCommerce shortcodes are placed on those pages.",
+          "Publish/update and refresh the relevant pages after each batch to confirm the change applied."
+        ],
+        "caveats": [
+          "CSS snippets are theme/plugin-specific — they assume the same starter theme, widgets and class names. Adapt before assuming they transfer.",
+          "Class names referenced by the CSS must be added to the specific widget's Advanced > CSS Classes field, or the styling silently does nothing.",
+          "Layering many snippets makes future theme updates or redesigns harder to unpick; keep snippets commented."
+        ],
+        "tags": [
+          "store-setup",
+          "css",
+          "store-design",
+          "woocommerce",
+          "product-card",
+          "cart",
+          "checkout",
+          "theme-customization"
+        ]
+      },
+      {
+        "title": "Replace default cart and checkout widgets with WooCommerce shortcodes",
+        "summary": "Swap bloated default cart/checkout widget layouts for WooCommerce shortcodes to get cleaner, theme-matching cart and checkout pages.",
+        "use_when": "When cart or checkout pages use default template/widget layouts that look inconsistent with the rest of the store, and you want a simpler page structure.",
+        "steps": [
+          "Look up the current WooCommerce shortcodes list in the official WooCommerce documentation (verify the exact shortcode names for your version rather than relying on copied text).",
+          "Open Pages > Cart, edit it, select the existing cart container/blocks, delete them, and paste the cart shortcode. Save.",
+          "Open Pages > Checkout, delete the default checkout widgets/blocks and paste the checkout shortcode. Save.",
+          "Refresh both pages to confirm the shortcode-rendered layout appears and matches the theme.",
+          "If the shortcode layout looks worse than the default, revert: open the page, remove the shortcode, insert the default Cart block/widget (search 'cart' in the block inserter) and re-add default structure.",
+          "Optionally apply custom CSS after placing shortcodes, since cart/checkout styling snippets only affect shortcode-rendered pages."
+        ],
+        "caveats": [
+          "Deleting the default cart/checkout blocks removes the layout you may want to fall back to — note or screenshot before deleting.",
+          "Shortcode output and available attributes change between WooCommerce versions; always check current documentation.",
+          "The source presenter preferred the default widget layout for checkout with their theme but chose to showcase shortcode layout for cart — treat as a style preference, not a fixed rule."
+        ],
+        "tags": [
+          "store-setup",
+          "woocommerce",
+          "cart",
+          "checkout",
+          "shortcodes",
+          "store-design"
+        ]
+      },
+      {
+        "title": "Enable and style a page header banner with breadcrumbs",
+        "summary": "Turn on the theme's Page Header template part to add a branded title banner with breadcrumbs to shop, blog, cart and other pages.",
+        "use_when": "When non-homepage store pages (shop, blog, cart, contact) start abruptly with no header context and you want a consistent branded banner with breadcrumbs.",
+        "steps": [
+          "Go to Appearance > Customize > Layout > Page Header (naming varies by theme) and turn on 'Page Header Display'.",
+          "Enable display of the page title and the breadcrumb trail so each page shows its name and navigation path.",
+          "In the Page Header design settings, set the background color to a brand or theme color consistent with the site palette.",
+          "Set padding-top and padding-bottom to roughly 112px each to give the banner breathing room (source used 112 top and 112 bottom), and keep margin-bottom around 68px to space content below.",
+          "Publish and visit representative pages (shop, blog, cart, contact) to confirm the banner and breadcrumbs render consistently.",
+          "Note the blog/page header CSS snippet works together with this setting — the banner may need the CSS present and the correct page settings enabled."
+        ],
+        "caveats": [
+          "Page Header is a template part; enabling it affects all pages that use the header, so verify it doesn't clash with pages that already have a custom hero.",
+          "The exact menu path and setting labels differ across themes; locate the equivalent setting in your theme's customizer or site editor."
+        ],
+        "tags": [
+          "store-setup",
+          "page-header",
+          "breadcrumbs",
+          "store-design",
+          "woocommerce",
+          "site-navigation"
+        ]
+      },
+      {
+        "title": "Change the blog author display name store-wide",
+        "summary": "Edit the WordPress user profile so blog posts show a chosen full display name instead of a username.",
+        "use_when": "When blog posts on the store's content section show a generic or blank author name and you want a personal or brand author name to appear.",
+        "steps": [
+          "Go to Dashboard > Users and open the relevant user profile.",
+          "Enter First Name and Last Name. WordPress will generate display-name variants from these fields.",
+          "Choose the preferred Display Name from the dropdown (e.g., full name or first+last).",
+          "Click Update Profile.",
+          "Visit a published blog post to confirm the author name now reflects the chosen display name across all posts.",
+          "If the theme hides author names, check the single-post template settings for an author/byline toggle."
+        ],
+        "caveats": [
+          "For guest authorship or a brand author, a role and capability review is often needed — simply changing display name keeps the account's publishing permissions.",
+          "Changing the display name updates the byline everywhere that user is the author; verify it doesn't break any author archive links you rely on."
+        ],
+        "tags": [
+          "store-setup",
+          "blog",
+          "author-profile",
+          "users",
+          "content",
+          "wordpress"
+        ]
+      },
+      {
+        "title": "Verify storefront pages end-to-end after setup",
+        "summary": "Run a structured walkthrough of all key storefront pages (shop, product, blog, contact, account, cart) after design and configuration to confirm functionality and appearance.",
+        "use_when": "After completing theme setup, CSS, footer and shortcode work, before handing off or launching an ecommerce store.",
+        "steps": [
+          "Check top navigation: confirm Home, Shop, Blog, Contact and other key links route to the right pages.",
+          "Visit Shop: confirm product grid, sidebar search, price filter, category and attribute filters all render and return results.",
+          "Open a product: verify gallery images, variation selector (sizes/options), description, related products and add-to-cart all work.",
+          "Open the Blog listing and a single post: confirm title, featured image and related posts display, and that blog image/title CSS applied.",
+          "Open the Contact page: confirm store details, the working contact form and the embedded map point to the real business location.",
+          "Test search: find a product by keyword. Test the user account dashboard: wishlist (even empty), orders with details and mini-cart behavior.",
+          "Close the loop by fixing anything visually broken (CSS class missing, wrong block in a column) and re-verify."
+        ],
+        "caveats": [
+          "The source walkthrough is a visual/functional sweep, not a payment or fulfillment test — actually place a test order separately.",
+          "Wishlist and account features depend on installed plugins; confirm those are active before testing."
+        ],
+        "tags": [
+          "store-setup",
+          "qa-testing",
+          "storefront",
+          "shop-page",
+          "product-page",
+          "user-account",
+          "pre-launch"
+        ]
+      }
+    ]
+  },
+  "raw_content": "{\"cards\":[{\"title\":\"Build a multi-column footer with navigation menus and contact details\",\"summary\":\"Assemble a four-column footer (logo/description, quick links, website links, contact info) in a block-based theme editor, then fix column layout problems.\",\"use_when\":\"Setting up or fixing a store footer in a block-based theme (e.g., WooCommerce block theme) so navigation, contact details and copyright display correctly.\",\"steps\":[\"Add blocks sequentially in a footer column using the block inserter. For the first column, add an image (logo/site icon), then a paragraph block after it for a short store description.\",\"For the second column, add a Navigation Menu block, set its title (e.g. 'Quick Links') and select the footer menu assigned to it. You can rename the menu title (e.g. change to 'Shop') without changing the underlying menu.\",\"Repeat the Navigation Menu block in the third column, rename the title (e.g. 'Website') and select a second footer menu.\",\"For the contact column, add a Heading block ('Contact Us'), then add paragraph blocks after it for email, phone and address, adding each with the 'add after' option.\",\"If content spreads across the whole footer instead of staying in one column, insert a Columns block with a single column and drag each block into it one by one until all footer content sits in a single vertical column.\",\"Publish, then check the footer preview. If extra menus appear that you don't want, return to Appearance > Menus, open the relevant footer menu, deselect its footer menu location, save, and reload.\",\"Verify the current block inserter and menu-location interface in your WordPress/WooCommerce version, as labels may change.\"],\"caveats\":[\"Menu location assignment must match the Navigation Menu block's selected menu, or the wrong links appear in the footer.\",\"Deselecting a menu's footer location removes it from the footer entirely, including any copyright or other links built into that menu.\"],\"tags\":[\"store-setup\",\"woocommerce\",\"footer\",\"site-navigation\",\"block-theme\",\"store-design\"]},{\"title\":\"Apply a curated custom-CSS set to polish theme design elements\",\"summary\":\"Use a provided sequence of custom CSS snippets (buttons, headings, counters, product cards, blog images, cart/checkout) to unify a store's visuals beyond default theme styling.\",\"use_when\":\"When default theme styling makes product grids, buttons, counters, blog images or cart/checkout pages look unpolished and you want consistent store-wide design quickly.\",\"steps\":[\"Go to Appearance > Customize > Additional CSS (or the theme's Additional CSS panel) and paste each snippet in order after the previous one, leaving spacing between blocks.\",\"Start with the site default style snippet to establish baseline typography and element styling.\",\"Add the homepage button style snippet — verify buttons and their icons become larger and more consistent.\",\"Add the product heading snippet for homepage section headings.\",\"Add the counter style snippet to fix counter/countdown widgets that break at tablet and smaller widths. After pasting, add the documented class name to the countdown widget's Advanced > Additional CSS Class field, publish, and resize the browser to confirm it holds at all widths.\",\"Add the blog post image snippet, then add the documented class name to the blog post widget's Advanced > Additional CSS Class field and refresh to confirm images are no longer distorted.\",\"Add the page header, product card, blog post and cart/checkout snippets. The product card snippet is the one that restyles product archives/shop grids; the cart/checkout snippet only takes effect once the WooCommerce shortcodes are placed on those pages.\",\"Publish/update and refresh the relevant pages after each batch to confirm the change applied.\"],\"caveats\":[\"CSS snippets are theme/plugin-specific — they assume the same starter theme, widgets and class names. Adapt before assuming they transfer.\",\"Class names referenced by the CSS must be added to the specific widget's Advanced > CSS Classes field, or the styling silently does nothing.\",\"Layering many snippets makes future theme updates or redesigns harder to unpick; keep snippets commented.\"],\"tags\":[\"store-setup\",\"css\",\"store-design\",\"woocommerce\",\"product-card\",\"cart\",\"checkout\",\"theme-customization\"]},{\"title\":\"Replace default cart and checkout widgets with WooCommerce shortcodes\",\"summary\":\"Swap bloated default cart/checkout widget layouts for WooCommerce shortcodes to get cleaner, theme-matching cart and checkout pages.\",\"use_when\":\"When cart or checkout pages use default template/widget layouts that look inconsistent with the rest of the store, and you want a simpler page structure.\",\"steps\":[\"Look up the current WooCommerce shortcodes list in the official WooCommerce documentation (verify the exact shortcode names for your version rather than relying on copied text).\",\"Open Pages > Cart, edit it, select the existing cart container/blocks, delete them, and paste the cart shortcode. Save.\",\"Open Pages > Checkout, delete the default checkout widgets/blocks and paste the checkout shortcode. Save.\",\"Refresh both pages to confirm the shortcode-rendered layout appears and matches the theme.\",\"If the shortcode layout looks worse than the default, revert: open the page, remove the shortcode, insert the default Cart block/widget (search 'cart' in the block inserter) and re-add default structure.\",\"Optionally apply custom CSS after placing shortcodes, since cart/checkout styling snippets only affect shortcode-rendered pages.\"],\"caveats\":[\"Deleting the default cart/checkout blocks removes the layout you may want to fall back to — note or screenshot before deleting.\",\"Shortcode output and available attributes change between WooCommerce versions; always check current documentation.\",\"The source presenter preferred the default widget layout for checkout with their theme but chose to showcase shortcode layout for cart — treat as a style preference, not a fixed rule.\"],\"tags\":[\"store-setup\",\"woocommerce\",\"cart\",\"checkout\",\"shortcodes\",\"store-design\"]},{\"title\":\"Enable and style a page header banner with breadcrumbs\",\"summary\":\"Turn on the theme's Page Header template part to add a branded title banner with breadcrumbs to shop, blog, cart and other pages.\",\"use_when\":\"When non-homepage store pages (shop, blog, cart, contact) start abruptly with no header context and you want a consistent branded banner with breadcrumbs.\",\"steps\":[\"Go to Appearance > Customize > Layout > Page Header (naming varies by theme) and turn on 'Page Header Display'.\",\"Enable display of the page title and the breadcrumb trail so each page shows its name and navigation path.\",\"In the Page Header design settings, set the background color to a brand or theme color consistent with the site palette.\",\"Set padding-top and padding-bottom to roughly 112px each to give the banner breathing room (source used 112 top and 112 bottom), and keep margin-bottom around 68px to space content below.\",\"Publish and visit representative pages (shop, blog, cart, contact) to confirm the banner and breadcrumbs render consistently.\",\"Note the blog/page header CSS snippet works together with this setting — the banner may need the CSS present and the correct page settings enabled.\"],\"caveats\":[\"Page Header is a template part; enabling it affects all pages that use the header, so verify it doesn't clash with pages that already have a custom hero.\",\"The exact menu path and setting labels differ across themes; locate the equivalent setting in your theme's customizer or site editor.\"],\"tags\":[\"store-setup\",\"page-header\",\"breadcrumbs\",\"store-design\",\"woocommerce\",\"site-navigation\"]},{\"title\":\"Change the blog author display name store-wide\",\"summary\":\"Edit the WordPress user profile so blog posts show a chosen full display name instead of a username.\",\"use_when\":\"When blog posts on the store's content section show a generic or blank author name and you want a personal or brand author name to appear.\",\"steps\":[\"Go to Dashboard > Users and open the relevant user profile.\",\"Enter First Name and Last Name. WordPress will generate display-name variants from these fields.\",\"Choose the preferred Display Name from the dropdown (e.g., full name or first+last).\",\"Click Update Profile.\",\"Visit a published blog post to confirm the author name now reflects the chosen display name across all posts.\",\"If the theme hides author names, check the single-post template settings for an author/byline toggle.\"],\"caveats\":[\"For guest authorship or a brand author, a role and capability review is often needed — simply changing display name keeps the account's publishing permissions.\",\"Changing the display name updates the byline everywhere that user is the author; verify it doesn't break any author archive links you rely on.\"],\"tags\":[\"store-setup\",\"blog\",\"author-profile\",\"users\",\"content\",\"wordpress\"]},{\"title\":\"Verify storefront pages end-to-end after setup\",\"summary\":\"Run a structured walkthrough of all key storefront pages (shop, product, blog, contact, account, cart) after design and configuration to confirm functionality and appearance.\",\"use_when\":\"After completing theme setup, CSS, footer and shortcode work, before handing off or launching an ecommerce store.\",\"steps\":[\"Check top navigation: confirm Home, Shop, Blog, Contact and other key links route to the right pages.\",\"Visit Shop: confirm product grid, sidebar search, price filter, category and attribute filters all render and return results.\",\"Open a product: verify gallery images, variation selector (sizes/options), description, related products and add-to-cart all work.\",\"Open the Blog listing and a single post: confirm title, featured image and related posts display, and that blog image/title CSS applied.\",\"Open the Contact page: confirm store details, the working contact form and the embedded map point to the real business location.\",\"Test search: find a product by keyword. Test the user account dashboard: wishlist (even empty), orders with details and mini-cart behavior.\",\"Close the loop by fixing anything visually broken (CSS class missing, wrong block in a column) and re-verify.\"],\"caveats\":[\"The source walkthrough is a visual/functional sweep, not a payment or fulfillment test — actually place a test order separately.\",\"Wishlist and account features depend on installed plugins; confirm those are active before testing.\"],\"tags\":[\"store-setup\",\"qa-testing\",\"storefront\",\"shop-page\",\"product-page\",\"user-account\",\"pre-launch\"]}]}",
+  "input": {
+    "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+    "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+    "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+    "folder": "/05-SET-store-setup",
+    "domain": "store-setup",
+    "section": 5,
+    "section_count": 6,
+    "text": "block. Our logo is done. After the logo, I'm going to click on the options again and click on add after. So, I'm adding a block right after this footer in the same column. So, in here, I'm going to click on uh add again and click on this paragraph. Then, I'm going to type this in the paragraph. It'll be added right after the image. Now, this is all for this column. We want to move to the second column. Let's click on this add block. We going to search for navigation menu. You'll see this. If you add it here, you'll be select you can select the title of the uh navigation menu. I'm going to type quick links. And from the select menu, we can select the footer menu one. And you'll see it it will be showing the footer menu one link under the quick links. So you can actually rename this one shop. Okay, one column is added. Then we can click on here again search for navigation menu and this time we can rename this website and select the menu footer menu 2. And here the footer menu 2 will be shown. And lastly I want to add some contact us details. So click on here and click on heading a heading will be added here. I'm going to type contact us. Then after contact us I'm going to click here.\n\n Click on this add after and add a paragraph this information email address. Then after this click on add after and add a phone number. Then clicking on add after and adding an address. Publish. And you'll see there will be a problem. Everything I added here won't be in a single column. So that's why these are spreading across all the footer. So what we want to do is click on here then search for columns. Click one column and we have to drag and drop all of these within this column like just drag and drop all of them one after another. You'll see everything will be in one column. And finally drag this one as well in the one column. Now everything will be like this. Everything is in a single column. So our footer is looking like this. But we can see there are some extra menus showing here. We don't want to show this. So we can publish here and go back from here. We can go back to the layout and the footer. We can go back to our menus. Go to the footer menu one. And actually deselect this option footer menu from here. Publish. And the menu will be gone from here. Only will be the copyright text. Okay. Nice. So we're basically done with our footer. Footer is looking pretty nice. And now it's time to do our most important thing, which is to add our special custom CSS to make everything polished. It will fix all the product design. It will fix the button design. It will fix the blocks design, just everything. Okay? So, you just need to go to jimfigital.com in this page and we can scroll all the way up. We just have to add CSS codes one by one. So first we will have this website default style CSS. Just copy it on a clipboard and from here open this additional CSS. Add the CSS code here. Then again go back scroll down. You'll see this homepage button style CSS. Copy this. And right after this code add some space and add the code here. And you'll see the button will be fixed like this. icon will be bigger looking really nice. So this was uh code for the button. Now after we have this product heading style CSS for homepage copy this, add it here. Then go back and scroll down. We have this counter style CSS. Copy it. Add it here. So it will actually fix the counter in the responsive mode in the tablet mode. In some point it actually breaks. So to fix that we have added this custom code. Just do one thing after you add the code copy this countdown code. Countdown class name. Go back to your homepage and select the countdown. Go to the advanced in the classes. Add this countdown class name and publish. Refresh the homepage and your countdown will be good in all screen sizes. Doesn't matter how you drag the screen size like this. Okay. Then in the code, scroll down. We need this blog post image style CSS. Copy all of them. In the customization, add the code in here. So it'll actually fix our blog images. But it's not fixing yet because from here we need to add this class name in our homepage blog. So go to the homepage, select the blog, this blog post widget, go to the advanced in the class name CSS classes, add this publish and refresh the page. Now if we go to the blogs. Okay, we have to publish it from here. So, it saves the code. Then refresh the homepage. So, it loads the code from there. And if we scroll down now and our blogs image is perfectly fixed. Amazing. Now, let's go back to the code. We have more. We have the page header style CSS. Copy this and add it here. So this will basically control if we go to our blogs. Okay, here it's supposed to be a banner says blog. If we go to our targeted website in the blog, it should be here. Actually, we have to turn on a setting to enable this. So I'm going to show you this a bit later. For now, just add the custom code and we're good. So after this uh page header copy this product card style CSS. This is one of the most important code. So after copying it just add it after this code and this will mainly change the product list or product archive style. If we go to our homepage you'll see this is now perfectly polished. Before it was really really unpolished and bad looking. Now this is every all perfect. If we even go to our shop page. Okay. So we have to uh publish this in here. Publish this. And in our shop page as well. This will be perfectly fixed. Amazing. This is the magic of custom CSS. Now let's go ahead and add some more code. We have this blog post style CSS. Copy it. And if we add it after this code, we go to the blocks page and the blocks will be perfectly fixed. Before the code, it was really bad. Now it's perfect. We can go inside the blog and everything will be nicely stylized. Perfect. Now let's go back to the custom code again. And we have this cart and checkout page style CSS. Currently actually our cart and checkout page is not looking that great. This is like default one. So let's go ahead and add this code in here in here. Publish. And in the cut page, nothing is actually changed because we didn't add a short code from our pages. And it will be really really easy. I'm going to show you for now. Just keep the code. After adding the short code, our cart page and check out page will be looking really nice completely matching with our theme. Okay. So, let's go back in the code and we're done with the custom code. So, the major thing in our website has been solved. as the design issues are solved. You can also see our header is having a nice shadow under it like everything is looking perfect now. Even the products in here are looking perfect. Now we're going to do some polishing stuff like in our blogs page we want a banner says blogs. So for that it's really easy. We have to just customize a little bit. So first we need to go to the layout need to go to the page header and turn on this page header display. So in the blocks page we want to turn in the title then a breadcrumb and this will be looking like this. Now in the design keep this background color this color. So the background color will be this. Then we have to increase the padding top and bottom of this banner. Make the bottom top 112. Padding bottom 11 on two. This will be like this. And keep the margin bottom the same 68. And we'll be good. This is looking really nice. Now publish. If we go to every pages now, for example, the cart page, the cart page will have this nice banner. Then the contact page is already having this spatial banner but also the other pages like the shop and blogs are having the nice banner. Okay. Now I'm going to show you how to use short codes to customize the cart page and the checkout page. So I'm going to before adding the short code I'm going to show you how it's looking currently. Just show uh looking like this. And if you also go to the checkout page this is looking like this. just basic. Now on Google, just search oocommerce short codes. Scroll down and in the WooCommerce website, you'll see this short codes included with WooCommerce documentation. This link and if you scroll down, you'll find all the short codes. First thing, we need this WooCommerce card short code. Just select it and copy. Go back to your pages. So from here we can just close this customization option. Go to our pages. Open the cart page. Click on edit. And by default this is showing the cart page style which is created using default widgets. So select all of them like this the whole container. Click on options. Delete it. Instead just paste the simple short code. Now save it. Now if we go to the cart page and refresh, this is looking like this. Refresh. It will be like this. Then if we go to the checkout page, the default is like this. But if we grab the short code this WooCommerce checkout and go to the checkout page in our pages and this is the default widgets. Delete it. Add the code. Save it. And now see the changes here by refreshing. So this look like this. But if you prefer the default one, if the design goes good with the default one, just keep the default widgets and your design will be back to default. So actually for the check out page, I'm keeping this one. This this one is looking actually better with the theme we have. And also if you want to change the card uh cart page to default just open the cart page again remove the short code and click on add search for card you see this card just add it and everything default will be added again nice okay finally I wanted to show you how to change the author name right our blog author Okay. So, this is right here. Just go to the dashboard. Then go to the users. Open your user. Scroll down. And in here you can just first add your first name, then last name. Then from the display name, you can choose the variation you want. The variation will be generated like this. I'm selecting this one. Updating profile. And now everywhere you'll see the author name as full name. Okay. So this is our website. We have just created a really beautiful pet food online store. The design of this website is just amazing and it also functions very well. Let's give a quick tour after finishing our website. So on the menus first we have home then the shop. Let's go to the shop. Here we can see all the products is showing up here with the sidebar. In the sidebar we can actually search for the product. Then using the filters like price filter we can filter out the price range. Then we can filter it by categories, status and all. Then we can open any product. It will be shown like this with gallery images. 10 different variation. This is actually looking really good after adding the custom CSS. Then we'll see all the description related products and all. Then we can go to the blogs where we list all of our blogs in the website from we can open any blogs and read the blogs. The title will be here, the featured image will be here and the related post will be shown here. And then we got our nice contact page. contact us page. Here we show all the details of our store or business. And this is a fully functional contact form. People can contact you through this form and this is the Google map showing or focusing on your actual physical business. We have the search button. We can search for any product using it. Then we have the dashboard, user dashboard. And this is currently looking like this. Actually pretty solid design. This is my wish list which is empty. Then this is orders. It has like every details and e-commerce user account requires. Then we have the mini card and you know what mini cut does. Every design and elements is looking perfect. Every elements, every design is looking perfect after customizing our website. So if you have learned something new today from this video, make sure to hit that like button, subscribe to our channel, share this video. It would mean world to us. And hey, if you think that building website is overwhelming for you, you can go to jimfaddigital.com. If you need any website solution, you can let us know. We build from small portfolio websites to advanced e-commerce websites. from our website. Click on need a solution. Add a request from here and we will be waiting there for you. So that's it for today guys. I'll catch you on the next video. For now, bye-bye.",
+    "prior_notes": [],
+    "id": "64a8b6003426900d291416d5"
+  },
+  "system_prompt_sha256": "f2341d28186a0dbaee868d37ce33c173f631088eb1754997556740d4905c0f2b"
+}

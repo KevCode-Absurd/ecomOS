@@ -1,0 +1,186 @@
+{
+  "status": "complete",
+  "mapping": {
+    "A": "frontier_with",
+    "B": "frontier_without",
+    "C": "cheap_without",
+    "D": "cheap_with"
+  },
+  "judge_model": "deepseek-flash",
+  "output": {
+    "reviews": [
+      {
+        "label": "A",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 4,
+          "prioritization": 4
+        },
+        "strengths": [
+          "Correctly calculates Meta ROAS 3.00 to 3.20 and Shopify revenue/Meta spend 3.00 to 2.05.",
+          "Explicitly refuses to add Meta and Klaviyo attributed revenue or call either incremental.",
+          "Adds DAY18 contribution/break-even and inventory replenishment gap.",
+          "Staged reconciliation plan with scaling gates and useful owner/developer/designer hour allocation."
+        ],
+        "issues": [
+          "No material issue; CPM/CTR diagnostics are omitted but not required."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Meta ROAS 3 to 3.2 while Shopify revenue/spend falls 3 to about 2.045.",
+            "met": true,
+            "reason": "Computes both ratios and highlights the divergence."
+          },
+          {
+            "criterion": "Do not add Meta and email attributed revenue or call either incremental.",
+            "met": true,
+            "reason": "States not to add and treats both as non-incremental without evidence."
+          },
+          {
+            "criterion": "Require order/window reconciliation and contribution before scaling.",
+            "met": true,
+            "reason": "Requires reconciliation, contribution, inventory and measurement gates before any capped increase."
+          }
+        ]
+      },
+      {
+        "label": "B",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 3,
+          "uncertainty_and_questions": 4,
+          "prioritization": 4
+        },
+        "strengths": [
+          "Correct arithmetic and clear reconciliation across Shopify, Meta and Klaviyo.",
+          "Explicitly warns that adding attributed revenue overstates commerce total.",
+          "Includes DAY18 contribution margin and inventory gap.",
+          "Cautious scaling gate and useful questions."
+        ],
+        "issues": [
+          "Omits CPM/CTR diagnostic and does not allocate limited owner/developer/designer hours.",
+          "Action plan is strong but slightly less resource-specific than A."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Meta ROAS 3 to 3.2 while Shopify revenue/spend falls 3 to about 2.045.",
+            "met": true,
+            "reason": "Table shows Meta ROAS 3.00 to 3.20 and Shopify revenue/Meta spend 3.00 to 2.05."
+          },
+          {
+            "criterion": "Do not add Meta and email attributed revenue or call either incremental.",
+            "met": true,
+            "reason": "Says adding gives an overstated $84,400 and email revenue is neither additional nor proven incremental."
+          },
+          {
+            "criterion": "Require order/window reconciliation and contribution before scaling.",
+            "met": true,
+            "reason": "Requires reconciliation, contribution economics and inventory before reconsidering scaling."
+          }
+        ]
+      },
+      {
+        "label": "C",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 3,
+          "uncertainty_and_questions": 4,
+          "prioritization": 3
+        },
+        "strengths": [
+          "Correct arithmetic including CPM, CTR and mobile funnel diagnosis.",
+          "Explicit no-add/non-incremental treatment of Meta and Klaviyo revenue.",
+          "Includes contribution break-even and inventory stockout constraint.",
+          "Brand-specific PDP fixes and water-resistant-not-waterproof claim constraint."
+        ],
+        "issues": [
+          "Recommends shifting some budget to laptop-fit creative despite no conversion sample.",
+          "Suggests a 14-day geo holdout without discussing power or feasibility.",
+          "Prioritization sequence mixes holdout and immediate PDP fixes."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Meta ROAS 3 to 3.2 while Shopify revenue/spend falls 3 to about 2.045.",
+            "met": true,
+            "reason": "States Meta ROAS 3.00 to 3.20 and actual Shopify revenue/Meta dollar 3.00 to 2.05."
+          },
+          {
+            "criterion": "Do not add Meta and email attributed revenue or call either incremental.",
+            "met": true,
+            "reason": "Calls $84,400 overlapping/non-additive, not incremental sales."
+          },
+          {
+            "criterion": "Require order/window reconciliation and contribution before scaling.",
+            "met": true,
+            "reason": "Requires holdout/reconciliation and contribution break-even before scaling."
+          }
+        ]
+      },
+      {
+        "label": "D",
+        "scores": {
+          "factual_accuracy": 3,
+          "brand_fit": 3,
+          "task_completion": 3,
+          "actionability": 3,
+          "uncertainty_and_questions": 4,
+          "prioritization": 3
+        },
+        "strengths": [
+          "Correct core ROAS/Shopify ratio and CPM/CTR/CPC derivations.",
+          "Strong can/cannot-conclude section and hypothesis framing.",
+          "Correct contribution break-even and no-add treatment.",
+          "Concrete diagnostic steps and useful questions."
+        ],
+        "issues": [
+          "Omits the supplied DAY18 inventory constraint, a hard scaling feasibility check.",
+          "Uses 'Meta-attributed MER' loosely for Shopify net revenue divided by Meta spend.",
+          "Does not address limited owner/developer/designer resource allocation."
+        ],
+        "critical_errors": [
+          "Missing DAY18 inventory stock cover versus replenishment in a scaling recommendation."
+        ],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Meta ROAS 3 to 3.2 while Shopify revenue/spend falls 3 to about 2.045.",
+            "met": true,
+            "reason": "States Meta ROAS 3.00 to 3.20 and Shopify revenue/Meta spend 3.00 to 2.05."
+          },
+          {
+            "criterion": "Do not add Meta and email attributed revenue or call either incremental.",
+            "met": true,
+            "reason": "Says Meta+Klaviyo sum is not valid and shows overlapping credit."
+          },
+          {
+            "criterion": "Require order/window reconciliation and contribution before scaling.",
+            "met": true,
+            "reason": "Requires re-reporting/reconciliation and contribution break-even before permanently raising spend."
+          }
+        ]
+      }
+    ],
+    "ranking": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "summary": "A and B are strongest and closely matched; A is slightly more complete with resource allocation, inventory and gating. C has strong arithmetic and diagnostics but minor overreach on creative/holdout. D has strong uncertainty framing but omits the inventory constraint and uses loose MER terminology."
+  },
+  "request_id": "c3ea28f743366213e4ccf1bd67a62f758ff5d6601faba83d1bc0cfa70eb1d99c",
+  "cost_upper_estimate_usd": 0.0299448
+}

@@ -1,0 +1,635 @@
+{
+  "cards": [
+    {
+      "title": "Four pillars of ecommerce security mapped to store controls",
+      "summary": "Frame storefront security work around privacy, integrity, authentication and non-repudiation, and translate each pillar into concrete store controls.",
+      "use_when": "Auditing or planning your store's security program and deciding which controls to add next across PDP, account, checkout and order records.",
+      "steps": [
+        "Treat Privacy as keeping customer personal and payment data away from unauthorized parties: require encryption in transit and at rest, restrict admin/data access by role, and limit which apps and integrations can read customer records.",
+        "Treat Integrity as ensuring customer-submitted data is not altered in transit or storage: use TLS, validate and re-confirm order, address and payment details server-side, and keep tamper-evident change logs on orders and customer profiles.",
+        "Treat Authentication as proving both buyer and seller are real: require email verification or magic links for accounts, offer PIN or card verification at checkout, and publish verifiable business identity and contact details so buyers can confirm you are genuine.",
+        "Treat Non-repudiation as making transactions undeniable: retain signed order confirmations, timestamped payment authorizations, consent records and email/confirmation logs so a disputed purchase or chargeback can be evidenced by both sides.",
+        "Assign each control to an owner and review the four pillars quarterly, since gaps usually appear at new touchpoints (subscriptions, B2B portals, additional payment methods) rather than at the original checkout."
+      ],
+      "caveats": [
+        "The four-pillar framing is a conceptual model, not a certification. Meeting it does not by itself make you PCI DSS compliant."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "compliance",
+        "authentication",
+        "data-protection",
+        "checkout",
+        "account-security"
+      ],
+      "id": "a1aa08fcea0812ffeeb7e947",
+      "source_id": "1CVdtLnDDQfVHxiFDsC0xlFqwKWCvYrnw",
+      "source_sha256": "cd5d9d2db79cc72ad2fdf24d97d4665c57a652d25b0a43c5e3d020d15f97538a",
+      "source_name": "E-Commerce Security_ Importance, Issues & Protection Measures.docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 0
+    },
+    {
+      "title": "Layered defense: block malicious traffic before it reaches origin",
+      "summary": "Combine a CDN and WAF in front of the origin, plus MFA on admin/account access, so no single control is the only barrier.",
+      "use_when": "Designing the network and access architecture of a self-hosted or heavily customized storefront that must absorb bots, DDoS and random malicious traffic.",
+      "steps": [
+        "Put a CDN or edge proxy in front of the origin server so volumetric DDoS traffic and obvious bot floods are absorbed or filtered at the edge; the source notes CDNs use machine learning to block malicious incoming traffic before it reaches your server.",
+        "Layer a Web Application Firewall in front of the application to filter spam, bad bots and common web attack classes such as XSS and SQLi; configure it in front of the store rather than only on the origin host.",
+        "Add multi-factor authentication to admin panels, hosting, payment dashboards and customer accounts that store payment or address data, so a stolen password alone is not sufficient.",
+        "Apply the same layering to non-web surfaces: DNS, email (for staff and customer-facing sending), and any API or integration endpoint that can trigger orders or refunds.",
+        "Monitor edge and WAF logs for attack patterns and adjust rules; treat the first layer as disposable filtering, not as proof the origin is safe.",
+        "Verify each layer actually passes legitimate checkout and login traffic end to end after any rule change, since over-blocking converts directly into lost orders."
+      ],
+      "caveats": [
+        "The source (quoting Roger Grimes, 2018) states most companies using MFA are still hacked, so MFA is a layer, not a guarantee.",
+        "CDN, WAF and MFA capability and configuration differ by provider; verify current features and defaults in your own platform before relying on them."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "waf",
+        "cdn",
+        "ddos",
+        "mfa",
+        "defense-in-depth"
+      ],
+      "id": "6c4dfeee01252fb06b5532cf",
+      "source_id": "1CVdtLnDDQfVHxiFDsC0xlFqwKWCvYrnw",
+      "source_sha256": "cd5d9d2db79cc72ad2fdf24d97d4665c57a652d25b0a43c5e3d020d15f97538a",
+      "source_name": "E-Commerce Security_ Importance, Issues & Protection Measures.docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 0
+    },
+    {
+      "title": "SSL/TLS: encrypt data in transit across every hop",
+      "summary": "Deploy TLS certificates so customer data is unreadable to intermediaries between buyer and server, and treat missing encryption as exposed credentials and card data.",
+      "use_when": "Setting up or auditing transport security for a storefront, checkout, account area or admin interface, especially after migrating hosts or adding a custom domain.",
+      "steps": [
+        "Install and maintain SSL/TLS certificates for every customer-facing domain and subdomain, including checkout and account pages, so data is encrypted on each hop between the buyer's device and your server.",
+        "Explain the principle to stakeholders: without encryption, any device between sender and server can read passwords, usernames and card numbers, because data passes through multiple computers before reaching the destination.",
+        "Enforce HTTPS across the whole site and redirect or block plain-HTTP requests; a partially secure checkout does not protect the session.",
+        "Automate certificate issuance and renewal, and monitor expiry, so an expired certificate does not silently break checkout.",
+        "Extend the same transport discipline to integrations: webhooks, payment provider callbacks and fulfillment APIs should be encrypted and authenticated as well."
+      ],
+      "caveats": [
+        "HTTPS protects data in transit only; it does not by itself make you PCI compliant, prevent malware, or secure stored card data.",
+        "Certificate setup and renewal workflows vary by host and platform; verify the current interface, and note that hosted platforms may manage this for you."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "tls",
+        "encryption",
+        "checkout",
+        "compliance",
+        "transport-security"
+      ],
+      "id": "df34d29eeda11171af2a61c8",
+      "source_id": "1CVdtLnDDQfVHxiFDsC0xlFqwKWCvYrnw",
+      "source_sha256": "cd5d9d2db79cc72ad2fdf24d97d4665c57a652d25b0a43c5e3d020d15f97538a",
+      "source_name": "E-Commerce Security_ Importance, Issues & Protection Measures.docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 0
+    },
+    {
+      "title": "PCI DSS scope: who owns what across hosted vs self-hosted",
+      "summary": "Treat PCI DSS as applying to any business handling card transactions, and decide card-data handling based on whether you are hosted, self-hosted or using redirect/iframe payments.",
+      "use_when": "Deciding your payment integration architecture, evaluating a hosted platform like Shopify, or assessing how much cardholder-data responsibility your team actually carries.",
+      "steps": [
+        "Accept the baseline rule from the source: PCI DSS applies to all businesses that handle credit card transactions, and it enforces strict protection of credit card data.",
+        "Reduce scope by not storing or transmitting raw card numbers yourself: use your payment provider's hosted fields, redirect or tokenized checkout so card data never touches your servers.",
+        "If self-hosted, map where cardholder data flows through your infrastructure, apply the standard's requirements to that environment, and keep evidence for audits.",
+        "If on a hosted platform, apply the shared responsibility model: the platform secures its own infrastructure, but you still own your admin account security, app/permission choices, refund and order handling, and any custom code or integrations you add.",
+        "Review annually and whenever you add a payment method, market, or integration, because each addition can change your PCI scope.",
+        "Keep card data out of logs, order notes, support tickets and exported CSVs; storing it there re-expands scope unintentionally."
+      ],
+      "caveats": [
+        "This source describes PCI DSS at a high level only; the actual requirements and current version must be checked against the PCI Security Standards Council and your acquirer.",
+        "Shared responsibility boundaries vary by platform and plan; verify your specific agreement rather than assuming the platform covers everything."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "compliance",
+        "pci-dss",
+        "payments",
+        "shared-responsibility",
+        "checkout"
+      ],
+      "id": "3c5e4e35f931cb4697d9c971",
+      "source_id": "1CVdtLnDDQfVHxiFDsC0xlFqwKWCvYrnw",
+      "source_sha256": "cd5d9d2db79cc72ad2fdf24d97d4665c57a652d25b0a43c5e3d020d15f97538a",
+      "source_name": "E-Commerce Security_ Importance, Issues & Protection Measures.docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 0
+    },
+    {
+      "title": "Protect against counterfeit sites and brand abuse",
+      "summary": "Counterfeit lookalike sites and content tampering damage trust and valuation; use packaging authentication and monitoring to fight them.",
+      "use_when": "Planning brand-protection work for a store selling branded or high-demand physical goods that phishing and counterfeit sites might imitate.",
+      "steps": [
+        "Monitor for fake versions of your store: the source notes attackers can create counterfeit sites cheaply, harming reputation and valuations, so set up periodic searches, typosquat monitoring and takedown requests for lookalike domains.",
+        "Add QR code authentication to product packaging so customers can verify authenticity from a smartphone, giving buyers an independent way to distinguish genuine goods from counterfeits.",
+        "Watch for malicious alterations to your own site content designed to divert traffic to competitors or damage reputation; use integrity monitoring and a change log on published content.",
+        "Treat customer data theft as a brand event, not only an IT event: notify affected customers, document what was exposed, and prepare a response plan before an incident.",
+        "Keep robust backups with ransomware protection so a worm, virus or defacement can be rolled back quickly and downtime minimized."
+      ],
+      "caveats": [
+        "QR packaging authentication applies to physical products you control; pure-digital or dropshipped catalogs need different verification methods.",
+        "The source's framing of counterfeit-site risk is qualitative; no specific detection thresholds or measurement methods are provided."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "brand-protection",
+        "data-protection",
+        "backups",
+        "trust"
+      ],
+      "id": "f7fc93724150e41e7303bfc0",
+      "source_id": "1CVdtLnDDQfVHxiFDsC0xlFqwKWCvYrnw",
+      "source_sha256": "cd5d9d2db79cc72ad2fdf24d97d4665c57a652d25b0a43c5e3d020d15f97538a",
+      "source_name": "E-Commerce Security_ Importance, Issues & Protection Measures.docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 0
+    },
+    {
+      "title": "Handle the fraud, dispute and delivery moment of uncertainty",
+      "summary": "Online buyers face uncertainty at payment, dispute resolution and delivery, so make these stages transparent and accountable to reduce fraud exposure and abandonment.",
+      "use_when": "Reviewing checkout, post-purchase communication and dispute handling to reduce buyer uncertainty and the fraud that exploits it.",
+      "steps": [
+        "Identify the three high-uncertainty moments the source names: payment, dispute resolution and delivery. These are the points where buyers are most exposed to fraudsters.",
+        "At payment, show recognizable payment controls (card verification, secure-payment indicators) and keep the checkout on a trusted, encrypted domain.",
+        "At dispute resolution, give a clear point of contact for problems and a documented process, so customers do not have to rely on unofficial channels where impersonation happens.",
+        "At delivery, provide tracking and a verifiable record of what was ordered and shipped; this also supports non-repudiation if a chargeback is filed later.",
+        "Be explicit about data collection and usage, not just problem-contact transparency. The source notes many businesses disclose contact points but fail to disclose how personal data is collected and used."
+      ],
+      "caveats": [
+        "The source's suggestion to embed third-party reviews for transparency is promotional and outside this section's defensive scope; treat reviews as a separate trust decision.",
+        "No specific abandonment or fraud-reduction figures are given for these measures."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "checkout",
+        "post-purchase",
+        "trust",
+        "customer-communication"
+      ],
+      "id": "d8a54a7666a1e331fc5d31cd",
+      "source_id": "1CVdtLnDDQfVHxiFDsC0xlFqwKWCvYrnw",
+      "source_sha256": "cd5d9d2db79cc72ad2fdf24d97d4665c57a652d25b0a43c5e3d020d15f97538a",
+      "source_name": "E-Commerce Security_ Importance, Issues & Protection Measures.docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 0
+    },
+    {
+      "title": "Anti-malware scanning and scheduled detection for storefront files",
+      "summary": "Malware such as card skimmers, spam injectors and redirects hides in store files; use continuous scanning plus scheduled scans to detect and clean it.",
+      "use_when": "Operating a self-hosted or plugin-heavy store and needing a routine for detecting malicious code injected into the site.",
+      "steps": [
+        "Deploy anti-malware software that scans both your web system and supporting devices; the source's requirement is that it renders hidden malware on your website visible and resolvable.",
+        "Enable scheduled scans (daily, weekly, fortnightly or monthly) rather than relying on manual checks, so the routine survives busy periods.",
+        "Turn on file-change notifications so you learn immediately when store files are modified, which is the typical signature of an injection.",
+        "Prioritize known storefront malware families the source names: credit-card skimming scripts, spam injections, pharma-injection pages, pub2srv and malicious redirects.",
+        "After any detection, treat it as a breach until proven otherwise: rotate admin and integration credentials, check for unauthorized admin users or payment-route changes, and review checkout code.",
+        "Keep backups with ransomware protection so a clean restore is possible if cleaning fails."
+      ],
+      "caveats": [
+        "The source promotes specific third-party scanner and firewall products; the durable practice is scheduled scanning, file-change alerts and credential rotation, not any one vendor.",
+        "Anti-malware does not replace a WAF, access control or transport encryption; it is one layer."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "malware",
+        "monitoring",
+        "digital-skimming",
+        "backups",
+        "incident-response"
+      ],
+      "id": "2abf4fa5b32ed846ef64082e",
+      "source_id": "1CVdtLnDDQfVHxiFDsC0xlFqwKWCvYrnw",
+      "source_sha256": "cd5d9d2db79cc72ad2fdf24d97d4665c57a652d25b0a43c5e3d020d15f97538a",
+      "source_name": "E-Commerce Security_ Importance, Issues & Protection Measures.docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 0
+    },
+    {
+      "title": "Defend against digital skimming and payment-page tampering",
+      "summary": "Card skimming (Magecart-style attacks) injects code into checkout to steal card data; protect by minimizing third-party scripts and monitoring checkout code.",
+      "use_when": "Managing checkout page scripts, tags and third-party apps, or investigating an incident where card data may have been captured from your site.",
+      "steps": [
+        "Inventory every script and app that loads on checkout and payment pages, including analytics, chat, A/B testing and tag managers, and remove anything that does not need to run at the payment step.",
+        "Restrict who can edit checkout templates and scripts, and require review for checkout code changes, since injected skimming code typically arrives through a compromised admin account or third-party dependency.",
+        "Use hosted payment fields or redirect flows so raw card numbers never enter your page's DOM where injected script could read them.",
+        "Monitor checkout code and script sources for unexpected changes, and route alerts to a named owner who can act quickly.",
+        "Include checkout integrity checks in your regular security review, alongside malware scans, so tampering is detected even if the script is served from a legitimate-looking domain.",
+        "If skimming is suspected, treat it as a card-data breach: isolate, rotate credentials, notify your payment provider and follow your incident process."
+      ],
+      "caveats": [
+        "The source names Magecart as a category but provides no technical detection recipe; methods vary by platform and should be validated on systems you own.",
+        "No control fully eliminates skimming risk while third-party scripts run on checkout."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "digital-skimming",
+        "checkout",
+        "third-party-scripts",
+        "incident-response",
+        "monitoring"
+      ],
+      "id": "00fe8dc22000ebe5e90a1b11",
+      "source_id": "1CVdtLnDDQfVHxiFDsC0xlFqwKWCvYrnw",
+      "source_sha256": "cd5d9d2db79cc72ad2fdf24d97d4665c57a652d25b0a43c5e3d020d15f97538a",
+      "source_name": "E-Commerce Security_ Importance, Issues & Protection Measures.docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 0
+    },
+    {
+      "title": "Bot, spam and OWASP-class application defense with a WAF",
+      "summary": "A Web Application Firewall filters spam, bad bots and common web attacks like XSS and SQL injection before they reach your store application.",
+      "use_when": "Configuring application-layer protection for a storefront and deciding what the WAF should block versus allow.",
+      "steps": [
+        "Place a WAF in front of the store application to filter bad bots, spam and the OWASP top 10 threat classes the source names, including cross-site scripting (XSS) and SQL injection (SQLi).",
+        "Verify your platform path: WAF configurations differ for WordPress, Magento, Opencart, Prestashop, Drupal, Joomla and custom PHP sites, so confirm a supported setup rather than assuming one configuration fits.",
+        "Test the WAF against legitimate checkout, login and account flows after any rule change; false positives block real customers and directly cost orders.",
+        "Combine WAF filtering with rate limiting and bot challenges on high-abuse endpoints such as login, account creation, password reset and checkout submission.",
+        "Review WAF logs regularly to tune rules and identify patterns, and keep a documented bypass path for emergencies so a bad rule does not take the store down."
+      ],
+      "caveats": [
+        "The source names the Astra firewall and its feature claims; treat vendor capability lists as claims to verify in your environment, not guarantees.",
+        "A WAF does not fix vulnerable application code; it filters traffic in front of it."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "waf",
+        "bot-mitigation",
+        "owasp",
+        "spam",
+        "rate-limiting"
+      ],
+      "id": "965af11e3df4bc36abb8af71",
+      "source_id": "1CVdtLnDDQfVHxiFDsC0xlFqwKWCvYrnw",
+      "source_sha256": "cd5d9d2db79cc72ad2fdf24d97d4665c57a652d25b0a43c5e3d020d15f97538a",
+      "source_name": "E-Commerce Security_ Importance, Issues & Protection Measures.docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 0
+    },
+    {
+      "title": "Layer passwords, PINs and magic links for buyer authentication",
+      "summary": "Verify buyers with login credentials, card PINs, magic links or email verification so accounts and orders belong to real identities.",
+      "use_when": "Designing customer account login, guest checkout verification, or account-recovery flows for the store.",
+      "steps": [
+        "Require authentication that proves identity for account access, using recognized methods such as client login credentials and card PINs at the point of verification.",
+        "For friction-averse buyers, use email-based magic links or one-time codes so verification does not require remembering a password.",
+        "Apply MFA or step-up verification to sensitive account actions: changing email or shipping address, viewing stored payment data, and issuing refunds or store credit.",
+        "Verify on the seller side too: publish enough business identity and contact information that buyers can confirm the store is genuine.",
+        "Align verification strength with the action: browsing can stay open, but saved-payment access and address changes should require re-verification.",
+        "Watch for account-takeover patterns in support channels, such as sudden email or address changes before an order, and add manual review triggers."
+      ],
+      "caveats": [
+        "The source notes authentication solutions can require expert help if you cannot implement them yourself.",
+        "Stronger authentication adds checkout friction; the source does not provide a benchmark for how much friction is acceptable."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "authentication",
+        "account-takeover",
+        "mfa",
+        "customer-accounts",
+        "checkout"
+      ],
+      "id": "66e6ee00a6cb6b437e5842ed",
+      "source_id": "1CVdtLnDDQfVHxiFDsC0xlFqwKWCvYrnw",
+      "source_sha256": "cd5d9d2db79cc72ad2fdf24d97d4665c57a652d25b0a43c5e3d020d15f97538a",
+      "source_name": "E-Commerce Security_ Importance, Issues & Protection Measures.docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 0
+    },
+    {
+      "title": "Non-repudiation: keep evidence that orders and consents happened",
+      "summary": "Digital signatures and retained records let neither buyer nor seller deny a transaction, which matters in ecommerce where no live video exists.",
+      "use_when": "Setting up order records, consent capture and chargeback evidence for the store, especially for high-value or subscription orders.",
+      "steps": [
+        "Accept the principle: non-repudiation is a legal and security layer confirming that communication reached the recipient, so a party cannot deny a signature, email or purchase.",
+        "Retain timestamped records of the order confirmation, payment authorization, terms acceptance and delivery confirmation for each transaction.",
+        "Use digital signatures or authenticated confirmations where available, and store them alongside the order record rather than in a separate system that may not be searchable during a dispute.",
+        "Capture marketing and data consent separately from purchase consent, since the source notes businesses often disclose contact points but not how personal data is collected and used.",
+        "Make the evidence retrievable by support staff before a chargeback deadline so disputes can be answered quickly.",
+        "Review retention periods and access controls so the evidence store itself does not become a privacy or breach liability."
+      ],
+      "caveats": [
+        "Non-repudiation is described as a legal principle; specific admissibility of digital records varies by jurisdiction and should be checked with counsel.",
+        "The source gives no specific retention period or tooling recommendation."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "non-repudiation",
+        "order-records",
+        "chargebacks",
+        "compliance",
+        "consent"
+      ],
+      "id": "5e4b42b4a48a37171bf1029b",
+      "source_id": "1CVdtLnDDQfVHxiFDsC0xlFqwKWCvYrnw",
+      "source_sha256": "cd5d9d2db79cc72ad2fdf24d97d4665c57a652d25b0a43c5e3d020d15f97538a",
+      "source_name": "E-Commerce Security_ Importance, Issues & Protection Measures.docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 0
+    },
+    {
+      "title": "Treat security failures as a survival risk, not an IT line item",
+      "summary": "Cybercrime causes financial, market-share and reputation losses, and the source reports most small stores that suffer attacks do not survive six months.",
+      "use_when": "Making the business case for security investment, or deciding how much budget and staffing to allocate to storefront protection.",
+      "steps": [
+        "Quantify the business exposure in the terms the source uses: losses in finances, market share and reputation, plus the possibility of criminal charges against the company.",
+        "Present the survival framing to decision-makers: the source reports that almost 60% of small ecommerce stores that experience cybercrimes do not survive more than six months.",
+        "Identify the specific loss mechanisms you face: diverted traffic, stolen customer and inventory data, denied service reducing store functionality, and stolen or altered intellectual property.",
+        "Convert the risk into operational requirements: staffing or expert support for security, backups with ransomware protection, and monitoring that runs continuously rather than annually.",
+        "Revisit the assessment when you add markets, payment methods or integrations, since those increase attack surface and change which losses are plausible."
+      ],
+      "caveats": [
+        "The statistics cited (32.4% of attacks, 29% malicious traffic, 85.6% purchase rate, 60% survival) are dated around 2018 and presented loosely; use them as source-stated framing, not current benchmarks.",
+        "Survival statistics describe a correlation in the cited reporting, not a causal guarantee for any individual store."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "risk-assessment",
+        "business-case",
+        "data-protection",
+        "downtime"
+      ],
+      "id": "ef80940bbfac00b8d729a877",
+      "source_id": "1CVdtLnDDQfVHxiFDsC0xlFqwKWCvYrnw",
+      "source_sha256": "cd5d9d2db79cc72ad2fdf24d97d4665c57a652d25b0a43c5e3d020d15f97538a",
+      "source_name": "E-Commerce Security_ Importance, Issues & Protection Measures.docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 0
+    },
+    {
+      "title": "Harden store networks against worms, Trojans and destructive payloads",
+      "summary": "Malware delivered via worms, viruses and fake software can hijack systems, erase or block data, and propagate malicious links through your network.",
+      "use_when": "Establishing endpoint and store-adjacent device protection, especially for teams running order management, warehouse or admin workstations.",
+      "steps": [
+        "Install and maintain anti-virus and anti-malware protection on the devices and systems that touch the store, admin panels and order data; the source lists this as a necessary minimum alongside firewalls and encryption.",
+        "Recognize the delivery vector: the source notes attackers hide Trojans in fake software, so restrict software installation to approved sources for staff who access store systems.",
+        "Plan for the damage types named: hijacked systems, erased data, blocked data access, and the spread of malicious links to clients and other computers on the network.",
+        "Segment admin and operational networks from general browsing where feasible, so a single infected workstation cannot reach store infrastructure.",
+        "Keep an offline or immutable backup with ransomware protection, and test restoration so recovery is a rehearsed process rather than an untested assumption.",
+        "Educate staff who open order emails, supplier files and attachments, since malicious links can be forwarded onward through your network."
+      ],
+      "caveats": [
+        "Anti-virus and firewalls reduce but do not eliminate infection risk; the source presents them as a minimum, not a guarantee.",
+        "No specific product or detection rate is endorsed here beyond the source's vendor examples."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "malware",
+        "endpoint-security",
+        "backups",
+        "ransomware",
+        "staff-training"
+      ],
+      "id": "994f398eea3e4e6677688f9f",
+      "source_id": "1CVdtLnDDQfVHxiFDsC0xlFqwKWCvYrnw",
+      "source_sha256": "cd5d9d2db79cc72ad2fdf24d97d4665c57a652d25b0a43c5e3d020d15f97538a",
+      "source_name": "E-Commerce Security_ Importance, Issues & Protection Measures.docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 0
+    },
+    {
+      "title": "Route traffic through selective-permeability firewalls",
+      "summary": "Firewalls regulate inbound and outbound store traffic with selective permeability, allowing only trusted traffic through.",
+      "use_when": "Choosing and configuring firewall or plugin protection for a self-hosted ecommerce site.",
+      "steps": [
+        "Deploy firewall protection using ecommerce-appropriate software or plugins that bar untrusted networks and regulate both inbound and outbound traffic.",
+        "Configure for selective permeability: the rule is to permit trusted traffic only, rather than blocking individual known-bad sources.",
+        "Verify outbound rules too, since compromised store code often needs an outbound channel to exfiltrate card or customer data.",
+        "Combine the firewall with the WAF and malware scanning layers so network filtering, application filtering and file integrity are covered separately.",
+        "Test the rules against real checkout, login and webhook traffic after changes, and log blocked events for review."
+      ],
+      "caveats": [
+        "The source promotes a specific vendor firewall; vendor feature lists are claims to verify, and results vary by site architecture.",
+        "A firewall in front of a vulnerable plugin does not fix the underlying vulnerability."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "firewall",
+        "network-security",
+        "waf",
+        "self-hosted",
+        "monitoring"
+      ],
+      "id": "893cc2b3b57c0105f563e5e8",
+      "source_id": "1CVdtLnDDQfVHxiFDsC0xlFqwKWCvYrnw",
+      "source_sha256": "cd5d9d2db79cc72ad2fdf24d97d4665c57a652d25b0a43c5e3d020d15f97538a",
+      "source_name": "E-Commerce Security_ Importance, Issues & Protection Measures.docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 0
+    },
+    {
+      "title": "Automate high-risk order handling on hosted platforms",
+      "summary": "Hosted platforms leave platform infrastructure to the provider but you still own order-risk decisions, so automate high-risk order review and actions.",
+      "use_when": "Operating on a hosted platform like Shopify and needing a repeatable process for suspicious orders, refunds or account changes.",
+      "steps": [
+        "Clarify the shared responsibility split: the hosted platform secures its own infrastructure, while you remain responsible for your admin accounts, apps, data access and order-level decisions.",
+        "Define what counts as a high-risk order for your store (for example mismatched billing and shipping, unusually large first orders, or rapid repeat orders from one buyer) and make the criteria explicit rather than leaving it to staff judgment alone.",
+        "Automate the response on hosted platforms using workflow tooling such as Shopify Flow: tag or hold high-risk orders, notify a named reviewer, and release or cancel based on a documented rule.",
+        "Restrict admin permissions so only authorized staff can refund, export customer data or edit payment settings.",
+        "Log every automated and manual risk decision so patterns can be reviewed and rules adjusted over time.",
+        "Re-verify the current interface and available triggers before building workflows, since platform automation features change."
+      ],
+      "caveats": [
+        "The source names Shopify Flow and hosted-platform handling in this section's header, but the body does not detail the workflow configuration; treat platform specifics as needing verification.",
+        "Automated rules can produce false positives that delay legitimate orders, so include a review path."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "order-review",
+        "automation",
+        "shopify",
+        "shared-responsibility",
+        "fraud"
+      ],
+      "id": "4156d47e2c2baa438521c1ca",
+      "source_id": "1CVdtLnDDQfVHxiFDsC0xlFqwKWCvYrnw",
+      "source_sha256": "cd5d9d2db79cc72ad2fdf24d97d4665c57a652d25b0a43c5e3d020d15f97538a",
+      "source_name": "E-Commerce Security_ Importance, Issues & Protection Measures.docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 0
+    },
+    {
+      "title": "Map payment-fraud controls: verification checks at checkout",
+      "summary": "Address verification, card verification and 3D Secure shift some fraud risk decisions to the checkout step, alongside PCI compliance for card data.",
+      "use_when": "Choosing and configuring payment verification settings for checkout, or deciding how much friction to add to reduce card-not-present fraud.",
+      "steps": [
+        "Distinguish the mechanisms rather than treating them as one control: address verification checks the billing address against issuer records, card verification value checks the printed code, and 3D Secure adds an issuer-side buyer authentication step.",
+        "Enable these checks on your payment provider's settings and confirm they apply to the payment methods and regions you sell into.",
+        "Accept that requiring 3D Secure or strict address matching can convert some legitimate buyers away, so weigh fraud reduction against checkout completion for your own catalog and markets.",
+        "Keep these verification steps separate from transport encryption and compliance work; verification is a fraud signal, not a substitute for PCI DSS or TLS.",
+        "Record which checks fired on each order so disputes and rule tuning have evidence.",
+        "Review chargeback and decline patterns periodically and adjust thresholds rather than setting rules once and leaving them."
+      ],
+      "caveats": [
+        "This source's body mentions 3DS, AVS and CVV only in the section header; it gives no configuration detail, so verify current provider options and rules.",
+        "None of these checks guarantees fraud prevention, and none replaces PCI DSS obligations."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "payments",
+        "fraud",
+        "3d-secure",
+        "checkout",
+        "chargebacks"
+      ],
+      "id": "8a7af1a2b1458ced8f86c56e",
+      "source_id": "1CVdtLnDDQfVHxiFDsC0xlFqwKWCvYrnw",
+      "source_sha256": "cd5d9d2db79cc72ad2fdf24d97d4665c57a652d25b0a43c5e3d020d15f97538a",
+      "source_name": "E-Commerce Security_ Importance, Issues & Protection Measures.docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 0
+    },
+    {
+      "title": "Defend against denial-of-service and keep the store selling",
+      "summary": "Hackers can prevent legitimate users from using the store, reducing functionality; DDoS filtering and preparedness keep orders flowing.",
+      "use_when": "Preparing for or responding to traffic floods, slow checkout, or downtime during a peak sales period.",
+      "steps": [
+        "Assume downtime is a revenue event: the source frames denial of service as preventing legitimate users from using the store and causing a reduction in its functioning.",
+        "Absorb volumetric attacks at the edge with a CDN or DDoS-protection layer, so the origin server is not the first thing hit.",
+        "Rate-limit and challenge high-cost endpoints such as search, cart, login and checkout submission, which bots often target to exhaust server capacity.",
+        "Maintain current backups with ransomware protection so a destructive event can be restored quickly and downtime minimized.",
+        "Prepare a response plan with named owners, customer communication templates, and a decision rule for when to enable stricter mitigation that may inconvenience some buyers.",
+        "Review capacity and mitigation settings before major sale events rather than during them."
+      ],
+      "caveats": [
+        "The source describes CDN machine learning as blocking DDoS threats but gives no capacity figures or thresholds.",
+        "Strict mitigation can block real customers during high traffic; plan the trade-off in advance."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "ddos",
+        "cdn",
+        "uptime",
+        "peak-season",
+        "incident-response"
+      ],
+      "id": "06bc968f35c34d98209345ea",
+      "source_id": "1CVdtLnDDQfVHxiFDsC0xlFqwKWCvYrnw",
+      "source_sha256": "cd5d9d2db79cc72ad2fdf24d97d4665c57a652d25b0a43c5e3d020d15f97538a",
+      "source_name": "E-Commerce Security_ Importance, Issues & Protection Measures.docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 0
+    },
+    {
+      "title": "Integrity: keep customer data unaltered to preserve trust",
+      "summary": "Integrity means using customer information as given, without changing any part of it, because alterations erode buyer confidence.",
+      "use_when": "Reviewing how order, address and profile data is edited and stored across the store, especially where staff or integrations can modify customer records.",
+      "steps": [
+        "Adopt the principle: the business uses customer information as provided, without changing anything, and altering any part of the data causes the buyer to lose confidence in the enterprise's security.",
+        "Prevent silent edits: make changes to shipping addresses, order contents and contact details deliberate and logged rather than overwritten by tooling.",
+        "Validate customer-submitted data on receipt and flag discrepancies instead of auto-correcting them without notice.",
+        "Restrict write access so only the roles and integrations that need to change customer records can do so.",
+        "Show customers what was recorded, via order confirmation and account views, so discrepancies surface early rather than at delivery or dispute time.",
+        "Treat unexplained changes in records as a security signal, since unauthorized alteration may indicate compromise rather than a data-entry issue."
+      ],
+      "caveats": [
+        "Integrity in this source is a conceptual principle; it names no specific validation library or logging standard.",
+        "Some normalization (address formatting, phone formatting) is operationally necessary; the principle is to avoid altering meaning without the customer's knowledge."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "data-integrity",
+        "customer-data",
+        "access-control",
+        "order-records",
+        "trust"
+      ],
+      "id": "86d4b5ae6b15f47bf6761bfa",
+      "source_id": "1CVdtLnDDQfVHxiFDsC0xlFqwKWCvYrnw",
+      "source_sha256": "cd5d9d2db79cc72ad2fdf24d97d4665c57a652d25b0a43c5e3d020d15f97538a",
+      "source_name": "E-Commerce Security_ Importance, Issues & Protection Measures.docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 0
+    },
+    {
+      "title": "Privacy: prevent unauthorized access to customer data",
+      "summary": "Privacy means no party other than the seller the customer chose should access their personal information and account details.",
+      "use_when": "Reviewing app permissions, data exports, staff access and vendor sharing for the store's customer database.",
+      "steps": [
+        "Define the baseline: a breach of confidentiality occurs when sellers let others access customer information, so the standard is that only the chosen seller accesses personal information and account details.",
+        "Audit every app, integration and agency that can read customer records, and remove or scope down access that is not required for its function.",
+        "Apply a minimum protective stack as the source describes: anti-virus, firewall, encryption and other data protection to safeguard credit card and bank details.",
+        "Limit data exports, and avoid keeping card or bank details in spreadsheets, support tickets or marketing tools.",
+        "Document what personal data you collect and how it is used, since the source notes businesses often disclose a problem contact point but not their data collection and usage practices.",
+        "Review access when staff leave or agency relationships end, since retained credentials are a common confidentiality gap."
+      ],
+      "caveats": [
+        "The source gives the privacy principle and a minimum control list, not a full privacy-regulation compliance program; check applicable law separately.",
+        "Encryption and firewalls reduce exposure but do not guarantee customer data remains private if access is misconfigured."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "privacy",
+        "customer-data",
+        "access-control",
+        "apps-integrations",
+        "compliance"
+      ],
+      "id": "e9fc52a7717af1c4b06da89f",
+      "source_id": "1CVdtLnDDQfVHxiFDsC0xlFqwKWCvYrnw",
+      "source_sha256": "cd5d9d2db79cc72ad2fdf24d97d4665c57a652d25b0a43c5e3d020d15f97538a",
+      "source_name": "E-Commerce Security_ Importance, Issues & Protection Measures.docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 0
+    },
+    {
+      "title": "Run a continuous security review across store surfaces",
+      "summary": "Security is ongoing, not a one-time setup; the source's closing recommendation is proactive, continuous protection across the website.",
+      "use_when": "Setting a recurring security cadence for the store rather than reacting only after an incident.",
+      "steps": [
+        "Accept the source's closing posture: don't stop at basic authentication, SSL and MFA, because attackers keep improving, so implement proactive protection across the website continuously.",
+        "Define a recurring review covering the store surfaces named across this section: transport encryption, authentication and MFA, firewall/WAF rules, malware scans, backups, payment verification settings and admin permissions.",
+        "Assign an owner and a schedule for each review item, and record the outcome so gaps are visible between cycles.",
+        "Include ongoing vulnerability monitoring, which the source names as part of the overall ecommerce-security definition alongside encryption, secure payments, PCI DSS compliance and bot protection.",
+        "Re-run the review after significant changes: new market, new payment method, new app, platform migration or staff change.",
+        "Keep an incident response plan ready, and rehearse the steps for notifying customers and payment partners."
+      ],
+      "caveats": [
+        "The source gives no specific review frequency or checklist depth; set a cadence proportionate to order volume and data sensitivity.",
+        "Vendor product claims in the source are promotional illustrations of the tactics, not endorsements or performance guarantees."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "security-review",
+        "monitoring",
+        "incident-response",
+        "compliance",
+        "process"
+      ],
+      "id": "81d28e4a2a57e3c22f60b5fd",
+      "source_id": "1CVdtLnDDQfVHxiFDsC0xlFqwKWCvYrnw",
+      "source_sha256": "cd5d9d2db79cc72ad2fdf24d97d4665c57a652d25b0a43c5e3d020d15f97538a",
+      "source_name": "E-Commerce Security_ Importance, Issues & Protection Measures.docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 0
+    }
+  ],
+  "request_id": "b2488cfc01f0e538a6b2ffbbbeabab8e3389987a9221fb2ffd955093802e79f3",
+  "ecommerce_scope_version": 1
+}

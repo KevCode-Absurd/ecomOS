@@ -1,0 +1,196 @@
+{
+  "status": "complete",
+  "mapping": {
+    "A": "frontier_without",
+    "B": "cheap_with",
+    "C": "cheap_without",
+    "D": "frontier_with"
+  },
+  "judge_model": "gpt-5.6-terra",
+  "output": {
+    "reviews": [
+      {
+        "label": "A",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 4,
+          "prioritization": 4
+        },
+        "strengths": [
+          "All requested conversion calculations are correct, including overall, mobile, desktop, funnel transitions, AOV, and the descriptive device-mix decomposition.",
+          "Correctly identifies two observed upstream deteriorations: session-to-add-to-cart and add-to-cart-to-checkout. It does not misattribute the aggregate funnel loss solely to mobile because device-level funnel stages are unavailable.",
+          "Clearly distinguishes evidence from hypotheses and explicitly avoids treating speed, traffic quality, or mobile usability as proven causes.",
+          "Uses TrailFold-specific, policy-compliant information recommendations: 13-inch sleeve, water-resistant rather than waterproof, and 4–7 business-day delivery.",
+          "The three missing facts are prioritized and directly tied to resolving the principal ambiguity: traffic composition versus on-site/device friction."
+        ],
+        "issues": [
+          "The third missing-fact item combines a dated change log, usability evidence, and field-performance evidence; it is still useful, but could be narrowed into one more sharply defined data request."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Overall conversion is calculated as 3% to 2%, mobile as about 2.667% to 1.5%, and desktop remains 4%.",
+            "met": true,
+            "reason": "All rates and changes are calculated correctly from supplied sessions and orders."
+          },
+          {
+            "criterion": "Add-to-cart rate is identified as 10% to 8%, while checkout completion remains 50%.",
+            "met": true,
+            "reason": "It also correctly identifies the separate 60% to 50% add-to-cart-to-checkout decline."
+          },
+          {
+            "criterion": "Does not assert speed, tracking failure, or creative fatigue as a proven cause.",
+            "met": true,
+            "reason": "Technical and traffic explanations are explicitly framed as unverified hypotheses."
+          }
+        ]
+      },
+      {
+        "label": "B",
+        "scores": {
+          "factual_accuracy": 3,
+          "brand_fit": 3,
+          "task_completion": 4,
+          "actionability": 3,
+          "uncertainty_and_questions": 3,
+          "prioritization": 3
+        },
+        "strengths": [
+          "Core conversion, device, funnel, AOV, revenue-per-session, Meta CPM/CTR, impressions, click, and ROAS arithmetic is accurate.",
+          "Correctly locates observed deterioration before checkout completion and notes that stable aggregate checkout completion does not prove every device/browser path is healthy.",
+          "Treats Meta attribution as unreconciled and non-incremental rather than using reported platform revenue as proof of business improvement.",
+          "Provides useful, brand-safe clarity-test content and does not make unsupported 15-inch or waterproof claims.",
+          "The first two missing-data requests are concrete and useful for distinguishing device friction from traffic-quality changes."
+        ],
+        "issues": [
+          "It introduces unsupported 'reference heuristics,' 'cited directional band,' and stage-band assessments. No such benchmark source or reference guidance was supplied, so these statements should not be presented as context.",
+          "It calls the add-to-cart-to-checkout gap the 'largest actionable gap,' although its own counterfactual math would not establish that as the largest order opportunity; restoring session-to-add-to-cart to the prior rate produces a larger modeled order increase than restoring add-to-cart-to-checkout alone.",
+          "The recommended test says to surface a '13-inch sleeve dimension,' but no physical sleeve dimensions were provided. It should say only that it fits a padded 13-inch laptop sleeve.",
+          "The response goes materially beyond the diagnostic task with unsupported benchmark commentary and a spend-to-revenue ratio that is not a profitability or incrementality measure.",
+          "One question asks for owner approval of a spend hold/reallocation rather than seeking one of the most useful missing facts."
+        ],
+        "critical_errors": [
+          "Uses unsupplied funnel benchmark/reference-band claims as though a reference exists.",
+          "Risks implying a sleeve measurement exists when the facts only support a 13-inch laptop-sleeve specification."
+        ],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Overall conversion is calculated as 3% to 2%, mobile as about 2.667% to 1.5%, and desktop remains 4%.",
+            "met": true,
+            "reason": "The displayed calculations are correct."
+          },
+          {
+            "criterion": "Add-to-cart rate is identified as 10% to 8%, while checkout completion remains 50%.",
+            "met": true,
+            "reason": "The funnel calculations are correct and include the 60% to 50% middle-stage change."
+          },
+          {
+            "criterion": "Does not assert speed, tracking failure, or creative fatigue as a proven cause.",
+            "met": true,
+            "reason": "Those possibilities are generally labeled hypotheses, despite unnecessary benchmark framing elsewhere."
+          }
+        ]
+      },
+      {
+        "label": "C",
+        "scores": {
+          "factual_accuracy": 2,
+          "brand_fit": 4,
+          "task_completion": 3,
+          "actionability": 3,
+          "uncertainty_and_questions": 3,
+          "prioritization": 3
+        },
+        "strengths": [
+          "The requested overall, device, and funnel arithmetic is accurate, including the mix decomposition and stable checkout-completion rate.",
+          "It correctly recognizes that desktop conversion is unchanged, aggregate add-to-cart and add-to-cart-to-checkout performance worsened, and AOV is flat.",
+          "It uses TrailFold-specific customer questions and PDP facts without fabricating testimonials or prohibited product claims.",
+          "It appropriately labels creative fatigue, traffic quality, and mobile friction as hypotheses rather than established causes.",
+          "The proposed low-cost PDP information test is consistent with the available budget and avoids discounting and unsupported claims."
+        ],
+        "issues": [
+          "It states that the funnel problem is 'top and mid funnel on mobile,' but only overall funnel-stage counts are supplied. The evidence establishes a mobile conversion decline and aggregate upstream funnel deterioration, not that the observed add-to-cart or cart-to-checkout losses specifically occurred on mobile.",
+          "It says AOV staying at $90 means 'product mix and discounting did not cause the revenue decline' and calls discounting unlikely on that basis. Flat AOV cannot rule out changes in price, discounting, SKU mix, or their offsetting effects; no period-specific discount or pricing data is supplied.",
+          "Its order-shortfall calculations are individually correct but presented as though they allocate loss across mobile product-page engagement and cart progression. They are aggregate counterfactuals, not evidence of mobile-stage causation.",
+          "The three missing facts omit a dated change log, which is especially useful for testing whether a storefront, tracking, offer, or campaign change coincided with the decline."
+        ],
+        "critical_errors": [
+          "Attributes the aggregate upstream funnel deterioration specifically to mobile without device-level add-to-cart and checkout-start data.",
+          "Uses flat AOV to exclude product mix or discounting as causes without supporting period-level pricing or SKU-mix evidence."
+        ],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Overall conversion is calculated as 3% to 2%, mobile as about 2.667% to 1.5%, and desktop remains 4%.",
+            "met": true,
+            "reason": "All requested device and overall conversion calculations are correct."
+          },
+          {
+            "criterion": "Add-to-cart rate is identified as 10% to 8%, while checkout completion remains 50%.",
+            "met": true,
+            "reason": "The aggregate funnel rates are calculated correctly."
+          },
+          {
+            "criterion": "Does not assert speed, tracking failure, or creative fatigue as a proven cause.",
+            "met": true,
+            "reason": "Creative fatigue and technical causes are explicitly labeled hypotheses."
+          }
+        ]
+      },
+      {
+        "label": "D",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 4,
+          "prioritization": 4
+        },
+        "strengths": [
+          "All requested conversion and funnel calculations are correct and clearly presented, including the full-funnel reconciliation from 3% to 2%.",
+          "Correctly separates the observed facts: mobile conversion fell, desktop held steady, session-to-add-to-cart declined, add-to-cart-to-checkout declined, and aggregate checkout completion stayed at 50%.",
+          "The device-mix calculation is accurate and explicitly described as descriptive rather than causal.",
+          "It makes the important qualification that aggregate funnel data cannot assign the upstream funnel loss specifically to mobile, despite the clear mobile conversion decline.",
+          "Evidence and hypotheses are cleanly separated. It does not claim speed, broken buttons, payment errors, tracking failure, or ad quality as established causes.",
+          "Its three missing facts are tightly prioritized: device/browser progression, mobile traffic composition, and a dated change/incident history.",
+          "Recommended actions are feasible and restrained: targeted mobile-path QA and investigation before broad redesign or increased acquisition spend."
+        ],
+        "issues": [],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Overall conversion is calculated as 3% to 2%, mobile as about 2.667% to 1.5%, and desktop remains 4%.",
+            "met": true,
+            "reason": "The calculations and percentage-point changes are correct."
+          },
+          {
+            "criterion": "Add-to-cart rate is identified as 10% to 8%, while checkout completion remains 50%.",
+            "met": true,
+            "reason": "It correctly calculates all three funnel transitions and reconciles them to overall conversion."
+          },
+          {
+            "criterion": "Does not assert speed, tracking failure, or creative fatigue as a proven cause.",
+            "met": true,
+            "reason": "Technical and acquisition explanations are explicitly described as plausible but unverified."
+          }
+        ]
+      }
+    ],
+    "ranking": [
+      "A",
+      "D",
+      "B",
+      "C"
+    ],
+    "summary": "A and D are the strongest: both complete the requested diagnosis accurately, maintain causal discipline, and prioritize highly useful missing data. A is slightly more operationally specific on a safe information-clarity response; D is especially concise and precise about the limits of aggregate funnel data. B is substantially useful but weakened by invented benchmark/reference framing and an unsupported sleeve-dimension implication. C has correct arithmetic and sound brand-safe ideas, but overattributes aggregate funnel losses to mobile and overinterprets flat AOV."
+  },
+  "request_id": "32aa5cc03c6ce5146a5b2dc3d001f9d437b2a606a506358c47227619b82f10b8",
+  "cost_upper_estimate_usd": 0.058728875
+}

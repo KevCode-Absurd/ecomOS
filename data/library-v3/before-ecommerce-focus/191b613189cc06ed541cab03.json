@@ -1,0 +1,761 @@
+{
+  "cards": [
+    {
+      "title": "Decide whether you need an A/B test or a holdout",
+      "summary": "A/B tests answer whether one variant beat another locally; holdouts and incrementality tests answer whether the change created business value that wouldn't have happened anyway.",
+      "use_when": "Choosing a measurement approach before committing budget to a test, a campaign, or a full CRO program.",
+      "steps": [
+        "Map the business question to the method before designing anything: 'Did this specific variant win?' → standard A/B test. 'Does retargeting drive incremental revenue?' → user-level holdout. 'Does a paid channel drive incremental sales?' → geo holdout. 'Has the whole CRO program generated value?' → persistent program holdout. 'What was the impact during peak season with no clean control?' → BSTS or difference-in-differences. 'We cannot randomize at all' → synthetic control, propensity score matching, or regression discontinuity.",
+        "Recognize what an A/B test cannot tell you: whether conversions would have happened anyway, the cumulative effect of shipping many winners, or what happens if you switch a channel off.",
+        "Match method to traffic: the source suggests high-traffic stores (>100k monthly visitors) can support user-level holdouts, geo holdouts and switchback tests, while lower-traffic stores may need BSTS, synthetic control or longer-duration holdouts to reach statistical power.",
+        "Judge value by the counterfactual question — would this have happened anyway — not by the number of tests run."
+      ],
+      "caveats": [
+        "The >100k monthly visitor figure is the source's rough guidance, not a validated threshold.",
+        "Some listed methods (BSTS, PSM, IV, RDD) are presented as advanced causal techniques; the source itself flags them as beyond the core CRO playbook, so weigh implementation cost and expertise before adopting them."
+      ],
+      "tags": [
+        "testing",
+        "measurement",
+        "incrementality",
+        "holdout",
+        "causal-inference",
+        "experiment-design"
+      ],
+      "id": "99267d8022f80efab6f258d6",
+      "source_id": "13xcmKLUtePPNdWOs5tNDQCnQJxcH3vGJ",
+      "source_sha256": "9cdaed43cd0bc6ed00726991891fa1bd4ffe07c547fa616e4ee05e29a9e790e4",
+      "source_name": "CRO fundamentals.docx",
+      "folder": "/09-CRO-testing",
+      "domain": "testing",
+      "section": 0
+    },
+    {
+      "title": "Run a persistent holdout to prove CRO program value",
+      "summary": "A randomly assigned holdout that never receives any shipped improvement measures the net cumulative impact of the entire CRO program.",
+      "use_when": "You need to prove to leadership or a client that ongoing conversion work is generating revenue rather than taking credit for traffic that would have converted anyway.",
+      "steps": [
+        "Randomly assign a slice of all traffic (the source's example uses 5%) to a holdout that permanently sees the pre-program experience, while everyone else receives every shipped winner.",
+        "Keep the holdout running for an extended period (example: 90 days) rather than the duration of a single test.",
+        "Compare conversion between holdout and optimized groups at the end; the source's example had holdout 2.5% vs optimized 2.9%, a 0.4 percentage point / 16% relative lift attributable to the program.",
+        "Use this net number as the honest measure rather than summing individual test wins."
+      ],
+      "caveats": [
+        "Individual A/B winners interact and decay: the source notes interaction effects between combined changes, cumulative drift in buyer population and seasonality, and attribution confusion when many changes ship together.",
+        "A 5% holdout for 90 days is an illustrative setup; the source gives no required sample size or significance rule, and small stores may lack the power."
+      ],
+      "tags": [
+        "testing",
+        "measurement",
+        "holdout",
+        "conversion-optimization",
+        "incrementality"
+      ],
+      "id": "4a6e36289b4c948c59c143ea",
+      "source_id": "13xcmKLUtePPNdWOs5tNDQCnQJxcH3vGJ",
+      "source_sha256": "9cdaed43cd0bc6ed00726991891fa1bd4ffe07c547fa616e4ee05e29a9e790e4",
+      "source_name": "CRO fundamentals.docx",
+      "folder": "/09-CRO-testing",
+      "domain": "testing",
+      "section": 0
+    },
+    {
+      "title": "Run channel incrementality tests with user and geo holdouts",
+      "summary": "Holdout designs reveal what fraction of a channel's attributed conversions would have happened without spend, letting you reallocate budget to genuinely incremental channels.",
+      "use_when": "A channel shows strong ROAS or attribution and you suspect it is intercepting demand that already existed, or you need to justify ad spend.",
+      "steps": [
+        "Choose the holdout type by intervention: user-level holdout for email, loyalty and personalization; geo holdout for ad spend and channel-level incrementality; feature-specific holdout (e.g. hold 5% of users back from recommendations or popups) for on-site features.",
+        "Run the retargeting-style test: define the audience (example: visited in the last 30 days without purchasing), randomly hold back a portion (example 20%), suppress ads to that group for a defined window (example 14 days), and compare conversion rates.",
+        "Interpret the holdout's conversion rate as the organic baseline: in the source's example the holdout converted at 70% of the exposed rate, implying only 30% true incrementality — the brand then stopped standard retargeting offers and used the channel only for specific deal announcements.",
+        "Run email the same way: hold back around 10% of the list from a promotional campaign; in the example control purchased at 2.1% and the promoted group at 3.8%, so incremental lift was 1.7 points, not 3.8.",
+        "For ad platforms, use a platform-native lift study or a DIY geo holdout — pausing ads in matched test regions and comparing to control regions."
+      ],
+      "caveats": [
+        "These are illustrative results, not benchmarks; actual incrementality varies by brand, channel and market.",
+        "The source reports 71% of advertisers call incrementality their most important KPI, but gives no universal minimum holdout size or duration."
+      ],
+      "tags": [
+        "testing",
+        "measurement",
+        "incrementality",
+        "holdout",
+        "acquisition",
+        "attribution"
+      ],
+      "id": "811dfec8702b2af33e2132e9",
+      "source_id": "13xcmKLUtePPNdWOs5tNDQCnQJxcH3vGJ",
+      "source_sha256": "9cdaed43cd0bc6ed00726991891fa1bd4ffe07c547fa616e4ee05e29a9e790e4",
+      "source_name": "CRO fundamentals.docx",
+      "folder": "/09-CRO-testing",
+      "domain": "testing",
+      "section": 0
+    },
+    {
+      "title": "Design a geo holdout for ad channel measurement",
+      "summary": "A geo holdout pauses a channel in matched regions to estimate its true incremental impact on conversions and revenue.",
+      "use_when": "You want to measure whether a paid channel drives sales that would not have occurred otherwise, especially where user-level suppression is not feasible.",
+      "steps": [
+        "Select holdout regions and verify they correlate with control markets before running — the source's example brand used 10 DMAs with 0.96–0.99 correlation to control markets for conversions and revenue, producing a high-powered test.",
+        "Pause all campaigns for the channel in the holdout regions for a fixed window (example: 6 weeks), keeping control regions running normally.",
+        "Measure incremental CPA, incremental ROAS, new-customer CPA and new-customer ROAS with confidence levels; the example reported incremental CPA of $130 (10.4% lift at 99% confidence) and incremental ROAS of 0.51 (7.9% lift at 90% confidence).",
+        "Interpret low incremental ROAS as evidence the channel mainly intercepts existing demand, and decide spend accordingly.",
+        "Note that when ecommerce is only one channel of an omni-channel business, measured online lift may understate total brand impact."
+      ],
+      "caveats": [
+        "Results are a single company example, not a benchmark; correlation-based market matching must be verified for your own markets.",
+        "The source gives no rule for how many DMAs or how long the pause should be."
+      ],
+      "tags": [
+        "testing",
+        "measurement",
+        "incrementality",
+        "holdout",
+        "acquisition",
+        "geo-testing"
+      ],
+      "id": "83f40c6e50d6b0fae3ed2643",
+      "source_id": "13xcmKLUtePPNdWOs5tNDQCnQJxcH3vGJ",
+      "source_sha256": "9cdaed43cd0bc6ed00726991891fa1bd4ffe07c547fa616e4ee05e29a9e790e4",
+      "source_name": "CRO fundamentals.docx",
+      "folder": "/09-CRO-testing",
+      "domain": "testing",
+      "section": 0
+    },
+    {
+      "title": "Cut mobile load time toward a sub-2s LCP target",
+      "summary": "Page speed has a documented compounding effect on conversion, and the source sets a practical mobile target under 2 seconds LCP.",
+      "use_when": "Prioritizing technical fixes or arguing for speed investment on an ecommerce site.",
+      "steps": [
+        "Measure LCP and INP for real users rather than lab-only scores, using tools such as Chrome UX Report, Shopify web performance reporting or PageSpeed Insights (verify current interfaces).",
+        "Set the target: under 2s LCP for mobile as the source's stated aim.",
+        "Use the reported relationships to size the opportunity: every 100ms slower load is credited with roughly 3.5% lower conversion (one large analysis cited up to a 7% drop); every 32ms slower interactivity with about a 1.5% drop; a 0.1s mobile speed improvement with an 8.4% retail conversion boost; pages loading at 2.4s converting around 1.9% vs below 1% at ~4.2s.",
+        "Apply practical fixes: compress images sharply (source suggests hero under 100KB and grid images under 60KB), serve responsive WebP, lazy-load below the fold, preconnect key domains, defer non-critical JavaScript.",
+        "Re-measure after changes and pair with a test or holdout when you want to attribute revenue impact."
+      ],
+      "caveats": [
+        "The percentage-per-millisecond figures come from different studies with different baselines; treat them as directional, not precise forecasts.",
+        "Speed affects SEO and paid costs too, so isolate CRO impact carefully if you need a clean attribution."
+      ],
+      "tags": [
+        "testing",
+        "conversion-optimization",
+        "site-speed",
+        "mobile",
+        "measurement",
+        "product-page"
+      ],
+      "id": "6152128ab30cd065aa0a67ae",
+      "source_id": "13xcmKLUtePPNdWOs5tNDQCnQJxcH3vGJ",
+      "source_sha256": "9cdaed43cd0bc6ed00726991891fa1bd4ffe07c547fa616e4ee05e29a9e790e4",
+      "source_name": "CRO fundamentals.docx",
+      "folder": "/09-CRO-testing",
+      "domain": "testing",
+      "section": 0
+    },
+    {
+      "title": "Prioritise checkout fixes before other CRO work",
+      "summary": "Checkout is presented as the highest-ROI CRO area because most sites score mediocre or worse on checkout usability and abandonment causes are largely solvable.",
+      "use_when": "Setting a CRO roadmap or allocating the first round of optimization effort on an ecommerce store.",
+      "steps": [
+        "Benchmark your checkout against known abandonment causes: extra costs appearing late (39% of abandoners), flow too long or complicated (18%), forced account creation (~16–24%).",
+        "Make guest checkout prominent — the source reports Baymard finding 62% of sites do not make it prominent enough; collect the email during guest checkout to build the account relationship afterwards.",
+        "Reduce form fields to only what is strictly necessary for the transaction, enable autofill, and add progress indicators.",
+        "Show shipping, taxes and fees before checkout begins rather than revealing them late.",
+        "Offer the payment methods your audience actually uses (wallets like Apple Pay, Google Pay, Shop Pay in Western markets; local methods such as UPI where dominant) and avoid redirects or context switches during payment.",
+        "Use high-contrast buttons and minimal field counts; the source cites ML analysis of checkout sessions where logistic regression modelled these effects with 87% accuracy.",
+        "Track cart abandonment (~70.22% average) and mobile abandonment (~85%) as baseline metrics and re-measure after changes."
+      ],
+      "caveats": [
+        "Baymard-based figures (35% checkout conversion increase available from UX, 32 improvements per large site, 2% of sites rated good) are third-party research reported by the source, not guarantees.",
+        "The 87% accuracy figure describes a modelling exercise, not a conversion lift."
+      ],
+      "tags": [
+        "conversion-optimization",
+        "checkout",
+        "cart-abandonment",
+        "measurement",
+        "mobile",
+        "payment"
+      ],
+      "id": "14a5fdd7558b779723e73e4c",
+      "source_id": "13xcmKLUtePPNdWOs5tNDQCnQJxcH3vGJ",
+      "source_sha256": "9cdaed43cd0bc6ed00726991891fa1bd4ffe07c547fa616e4ee05e29a9e790e4",
+      "source_name": "CRO fundamentals.docx",
+      "folder": "/09-CRO-testing",
+      "domain": "testing",
+      "section": 0
+    },
+    {
+      "title": "Recover abandoned carts with a timed multi-channel sequence",
+      "summary": "Cart abandonment averages about 70%, and recovery works best with early, escalating messages that handle objections before offering incentives.",
+      "use_when": "Designing or auditing cart and browse abandonment flows for an ecommerce store.",
+      "steps": [
+        "Re-engage abandoners within the first hour of abandonment rather than waiting.",
+        "Escalate over roughly 72 hours through multi-step email and SMS flows that handle objections and add urgency.",
+        "Address the top objection explicitly — cost transparency — by showing shipping, taxes and fees before checkout begins.",
+        "Use exit-intent pop-ups to capture abandoning visitors before they leave.",
+        "Display brand reviews on the checkout page to reinforce trust at the point of highest hesitation.",
+        "Use time-limited discounts or free shipping offers as incentives, and personalize with real-time intent detection (fit, shipping, returns, compatibility reassurance).",
+        "Prioritize mobile, where the source reports abandonment around 85%."
+      ],
+      "caveats": [
+        "The 72-hour and first-hour timings are the source's recovery framing, not a tested optimum; test timing and incentive depth for your audience.",
+        "Discounting in recovery flows can train customers to abandon; the source does not resolve this trade-off."
+      ],
+      "tags": [
+        "retention",
+        "cart-abandonment",
+        "email",
+        "conversion-optimization",
+        "checkout",
+        "mobile"
+      ],
+      "id": "50cd52625f6551352127b57c",
+      "source_id": "13xcmKLUtePPNdWOs5tNDQCnQJxcH3vGJ",
+      "source_sha256": "9cdaed43cd0bc6ed00726991891fa1bd4ffe07c547fa616e4ee05e29a9e790e4",
+      "source_name": "CRO fundamentals.docx",
+      "folder": "/09-CRO-testing",
+      "domain": "testing",
+      "section": 0
+    },
+    {
+      "title": "Place trust signals where the purchase decision happens",
+      "summary": "The source reports 86% of shoppers require trust signals and social proof, and inline placement next to the buy action outperformed a separate trust section in one case.",
+      "use_when": "Improving product page or checkout credibility, or deciding where to put reviews, guarantees and security badges.",
+      "steps": [
+        "Assume scepticism: the source states only 14% of consumers trust what a brand says about itself, so 86% need external proof.",
+        "Use customer reviews and ratings, but keep a realistic distribution — a mix of 4- and 5-star reviews is reported as more credible than an unbroken wall of 5-star ratings.",
+        "Add security badges and payment logos for financial-data concerns, clear return and warranty details to reduce perceived risk, and transparent shipping estimates ('Ships in 2–3 days' rather than 'Add to cart to see shipping').",
+        "Add social proof indicators such as 'X people bought this', 'Only Y left', 'In X carts'.",
+        "Place trust elements inline where the decision happens — the source cites a DTC brand moving small icons next to the Add to Cart button instead of a section below, yielding +18% revenue per session after three weeks.",
+        "If prioritising test ideas, the source reports the highest win rates in benefit communication (54.5%), shipping and return communication (41.8%) and payment trust signals (40.5%)."
+      ],
+      "caveats": [
+        "The 54.5%/41.8%/40.5% win-rate figures are reported test-category win rates from an unspecified dataset; use them to rank ideas, not to promise results.",
+        "The +18% revenue-per-session example is a single case study."
+      ],
+      "tags": [
+        "conversion-optimization",
+        "product-page",
+        "trust-signals",
+        "social-proof",
+        "checkout",
+        "testing"
+      ],
+      "id": "e51b3a918c52a9306d6b39de",
+      "source_id": "13xcmKLUtePPNdWOs5tNDQCnQJxcH3vGJ",
+      "source_sha256": "9cdaed43cd0bc6ed00726991891fa1bd4ffe07c547fa616e4ee05e29a9e790e4",
+      "source_name": "CRO fundamentals.docx",
+      "folder": "/09-CRO-testing",
+      "domain": "testing",
+      "section": 0
+    },
+    {
+      "title": "Match category page design to its purpose",
+      "summary": "Category pages serve browsing, deciding or buying roles, and adding Add to Cart to a browsing-focused page creates decision conflict.",
+      "use_when": "Redesigning collection pages or diagnosing poor category-to-product navigation.",
+      "steps": [
+        "Classify the page's job as browsing, deciding or buying, and design for that job.",
+        "On browsing-focused pages, avoid premature 'Add to Cart' buttons — the visitor is answering 'what options exist here?', not 'am I ready to buy this?', and the source attributes a friction penalty to the interruption.",
+        "Prioritise what browsing visitors need: clear subcategories that reduce mental load, strong visual hierarchy for scanning, filters that narrow without overwhelming, and easy click-through to product pages.",
+        "Monitor category-page exit rate and compare it to the site average; the source treats a high exit rate as a sign of design failure because visitors are leaving rather than moving to product pages.",
+        "Keep promotional messaging consistent between category pages and PDPs, since reinforced messaging is reported to raise add-to-cart likelihood."
+      ],
+      "caveats": [
+        "The source gives no rule for classifying a page as browsing vs buying, and notes no specific exit-rate variance threshold.",
+        "The exit-rate heuristic assumes your site average is a valid baseline; highly varied page types can distort it."
+      ],
+      "tags": [
+        "conversion-optimization",
+        "category-page",
+        "product-page",
+        "measurement",
+        "navigation"
+      ],
+      "id": "8ee789098171b52ba8406498",
+      "source_id": "13xcmKLUtePPNdWOs5tNDQCnQJxcH3vGJ",
+      "source_sha256": "9cdaed43cd0bc6ed00726991891fa1bd4ffe07c547fa616e4ee05e29a9e790e4",
+      "source_name": "CRO fundamentals.docx",
+      "folder": "/09-CRO-testing",
+      "domain": "testing",
+      "section": 0
+    },
+    {
+      "title": "Optimise mobile category pages for thumb and speed",
+      "summary": "Mobile drives most traffic but lags desktop on conversion, and the source lists specific mobile category-page requirements such as thumb-zone placement, 44px targets and fast filter access.",
+      "use_when": "Building or auditing mobile collection and listing pages.",
+      "steps": [
+        "Place key actions in the lower half of the screen where thumbs reach, e.g. a sticky filter bar at the bottom.",
+        "Use tap targets of at least 44px with generous whitespace.",
+        "Give filters immediate access — the source reports 75% of mobile users abandon if they cannot refine quickly — via a sticky bottom sheet or floating filter pill rather than a hidden hamburger menu.",
+        "Limit above-fold density: the first two rows get most taps, so keep hero banners to 30–40% of the initial view.",
+        "Use swipeable carousels for subcategories or variants, since swiping is described as more natural than long vertical scrolling on mobile.",
+        "Serve responsive WebP images and lazy-load below the fold so large images do not slow interactivity."
+      ],
+      "caveats": [
+        "The 75% filter-abandonment figure is reported without citation; treat it as directional.",
+        "The mobile share and conversion-gap framing (~60% of sales, about half desktop conversion) is an industry generalization that varies by vertical."
+      ],
+      "tags": [
+        "conversion-optimization",
+        "mobile",
+        "category-page",
+        "site-speed",
+        "navigation"
+      ],
+      "id": "ccbce06755f2b18d53cc79a3",
+      "source_id": "13xcmKLUtePPNdWOs5tNDQCnQJxcH3vGJ",
+      "source_sha256": "9cdaed43cd0bc6ed00726991891fa1bd4ffe07c547fa616e4ee05e29a9e790e4",
+      "source_name": "CRO fundamentals.docx",
+      "folder": "/09-CRO-testing",
+      "domain": "testing",
+      "section": 0
+    },
+    {
+      "title": "Personalise the homepage without overwhelming choice",
+      "summary": "Personalised and bestseller-driven homepage recommendations lifted PDP click-through sharply in reported experiments, while broad multi-category assortments reduced engagement.",
+      "use_when": "Improving homepage routing and product discovery, especially for mixed new and returning visitors.",
+      "steps": [
+        "Show personalised product recommendations to visitors with history — a reported retail experiment found +136% CTR to PDPs versus static recommendations.",
+        "For visitors with no history, show bestsellers — reported as +23.01% CTR to PDPs versus static featured products, attributing the effect to social validation of what others are buying.",
+        "Avoid promoting a wide spread of categories at once: the source reports promoting broad assortments (e.g. full head-to-toe outfits) decreased Add to Cart by 6.07% and CTR by 10.4%, judged as option overload.",
+        "Keep homepage fundamentals: a hero that conveys the value proposition instantly, one clear conversion offer (e.g. newsletter signup with a concrete incentive such as early access or a first-order discount), simplified navigation with clear category entry points, and high-quality visuals on clean backgrounds.",
+        "Remember the homepage's job is orientation and credibility; conversion usually happens later in the funnel."
+      ],
+      "caveats": [
+        "The percentage lifts come from unnamed retail experiments without disclosed sample sizes or test durations; treat them as directional.",
+        "Personalisation value varies by demographic; the source reports the 35–44 cohort rating personalisation significantly higher and suggests securing trust signals and good page design for all cohorts before layering personalisation selectively."
+      ],
+      "tags": [
+        "conversion-optimization",
+        "homepage",
+        "personalization",
+        "merchandising",
+        "customer-research",
+        "experiment-design"
+      ],
+      "id": "65192611931fcc5f7477bc80",
+      "source_id": "13xcmKLUtePPNdWOs5tNDQCnQJxcH3vGJ",
+      "source_sha256": "9cdaed43cd0bc6ed00726991891fa1bd4ffe07c547fa616e4ee05e29a9e790e4",
+      "source_name": "CRO fundamentals.docx",
+      "folder": "/09-CRO-testing",
+      "domain": "testing",
+      "section": 0
+    },
+    {
+      "title": "Serve LLM-referred visitors with confirmation, not browsing",
+      "summary": "AI referral traffic is growing fast and behaves differently from search traffic: it often lands on product pages pre-sold and expects its exact brief confirmed.",
+      "use_when": "Reviewing landing experiences for AI-assistant and chat-based referral traffic.",
+      "steps": [
+        "Understand the behavioural difference: LLM referrals arrive from natural-language questions and detailed constraints rather than short keywords, and the model has already done research and filtering before the click.",
+        "Confirm the brief immediately on landing — match constraints like size, price ceiling, shipping speed and use case — because the source notes conversion drops when the page feels generic or forces the visitor to redo work.",
+        "Prioritise product pages as the likely entry point: the source reports more than half of AI-referred sessions start on product pages versus about 20% for organic search.",
+        "Consider that AI-referred shoppers are reported to convert at nearly 50% higher rates and spend 14% more when they convert.",
+        "If relevant, consider AI-assisted pre-sale chat or search experiences; one Columbia Business School study across seven workflows on a major platform reported sales lifts up to 16.3%, with a pre-sale chatbot showing 16.3% sales and 21.7% conversion-rate increases."
+      ],
+      "caveats": [
+        "The 4,700% year-over-year growth in generative-AI referral traffic and the Shopify session figures come from a fast-moving channel; verify current data before planning budgets around them.",
+        "The chatbot study is a single platform study and the source notes smaller and newer sellers saw larger gains than established vendors — do not generalise the lift to every store."
+      ],
+      "tags": [
+        "acquisition",
+        "landing-page",
+        "product-page",
+        "personalization",
+        "conversion-optimization",
+        "measurement"
+      ],
+      "id": "33f110a5badffd74bd2584c0",
+      "source_id": "13xcmKLUtePPNdWOs5tNDQCnQJxcH3vGJ",
+      "source_sha256": "9cdaed43cd0bc6ed00726991891fa1bd4ffe07c547fa616e4ee05e29a9e790e4",
+      "source_name": "CRO fundamentals.docx",
+      "folder": "/09-CRO-testing",
+      "domain": "testing",
+      "section": 0
+    },
+    {
+      "title": "Run valid A/B tests with a hypothesis and prioritisation framework",
+      "summary": "A disciplined testing programme needs sufficient sample, one primary metric, predetermined duration, proper randomisation and hypotheses written in IF/THEN/BECAUSE form.",
+      "use_when": "Setting up or auditing an ecommerce experimentation programme.",
+      "steps": [
+        "Write each hypothesis as IF [change], THEN [expected result], BECAUSE [reasoning].",
+        "Prioritise ideas with a structured framework such as PIE (Potential, Importance, Ease), ICE (Impact, Confidence, Ease) or CIE (Confidence, Importance, Ease).",
+        "Meet the validity requirements: sufficient sample size for statistical significance, a single clear primary metric (usually conversion rate or revenue per session), proper randomisation, a predetermined duration and balanced traffic allocation.",
+        "Avoid peeking and stopping early; this is stated as a requirement for a valid test.",
+        "Use multivariate testing only where traffic and variable count clear the reliability threshold; below it, sequential A/B tests are the safer choice.",
+        "Consider CUPED as a variance-reduction technique using pre-experiment data (such as past purchase frequency or browsing history) as a covariate to reduce required sample size and increase sensitivity."
+      ],
+      "caveats": [
+        "The source names frameworks but does not supply scoring scales or sample-size formulas.",
+        "A reported programme ran 54 experiments at a 61.1% win rate with 1.879 ROI excluding platform costs — an example, not a target."
+      ],
+      "tags": [
+        "testing",
+        "experiment-design",
+        "conversion-optimization",
+        "measurement",
+        "cuped"
+      ],
+      "id": "fbe0ce832e69417077728d77",
+      "source_id": "13xcmKLUtePPNdWOs5tNDQCnQJxcH3vGJ",
+      "source_sha256": "9cdaed43cd0bc6ed00726991891fa1bd4ffe07c547fa616e4ee05e29a9e790e4",
+      "source_name": "CRO fundamentals.docx",
+      "folder": "/09-CRO-testing",
+      "domain": "testing",
+      "section": 0
+    },
+    {
+      "title": "Track the right funnel metrics at each stage",
+      "summary": "Stage-level benchmarks expose which part of the funnel is leaking and prevent average conversion rate from hiding the actual constraint.",
+      "use_when": "Diagnosing where an ecommerce funnel underperforms before choosing optimization work.",
+      "steps": [
+        "Measure each stage separately rather than relying on overall conversion rate.",
+        "Compare against the source's stage benchmarks: overall CR poor <1%, average 2–3%, good 3–5%, excellent >5%; add-to-cart poor <5%, average 8–12%, good 12–18%, excellent >18%; cart-to-checkout poor <30%, average 50–60%, good 60–70%, excellent >70%; checkout completion poor <50%, average 60–70%, good 70–80%, excellent >80%.",
+        "Compare product page conversion by vertical before judging performance: beauty and skincare 2.5–4%, apparel and fashion 1.8–3%, consumer electronics 1.2–2%, home goods and furniture 1.5–2.5%, SaaS and subscriptions 3–7%.",
+        "Interpret the differences by category dynamics — fast repeat cycles lift beauty; high AOV and research-heavy behaviour depress electronics; fit uncertainty and returns drag fashion.",
+        "Use revenue per session, not just conversion rate, when evaluating wins, since an AOV lift from trust signals or personalisation is as valuable as a CR lift."
+      ],
+      "caveats": [
+        "Benchmarks are reported across tens of thousands of stores and vary by vertical, traffic source and measurement definition; use them as context, not targets.",
+        "The cart abandonment benchmark of about 70.22% is an average across 50 studies without a stated measurement window or jurisdiction."
+      ],
+      "tags": [
+        "measurement",
+        "conversion-optimization",
+        "analytics",
+        "product-page",
+        "checkout",
+        "benchmarks"
+      ],
+      "id": "100830224de14f768e1c52bd",
+      "source_id": "13xcmKLUtePPNdWOs5tNDQCnQJxcH3vGJ",
+      "source_sha256": "9cdaed43cd0bc6ed00726991891fa1bd4ffe07c547fa616e4ee05e29a9e790e4",
+      "source_name": "CRO fundamentals.docx",
+      "folder": "/09-CRO-testing",
+      "domain": "testing",
+      "section": 0
+    },
+    {
+      "title": "Test popups and features with a holdout to capture net revenue",
+      "summary": "A popup holdout reveals net incremental revenue, not just opt-in lift, and a feature holdout measures whether recommendations or personalisation pay for themselves.",
+      "use_when": "A team believes a popup (or another on-site feature) helps or hurts and wants evidence beyond opt-in rate.",
+      "steps": [
+        "Split traffic so one group sees the feature and a smaller holdout does not — the source's popup example uses 90% exposed and 10% holdout.",
+        "Tag and track both groups through the full customer journey rather than stopping at opt-in.",
+        "Measure revenue per visitor, AOV, conversion rate and email/SMS opt-in rates so you can see whether opt-in gains are offset by conversion suppression.",
+        "Apply the same pattern to features: hold back about 5% of users from product recommendations and compare incremental revenue.",
+        "Conclude on net incremental revenue — the source stresses that opt-in lift alone does not establish value."
+      ],
+      "caveats": [
+        "The source gives the 90/10 and 5% splits as examples without required sample sizes or durations.",
+        "The source does not report popup results, so no expected effect size is implied."
+      ],
+      "tags": [
+        "testing",
+        "holdout",
+        "measurement",
+        "conversion-optimization",
+        "personalization",
+        "email"
+      ],
+      "id": "6669a87c07bb0d8b50b848a5",
+      "source_id": "13xcmKLUtePPNdWOs5tNDQCnQJxcH3vGJ",
+      "source_sha256": "9cdaed43cd0bc6ed00726991891fa1bd4ffe07c547fa616e4ee05e29a9e790e4",
+      "source_name": "CRO fundamentals.docx",
+      "folder": "/09-CRO-testing",
+      "domain": "testing",
+      "section": 0
+    },
+    {
+      "title": "Choose a causal method when randomisation is not possible",
+      "summary": "When you cannot randomise users, methods such as difference-in-differences, switchback, synthetic control, BSTS, PSM, IV and RDD provide causal estimates under specific conditions.",
+      "use_when": "You need causal evidence for a site-wide change, a marketplace intervention, a seasonal launch or a threshold-based offer.",
+      "steps": [
+        "Difference-in-differences: compare the change over time in a treatment and control group — effect = (treatment_after − treatment_before) − (control_after − control_before) — useful for site-wide changes such as an email redesign with a comparable control.",
+        "Switchback: randomise whole environments across time instead of users, useful for marketplaces, search ranking and ad allocation where user-level randomisation causes interference. A cited marketplace ran a 12-day switchback rotating one-page and three-page checkout hourly and reported AOV up 2.1% at 98% significance — the source notes this contradicts the conventional 'fewer steps = higher conversion' advice.",
+        "Synthetic control: build a weighted composite control from imperfect candidates when no single market matches; cited for a retailer estimating how a feature would have performed without it.",
+        "BSTS: use a time-series model combining seasonality/trend handling, predictor selection and model averaging to isolate an effect during peak season without a clean control.",
+        "PSM: match treated customers to controls on propensity scores when you have rich observable covariates.",
+        "IV and RDD: use an instrument correlated with treatment but not directly with the outcome, or exploit a threshold (e.g. a discount at a $100 spend cut-off) to compare near-identical customers either side of the line."
+      ],
+      "caveats": [
+        "These methods rely on assumptions (parallel trends, valid instruments, comparable propensity, stable cut-offs) that the source does not test for you; they are advanced and typically outside a standard CRO playbook.",
+        "The source states switchback designs reduce standard errors 40–60% versus simple item randomisation but gives no basis for the figure."
+      ],
+      "tags": [
+        "testing",
+        "causal-inference",
+        "measurement",
+        "experiment-design",
+        "marketplace",
+        "checkout"
+      ],
+      "id": "f7d200ab2f395d82a2f7b6b4",
+      "source_id": "13xcmKLUtePPNdWOs5tNDQCnQJxcH3vGJ",
+      "source_sha256": "9cdaed43cd0bc6ed00726991891fa1bd4ffe07c547fa616e4ee05e29a9e790e4",
+      "source_name": "CRO fundamentals.docx",
+      "folder": "/09-CRO-testing",
+      "domain": "testing",
+      "section": 0
+    },
+    {
+      "title": "Document causal findings into a reusable knowledge base",
+      "summary": "Every holdout, incrementality test and causal analysis should be written up with the question, method, result and decision so learnings compound.",
+      "use_when": "Running an ongoing measurement programme and building institutional memory beyond a pile of A/B test results.",
+      "steps": [
+        "Record the question asked.",
+        "Record the method used (A/B test, user-level holdout, geo holdout, DiD, switchback, BSTS, synthetic control, PSM, IV, RDD).",
+        "Record the result with its confidence interval.",
+        "Record the business decision made as a result.",
+        "Review the accumulated log to understand not just what won but what actually matters for the business, and to avoid re-litigating settled questions."
+      ],
+      "caveats": [
+        "The source does not specify a template format or review cadence.",
+        "Documenting results without acting on them adds no value; tie each entry to a decision."
+      ],
+      "tags": [
+        "measurement",
+        "documentation",
+        "experiment-design",
+        "incrementality",
+        "analytics"
+      ],
+      "id": "40decabc3b5335c52e2868b5",
+      "source_id": "13xcmKLUtePPNdWOs5tNDQCnQJxcH3vGJ",
+      "source_sha256": "9cdaed43cd0bc6ed00726991891fa1bd4ffe07c547fa616e4ee05e29a9e790e4",
+      "source_name": "CRO fundamentals.docx",
+      "folder": "/09-CRO-testing",
+      "domain": "testing",
+      "section": 0
+    },
+    {
+      "title": "Prioritise the eight high-leverage CRO moves",
+      "summary": "The source's strategic ordering puts checkout, mobile, speed and trust ahead of incremental optimisation.",
+      "use_when": "Setting a 2025–2026 CRO roadmap or deciding what to tackle first with limited resource.",
+      "steps": [
+        "Fix checkout first — described as the highest-ROI intervention for most ecommerce businesses, with third-party usability research suggesting around a 35% checkout conversion increase is available from UX alone.",
+        "Win mobile, where traffic share is high but conversion lags desktop.",
+        "Invest in speed, because LCP and INP improvements correlate with revenue and also affect search visibility and paid traffic costs.",
+        "Build trust aggressively — reviews, return policies, security signals — visible where decisions happen.",
+        "Personalise intelligently: start with bestsellers for new visitors, then layer intent-based personalisation.",
+        "Optimise for LLM referral traffic, which arrives pre-sold and expects confirmation rather than generic browsing.",
+        "Test relentlessly with a disciplined programme; the source frames a 60%+ win rate as generating compounding returns.",
+        "Measure revenue per session, not only conversion rate, since AOV lifts are as valuable as CR lifts."
+      ],
+      "caveats": [
+        "'Fix checkout first' is the source's opinion about typical ecommerce priority, not a rule for every store; a business with a strong checkout and weak PDP may get more from elsewhere.",
+        "The 35% checkout uplift and 60%+ win-rate figures come from third-party research and one programme respectively."
+      ],
+      "tags": [
+        "conversion-optimization",
+        "strategy",
+        "checkout",
+        "mobile",
+        "site-speed",
+        "measurement"
+      ],
+      "id": "f31a8df5db42adae81aaaa06",
+      "source_id": "13xcmKLUtePPNdWOs5tNDQCnQJxcH3vGJ",
+      "source_sha256": "9cdaed43cd0bc6ed00726991891fa1bd4ffe07c547fa616e4ee05e29a9e790e4",
+      "source_name": "CRO fundamentals.docx",
+      "folder": "/09-CRO-testing",
+      "domain": "testing",
+      "section": 0
+    },
+    {
+      "title": "Use the revenue equation to size CRO opportunity",
+      "summary": "Revenue equals traffic × conversion rate × average order value × repeat rate, and CRO directly controls three of those four terms.",
+      "use_when": "Framing the business case for a CRO programme or estimating the value of a proposed improvement.",
+      "steps": [
+        "Write the equation: ecommerce revenue = traffic × conversion rate × AOV × repeat rate.",
+        "Model a concrete scenario: a business doing $1M/year at 2% conversion would reach $1.5M from the same traffic at 3%; a further 15% AOV improvement through personalisation and trust signals adds about $225K.",
+        "Use the framing to explain why CRO compounds relative to buying more traffic, which scales cost linearly.",
+        "Pair the model with an incrementality measurement so you can verify the modelled lift rather than assume it."
+      ],
+      "caveats": [
+        "The $1M/2%→3% example is illustrative arithmetic, not a forecast; it assumes traffic, AOV and repeat rate stay flat.",
+        "Modelled gains ignore interaction effects, seasonality and market shifts that the source itself flags as reasons winners decay."
+      ],
+      "tags": [
+        "measurement",
+        "conversion-optimization",
+        "analytics",
+        "strategy",
+        "incrementality"
+      ],
+      "id": "9decb006b359d29d1a90a805",
+      "source_id": "13xcmKLUtePPNdWOs5tNDQCnQJxcH3vGJ",
+      "source_sha256": "9cdaed43cd0bc6ed00726991891fa1bd4ffe07c547fa616e4ee05e29a9e790e4",
+      "source_name": "CRO fundamentals.docx",
+      "folder": "/09-CRO-testing",
+      "domain": "testing",
+      "section": 0
+    },
+    {
+      "title": "Avoid the ten recurring ecommerce CRO pitfalls",
+      "summary": "The source's pitfall list concentrates on checkout UX, late costs, forced accounts, mobile neglect, buried trust signals and ignoring AI referral traffic.",
+      "use_when": "Auditing an ecommerce site before a CRO engagement or as a pre-launch checklist.",
+      "steps": [
+        "Check checkout UX quality — reported as mediocre or worse on roughly 64% of desktop and 63% of mobile sites, good on about 2% and perfect on none, with 15% poor or very poor.",
+        "Check whether shipping, taxes and fees appear late — the leading abandonment cause at 39%.",
+        "Check whether guest checkout is prominent — reported as insufficient on 62% of sites.",
+        "Check mobile load time, since every 100ms is credited with roughly 3.5% lower conversion.",
+        "Check for desktop-first design squeezed onto mobile: tiny thumbnails, unreadable text, hidden filters.",
+        "Check whether trust signals sit below the fold instead of where decisions happen.",
+        "Check for an overloaded homepage with too many categories or options.",
+        "Check for premature Add to Cart CTAs on browsing-focused category pages.",
+        "Check whether a testing programme exists at all rather than relying on opinion.",
+        "Check the landing experience for AI/LLM referral traffic, which fails when it is generic."
+      ],
+      "caveats": [
+        "The Baymard benchmark percentages describe site-quality distributions in third-party research, not your site; verify with your own audit.",
+        "The list is diagnostic only — the source does not rank which pitfall to fix first beyond its general 'checkout first' guidance."
+      ],
+      "tags": [
+        "conversion-optimization",
+        "checkout",
+        "mobile",
+        "trust-signals",
+        "category-page",
+        "audit"
+      ],
+      "id": "66d9d3c8ad609c3aadcf348d",
+      "source_id": "13xcmKLUtePPNdWOs5tNDQCnQJxcH3vGJ",
+      "source_sha256": "9cdaed43cd0bc6ed00726991891fa1bd4ffe07c547fa616e4ee05e29a9e790e4",
+      "source_name": "CRO fundamentals.docx",
+      "folder": "/09-CRO-testing",
+      "domain": "testing",
+      "section": 0
+    },
+    {
+      "title": "Assemble an ecommerce CRO tool stack by function",
+      "summary": "The source maps CRO functions to tool categories — analytics, heatmaps, testing, personalisation, surveys, speed monitoring and cart recovery.",
+      "use_when": "Choosing or reviewing the tooling for a CRO programme.",
+      "steps": [
+        "Analytics: Shopify Analytics, Google Analytics 4, Mixpanel.",
+        "Heatmaps and session recording: VWO Insights, Hotjar, Microsoft Clarity.",
+        "A/B testing: VWO, Optimizely, AB Tasty, Convert.",
+        "Personalisation: Optimizely, Monetate, Rebuy, Dynamic Yield.",
+        "Surveys and feedback: VWO On-Page Surveys, Qualtrics, Hotjar Surveys.",
+        "Speed monitoring: Chrome UX Report, Shopify Web Performance, PageSpeed Insights.",
+        "Cart recovery: Klaviyo, Yotpo, WooCommerce plugins.",
+        "Verify current feature sets, pricing and integrations with each vendor before committing, since tool capabilities change frequently."
+      ],
+      "caveats": [
+        "The source lists categories and example tools without evaluating or ranking them.",
+        "Tool names and integrations change; treat this as a category checklist rather than a fixed stack."
+      ],
+      "tags": [
+        "measurement",
+        "analytics",
+        "testing",
+        "personalization",
+        "site-speed",
+        "tooling"
+      ],
+      "id": "dd8a3e9b73d4f283c8d305cd",
+      "source_id": "13xcmKLUtePPNdWOs5tNDQCnQJxcH3vGJ",
+      "source_sha256": "9cdaed43cd0bc6ed00726991891fa1bd4ffe07c547fa616e4ee05e29a9e790e4",
+      "source_name": "CRO fundamentals.docx",
+      "folder": "/09-CRO-testing",
+      "domain": "testing",
+      "section": 0
+    },
+    {
+      "title": "Keep homepage and PDP visuals and descriptions sales-ready",
+      "summary": "Product pages need multi-angle visuals, benefit-led descriptions, findable key information and an above-fold add-to-cart CTA.",
+      "use_when": "Building or auditing product detail pages, especially before a paid traffic push.",
+      "steps": [
+        "Use crisp high-quality images from multiple angles, short videos and lifestyle photography so shoppers can visualise ownership; 360° views or short demo clips are cited for engagement and time on page.",
+        "Set products against clean light backgrounds to show items accurately.",
+        "Write thorough descriptions that lead with the core value proposition and spell out perceived value, benefits and use cases rather than only features.",
+        "Make pricing, shipping costs, return policies and realistic delivery estimates easy to find.",
+        "Keep the primary add-to-cart CTA visible without scrolling and keep shipping and return information reachable without navigating away.",
+        "Add trust signals and social proof near the buy action rather than in a separate section below.",
+        "Treat small lifts as significant: going from 2.0% to 2.5% conversion is a 25% revenue increase at the same traffic."
+      ],
+      "caveats": [
+        "Documented PDP results cited by the source vary widely (a +5.16% add-to-bag click example after 8 days, a ~6% CR and 9% revenue example); these are individual case studies, not expected outcomes.",
+        "The source gives no image count, description length or asset specification standards."
+      ],
+      "tags": [
+        "conversion-optimization",
+        "product-page",
+        "merchandising",
+        "trust-signals",
+        "copywriting",
+        "mobile"
+      ],
+      "id": "fbff535d22854adf53e0ef3b",
+      "source_id": "13xcmKLUtePPNdWOs5tNDQCnQJxcH3vGJ",
+      "source_sha256": "9cdaed43cd0bc6ed00726991891fa1bd4ffe07c547fa616e4ee05e29a9e790e4",
+      "source_name": "CRO fundamentals.docx",
+      "folder": "/09-CRO-testing",
+      "domain": "testing",
+      "section": 0
+    },
+    {
+      "title": "Test trust-signal hierarchies to find the winning order",
+      "summary": "Different trust signals win at different rates, so where you place proof and which proof you lead with are testable variables.",
+      "use_when": "Deciding what to add to a product page or checkout and in what order, before committing to a redesign.",
+      "steps": [
+        "List candidate trust elements: customer reviews and ratings, realistic review distributions, security badges and payment logos, social proof indicators, clear return and warranty details, transparent shipping information.",
+        "Rank initial test ideas using the reported test-category win rates: benefit communication 54.5%, shipping and return communication 41.8%, payment trust signals 40.5%.",
+        "Test placement as its own variable — separate section below content versus inline icons beside the buy button — since the source reports an inline placement yielding +18% revenue per session over three weeks in one DTC case.",
+        "Keep the primary metric as revenue per session or conversion, not click-through on the trust element alone.",
+        "Re-test after significant site changes, since winners can decay as context shifts."
+      ],
+      "caveats": [
+        "The win-rate percentages are reported category win rates from an unspecified dataset and may not transfer to your vertical or traffic mix.",
+        "The 18% case study is a single brand example; do not treat inline placement as a guaranteed lift."
+      ],
+      "tags": [
+        "testing",
+        "trust-signals",
+        "product-page",
+        "conversion-optimization",
+        "checkout",
+        "social-proof"
+      ],
+      "id": "14d692fce3d213539b186090",
+      "source_id": "13xcmKLUtePPNdWOs5tNDQCnQJxcH3vGJ",
+      "source_sha256": "9cdaed43cd0bc6ed00726991891fa1bd4ffe07c547fa616e4ee05e29a9e790e4",
+      "source_name": "CRO fundamentals.docx",
+      "folder": "/09-CRO-testing",
+      "domain": "testing",
+      "section": 0
+    },
+    {
+      "title": "Run three incrementality tests any store can attempt",
+      "summary": "Platform lift studies, DIY geo holdouts and on/off experiments cover the practical range of incrementality testing for ecommerce.",
+      "use_when": "When you need evidence about channel value but do not have a dedicated measurement team.",
+      "steps": [
+        "Platform-native lift study: use Meta or Google's built-in exposed/holdout randomisation and read the conversion difference (verify current interface and availability).",
+        "DIY geo holdout: pause ads in matched test regions and compare them with control regions to measure channel-level incrementality across markets.",
+        "On/off experiment: turn a channel or campaign on and off in alternating periods and compare overall revenue impact.",
+        "Choose based on the question: platform studies isolate a single platform's incremental conversions, while geo holdouts and on/off tests capture effects across all channels.",
+        "Document the question, method, result and decision each time so the programme builds a causal knowledge base."
+      ],
+      "caveats": [
+        "The source lists these as options without validation for statistical power at low traffic volumes.",
+        "On/off experiments are vulnerable to seasonality and trend shifts; pair with a matched control period or account for the trend."
+      ],
+      "tags": [
+        "testing",
+        "incrementality",
+        "measurement",
+        "acquisition",
+        "geo-testing",
+        "holdout"
+      ],
+      "id": "6cf0a9b546e08664f064405f",
+      "source_id": "13xcmKLUtePPNdWOs5tNDQCnQJxcH3vGJ",
+      "source_sha256": "9cdaed43cd0bc6ed00726991891fa1bd4ffe07c547fa616e4ee05e29a9e790e4",
+      "source_name": "CRO fundamentals.docx",
+      "folder": "/09-CRO-testing",
+      "domain": "testing",
+      "section": 0
+    }
+  ],
+  "request_id": "4a94bc13800bfd5ce39e7d470e1c5392468095c214e8312eb36f8dd0c83f0f8c"
+}

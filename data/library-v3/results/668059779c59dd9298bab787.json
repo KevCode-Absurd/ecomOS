@@ -1,0 +1,475 @@
+{
+  "cards": [
+    {
+      "title": "Model login security as credential-to-account binding, not factors",
+      "summary": "Stop enumerating knowledge/possession/biometric factor categories; instead inventory every thing that can bind a customer to an account and assess each one's interception and recovery risk.",
+      "use_when": "Deciding what login and account-recovery methods your storefront should accept, or auditing why a 'two-factor' customer account can still be taken over.",
+      "steps": [
+        "List every method your checkout or account system actually accepts as proof of identity: password, email reset link, SMS code, authenticator app code, push notification, security key, biometric unlock, social login, support-desk challenge answers.",
+        "For each, ask the source's test question: if an attacker intercepts or relays that proof in real time, do they gain account access? Email reset links and SMS codes pass that proof along in full, so they collapse to 'as secure as the inbox' or 'as secure as the carrier's number-reassignment process'.",
+        "Note that classic 'something you know / have / are' categories break down (e.g., a security question, a credit-card last-4, an SSH key used only for recovery). Treat these as real factors anyway if your support flow accepts them.",
+        "Rank methods by how recoverable they are for a locked-out customer versus how interceptable they are, then choose a default and a documented fallback.",
+        "Do not convert source opinion (SMS 'really should' go away) into a blanket ban; weigh it against your customers' recovery needs and support cost."
+      ],
+      "caveats": [
+        "The source is a technical talk on authentication, not a study of storefront conversion impact; treat usability trade-offs as judgment calls to test, not measured results.",
+        "Carrier number-reassignment policy is jurisdiction- and time-specific; verify current practice before relying on SMS as a sole recovery path."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "authentication",
+        "account-security",
+        "customer-accounts",
+        "fraud-prevention",
+        "recovery-flows",
+        "measurement"
+      ],
+      "id": "8a2882319f8c9f3c68670db7",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 18
+    },
+    {
+      "title": "Attack the password-reset link as your weakest login path",
+      "summary": "Treat any email reset link as equivalent to a password because whoever holds the link holds the account, and harden or replace it accordingly.",
+      "use_when": "Designing or reviewing the forgot-password, magic-link login, or email-verification flow on a storefront.",
+      "steps": [
+        "Trace what a password-reset link actually grants. In the source's description, a single link opened in any browser (even incognito) plus a known username can yield full account access.",
+        "Assume that anyone with access to the linked inbox can take the account; the security of the account therefore equals the security of that mailbox, not the strength of the password.",
+        "If you also require an SMS or authenticator code after the link, check whether the attacker can complete both steps in parallel while the legitimate customer is mid-flow; the source describes attackers racing the customer's own login.",
+        "For storefront admin or high-value accounts (staff logins, payout settings), require a hardware-backed credential or a second independent channel before letting a link alone reset anything.",
+        "Keep an audit trail of link generation so a suspicious reset can be noticed; the source notes customers may spot an unexpected reset email, but attackers who control the inbox can delete it."
+      ],
+      "caveats": [
+        "Requiring hardware keys for all consumer shoppers will cost conversions; scope strict controls to privileged or high-value accounts unless you can measure the trade-off.",
+        "Email provider security varies; the source's claim that a link equals full account access depends on whether additional factors are required."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "authentication",
+        "recovery-flows",
+        "customer-accounts",
+        "checkout",
+        "account-security"
+      ],
+      "id": "be571a894d84534268762622",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 18
+    },
+    {
+      "title": "Recognize anti-phishing images as a non-factor",
+      "summary": "A bank-style personal image shown before password entry does not defend the customer and is trivially relayed by an attacker in the middle; replace such theater with HTTPS plus a verifiable server credential.",
+      "use_when": "Reviewing branded or in-house authentication schemes on your site, or a vendor pitching a custom 'trust indicator' before login.",
+      "steps": [
+        "Classify the mechanism by asking who it proves: a personal image or pre-set phrase proves the server knows the username, not that the customer is who they claim.",
+        "Simulate the attacker's position: if they sit between customer and server and relay messages in both directions, they forward the server's image to the victim unchanged, so the indicator gives the attacker no obstacle.",
+        "Replace it with transport-level protection (HTTPS) that ties the server identity to something the browser can verify, per the source, rather than a bank-invented scheme.",
+        "If you keep any brand trust cue, do not count it in your authentication or fraud-resistance posture; document it as UX only.",
+        "Do not claim HTTPS or any single control guarantees security; the source presents HTTPS as the real solution to this specific class of relay attack, not as a total guarantee."
+      ],
+      "caveats": [
+        "The source dates this to pre-HTTPS-era banking practice; current browsers and standards may handle these cases differently, so verify what your stack actually does.",
+        "This card addresses server-impersonation defenses; it does not cover how to detect account takeover after login."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "authentication",
+        "phishing",
+        "account-security",
+        "customer-accounts",
+        "vendor-evaluation"
+      ],
+      "id": "c16584de911d24b158ff295e",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 18
+    },
+    {
+      "title": "Rate SMS and app-based one-time codes by interception and phishing risk",
+      "summary": "SMS and TOTP codes are interceptable and phishable in real time, so treat them as better-than-nothing second factors, not as strong authentication.",
+      "use_when": "Choosing the default 2FA method for shopper accounts, staff accounts, or a mandatory step at checkout.",
+      "steps": [
+        "Note the source's assessment: SMS is 'a little bit better than passwords' but has real risks; with moderate effort or money it can be compromised via number reassignment through the carrier.",
+        "Understand the live-race attack: an attacker logging in in parallel with the customer can obtain the same code from an SMS or from an authenticator app the victim is reading; the source warns the moment a user realizes they are being hacked is exactly when they are most likely to type credentials into a phishing page.",
+        "Count the phishing path: a lookalike domain can lure the customer into completing the code exchange with the attacker's server, which then relays it.",
+        "Prefer a hardware-backed credential where possible; the source notes an authenticator app code is no harder to relay than SMS in this scenario, since it is still a typed number.",
+        "If you must keep SMS for conversion reasons, keep it as a fallback rather than the only factor and pair it with anomaly monitoring at login."
+      ],
+      "caveats": [
+        "The source is explicit that sites keep SMS because it is far better than nothing and has a good recovery story for lost phones; a ban is an opinion, not a universal rule.",
+        "Carrier reassignment protections vary by country and provider and change over time; verify current policy."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "authentication",
+        "two-factor",
+        "sms",
+        "phishing",
+        "customer-accounts",
+        "account-security"
+      ],
+      "id": "9e5baf9f66b1abfd1abc7d7a",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 18
+    },
+    {
+      "title": "Use push-notification login, but read approval prompts carefully",
+      "summary": "Push approval avoids SMS-network risks and runs over secure transport, yet it remains phishable because the prompt is not cryptographically tied to the site the customer is visiting.",
+      "use_when": "Evaluating an authenticator-app or push-based login for shopper or admin accounts.",
+      "steps": [
+        "Confirm the transport: the source contrasts push with SMS by noting it does not rely on SMS network security and goes through secure transports.",
+        "Recognize the residual phish: the customer receives a prompt asking whether they meant to log in to a site, and the source stresses there is no connection between the computer and the approving device guaranteeing the prompt matches the site the customer is on.",
+        "Adopt the mitigation the source cites: some vendors add context such as showing where the login originates so the customer can judge plausibility; treat this as a UX aid, not a guarantee.",
+        "If a provider supports it, prefer requiring a hardware security key for the same flow; the source says it personally does this rather than accept push prompts.",
+        "Train staff/admin users to reject unexpected approval prompts and to report them rather than approving to clear the screen."
+      ],
+      "caveats": [
+        "The source says most of the time push is fine, so this is a risk-trade-off card, not a reason to reject every push-based product.",
+        "Vendor prompt wording and context features change; verify the current behavior of whichever app you adopt."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "authentication",
+        "two-factor",
+        "push-notifications",
+        "phishing",
+        "admin-accounts"
+      ],
+      "id": "b7540e558ff6fdb024a6a001",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 18
+    },
+    {
+      "title": "Design account recovery before you enforce strong factors",
+      "summary": "Recovery is an unsolved problem: the more fallback flexibility you allow, the more of your strong-factor guarantees you give away, so decide the trade-off deliberately.",
+      "use_when": "Planning 2FA rollout for shopper accounts or choosing what the support desk may accept to unlock an account.",
+      "steps": [
+        "Accept the source's framing that recovery is genuinely hard and the compromises are not great; the source attributes the same point to colleagues who push for wider security-key use.",
+        "Choose consciously between two shapes: require multiple independent factors (the source cites sites that require several keys, or SMS/backup codes before adding a key) so losing one is survivable, or permit support-desk verification, which the source warns degrades your physical guarantees.",
+        "If you use a low-risk recovery channel alongside a strong one, state the effective level: a security key plus SMS as backup means the account is only as strong as the SMS path.",
+        "For high-assurance admin access in the style of advanced-protection programs, accept that losing every registered device can lock the account out entirely; document that consequence before enrolling staff.",
+        "Do not present recovery strength as guaranteed: the source calls this unsolved and notes that flexibility means falling back from strong technical measures."
+      ],
+      "caveats": [
+        "The source's own preference is tying recovery to a large trusted platform account (e.g., Apple iCloud Keychain), acknowledging that this just moves the trust problem and carries its own trade-offs.",
+        "Any support-desk challenge answer you accept should be treated as a real authentication factor in your risk model, even if you call it 'not a factor'."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "authentication",
+        "recovery-flows",
+        "customer-accounts",
+        "admin-accounts",
+        "account-security"
+      ],
+      "id": "822b4433112b0879f10f508d",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 18
+    },
+    {
+      "title": "Adopt hardware-backed sign-in and passwordless flows via the browser credential API",
+      "summary": "WebAuthn lets a customer register a credential (create) and then prove control of it (get), backing passwordless or username-less login with keys held in a hardware secure element.",
+      "use_when": "Choosing how to implement security-key or biometric login on your storefront and deciding between passwordless and password-plus-key.",
+      "steps": [
+        "Model the flow at the API level: the site calls a create operation to register the credential and associate it with the account, then a get operation at login to prove the customer still holds it; the source describes these as the two calls of the browser credential API (verify current names and shapes in documentation, as the argument structures are deep and mix encodings).",
+        "Understand what the site stores: per the source, you save the opaque registration output and later ask a library to validate the returned assertion rather than reasoning about the key material yourself.",
+        "Support username-less login ('passwordlist' in the source) where the device's biometric unlock identifies the customer so they tap once without typing a username or password; the source notes this requires browser support and is bounded by the device.",
+        "Decide on resident (device-bound) keys: the source explains resident key means the credential lives on the physical device's secure element and nothing usable is stored on the server, which supports a stronger assurance for staff logging in from approved hardware.",
+        "Expect real integration cost: the source says it would be hard to recommend this for a service without a dedicated security team, and that library abstractions are the intended path."
+      ],
+      "caveats": [
+        "The source notes the specification is complex and poorly documented in places and that implementations vary; verify the current interface rather than coding to this description.",
+        "The source says resident-key current behavior can still reveal which usernames a key is registered for, contrary to the spec's privacy goal; do not assume username privacy today."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "authentication",
+        "passkeys",
+        "webauthn",
+        "security-keys",
+        "passwordless",
+        "customer-accounts"
+      ],
+      "id": "ef94282cf242fdccc02ea118",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 18
+    },
+    {
+      "title": "Choose between device-bound and synced credentials for shopkeeper and customer logins",
+      "summary": "A credential bound to one device's secure element cannot be used elsewhere without physical access, while synced credentials trade that assurance for recoverability across a customer's devices.",
+      "use_when": "Deciding whether storefront or back-office logins should require a specific physical key versus allowing biometrics synced through a platform account.",
+      "steps": [
+        "Establish the assurance of the device-bound option from the source: with a resident key, if the device is unplugged or unavailable there is no way to authenticate from another machine, because the only copy of the key is in the hardware.",
+        "Use that for cases where the goal is to guarantee staff sign in only from the tokens your company issued and trusts, which the source gives as the motivating example.",
+        "Weigh the synced alternative the source describes: credentials replicated across a customer's devices through a large platform account, so registering one device and then another lets them authenticate from either, at the cost of trusting that platform's replication.",
+        "Match the choice to the account: high-value administrative or payout access favors the device-bound path; ordinary shopper accounts favor whichever keeps sign-in friction low enough to complete checkout.",
+        "Document the trade-off explicitly rather than defaulting silently, since both options shift who must be trusted."
+      ],
+      "caveats": [
+        "The source presents cross-device credential syncing as emerging ('some indications') at the time of the talk, not an official platform commitment; confirm current support before designing around it.",
+        "The source's own stated comfort with trusting a platform account is a personal judgment, not a security guarantee for your business."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "authentication",
+        "passkeys",
+        "security-keys",
+        "admin-accounts",
+        "customer-accounts",
+        "account-security"
+      ],
+      "id": "2124b9d665e3aa18640bc23f",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 18
+    },
+    {
+      "title": "Run authentication as a pluggable abstraction so you can adopt stronger credentials later",
+      "summary": "The source's core architectural argument is to abstract authentication behind a create/get interface so physical keys, biometrics, pins or passwords all sit behind the same site logic.",
+      "use_when": "Scoping authentication work on a new storefront or replatforming an existing account system.",
+      "steps": [
+        "Define one internal interface with two operations in the source's shape: register a credential for an account, and verify a subsequent assertion.",
+        "Keep authentication factors out of your business logic; the source's complaint is that teams spend effort reasoning about which device a customer has instead of simply keeping them secure.",
+        "Store only what the library tells you to store, and delegate validation to it rather than parsing formats yourself; the source notes the wire data mixes several encodings including base64url and array buffers.",
+        "Because the abstraction decouples the site from the specific hardware, you can later add security keys, platform biometrics, or card-based credentials without changing the storefront flow; the source says even exotic options can be layered behind it, including ones requiring manual data transfer between machines.",
+        "Budget for the extra work honestly: the source says implementing this today needs tracking many details unless a good abstraction is in place, and points to open-source abstractions as the mitigation."
+      ],
+      "caveats": [
+        "Do not invent a specific library or vendor recommendation; the source only says an abstraction exists and was open-sourced, without naming it here.",
+        "Abstraction reduces per-factor work but does not by itself guarantee security; each credential type's threat model still applies."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "authentication",
+        "architecture",
+        "webauthn",
+        "integrations",
+        "customer-accounts"
+      ],
+      "id": "54dc85fef2012b25786693c8",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 18
+    },
+    {
+      "title": "Check the WebAuthn, CTAP and U2F naming before integrating a device",
+      "summary": "The ecosystem's overlapping names (WebAuthn, FIDO2, CTAP, U2F) describe different layers, and mismatched support produces devices that simply do not work with a given browser.",
+      "use_when": "Evaluating security-key hardware or browser support while adding key-based login to a storefront.",
+      "steps": [
+        "Split the layers as the source describes: WebAuthn is the browser-side API the site calls; CTAP is the protocol between the browser and the physical authenticator; FIDO2 combines the browser part with the newer authenticator protocol.",
+        "Treat U2F as the older, formerly non-standard API that WebAuthn replaced, and expect sites and docs to still call security-key registration 'U2F' by legacy naming.",
+        "Verify actual device and browser support before promising customers that keys will work: the source notes a browser that advertises WebAuthn support may in fact only implement the older authenticator protocol, which changes what hardware is compatible.",
+        "Test with the exact browser, OS, and key combinations your customers use, including phone-based keys and app-based unlock, because platform behavior differs.",
+        "When writing customer-facing labels, avoid exposing these acronyms; use a plain term such as a security key for the physical object."
+      ],
+      "caveats": [
+        "Naming and support matrices change as specifications and browsers update; the source's specific compatibility observations are historical and must be re-verified.",
+        "Do not reproduce the source's confusing acronym mapping as a rule for current products without checking the current spec documentation."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "authentication",
+        "webauthn",
+        "security-keys",
+        "integrations",
+        "vendor-evaluation"
+      ],
+      "id": "aa2e164554b4dbdcab9a8e5a",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 18
+    },
+    {
+      "title": "Handle credential-registration privacy between sites",
+      "summary": "A credential used on multiple sites should not let those sites correlate the same customer, though within a single site re-registering an existing key is intentionally detectable for usability.",
+      "use_when": "Reviewing whether your login implementation leaks user identity signals across your own properties or partner sites.",
+      "steps": [
+        "Verify that per-site scoping is in place: the source states the browser enforces site-unique data so that two sites should find it difficult or impossible to tell that a customer is using the same key.",
+        "Accept intentional within-site detection: the source explains a site is meant to be able to tell when the same key is re-registered, so a customer who accidentally registers twice sees a coherent 'already registered' state instead of a duplicate entry.",
+        "For consumers with no username, note the source's warning that current resident-key behavior can still reveal registered usernames when you probe the device, so username-less login does not yet guarantee anonymity.",
+        "If you operate several storefronts or a marketplace with multiple tenants, treat cross-property correlation as a privacy design decision and document your stance.",
+        "Prefer relying on browser-enforced scoping over custom correlation tricks, and revisit when platform privacy features land."
+      ],
+      "caveats": [
+        "The source describes stronger hardware-trust-reducing protections as work in progress, not shipped features; do not assume they exist.",
+        "This is about privacy, not authorization; the same protocol does not encode what an authenticated account is permitted to do."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "authentication",
+        "privacy",
+        "webauthn",
+        "customer-research",
+        "compliance"
+      ],
+      "id": "357172b29b2f1cf96e5d6c70",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 18
+    },
+    {
+      "title": "Value QR-code cross-device login honestly",
+      "summary": "QR-based login links a phone to a desktop session and can be strong when the phone's own unlock and transport are secure, but the code is visible on screen and the flow is still phishable.",
+      "use_when": "Deciding whether to offer scan-to-login on a storefront or in a merchant app.",
+      "steps": [
+        "Trace the mechanism: the source describes the desktop showing a code, the phone scanning it and communicating to the server that this device has seen the code, usually proving possession with a private key.",
+        "Note the two directions the source distinguishes: logging in from a device that is already authenticated (the desktop is signed in and authorizes the phone), versus scanning while signed in on the phone to log in elsewhere.",
+        "Account for shoulder-surfing and cameras: the code is physically visible on screen, so anyone able to see or photograph it can relay it under some circumstances.",
+        "Recognize the residual phishing risk the source concedes: an attacker imitating the target site can present the code prompt, so this is not immune to the site-impersonation problem.",
+        "Ensure the phone-side gate is strong, since the security of the whole exchange reduces to how well the phone is protected, up to and including a secure element inside the device."
+      ],
+      "caveats": [
+        "The source suggests sites are unlikely to build this going forward if strong credential standards succeed, so treat it as a transitional option.",
+        "The source's comparison of the two QR use cases is explicitly tentative ('I'd have to take a second to think about how phishable each of those are')."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "authentication",
+        "qr-code-login",
+        "phishing",
+        "customer-accounts",
+        "mobile"
+      ],
+      "id": "9560f29c325ab2da63cffbc1",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 18
+    },
+    {
+      "title": "Treat client certificates and SSH keys as real factors in recovery",
+      "summary": "Client certificates and SSH keys can authenticate a customer or staff member even though they are not used to sign in to the website directly, and they are commonly accepted in recovery flows.",
+      "use_when": "Auditing ecommerce account-recovery and support processes, or assessing what an integration key can do if exposed.",
+      "steps": [
+        "Identify the keys you and your customers already hold: on a storefront, that includes SSH or deploy keys used by integrations, and for developer-facing services, the customer's own SSH key used to push or deploy.",
+        "Recognize that the source describes treating an SSH key as an authentication factor in recovery: if a customer has lost their second factors, proving access via the key can be accepted, subject to limits.",
+        "Also count indirect proofs the source cites, such as a device already logged into the account that can be demonstrated to an operator, which functions like a factor for recovery even though it is not part of normal login.",
+        "For your own storefront, map every key or token that can prove account control and decide explicitly whether support may accept it, and under what constraints.",
+        "Because client-certificate UI is annoying and was historically poorly configured, the source notes it never became popular on the public web; keep it for staff or enterprise paths rather than consumer checkout."
+      ],
+      "caveats": [
+        "This describes platform-specific policy at the time of the talk (e.g., certain hosts treating SSH keys as recovery factors) with limits; do not generalize it to any service.",
+        "Ambient client-certificate authentication carries privacy implications if it identifies users automatically on every visit."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "authentication",
+        "recovery-flows",
+        "ssh-keys",
+        "integrations",
+        "admin-accounts"
+      ],
+      "id": "1a34783ce4eb49a7b71ee28b",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 18
+    },
+    {
+      "title": "Separate authentication from authorization in the credential design",
+      "summary": "Proving who a user is and deciding what that user may do are different problems, and the credential protocol the source discusses only addresses the first.",
+      "use_when": "Scoping account-access requirements for a storefront, a merchant back office, or an agent that acts on a customer's behalf.",
+      "steps": [
+        "State the split plainly when writing requirements: authentication proves the customer is who they claim; authorization encodes what they are allowed to do (view orders, issue refunds, change payouts).",
+        "Do not expect a hardware key or biometric credential to convey permissions: the source says nothing in this protocol is designed to prove access rights beyond the single key identifying the user.",
+        "Implement permission checks server-side against the authenticated account, and treat the credential only as the identity assertion.",
+        "When an integration or agent acts for an account, bind permissions to that account separately and scope them to the brand and task rather than inheriting full account power from a successful credential check.",
+        "Document which flows are identity checks and which are permission checks so support and engineering do not conflate them during incidents."
+      ],
+      "caveats": [
+        "The source offers only a brief note that authorization may be layered in future, so plan your own permission model rather than waiting for the credential standard to supply one.",
+        "A successful credential assertion proves control of the key, not the legitimacy of the underlying business request."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "authentication",
+        "authorization",
+        "admin-accounts",
+        "integrations",
+        "account-security"
+      ],
+      "id": "83f09dc4ed01a4b95c85e673",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 18
+    },
+    {
+      "title": "Name the customer-facing credential plainly for storefront login",
+      "summary": "User-facing terminology for credentials is unsettled, and the source warns that device-centric wording now ambiguously means both an external key and the customer's own phone.",
+      "use_when": "Writing the account-security settings copy, login buttons and help articles for your storefront.",
+      "steps": [
+        "Pick a plain label for the physical object, since the source reports that 'security key' is roughly what everyone calls the thing in front of the user, and warns not to expose internal acronyms as English.",
+        "Avoid relying on 'device' to mean an external token, because the source points out the same word now also means the customer's phone or laptop when they use built-in biometrics, creating confusion.",
+        "Account for platform branding: the source observes Windows brands its biometric flow and other platforms brand theirs, so one generic button may need platform-aware labels to match what customers see on screen.",
+        "For flows that unlock with a fingerprint or face rather than a separate key, use wording about signing in with the device or with biometrics, mirroring how the source describes the generalization.",
+        "Test the wording against real support tickets: the source notes Android may present a chooser among key, Bluetooth, NFC, fingerprint and face, so your copy should not promise a single interaction."
+      ],
+      "caveats": [
+        "The source states explicitly that no standard naming has been settled and that naming choices confuse users; expect to iterate.",
+        "This assumes the customer sees a platform prompt; what appears varies by browser and OS, so verify the current experience."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "authentication",
+        "copywriting",
+        "product-page",
+        "customer-research",
+        "webauthn"
+      ],
+      "id": "45ceb9e634a15c8ccce3eaf6",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 18
+    }
+  ],
+  "request_id": "9a2f330390272affe3a6a5d938026df529024e3ddb4baf5c2ee249ba7447487a",
+  "ecommerce_scope_version": 1
+}

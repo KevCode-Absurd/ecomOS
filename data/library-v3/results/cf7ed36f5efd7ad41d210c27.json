@@ -1,0 +1,420 @@
+{
+  "cards": [
+    {
+      "title": "Inject custom Liquid sections into a Shopify theme",
+      "summary": "Mechanical click path for adding a custom Liquid section file to a Shopify theme so a bespoke product page can be built manually.",
+      "use_when": "You need to build a custom PDP section or page by hand in Shopify (no page builder), e.g. a branded product template for a new SKU.",
+      "steps": [
+        "In Shopify admin go to Online Store, then Edit Code to open the theme code editor.",
+        "Open the Sections folder and choose Add a new section; name the file with a clear convention (in the source example: a product-specific name like [brand]_[product]_gg.liquid).",
+        "Paste your HTML/Liquid code into the new section file and Save.",
+        "To revise later, return to Edit Code, paste the new code over the old code, Save, then refresh the live page to confirm the change rendered.",
+        "Verify the current Shopify admin labels and menus yourself — theme editor layout changes over time."
+      ],
+      "caveats": [
+        "Section code lives in the theme; theme updates or switching themes can drop or conflict with custom files.",
+        "Only edit code in a duplicated/published-safe theme if you cannot afford downtime."
+      ],
+      "tags": [
+        "store-setup",
+        "shopify",
+        "liquid",
+        "theme-editing",
+        "product-page",
+        "custom-sections"
+      ],
+      "id": "8818e8f9c5b2b51d4c4d2676",
+      "source_id": "1Ig6z4IGo0uaqFz7wHZSEla-LB2LUOsUi",
+      "source_sha256": "c726b9dc7eef6422893637df7ea264954f64df5de865f803ede40683f69c377a",
+      "source_name": "Claude & Shopify Built $750k_m Ai Powered Ecom Brand.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 1
+    },
+    {
+      "title": "Assign a custom page template to a specific product",
+      "summary": "Click path for creating a product-specific template in the theme customizer and pointing one product at it so it renders a custom Liquid section.",
+      "use_when": "You want one hero/paid-traffic product to have a unique PDP layout while all other products keep the default template.",
+      "steps": [
+        "Create the product first: Products, Add product, upload images, set price, and Save.",
+        "Go to Online Store, then Customize Theme and create a new template for the product (name it per product, e.g. hair_nectar_gg).",
+        "Inside that template, hide the default sections you do not want, then Add Section and select the custom Liquid file you created earlier.",
+        "Assign the specific product to the template so it populates the section.",
+        "Confirm the product page renders the custom layout and that the default template is untouched for other products.",
+        "Verify current Shopify template-assignment UI before relying on this path."
+      ],
+      "caveats": [
+        "Template names are arbitrary but must match what you assign in the product; mismatches silently fall back to the default template.",
+        "Hiding default sections is not deletion — you can restore them if the layout breaks."
+      ],
+      "tags": [
+        "store-setup",
+        "shopify",
+        "product-page",
+        "theme-editing",
+        "templates",
+        "product-template"
+      ],
+      "id": "54bad54781d139f87a424033",
+      "source_id": "1Ig6z4IGo0uaqFz7wHZSEla-LB2LUOsUi",
+      "source_sha256": "c726b9dc7eef6422893637df7ea264954f64df5de865f803ede40683f69c377a",
+      "source_name": "Claude & Shopify Built $750k_m Ai Powered Ecom Brand.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 1
+    },
+    {
+      "title": "Make a product actually buyable before launch",
+      "summary": "The minimum product-admin steps to stop a new product from showing sold out or unaddable-to-cart at launch.",
+      "use_when": "Immediately before driving paid traffic or launch content to a new product, to avoid wasting spend on an unbuyable PDP.",
+      "steps": [
+        "Go to Products, Edit product on the SKU you are launching.",
+        "Set Available inventory (the source example used a large number like 10,000 for a launch SKU) and Save.",
+        "If drop shipping, confirm the fulfillment app or supplier actually holds that stock — Shopify inventory is only a number and does not create real stock.",
+        "After saving, add the product to cart yourself on the live store to confirm it is purchasable and the variant/price is correct."
+      ],
+      "caveats": [
+        "Setting a large inventory number on a drop-ship SKU does not guarantee fulfillment; keep it aligned with real supplier stock.",
+        "If you later toggle inventory tracking, re-check the PDP still allows purchase."
+      ],
+      "tags": [
+        "store-setup",
+        "shopify",
+        "inventory",
+        "product-launch",
+        "checkout",
+        "fulfillment"
+      ],
+      "id": "d7c81282140d8c0a9cd5de68",
+      "source_id": "1Ig6z4IGo0uaqFz7wHZSEla-LB2LUOsUi",
+      "source_sha256": "c726b9dc7eef6422893637df7ea264954f64df5de865f803ede40683f69c377a",
+      "source_name": "Claude & Shopify Built $750k_m Ai Powered Ecom Brand.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 1
+    },
+    {
+      "title": "Reverse-engineer a validated product via a challenger angle",
+      "summary": "Score a candidate product across demand, ad momentum, store-level and competition signals, then only pursue it with a differentiating brand/content angle rather than a clone.",
+      "use_when": "Product selection: deciding whether to base a new store on a proven seller you found in ad libraries.",
+      "steps": [
+        "Pick a product from a brand already scaling with active ads; treat sustained active-ad counts as the strongest ad-momentum indicator (source treats growing active ads as the key signal).",
+        "Score the opportunity across demand, ad momentum, store-level revenue/trust signals (e.g. Trustpilot), competition/concentration of top-spending ads, and Facebook/Meta ad-fit.",
+        "Check for a moat: if the winning tier is crowded and the moat is brand- and content-driven, a clone will lose — you must bring a sharp angle.",
+        "Check policies and ad-language compliance before committing, since category language can gate scaling.",
+        "If the score is high but the moat is brand-driven, plan for serious content and influencer support, not just a better product.",
+        "Treat the source's 7.95/10 'go with conditions' verdict as a heuristic example, not a benchmark threshold."
+      ],
+      "caveats": [
+        "Scores combine one tool's ad-library data plus web research; without ad-library access expect materially less data (source cites roughly 55% of its data set).",
+        "Source opinion: a product can be validated yet still fail if you clone the incumbent instead of out-branding it."
+      ],
+      "tags": [
+        "store-setup",
+        "product-selection",
+        "product-validation",
+        "research",
+        "ad-library",
+        "competitor-research",
+        "positioning"
+      ],
+      "id": "42a898b74a67918f501a193f",
+      "source_id": "1Ig6z4IGo0uaqFz7wHZSEla-LB2LUOsUi",
+      "source_sha256": "c726b9dc7eef6422893637df7ea264954f64df5de865f803ede40683f69c377a",
+      "source_name": "Claude & Shopify Built $750k_m Ai Powered Ecom Brand.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 1
+    },
+    {
+      "title": "Capture competitor pages and ads as structured research inputs",
+      "summary": "Use screenshots of a proven competitor page as the seed input to product validation, branding, mockups and page-mirroring workflows.",
+      "use_when": "Starting any reverse-engineering workflow (validation, branding, product mockup, page clone) and needing a clean source image of the target brand page.",
+      "steps": [
+        "Open the competitor's store page in the browser.",
+        "Use a full-page capture browser extension to screenshot the entire page, then download it.",
+        "Feed the screenshot into the research/branding tool as the reference brand you are modeling.",
+        "Note what is copied versus elevated: the source explicitly says it models what works but intends to improve pages, branding and voice rather than clone.",
+        "If visual references are needed, a page-image extraction extension lists every image on the page and lets you download them individually for use as inspiration inputs."
+      ],
+      "caveats": [
+        "Downloading a competitor's imagery is for research/inspiration; do not ship their copyrighted assets as your own.",
+        "Screenshots are reference inputs, not validated product data — pair with ad-library and store-level signals."
+      ],
+      "tags": [
+        "store-setup",
+        "research",
+        "competitor-research",
+        "screenshots",
+        "brand-research",
+        "creative-strategy"
+      ],
+      "id": "7ff9026e43a5b88a5159b6cd",
+      "source_id": "1Ig6z4IGo0uaqFz7wHZSEla-LB2LUOsUi",
+      "source_sha256": "c726b9dc7eef6422893637df7ea264954f64df5de865f803ede40683f69c377a",
+      "source_name": "Claude & Shopify Built $750k_m Ai Powered Ecom Brand.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 1
+    },
+    {
+      "title": "Build the brand kit before the store: intake, positioning and naming",
+      "summary": "Sequence for generating a usable brand system (strategy, voice, palette, logo, name) from a modeled competitor using an AI branding workflow.",
+      "use_when": "Building a new store's brand from scratch when you already have a validated product and a competitor to model.",
+      "steps": [
+        "Run a branding intake with: specific product, business name, target market, price position, competitors, existing assets, and launch channel (the source used a US target market and a Shopify store).",
+        "Set brand-voice sliders (playful vs. serious, bold vs. soft), then answer the positioning prompts — source cites the 'dinner party test', '3-second feeling', and naming the territory/instinct questions.",
+        "Generate a brand strategy snapshot: colors, motif, product names.",
+        "Generate candidate names, then critique them against the actual customer; the source rejected names that felt disconnected and asked for names with 'hair' in them, which produced usable options.",
+        "Check domain availability and pick alternates (.co, .shop prefix, 'co' suffix) if the .com is taken.",
+        "Lock the name before generating assets so everything downstream stays consistent."
+      ],
+      "caveats": [
+        "First-round AI names can miss the customer; plan to give corrective feedback rather than accepting the first list.",
+        "The source's chosen name and domain alternatives are examples, not recommendations for your category."
+      ],
+      "tags": [
+        "store-setup",
+        "branding",
+        "positioning",
+        "naming",
+        "color-palette",
+        "logo",
+        "brand-strategy"
+      ],
+      "id": "10d18b2b9c4aac5d1c230868",
+      "source_id": "1Ig6z4IGo0uaqFz7wHZSEla-LB2LUOsUi",
+      "source_sha256": "c726b9dc7eef6422893637df7ea264954f64df5de865f803ede40683f69c377a",
+      "source_name": "Claude & Shopify Built $750k_m Ai Powered Ecom Brand.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 1
+    },
+    {
+      "title": "Generate a brand board, then lock it for production consistency",
+      "summary": "Use a generative image tool to explore a brand board, then move it into a precise design tool to freeze logo and palette for suppliers and print.",
+      "use_when": "Preparing brand assets before sending a logo or packaging to a supplier or designer, or building landing-page visuals on-brand.",
+      "steps": [
+        "Prompt a text-to-image tool to generate a brand board: logo, signature palette, pattern, headline treatment, element style and social vibe (the source used a poster-style brand board and preferred the most visual output over the most technical one).",
+        "Feed your accepted brand board back so the brand strategy can be finalized.",
+        "Generate logo concepts at a square (1:1) aspect ratio and pick one; the source generated four options and chose manually.",
+        "Move the chosen logo and palette into a precision design tool to recreate them exactly — generative tools approximate logos, which is unsafe for supplier files.",
+        "Export pixel-accurate PNGs of the logo in its variants and the exact color palette, so the mark never drifts across assets."
+      ],
+      "caveats": [
+        "Generative image outputs are approximations — never send a generated logo to a supplier without recreating it precisely.",
+        "The source preferred one specific visual style/tool, which is a taste preference, not a universal rule."
+      ],
+      "tags": [
+        "store-setup",
+        "branding",
+        "logo",
+        "color-palette",
+        "creative-strategy",
+        "design-tools",
+        "print-files"
+      ],
+      "id": "d3082ef30971df040a3986f1",
+      "source_id": "1Ig6z4IGo0uaqFz7wHZSEla-LB2LUOsUi",
+      "source_sha256": "c726b9dc7eef6422893637df7ea264954f64df5de865f803ede40683f69c377a",
+      "source_name": "Claude & Shopify Built $750k_m Ai Powered Ecom Brand.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 1
+    },
+    {
+      "title": "Write a brand reference guide for every downstream asset creator",
+      "summary": "Produce a short written brand description so mockups, product photography prompts and any hired creator can stay on-brand.",
+      "use_when": "Briefing product mockup generation, a photographer/videographer, or a designer and needing one consistent description of what the brand stands for.",
+      "steps": [
+        "From your branding exercise, request a written description covering: what the brand is, what it stands for, its personality, and its unique identity.",
+        "Format it as a reference usable by a photographer, videographer or any asset creator.",
+        "Reuse the same guide as an input to product mockup and image generation so visuals stay consistent with the positioning.",
+        "Update the guide if the brand positioning shifts, so old asset prompts do not pull in stale mood."
+      ],
+      "caveats": [
+        "The guide is only useful if it is actually pasted into every asset workflow; a file nobody opens changes nothing.",
+        "Keep it descriptive and specific — generic adjectives produce generic imagery."
+      ],
+      "tags": [
+        "store-setup",
+        "branding",
+        "content-brief",
+        "creative-strategy",
+        "product-photography",
+        "brand-guide"
+      ],
+      "id": "26655e13ae5df22d87776555",
+      "source_id": "1Ig6z4IGo0uaqFz7wHZSEla-LB2LUOsUi",
+      "source_sha256": "c726b9dc7eef6422893637df7ea264954f64df5de865f803ede40683f69c377a",
+      "source_name": "Claude & Shopify Built $750k_m Ai Powered Ecom Brand.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 1
+    },
+    {
+      "title": "Draft the product mockup before contacting any supplier",
+      "summary": "Sequence for producing approved bottle and packaging mockups plus a clean pack shot from a competitor photo, logo, brand board and brand guide.",
+      "use_when": "Product sourcing and packaging prep: you need a visual target to send a supplier and to populate PDP imagery.",
+      "steps": [
+        "Start with a competitor product photo so the tool understands the physical product you are making.",
+        "Add your logo, brand board, and written brand guide as inputs, then confirm the generated brand snapshot.",
+        "Name the first product with a consumer-friendly name (the source used a fun name instead of an ingredient name) and approve a bottle concept, e.g. a 'nectar window' label style.",
+        "Generate the base product image in the image tool at a print-friendly ratio (source used 3:4, 2K, medium) and generate multiple variations to choose from.",
+        "For image two, use your approved mockup plus your logo to generate lifestyle/setting shots; for image three, generate a clean pack shot.",
+        "Feed the approved images into a packaging brief to produce front/hero and back-panel packaging art, then send the product image and packaging spec together to the supplier."
+      ],
+      "caveats": [
+        "Suppliers can improve on your spec — treat it as a direction, not a final print file.",
+        "Generated mockups are concepts; verify dimensions and label legal/ingredient copy before production."
+      ],
+      "tags": [
+        "store-setup",
+        "product-mockup",
+        "packaging",
+        "supplier-management",
+        "product-page",
+        "creative-strategy",
+        "image-generation"
+      ],
+      "id": "c962036d33a6f9bc46ef8a13",
+      "source_id": "1Ig6z4IGo0uaqFz7wHZSEla-LB2LUOsUi",
+      "source_sha256": "c726b9dc7eef6422893637df7ea264954f64df5de865f803ede40683f69c377a",
+      "source_name": "Claude & Shopify Built $750k_m Ai Powered Ecom Brand.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 1
+    },
+    {
+      "title": "Create on-brand lifestyle imagery from competitor inspiration",
+      "summary": "Adapt competitor lifestyle shot compositions into your own branded images by pairing an inspiration image with your product reference and a written prompt.",
+      "use_when": "Building PDP, landing-page and ad creative imagery that looks on-brand without a photoshoot.",
+      "steps": [
+        "Collect inspiration images from the competitor page (a page-image downloader extension speeds this up).",
+        "Pair each inspiration image (composition/lighting reference) with an image of your own product (identity reference).",
+        "Rewrite the scene for your formulation: the source swapped competitor props (e.g. white ice, oranges, lavender) for props matching its own ingredients (rosemary, cucumber, honey, avocado).",
+        "Generate at a usable resolution and iterate by swapping only the inspiration image while keeping the brand reference constant.",
+        "Use these images for the store, supplier presentations, influencer briefs and investor/pitch visuals."
+      ],
+      "caveats": [
+        "Output quality tracks prompt quality — the source states images are only as good as the prompts.",
+        "Reusing a competitor's exact composition may risk looking derivative; change props, setting and brand cues."
+      ],
+      "tags": [
+        "store-setup",
+        "creative-strategy",
+        "product-photography",
+        "image-generation",
+        "product-page",
+        "ad-creative",
+        "landing-page"
+      ],
+      "id": "6fd1b113469847dfc4f95e94",
+      "source_id": "1Ig6z4IGo0uaqFz7wHZSEla-LB2LUOsUi",
+      "source_sha256": "c726b9dc7eef6422893637df7ea264954f64df5de865f803ede40683f69c377a",
+      "source_name": "Claude & Shopify Built $750k_m Ai Powered Ecom Brand.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 1
+    },
+    {
+      "title": "Sequence sourcing modes: dropship, then faster fulfillment, then private label",
+      "summary": "A staged sourcing recommendation: start dropshipping to test demand, upgrade fulfillment for speed, then move to private-label inventory as volume proves out.",
+      "use_when": "Choosing fulfillment/sourcing model for a new store built around a validated product, especially when launch capital is limited.",
+      "steps": [
+        "Build the sourcing report for the product: supplier options by model, unit costs and margins, ETA and trust signals for each.",
+        "Launch on dropshipping first to take orders without inventory risk, using supplier product images for your store's product visuals.",
+        "Once orders are coming, move to a faster/domestic delivery option (source names ZenDrop/Spocket) to cut delivery time.",
+        "Once sales justify it, move into private labeling: order inventory, send your branding, have labels printed and the product prepared by the supplier.",
+        "If branded packaging is not yet affordable ($500–$1,000 stock example in the source), keep dropshipping and apply branding on the website and brand pages rather than the product — avoid showing branded product photos that mismatch the unbranded item the customer receives.",
+        "Do branding first anyway, as a target vision, even while shipping unbranded stock."
+      ],
+      "caveats": [
+        "The source's model sequence (dropship → ZenDrop/Spocket → private label) is a recommendation, not a proven mandatory path.",
+        "A branded PDP with an unbranded shipped product creates a visible mismatch — the source explicitly warns against this; reconcile imagery with what actually ships."
+      ],
+      "tags": [
+        "store-setup",
+        "supplier-management",
+        "fulfillment",
+        "dropshipping",
+        "private-label",
+        "inventory",
+        "product-page"
+      ],
+      "id": "d175a55e416593dc6d1f1054",
+      "source_id": "1Ig6z4IGo0uaqFz7wHZSEla-LB2LUOsUi",
+      "source_sha256": "c726b9dc7eef6422893637df7ea264954f64df5de865f803ede40683f69c377a",
+      "source_name": "Claude & Shopify Built $750k_m Ai Powered Ecom Brand.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 1
+    },
+    {
+      "title": "Mirror a proven competitor page into your brand as a starting structure",
+      "summary": "Use a page-mirroring tool to replicate a high-performing competitor page's section structure, then rebrand it to your palette and logo.",
+      "use_when": "Building a homepage, collection page or PDP for a new brand when you have a proven competitor page to model and no page-builder available.",
+      "steps": [
+        "Open the proven competitor page and run the mirror tool to crawl and capture the page's full section structure.",
+        "Name the mirrored product/page and declare whether the page is transactional (customers buy on it) — checkout needs differ for buy-on-page vs. browse-only pages.",
+        "Watch the section-by-section build to confirm the tool captured the right structure; compare against the original section by section (hero media, description, video grid, reviews, FAQs, testimonials, footer).",
+        "Upload your logo and color palette and generate theme variants, then pick one that matches your brand.",
+        "Export/save your work (download the HTML) and re-upload to resume later — the source warns to always save before exiting."
+      ],
+      "caveats": [
+        "Tool names, plans and buttons in the source are vendor-specific and may change — verify the current interface.",
+        "Mirroring produces a neutral structural template; you still need to rebrand copy and imagery or the result reads as a clone."
+      ],
+      "tags": [
+        "store-setup",
+        "landing-page",
+        "product-page",
+        "page-builder",
+        "shopify",
+        "branding",
+        "competitor-research"
+      ],
+      "id": "c386abd9ce999db19e031c79",
+      "source_id": "1Ig6z4IGo0uaqFz7wHZSEla-LB2LUOsUi",
+      "source_sha256": "c726b9dc7eef6422893637df7ea264954f64df5de865f803ede40683f69c377a",
+      "source_name": "Claude & Shopify Built $750k_m Ai Powered Ecom Brand.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 1
+    },
+    {
+      "title": "Score and upgrade a mirrored page section-by-section",
+      "summary": "Audit a page against a scoring model, then add the missing sections it recommends rather than shipping the mirrored structure unchanged.",
+      "use_when": "Pre-launch page review: improving a PDP or homepage before spending on acquisition.",
+      "steps": [
+        "Run the page score calculation so the tool evaluates existing sections and outputs a score plus specific missing-section recommendations.",
+        "Treat the score as a comparative heuristic, not an absolute benchmark: the source's mirrored page scored 55/100 and it added every recommended section.",
+        "Add recommended sections (the source suggested adding all of them), then manually reorder, hide, or add sections as needed for your offer.",
+        "Rewrite copy with AI as a separate pass rather than accepting mirrored copy.",
+        "Re-score after edits and compare before/after so the upgrade is measurable within the tool's model."
+      ],
+      "caveats": [
+        "The 55/100 figure and 'add all sections' advice are the source's tool and opinion, not a published standard — judge whether each section fits your offer.",
+        "Adding sections can lengthen the page; do not add a block that has no real content behind it."
+      ],
+      "tags": [
+        "store-setup",
+        "conversion-optimization",
+        "product-page",
+        "landing-page",
+        "page-audit",
+        "copywriting",
+        "measurement"
+      ],
+      "id": "40f69bed15d75cbb433a035c",
+      "source_id": "1Ig6z4IGo0uaqFz7wHZSEla-LB2LUOsUi",
+      "source_sha256": "c726b9dc7eef6422893637df7ea264954f64df5de865f803ede40683f69c377a",
+      "source_name": "Claude & Shopify Built $750k_m Ai Powered Ecom Brand.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 1
+    }
+  ],
+  "request_id": "cf9fb72010d463b1f5c48ec212d69ba6cfe11c7483dc579bf5564016d5c1171f",
+  "ecommerce_scope_version": 1
+}

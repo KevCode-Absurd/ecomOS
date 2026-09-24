@@ -1,0 +1,489 @@
+{
+  "cards": [
+    {
+      "title": "Set up WooCommerce variable products with generated variations",
+      "summary": "Configure a variable product end-to-end: attributes, generated variations, per-variation SKU, price, stock and thumbnail.",
+      "use_when": "Adding a product that comes in multiple colors, sizes or other options on a WooCommerce store.",
+      "steps": [
+        "Create the product and change Product type to 'Variable product' before saving.",
+        "In the Attributes tab add an attribute (e.g. Color), enter values separated by the pipe | symbol (white|blue|pink), tick 'Use for variations', and save attributes.",
+        "Open the Variations tab and click 'Generate variations' to auto-create one row per combination instead of adding them manually.",
+        "Edit each variation individually to set its own SKU (e.g. kova-echo-white), regular price, sale price, thumbnail and, if you manage stock per variation, stock quantity and low stock threshold.",
+        "Set the main Product image (the image shown before a shopper picks a variation) and add extra gallery images for the default color.",
+        "Publish, then preview the storefront and click through each option to confirm the image and price swap correctly per variation."
+      ],
+      "caveats": [
+        "The specific button labels live in the WooCommerce product editor and can move between versions; verify the current interface.",
+        "Separate variations add admin overhead — don't generate variations for attributes that are purely descriptive."
+      ],
+      "tags": [
+        "store-setup",
+        "woocommerce",
+        "product-setup",
+        "variants",
+        "product-page",
+        "catalog-management"
+      ],
+      "id": "74c23b17ca3abe4801d5250a",
+      "source_id": "1Wkwgmn2r1WmdIXB9ionMa7wpQXdSAucF",
+      "source_sha256": "6b7c2c99cb4a5c776e6d68ed0731115845968c60409f3015f9433ee152b01590",
+      "source_name": "How to Create an Ecommerce Website with WordPress 2026 (step by step).docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 1
+    },
+    {
+      "title": "Product data fields that drive PDP content: SKU, stock, weight",
+      "summary": "Fill WooCommerce Product Data tabs so stock messaging, shipping and descriptions match what the shopper sees.",
+      "use_when": "Creating or auditing a physical product listing on WooCommerce before it goes live.",
+      "steps": [
+        "Set the SKU (your own stock-keeping code) and, if you have a real barcode, a UPC/GTIN. Skip barcodes for placeholder or made-up products.",
+        "Tick 'Track stock quantity' and enter the units on hand; set backorders to 'Do not allow' if you don't want to sell what you can't ship.",
+        "Set a low stock threshold (e.g. 10) so the product page can show 'low stock, order soon' messaging.",
+        "In the Shipping tab enter the weight and dimensions of the entire package — this is what shipping rates and label calculations use.",
+        "Write two descriptions: the long product description (the full sales story) and the short description (the summary that appears near the price/button).",
+        "Use the product image as the default PDP visual, a gallery for supporting shots, and category/tags so the item surfaces in on-site search and category browsing.",
+        "For downloadable or service products select Virtual/Downloadable instead of shipping fields."
+      ],
+      "caveats": [
+        "Weight/dimensions are per package, not per item, when items ship together.",
+        "Low-stock and stock-count messages only show if you actually track inventory."
+      ],
+      "tags": [
+        "store-setup",
+        "woocommerce",
+        "product-setup",
+        "inventory",
+        "product-page",
+        "shipping"
+      ],
+      "id": "cbae7d9daa4d6a2b02206cfc",
+      "source_id": "1Wkwgmn2r1WmdIXB9ionMa7wpQXdSAucF",
+      "source_sha256": "6b7c2c99cb4a5c776e6d68ed0731115845968c60409f3015f9433ee152b01590",
+      "source_name": "How to Create an Ecommerce Website with WordPress 2026 (step by step).docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 1
+    },
+    {
+      "title": "Configure Stripe and PayPal for WooCommerce and switch to live",
+      "summary": "Install payment plugins, connect accounts, run the connection test and flip the mode from Test to Live before launch.",
+      "use_when": "Enabling credit card and PayPal checkout on a WooCommerce store.",
+      "steps": [
+        "Install and activate the Stripe and PayPal WooCommerce payment plugins from Plugins > Add New (search by name).",
+        "Open WooCommerce settings for Stripe, connect your Stripe account (business details, bank account, statement descriptor) and agree/submit.",
+        "With the account connected, change mode from Test to Live, run the connection test, and save.",
+        "Repeat the connection flow for PayPal, then go to WooCommerce > Settings > Payments and enable the PayPal gateway (it may be inactive by default).",
+        "Verify by adding a product to the cart, proceeding to checkout, and confirming both the card fields and the PayPal option appear."
+      ],
+      "caveats": [
+        "Plugin names and settings screens change; verify current onboarding flow.",
+        "Do a live-mode test transaction before launch — the connection test confirms the link, not that checkout charges correctly.",
+        "The presenter is compensated via a hosting affiliate link; treat host recommendations as opinion."
+      ],
+      "tags": [
+        "store-setup",
+        "payments",
+        "woocommerce",
+        "stripe",
+        "paypal",
+        "checkout"
+      ],
+      "id": "8408a99f2223933e77e0f55d",
+      "source_id": "1Wkwgmn2r1WmdIXB9ionMa7wpQXdSAucF",
+      "source_sha256": "6b7c2c99cb4a5c776e6d68ed0731115845968c60409f3015f9433ee152b01590",
+      "source_name": "How to Create an Ecommerce Website with WordPress 2026 (step by step).docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 1
+    },
+    {
+      "title": "Shipping zones, flat rate and free-shipping thresholds",
+      "summary": "Build shipping zones with a flat rate plus a free-shipping method gated by an order minimum, ordered so free shipping wins.",
+      "use_when": "Setting up shipping charges and a free-shipping minimum for an online store.",
+      "steps": [
+        "In WooCommerce > Settings > Shipping create a zone per region (e.g. United States) and assign zone regions.",
+        "Add a Flat rate method: give it a name like 'Standard rate', set taxable status as appropriate, and enter a cost (example used: $10).",
+        "Add a Free shipping method and set its requirement to Minimum order amount (example threshold: $100). The operator can use any threshold; it must be chosen so shipping cost is covered.",
+        "Leave 'Apply minimum order rule before coupon' unchecked if the free-shipping threshold should be judged after coupons reduce the total.",
+        "Drag Free shipping above the flat rate inside the zone so qualifying carts get it automatically.",
+        "Save changes and test with a cart just above and just below the threshold."
+      ],
+      "caveats": [
+        "The $100 threshold and $10 rate are the tutorial's examples, not benchmarks — margin and average order value should set your own numbers.",
+        "Local pickup is listed as rarely used; judge by whether customers can collect."
+      ],
+      "tags": [
+        "store-setup",
+        "shipping",
+        "woocommerce",
+        "free-shipping",
+        "pricing",
+        "conversion-optimization"
+      ],
+      "id": "01aafe27763fb1766343c0c8",
+      "source_id": "1Wkwgmn2r1WmdIXB9ionMa7wpQXdSAucF",
+      "source_sha256": "6b7c2c99cb4a5c776e6d68ed0731115845968c60409f3015f9433ee152b01590",
+      "source_name": "How to Create an Ecommerce Website with WordPress 2026 (step by step).docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 1
+    },
+    {
+      "title": "Welcome coupon setup: percentage, usage limits, exclusions",
+      "summary": "Create a first-order welcome coupon with a percentage discount and a one-use-per-customer limit.",
+      "use_when": "Launching a store or promo and you need a discount code that can't be abused.",
+      "steps": [
+        "Go to WooCommerce > Marketing > Coupons and create a coupon with a simple code (e.g. welcome10).",
+        "Set discount type to Percentage and enter the value (example: 10).",
+        "Optionally tick 'free shipping' to bundle shipping into the coupon; skip it for the welcome case in the tutorial.",
+        "Set an expiration date, then under Usage restriction set minimum/maximum spend, prevent coupon stacking, exclude sale items, and scope to products/categories/brands if needed.",
+        "Under Usage limits set the per-user limit (example: 1) so each shopper can use it once, and optionally a total usage cap.",
+        "Publish, then test on the storefront by adding a product, applying the code in the cart, and confirming the discount amount."
+      ],
+      "caveats": [
+        "Discount depth is a margin decision — the 10% example is illustrative, not a recommended rate.",
+        "Limits only work as configured; verify the per-user rule actually blocks a second redemption."
+      ],
+      "tags": [
+        "store-setup",
+        "coupons",
+        "promotions",
+        "woocommerce",
+        "pricing",
+        "retention"
+      ],
+      "id": "60a02cc9a78e2440a3774745",
+      "source_id": "1Wkwgmn2r1WmdIXB9ionMa7wpQXdSAucF",
+      "source_sha256": "6b7c2c99cb4a5c776e6d68ed0731115845968c60409f3015f9433ee152b01590",
+      "source_name": "How to Create an Ecommerce Website with WordPress 2026 (step by step).docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 1
+    },
+    {
+      "title": "Use a starter template, then customize instead of building from scratch",
+      "summary": "Install a theme plus starter templates and Elementor so a full store layout exists before you customize.",
+      "use_when": "Building a new WordPress/WooCommerce storefront and you want a working layout fast.",
+      "steps": [
+        "Install and activate a lightweight theme (Astra is used in the tutorial), then launch its starter-templates plugin.",
+        "When choosing templates, click back before proceeding and explicitly select Elementor as the page builder — the tutorial warns against the block editor for this workflow.",
+        "Filter templates by Ecommerce, pick a free one (premium tags are paid), and let the importer install the pages, Elementor and WooCommerce.",
+        "Logo, font and color choices at import are placeholders — the presenter says they get replaced later, so don't over-invest there.",
+        "After import, use 'Edit with Elementor' on the homepage and replace text, images and backgrounds section by section rather than rebuilding."
+      ],
+      "caveats": [
+        "Imported templates include demo products and categories (e.g. 'Indoor plants') that must be deleted.",
+        "Template import writes many pages/settings; check for leftover demo content before launch."
+      ],
+      "tags": [
+        "store-setup",
+        "wordpress",
+        "elementor",
+        "themes",
+        "site-build",
+        "merchandising"
+      ],
+      "id": "a4bfc0ed6c747e6527e101da",
+      "source_id": "1Wkwgmn2r1WmdIXB9ionMa7wpQXdSAucF",
+      "source_sha256": "6b7c2c99cb4a5c776e6d68ed0731115845968c60409f3015f9433ee152b01590",
+      "source_name": "How to Create an Ecommerce Website with WordPress 2026 (step by step).docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 1
+    },
+    {
+      "title": "Elementor structure: sections, containers and widgets",
+      "summary": "Understand the three-level Elementor hierarchy and how to build a hero section from an empty canvas.",
+      "use_when": "Editing the homepage or a landing page in Elementor and you need to control layout and positioning.",
+      "steps": [
+        "Treat the page as sections (full-width background bands, shown by the pink outline), containers inside them (gray dashed boxes), and widgets/elements inside containers.",
+        "Add a section with the plus button, pick Flexbox, and choose a column/container arrangement; templates or AI-generated layouts are alternative starting points.",
+        "To make a section fill the screen, select the container's six-dot handle, change minimum height units to VH and drag the slider to 100.",
+        "Drag widgets in from the element panel (Heading, Text Editor, Divider, Button, Image, Icon Box) and edit text either in the sidebar field or directly on canvas.",
+        "Center content vertically with the container's Justify Content setting.",
+        "Reorder by dragging sections on canvas or by dragging entries in the structure/layers panel.",
+        "Preview without editing outlines using the preview arrow, then publish to save."
+      ],
+      "caveats": [
+        "Newer Elementor versions default to containers rather than the older section/column model; verify the current editor.",
+        "Two-height, viewport-sized sections can behave differently on mobile until you set responsive padding."
+      ],
+      "tags": [
+        "store-setup",
+        "elementor",
+        "landing-page",
+        "site-build",
+        "merchandising",
+        "wordpress"
+      ],
+      "id": "674f89bdf04c94db96d43791",
+      "source_id": "1Wkwgmn2r1WmdIXB9ionMa7wpQXdSAucF",
+      "source_sha256": "6b7c2c99cb4a5c776e6d68ed0731115845968c60409f3015f9433ee152b01590",
+      "source_name": "How to Create an Ecommerce Website with WordPress 2026 (step by step).docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 1
+    },
+    {
+      "title": "Style buttons for visibility: normal vs hover states, padding, radius",
+      "summary": "Configure button normal and hover states, padding and border radius so the CTA stands out on the page.",
+      "use_when": "Designing add-to-cart or buy-now buttons on a homepage, landing page or product page.",
+      "steps": [
+        "Select the button widget and open Style; note there are separate Normal and Hover tabs — set both.",
+        "Set text color and background (classic solid color or gradient) for Normal; set a clearly different text and background for Hover so the change is obvious to shoppers.",
+        "Optionally apply a hover animation such as 'Grow' to draw attention to the CTA.",
+        "Control shape with Border Radius: 0 gives a square button, higher values approach a circle; the tutorial lands mid-range (~15).",
+        "Control size with Padding; unlink the four values when you want wide but not tall buttons (example: 32 left/right, 15 top/bottom).",
+        "Keep button padding and label short enough that the button doesn't read as a large box on mobile."
+      ],
+      "caveats": [
+        "These are styling levers, not proven conversion lifts — validate any change against your own analytics.",
+        "Hover states don't exist on touch devices, so don't rely on hover alone to signal interactivity."
+      ],
+      "tags": [
+        "elementor",
+        "conversion-optimization",
+        "landing-page",
+        "product-page",
+        "design",
+        "cta"
+      ],
+      "id": "92302015d2d56828a46d2b42",
+      "source_id": "1Wkwgmn2r1WmdIXB9ionMa7wpQXdSAucF",
+      "source_sha256": "6b7c2c99cb4a5c776e6d68ed0731115845968c60409f3015f9433ee152b01590",
+      "source_name": "How to Create an Ecommerce Website with WordPress 2026 (step by step).docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 1
+    },
+    {
+      "title": "Video and image hero sections on the homepage",
+      "summary": "Use an Elementor section with a video or gradient background, then fix contrast so overlaid text stays readable.",
+      "use_when": "Building or replacing the homepage hero that showcases a top product.",
+      "steps": [
+        "Select the hero section's six-dot handle, open Style > Background, and choose Classic (solid), Gradient, or the Video tab.",
+        "For video, host it (the tutorial uses an unlisted YouTube video) and paste the link into the video URL field.",
+        "Add a subtle gradient overlay or choose text colors that contrast with the moving background.",
+        "After adding the video, change text to white (or a contrasting color) in Style > Text Color for each heading and paragraph, since overlaying copy on video can obscure it.",
+        "Swap individual elements freely: duplicate a heading to create a subheading, adjust typography weight and size, and add a Divider at reduced width to separate content.",
+        "Use an Image widget for product visuals where video is not appropriate."
+      ],
+      "caveats": [
+        "Background video typically will not autoplay on mobile and can look broken — plan a mobile-specific alternative (see responsive card).",
+        "Only use media you have the rights to host."
+      ],
+      "tags": [
+        "elementor",
+        "landing-page",
+        "merchandising",
+        "design",
+        "homepage",
+        "creative-strategy"
+      ],
+      "id": "b972166dd616fe5fa76f14f6",
+      "source_id": "1Wkwgmn2r1WmdIXB9ionMa7wpQXdSAucF",
+      "source_sha256": "6b7c2c99cb4a5c776e6d68ed0731115845968c60409f3015f9433ee152b01590",
+      "source_name": "How to Create an Ecommerce Website with WordPress 2026 (step by step).docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 1
+    },
+    {
+      "title": "Header and footer are theme settings, not Elementor",
+      "summary": "Edit the Astra header via Customize (logo, menu, transparent header) while page content stays in Elementor.",
+      "use_when": "Changing the store logo, navigation menu or header background color.",
+      "steps": [
+        "Open Customize from the admin bar — this controls the theme header and footer, which Elementor does not manage.",
+        "Replace the logo: untoggle the separate transparent logo option so one logo is used sitewide, then upload a transparent PNG and set the logo width (skip cropping so the image isn't cut).",
+        "Set the site title, which is what appears in the browser tab.",
+        "Enable a transparent header on the complete website, and uncheck it for WooCommerce product pages if you want the same header on PDPs.",
+        "Adjust header background under Design > Primary Header: choose a color (e.g. black) and reduce the slider to about half opacity for a translucent header.",
+        "Edit the navigation menu via the pencil icon > Configure Menu > Primary Menu: add Pages, Custom Links, Posts, Products or product categories, and drag items sideways under another item to create dropdown sub-items.",
+        "Set menu text/link color and hover color under Transparent Header > Design to match the site's palette.",
+        "Publish."
+      ],
+      "caveats": [
+        "Theme options and labels shift between Astra versions; verify the current Customizer panels.",
+        "Changing header colors may require updating body-section text colors for contrast."
+      ],
+      "tags": [
+        "store-setup",
+        "wordpress",
+        "navigation",
+        "themes",
+        "design",
+        "site-build"
+      ],
+      "id": "86b429e07dcd1eabd9713087",
+      "source_id": "1Wkwgmn2r1WmdIXB9ionMa7wpQXdSAucF",
+      "source_sha256": "6b7c2c99cb4a5c776e6d68ed0731115845968c60409f3015f9433ee152b01590",
+      "source_name": "How to Create an Ecommerce Website with WordPress 2026 (step by step).docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 1
+    },
+    {
+      "title": "Organize the catalog with product categories and parent/child structure",
+      "summary": "Create product categories (and parents) so shoppers can sort and categories surface on the homepage.",
+      "use_when": "Organizing a WooCommerce product catalog into navigable categories and subcategories before building collection menus and homepage sections.",
+      "steps": [
+        "Go to Products > Categories and delete demo categories that shipped with the template (e.g. 'Indoor plants').",
+        "Add a new category with a clear name, a simple lowercase slug for the URL, and optionally a parent category.",
+        "Use parent categories to group variants, e.g. put 'Wireless headphones' and 'Earbuds' under a parent 'Headphones'.",
+        "Skip thumbnail/description for now if they aren't ready — they can be added later.",
+        "Assign each product to the right category in the product editor (and uncheck Uncategorized) so it appears in that category's listings and the homepage sections that pull from it.",
+        "Add tags to products to help on-site search, using your own brand or product name as tags."
+      ],
+      "caveats": [
+        "Categories are what on-site browsing and menu dropdowns rely on; tags help search but shouldn't replace categories.",
+        "A flat, one-level category set is fine for small catalogs — the tutorial starts that way."
+      ],
+      "tags": [
+        "store-setup",
+        "catalog-management",
+        "woocommerce",
+        "merchandising",
+        "navigation",
+        "product-page"
+      ],
+      "id": "774893c987c2a40cb9f8c04e",
+      "source_id": "1Wkwgmn2r1WmdIXB9ionMa7wpQXdSAucF",
+      "source_sha256": "6b7c2c99cb4a5c776e6d68ed0731115845968c60409f3015f9433ee152b01590",
+      "source_name": "How to Create an Ecommerce Website with WordPress 2026 (step by step).docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 1
+    },
+    {
+      "title": "Upsells and cross-sells in WooCommerce linked products",
+      "summary": "Use WooCommerce Linked Products so shoppers see an upgrade on the product page and add-ons in the cart.",
+      "use_when": "Setting product recommendations on a PDP and in the cart to raise average order value.",
+      "steps": [
+        "In the product editor's Linked Products tab, add Upsells — these show on the product page as an upgraded or higher-priced alternative to the item being viewed.",
+        "Add Cross-sells — these appear in the cart when the shopper is close to checking out.",
+        "Search for the products by name in each field; the targets must already exist as products in the store.",
+        "Keep the relationship relevant (related product, not a random item) so the recommendation makes sense.",
+        "Review on the storefront: open a PDP to see upsells and add an item to cart to see cross-sells render."
+      ],
+      "caveats": [
+        "Recommending unrelated items can distract from checkout; the tutorial's example pairs a cheaper headphone with a nicer one, not an arbitrary product.",
+        "Cross-sells add cart steps — measure whether they help or hurt checkout completion."
+      ],
+      "tags": [
+        "woocommerce",
+        "merchandising",
+        "product-page",
+        "upsell",
+        "cross-sell",
+        "cart"
+      ],
+      "id": "487c7ec1c1054e0e1cffeb94",
+      "source_id": "1Wkwgmn2r1WmdIXB9ionMa7wpQXdSAucF",
+      "source_sha256": "6b7c2c99cb4a5c776e6d68ed0731115845968c60409f3015f9433ee152b01590",
+      "source_name": "How to Create an Ecommerce Website with WordPress 2026 (step by step).docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 1
+    },
+    {
+      "title": "Clean up demo products before adding your own catalog",
+      "summary": "Delete template products and their trash, then replicate a configured product for the rest of the catalog instead of rebuilding each one.",
+      "use_when": "Starting a store from an imported template and needing to replace placeholder products.",
+      "steps": [
+        "Go to Products > All Products, select all demo products, apply the 'Move to trash' bulk action, then empty the trash.",
+        "With an empty catalog, the 'Add product' flow prompts for product type: Physical (shipped), Variable (has variations like color/size), Grouped (a bundle sold as one).",
+        "Reuse the structure: duplicate an existing configured product and edit it for the next item rather than repeating every field from scratch.",
+        "Confirm new items appear in the homepage product sections that reference the catalog, and assign each to its category and price.",
+        "If product thumbnails look grainy in grids, change the product image size in Customizer to e.g. 900x600 and republish."
+      ],
+      "caveats": [
+        "Duplicating carries over old images, descriptions and variations — scrub those before publishing.",
+        "Image-size values are examples from the tutorial, not measured optimal sizes."
+      ],
+      "tags": [
+        "store-setup",
+        "woocommerce",
+        "catalog-management",
+        "product-setup",
+        "merchandising",
+        "product-page"
+      ],
+      "id": "37e739ed2006f0311346e6e7",
+      "source_id": "1Wkwgmn2r1WmdIXB9ionMa7wpQXdSAucF",
+      "source_sha256": "6b7c2c99cb4a5c776e6d68ed0731115845968c60409f3015f9433ee152b01590",
+      "source_name": "How to Create an Ecommerce Website with WordPress 2026 (step by step).docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 1
+    },
+    {
+      "title": "Responsive design: serve different sections per device in Elementor",
+      "summary": "Duplicate a desktop section and use Elementor's responsive controls to show a simplified version only on mobile.",
+      "use_when": "Fixing the homepage on mobile/tablet, e.g. a background video that doesn't play on phones.",
+      "steps": [
+        "Switch to the phone/tablet icon in Elementor's responsive preview and inspect the section — video backgrounds often render as a gray gap on mobile.",
+        "Duplicate the desktop hero section so you have two copies.",
+        "On the duplicate meant for mobile, open Advanced > Responsive and hide it on tablet and desktop, leaving mobile enabled.",
+        "On the original desktop section, hide it on mobile and leave tablet/desktop enabled, so each device sees one clean version.",
+        "In the mobile section, remove the video link (or leave it blank), set the background to a gradient, and add a product Image widget instead.",
+        "Use Advanced > Padding with the mobile-only indicator to space the section and keep content clear of the header; adjust per-element mobile settings like button position.",
+        "Preview each device view before publishing."
+      ],
+      "caveats": [
+        "Duplicated sections multiply maintenance — update both when content changes.",
+        "Pixel values shown are illustrative; check across real devices."
+      ],
+      "tags": [
+        "elementor",
+        "responsive-design",
+        "landing-page",
+        "mobile",
+        "design",
+        "conversion-optimization"
+      ],
+      "id": "ae2ae53144f1e98aa01077e5",
+      "source_id": "1Wkwgmn2r1WmdIXB9ionMa7wpQXdSAucF",
+      "source_sha256": "6b7c2c99cb4a5c776e6d68ed0731115845968c60409f3015f9433ee152b01590",
+      "source_name": "How to Create an Ecommerce Website with WordPress 2026 (step by step).docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 1
+    },
+    {
+      "title": "Single product page spacing and button styling via Customize",
+      "summary": "Fix PDP padding and recolor add-to-cart buttons in the Customizer rather than in Elementor.",
+      "use_when": "Adjusting layout and colors on the WooCommerce product page so content clears the header and CTAs match the brand.",
+      "steps": [
+        "Open the single product page and click Customize to reach the WooCommerce Single Product settings (these are theme options, not Elementor).",
+        "Under Single Product > Design, unlink the padding values and set top padding (example: 120px) so the content clears the sticky header.",
+        "Change the sticky add-to-cart button colors (background and hover) under the same Design panel; a page refresh may be needed for updates to show.",
+        "Change global button background/hover under Global > Buttons, then publish and refresh to confirm.",
+        "Edit the shipping-note text on the PDP (e.g. 'free shipping') under General > Single Product if your shipping terms differ.",
+        "Add a purchase note under the product's Advanced tab for a custom post-purchase message, and keep menu order at 0 unless you need manual sorting."
+      ],
+      "caveats": [
+        "Setting padding without checking the responsive views can push content off small screens.",
+        "Customizer labels vary by theme version."
+      ],
+      "tags": [
+        "woocommerce",
+        "product-page",
+        "design",
+        "conversion-optimization",
+        "elementor",
+        "checkout"
+      ],
+      "id": "c471d0cba9738b85ca6e1cbc",
+      "source_id": "1Wkwgmn2r1WmdIXB9ionMa7wpQXdSAucF",
+      "source_sha256": "6b7c2c99cb4a5c776e6d68ed0731115845968c60409f3015f9433ee152b01590",
+      "source_name": "How to Create an Ecommerce Website with WordPress 2026 (step by step).docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 1
+    }
+  ],
+  "request_id": "5b331534dbcc0c6ee74f73614f8830227f94b9df65b42df1586d08ff01e92935",
+  "ecommerce_scope_version": 1,
+  "local_recovery": "Added missing applicability sentence using the existing catalog instructions."
+}

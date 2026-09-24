@@ -1,0 +1,400 @@
+{
+  "request_id": "14e7325c2774c7d555ac9b88778e4147ab63034bc0897f31f4497b8d2262e2bc",
+  "provider": "deepseek",
+  "model": "deepseek-flash",
+  "effort": "high",
+  "completion_limit": 32768,
+  "usage": {
+    "prompt_tokens": 11946,
+    "completion_tokens": 24339,
+    "total_tokens": 36285,
+    "prompt_tokens_details": {
+      "cached_tokens": 1536
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 22625
+    },
+    "prompt_cache_hit_tokens": 1536,
+    "prompt_cache_miss_tokens": 10410
+  },
+  "booked_cost_usd": 0.032790599999999996,
+  "seconds": 112.28,
+  "finish_reason": "stop",
+  "output": {
+    "reviews": [
+      {
+        "label": "A",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 4,
+          "prioritization": 4
+        },
+        "strengths": [
+          "Correct inventory math: 210/8=26.3 days cover, 70-unit shortfall, 6/day max, 5.5/day buffer.",
+          "Balances inventory, acquisition, conversion and retention in a clear three-priority order.",
+          "Brand-safe copy: 13-inch sleeve, water-resistant not waterproof, 4–7 day delivery, no discount.",
+          "Strong uncertainty handling: asks whether stock is sellable/committed, paid DAY18 demand share, and accessory economics."
+        ],
+        "issues": [
+          "The $750 allowable release from the $3,000 budget is arbitrary rather than derived.",
+          "Designer 8 hrs/week is not explicitly capped, though the scope stays modest."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "210/8 = 26.25 days of Daypack stock against 35-day replenishment; about 8.75-day gap at current rate.",
+            "met": true,
+            "reason": "States 26.3 days vs 35 days, 70-unit shortfall, 6/day max, 5.5/day buffer."
+          },
+          {
+            "criterion": "Avoid accelerating Daypack demand without a stock plan.",
+            "met": true,
+            "reason": "Sets inventory-led acquisition ceiling and tells reduce/pause DAY18-focused acquisition."
+          },
+          {
+            "criterion": "Respect 8 designer and 4 developer hours per week and $3000 budget.",
+            "met": true,
+            "reason": "Caps developer at 4 hrs/week and keeps at least $2,250 of $3,000 uncommitted."
+          }
+        ]
+      },
+      {
+        "label": "B",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 4,
+          "prioritization": 4
+        },
+        "strengths": [
+          "Correct inventory, mobile-funnel, Meta/Shopify and contribution calculations.",
+          "Explicitly caps resources at 12 designer, 6 developer, 8 owner hours over the fortnight and treats $3,000 as a ceiling.",
+          "Concrete accessory retention test with contribution math and holdout caveat.",
+          "Plain-spoken, brand-safe product messaging."
+        ],
+        "issues": [
+          "Accessory standalone shipping/pick-pack costs are unknown, though this is caveated.",
+          "A two-week email holdout may be statistically inconclusive, also noted.",
+          "Does not explicitly address the missing Added-to-Cart flow."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "210/8 = 26.25 days of Daypack stock against 35-day replenishment; about 8.75-day gap at current rate.",
+            "met": true,
+            "reason": "States 26.25 days cover, 70-unit shortfall, 6/day max, 5.5/day buffer."
+          },
+          {
+            "criterion": "Avoid accelerating Daypack demand without a stock plan.",
+            "met": true,
+            "reason": "Inventory guardrail and paid-spend reduction; says conversion gains must stay inside the guardrail."
+          },
+          {
+            "criterion": "Respect 8 designer and 4 developer hours per week and $3000 budget.",
+            "met": true,
+            "reason": "Caps at 12 designer/6 developer/8 owner hours over two weeks and treats $3,000 as a ceiling."
+          }
+        ]
+      },
+      {
+        "label": "C",
+        "scores": {
+          "factual_accuracy": 3,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 3,
+          "prioritization": 4
+        },
+        "strengths": [
+          "Core inventory math is correct: 26.25 days cover, 8.75-day gap, 6/day max, 28-unit reduction over 14 days.",
+          "Identifies mobile as the main order decline and uses the ATC-to-checkout drop correctly.",
+          "Good customer-ticket and Klaviyo attribution caveats.",
+          "Clear three-priority plan with timelines."
+        ],
+        "issues": [
+          "Calls prior Meta CPA 'profitable' from $39.60 contribution before returns/overhead and assumes all orders are Daypack.",
+          "Recommends shifting paid budget to POUCH/BOTTLE before showing accessory demand or economics; this is flagged as an assumption but still stated as an action.",
+          "Says there is no cart-abandonment flow while a checkout-abandonment flow exists; should distinguish ATC vs checkout flow.",
+          "Uses exact 6/day cap without an explicit safety buffer for delayed replenishment."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "210/8 = 26.25 days of Daypack stock against 35-day replenishment; about 8.75-day gap at current rate.",
+            "met": true,
+            "reason": "States 26.25 days cover, 35−26.25=8.75-day gap, 6/day max, 28-unit two-week reduction."
+          },
+          {
+            "criterion": "Avoid accelerating Daypack demand without a stock plan.",
+            "met": true,
+            "reason": "Caps Daypack at 6/day, shifts paid away from Daypack, and suggests waitlist/notify if organic demand exceeds cap."
+          },
+          {
+            "criterion": "Respect 8 designer and 4 developer hours per week and $3000 budget.",
+            "met": true,
+            "reason": "Mentions using available 8 design/4 dev hours and the $3,000 test budget, though the flow scope is aggressive."
+          }
+        ]
+      },
+      {
+        "label": "D",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 3,
+          "uncertainty_and_questions": 4,
+          "prioritization": 4
+        },
+        "strengths": [
+          "Excellent numeric diagnosis: mobile CVR, ATC-to-checkout, Meta/Klaviyo overlap, inventory gap and replenishment cash.",
+          "Brand-safe product fixes for sizing, water resistance, delivery and returns.",
+          "Strong uncertainty handling with clear questions and assumptions.",
+          "Clear three-priority structure that avoids discounting and broad DAY18 acquisition."
+        ],
+        "issues": [
+          "Weekly designer/developer hour caps are not explicitly allocated; the PDP variant, ATC flow, post-purchase flow and delivery messaging may strain 8 designer/4 developer hours per week.",
+          "Uses exact 6/day cap with no explicit buffer if replenishment is delayed.",
+          "Shifting only the $3,000 test budget may not address the bulk of existing $22k Meta spend, even though the sell-through cap is the main control.",
+          "CTA change to 'Add to cart' is a reasonable hypothesis but unsupported by the supplied data."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "210/8 = 26.25 days of Daypack stock against 35-day replenishment; about 8.75-day gap at current rate.",
+            "met": true,
+            "reason": "States 26.25 days cover, 70-unit gap, roughly 9 uncovered days, and 6/day cap."
+          },
+          {
+            "criterion": "Avoid accelerating Daypack demand without a stock plan.",
+            "met": true,
+            "reason": "Sets a hard DAY18 sell-through cap and shifts test budget away from broad DAY18 prospecting."
+          },
+          {
+            "criterion": "Respect 8 designer and 4 developer hours per week and $3000 budget.",
+            "met": true,
+            "reason": "Mentions the $3,000 test budget and limits work to three priorities, but the weekly 8/4 cap is implicit rather than explicit."
+          }
+        ]
+      }
+    ],
+    "ranking": [
+      "B",
+      "A",
+      "D",
+      "C"
+    ],
+    "summary": "B and A are the strongest: both calculate inventory and funnel math correctly, respect brand constraints, and stay focused. B edges ahead on explicit resource caps and a concrete accessory-retention test; A is slightly more cautious but less explicit on designer hours. D is analytically strong but less explicit about weekly hour caps and proposes a large two-week scope. C is useful but has notable overstatements around Meta CPA profitability and accessory-spend reallocation, plus a flow-labeling imprecision."
+  },
+  "raw_content": "{\"reviews\":[{\"label\":\"A\",\"scores\":{\"factual_accuracy\":4,\"brand_fit\":4,\"task_completion\":4,\"actionability\":4,\"uncertainty_and_questions\":4,\"prioritization\":4},\"strengths\":[\"Correct inventory math: 210/8=26.3 days cover, 70-unit shortfall, 6/day max, 5.5/day buffer.\",\"Balances inventory, acquisition, conversion and retention in a clear three-priority order.\",\"Brand-safe copy: 13-inch sleeve, water-resistant not waterproof, 4–7 day delivery, no discount.\",\"Strong uncertainty handling: asks whether stock is sellable/committed, paid DAY18 demand share, and accessory economics.\"],\"issues\":[\"The $750 allowable release from the $3,000 budget is arbitrary rather than derived.\",\"Designer 8 hrs/week is not explicitly capped, though the scope stays modest.\"],\"critical_errors\":[],\"questions_useful\":true,\"criterion_results\":[{\"criterion\":\"210/8 = 26.25 days of Daypack stock against 35-day replenishment; about 8.75-day gap at current rate.\",\"met\":true,\"reason\":\"States 26.3 days vs 35 days, 70-unit shortfall, 6/day max, 5.5/day buffer.\"},{\"criterion\":\"Avoid accelerating Daypack demand without a stock plan.\",\"met\":true,\"reason\":\"Sets inventory-led acquisition ceiling and tells reduce/pause DAY18-focused acquisition.\"},{\"criterion\":\"Respect 8 designer and 4 developer hours per week and $3000 budget.\",\"met\":true,\"reason\":\"Caps developer at 4 hrs/week and keeps at least $2,250 of $3,000 uncommitted.\"}]},{\"label\":\"B\",\"scores\":{\"factual_accuracy\":4,\"brand_fit\":4,\"task_completion\":4,\"actionability\":4,\"uncertainty_and_questions\":4,\"prioritization\":4},\"strengths\":[\"Correct inventory, mobile-funnel, Meta/Shopify and contribution calculations.\",\"Explicitly caps resources at 12 designer, 6 developer, 8 owner hours over the fortnight and treats $3,000 as a ceiling.\",\"Concrete accessory retention test with contribution math and holdout caveat.\",\"Plain-spoken, brand-safe product messaging.\"],\"issues\":[\"Accessory standalone shipping/pick-pack costs are unknown, though this is caveated.\",\"A two-week email holdout may be statistically inconclusive, also noted.\",\"Does not explicitly address the missing Added-to-Cart flow.\"],\"critical_errors\":[],\"questions_useful\":true,\"criterion_results\":[{\"criterion\":\"210/8 = 26.25 days of Daypack stock against 35-day replenishment; about 8.75-day gap at current rate.\",\"met\":true,\"reason\":\"States 26.25 days cover, 70-unit shortfall, 6/day max, 5.5/day buffer.\"},{\"criterion\":\"Avoid accelerating Daypack demand without a stock plan.\",\"met\":true,\"reason\":\"Inventory guardrail and paid-spend reduction; says conversion gains must stay inside the guardrail.\"},{\"criterion\":\"Respect 8 designer and 4 developer hours per week and $3000 budget.\",\"met\":true,\"reason\":\"Caps at 12 designer/6 developer/8 owner hours over two weeks and treats $3,000 as a ceiling.\"}]},{\"label\":\"C\",\"scores\":{\"factual_accuracy\":3,\"brand_fit\":4,\"task_completion\":4,\"actionability\":4,\"uncertainty_and_questions\":3,\"prioritization\":4},\"strengths\":[\"Core inventory math is correct: 26.25 days cover, 8.75-day gap, 6/day max, 28-unit reduction over 14 days.\",\"Identifies mobile as the main order decline and uses the ATC-to-checkout drop correctly.\",\"Good customer-ticket and Klaviyo attribution caveats.\",\"Clear three-priority plan with timelines.\"],\"issues\":[\"Calls prior Meta CPA 'profitable' from $39.60 contribution before returns/overhead and assumes all orders are Daypack.\",\"Recommends shifting paid budget to POUCH/BOTTLE before showing accessory demand or economics; this is flagged as an assumption but still stated as an action.\",\"Says there is no cart-abandonment flow while a checkout-abandonment flow exists; should distinguish ATC vs checkout flow.\",\"Uses exact 6/day cap without an explicit safety buffer for delayed replenishment.\"],\"critical_errors\":[],\"questions_useful\":true,\"criterion_results\":[{\"criterion\":\"210/8 = 26.25 days of Daypack stock against 35-day replenishment; about 8.75-day gap at current rate.\",\"met\":true,\"reason\":\"States 26.25 days cover, 35−26.25=8.75-day gap, 6/day max, 28-unit two-week reduction.\"},{\"criterion\":\"Avoid accelerating Daypack demand without a stock plan.\",\"met\":true,\"reason\":\"Caps Daypack at 6/day, shifts paid away from Daypack, and suggests waitlist/notify if organic demand exceeds cap.\"},{\"criterion\":\"Respect 8 designer and 4 developer hours per week and $3000 budget.\",\"met\":true,\"reason\":\"Mentions using available 8 design/4 dev hours and the $3,000 test budget, though the flow scope is aggressive.\"}]},{\"label\":\"D\",\"scores\":{\"factual_accuracy\":4,\"brand_fit\":4,\"task_completion\":4,\"actionability\":3,\"uncertainty_and_questions\":4,\"prioritization\":4},\"strengths\":[\"Excellent numeric diagnosis: mobile CVR, ATC-to-checkout, Meta/Klaviyo overlap, inventory gap and replenishment cash.\",\"Brand-safe product fixes for sizing, water resistance, delivery and returns.\",\"Strong uncertainty handling with clear questions and assumptions.\",\"Clear three-priority structure that avoids discounting and broad DAY18 acquisition.\"],\"issues\":[\"Weekly designer/developer hour caps are not explicitly allocated; the PDP variant, ATC flow, post-purchase flow and delivery messaging may strain 8 designer/4 developer hours per week.\",\"Uses exact 6/day cap with no explicit buffer if replenishment is delayed.\",\"Shifting only the $3,000 test budget may not address the bulk of existing $22k Meta spend, even though the sell-through cap is the main control.\",\"CTA change to 'Add to cart' is a reasonable hypothesis but unsupported by the supplied data.\"],\"critical_errors\":[],\"questions_useful\":true,\"criterion_results\":[{\"criterion\":\"210/8 = 26.25 days of Daypack stock against 35-day replenishment; about 8.75-day gap at current rate.\",\"met\":true,\"reason\":\"States 26.25 days cover, 70-unit gap, roughly 9 uncovered days, and 6/day cap.\"},{\"criterion\":\"Avoid accelerating Daypack demand without a stock plan.\",\"met\":true,\"reason\":\"Sets a hard DAY18 sell-through cap and shifts test budget away from broad DAY18 prospecting.\"},{\"criterion\":\"Respect 8 designer and 4 developer hours per week and $3000 budget.\",\"met\":true,\"reason\":\"Mentions the $3,000 test budget and limits work to three priorities, but the weekly 8/4 cap is implicit rather than explicit.\"}]}],\"ranking\":[\"B\",\"A\",\"D\",\"C\"],\"summary\":\"B and A are the strongest: both calculate inventory and funnel math correctly, respect brand constraints, and stay focused. B edges ahead on explicit resource caps and a concrete accessory-retention test; A is slightly more cautious but less explicit on designer hours. D is analytically strong but less explicit about weekly hour caps and proposes a large two-week scope. C is useful but has notable overstatements around Meta CPA profitability and accessory-spend reallocation, plus a flow-labeling imprecision.\"}",
+  "input": {
+    "brand": {
+      "fictional": true,
+      "name": "TrailFold",
+      "market": "US",
+      "currency": "USD",
+      "platforms": [
+        "Shopify",
+        "Meta Ads",
+        "Klaviyo"
+      ],
+      "positioning": "Practical lightweight bags for commuters who take short weekend trips; restrained, useful, plain-spoken voice.",
+      "products": [
+        {
+          "sku": "DAY18",
+          "name": "Daypack 18L",
+          "price": 80,
+          "landed_cogs": 28,
+          "pick_pack": 2,
+          "merchant_shipping_cost": 8,
+          "payment_fee_percent": 3,
+          "features": [
+            "18L capacity",
+            "padded 13-inch laptop sleeve",
+            "water-resistant fabric, not waterproof",
+            "external bottle pocket"
+          ],
+          "stock": 210,
+          "daily_units_sold": 8,
+          "confirmed_replenishment_units": 500,
+          "replenishment_arrival_days": 35
+        },
+        {
+          "sku": "POUCH",
+          "name": "Cable pouch",
+          "price": 20,
+          "landed_cogs": 5,
+          "stock": 800
+        },
+        {
+          "sku": "BOTTLE",
+          "name": "Steel bottle",
+          "price": 32,
+          "landed_cogs": 9,
+          "stock": 600
+        }
+      ],
+      "policies": {
+        "shipping": "Free US shipping; delivery estimate 4-7 business days",
+        "returns": "30-day returns for unused products; return shipping paid by customer",
+        "discounts": "No current discount. Any new discount needs owner approval."
+      },
+      "claim_constraints": [
+        "No evidence for waterproof, medical, sustainability or lifetime-durability claims.",
+        "No verified competitor performance data.",
+        "No clinical or controlled product test results."
+      ],
+      "customer_themes": {
+        "simulated_review_count": 120,
+        "themes": [
+          "fits daily commute",
+          "customers ask whether a 15-inch laptop fits",
+          "customers ask whether rain protection means waterproof"
+        ],
+        "support_tickets_last_30_days": {
+          "delivery_date_questions": 42,
+          "15_inch_laptop_fit": 28,
+          "waterproof_questions": 18
+        },
+        "note": "Themes, not verbatim licensed testimonials; no fabricated quotes or endorsements."
+      },
+      "website_snapshot": {
+        "pdp_headline": "Adventure starts here",
+        "first_image": "product on plain background",
+        "pdp_details": "Laptop sizing and delivery window are below reviews; CTA says Buy now. No field speed or session-recording data."
+      },
+      "shopify": {
+        "previous_30_days": {
+          "sessions": 20000,
+          "orders": 600,
+          "net_product_revenue": 54000,
+          "mobile_sessions": 15000,
+          "mobile_orders": 400,
+          "desktop_sessions": 5000,
+          "desktop_orders": 200,
+          "add_to_cart_sessions": 2000,
+          "checkout_started_sessions": 1200
+        },
+        "current_30_days": {
+          "sessions": 25000,
+          "orders": 500,
+          "net_product_revenue": 45000,
+          "mobile_sessions": 20000,
+          "mobile_orders": 300,
+          "desktop_sessions": 5000,
+          "desktop_orders": 200,
+          "add_to_cart_sessions": 2000,
+          "checkout_started_sessions": 1000
+        },
+        "definitions": "Revenue excludes tax/shipping; periods equal length. Funnel counts are session-based and internally consistent, but no controlled attribution experiment.",
+        "new_customer_share_current": 0.72,
+        "cohort_90_day_repeat_rate": 0.14
+      },
+      "meta": {
+        "previous_30_days": {
+          "spend": 18000,
+          "reported_purchase_value": 54000,
+          "cpm": 12,
+          "link_ctr_percent": 1.5
+        },
+        "current_30_days": {
+          "spend": 22000,
+          "reported_purchase_value": 70400,
+          "cpm": 15,
+          "link_ctr_percent": 1.2
+        },
+        "settings": "7-day click plus 1-day view; no incremental lift study. Meta reported value not reconciled to Shopify orders.",
+        "creative_history": [
+          {
+            "name": "Desk-to-trail demonstration",
+            "spend_share": 0.55,
+            "observed_result": "Largest spend recipient; mature creative. No asset-level contribution data."
+          },
+          {
+            "name": "Laptop-fit comparison",
+            "spend_share": 0.25,
+            "observed_result": "Higher CTR in small test; conversion sample not supplied."
+          },
+          {
+            "name": "Minimal product still",
+            "spend_share": 0.2,
+            "observed_result": "No reliable lift estimate."
+          }
+        ]
+      },
+      "klaviyo": {
+        "marketable_profiles": 12000,
+        "reported_attributed_revenue_current": 14000,
+        "attribution_window": "5-day click plus 5-day open",
+        "flows": [
+          {
+            "name": "welcome",
+            "messages": 1,
+            "offer": "none"
+          },
+          {
+            "name": "checkout abandonment",
+            "trigger": "Started Checkout",
+            "messages": 1,
+            "delay_hours": 24,
+            "observed_gap": "No Added to Cart flow; filters not audited."
+          }
+        ],
+        "campaigns_per_week": 3,
+        "reported_open_rate_percent": 52,
+        "click_rate_percent": 1.1,
+        "order_rate_percent": 0.18,
+        "note": "Revenue attribution overlaps other systems; no holdout or recent deliverability audit."
+      },
+      "resources": {
+        "weekly_designer_hours": 8,
+        "weekly_developer_hours": 4,
+        "owner_hours": 4,
+        "next_14_day_test_budget": 3000,
+        "cash_constraint": "Protect replenishment payments; no additional inventory purchase approved."
+      },
+      "unavailable": [
+        "GA4 breakdowns",
+        "Clarity/Hotjar recordings",
+        "field Core Web Vitals",
+        "SKU-level ad acquisition cost",
+        "cohort contribution LTV",
+        "creative-level conversion sample sizes",
+        "channel incrementality",
+        "email holdout data"
+      ]
+    },
+    "task": "What are the top three priorities for the next two weeks? Balance acquisition, conversion, retention and inventory rather than proposing everything.",
+    "criteria": [
+      "210/8 = 26.25 days of Daypack stock against 35-day replenishment; about 8.75-day gap at current rate.",
+      "Avoid accelerating Daypack demand without a stock plan.",
+      "Respect 8 designer and 4 developer hours per week and $3000 budget."
+    ],
+    "weights": {
+      "factual_accuracy": 30,
+      "brand_fit": 15,
+      "task_completion": 20,
+      "actionability": 15,
+      "uncertainty_and_questions": 10,
+      "prioritization": 10
+    },
+    "answers": {
+      "A": "{\"answer_markdown\": \"## Top three priorities for the next two weeks\\n\\n**Recommendation:** protect Daypack availability first, fix purchase uncertainty second, and improve one existing retention touchpoint third. Do not scale acquisition or launch a broad testing program while inventory is short.\\n\\n### 1. Set an inventory-led acquisition ceiling\\n\\n**Observation:** DAY18 has **210 ÷ 8 = 26.3 days** of stock, but replenishment arrives in 35 days. Maintaining current demand requires **35 × 8 = 280 units**, a **70-unit shortfall**. The maximum average pace without a buffer is **210 ÷ 35 = 6 units/day**.\\n\\nSet a provisional planning target of **5.5 units/day**, leaving roughly **17 units** at arrival if replenishment is on time. This is an inventory target, not something ad budgets can guarantee.\\n\\n**Next two weeks:**\\n- Immediately reduce DAY18-focused acquisition and retargeting; pause marginal activity first where reconciled results support that choice. Do not expand prospecting based on platform ROAS.\\n- Review total DAY18 sales and remaining stock daily. Recalculate the allowable pace as `(available units − safety buffer) ÷ days until sellable replenishment`. If organic and lifecycle demand already consumes that allowance, pause paid DAY18 promotion.\\n- Keep at least **$2,250 of the $3,000 test budget uncommitted**. Release at most $750 only if stock pace permits, as replacement—not additional—acquisition spend. Otherwise retain all $3,000. Do not automatically redirect spend to accessories without their standalone economics.\\n\\n**Why:** Meta ROAS rose from **3.0 to 3.2**, but Shopify revenue/spend fell from **$54,000/$18,000 = 3.0** to **$45,000/$22,000 = 2.05**. Neither establishes incremental profitability. DAY18 contribution before ads, returns and overhead is **$80 − $28 − $2 − $8 − $2.40 = $39.60**; this is not a validated allowable CAC for every order.\\n\\n**Owner:** owner/operator. **Success:** a credible stock bridge, protected replenishment cash, and no unsupported spend increase.\\n\\n### 2. Fix mobile product clarity—not the whole site\\n\\n**Observation:** overall conversion fell from **3% to 2%**. Mobile fell from **400/15,000 = 2.67%** to **300/20,000 = 1.5%**, while desktop stayed at **4%**. At the previous mobile rate, current mobile traffic would produce about 533 orders versus 300 actual orders. That identifies where to investigate; it does not prove a UX defect or promise 233 recoverable orders.\\n\\n**Hypothesis:** buried fit and delivery details create uncertainty. Support questions support prioritizing those details, but traffic quality could also explain the decline. There is no speed evidence.\\n\\nPrepare one focused mobile PDP update:\\n- Replace “Adventure starts here” with **“An 18L daypack for your daily commute and short weekend trips.”**\\n- Place **“Padded 13-inch laptop sleeve,” “Water-resistant fabric—not waterproof,”** and **“Free US shipping · Estimated delivery: 4–7 business days”** beside the purchase area.\\n- State that 15-inch laptop fit is not confirmed; do not imply compatibility.\\n- Make unused-product returns and customer-paid return shipping easy to find.\\n\\nKeep this to copy, placement and mobile QA. Avoid a redesign, speculative speed work or fabricated testimonials.\\n\\n**Owner:** developer, capped at four hours weekly; designer support only as needed. **Success:** correct information displayed reliably, fewer fit/weather/delivery questions, and monitored mobile funnel rates. Treat before/after conversion as directional because acquisition changes confound it. Any demand gain consumes the same inventory allowance.\\n\\n### 3. Audit one lifecycle flow and serve existing buyers\\n\\nDo not add more campaigns or a multi-flow build. Audit the existing checkout-abandonment message for purchase suppression, consent, stock availability and duplication before increasing sends. Keep its current cadence during the audit; clarify shipping, fit and returns without introducing a discount.\\n\\nReplace one already-planned weekly campaign with useful post-purchase information for recent DAY18 buyers. Include an optional cable-pouch recommendation only after confirming accessory fulfillment economics and suppressing customers who already bought it. Do not promote another daypack to these buyers.\\n\\n**Owner:** operator, using existing templates. **Success:** correct eligibility, clicks, complaints, unsubscribes and matched Shopify orders—not the 52% open rate or $14,000 attributed revenue alone. Klaviyo and Meta attribution overlap; do not add them together. Defer retention scaling until incremental contribution is better understood.\", \"questions\": [\"Does the 210-unit stock figure exclude committed orders, and is day 35 the date replenishment becomes sellable rather than merely arriving?\", \"What share of current spend and Shopify orders involves DAY18, and how much DAY18 demand continues without paid promotion?\", \"What are pick/pack and shipping costs for accessory-only orders versus accessories added to a daypack order?\"], \"assumptions\": [\"The stated eight daily DAY18 units represent total current demand across channels.\", \"The 5.5-unit daily target is a provisional inventory buffer, not a forecast or guaranteed result of reducing ads.\", \"The $3,000 is a maximum test allowance, not a spending commitment; preserving cash takes precedence.\", \"All changes described are recommendations for the team to implement; no platform access or deployment has occurred.\"]}",
+      "B": "{\"answer_markdown\": \"# TrailFold: top three priorities for the next two weeks\\n\\n**Goal: protect replenishment cash, stretch Daypack inventory to arrival, and improve contribution from existing demand—not maximize order volume.** Work in this order; conversion improvements must remain inside the inventory guardrail.\\n\\n## 1. Put inventory and cash limits on acquisition\\n**Lever:** acquire customers selectively. **Metrics:** Daypack units/day, projected stock at replenishment, and contribution after advertising.\\n\\nThe inventory constraint is immediate:\\n- Coverage: **210 ÷ 8 = 26.25 days**, versus replenishment in 35 days.\\n- Demand through arrival: **8 × 35 = 280 units**, leaving a **70-unit shortfall**.\\n- Maximum sustainable pace without a buffer: **210 ÷ 35 = 6 units/day**.\\n\\nUse **5.5 units/day as a provisional planning target**, leaving roughly 17 units at day 35. This is a proposed buffer, not a proven optimum. Confirm that the arrival date means available to sell, rather than simply delivered.\\n\\n**Days 1–2:** stop acquisition expansion and reduce Daypack-focused paid spend. Do not assume a proportional relationship between spend and sales: organic and existing-customer demand may consume the available stock alone. Review total Daypack sales and the remaining-stock forecast daily; reduce further if the rolling pace exceeds the target. If unpaid demand already exceeds it, pause Daypack ads and prepare an honest back-in-stock path rather than promising unavailable stock.\\n\\nPaid performance does not justify scaling: Meta reported ROAS increased from **3.0 to 3.2**, while Shopify revenue/ad spend fell from **$54,000/$18,000 = 3.0** to **$45,000/$22,000 = 2.05**. Neither establishes incrementality; reconcile reporting before allocating more money.\\n\\nA standalone Daypack contributes **$80 − $28 − $2 − $8 − $2.40 = $39.60 before ads, returns and overhead**. That is not an acceptable CAC target without further deductions. Protect replenishment payments; treat the **$3,000 test budget as a ceiling, not a spending requirement**.\\n\\n## 2. Fix the mobile product decision—not the whole website\\n**Lever:** acquire more qualified customers from existing traffic. **Metrics:** mobile add-to-cart rate, purchase conversion, contribution/session, and expectation-related support contacts.\\n\\nObserved performance points toward mobile:\\n- Overall conversion: **600/20,000 = 3% → 500/25,000 = 2%**.\\n- Mobile: **400/15,000 = 2.67% → 300/20,000 = 1.5%**.\\n- Desktop remains **4%**; AOV remains **$90**.\\n- Add-to-cart rate fell **10% → 8%**; checkout completion stayed **50%**.\\n\\nThis supports investigating mobile product understanding and traffic quality—not declaring a speed or checkout defect. Missing speed and behavioral evidence prevents that diagnosis.\\n\\n**Days 3–7:** make one tightly scoped PDP update. Replace “Adventure starts here” with **“An 18L daypack for your commute and short weekend trips.”** Put these facts beside the purchase area:\\n- Padded 13-inch laptop sleeve; do not promise 15-inch fit.\\n- Water-resistant fabric, not waterproof.\\n- Free US shipping; estimated delivery in 4–7 business days.\\n- 30-day returns for unused products; customer pays return shipping.\\n\\nQA the mobile purchase path. Compare device and traffic-source performance where available, but label before/after changes as directional because acquisition is changing simultaneously. Better conversion should allow lower paid traffic, not accelerate stock depletion.\\n\\n## 3. Test one accessory repeat-purchase offer to existing customers\\n**Lever:** increase purchases per customer. **Metrics:** second-order rate and contribution per eligible recipient versus holdout.\\n\\nThe **14% 90-day repeat rate** is a baseline, not proof that email is broken. Bags are not consumables. Accessories provide a plausible next purchase without using scarce Daypack inventory; their stock counts alone do not establish overstock.\\n\\n**Days 8–14:** send one plain-spoken, no-discount cable-pouch email to eligible previous Daypack buyers who have not bought it. Replace a scheduled campaign for this segment rather than adding frequency. Check consent, suppress recent purchasers and active service issues, and randomly hold out 20% from this offer.\\n\\nPouch contribution before fulfillment is **$20 − $5 − $0.60 = $14.40**, assuming the same payment rate. Confirm standalone shipping and handling before sending; free shipping could materially erode this. Judge Shopify orders and contribution, not opens or overlapping attributed revenue. A small two-week result may be inconclusive.\\n\\n**Capacity and exclusions:** cap work at 12 designer, 6 developer and 8 owner hours across the fortnight, leaving design/development contingency. Defer new channels, discounts, creative expansion, SMS, bundles and a full flow rebuild. Review inventory daily and these three outcomes on days 7 and 14.\", \"questions\": [\"Does the confirmed day-35 replenishment date mean the 500 units will be available to sell, and are any existing units reserved or unavailable?\", \"What are standalone accessory shipping/pick-pack costs, and how much current Daypack demand can be linked to paid traffic using reconciled orders?\"], \"assumptions\": [\"The 210 Daypacks are sellable and the current eight-unit daily sales rate is a reasonable starting forecast.\", \"The 5.5-unit daily planning target is a proposed safety buffer and should be revised after confirming receiving timing and demand.\", \"The pouch calculation provisionally uses the Daypack's 3% payment fee; accessory fulfillment costs remain unknown.\", \"All actions are recommendations for the team to execute; no platform changes or deployments have been made.\"]}",
+      "C": "{\"answer_markdown\": \"## Two-week priorities for TrailFold\\n\\n**Constraint check.** Cash is reserved for replenishment; no additional inventory purchase is approved. Daypack 18L inventory: 210 units at 8/day = 26.25 days of cover. Replenishment arrives in 35 days, leaving a gap of 35 − 26.25 = **8.75 days** if demand continues. To avoid stockout, maximum sustainable sell-through is 210 ÷ 35 = **6/day**. Current pace is 2/day too high (25%). Over the next 14 days, current pace sells 112 units; the guardrail allows 84. That means TrailFold needs to suppress or shift at least **28 Daypack units** in the next two weeks.\\n\\nA key implication: before replenishment, the maximum Daypack units sellable is fixed at 210. Paid acquisition for Daypack cannot increase total units before day 35; it only pulls demand forward and risks stockout. So acquisition should move toward in-stock accessories and email capture, while conversion and retention work protect the cash and customer experience.\\n\\n---\\n\\n### Priority 1 — Inventory guardrail + paid reallocation (Days 1–3)\\n\\n**Observation:** Daypack stock is the binding constraint. Current Meta spend is $22,000 for 30 days; Shopify net product revenue is $45,000. Meta reports $70,400 purchase value, which exceeds Shopify revenue by $25,400 (56%). Previous period Meta reported $54,000, exactly matching Shopify, so the current gap is a warning, not proof of incremental performance.\\n\\n**Action:**\\n- Cap Daypack sell-through at 6/day until replenishment. If organic demand exceeds that, add a waitlist/notify option rather than discounting.\\n- Pause or heavily reduce Meta ads featuring Daypack. Shift the next 14-day test budget ($3,000) and a portion of existing Meta spend to POUCH and BOTTLE, or to email capture/waitlist. Do not scale based on Meta-reported ROAS until reconciled to Shopify.\\n- Use Shopify orders, not platform-reported value, as the decision metric. Current blended Meta CPA is 22,000 ÷ 500 = **$44**; Daypack contribution is **$39.60**, so if all orders were Daypack, paid acquisition is marginally unprofitable. Previous blended CPA was 18,000 ÷ 600 = **$30**, which was profitable.\\n\\n**Daypack contribution arithmetic:** $80 price − $28 COGS − $2 pick/pack − $8 shipping − $2.40 payment fee (3% of $80) = **$39.60**. Margin = 49.5%. Breakeven ROAS = 80 ÷ 39.60 = **2.02**.\\n\\n---\\n\\n### Priority 2 — Mobile PDP/funnel repair (Days 3–10)\\n\\n**Observation:** The revenue drop is almost entirely mobile. Mobile sessions rose from 15,000 to 20,000, but mobile orders fell from 400 to 300. Mobile conversion dropped from 400 ÷ 15,000 = 2.67% to 300 ÷ 20,000 = **1.5%**. Desktop conversion stayed at 200 ÷ 5,000 = **4.0%**. Overall conversion fell from 3.0% to 2.0%.\\n\\nThe session funnel shows the leak before checkout: add-to-cart sessions stayed at 2,000, but checkout-started sessions fell from 1,200 to 1,000. ATC-to-checkout dropped from 60% to 50%. Checkout-to-order stayed at 50% in both periods.\\n\\n**Hypotheses:** The PDP is not answering high-frequency questions. Support tickets last 30 days: 42 delivery-date questions, 28 15-inch laptop-fit questions, 18 waterproof questions. The PDP headline “Adventure starts here” does not match TrailFold’s practical commuter positioning. Laptop sizing and delivery window sit below reviews, and the CTA is “Buy now.”\\n\\n**Action:**\\n- Move laptop compatibility, delivery estimate (4–7 business days), and returns summary above the fold on mobile.\\n- Add plain FAQ copy: Daypack has a padded 13-inch laptop sleeve; 15-inch fit is **not confirmed** unless verified. Fabric is water-resistant, **not waterproof**.\\n- Test a mobile PDP variant against current: clearer headline, sizing module, delivery window, and CTA microcopy. Use designer/developer hours already available (8 design, 4 dev). Measure mobile conversion, ATC-to-checkout, and ticket volume.\\n- Because Daypack is stock-constrained, keep paid traffic away from Daypack during this test; use existing mobile traffic and accessory PDPs where possible.\\n\\n---\\n\\n### Priority 3 — Retention flows for in-stock products (Days 7–14)\\n\\n**Observation:** New customer share is 72%, 90-day repeat rate is 14%. Klaviyo has 12,000 marketable profiles, 3 campaigns/week, 52% open rate, 1.1% click rate, 0.18% order rate. Current attributed revenue is $14,000, but the math is inconsistent: 12,000 × 0.18% = 21.6 orders per campaign; 3/week × ~4.33 weeks = ~13 campaigns; 21.6 × 13 × $90 AOV ≈ $25,254. The $14,000 reported figure suggests overlap, lower deliverability, or different segmentation. Treat Klaviyo attribution cautiously.\\n\\n**Action:**\\n- Audit Klaviyo filters. There is no cart-abandonment flow and no post-purchase flow. Add a cart-abandonment flow filtered to in-stock POUCH/BOTTLE, not Daypack.\\n- Add a post-purchase flow for Daypack buyers that educates on rain resistance and laptop sizing, then offers POUCH/BOTTLE accessories. This builds repeat behavior without driving more Daypack demand.\\n- Welcome flow currently has one message and no offer. Keep it non-discount, but add education and accessory cross-sell. No new discount without owner approval.\\n- Where possible, run a holdout to measure incremental retention revenue rather than attributed revenue.\\n\\n---\\n\\n### Missing facts and risks\\n\\n- SKU-level order mix and paid-attributed orders are not supplied. If POUCH/BOTTLE cannot absorb Meta spend, revenue may fall further in the short term.\\n- Accessory shipping/pick-pack costs are not supplied, so POUCH/BOTTLE contribution is less certain.\\n- 15-inch laptop fit is not verified. Do not claim it.\\n- Meta and Klaviyo attribution overlap and are not reconciled. Do not treat reported ROAS or attributed revenue as incremental.\\n- No field speed, session recording, or incrementality data is available.\\n\\n**Bottom line:** Protect Daypack inventory first, move paid acquisition to in-stock products or email capture, fix the mobile PDP with factual sizing/delivery/water-resistance answers, and use retention flows to grow accessory repeat revenue without creating a Daypack stockout.\", \"questions\": [\"What is the SKU-level order and revenue mix for the last 30 days, and how many of the 500 Shopify orders were Meta-attributed versus organic/email? This determines how much spend can move off Daypack without losing total revenue.\", \"Has the Daypack's 15-inch laptop fit been physically verified? If not, we will state 13-inch sleeve only and not claim 15-inch fit.\", \"Can we launch a non-discount Daypack waitlist/notify and an accessory-focused ad/email test, or does any offer or inventory message require owner approval?\"], \"assumptions\": [\"Daypack is the primary revenue driver and most Meta creative features it.\", \"POUCH and BOTTLE have sufficient stock and no replenishment constraint.\", \"Accessory shipping and pick/pack costs are not supplied, so accessory contribution is less certain than Daypack contribution.\", \"No discount or additional inventory purchase is approved.\", \"Klaviyo reported revenue overlaps other systems and is not incremental.\"]}",
+      "D": "{\"answer_markdown\": \"## Priority call\\nThe binding constraint is DAY18 inventory, and the biggest controllable leak is mobile PDP/checkout friction. I would run three priorities in this order, with one owner for the inventory guardrail, one designer/developer block for PDP work, and one Klaviyo/post-purchase test.\\n\\n### Diagnosis in numbers\\n- Shopify current vs prior: sessions 20,000→25,000 (+25%), orders 600→500 (-16.7%), net product revenue $54,000→$45,000 (-16.7%), AOV flat at $90 ($54,000/600, $45,000/500).\\n- Mobile is the break: mobile sessions 15,000→20,000, mobile orders 400→300, so mobile CVR 2.67%→1.5%. Desktop CVR is flat at 4.0% (200/5,000).\\n- Funnel: ATC rate 10%→8% (2,000/20,000 vs 2,000/25,000); ATC→checkout 60%→50% (1,200/2,000 vs 1,000/2,000); checkout→order 50% both (600/1,200 vs 500/1,000).\\n- Meta: CPM $12→$15, CTR 1.5%→1.2%, estimated clicks 22,500→17,600, CPC $0.80→$1.25. Reported ROAS looks fine (3.0→3.2), but Meta reported $70,400 + Klaviyo $14,000 = $84,400 against $45,000 Shopify revenue. That is overlap, not incremental truth. Use Shopify as source of truth.\\n- DAY18 stock: 210 units / 8 per day = 26.25 days cover. Replenishment is 500 units in 35 days. Demand over 35 days = 280; gap = 70 units. To avoid a stockout before arrival, sell no more than 210/35 = 6 DAY18/day. That is a 25% reduction from current pace. Replenishment cash = 500 × $28 = $14,000, protected by policy.\\n\\n### Priority 1 — Inventory-aware acquisition reallocation (owner/ops + paid media)\\nSet a hard DAY18 sell-through cap of 6/day until the replenishment lands. If current 8/day continues, stockout is about day 26, leaving roughly 9 days uncovered. Do not buy extra inventory. Shift the $3,000 test budget away from broad DAY18 prospecting and mature “Desk-to-trail” creative (55% of spend) toward accessories and educational creative that supports conversion: laptop-fit education and “water-resistant, not waterproof.” Use no new discount; none is approved. Metrics: DAY18 days cover, units/day, accessory units, contribution after ad spend, and cash reserved for the $14,000 replenishment. Lever: acquire more customers, but only where inventory can support it.\\n\\n### Priority 2 — Fix mobile PDP and checkout friction (conversion)\\nThe support tickets say the PDP is not answering buyer questions: 42 delivery-date questions, 28 15-inch-laptop questions, 18 waterproof questions in 30 days. The page puts laptop sizing and delivery below reviews, and the CTA says “Buy now.” Move sizing, delivery window, and water-resistance language above reviews. Say plainly: “Water-resistant fabric, not waterproof.” For laptops, do not claim 15-inch fit unless it is verified; current fact is a padded 13-inch sleeve. Publish measured sleeve dimensions once ops supplies them. Change CTA to “Add to cart” and show the 4–7 business-day estimate near the button. Add an Added-to-Cart flow; Klaviyo currently has checkout abandonment only, at 24 hours.\\n\\nArithmetic: restoring ATC→checkout from 50% to the prior 60% gives 1,200 starts; at 50% checkout completion that is 600 orders vs 500, or +100 orders ≈ +$9,000 at $90 AOV. Recovering half the mobile CVR gap gives 20,000 × (2.67%−1.5%)/2 ≈ +117 mobile orders ≈ +$10,530. Do not add these together; they overlap. Apply only with the DAY18 cap or an accessory mix.\\n\\n### Priority 3 — Retention/cash via post-purchase accessory cross-sell (retention + CX)\\nThe 90-day repeat rate is 14%, and 72% of current customers are new. Klaviyo has 12,000 marketable profiles but only welcome and checkout abandonment flows, with no holdout. Build a post-purchase flow for DAY18 buyers: set delivery expectations, explain the 13-inch sleeve, and cross-sell the cable pouch ($20) and steel bottle ($32). This increases purchases per customer without consuming DAY18 stock. Full-price only; no discount approval. Also add proactive delivery-status messaging to reduce the 42 delivery-date tickets. Metrics: repeat-purchase rate, accessory attach rate, AOV, contribution after message costs, and delivery tickets. Do not judge success by opens or clicks; the reported 52% open, 1.1% click, 0.18% order rates are platform metrics, not profit.\\n\\n### What I would defer\\nDo not run a broad DAY18 acquisition push, do not claim waterproof or 15-inch fit, do not launch a sitewide discount, and do not buy more inventory. Two weeks is enough to cap stock, fix the mobile PDP, add an ATC flow, and test accessory cross-sell. If DAY18 stock can be accelerated or partly reallocated, Priority 2 can be expanded; otherwise inventory gates it.\", \"questions\": [\"What is the measured internal laptop sleeve dimension or opening for DAY18, and is 15-inch fit actually verified? This determines whether we can answer the 28 laptop-fit tickets and what creative can legally claim.\", \"What are current sell-through, days cover, and replenishment lead times for POUCH and BOTTLE? This determines whether we can profitably shift demand from DAY18 to accessories.\", \"Can the 500-unit DAY18 replenishment be split or accelerated, or can we open a transparent waitlist/pre-order to cover the projected 9-day gap? If not, the 6/day cap is the only inventory-safe option.\"], \"assumptions\": [\"DAY18 daily units sold of 8 is net of returns and continues absent intervention; no seasonality adjustment was supplied.\", \"The 500-unit replenishment arrives in 35 days with no partial earlier receipt, and no additional inventory purchase is approved.\", \"The stated pick/pack and merchant shipping costs apply as given; accessory contribution excludes allocated shipping if added to an existing order.\", \"No discounts without owner approval, and no waterproof, 15-inch-fit, medical, sustainability, or lifetime-durability claims are supported.\", \"Meta and Klaviyo reported revenue are not reconciled to Shopify and should not be treated as incremental.\", \"Support themes and ticket counts are directional evidence, not verbatim testimonials or controlled test results.\", \"POUCH and BOTTLE stock can be sold as add-ons/cross-sells, but their current sell-through and replenishment status are not supplied.\"]}"
+    },
+    "available_reference_material": "[4de99e1618e1940053bc352f] Use the three growth levers to prioritize store work\nApplies when: Selecting whether the next store initiative should focus on acquisition, product and cart merchandising, pricing, bundles, retention, or replenishment.\n- Use the source’s simplified model: business value comes from the number of customers acquired and the value created by each customer. For an ecommerce store, do not call new customers multiplied by lifetime value “monthly revenue”; it is a cohort-value estimate. Track period revenue separately from cohort performance.\n- Choose one of three levers for each initiative: acquire more customers, increase profit per purchase, or increase the number of purchases per customer. Examples include new creative and channels for acquisition; bundles, quantity breaks, cross-sells, and margin-aware pricing for profit per order; and replenishment reminders, subscriptions, and post-purchase education for repeat orders.\n- For every proposed change, state the lever and the metric it should move. A PDP bundle should be evaluated through attach rate, average order value, gross profit, and returns; a reorder email through repeat-purchase rate and contribution after message costs.\n- Treat flat results cautiously. The source argues that “maintenance” is not a stable state when markets and competitors change. Compare performance with the category, channel costs, and prior cohorts rather than assuming unchanged top-line sales equal health.\n- Recognize the tradeoff between customer growth and cash: acquisition requires spend, while cash is preserved by margin. Use contribution and payback data to decide how aggressively to fund acquisition.\nCondition: The source’s 9% market-growth reference and 20–30% growth suggestion are illustrative, not ecommerce targets.\nCondition: Increasing AOV is not automatically beneficial if discounting, shipping subsidies, returns, or bundle costs erase incremental gross profit.\n\n[6303415d3bb8a2f424ff65aa] Prioritizing Your Next Store Improvements: SEO and Email First\nApplies when: You have a functioning store and are deciding which growth skill or project to invest in next.\n- If your store lacks organic discovery, prioritize learning search optimization and using a rank-tracking plugin to be found in search results.\n- If you already have traffic but weak repeat revenue, prioritize deepening your email list and automation setup.\n- Treat affiliate marketing as an optional, separate monetization path (promoting other people's products) rather than a core store requirement.\n- Pick one priority at a time and implement it fully before moving on.\nCondition: This is the presenter's stated opinion on prioritization, not a proven universal rule; your store's bottleneck should drive the choice.\nCondition: The presenter's affiliate earnings figure is a personal example, not a promise of results.\n\n[bcee1e69de7698ae45475b5d] The Daily 3: Cut to Three Needle-Movers\nApplies when: Weekly planning for a lean ecommerce team or solo operator overwhelmed by merchandising, marketing, and ops tasks.\n- Each morning (or the night before), list everything you could do across your store — product pages, ads, inventory, email, support.\n- Force-rank and select only 3 tasks that most move the needle (e.g. fix the top PDP, launch the restock email, resolve a checkout drop-off).\n- Work top to bottom through those 3 before touching anything else.\n- Say no to the other 97% deliberately; defer, delegate, or delete them.\n- Review the pattern over weeks so recurring 'yes' items reflect your real priorities, not noise.\nCondition: Source is the presenter's personal operating rule, not a proven system for all teams.\nCondition: Some urgent ops issues (stockouts, payment failures) may need same-day handling outside the 3.\n\n[59201e11d90cb25899157906] Ship inventory 3–6 weeks ahead and avoid stockouts\nApplies when: Planning replenishment timing and launch timing for FBA products.\n- Ship inventory at least 3 weeks before you expect it checked in; allow up to about 6 weeks, and expect longer during holidays.\n- Don't wait until you have only a week or two of stock — Amazon won't prioritize your shipment just because you'll soon be out of stock.\n- Use the Restock Inventory widget's days-left and recommended send quantity as an early trigger.\n- Separate receiving time from available-to-sell time: a shipment may sit 'delivered' but not 'receiving' for weeks.\n- For launch, schedule products to arrive and be checked in before your planned offer-start launch date.\nCondition: The 3–6 week window is the presenter's rule-of-thumb, not a platform SLA.\nCondition: Delays vary by season and warehouse load; verify current expectations.\n\n[821c9df1232e2a2a70db3844] Prioritize fast follow-up over almost everything else\nApplies when: Deciding what to fix first in a store's lead handling and conversion process.\n- Set up a system that calls or reaches a lead within about 60 seconds of opting in.\n- Cite the source's basis: an HBR study he refers to showed an average 391% increase in sales, which he translates as roughly quadrupling.\n- Run the prioritization test: if nothing else on the roadmap can quadruple sales, this should be the first priority.\n- Reframe staffing as self-funding: the source argues you can afford the coverage out of the sales lift it produces.\n- Treat it as simple to understand and hard to operate — the constraint is coverage and process, not the idea.\nCondition: The 391% is a study figure cited by the source, not a guaranteed outcome for your store.\nCondition: This applies to businesses with a sales follow-up step — direct-to-consumer self-serve checkouts may have no equivalent action.\n\n[290bef9daa56a500ad07a194] Prioritize the Retention Hierarchy Before Touching Email and SMS\nApplies when: Repeat purchase rate or 90-day LTV is flat and you're tempted to invest in more email flows, SMS or Klaviyo work as the first fix.\n- Work the hierarchy top-down, not bottom-up: 1) product quality, 2) product portfolio (natural cross-sell, upsell, replenishment), 3) acquisition quality, 4) customer experience across all touchpoints, 5) owned media (email, SMS, direct mail, WhatsApp).\n- Audit product quality using real customer evidence — surveys, NPS, verbatim feedback from buyers — not the founder's own view.\n- Check the portfolio for natural repurchase mechanics: is there a reason a customer must come back? If not, the fix may be a new product, collection, cross-sell or subscription rather than more messaging.\n- Examine acquisition quality: low-AOV TikTok Shop buyers and Black Friday 40-50% flash-sale bargain hunters repeat far less than a customer who spent $200 on the first order. First-order behavior is a strong predictor of retention.\n- Review the full customer experience, including post-purchase communication, shipping updates and support. A problem handled well can drive return rather than defection.\n- Only after the four foundations are healthy should you spend on owned media, where it acts as the amplifier that can exploit the constraint.\nCondition: This is the source's stated hierarchy and opinion; it is not a universal law, and brands with a strong product may still get quick wins from flows.\nCondition: Owned media can genuinely amplify retention once foundations are sound — the caution is about using it to mask a broken product or portfolio.\n\n[ebe1e2f78000779e3abab50f] Prioritize retention tests by the constraint in the customer journey\nApplies when: Directing a retention team's testing roadmap, or asking what to test after the email flows have been built.\n- Set the testing agenda from the constraint identified in the F1/F2/F3 journey. If the constraint is first-to-second order conversion, test only things that can plausibly move that.\n- Prioritise three testing categories: 1) structure and timing — flow architecture, split order, campaign cadence, segmentation, time of day, flow delays; 2) offers — incentive size, structure, conditions, timing relative to stage; 3) messaging — copy, angles, headlines, creative.\n- Stop spending the test budget on subject lines, click-through rates and time delays as the main tests. The source frames that as 'being an email marketer' rather than a retention marketer.\n- Keep one person focused on high-level retention strategy and profitability, alongside executors who handle creative, subject lines and segmentation — both roles are needed.\n- Review success through 90/365-day LTGP, first-to-second conversion and top-customer revenue, not through in-platform opens or clicks.\nCondition: Subject line and content tests are legitimate parts of an email marketer's job; the source's point is about prioritisation, not abolishing them.\nCondition: Constraint-first testing requires first building the F1/F2/F3 structure, otherwise you cannot isolate where to test.\n\n[5e46d0e232dde01447864b12] Depth beats breadth for new stores: pick one critical goal\nApplies when: Deciding what the next 90 days of store work is actually for — product range expansion, ad spend, SEO, retention — before allocating budget or headcount.\n- Ask what would still matter if the store hit every other metric. New customer acquisition that produces references, follow-on purchases, employee confidence and press interest is usually a stronger candidate than raw revenue or cost control in an early-stage business.\n- Introduce the anchor line to the team: 'If everything is important, then nothing is.' Use it to stop parallel initiatives competing for the same person's week.\n- Name the single priority in one sentence and get each function to justify what it contributes to it, rather than defending its own separate metric.\n- Reject substitutes that sound different but are the same measure (e.g. 'more good customers' vs 'market share').\n- When the priority is set, hold the line that other metrics are secondary until the period ends, and say so explicitly to the people who will be measured on them.\nCondition: This is presented as a leadership stance in the source, not a universal law; businesses in maintenance mode or with a profitable core may legitimately run multiple balanced goals.\nCondition: Choosing one goal privileges the stage of the business — an unproven store plausibly needs customers before it optimizes retention or margin.\n\n[8669aea558c2720eb70ff0e5] Grade inventory and rationalize SKUs to avoid the inventory death spiral\nApplies when: Product selection, inventory management and merchandise planning: deciding which SKUs to keep, launch or clear, and how to brief the paid media team.\n- Grade inventory by sell-through: grade A fast moving, grade B medium, grade C and D slow or not moving. The source notes Shopify auto-ranks inventory in the products area, so verify current interface behavior yourself.\n- Recognize the launch pattern: new products often land 30-40% of inventory through organic and existing customer demand, then stall into grade C or D.\n- When a SKU stalls, measure days of inventory on hand (source example: 400 days) to quantify how long the cash will be tied up.\n- Rationalize SKU count down as new products are introduced, rather than letting slow sellers accumulate on the balance sheet.\n- Coordinate marketing and finance so the paid media team knows which grades need to be pushed. This is presented as a common failure: agencies and paid teams KPI'd only on profit will never prioritize grade B/C/D inventory, yet clearing that inventory is how it converts back to cash.\n- When rationalizing, convert stalled stock back to cash via paid media at break-even or slight loss, isolated funnels/offer pages, or by launching it into a new market where heavy discounting will not erode brand equity in the primary market.\nCondition: The source warns against treating product-led growth as universally applicable: single-product brands at scale are concentrated in the supplements space (Grunes, AG1, IM8 are cited), where a product can be repositioned into a large addressable market. Most ecommerce brands are advised to plan future product launches instead.\nCondition: The 400-day inventory figure and the 30-40% initial sell-through are source illustrations.\n\n[9994f2466192226ec5f0ab86] Roll Event Revenue Back into Inventory, Not Lifestyle\nApplies when: After a spike day, restock, launch or viral moment — deciding how to allocate a large cash inflow in an ecommerce inventory business.\n- On the spike day, compute the incoming cash and immediately place it against the next inventory order — the source says it took the entire $1.36M day and put it into more greens powder from the manufacturer.\n- Resist purchases that reduce working capital during high-growth phases; the source says the discipline of not buying the BMW or the apartment when you could, and rolling everything back in, is what enables rapid scaling.\n- Accept that cash flow stays tight even while profitable: Bloom says the money kept going back into inventory through the growth years, which the source frames as a deliberate choice, not an error.\n- Act on the spike while supply is the constraint: if the product sold out and is restocking, the priority is refilling inventory so the demand is not wasted.\nCondition: This applies to an inventory-heavy physical-goods business where cash converts into stock; service or software businesses have different capital dynamics.\nCondition: The source's $1.36M day is a case example; the principle of reinvestment, not the figure, is the transferable part.\n\n[ec589900e2d1e4455991303e] Method: Forecast the Three Numbers That Matter in an Inventory-Heavy Business\nApplies when: Building a weekly reporting dashboard, diagnosing supply issues, or setting up forecasts for an inventory-heavy ecommerce or CPG operation.\n- Select the two or three core numbers. The source's answer, if on an island for a week, is raw-material inventory, finished-goods inventory, net revenue, and cost of goods.\n- Watch inventory as cash — the source states inventory is cash, and if your supply is tight, the risk is demand not being met or cash being tied up.\n- Manage cost of goods tightly, since the source describes the business as inventory-heavy and cost-sensitive.\n- Treat net revenue as the demand check and inventory as the supply check, and interpret the pair together: the source says the two numbers are 'make sure your costs are okay and you have cash, and then your demand is good.'\n- For ecommerce: use these same metrics to run working-capital management, and use a cash-conversion dashboard tied to inventory turns so you don't run out of cash while growing.\nCondition: This is the founder's own operating metric set, not a universal standard — other businesses may prioritize other numbers.\nCondition: No numeric targets or benchmarks are given in the source.\n\n[ba96ccd29fd707b67eac4bac] Tactical SMS starting order for a mid-size brand\nApplies when: Prioritizing the first 30–90 days of an SMS improvement program when the team is lean and everything feels urgent.\n- Step 1 — List growth: maximize subscribers through the on-site opt-in/pop-up and fix its acquisition rate first; this is the top of your owned-channel funnel and pays off later.\n- Step 2 — Cadence: add one send per interval and monitor unsubscribe rate, resetting your baseline at the point unsubs start rising; watch total channel revenue with it.\n- Step 3 — Conversation: begin asking customers questions to learn objections and purchase intent, and route those insights into all your flows.\n- Step 4 — Tooling/partner: if the team is lean and cannot execute the above, the source's own advice is to pick a hands-on platform that will push you toward the latest capabilities, accepting that this is the presenter's commercial pitch.\n- Sequence matters: list size and opt-in rate bound what cadence and conversation can deliver, so don't start by adding formats if your capture is weak.\nCondition: The $5–10M band is the presenter's segmentation; smaller and larger brands may need a different order.\nCondition: Step 4 is a vendor recommendation from the vendor's own employee and should not be read as an independent assessment.\n\n[4a2e3d77d68e6ab798ea51e8] Prioritize a CRO backlog with the PXL framework\nApplies when: Turning audit, analytics, survey, interview, and usability findings into an ordered roadmap for PDP, landing-page, cart, or checkout improvements.\n- Complete the research stage first: audits, quantitative analysis, surveys, user tests, and customer interviews should supply the hypotheses to rank.\n- Create a backlog in which each item describes the shopper problem, proposed change, affected journey stage, expected outcome, evidence, and primary metric.\n- Apply the PXL framework consistently to score and sequence the backlog rather than prioritizing by stakeholder preference or implementation convenience alone.\n- Build the highest-priority viable hypotheses first, recording the result and learning so future prioritization improves.\n- Consult the framework's original, current documentation for the scoring mechanics instead of inventing what the acronym means.\nCondition: The source explicitly does not claim ownership of PXL and does not provide its formula or individual scoring criteria.\nCondition: A prioritization score supports judgment; it does not replace test feasibility, technical constraints, inventory realities, or margin considerations.\n\n[4d29da5108cacc4052043920] Align marketing strategy with SKU inventory to prioritize cash turnover\nApplies when: Replenishment, pricing or promotion planning when a store is cash-constrained and holding slow-moving SKUs.\n- 1) Maintain constant communication between the marketing team (or agency) and whoever owns inventory, covering inventory position across the different SKUs.\n- Coordinate inventory and advertising: additional borrowing raises interest expense and reduces cash/net profit. Interest alone does not change MER (revenue/ad spend); model sales and spend separately.\n- 3) Where inventory is overstocked, apply strategies that intentionally decrease profitability, decrease acquisition MER or decrease efficiency in order to prioritize turnover of inventory into cash.\n- 4) Evaluate whether that trade makes the business overall healthier before executing.\n- This is an inventory-merchandising decision, not a universal rule to discount.\nCondition: The source frames this as situational—only when cash conversion cycle is the actual constraint.\nCondition: It gives no specific discount depth, turnover target or interest threshold; decide those from your own numbers."
+  },
+  "system_prompt_sha256": "037bf431e47512102454c9f08e72091bf1161db527b580244042113b2bbdff32"
+}

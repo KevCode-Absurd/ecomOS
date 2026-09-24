@@ -1,0 +1,582 @@
+{
+  "cards": [
+    {
+      "title": "Google Ads bidding: expansive vs restrictive strategies",
+      "summary": "Choose between expansive (Max Conversions/Max Conversion Value) and restrictive (tROAS/tCPA) bidding based on whether you need to test new audiences for scale or protect efficiency.",
+      "use_when": "Deciding on the account-level bidding strategy for a Google Search, Shopping or PMax campaign and diagnosing whether the current strategy is starving the campaign of new-audience tests.",
+      "steps": [
+        "Classify each option: Max Conversions and Max Conversion Value are expansive because they can enter any auction within results constraints; tCPA and tROAS are restrictive because they only enter auctions where the efficiency target can be met. Confirm current interface labelling in Google Ads before changing.",
+        "Model the trade-off as a testing budget: the source's heuristic is that an expansive campaign allocates roughly a share of budget to adjacent, not-yet-proven tests (new keywords, audiences, placements, regions), while a restrictive campaign allocates close to zero. Treat this as an illustrative heuristic, not a measured figure.",
+        "Recognise that the effective testing budget of a restrictive strategy depends on how aggressive the target is versus actual performance: if you achieve 4x and target 4.5x, expect near-zero testing; if you achieve 5x and target 2x, the campaign behaves more like expansive.",
+        "Rotate between the two modes over extended periods rather than staying on tROAS permanently: long-term restrictive bidding silos the account into one audience and can create a negative feedback loop as conversion data ages.",
+        "For new accounts with no conversion history, expect to be forced onto Manual CPC or Maximize Clicks until data exists; treat these as temporary and move off them as soon as possible."
+      ],
+      "caveats": [
+        "Smart bidding availability and naming change over time — verify the current interface and your account's eligibility.",
+        "The 'testing budget' percentages are the presenter's conceptual illustration, not measured platform mechanics.",
+        "Some accounts use Maximize Clicks deliberately in advanced arbitrage tests, but the source says this is rare (not in ~90% of accounts they manage)."
+      ],
+      "tags": [
+        "multi",
+        "google-ads",
+        "bidding-strategy",
+        "acquisition",
+        "experiment-design",
+        "performance-max",
+        "measurement"
+      ],
+      "id": "7881306718d910374f4372f3",
+      "source_id": "1Ta2RSp1n8gCTsxoz38HIw1ZHjRtrCjTL",
+      "source_sha256": "19a89cf51ff5bb9e0e5038c8cb1877e1211529b1fa94761ff5b73fce003770d6",
+      "source_name": "How to Scale an eCommerce Brand Profitably in 2026_ The Full System.docx",
+      "folder": "/99-multi",
+      "domain": "multi",
+      "section": 12
+    },
+    {
+      "title": "Prefer value-based bidding for ecommerce over lowest-CPA bidding",
+      "summary": "In ecommerce, optimising for Max Conversions pushes budget to the cheapest product; Max Conversion Value optimises towards margin mix instead.",
+      "use_when": "Setting or auditing the bidding objective for an ecommerce Google Ads account with a wide price range across products.",
+      "steps": [
+        "Map the risk: a Max Conversions campaign targets the lowest cost per acquisition, so it will concentrate spend on low-price, easy-to-convert items (e.g. a $40 t-shirt) rather than high-value items (e.g. a $200 jumper) even when the higher-value item returns a better ROAS on that spend.",
+        "Work the illustrative comparison from the source: the t-shirt might acquire at ~$20 CPA at 2x ROAS while the jumper costs ~$60 to acquire at 3.5x ROAS; a CPA-optimised campaign still funnels budget to the t-shirt and the account loses the better return.",
+        "Switch ecommerce accounts to Max Conversion Value (value-based) in the large majority of cases so optimisation follows revenue rather than order count. The presenter recommends value roughly 90% of the time.",
+        "Use tROAS as the restrictive version of Max Conversion Value when you need to defend an efficiency floor, and Max Conversion Value when you need to find new converting audiences.",
+        "Review which products are absorbing spend after any objective change to confirm the mix matches your margin priorities."
+      ],
+      "caveats": [
+        "This is the presenter's ecommerce-specific recommendation for established accounts; new accounts without conversion data may not have access to value-based smart bidding.",
+        "Value-based bidding requires accurate conversion values in tracking, so fix tracking before switching."
+      ],
+      "tags": [
+        "multi",
+        "google-ads",
+        "bidding-strategy",
+        "pricing",
+        "product-selection",
+        "margin",
+        "performance-max"
+      ],
+      "id": "791e1a8f256b8d933848c321",
+      "source_id": "1Ta2RSp1n8gCTsxoz38HIw1ZHjRtrCjTL",
+      "source_sha256": "19a89cf51ff5bb9e0e5038c8cb1877e1211529b1fa94761ff5b73fce003770d6",
+      "source_name": "How to Scale an eCommerce Brand Profitably in 2026_ The Full System.docx",
+      "folder": "/99-multi",
+      "domain": "multi",
+      "section": 12
+    },
+    {
+      "title": "Detect and stop the tROAS death spiral",
+      "summary": "A tROAS target that stops being met shrinks targeting, reduces spend, starves the model of conversion data and accelerates decline — pull the target back aggressively and early.",
+      "use_when": "Diagnosing a Google Ads account where spend and conversions are gradually trailing off over weeks and campaigns appear to be dying.",
+      "steps": [
+        "Plot cost and conversions on a weekly view across 90–180 days and look for a slow trailing-off trend rather than a sudden drop, which is the signature of the spiral.",
+        "Understand the mechanism: tROAS models primarily off the last 30–90 days of conversion data, so once conversions fall the sample size bias worsens targeting, which lowers conversions further and pushes you further from the target, so spend pulls back again.",
+        "When you see the spiral, pull the tROAS target back aggressively rather than in small steps — the source's observation is that the common failure is being too timid, after which the account keeps declining.",
+        "If you leave tROAS untouched while it is not being met, expect the campaign to keep narrowing and eventually stop driving meaningful volume.",
+        "Check for the trigger that started the decline — seasonality, a top product going out of stock, feed disapproval — and resolve it alongside the bidding change, or the spiral restarts.",
+        "Consider rotating to an expansive strategy for a period to rebuild conversion volume and re-widen the audience pool before returning to a restrictive target."
+      ],
+      "caveats": [
+        "The 30–90 day modelling window is the source's characterisation of platform behaviour and should be verified against current documentation.",
+        "Aggressive target changes still destabilise campaigns; make one significant change and observe before layering more."
+      ],
+      "tags": [
+        "multi",
+        "google-ads",
+        "troas",
+        "bidding-strategy",
+        "measurement",
+        "performance-max",
+        "diagnostics"
+      ],
+      "id": "508646f782d913537fcb3f22",
+      "source_id": "1Ta2RSp1n8gCTsxoz38HIw1ZHjRtrCjTL",
+      "source_sha256": "19a89cf51ff5bb9e0e5038c8cb1877e1211529b1fa94761ff5b73fce003770d6",
+      "source_name": "How to Scale an eCommerce Brand Profitably in 2026_ The Full System.docx",
+      "folder": "/99-multi",
+      "domain": "multi",
+      "section": 12
+    },
+    {
+      "title": "Merge campaign learnings with portfolio bidding strategies",
+      "summary": "Portfolio bid strategies let segmented campaigns share learning and let you apply max/min CPC caps on top of value-based bidding.",
+      "use_when": "You need tight campaign segmentation for reporting or structure but individual campaigns are too data-starved to learn well, or you want to cap expensive clicks in a high-CPC niche.",
+      "steps": [
+        "Set up a portfolio bidding strategy at the account level and apply it across the relevant campaigns so they pool conversion learnings instead of learning in isolation.",
+        "Use it when your segmentation has fragmented conversion volume to the point where no single campaign can model effectively — the portfolio breaks down the silos without undoing your campaign structure.",
+        "Apply a max CPC floor/ceiling on top of a value-based or tROAS strategy when certain auctions are structurally unprofitable: the source's example is high-end furniture where $10–$30 clicks are never worth it regardless of intent.",
+        "Verify current feature availability before relying on portfolio strategies; access levels and the comparable SA3 feature have changed and are plan-dependent.",
+        "For Search campaigns specifically, look at the smart bidding exploration setting, which the source says allows the campaign to test outside the target in percentage bands and creates a middle ground between restrictive and expansive bidding. It is not available on PMax or Shopping — confirm in your account."
+      ],
+      "caveats": [
+        "Feature availability differs by account type, spend level and platform release; check the live interface.",
+        "Pooling learnings means a bad performer can influence the whole portfolio, so monitor campaign-level results after applying it."
+      ],
+      "tags": [
+        "multi",
+        "google-ads",
+        "bidding-strategy",
+        "account-structure",
+        "campaign-management",
+        "search-ads"
+      ],
+      "id": "f6bbad74d2b1fc09c322efa9",
+      "source_id": "1Ta2RSp1n8gCTsxoz38HIw1ZHjRtrCjTL",
+      "source_sha256": "19a89cf51ff5bb9e0e5038c8cb1877e1211529b1fa94761ff5b73fce003770d6",
+      "source_name": "How to Scale an eCommerce Brand Profitably in 2026_ The Full System.docx",
+      "folder": "/99-multi",
+      "domain": "multi",
+      "section": 12
+    },
+    {
+      "title": "Change Google Ads budgets and strategies slowly, downward faster than upward",
+      "summary": "Increase Google budgets in roughly 20% increments; reductions can be faster, but large overnight increases or bidding changes cause instability.",
+      "use_when": "Scaling or cutting spend on a Google Ads campaign and deciding how large a single change to make.",
+      "steps": [
+        "Increase Google budgets in ~20% steps rather than doubling overnight; the source reports this rule holds on Google and that large upward jumps are consistently a bad idea because Google is a more stable, consistent platform that responds to methodical changes.",
+        "Apply the same caution to bidding strategy changes: move slowly upward, and avoid introducing a new target CPA or tROAS overnight.",
+        "Reduce budgets faster when needed — the source reports that cutting budgets quickly generally causes little instability or performance drop-off, unlike increases.",
+        "On Meta and TikTok, you have more flexibility and can raise budgets faster than the Google 20% guideline.",
+        "Treat 'Limited by budget' status as an indicator, not proof: the source says they see it on nearly every account regardless of spend level, including campaigns spending $5,000–$10,000/day in small markets, so validate incremental opportunity with other evidence before scaling."
+      ],
+      "caveats": [
+        "The 20% guideline is the source's rule of thumb for Google, not a platform-enforced limit.",
+        "Budget cuts can still harm campaigns that depend on stable delivery; monitor conversion volume after any large reduction."
+      ],
+      "tags": [
+        "multi",
+        "google-ads",
+        "budget-management",
+        "scaling",
+        "campaign-management",
+        "measurement"
+      ],
+      "id": "50032f16a8cf75faea1b48cd",
+      "source_id": "1Ta2RSp1n8gCTsxoz38HIw1ZHjRtrCjTL",
+      "source_sha256": "19a89cf51ff5bb9e0e5038c8cb1877e1211529b1fa94761ff5b73fce003770d6",
+      "source_name": "How to Scale an eCommerce Brand Profitably in 2026_ The Full System.docx",
+      "folder": "/99-multi",
+      "domain": "multi",
+      "section": 12
+    },
+    {
+      "title": "Optimise Google Merchant Center titles from search term data",
+      "summary": "Product feed titles are the main lever for Shopping and PMax placement; build them from historically converting search terms rather than default product names.",
+      "use_when": "Improving Shopping or PMax performance by rewriting product feed titles, or auditing a feed where default variant names are being used.",
+      "steps": [
+        "Recognise the default problem: feeds typically pull 'Nathan dress size 12' plus colour, with brand auto-appended. The brand name is meaningless if brand is excluded from campaigns, and the product name means nothing to shoppers who don't already know the product.",
+        "Push the brand to the end of the title, or omit it entirely if you're not a recognised brand. Keep the unique product name only where it adds meaning.",
+        "Pull the keywords you front-load from the search term report — identify which terms have actually converted historically on the account — then place the strongest converting descriptor first (e.g. 'formal dress' ahead of the product name).",
+        "Add as many relevant attributes as fit within the title length limit (colour, style, size, format) so the listing can surface for attribute-based queries such as 'blue dress' that it previously couldn't match.",
+        "For generic or CPG products, layer multiple validated keyword variations into one title: e.g. 'dissolvable creatine powder clear flavoured portable [brand]', maximising the surface area of terms the listing can match.",
+        "Roll title changes out slowly over time rather than swapping every title at once, and watch CTR, CPC and ROAS to check the changes are making a material difference."
+      ],
+      "caveats": [
+        "There is no golden rule for title structure — the source offers a directional template, not a fixed formula.",
+        "Changing many titles simultaneously resets learning phases on campaigns; the source warns against a mass overnight rollout.",
+        "If feed changes do not move CTR, CPC or returns, test alternative keyword selections rather than assuming the template failed."
+      ],
+      "tags": [
+        "multi",
+        "google-merchant-center",
+        "product-feed",
+        "shopping-ads",
+        "product-page",
+        "keyword-research",
+        "performance-max"
+      ],
+      "id": "6e67e3c7c4432dabff6f7ff2",
+      "source_id": "1Ta2RSp1n8gCTsxoz38HIw1ZHjRtrCjTL",
+      "source_sha256": "19a89cf51ff5bb9e0e5038c8cb1877e1211529b1fa94761ff5b73fce003770d6",
+      "source_name": "How to Scale an eCommerce Brand Profitably in 2026_ The Full System.docx",
+      "folder": "/99-multi",
+      "domain": "multi",
+      "section": 12
+    },
+    {
+      "title": "Spin variant listings to cover multiple keyword pools",
+      "summary": "When a product has multiple variants, each variant generates its own Shopping listing — use separate titles and creative per variant to target different keyword pools and audiences.",
+      "use_when": "Merchandising a multi-variant product (sizes, formats, pack sizes) in Google Shopping or PMax and looking to expand reach without duplicating landing pages.",
+      "steps": [
+        "Confirm that each variant (e.g. 50g, 100g, 500g creatine) produces a separate feed listing depending on how the feed is configured.",
+        "Assign each variant a distinct title and image focused on a different validated keyword pool, so the set of listings collectively covers more search demand than a single listing could.",
+        "Accept that all variants route to the same product landing page — the differentiation happens at the listing/feed level, not the destination page.",
+        "Monitor each variant listing separately for CTR and conversion so you can identify which keyword pool is winning and shift title emphasis accordingly.",
+        "Combine this with title optimisation so the distinct pools are backed by search terms that have actually converted historically."
+      ],
+      "caveats": [
+        "Behaviour depends on feed configuration and platform rules for variant grouping; verify how your feed currently splits listings.",
+        "Do not use variant spinoffs to create near-duplicate listings that violate feed policy — the differentiation must be genuine product variants."
+      ],
+      "tags": [
+        "multi",
+        "google-merchant-center",
+        "product-feed",
+        "shopping-ads",
+        "merchandising",
+        "performance-max"
+      ],
+      "id": "7421bd80f1529f7e897598b5",
+      "source_id": "1Ta2RSp1n8gCTsxoz38HIw1ZHjRtrCjTL",
+      "source_sha256": "19a89cf51ff5bb9e0e5038c8cb1877e1211529b1fa94761ff5b73fce003770d6",
+      "source_name": "How to Scale an eCommerce Brand Profitably in 2026_ The Full System.docx",
+      "folder": "/99-multi",
+      "domain": "multi",
+      "section": 12
+    },
+    {
+      "title": "Fix feed image aspect ratios and build contrast for click-through",
+      "summary": "Shopping images occupy most of the listing real estate, so match the platform's required aspect ratio and design for contrast against competing listings — not for maximum CTR on the wrong audience.",
+      "use_when": "Auditing product feed imagery for a Shopping or PMax campaign where CTR is weak or images are being auto-cropped.",
+      "steps": [
+        "Override the feed with a supplementary feed using the platform's current preferred image ratio. The source reports fashion images often come through at 9x6 and get auto-cropped badly; they specify 4x5 as the ratio Google wants to receive. Verify the current requirement in Merchant Center documentation.",
+        "Treat the image as the analogue of an ad hook: the goal is to attract the right shopper, not every shopper. The source cites Eugene Schwartz's principle that a headline targets the right reader, not all readers.",
+        "Build visual contrast against the listings you actually compete with: if competitors all use white-background studio shots, keep your product photography but change the background colour so your listing stands out in the grid.",
+        "Do not optimise purely for click-through rate — higher CTR from mismatched browsers harms conversion; judge image changes on return metrics, not clicks alone.",
+        "Check the rest of the feed while you're there: descriptions and attributes should already be clean; if not, fix them as a one-time setup."
+      ],
+      "caveats": [
+        "Aspect ratio and image requirements are platform policies that change; confirm the current standard rather than assuming 4x5 indefinitely.",
+        "The cited ratio and the '70% of listing real estate' figure are the source's observations, not verified current specifications."
+      ],
+      "tags": [
+        "multi",
+        "google-merchant-center",
+        "product-feed",
+        "creative-strategy",
+        "shopping-ads",
+        "conversion-optimization",
+        "performance-max"
+      ],
+      "id": "f8b37ea10202cfe7e5130d49",
+      "source_id": "1Ta2RSp1n8gCTsxoz38HIw1ZHjRtrCjTL",
+      "source_sha256": "19a89cf51ff5bb9e0e5038c8cb1877e1211529b1fa94761ff5b73fce003770d6",
+      "source_name": "How to Scale an eCommerce Brand Profitably in 2026_ The Full System.docx",
+      "folder": "/99-multi",
+      "domain": "multi",
+      "section": 12
+    },
+    {
+      "title": "Set up separate feeds per currency for international Shopping",
+      "summary": "Running multiple regions through a single-currency feed forces live currency conversion on the listing, which suppresses CTR and conversion.",
+      "use_when": "Selling to customers in more than one currency via Google Shopping and reviewing the feed structure.",
+      "steps": [
+        "Check whether all regions run through one feed with one currency — the source reports this as a common audit finding.",
+        "Create separate feeds for each currency so listings display in the shopper's local currency instead of showing a live-converted price.",
+        "Fix this because converted listings display disclaimers like 'converted from AUD' plus tax, which signals an international store to the shopper and depresses both click-through and conversion — even when you are not actually an international store.",
+        "Pair the currency feed fix with the broader feed clean-up (titles, images, attributes) as part of a one-time setup rather than a recurring task."
+      ],
+      "caveats": [
+        "Multi-currency feed configuration interacts with Merchant Center account and country settings; verify current setup requirements before restructuring.",
+        "Localised pricing has tax and legal implications that vary by market."
+      ],
+      "tags": [
+        "multi",
+        "google-merchant-center",
+        "product-feed",
+        "international",
+        "shopping-ads",
+        "conversion-optimization"
+      ],
+      "id": "ac4bf9ad64fd12e1ce92b00e",
+      "source_id": "1Ta2RSp1n8gCTsxoz38HIw1ZHjRtrCjTL",
+      "source_sha256": "19a89cf51ff5bb9e0e5038c8cb1877e1211529b1fa94761ff5b73fce003770d6",
+      "source_name": "How to Scale an eCommerce Brand Profitably in 2026_ The Full System.docx",
+      "folder": "/99-multi",
+      "domain": "multi",
+      "section": 12
+    },
+    {
+      "title": "Sequence the 90-day Google Ads improvement rollout",
+      "summary": "Implement Google Ads fixes in a defined order: tracking, structure map, PMax checks, waste removal, assets, then feed changes slowly.",
+      "use_when": "Planning an account-wide Google Ads overhaul or onboarding a new ecommerce account with multiple issues to fix.",
+      "steps": [
+        "Start with tracking: no J4 duplicate events, back-end conversions firing with enhanced conversions and auto-tagging on. Everything downstream depends on clean data.",
+        "Build a structure map: start from one campaign as the default and require a commercial reason for each additional campaign (e.g. splitting brand from non-brand), with consistent naming across the structure.",
+        "Run a PMax-specific check: asset groups split by product type, listing groups split out, brand exclusions on, audience signals present, tROAS not set absurdly high (which turns PMax into a retargeting campaign), and the correct bidding strategy per the expansive/restrictive logic.",
+        "Audit for wasted spend: kill campaigns that spend too little to matter and roll the budget up, negative-keyword unprofitable search terms, and turn off display on Search campaigns.",
+        "Health-check ad assets: sitelinks, call ads, and promos that aren't stale or outdated, and maximise assets in every campaign to increase ad real estate.",
+        "Finish with the feed check (titles, images) and roll changes out slowly, watching CTR, CPC and returns in real time to confirm material impact."
+      ],
+      "caveats": [
+        "The order matters — feeding optimisations into broken tracking produces misleading decisions.",
+        "Feed and structure changes reset learning phases, so avoid batching all of them at once."
+      ],
+      "tags": [
+        "multi",
+        "google-ads",
+        "campaign-management",
+        "audit",
+        "product-feed",
+        "tracking",
+        "performance-max"
+      ],
+      "id": "fb780cdc68aaf637eac0cfb9",
+      "source_id": "1Ta2RSp1n8gCTsxoz38HIw1ZHjRtrCjTL",
+      "source_sha256": "19a89cf51ff5bb9e0e5038c8cb1877e1211529b1fa94761ff5b73fce003770d6",
+      "source_name": "How to Scale an eCommerce Brand Profitably in 2026_ The Full System.docx",
+      "folder": "/99-multi",
+      "domain": "multi",
+      "section": 12
+    },
+    {
+      "title": "Run a 5-minute business-level diagnostic before touching Google Ads",
+      "summary": "Before troubleshooting Google, verify cross-channel spend mix, decompose the revenue equation, separate attributed from true business KPIs, and rule out seasonality.",
+      "use_when": "Revenue or efficiency has dipped and you are deciding whether the problem is even a Google Ads problem before diving into the account.",
+      "steps": [
+        "Do a cross-channel check first: if Google is only 10% of ad spend, a revenue dip is far more likely a Meta issue; prioritise platform investigation by share of spend. The source reports that for most of their clients the majority of spend skews to Meta, so Meta is usually checked first.",
+        "Ask what changed outside Google: coming off a sale, a Meta creative refresh that immediately preceded the dip, an offer change, or anything else that could explain the drop.",
+        "Decompose the revenue equation: revenue = conversion rate × average order value × sessions. Identify which of the three moved. Falling conversion rate points to the website; falling sessions points to a traffic source losing click volume; falling AOV points to product mix or a changed upsell/cross-sell.",
+        "Separate true business KPIs (revenue, profit contribution) from attributed platform metrics, and reconcile them — an attribution error or conversion lag can make a platform look broken when the business is fine.",
+        "Check seasonality against your forecast before starting a long diagnostic; without forecasting, normal seasonal dips are mistaken for problems."
+      ],
+      "caveats": [
+        "The 10% / 65-35 examples are illustrations of the prioritisation logic, not universal thresholds.",
+        "This step often resolves the issue — the source notes Google is typically the most consistent platform and rarely the cause when it is a minority of spend."
+      ],
+      "tags": [
+        "multi",
+        "diagnostics",
+        "measurement",
+        "attribution",
+        "media-mix",
+        "seasonality",
+        "conversion-optimization"
+      ],
+      "id": "74278f16f035e15ba11dd134",
+      "source_id": "1Ta2RSp1n8gCTsxoz38HIw1ZHjRtrCjTL",
+      "source_sha256": "19a89cf51ff5bb9e0e5038c8cb1877e1211529b1fa94761ff5b73fce003770d6",
+      "source_name": "How to Scale an eCommerce Brand Profitably in 2026_ The Full System.docx",
+      "folder": "/99-multi",
+      "domain": "multi",
+      "section": 12
+    },
+    {
+      "title": "Complete three pre-checks before any Google Ads diagnosis",
+      "summary": "Check change history, extend the time horizon, and use conversions-by-conversion-time before concluding performance has genuinely declined.",
+      "use_when": "Starting an account diagnostic or about to make changes after noticed a performance dip.",
+      "steps": [
+        "Check change history first — never audit or make changes straight after a series of changes. Review what you, teammates, or the client altered in the account before drawing conclusions.",
+        "Extend your time horizon rather than comparing two short windows; short windows invite small-sample-size errors. Zoom out relative to the account's conversion volume before acting.",
+        "Account for conversion latency: Google attributes a purchase back to the click date, not the purchase date, so the most recent 3–4 days always look terrible on default conversion columns.",
+        "Pull the custom column 'conversions by conversion time' to see conversions attributed to the day the customer actually purchased, giving a usable read on recent days.",
+        "Only then decide whether the dip is real, and avoid launching a full diagnostic over a latency artefact."
+      ],
+      "caveats": [
+        "Conversion latency behaviour and available custom columns may change; verify current column options in the interface.",
+        "Even with conversion-time columns, very recent data remains incomplete — combine with forecasting for the last days of a period."
+      ],
+      "tags": [
+        "multi",
+        "google-ads",
+        "conversion-tracking",
+        "measurement",
+        "diagnostics",
+        "attribution"
+      ],
+      "id": "41fe6e957f15627198531c6f",
+      "source_id": "1Ta2RSp1n8gCTsxoz38HIw1ZHjRtrCjTL",
+      "source_sha256": "19a89cf51ff5bb9e0e5038c8cb1877e1211529b1fa94761ff5b73fce003770d6",
+      "source_name": "How to Scale an eCommerce Brand Profitably in 2026_ The Full System.docx",
+      "folder": "/99-multi",
+      "domain": "multi",
+      "section": 12
+    },
+    {
+      "title": "Drill from account to campaign to ad group to find the inflection point",
+      "summary": "Troubleshoot Google Ads by sorting campaigns by spend, plotting metrics on 90–180 day weekly views, and locating the exact date performance changed — then descend to the responsible campaign and ad group.",
+      "use_when": "A confirmed Google Ads performance decline needs to be traced to a specific campaign type, campaign and ad group.",
+      "steps": [
+        "Work from the account overview over 90–180 days on weekly view, rotating through cost, conversions, conversion value, cost per conversion, ROAS and CTR to see what moved and when.",
+        "Go to the campaign tab and sort by cost descending. Focus on the top five campaigns by spend: a campaign holding ~10% of budget cannot materially move the account even with a 100% performance change, so deprioritise small campaigns.",
+        "Identify the inflection point — e.g. a specific date after which a metric started trailing off — and find which campaigns changed at that point.",
+        "Repeat at ad group level (or PMax asset groups) to isolate which element contributed to the metric change.",
+        "Determine which campaign type failed first, because failure modes differ: PMax, Shopping and Search each decline for different reasons.",
+        "Prioritise this because a small campaign's improvement is diluted further by Google's share of total media spend — a 5% Google-level impact can become single digits at business level."
+      ],
+      "caveats": [
+        "The top-five-by-spend focus is a prioritisation heuristic, not a rule that small campaigns can never matter.",
+        "Sorting by spend assumes the largest campaigns carry the largest business impact, which is usually but not always true."
+      ],
+      "tags": [
+        "multi",
+        "google-ads",
+        "diagnostics",
+        "campaign-management",
+        "measurement",
+        "performance-max",
+        "shopping-ads"
+      ],
+      "id": "39809745fc544314447fbb64",
+      "source_id": "1Ta2RSp1n8gCTsxoz38HIw1ZHjRtrCjTL",
+      "source_sha256": "19a89cf51ff5bb9e0e5038c8cb1877e1211529b1fa94761ff5b73fce003770d6",
+      "source_name": "How to Scale an eCommerce Brand Profitably in 2026_ The Full System.docx",
+      "folder": "/99-multi",
+      "domain": "multi",
+      "section": 12
+    },
+    {
+      "title": "Diagnose PMax failures: warm/cold drift, disapprovals, tROAS narrowing, product bloat",
+      "summary": "PMax campaigns fail in four recurring ways — audience drift, feed disapprovals, tROAS-driven audience narrowing, and product/SKU churn resetting learning.",
+      "use_when": "Troubleshooting a declining Performance Max campaign in an ecommerce account.",
+      "steps": [
+        "Check warm/cold drift: PMax can retarget existing customers even when labelled a cold campaign. Review the search term report and audience report; brand terms appearing or an existing-customer skew means brand exclusion is broken or tROAS is set too high, forcing retargeting.",
+        "Check feed disapprovals: in ecommerce, the source estimates 80–90% of PMax performance comes from Shopping, and Shopping performance comes from feed quality. Look for top-spending products that went out of stock, were turned off, or were disapproved, then verify in Merchant Center.",
+        "Check tROAS narrowing: raising tROAS does not create magic efficiency — it narrows targeting to buyers more likely to convert at the target, which skews warmer. Expect worse new-customer ROAS; the source says you can verify with third-party attribution (e.g. Triple Whale) or natively in Google Ads, and that a high-tROAS PMax typically shows much worse NC ROAS than the same campaign with a low tROAS.",
+        "Check product bloat and stock churn: rapidly adding SKUs floods the campaign and hurts learning. A product holding ~15% of campaign spend that goes out of stock for even a few days resets that product's learning and affects the whole campaign.",
+        "If stock volatility is chronic, restructure the account so a single unstable product cannot drag down the campaigns around it — the source's agency asks clients to flag this at onboarding."
+      ],
+      "caveats": [
+        "The 80–90% Shopping share and 15%-of-spend example are source observations, not universal benchmarks.",
+        "NC ROAS measurement depends on your attribution tool's correctness."
+      ],
+      "tags": [
+        "multi",
+        "performance-max",
+        "diagnostics",
+        "google-merchant-center",
+        "product-feed",
+        "troas",
+        "inventory"
+      ],
+      "id": "5bfbaaa5f311822c84555d8f",
+      "source_id": "1Ta2RSp1n8gCTsxoz38HIw1ZHjRtrCjTL",
+      "source_sha256": "19a89cf51ff5bb9e0e5038c8cb1877e1211529b1fa94761ff5b73fce003770d6",
+      "source_name": "How to Scale an eCommerce Brand Profitably in 2026_ The Full System.docx",
+      "folder": "/99-multi",
+      "domain": "multi",
+      "section": 12
+    },
+    {
+      "title": "Diagnose Search campaign failures: search terms, auctions, tROAS, display leakage",
+      "summary": "Search campaign declines typically trace to changed search term spend allocation, new auction competition, raised tROAS or unintended display spend.",
+      "use_when": "Troubleshooting a declining Google Search campaign where volume or efficiency has dropped.",
+      "steps": [
+        "Compare the search term report before and after the inflection point, sorted by spend: check whether the terms absorbing spend and their efficiency materially changed. The source notes broad match plus smart bidding can produce wild shifts in search term allocation that cause the performance change.",
+        "If search terms look stable and performance per term is unchanged, move on to the next check rather than forcing a search term explanation.",
+        "Check auction insights before and after the dip: a new competitor entering the auction can raise CPCs or reduce your share of entries, lowering volume.",
+        "Verify tROAS has not been squeezed upward, which narrows targeting and shifts spend toward warmer audiences — same mechanism as PMax.",
+        "Confirm display is turned off on the search campaign so spend has not been silently allocated into display placements."
+      ],
+      "caveats": [
+        "Auction insight metrics are directional; interpret alongside your own CPC and impression-share trends.",
+        "Negative keyword work and broad match settings interact with smart bidding — changes here can take time to stabilise."
+      ],
+      "tags": [
+        "multi",
+        "google-ads",
+        "search-ads",
+        "diagnostics",
+        "keyword-research",
+        "troas",
+        "auction-insights"
+      ],
+      "id": "9fcbc9897f69f7101d921ad9",
+      "source_id": "1Ta2RSp1n8gCTsxoz38HIw1ZHjRtrCjTL",
+      "source_sha256": "19a89cf51ff5bb9e0e5038c8cb1877e1211529b1fa94761ff5b73fce003770d6",
+      "source_name": "How to Scale an eCommerce Brand Profitably in 2026_ The Full System.docx",
+      "folder": "/99-multi",
+      "domain": "multi",
+      "section": 12
+    },
+    {
+      "title": "Diagnose Shopping campaign failures through the feed first",
+      "summary": "Shopping failures closely mirror PMax mechanics minus audience drift; the dominant causes are feed and product availability issues.",
+      "use_when": "Troubleshooting a declining Google Shopping campaign in an ecommerce store.",
+      "steps": [
+        "Check tROAS settings as for PMax — a raised target narrows audience and pulls spend warmer.",
+        "Check Merchant Center thoroughly: out-of-stock top products, recent title or description changes, and any feed errors or warnings. This is usually the most important check for Shopping.",
+        "Check whether too many products have been added to the campaign, which can impact learning as described in the PMax product bloat failure mode.",
+        "Check search partners: the source notes heavy spend flowing to search partners performing poorly is worth verifying, though they consider it less likely to be the root cause.",
+        "Remember that Shopping lacks the warm/cold retargeting dimension of PMax, so feed and product status take more of the diagnostic weight."
+      ],
+      "caveats": [
+        "Feed changes reset learning, so correlate the timing of any recent feed edit with the start of the decline.",
+        "Search partner performance varies by account — verify with segment-level reporting before excluding."
+      ],
+      "tags": [
+        "multi",
+        "google-ads",
+        "shopping-ads",
+        "diagnostics",
+        "google-merchant-center",
+        "product-feed",
+        "troas"
+      ],
+      "id": "ed7c1f01178816b95a5b2d32",
+      "source_id": "1Ta2RSp1n8gCTsxoz38HIw1ZHjRtrCjTL",
+      "source_sha256": "19a89cf51ff5bb9e0e5038c8cb1877e1211529b1fa94761ff5b73fce003770d6",
+      "source_name": "How to Scale an eCommerce Brand Profitably in 2026_ The Full System.docx",
+      "folder": "/99-multi",
+      "domain": "multi",
+      "section": 12
+    },
+    {
+      "title": "Decompose campaign KPIs via submetric formulas for root cause analysis",
+      "summary": "Every campaign metric is a product of underlying metrics; drilling into the right submetric locates the true root cause instead of a symptom.",
+      "use_when": "Investigating why a specific campaign's revenue, ROAS, CPA or conversion volume moved, in order to find the actual root cause.",
+      "steps": [
+        "Apply the core formulas: CPA = CPC ÷ conversion rate; clicks = impressions × click-through rate; attributed revenue = clicks × conversion rate × average order value.",
+        "Start with whether efficiency (ROAS/CPA) or volume (clicks) is the issue. If ROAS dropped while clicks held steady, drill into CPC and conversion rate. If click volume dropped, the cause is either impressions compressing (fewer auctions entered) or falling CTR (competitors' listings becoming more convincing).",
+        "When troubleshooting AOV, decompose it into new-customer AOV and returning-customer AOV, and identify which one dipped before looking at offers. Then look at units per transaction and average unit retail to find the mechanical cause within the affected segment.",
+        "Treat the deeper formula breakdowns as the goal: the source argues the more granular your metric understanding, the better your root cause analysis compared to operators who change offers without checking which AOV component actually moved.",
+        "Check the quality score components when CPCs move: add quality score, expected CTR, ad relevance and landing page experience as columns and see which changed after the inflection point. Ad relevance is usually a quick fix; expected CTR is driven by actual CTR; landing page experience often requires dev work and can take weeks or months to refresh."
+      ],
+      "caveats": [
+        "Formula structures are stable, but which columns expose each component changes with the platform interface — verify column availability.",
+        "Landing page experience rescoring timing is unpredictable; the source reports real cases where the fix took weeks to months to register."
+      ],
+      "tags": [
+        "multi",
+        "measurement",
+        "diagnostics",
+        "conversion-optimization",
+        "average-order-value",
+        "quality-score",
+        "google-ads"
+      ],
+      "id": "fee71c6e7a9f469d10e6ee47",
+      "source_id": "1Ta2RSp1n8gCTsxoz38HIw1ZHjRtrCjTL",
+      "source_sha256": "19a89cf51ff5bb9e0e5038c8cb1877e1211529b1fa94761ff5b73fce003770d6",
+      "source_name": "How to Scale an eCommerce Brand Profitably in 2026_ The Full System.docx",
+      "folder": "/99-multi",
+      "domain": "multi",
+      "section": 12
+    },
+    {
+      "title": "Use revenue equation to route ecommerce diagnosis",
+      "summary": "Revenue = conversion rate × AOV × sessions; identifying which lever moved tells you whether to look at the website, a traffic source, or product mix.",
+      "use_when": "A top-line revenue decline needs to be attributed to a store-side or media-side cause before choosing a fix.",
+      "steps": [
+        "Compute the three components across the affected period and identify which one changed.",
+        "If conversion rate dropped, investigate the website: broken pages, changed product pages, checkout issues, or structural changes.",
+        "If sessions dropped, investigate traffic sources: find which platform lost click volume and why.",
+        "If AOV dropped, check both product portfolio prioritisation (e.g. Google Ads now pushing cheaper products) and website changes such as a modified upsell or cross-sell structure.",
+        "Rule out external causes (sales ending, creative refreshes on other platforms, offer changes) before attributing the change to Google Ads."
+      ],
+      "caveats": [
+        "The equation treats the three components as independent; in practice they interact (e.g. traffic mix shifts change AOV).",
+        "Session and conversion data quality depends on tracking accuracy — fix tracking first."
+      ],
+      "tags": [
+        "multi",
+        "measurement",
+        "diagnostics",
+        "conversion-optimization",
+        "average-order-value",
+        "traffic",
+        "attribution"
+      ],
+      "id": "aaa2978ee3ef8d8bb27dda44",
+      "source_id": "1Ta2RSp1n8gCTsxoz38HIw1ZHjRtrCjTL",
+      "source_sha256": "19a89cf51ff5bb9e0e5038c8cb1877e1211529b1fa94761ff5b73fce003770d6",
+      "source_name": "How to Scale an eCommerce Brand Profitably in 2026_ The Full System.docx",
+      "folder": "/99-multi",
+      "domain": "multi",
+      "section": 12
+    }
+  ],
+  "request_id": "265d6053ea80af4f086a93a424b65e9759fc5059cf28635f4d1144e8142553a5",
+  "ecommerce_scope_version": 1
+}

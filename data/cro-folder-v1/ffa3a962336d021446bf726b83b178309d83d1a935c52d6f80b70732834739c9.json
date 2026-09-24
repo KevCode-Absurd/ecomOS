@@ -1,0 +1,1169 @@
+{
+  "request_id": "ffa3a962336d021446bf726b83b178309d83d1a935c52d6f80b70732834739c9",
+  "provider": "deepseek",
+  "model": "deepseek-flash",
+  "effort": "high",
+  "completion_limit": 65536,
+  "usage": {
+    "prompt_tokens": 10436,
+    "completion_tokens": 12071,
+    "total_tokens": 22507,
+    "prompt_tokens_details": {
+      "cached_tokens": 256
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 8017
+    },
+    "prompt_cache_hit_tokens": 256,
+    "prompt_cache_miss_tokens": 10180
+  },
+  "booked_cost_usd": 0.017616,
+  "seconds": 40.56,
+  "finish_reason": "stop",
+  "output": {
+    "repairs": [
+      {
+        "candidate_id": "d94440fcfea5c7591922c31bfd0f021e5fc76d58315ce07bf01761d48f0b79d2",
+        "unit": {
+          "id": "d94440fcfea5c7591922c31bfd0f021e5fc76d58315ce07bf01761d48f0b79d2",
+          "kind": "action",
+          "title": "Use micro-conversions as primary metric with purchase/revenue guardrails",
+          "claim": {
+            "text": "In the source's low-traffic methods section, it suggests micro-conversions such as add-to-cart and begin-checkout as the primary metric because they are more frequent and power faster, but warns a lift may not carry through to purchase or revenue; use them as a leading indicator and keep purchase/revenue as guardrails.",
+            "quote": "Micro-conversions (add-to-cart, begin-checkout) as primary metric. They are more frequent so they power faster, but the risk is real: a lift in add-to-cart may not carry through to purchase or revenue. Use them as a leading indicator, keep purchase/revenue as guardrails."
+          },
+          "action": {
+            "text": "In the low-traffic context, use micro-conversions (add-to-cart, begin-checkout) as the primary metric and keep purchase/revenue as guardrails.",
+            "quote": "Use them as a leading indicator, keep purchase/revenue as guardrails."
+          },
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "Below the A/B threshold, where the job shifts from proving things statistically to learning fast and cheaply.",
+                "quote": "below the A/B threshold"
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "No threshold for when a micro-conversion lift is likely to carry through to purchase is given."
+          ],
+          "relations": []
+        }
+      },
+      {
+        "candidate_id": "dce8510bf30c75c42ac1a45b592bb9e1cab9c64207bbb69c435ecf2b0355449c",
+        "unit": {
+          "id": "dce8510bf30c75c42ac1a45b592bb9e1cab9c64207bbb69c435ecf2b0355449c",
+          "kind": "action",
+          "title": "Detect and act on sample ratio mismatch",
+          "claim": {
+            "text": "The source defines sample ratio mismatch (SRM) as the observed traffic split differing from the designed split, recommends detecting it with a chi-square goodness-of-fit test on the randomisation unit (users, not page views), notes Kohavi's figure that about 6% of Microsoft experiments show SRM, and says if SRM is present the result is biased and should not be trusted until the cause is found.",
+            "quote": "Sample ratio mismatch (SRM): the observed traffic split differs from the designed split (e.g. 50/50 comes back 50.3/49.7). Detect with a chi-square goodness-of-fit test on the randomisation unit (users, not page views)."
+          },
+          "action": {
+            "text": "Detect SRM with a chi-square goodness-of-fit test on the randomisation unit (users, not page views).",
+            "quote": "Detect with a chi-square goodness-of-fit test on the randomisation unit (users, not page views)."
+          },
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "Run SRM checks early and often during an experiment; it is easy to run in a spreadsheet.",
+                "quote": "Test early and often; it is easy to run in a spreadsheet."
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [
+            {
+              "text": "If SRM is present the result is biased and should not be trusted until the cause is found.",
+              "quote": "If SRM is present the result is biased and should not be trusted until the cause is found."
+            }
+          ],
+          "unknowns": [
+            "No repair procedure beyond finding the cause is given."
+          ],
+          "relations": []
+        }
+      },
+      {
+        "candidate_id": "f3125f9b4713f86e8f0d431c181d293c7f0e8dd63ef2e48d19d23119ae58a047",
+        "unit": {
+          "id": "f3125f9b4713f86e8f0d431c181d293c7f0e8dd63ef2e48d19d23119ae58a047",
+          "kind": "action",
+          "title": "Consider CUPED only with appropriate pre-experiment data",
+          "claim": {
+            "text": "The source says CUPED uses pre-experiment data as a covariate to strip out variance not caused by treatment; the adjusted estimator stays unbiased with lower variance, and Optimizely's glossary says it can cut sample requirements 30-50% for metrics with strong correlation to historical behaviour. DTC practicality is mixed because pre-period covariates are often missing or weakly correlated for new or anonymous checkout traffic.",
+            "quote": "Uses pre-experiment data (usually the same metric measured before the test) as a covariate to strip out variance not caused by the treatment."
+          },
+          "action": {
+            "text": "Turn on CUPED if your platform offers it and you have returning identified users; it is not a magic fix for a brand with mostly new, anonymous traffic.",
+            "quote": "worth turning on if your platform offers it and you have returning identified users; not a magic fix for a brand with mostly new, anonymous traffic."
+          },
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "Platform offers CUPED and you have returning identified users.",
+                "quote": "if your platform offers it and you have returning identified users"
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": [
+              {
+                "text": "CUPED needs pre-experiment data keyed to the same user, which means logged-in users or stable device IDs.",
+                "quote": "CUPED needs pre-experiment data keyed to the same user, which means logged-in users or stable device IDs."
+              }
+            ]
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "For a DTC brand where most checkout traffic is new or not logged in, the pre-period covariate is often missing or weakly correlated, so the variance reduction is smaller; this is a limitation on expected benefit, not a categorical exclusion."
+          ],
+          "relations": []
+        }
+      }
+    ],
+    "additions": [
+      {
+        "id": "add-gst-vs-avi-guidance",
+        "kind": "action",
+        "title": "Choose GST versus always-valid inference based on expected sample size",
+        "claim": {
+          "text": "Spotify's guidance is that if you can estimate the expected sample size well, group sequential testing is more powerful; if you cannot, always-valid inference is safer.",
+          "quote": "Spotify's guidance: if you can estimate the expected sample size well, GST is more powerful; if you cannot, always-valid is safer."
+        },
+        "action": {
+          "text": "Choose GST when you can estimate the expected sample size well; otherwise choose always-valid inference as the safer option.",
+          "quote": "if you can estimate the expected sample size well, GST is more powerful; if you cannot, always-valid is safer."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "You must choose between group sequential testing and always-valid inference for a sequential design.",
+              "quote": "Spotify's guidance:"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No quantitative criterion for 'estimate the expected sample size well' is given."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "5c1ff129b28d5dcc99e6535662398b3d213b15e8080ea9d9910352942544d1ef"
+          }
+        ]
+      },
+      {
+        "id": "add-peeking-table-thresholds",
+        "kind": "principle",
+        "title": "Adjusted reported-significance thresholds for the number of peeks",
+        "claim": {
+          "text": "To get a true 5% false positive rate, the reported significance must be 2.9% for 1 peek, 2.2% for 2 peeks, 1.8% for 3, 1.4% for 5, and 1.0% for 10.",
+          "quote": "His peeking table: to get a true 5% you need reported significance of 2.9% (1 peek), 2.2% (2), 1.8% (3), 1.4% (5), 1.0% (10)."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The table is attributed to Miller but the source does not state the underlying model or assumptions used to derive the thresholds."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "c32bb61b9992e92ab88d8d6009c946f9f40b8e95199161ef50b691aeb05b021c"
+          }
+        ]
+      },
+      {
+        "id": "add-filter-bot-traffic",
+        "kind": "action",
+        "title": "Filter bot traffic",
+        "claim": {
+          "text": "The source states that bots create skew and sample ratio mismatch, so they should be filtered (Kohavi/Sonnet).",
+          "quote": "Bot traffic: bots create skew and SRM; filter them (Kohavi/Sonnet)."
+        },
+        "action": {
+          "text": "Filter bot traffic from experiments.",
+          "quote": "filter them (Kohavi/Sonnet)"
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No bot-detection method or filtering threshold is specified in the supplied text."
+        ],
+        "relations": []
+      },
+      {
+        "id": "add-tracking-breakage",
+        "kind": "warning",
+        "title": "Mid-test tracking breakage invalidates the experiment",
+        "claim": {
+          "text": "The source states that if the pixel or event tracking breaks mid-test, the experiment is invalid.",
+          "quote": "Tracking breakage: if the pixel/event breaks mid-test, the experiment is invalid."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "The pixel or event tracking breaks mid-test.",
+              "quote": "if the pixel/event breaks mid-test"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": []
+      },
+      {
+        "id": "add-correct-multiple-comparisons",
+        "kind": "action",
+        "title": "Correct for multiple comparisons with Bonferroni or FDR",
+        "claim": {
+          "text": "Testing many metrics or segments inflates false positives: with one decision metric error is 5%, two metrics about 10%, and three about 14% (Kohavi/Sonnet), so correct with Bonferroni or FDR.",
+          "quote": "Multiple comparisons: testing many metrics or segments inflates false positives. With one decision metric error is 5%, two metrics about 10%, three about 14% (Kohavi/Sonnet). Correct with Bonferroni or FDR."
+        },
+        "action": {
+          "text": "Correct for multiple comparisons with Bonferroni or FDR.",
+          "quote": "Correct with Bonferroni or FDR."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Testing many metrics or segments.",
+              "quote": "testing many metrics or segments inflates false positives"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No rule for choosing between Bonferroni and FDR is given."
+        ],
+        "relations": []
+      },
+      {
+        "id": "add-preregister-segments",
+        "kind": "action",
+        "title": "Pre-register segments to avoid segment fishing",
+        "claim": {
+          "text": "Slicing results after the fact until you find a winning segment is p-hacking; segments should be pre-registered.",
+          "quote": "Segment fishing: slicing results after the fact until you find a \"winning\" segment is p-hacking. Pre-register segments."
+        },
+        "action": {
+          "text": "Pre-register segments.",
+          "quote": "Pre-register segments."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "add-correct-multiple-comparisons"
+          }
+        ]
+      },
+      {
+        "id": "add-twymans-law",
+        "kind": "warning",
+        "title": "Twyman's law as the anchor rule for auditing case studies",
+        "claim": {
+          "text": "Any figure that looks interesting or surprising is usually wrong; a 364% lift is more likely an instrumentation bug, SRM, or contamination than a discovery (Kohavi). This is the anchor rule for auditing case studies.",
+          "quote": "Twyman's law: any figure that looks interesting or surprising is usually wrong. A 364% lift is more likely an instrumentation bug, SRM, or contamination than a discovery (Kohavi). This is the anchor rule for auditing case studies."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": []
+      },
+      {
+        "id": "add-simpler-variance-reduction",
+        "kind": "action",
+        "title": "Use proportion metrics and winsorisation for ecommerce variance reduction",
+        "claim": {
+          "text": "Simpler cousins that help ecommerce more than CUPED: pick a proportion metric instead of a raw revenue mean, and winsorize (cap) outlier orders.",
+          "quote": "Simpler cousins that help ecommerce more: pick a proportion metric instead of a raw revenue mean, and winsorize (cap) outlier orders."
+        },
+        "action": {
+          "text": "Pick a proportion metric instead of a raw revenue mean, and winsorize (cap) outlier orders.",
+          "quote": "pick a proportion metric instead of a raw revenue mean, and winsorize (cap) outlier orders"
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No winsorisation threshold or cap level is given."
+        ],
+        "relations": [
+          {
+            "kind": "alternative_to",
+            "target": "f3125f9b4713f86e8f0d431c181d293c7f0e8dd63ef2e48d19d23119ae58a047"
+          }
+        ]
+      }
+    ],
+    "unresolved": [
+      "The supplied text ends mid-section 8 after the A/B-test description; it does not contain the promised multi-armed bandit guidance or any continuation of that comparison.",
+      "The source does not define what counts as a 'surprising large' winner that must be re-tested with a holdout.",
+      "The source does not specify a bot-detection method or threshold for filtering bot traffic.",
+      "The source states anti-flicker snippets hide the page for up to 3-4 seconds by default and slow initial load, but does not state an acceptable delay or cost threshold.",
+      "The source does not give thresholds for winsorising outlier orders."
+    ]
+  },
+  "raw_content": "{\n  \"repairs\": [\n    {\n      \"candidate_id\": \"d94440fcfea5c7591922c31bfd0f021e5fc76d58315ce07bf01761d48f0b79d2\",\n      \"unit\": {\n        \"id\": \"d94440fcfea5c7591922c31bfd0f021e5fc76d58315ce07bf01761d48f0b79d2\",\n        \"kind\": \"action\",\n        \"title\": \"Use micro-conversions as primary metric with purchase/revenue guardrails\",\n        \"claim\": {\n          \"text\": \"In the source's low-traffic methods section, it suggests micro-conversions such as add-to-cart and begin-checkout as the primary metric because they are more frequent and power faster, but warns a lift may not carry through to purchase or revenue; use them as a leading indicator and keep purchase/revenue as guardrails.\",\n          \"quote\": \"Micro-conversions (add-to-cart, begin-checkout) as primary metric. They are more frequent so they power faster, but the risk is real: a lift in add-to-cart may not carry through to purchase or revenue. Use them as a leading indicator, keep purchase/revenue as guardrails.\"\n        },\n        \"action\": {\n          \"text\": \"In the low-traffic context, use micro-conversions (add-to-cart, begin-checkout) as the primary metric and keep purchase/revenue as guardrails.\",\n          \"quote\": \"Use them as a leading indicator, keep purchase/revenue as guardrails.\"\n        },\n        \"trigger\": {\n          \"op\": \"all\",\n          \"args\": [\n            {\n              \"text\": \"Below the A/B threshold, where the job shifts from proving things statistically to learning fast and cheaply.\",\n              \"quote\": \"below the A/B threshold\"\n            }\n          ]\n        },\n        \"prerequisites\": {\n          \"op\": \"all\",\n          \"args\": []\n        },\n        \"exclusions\": {\n          \"op\": \"any\",\n          \"args\": []\n        },\n        \"completion\": [],\n        \"unknowns\": [\n          \"No threshold for when a micro-conversion lift is likely to carry through to purchase is given.\"\n        ],\n        \"relations\": []\n      }\n    },\n    {\n      \"candidate_id\": \"dce8510bf30c75c42ac1a45b592bb9e1cab9c64207bbb69c435ecf2b0355449c\",\n      \"unit\": {\n        \"id\": \"dce8510bf30c75c42ac1a45b592bb9e1cab9c64207bbb69c435ecf2b0355449c\",\n        \"kind\": \"action\",\n        \"title\": \"Detect and act on sample ratio mismatch\",\n        \"claim\": {\n          \"text\": \"The source defines sample ratio mismatch (SRM) as the observed traffic split differing from the designed split, recommends detecting it with a chi-square goodness-of-fit test on the randomisation unit (users, not page views), notes Kohavi's figure that about 6% of Microsoft experiments show SRM, and says if SRM is present the result is biased and should not be trusted until the cause is found.\",\n          \"quote\": \"Sample ratio mismatch (SRM): the observed traffic split differs from the designed split (e.g. 50/50 comes back 50.3/49.7). Detect with a chi-square goodness-of-fit test on the randomisation unit (users, not page views).\"\n        },\n        \"action\": {\n          \"text\": \"Detect SRM with a chi-square goodness-of-fit test on the randomisation unit (users, not page views).\",\n          \"quote\": \"Detect with a chi-square goodness-of-fit test on the randomisation unit (users, not page views).\"\n        },\n        \"trigger\": {\n          \"op\": \"all\",\n          \"args\": [\n            {\n              \"text\": \"Run SRM checks early and often during an experiment; it is easy to run in a spreadsheet.\",\n              \"quote\": \"Test early and often; it is easy to run in a spreadsheet.\"\n            }\n          ]\n        },\n        \"prerequisites\": {\n          \"op\": \"all\",\n          \"args\": []\n        },\n        \"exclusions\": {\n          \"op\": \"any\",\n          \"args\": []\n        },\n        \"completion\": [\n          {\n            \"text\": \"If SRM is present the result is biased and should not be trusted until the cause is found.\",\n            \"quote\": \"If SRM is present the result is biased and should not be trusted until the cause is found.\"\n          }\n        ],\n        \"unknowns\": [\n          \"No repair procedure beyond finding the cause is given.\"\n        ],\n        \"relations\": []\n      }\n    },\n    {\n      \"candidate_id\": \"f3125f9b4713f86e8f0d431c181d293c7f0e8dd63ef2e48d19d23119ae58a047\",\n      \"unit\": {\n        \"id\": \"f3125f9b4713f86e8f0d431c181d293c7f0e8dd63ef2e48d19d23119ae58a047\",\n        \"kind\": \"action\",\n        \"title\": \"Consider CUPED only with appropriate pre-experiment data\",\n        \"claim\": {\n          \"text\": \"The source says CUPED uses pre-experiment data as a covariate to strip out variance not caused by treatment; the adjusted estimator stays unbiased with lower variance, and Optimizely's glossary says it can cut sample requirements 30-50% for metrics with strong correlation to historical behaviour. DTC practicality is mixed because pre-period covariates are often missing or weakly correlated for new or anonymous checkout traffic.\",\n          \"quote\": \"Uses pre-experiment data (usually the same metric measured before the test) as a covariate to strip out variance not caused by the treatment.\"\n        },\n        \"action\": {\n          \"text\": \"Turn on CUPED if your platform offers it and you have returning identified users; it is not a magic fix for a brand with mostly new, anonymous traffic.\",\n          \"quote\": \"worth turning on if your platform offers it and you have returning identified users; not a magic fix for a brand with mostly new, anonymous traffic.\"\n        },\n        \"trigger\": {\n          \"op\": \"all\",\n          \"args\": [\n            {\n              \"text\": \"Platform offers CUPED and you have returning identified users.\",\n              \"quote\": \"if your platform offers it and you have returning identified users\"\n            }\n          ]\n        },\n        \"prerequisites\": {\n          \"op\": \"all\",\n          \"args\": [\n            {\n              \"text\": \"CUPED needs pre-experiment data keyed to the same user, which means logged-in users or stable device IDs.\",\n              \"quote\": \"CUPED needs pre-experiment data keyed to the same user, which means logged-in users or stable device IDs.\"\n            }\n          ]\n        },\n        \"exclusions\": {\n          \"op\": \"any\",\n          \"args\": []\n        },\n        \"completion\": [],\n        \"unknowns\": [\n          \"For a DTC brand where most checkout traffic is new or not logged in, the pre-period covariate is often missing or weakly correlated, so the variance reduction is smaller; this is a limitation on expected benefit, not a categorical exclusion.\"\n        ],\n        \"relations\": []\n      }\n    }\n  ],\n  \"additions\": [\n    {\n      \"id\": \"add-gst-vs-avi-guidance\",\n      \"kind\": \"action\",\n      \"title\": \"Choose GST versus always-valid inference based on expected sample size\",\n      \"claim\": {\n        \"text\": \"Spotify's guidance is that if you can estimate the expected sample size well, group sequential testing is more powerful; if you cannot, always-valid inference is safer.\",\n        \"quote\": \"Spotify's guidance: if you can estimate the expected sample size well, GST is more powerful; if you cannot, always-valid is safer.\"\n      },\n      \"action\": {\n        \"text\": \"Choose GST when you can estimate the expected sample size well; otherwise choose always-valid inference as the safer option.\",\n        \"quote\": \"if you can estimate the expected sample size well, GST is more powerful; if you cannot, always-valid is safer.\"\n      },\n      \"trigger\": {\n        \"op\": \"all\",\n        \"args\": [\n          {\n            \"text\": \"You must choose between group sequential testing and always-valid inference for a sequential design.\",\n            \"quote\": \"Spotify's guidance:\"\n          }\n        ]\n      },\n      \"prerequisites\": {\n        \"op\": \"all\",\n        \"args\": []\n      },\n      \"exclusions\": {\n        \"op\": \"any\",\n        \"args\": []\n      },\n      \"completion\": [],\n      \"unknowns\": [\n        \"No quantitative criterion for 'estimate the expected sample size well' is given.\"\n      ],\n      \"relations\": [\n        {\n          \"kind\": \"depends_on\",\n          \"target\": \"5c1ff129b28d5dcc99e6535662398b3d213b15e8080ea9d9910352942544d1ef\"\n        }\n      ]\n    },\n    {\n      \"id\": \"add-peeking-table-thresholds\",\n      \"kind\": \"principle\",\n      \"title\": \"Adjusted reported-significance thresholds for the number of peeks\",\n      \"claim\": {\n        \"text\": \"To get a true 5% false positive rate, the reported significance must be 2.9% for 1 peek, 2.2% for 2 peeks, 1.8% for 3, 1.4% for 5, and 1.0% for 10.\",\n        \"quote\": \"His peeking table: to get a true 5% you need reported significance of 2.9% (1 peek), 2.2% (2), 1.8% (3), 1.4% (5), 1.0% (10).\"\n      },\n      \"action\": null,\n      \"trigger\": {\n        \"op\": \"all\",\n        \"args\": []\n      },\n      \"prerequisites\": {\n        \"op\": \"all\",\n        \"args\": []\n      },\n      \"exclusions\": {\n        \"op\": \"any\",\n        \"args\": []\n      },\n      \"completion\": [],\n      \"unknowns\": [\n        \"The table is attributed to Miller but the source does not state the underlying model or assumptions used to derive the thresholds.\"\n      ],\n      \"relations\": [\n        {\n          \"kind\": \"depends_on\",\n          \"target\": \"c32bb61b9992e92ab88d8d6009c946f9f40b8e95199161ef50b691aeb05b021c\"\n        }\n      ]\n    },\n    {\n      \"id\": \"add-filter-bot-traffic\",\n      \"kind\": \"action\",\n      \"title\": \"Filter bot traffic\",\n      \"claim\": {\n        \"text\": \"The source states that bots create skew and sample ratio mismatch, so they should be filtered (Kohavi/Sonnet).\",\n        \"quote\": \"Bot traffic: bots create skew and SRM; filter them (Kohavi/Sonnet).\"\n      },\n      \"action\": {\n        \"text\": \"Filter bot traffic from experiments.\",\n        \"quote\": \"filter them (Kohavi/Sonnet)\"\n      },\n      \"trigger\": {\n        \"op\": \"all\",\n        \"args\": []\n      },\n      \"prerequisites\": {\n        \"op\": \"all\",\n        \"args\": []\n      },\n      \"exclusions\": {\n        \"op\": \"any\",\n        \"args\": []\n      },\n      \"completion\": [],\n      \"unknowns\": [\n        \"No bot-detection method or filtering threshold is specified in the supplied text.\"\n      ],\n      \"relations\": []\n    },\n    {\n      \"id\": \"add-tracking-breakage\",\n      \"kind\": \"warning\",\n      \"title\": \"Mid-test tracking breakage invalidates the experiment\",\n      \"claim\": {\n        \"text\": \"The source states that if the pixel or event tracking breaks mid-test, the experiment is invalid.\",\n        \"quote\": \"Tracking breakage: if the pixel/event breaks mid-test, the experiment is invalid.\"\n      },\n      \"action\": null,\n      \"trigger\": {\n        \"op\": \"all\",\n        \"args\": [\n          {\n            \"text\": \"The pixel or event tracking breaks mid-test.\",\n            \"quote\": \"if the pixel/event breaks mid-test\"\n          }\n        ]\n      },\n      \"prerequisites\": {\n        \"op\": \"all\",\n        \"args\": []\n      },\n      \"exclusions\": {\n        \"op\": \"any\",\n        \"args\": []\n      },\n      \"completion\": [],\n      \"unknowns\": [],\n      \"relations\": []\n    },\n    {\n      \"id\": \"add-correct-multiple-comparisons\",\n      \"kind\": \"action\",\n      \"title\": \"Correct for multiple comparisons with Bonferroni or FDR\",\n      \"claim\": {\n        \"text\": \"Testing many metrics or segments inflates false positives: with one decision metric error is 5%, two metrics about 10%, and three about 14% (Kohavi/Sonnet), so correct with Bonferroni or FDR.\",\n        \"quote\": \"Multiple comparisons: testing many metrics or segments inflates false positives. With one decision metric error is 5%, two metrics about 10%, three about 14% (Kohavi/Sonnet). Correct with Bonferroni or FDR.\"\n      },\n      \"action\": {\n        \"text\": \"Correct for multiple comparisons with Bonferroni or FDR.\",\n        \"quote\": \"Correct with Bonferroni or FDR.\"\n      },\n      \"trigger\": {\n        \"op\": \"all\",\n        \"args\": [\n          {\n            \"text\": \"Testing many metrics or segments.\",\n            \"quote\": \"testing many metrics or segments inflates false positives\"\n          }\n        ]\n      },\n      \"prerequisites\": {\n        \"op\": \"all\",\n        \"args\": []\n      },\n      \"exclusions\": {\n        \"op\": \"any\",\n        \"args\": []\n      },\n      \"completion\": [],\n      \"unknowns\": [\n        \"No rule for choosing between Bonferroni and FDR is given.\"\n      ],\n      \"relations\": []\n    },\n    {\n      \"id\": \"add-preregister-segments\",\n      \"kind\": \"action\",\n      \"title\": \"Pre-register segments to avoid segment fishing\",\n      \"claim\": {\n        \"text\": \"Slicing results after the fact until you find a winning segment is p-hacking; segments should be pre-registered.\",\n        \"quote\": \"Segment fishing: slicing results after the fact until you find a \\\"winning\\\" segment is p-hacking. Pre-register segments.\"\n      },\n      \"action\": {\n        \"text\": \"Pre-register segments.\",\n        \"quote\": \"Pre-register segments.\"\n      },\n      \"trigger\": {\n        \"op\": \"all\",\n        \"args\": []\n      },\n      \"prerequisites\": {\n        \"op\": \"all\",\n        \"args\": []\n      },\n      \"exclusions\": {\n        \"op\": \"any\",\n        \"args\": []\n      },\n      \"completion\": [],\n      \"unknowns\": [],\n      \"relations\": [\n        {\n          \"kind\": \"depends_on\",\n          \"target\": \"add-correct-multiple-comparisons\"\n        }\n      ]\n    },\n    {\n      \"id\": \"add-twymans-law\",\n      \"kind\": \"warning\",\n      \"title\": \"Twyman's law as the anchor rule for auditing case studies\",\n      \"claim\": {\n        \"text\": \"Any figure that looks interesting or surprising is usually wrong; a 364% lift is more likely an instrumentation bug, SRM, or contamination than a discovery (Kohavi). This is the anchor rule for auditing case studies.\",\n        \"quote\": \"Twyman's law: any figure that looks interesting or surprising is usually wrong. A 364% lift is more likely an instrumentation bug, SRM, or contamination than a discovery (Kohavi). This is the anchor rule for auditing case studies.\"\n      },\n      \"action\": null,\n      \"trigger\": {\n        \"op\": \"all\",\n        \"args\": []\n      },\n      \"prerequisites\": {\n        \"op\": \"all\",\n        \"args\": []\n      },\n      \"exclusions\": {\n        \"op\": \"any\",\n        \"args\": []\n      },\n      \"completion\": [],\n      \"unknowns\": [],\n      \"relations\": []\n    },\n    {\n      \"id\": \"add-simpler-variance-reduction\",\n      \"kind\": \"action\",\n      \"title\": \"Use proportion metrics and winsorisation for ecommerce variance reduction\",\n      \"claim\": {\n        \"text\": \"Simpler cousins that help ecommerce more than CUPED: pick a proportion metric instead of a raw revenue mean, and winsorize (cap) outlier orders.\",\n        \"quote\": \"Simpler cousins that help ecommerce more: pick a proportion metric instead of a raw revenue mean, and winsorize (cap) outlier orders.\"\n      },\n      \"action\": {\n        \"text\": \"Pick a proportion metric instead of a raw revenue mean, and winsorize (cap) outlier orders.\",\n        \"quote\": \"pick a proportion metric instead of a raw revenue mean, and winsorize (cap) outlier orders\"\n      },\n      \"trigger\": {\n        \"op\": \"all\",\n        \"args\": []\n      },\n      \"prerequisites\": {\n        \"op\": \"all\",\n        \"args\": []\n      },\n      \"exclusions\": {\n        \"op\": \"any\",\n        \"args\": []\n      },\n      \"completion\": [],\n      \"unknowns\": [\n        \"No winsorisation threshold or cap level is given.\"\n      ],\n      \"relations\": [\n        {\n          \"kind\": \"alternative_to\",\n          \"target\": \"f3125f9b4713f86e8f0d431c181d293c7f0e8dd63ef2e48d19d23119ae58a047\"\n        }\n      ]\n    }\n  ],\n  \"unresolved\": [\n    \"The supplied text ends mid-section 8 after the A/B-test description; it does not contain the promised multi-armed bandit guidance or any continuation of that comparison.\",\n    \"The source does not define what counts as a 'surprising large' winner that must be re-tested with a holdout.\",\n    \"The source does not specify a bot-detection method or threshold for filtering bot traffic.\",\n    \"The source states anti-flicker snippets hide the page for up to 3-4 seconds by default and slow initial load, but does not state an acceptable delay or cost threshold.\",\n    \"The source does not give thresholds for winsorising outlier orders.\"\n  ]\n}",
+  "input": {
+    "source": {
+      "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+      "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+      "locator": "batch",
+      "start": 0,
+      "text": "Peeking inflates false positives. Miller's worst case: testing after every observation and stopping at first p<0.05 turns a nominal 5% false positive rate into 26.1%. His peeking table: to get a true 5% you need reported significance of 2.9% (1 peek), 2.2% (2), 1.8% (3), 1.4% (5), 1.0% (10). Etsy Engineering (Code as Craft, October 3 2018) put numbers on it with a true null at a 50% baseline and alpha 0.10: \"if we do peek and we check the significance level at every observation, then after 500 observations, there is over a 50% chance of incorrectly stating that treatment is different than the control.\" Kohavi and Sonnet's practical number: running two weeks then checking daily for two more weeks pushes a 5% error rate to about 17%.\n\nSequential methods legitimise looking early:\n\nmSPRT (mixture sequential probability ratio test): Johari, Koomen, Pekelis, Walsh, \"Always Valid Inference\" (arXiv 2015; Operations Research 2022). Produces always-valid p-values valid at any stopping time. Used by Optimizely, Uber, Netflix, Amplitude.\n\nGAVI (generalisation of always-valid inference): Howard et al. 2021 confidence sequences. Used by Eppo.\n\nGroup sequential design (GST) with alpha spending: Lan-DeMets 1983. Used by Spotify, which prefers GST over AVI for its power advantage in batch-analysed settings (Spotify Engineering, March 2023).\n\nCorrected-alpha approach (CAA): used by Statsig. Tradeoff: always-valid methods let you stop any time but cost power (wider intervals) versus a correctly-sized fixed test. Spotify's guidance: if you can estimate the expected sample size well, GST is more powerful; if you cannot, always-valid is safer.\n\nMinimum runtime: run at least one full week, and in practice two, to cover the weekly business cycle (Kohavi, \"Five Puzzling Outcomes\"). Weekends convert differently from weekdays; buyers differ by day. Two weeks captures one full cycle of returning visitors.\n\nNovelty and primacy effects. Novelty: a change gets a temporary bump because it is new; the effect decays. Primacy: existing users are primed to the old design and the new one underperforms at first, then recovers. Both are threats to external validity (Kohavi, Trustworthy Online Controlled Experiments). Diagnose by plotting daily effect over time and by comparing first-exposure vs repeat-exposure conversion for the variant. Kohavi's surprising finding: most suspected novelty/primacy effects are actually statistical artifacts of early, noisy cumulative deltas, not real trends.\n\n4. low-traffic methods with thresholds\n\nThe governing principle: below the A/B threshold, the job shifts from proving things statistically to learning fast and cheaply. Test bigger, not more.\n\nMethods and when each applies:\n\nBold, big-swing A/B tests. Below about 100,000 visitors/month, default to differentiated changes with a target effect of 10-20%+, not tweaks (aiformarketing.news; VWO concedes low-traffic sites should make big changes). One bold homepage test teaches more than 10 micro-tests on low-traffic category pages (SplitBase).\n\nTest on higher-traffic pages. Concentrate tests where the traffic is: homepage, top product pages, cart. Do not test low-traffic category pages.\n\nSequential before/after with honest error bars. Only when parallel testing is impossible and you can hold external conditions constant. Best for large structural changes. Treat as weak evidence.\n\nHoldouts and pre/post with controls. Re-test any surprising large winner with a holdout before banking the revenue.\n\nQualitative research first. Session replay, surveys, user testing to generate strong hypotheses when you cannot run many tests.\n\nMicro-conversions (add-to-cart, begin-checkout) as primary metric. They are more frequent so they power faster, but the risk is real: a lift in add-to-cart may not carry through to purchase or revenue. Use them as a leading indicator, keep purchase/revenue as guardrails.\n\nA/B/n and bandits: only at 3,000+ orders/month.\n\n5. Bayesian vs frequentist in practice\n\nFrequentist: controls long-run error rates via pre-set sample size, fixed alpha, analysis plan. Outputs p-values and confidence intervals. Pros: explicit error-rate contract, forces upfront MDE/sample discipline, reproducible across tools (a z-test is a z-test). Cons: p-values are widely misinterpreted, the 0.05 cliff is artificial, fixed sample is rigid, peeking silently breaks it.\n\nBayesian: computes posterior probabilities given data and a prior. Outputs \"probability B beats A\" and expected loss. Pros: intuitive for stakeholders, gives magnitude and risk, credible intervals mean what people think. Cons: priors are subjective and usually hidden by vendors; \"probability to be best\" can mislead without a loss function.\n\nHow tools report:\n\nVWO SmartStats: Bayesian, Beta-Binomial conjugate with Monte Carlo, reports probability-to-beat-baseline and expected loss.\n\nOptimizely Stats Engine: frequentist with mSPRT always-valid p-values plus False Discovery Rate control instead of raw Type I control.\n\nAB Tasty: Bayesian by preference.\n\nEppo: Bayesian with shrinkage plus GAVI sequential.\n\nStatsig: sequential always-valid (corrected-alpha).\n\nGrowthBook: both frequentist and Bayesian, plus sequential.\n\nThe two big pitfalls to flag: (1) Bayesian is not immune to peeking. Alex Molas (October 30 2025) simulated this: peeking after every 100 observations and stopping when P(A>B)>0.95 pushed the false positive rate to about 80%. A fixed posterior threshold does not control frequentist error under optional stopping. (2) Most commercial \"Bayesian\" tools use uninformative/flat priors, which makes them mathematically close to frequentist tests but with less transparency about what prior was used. If you cannot state the prior, you cannot fully interpret or reproduce the result (Convert.com; dripagency.de).\n\n6. common invalidations\n\nSample ratio mismatch (SRM): the observed traffic split differs from the designed split (e.g. 50/50 comes back 50.3/49.7). Detect with a chi-square goodness-of-fit test on the randomisation unit (users, not page views). Kohavi: about 6% of Microsoft experiments show SRM. If SRM is present the result is biased and should not be trusted until the cause is found. Kameleoon flags SRM at p<0.001. Test early and often; it is easy to run in a spreadsheet.\n\nFlicker (FOOC, Flash of Original Content): in client-side tests the original page renders briefly before JavaScript swaps in the variant. GrowthBook docs: \"this flickering can lead to inaccurate or unreliable test results... rather counterintuitively, flickering may have a positive effect on the results, sometimes the flashing may draw a user's attention to that variation, and cause an inflation in the effect.\" So flicker both hurts UX and biases the read. Mitigate with anti-flicker snippets (hide body until variant ready), synchronous script loading high in the head, or server-side testing. Anti-flicker snippets have a cost: they hide the page for up to 3-4 seconds by default and slow initial load (DebugBear; Andy Davies).\n\nBot traffic: bots create skew and SRM; filter them (Kohavi/Sonnet).\n\nTracking breakage: if the pixel/event breaks mid-test, the experiment is invalid. This is the one MEA concern that belongs here.\n\nSeasonality and promotions overlapping a test: a sale or holiday during one variant's window confounds before/after tests and can distort even parallel tests if it changes the visitor mix.\n\nMultiple comparisons: testing many metrics or segments inflates false positives. With one decision metric error is 5%, two metrics about 10%, three about 14% (Kohavi/Sonnet). Correct with Bonferroni or FDR.\n\nNovelty effects: see section 3.\n\nSegment fishing: slicing results after the fact until you find a \"winning\" segment is p-hacking. Pre-register segments.\n\nStopping early: see peeking, section 3.\n\nTwyman's law: any figure that looks interesting or surprising is usually wrong. A 364% lift is more likely an instrumentation bug, SRM, or contamination than a discovery (Kohavi). This is the anchor rule for auditing case studies.\n\n7. variance reduction: CUPED\n\nCUPED (Controlled-experiment Using Pre-Experiment Data), Deng, Xu, Kohavi, Walker, Microsoft 2013. Uses pre-experiment data (usually the same metric measured before the test) as a covariate to strip out variance not caused by the treatment. Adjusted estimator stays unbiased but has lower variance, so you reach significance faster or detect smaller effects at the same sample. Optimizely's glossary: can cut sample requirements 30-50% for metrics with strong correlation to historical behaviour. Now default-on in several tools (Datadog, Optimizely) and used by Netflix, Airbnb, Booking.\n\nPracticality for DTC: mixed. CUPED needs pre-experiment data keyed to the same user, which means logged-in users or stable device IDs. For a DTC brand where most checkout traffic is new or not logged in, the pre-period covariate is often missing or weakly correlated, so the variance reduction is smaller. The clearest evidence of the ceiling: Jin, Ba and colleagues at LinkedIn (\"Towards Optimal Variance Reduction in Online Controlled Experiments\", arXiv 2110.13406) ran CUPED on n=400,000 feed members and found it \"reduces 15.91% of variance compared to the diff-in-mean estimator\", limited because \"member's revenue is a volatile metric whose autocorrelation across different time periods is weak.\" Verdict: worth turning on if your platform offers it and you have returning identified users; not a magic fix for a brand with mostly new, anonymous traffic. Simpler cousins that help ecommerce more: pick a proportion metric instead of a raw revenue mean, and winsorize (cap) outlier orders.\n\n8. multi-armed bandits vs A/B tests\n\nA/B test: two periods, explore (split evenly) then exploit (ship winner). Best when you need a clean, high-confidence causal read before a lasting change: redesigns, pricing, navigation, checkout. Gives a defensible answer and a measured effect size."
+    },
+    "existing_units": [
+      {
+        "id": "c32bb61b9992e92ab88d8d6009c946f9f40b8e95199161ef50b691aeb05b021c",
+        "kind": "warning",
+        "title": "Peeking inflates false positives",
+        "claim": {
+          "text": "The source warns that testing after every observation and stopping at first p<0.05 turns a nominal 5% false positive rate into 26.1%.",
+          "quote": "Miller's worst case: testing after every observation and stopping at first p<0.05 turns a nominal 5% false positive rate into 26.1%."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Testing after every observation and stopping at first p<0.05.",
+              "quote": "testing after every observation and stopping at first p<0.05"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No direct recommendation on whether to avoid peeking or use sequential methods is stated in this unit; sequential methods are covered separately."
+        ],
+        "relations": [
+          {
+            "kind": "alternative_to",
+            "target": "5c1ff129b28d5dcc99e6535662398b3d213b15e8080ea9d9910352942544d1ef"
+          }
+        ]
+      },
+      {
+        "id": "5c1ff129b28d5dcc99e6535662398b3d213b15e8080ea9d9910352942544d1ef",
+        "kind": "principle",
+        "title": "Sequential methods legitimise looking early",
+        "claim": {
+          "text": "The source states that sequential methods legitimise looking early, listing mSPRT, GAVI, group sequential design with alpha spending, and corrected-alpha approach.",
+          "quote": "Sequential methods legitimise looking early:"
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "Tradeoff: always-valid methods cost power (wider intervals) versus a correctly-sized fixed test; Spotify's guidance is conditional on ability to estimate expected sample size."
+        ],
+        "relations": [
+          {
+            "kind": "alternative_to",
+            "target": "c32bb61b9992e92ab88d8d6009c946f9f40b8e95199161ef50b691aeb05b021c"
+          }
+        ]
+      },
+      {
+        "id": "57ed7c74aaf5f645b0a941b78af2b27c2c7e6f0799be2f851d040554af6376e5",
+        "kind": "action",
+        "title": "Run a minimum test duration of at least one week",
+        "claim": {
+          "text": "The source recommends a minimum runtime of at least one full week, and in practice two, to cover the weekly business cycle and returning visitors.",
+          "quote": "run at least one full week, and in practice two"
+        },
+        "action": {
+          "text": "Run at least one full week, and in practice two, to cover the weekly business cycle.",
+          "quote": "run at least one full week, and in practice two"
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No specific stopping rule or metric for determining the full cycle beyond the statement is given."
+        ],
+        "relations": []
+      },
+      {
+        "id": "8cfc34f27550dca89ba2e9f7c71e129ebd057439e4e3acefec4bc79a78d88e7f",
+        "kind": "action",
+        "title": "Diagnose novelty and primacy effects",
+        "claim": {
+          "text": "The source describes novelty and primacy as threats to external validity, and says to diagnose by plotting daily effect over time and comparing first-exposure vs repeat-exposure conversion for the variant.",
+          "quote": "Diagnose by plotting daily effect over time and by comparing first-exposure vs repeat-exposure conversion for the variant."
+        },
+        "action": {
+          "text": "Diagnose novelty/primacy by plotting daily effect over time and comparing first-exposure vs repeat-exposure conversion.",
+          "quote": "Diagnose by plotting daily effect over time and by comparing first-exposure vs repeat-exposure conversion for the variant."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Novelty or primacy effect is suspected.",
+              "quote": "Novelty and primacy effects."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No threshold for how much daily effect change indicates novelty/primacy is stated.",
+          "Kohavi's finding that most suspected effects are statistical artifacts of early noisy cumulative deltas is noted but no test is specified."
+        ],
+        "relations": []
+      },
+      {
+        "id": "00667f730bdb9afbe63e4dde9cbe0927cad9ec1bb6d4228f7daa76243ab7eeca",
+        "kind": "action",
+        "title": "Use bold big-swing tests for low-traffic sites",
+        "claim": {
+          "text": "The source's governing principle for below-threshold traffic is to shift from statistical proof to learning fast and cheaply; it recommends bold, big-swing A/B tests with differentiated changes targeting 10-20%+ effect rather than tweaks below about 100,000 visitors/month.",
+          "quote": "The governing principle: below the A/B threshold, the job shifts from proving things statistically to learning fast and cheaply. Test bigger, not more.\n\nMethods and when each applies:\n\nBold, big-swing A/B tests. Below about 100,000 visitors/month, default to differentiated changes with a target effect of 10-20%+, not tweaks"
+        },
+        "action": {
+          "text": "Default to differentiated changes with a target effect of 10-20%+, not tweaks, below about 100,000 visitors/month.",
+          "quote": "Below about 100,000 visitors/month, default to differentiated changes with a target effect of 10-20%+, not tweaks"
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Site has below about 100,000 visitors/month.",
+              "quote": "Below about 100,000 visitors/month"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": [
+            {
+              "text": "Avoid tweaks.",
+              "quote": "not tweaks"
+            }
+          ]
+        },
+        "completion": [],
+        "unknowns": [
+          "The source says one bold homepage test teaches more than 10 micro-tests on low-traffic category pages, but no metric for 'teaches more' is defined."
+        ],
+        "relations": []
+      },
+      {
+        "id": "9c9d139803a0ff04801b93491bb651f944e9730b12a3b10da6f3c89ec594cf47",
+        "kind": "action",
+        "title": "Concentrate tests on higher-traffic pages",
+        "claim": {
+          "text": "The source recommends concentrating tests where the traffic is: homepage, top product pages, cart, and not testing low-traffic category pages.",
+          "quote": "Concentrate tests where the traffic is: homepage, top product pages, cart. Do not test low-traffic category pages."
+        },
+        "action": {
+          "text": "Concentrate tests where the traffic is: homepage, top product pages, cart. Do not test low-traffic category pages.",
+          "quote": "Concentrate tests where the traffic is: homepage, top product pages, cart. Do not test low-traffic category pages."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": [
+            {
+              "text": "Do not test low-traffic category pages.",
+              "quote": "Do not test low-traffic category pages."
+            }
+          ]
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": []
+      },
+      {
+        "id": "917ec111c16b9f98e57db3564c5d6b9785c8684b9fb14ab14e2679f76e3faf0e",
+        "kind": "action",
+        "title": "Use sequential before/after with honest error bars only under strict conditions",
+        "claim": {
+          "text": "The source describes sequential before/after with honest error bars as a method only when parallel testing is impossible and external conditions can be held constant; it is best for large structural changes and should be treated as weak evidence.",
+          "quote": "Sequential before/after with honest error bars. Only when parallel testing is impossible and you can hold external conditions constant. Best for large structural changes. Treat as weak evidence."
+        },
+        "action": {
+          "text": "Use sequential before/after with honest error bars only when parallel testing is impossible and external conditions can be held constant.",
+          "quote": "Sequential before/after with honest error bars. Only when parallel testing is impossible and you can hold external conditions constant."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Parallel testing is impossible and external conditions can be held constant.",
+              "quote": "Only when parallel testing is impossible and you can hold external conditions constant."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Parallel testing is impossible and external conditions can be held constant.",
+              "quote": "Only when parallel testing is impossible and you can hold external conditions constant."
+            }
+          ]
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No definition of 'honest error bars' is given.",
+          "No specific external conditions are listed."
+        ],
+        "relations": []
+      },
+      {
+        "id": "f6d83771e81996482101b7b9bd170efa20af098bdd314e5ff42fefa23c465a94",
+        "kind": "action",
+        "title": "Re-test surprising large winners with a holdout",
+        "claim": {
+          "text": "The source recommends re-testing any surprising large winner with a holdout before banking the revenue.",
+          "quote": "Re-test any surprising large winner with a holdout before banking the revenue."
+        },
+        "action": {
+          "text": "Re-test any surprising large winner with a holdout before banking the revenue.",
+          "quote": "Re-test any surprising large winner with a holdout before banking the revenue."
+        },
+        "trigger": {
+          "op": "any",
+          "args": [
+            {
+              "text": "A surprising large winner is observed.",
+              "quote": "any surprising large winner"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No definition of 'surprising large' is given."
+        ],
+        "relations": []
+      },
+      {
+        "id": "df179ede98a1b9d9d676886e553dfad43b7d270841fa49be3bad7d848097cc2f",
+        "kind": "action",
+        "title": "Use qualitative research first when tests are limited",
+        "claim": {
+          "text": "The source recommends qualitative research first, using session replay, surveys, and user testing to generate strong hypotheses when you cannot run many tests.",
+          "quote": "Qualitative research first. Session replay, surveys, user testing to generate strong hypotheses when you cannot run many tests."
+        },
+        "action": {
+          "text": "Use qualitative research first, with session replay, surveys, and user testing, when you cannot run many tests.",
+          "quote": "Qualitative research first. Session replay, surveys, user testing to generate strong hypotheses when you cannot run many tests."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "You cannot run many tests.",
+              "quote": "when you cannot run many tests"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No sample size or method selection criteria for qualitative research are given."
+        ],
+        "relations": []
+      },
+      {
+        "id": "d94440fcfea5c7591922c31bfd0f021e5fc76d58315ce07bf01761d48f0b79d2",
+        "kind": "action",
+        "title": "Use micro-conversions as primary metric with purchase/revenue guardrails",
+        "claim": {
+          "text": "The source suggests micro-conversions such as add-to-cart and begin-checkout as the primary metric because they are more frequent and power faster, but warns a lift may not carry through to purchase or revenue; use them as a leading indicator and keep purchase/revenue as guardrails.",
+          "quote": "Micro-conversions (add-to-cart, begin-checkout) as primary metric. They are more frequent so they power faster, but the risk is real: a lift in add-to-cart may not carry through to purchase or revenue. Use them as a leading indicator, keep purchase/revenue as guardrails."
+        },
+        "action": {
+          "text": "Use micro-conversions (add-to-cart, begin-checkout) as the primary metric and keep purchase/revenue as guardrails.",
+          "quote": "Use them as a leading indicator, keep purchase/revenue as guardrails."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No threshold for when micro-conversion lift is likely to carry through to purchase is given."
+        ],
+        "relations": []
+      },
+      {
+        "id": "0e6f9ff3e7095ddeba0612e779ee26b1cbcf539dcb314c942d26e3ebf590aef8",
+        "kind": "action",
+        "title": "Use A/B/n and bandits only at 3,000+ orders/month",
+        "claim": {
+          "text": "The source says A/B/n and bandits should be used only at 3,000+ orders/month.",
+          "quote": "A/B/n and bandits: only at 3,000+ orders/month."
+        },
+        "action": {
+          "text": "Use A/B/n and bandits only at 3,000+ orders/month.",
+          "quote": "A/B/n and bandits: only at 3,000+ orders/month."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "At least 3,000 orders/month.",
+              "quote": "3,000+ orders/month"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": [
+            {
+              "text": "At least 3,000 orders/month.",
+              "quote": "3,000+ orders/month"
+            }
+          ]
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No further detail on bandit implementation or comparison is given in the supplied text."
+        ],
+        "relations": []
+      },
+      {
+        "id": "2d2c1731550143eed7a1ea0d83e7fad0bebcd424b76f4ca2ebd35e149c7eaf15",
+        "kind": "warning",
+        "title": "Bayesian methods are not immune to peeking",
+        "claim": {
+          "text": "The source flags that Bayesian is not immune to peeking; Alex Molas simulated peeking every 100 observations and stopping when P(A>B)>0.95, pushing false positive rate to about 80%, because a fixed posterior threshold does not control frequentist error under optional stopping.",
+          "quote": "Bayesian is not immune to peeking. Alex Molas (October 30 2025) simulated this: peeking after every 100 observations and stopping when P(A>B)>0.95 pushed the false positive rate to about 80%. A fixed posterior threshold does not control frequentist error under optional stopping."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Peeking after every 100 observations and stopping when P(A>B)>0.95.",
+              "quote": "peeking after every 100 observations and stopping when P(A>B)>0.95"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The simulation details beyond the stated threshold and observation interval are not given."
+        ],
+        "relations": []
+      },
+      {
+        "id": "dce8510bf30c75c42ac1a45b592bb9e1cab9c64207bbb69c435ecf2b0355449c",
+        "kind": "action",
+        "title": "Detect and act on sample ratio mismatch",
+        "claim": {
+          "text": "The source defines sample ratio mismatch (SRM) as observed traffic split differing from designed split, recommends detecting with a chi-square goodness-of-fit test on the randomisation unit (users, not page views), and says if SRM is present the result is biased and should not be trusted until the cause is found.",
+          "quote": "Detect with a chi-square goodness-of-fit test on the randomisation unit (users, not page views). Kohavi: about 6% of Microsoft experiments show SRM. If SRM is present the result is biased and should not be trusted until the cause is found."
+        },
+        "action": {
+          "text": "Detect SRM with a chi-square goodness-of-fit test on the randomisation unit (users, not page views).",
+          "quote": "Detect with a chi-square goodness-of-fit test on the randomisation unit (users, not page views)."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Observed traffic split differs from designed split.",
+              "quote": "the observed traffic split differs from the designed split"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No repair procedure beyond finding the cause is given."
+        ],
+        "relations": []
+      },
+      {
+        "id": "8dd4c9494eaf5e0dd73af24e3e8a19303a4ce5ecfad12e446abb236f99883bcb",
+        "kind": "action",
+        "title": "Mitigate flicker in client-side tests",
+        "claim": {
+          "text": "The source describes flicker (FOOC) in client-side tests where the original page renders briefly before JavaScript swaps in the variant; GrowthBook says it can lead to inaccurate or unreliable results and may even inflate effects, so flicker both hurts UX and biases the read.",
+          "quote": "Flicker (FOOC, Flash of Original Content): in client-side tests the original page renders briefly before JavaScript swaps in the variant."
+        },
+        "action": {
+          "text": "Mitigate with anti-flicker snippets (hide body until variant ready), synchronous script loading high in the head, or server-side testing.",
+          "quote": "Mitigate with anti-flicker snippets (hide body until variant ready), synchronous script loading high in the head, or server-side testing."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Client-side test renders original page briefly before JavaScript swaps in the variant.",
+              "quote": "in client-side tests the original page renders briefly before JavaScript swaps in the variant"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "Anti-flicker snippets hide the page for up to 3-4 seconds by default and slow initial load; no threshold for acceptable cost is given."
+        ],
+        "relations": []
+      },
+      {
+        "id": "f3125f9b4713f86e8f0d431c181d293c7f0e8dd63ef2e48d19d23119ae58a047",
+        "kind": "action",
+        "title": "Consider CUPED only with appropriate pre-experiment data",
+        "claim": {
+          "text": "The source says CUPED uses pre-experiment data as a covariate to strip out variance not caused by treatment; the adjusted estimator stays unbiased with lower variance, and Optimizely's glossary says it can cut sample requirements 30-50% for metrics with strong correlation to historical behaviour. DTC practicality is mixed.",
+          "quote": "Uses pre-experiment data (usually the same metric measured before the test) as a covariate to strip out variance not caused by the treatment."
+        },
+        "action": {
+          "text": "Turn on CUPED if your platform offers it and you have returning identified users; it is not a magic fix for a brand with mostly new, anonymous traffic.",
+          "quote": "worth turning on if your platform offers it and you have returning identified users; not a magic fix for a brand with mostly new, anonymous traffic."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Platform offers CUPED and you have returning identified users.",
+              "quote": "if your platform offers it and you have returning identified users"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": [
+            {
+              "text": "CUPED needs pre-experiment data keyed to the same user, which means logged-in users or stable device IDs.",
+              "quote": "CUPED needs pre-experiment data keyed to the same user, which means logged-in users or stable device IDs."
+            }
+          ]
+        },
+        "exclusions": {
+          "op": "any",
+          "args": [
+            {
+              "text": "For a DTC brand where most checkout traffic is new or not logged in, the pre-period covariate is often missing or weakly correlated.",
+              "quote": "For a DTC brand where most checkout traffic is new or not logged in, the pre-period covariate is often missing or weakly correlated, so the variance reduction is smaller."
+            }
+          ]
+        },
+        "completion": [],
+        "unknowns": [
+          "The source says simpler cousins help ecommerce more: pick a proportion metric instead of a raw revenue mean, and winsorize outlier orders, but does not give thresholds."
+        ],
+        "relations": []
+      },
+      {
+        "id": "47b15de1febeec2029f340a1b263923bdbce1be1bf3bd034cfd9a1dfb29bb77e",
+        "kind": "unresolved_claim",
+        "title": "Multi-armed bandits vs A/B tests comparison is cut off",
+        "claim": {
+          "text": "The source introduces section 8 on multi-armed bandits vs A/B tests and describes A/B tests, but the supplied text ends after the A/B description; the bandit comparison and continuation are missing.",
+          "quote": "A/B test: two periods, explore (split evenly) then exploit (ship winner). Best when you need a clean, high-confidence causal read before a lasting change: redesigns, pricing, navigation, checkout. Gives a defensible answer and a measured effect size."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The section title is '8. multi-armed bandits vs A/B tests', but no bandit-specific guidance or comparison is present in the supplied text.",
+          "The continuation after 'Gives a defensible answer and a measured effect size.' is missing."
+        ],
+        "relations": []
+      }
+    ],
+    "review": {
+      "reviews": [
+        {
+          "candidate_id": "c32bb61b9992e92ab88d8d6009c946f9f40b8e95199161ef50b691aeb05b021c",
+          "verdict": "supported",
+          "reasons": [
+            "The warning, stopping condition, nominal rate, and 26.1% false-positive figure exactly match the source.",
+            "The relation to sequential methods is supported by the immediately following statement that sequential methods legitimise looking early."
+          ]
+        },
+        {
+          "candidate_id": "5c1ff129b28d5dcc99e6535662398b3d213b15e8080ea9d9910352942544d1ef",
+          "verdict": "supported",
+          "reasons": [
+            "The source explicitly states that sequential methods legitimise looking early and lists mSPRT, GAVI, group sequential design with alpha spending, and corrected-alpha approaches.",
+            "The stated unknown correctly preserves the source’s conditional power/safety tradeoff rather than claiming one method is universally preferred."
+          ]
+        },
+        {
+          "candidate_id": "57ed7c74aaf5f645b0a941b78af2b27c2c7e6f0799be2f851d040554af6376e5",
+          "verdict": "supported",
+          "reasons": [
+            "The action accurately retains the stated minimum of one full week and the practical recommendation of two weeks.",
+            "Its rationale is supported: the source cites weekly differences in behavior and says two weeks captures a full cycle of returning visitors."
+          ]
+        },
+        {
+          "candidate_id": "8cfc34f27550dca89ba2e9f7c71e129ebd057439e4e3acefec4bc79a78d88e7f",
+          "verdict": "supported",
+          "reasons": [
+            "The diagnostic actions—plotting daily effects and comparing first-exposure with repeat-exposure conversion—are stated verbatim in the source.",
+            "The candidate does not invent a numerical threshold for diagnosing novelty or primacy."
+          ]
+        },
+        {
+          "candidate_id": "00667f730bdb9afbe63e4dde9cbe0927cad9ec1bb6d4228f7daa76243ab7eeca",
+          "verdict": "supported",
+          "reasons": [
+            "The visitor-volume condition, 10–20%+ target-effect range, and preference for differentiated changes rather than tweaks all match the source.",
+            "The exclusion of tweaks is a faithful rendering of the source’s below-about-100,000-visitors/month default, not an additional prohibition."
+          ]
+        },
+        {
+          "candidate_id": "9c9d139803a0ff04801b93491bb651f944e9730b12a3b10da6f3c89ec594cf47",
+          "verdict": "supported",
+          "reasons": [
+            "The action accurately names the homepage, top product pages, and cart as the places to concentrate tests and retains the instruction not to test low-traffic category pages."
+          ]
+        },
+        {
+          "candidate_id": "917ec111c16b9f98e57db3564c5d6b9785c8684b9fb14ab14e2679f76e3faf0e",
+          "verdict": "supported",
+          "reasons": [
+            "The candidate retains both required conditions: parallel testing is impossible and external conditions can be held constant.",
+            "Its claim also preserves the source’s qualifiers that this is best for large structural changes and should be treated as weak evidence."
+          ]
+        },
+        {
+          "candidate_id": "f6d83771e81996482101b7b9bd170efa20af098bdd314e5ff42fefa23c465a94",
+          "verdict": "supported",
+          "reasons": [
+            "The trigger and action exactly reflect the instruction to re-test any surprising large winner with a holdout before banking revenue.",
+            "It appropriately does not fabricate a definition of “surprising large.”"
+          ]
+        },
+        {
+          "candidate_id": "df179ede98a1b9d9d676886e553dfad43b7d270841fa49be3bad7d848097cc2f",
+          "verdict": "supported",
+          "reasons": [
+            "The source explicitly recommends qualitative research first, including session replay, surveys, and user testing, when many tests cannot be run.",
+            "The candidate preserves the stated purpose of generating stronger hypotheses."
+          ]
+        },
+        {
+          "candidate_id": "d94440fcfea5c7591922c31bfd0f021e5fc76d58315ce07bf01761d48f0b79d2",
+          "verdict": "revise",
+          "reasons": [
+            "The recommendation appears within the source’s section on low-traffic methods, but the candidate supplies no low-traffic or limited-power context and therefore presents it as an unqualified general metric policy.",
+            "The source specifically frames micro-conversions as a leading indicator because purchase or revenue may not follow; although the action includes guardrails, the candidate should make the low-traffic applicability explicit."
+          ]
+        },
+        {
+          "candidate_id": "0e6f9ff3e7095ddeba0612e779ee26b1cbcf539dcb314c942d26e3ebf590aef8",
+          "verdict": "supported",
+          "reasons": [
+            "The source explicitly says “A/B/n and bandits: only at 3,000+ orders/month,” and the candidate preserves both the method scope and numerical threshold."
+          ]
+        },
+        {
+          "candidate_id": "2d2c1731550143eed7a1ea0d83e7fad0bebcd424b76f4ca2ebd35e149c7eaf15",
+          "verdict": "supported",
+          "reasons": [
+            "The warning accurately reproduces the source’s simulated optional-stopping procedure, posterior threshold, and approximately 80% false-positive rate.",
+            "It also preserves the source’s qualification that a fixed posterior threshold does not control frequentist error under optional stopping."
+          ]
+        },
+        {
+          "candidate_id": "dce8510bf30c75c42ac1a45b592bb9e1cab9c64207bbb69c435ecf2b0355449c",
+          "verdict": "revise",
+          "reasons": [
+            "The candidate makes an observed split differing from the designed split the trigger for running the test, but that discrepancy is the condition the chi-square test is meant to detect. This creates a circular detection prerequisite.",
+            "It omits the source’s instruction to test SRM early and often.",
+            "It also omits the operational consequence that, once SRM is present, results should not be trusted until the cause is found."
+          ]
+        },
+        {
+          "candidate_id": "8dd4c9494eaf5e0dd73af24e3e8a19303a4ce5ecfad12e446abb236f99883bcb",
+          "verdict": "supported",
+          "reasons": [
+            "The described client-side flicker condition and all three mitigations—anti-flicker snippet, synchronous high-head loading, or server-side testing—are stated in the source.",
+            "The candidate retains the material anti-flicker cost as an unknown rather than denying it."
+          ]
+        },
+        {
+          "candidate_id": "f3125f9b4713f86e8f0d431c181d293c7f0e8dd63ef2e48d19d23119ae58a047",
+          "verdict": "revise",
+          "reasons": [
+            "The prerequisite concerning same-user pre-experiment data and the positive condition of returning identified users are supported.",
+            "However, the exclusion incorrectly turns a case of reduced or weaker expected variance reduction for mostly new or anonymous DTC traffic into a categorical exclusion. The source says CUPED is “not a magic fix” in that setting, not that it must not be used.",
+            "The source’s concluding recommendation is conditional on platform availability and returning identified users; those conditions can coexist with a business that has substantial new traffic."
+          ]
+        },
+        {
+          "candidate_id": "47b15de1febeec2029f340a1b263923bdbce1be1bf3bd034cfd9a1dfb29bb77e",
+          "verdict": "supported",
+          "reasons": [
+            "The supplied excerpt ends after the A/B-test description in a section titled “multi-armed bandits vs A/B tests,” with no subsequent bandit-specific comparison.",
+            "The candidate correctly labels this as unresolved rather than inventing missing bandit guidance."
+          ]
+        }
+      ],
+      "omissions": [
+        {
+          "description": "Conditional guidance for choosing group sequential testing versus always-valid inference is not represented as an actionable recommendation.",
+          "quote": "Spotify's guidance: if you can estimate the expected sample size well, GST is more powerful; if you cannot, always-valid is safer."
+        },
+        {
+          "description": "The source gives adjusted reported-significance thresholds for a stated number of peeks, which no candidate represents.",
+          "quote": "to get a true 5% you need reported significance of 2.9% (1 peek), 2.2% (2), 1.8% (3), 1.4% (5), 1.0% (10)."
+        },
+        {
+          "description": "The source advises filtering bot traffic because it can create skew and sample-ratio mismatch; this is not represented by a candidate.",
+          "quote": "Bot traffic: bots create skew and SRM; filter them (Kohavi/Sonnet)."
+        },
+        {
+          "description": "The source identifies mid-test tracking breakage as invalidating an experiment; this is not represented by a candidate.",
+          "quote": "Tracking breakage: if the pixel/event breaks mid-test, the experiment is invalid."
+        },
+        {
+          "description": "The source directs correction for multiple comparisons using Bonferroni or FDR; this is not represented by a candidate.",
+          "quote": "Correct with Bonferroni or FDR."
+        },
+        {
+          "description": "The source advises pre-registering segments to avoid post-hoc segment fishing; this is not represented by a candidate.",
+          "quote": "Segment fishing: slicing results after the fact until you find a \"winning\" segment is p-hacking. Pre-register segments."
+        },
+        {
+          "description": "The source’s auditing rule for surprising figures is not represented by a candidate.",
+          "quote": "Twyman's law: any figure that looks interesting or surprising is usually wrong."
+        },
+        {
+          "description": "The source recommends two simpler ecommerce-oriented variance-reduction choices not represented as candidate actions.",
+          "quote": "Simpler cousins that help ecommerce more: pick a proportion metric instead of a raw revenue mean, and winsorize (cap) outlier orders."
+        }
+      ],
+      "source_limitations": [
+        "The supplied excerpt ends mid-section 8, after the A/B-test description; it does not contain the promised bandit-specific comparison or any continuation of that section.",
+        "Several thresholds and platform-use claims are asserted with citations or vendor attributions, but the excerpt does not provide the underlying studies, data, implementation details, or definitions needed to independently assess them.",
+        "Some recommendations intentionally lack operational thresholds or decision procedures, including what qualifies as a surprising large winner, acceptable anti-flicker delay, or a novelty/primacy-effect threshold."
+      ]
+    },
+    "review_validation_errors": []
+  },
+  "system_prompt_sha256": "9ffba68e6c84bf9ae87d0ca9d5314d3a893363576fe03a84b00b8e461910efdd"
+}

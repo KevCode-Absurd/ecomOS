@@ -1,0 +1,42 @@
+{
+  "case": "subscription-gift/complementary",
+  "mode": "raw",
+  "request_id": "484e4940c66d54fa15526d4a4e0d711c9d2a0a608f0d42887f4a62d86377b62b",
+  "complete": true,
+  "cost": 0.0125715,
+  "prompt_tokens": 2379,
+  "completion_tokens": 552,
+  "checks": [],
+  "output": {
+    "decision": "Add the shaker cup to shipment #3. It is complementary to creatine rather than additional creatine, which directly avoids worsening the observed “too much product” cancellation reason. Send a shipment-specific pre-billing reminder that foregrounds the gift, states the upcoming charge and shipment plainly, and offers a one-click delay before account-management options. Suggested copy: “Your third creatine delivery is coming soon—and we’re including a complimentary shaker cup. Your subscription will renew on [DATE] for [AMOUNT] and ship around [SHIP DATE]. Need more time to finish what you have? Delay this delivery here: [DELAY LINK]. You can also manage your subscription here: [MANAGE LINK].”",
+    "next_steps": [
+      "Confirm shaker-cup inventory, unit cost, pack-out method, and whether it fits all shipment destinations.",
+      "Configure eligibility for active creatine subscribers’ third paid subscription order only, excluding prior recipients if applicable.",
+      "Build a shipment-#3 billing reminder using dynamic renewal date, amount, shipment date, delay link, and manage link.",
+      "Place the delay option above the manage-subscription link; keep cancellation/account controls accessible rather than hidden.",
+      "QA the reminder and fulfillment rule with test subscriptions before launch."
+    ],
+    "missing_inputs": [
+      "Billing lead time and the exact renewal versus shipment date customers should see.",
+      "Whether the shaker cup has destination, inventory, or fulfillment constraints.",
+      "Available subscription-platform capabilities for one-click delay links and order-number segmentation.",
+      "Brand-approved product-benefit language, sender voice, and legal/compliance review requirements."
+    ],
+    "evidence_used": [
+      {
+        "id": "source-2",
+        "supports": "Advises against gifting more of the subscribed product when excess inventory is a cancellation driver, and recommends communicating an upcoming gift in a customized billing reminder."
+      },
+      {
+        "id": "source-2",
+        "supports": "Recommends presenting a delay option for customers with too much product and customizing reminders by subscription order number."
+      }
+    ],
+    "assumptions": [
+      "The shaker cup is useful with creatine and does not materially increase the customer’s excess consumable inventory.",
+      "Shipment #3 refers to the third recurring subscription order, not the customer’s third lifetime purchase of any kind.",
+      "The brand can accurately segment third-order creatine subscribers and include the cup in fulfillment.",
+      "The proposed message is a practical template; required disclosures and timing should be validated for the brand’s markets."
+    ]
+  }
+}

@@ -1,0 +1,1007 @@
+{
+  "request_id": "0b8132198c6d980194fff52e23c8e65378234490e9433a2b1137787ff8fc8151",
+  "provider": "deepseek",
+  "model": "deepseek-flash",
+  "effort": "high",
+  "completion_limit": 65536,
+  "usage": {
+    "prompt_tokens": 9866,
+    "completion_tokens": 16365,
+    "total_tokens": 26231,
+    "prompt_tokens_details": {
+      "cached_tokens": 256
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 14132
+    },
+    "prompt_cache_hit_tokens": 256,
+    "prompt_cache_miss_tokens": 9610
+  },
+  "booked_cost_usd": 0.022597799999999998,
+  "seconds": 57.26,
+  "finish_reason": "stop",
+  "output": {
+    "repairs": [
+      {
+        "candidate_id": "f3a67f0086b0df9b7e769ca0a9b881441e525f23de0a862d4272a17080f269f3",
+        "unit": {
+          "id": "f3a67f0086b0df9b7e769ca0a9b881441e525f23de0a862d4272a17080f269f3",
+          "kind": "action",
+          "title": "Use a need-details-first form sequence like the claim example",
+          "claim": {
+            "text": "The source presents the claim assessment form as an example where the first step is injury details and step two asks for name, email and phone number; asking about injury or claim feels like a diagnosis process, while asking for personal information immediately feels like lead capture.",
+            "quote": "You see the first step is injury details. Now, that's really important. What they don't do is ask for your personal information immediately."
+          },
+          "action": {
+            "text": "In a multi-step form, consider asking need/problem details before personal details, as in the claim assessment example where step one is injury details and step two asks for name, email and phone number.",
+            "quote": "But by asking about the injury, about the claim, it feels like I'm going through a diagnosis process. Step two is your details. So at that stage, they ask for your name, email, phone number"
+          },
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "Asking for personal information immediately feels like the visitor is just having lead details captured.",
+                "quote": "All it feels like is I'm just having my lead details captured."
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "all",
+            "args": []
+          },
+          "completion": [
+            {
+              "text": "Step two asks for name, email and phone number after the need details.",
+              "quote": "Step two is your details. So at that stage, they ask for your name, email, phone number"
+            }
+          ],
+          "unknowns": [
+            "The number of need-detail fields is not stated beyond the injury-details example."
+          ],
+          "relations": []
+        }
+      },
+      {
+        "candidate_id": "8518c5883e6c196ae3fdfe909aa7ab4522030703e8e3444945a3c89ffd369ae2",
+        "unit": {
+          "id": "8518c5883e6c196ae3fdfe909aa7ab4522030703e8e3444945a3c89ffd369ae2",
+          "kind": "action",
+          "title": "Focus the claim-test CTA page on getting visitors to do the test",
+          "claim": {
+            "text": "The source says that on the claim-test page, they are not selling the solicitors firm or talking about how great they are; they are just getting the visitor to do the test.",
+            "quote": "they're not selling you their solicitors firm. They're not talking about how great they are. All they're doing is getting you to do the test."
+          },
+          "action": {
+            "text": "On a CTA page like the claim-test example, focus on getting the visitor to do the test rather than selling your firm.",
+            "quote": "All they're doing is getting you to do the test."
+          },
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "all",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "The source does not state when, if ever, to include company selling on a CTA page."
+          ],
+          "relations": []
+        }
+      },
+      {
+        "candidate_id": "1224261d8e4311ebb7b1209d2465cb8de2ac59623d80f5463ad41c0c5a5b752b",
+        "unit": {
+          "id": "1224261d8e4311ebb7b1209d2465cb8de2ac59623d80f5463ad41c0c5a5b752b",
+          "kind": "action",
+          "title": "Use plain English and common sense wording like the kitchen design CTA",
+          "claim": {
+            "text": "The source describes the kitchen design CTA wording as plain English and common sense and says it removes all of the possible fears.",
+            "quote": "It's so plain English. It's so common sense. It removes all of the possible fears."
+          },
+          "action": {
+            "text": "For a CTA, use plain English and common sense wording that addresses identified possible fears, as illustrated by the kitchen design example.",
+            "quote": "It's so plain English. It's so common sense. It removes all of the possible fears."
+          },
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "The visitor has possible fears such as wanting a particular style, not knowing what happens, or not wanting someone to come to the home.",
+                "quote": "So my fear might be I really want this particular style. I don't know if you're actually going to do it. My fear would be I don't know what happens. My fear would be I don't want something someone coming around to my home."
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "all",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "No readability standard or word list is given.",
+            "The source does not establish that every CTA can or must remove all possible fears."
+          ],
+          "relations": []
+        }
+      },
+      {
+        "candidate_id": "003818eae9e7a95f05fa8e41febca884bc1a8bfaa914961bd8a5d18aa076f0de",
+        "unit": {
+          "id": "003818eae9e7a95f05fa8e41febca884bc1a8bfaa914961bd8a5d18aa076f0de",
+          "kind": "action",
+          "title": "Make optional information requests optional",
+          "claim": {
+            "text": "The source says the kitchen design example asks for the home address only if the visitor would like a free home survey and does not force the visitor to give it.",
+            "quote": "If you'd like to arrange a free home survey, please don't forget to include your home address."
+          },
+          "action": {
+            "text": "Phrase optional information requests conditionally, such as saying to include the home address only if the visitor would like a free home survey.",
+            "quote": "If you'd like to arrange a free home survey, please don't forget to include your home address."
+          },
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "A possible fear is not wanting someone coming around to the home.",
+                "quote": "My fear would be I don't want something someone coming around to my home."
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "all",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "No rule is given for other optional fields."
+          ],
+          "relations": []
+        }
+      }
+    ],
+    "additions": [
+      {
+        "id": "add_visitor_question_checklist_01",
+        "kind": "action",
+        "title": "Answer visitor questions before they contact you",
+        "claim": {
+          "text": "The source gives a checklist of information visitors may need answered before contacting a service provider, including approximate cost, how quickly they can come, whether the person is good and reliable and who is coming out, qualifications, whether they work with the visitor's boiler type, and whether they service the area.",
+          "quote": "we need to know approximately how much it's going to cost. We need to know how quickly they can come because that's really important. We need to know are is the person good, reliable, who is actually coming out to do the boiler. Um, are they qualified? Do they work with my type of boiler? Do they service my area?"
+        },
+        "action": {
+          "text": "Identify and answer the questions visitors may need before they contact you, such as approximate cost, speed, reliability and who will attend, qualifications, compatibility with the visitor's boiler type, and service area.",
+          "quote": "we need to know approximately how much it's going to cost. We need to know how quickly they can come because that's really important. We need to know are is the person good, reliable, who is actually coming out to do the boiler. Um, are they qualified? Do they work with my type of boiler? Do they service my area?"
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Visitors have questions they need answered before they will get in contact with someone.",
+              "quote": "What are the things that you need answered before you will get in contact with someone?"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "all",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not state a required format for presenting these answers."
+        ],
+        "relations": []
+      },
+      {
+        "id": "add_contact_details_rationale_01",
+        "kind": "action",
+        "title": "Explain why contact details are needed after need details",
+        "claim": {
+          "text": "The source shows that after the claim form asks for injury details, it makes sense to ask for personal details by explaining the details are needed to send the claim assessment to the right place.",
+          "quote": "Great, thank you for filling out your injury details so that we can send your claim assessment to the right information, you know, to the right place. Tell us where to send it."
+        },
+        "action": {
+          "text": "When asking for contact details after need details, explain that the details are needed to send the assessment to the right place.",
+          "quote": "Great, thank you for filling out your injury details so that we can send your claim assessment to the right information, you know, to the right place. Tell us where to send it."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Personal details are requested after need details in a multi-step form.",
+              "quote": "Step two is your details. So at that stage, they ask for your name, email, phone number"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "all",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No exact wording is prescribed for forms other than the claim assessment example."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "f3a67f0086b0df9b7e769ca0a9b881441e525f23de0a862d4272a17080f269f3"
+          }
+        ]
+      }
+    ],
+    "unresolved": [
+      "The source excerpt begins mid-sentence, so preceding framing and any earlier qualifications are unavailable.",
+      "The source excerpt ends mid-sentence while introducing an Exposure Ninja-specific fear list; the rest of that list and any subsequent guidance are missing.",
+      "The source provides no conversion data, testing method, or measured results for the cited pages."
+    ]
+  },
+  "raw_content": "{\"repairs\":[{\"candidate_id\":\"f3a67f0086b0df9b7e769ca0a9b881441e525f23de0a862d4272a17080f269f3\",\"unit\":{\"id\":\"f3a67f0086b0df9b7e769ca0a9b881441e525f23de0a862d4272a17080f269f3\",\"kind\":\"action\",\"title\":\"Use a need-details-first form sequence like the claim example\",\"claim\":{\"text\":\"The source presents the claim assessment form as an example where the first step is injury details and step two asks for name, email and phone number; asking about injury or claim feels like a diagnosis process, while asking for personal information immediately feels like lead capture.\",\"quote\":\"You see the first step is injury details. Now, that's really important. What they don't do is ask for your personal information immediately.\"},\"action\":{\"text\":\"In a multi-step form, consider asking need/problem details before personal details, as in the claim assessment example where step one is injury details and step two asks for name, email and phone number.\",\"quote\":\"But by asking about the injury, about the claim, it feels like I'm going through a diagnosis process. Step two is your details. So at that stage, they ask for your name, email, phone number\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Asking for personal information immediately feels like the visitor is just having lead details captured.\",\"quote\":\"All it feels like is I'm just having my lead details captured.\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"all\",\"args\":[]},\"completion\":[{\"text\":\"Step two asks for name, email and phone number after the need details.\",\"quote\":\"Step two is your details. So at that stage, they ask for your name, email, phone number\"}],\"unknowns\":[\"The number of need-detail fields is not stated beyond the injury-details example.\"],\"relations\":[]}},{\"candidate_id\":\"8518c5883e6c196ae3fdfe909aa7ab4522030703e8e3444945a3c89ffd369ae2\",\"unit\":{\"id\":\"8518c5883e6c196ae3fdfe909aa7ab4522030703e8e3444945a3c89ffd369ae2\",\"kind\":\"action\",\"title\":\"Focus the claim-test CTA page on getting visitors to do the test\",\"claim\":{\"text\":\"The source says that on the claim-test page, they are not selling the solicitors firm or talking about how great they are; they are just getting the visitor to do the test.\",\"quote\":\"they're not selling you their solicitors firm. They're not talking about how great they are. All they're doing is getting you to do the test.\"},\"action\":{\"text\":\"On a CTA page like the claim-test example, focus on getting the visitor to do the test rather than selling your firm.\",\"quote\":\"All they're doing is getting you to do the test.\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"all\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source does not state when, if ever, to include company selling on a CTA page.\"],\"relations\":[]}},{\"candidate_id\":\"1224261d8e4311ebb7b1209d2465cb8de2ac59623d80f5463ad41c0c5a5b752b\",\"unit\":{\"id\":\"1224261d8e4311ebb7b1209d2465cb8de2ac59623d80f5463ad41c0c5a5b752b\",\"kind\":\"action\",\"title\":\"Use plain English and common sense wording like the kitchen design CTA\",\"claim\":{\"text\":\"The source describes the kitchen design CTA wording as plain English and common sense and says it removes all of the possible fears.\",\"quote\":\"It's so plain English. It's so common sense. It removes all of the possible fears.\"},\"action\":{\"text\":\"For a CTA, use plain English and common sense wording that addresses identified possible fears, as illustrated by the kitchen design example.\",\"quote\":\"It's so plain English. It's so common sense. It removes all of the possible fears.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"The visitor has possible fears such as wanting a particular style, not knowing what happens, or not wanting someone to come to the home.\",\"quote\":\"So my fear might be I really want this particular style. I don't know if you're actually going to do it. My fear would be I don't know what happens. My fear would be I don't want something someone coming around to my home.\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"all\",\"args\":[]},\"completion\":[],\"unknowns\":[\"No readability standard or word list is given.\",\"The source does not establish that every CTA can or must remove all possible fears.\"],\"relations\":[]}},{\"candidate_id\":\"003818eae9e7a95f05fa8e41febca884bc1a8bfaa914961bd8a5d18aa076f0de\",\"unit\":{\"id\":\"003818eae9e7a95f05fa8e41febca884bc1a8bfaa914961bd8a5d18aa076f0de\",\"kind\":\"action\",\"title\":\"Make optional information requests optional\",\"claim\":{\"text\":\"The source says the kitchen design example asks for the home address only if the visitor would like a free home survey and does not force the visitor to give it.\",\"quote\":\"If you'd like to arrange a free home survey, please don't forget to include your home address.\"},\"action\":{\"text\":\"Phrase optional information requests conditionally, such as saying to include the home address only if the visitor would like a free home survey.\",\"quote\":\"If you'd like to arrange a free home survey, please don't forget to include your home address.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"A possible fear is not wanting someone coming around to the home.\",\"quote\":\"My fear would be I don't want something someone coming around to my home.\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"all\",\"args\":[]},\"completion\":[],\"unknowns\":[\"No rule is given for other optional fields.\"],\"relations\":[]}}],\"additions\":[{\"id\":\"add_visitor_question_checklist_01\",\"kind\":\"action\",\"title\":\"Answer visitor questions before they contact you\",\"claim\":{\"text\":\"The source gives a checklist of information visitors may need answered before contacting a service provider, including approximate cost, how quickly they can come, whether the person is good and reliable and who is coming out, qualifications, whether they work with the visitor's boiler type, and whether they service the area.\",\"quote\":\"we need to know approximately how much it's going to cost. We need to know how quickly they can come because that's really important. We need to know are is the person good, reliable, who is actually coming out to do the boiler. Um, are they qualified? Do they work with my type of boiler? Do they service my area?\"},\"action\":{\"text\":\"Identify and answer the questions visitors may need before they contact you, such as approximate cost, speed, reliability and who will attend, qualifications, compatibility with the visitor's boiler type, and service area.\",\"quote\":\"we need to know approximately how much it's going to cost. We need to know how quickly they can come because that's really important. We need to know are is the person good, reliable, who is actually coming out to do the boiler. Um, are they qualified? Do they work with my type of boiler? Do they service my area?\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Visitors have questions they need answered before they will get in contact with someone.\",\"quote\":\"What are the things that you need answered before you will get in contact with someone?\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"all\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source does not state a required format for presenting these answers.\"],\"relations\":[]},{\"id\":\"add_contact_details_rationale_01\",\"kind\":\"action\",\"title\":\"Explain why contact details are needed after need details\",\"claim\":{\"text\":\"The source shows that after the claim form asks for injury details, it makes sense to ask for personal details by explaining the details are needed to send the claim assessment to the right place.\",\"quote\":\"Great, thank you for filling out your injury details so that we can send your claim assessment to the right information, you know, to the right place. Tell us where to send it.\"},\"action\":{\"text\":\"When asking for contact details after need details, explain that the details are needed to send the assessment to the right place.\",\"quote\":\"Great, thank you for filling out your injury details so that we can send your claim assessment to the right information, you know, to the right place. Tell us where to send it.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Personal details are requested after need details in a multi-step form.\",\"quote\":\"Step two is your details. So at that stage, they ask for your name, email, phone number\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"all\",\"args\":[]},\"completion\":[],\"unknowns\":[\"No exact wording is prescribed for forms other than the claim assessment example.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"f3a67f0086b0df9b7e769ca0a9b881441e525f23de0a862d4272a17080f269f3\"}]}],\"unresolved\":[\"The source excerpt begins mid-sentence, so preceding framing and any earlier qualifications are unavailable.\",\"The source excerpt ends mid-sentence while introducing an Exposure Ninja-specific fear list; the rest of that list and any subsequent guidance are missing.\",\"The source provides no conversion data, testing method, or measured results for the cited pages.\"]}",
+  "input": {
+    "source": {
+      "source_id": "1Rhe979-e16InGIMPR6o6U6pkj2AGimCM",
+      "source_sha256": "c232e6ea18e30f6a87acb9437114264b7f9e7f18c9a1de8a60a9bb6ccee060b0",
+      "locator": "batch",
+      "start": 0,
+      "text": "e know that we are supposed to take one of those and we know that that's going to be free of charge. No one's going to come around the counter and shout at us for eating the food from the counter. Now imagine for a second that those cocktail sticks were removed and it was just a bunch of brownies on that plate. What happens to the conversion rate now? Well, some people will just take the brownies because they are just life's takers and they will just assume through whatever reason that they are supposed to eat these brownies. Some people will ask, \"Oh, are these trials? Are these little tasters?\" But remember with that question comes embarrassment. The fear of embarrassment, potential embarrassment. So some people they won't even ask, they won't take, they will just assume no. Because whilst the brownie looks delicious and I really want to eat it and I'm really hungry, if someone does come around the counter or someone, you know, someone looks over and says, \"Oi, what are you doing?\" or \"That's going to be £5, please.\" Then there's embarrassment there. So the fear of embarrassment if you took those cocktail sticks out completely destroys the conversion rate. And it's exactly the same with the website. What we need to do is remove any of those potential fears so that it's extremely obvious and inviting about what you're supposed to do next. Better still would be a little tablet thing that says try some of this delicious Fat Witch walnut brownie free of charge. and then a little price thing which or a little packet that they can then buy when they like it. That would be great, but you know, let's do one thing at a time here. So, here's an example of a site which does a pretty good job. Um, but yeah, yeah, do a pretty good job. So, this says free claim assessment. So, we're still in the claim space because then we can just nice and easily compare different calls to action. If you think you may have a personal injury or clinical negligence claim, we're able to offer you a free claim assessment. Please complete the following form to the best of your knowledge and in as much detail as possible, and one of our specialist solicitors will contact you to discuss your claim. Our aim is to make the process of starting a personal injury claim as simple and straightforward as possible. If you're struggling at any point during the completion of this questionnaire and you wish to speak speak to a solicister, do not hesitate to call us on that number. Okay, that's pretty good. Right? They're saying, \"We're going to offer you a free claim assessment.\" Now, what they're not doing, claim assessment is a slightly technical term. What they might do is we'll say, \"We'll offer you a free claim assessment to help you establish if you have a valid claim, your likelihood of winning the claim, and also some potential, you know, how much could you claim.\" So, they're actually explaining what the benefit, what the outcome from the free claim assessment is, but it's pretty good, right? They've answered the main objections there, which is, you know, they've said if you think you may have a claim, so the main objection to this type of thing, it's going to be fear of embarrassment if I don't have a claim. Here's a really good one. Um, 30 second claim test. Try our 30-cond claim checker. Now, look at the language there. Try our 30-second claim checker. It's a 30- secondond claim test, which there's no perceived embarrassment there, is there? It's try it. I mean, you couldn't have a lower commitment call to action. If you're not sure whether you have a potential claim or if you'd like to find out how much compensation you might receive, simply fill in the form below for a free claim assessment. That is perfect. It tells you what you're going to get, i.e., do you have a claim? And it also says what how much compensation you might receive. Even better, look at the little logo at the top of that form. You see the first step is injury details. Now, that's really important. What they don't do is ask for your personal information immediately. Cuz if they said, what's your mobile number? Step two, what's your email address? Step three, what's your name? All it feels like is I'm just having my lead details captured. But by asking about the injury, about the claim, it feels like I'm going through a diagnosis process. Step two is your details. So at that stage, they ask for your name, email, phone number, but you're already invested in the process. You've already put your information in. So that feels less burdensome. And it also makes sense because then they can say, \"Great, thank you for filling out your injury details so that we can send your claim assessment to the right information, you know, to the right place. Tell us where to send it.\" And then step three is the results. Now, a little clue here, the results aren't actually, it's not live results in a box, right? It's not going to show you on the page, yes, you've got a claim because there's no way they can calculate that. So, there has to be human intervention there. But what that results page will say is great, thank you so much. We'll get your um well, someone will be in contact from the claims team to talk through your claim and to give you your results. So, by saying that, we're then making it okay for the follow-up call to happen. So, if you're a service company, think about how you can present this and how you can remove any potential objections somebody might have to uh to running through your call to action. The other thing to notice here is on this page, they're not selling you their solicitors firm. They're not talking about how great they are. All they're doing is getting you to do the test. We'll come back to that in a minute cuz it's really important. Next thing, this one here, contact us now to arrange a free kitchen design and no obligation quote. seen something you like, would like more information on our services, or would like to arrange a free kitchen design, uh, and no obligation quote? Simply get in touch by sending us a quick message and we'll get right back to you. If you'd like to arrange a free home survey, please don't forget to include your home address. Okay, that is perfect. That is the cocktail stick in the brownie in your face with a sign that says, \"Please take one.\" It's so plain English. It's so common sense. It removes all of the possible fears. So my fear might be I really want this particular style. I don't know if you're actually going to do it. My fear would be I don't know what happens. My fear would be I don't want something someone coming around to my home. Well, they've said great. Well, you don't have to. If you would like to arrange a free home survey, please don't forget to include your address. But they're not forcing you to give them their address to give you to give them your address. It's perfect. That wording is really important. It might be the most important wording on the website because that is the point where the rubber really meets the road. That person is sat on their phone or in front of their computer. They're just about to decide whether to inquire with your company and they they've got these things that they need to get through in order to tip them over the edge and to become a lead or sale. So, I'm going to run you through a quick exercise just to illustrate this to help put you in the mindset of the customer first of all before you actually uh before you actually start running through this for your business. So, your boiler seems to be faulty. You need it fixed. Um you've got a newborn baby at home. It's the dead of winter. So, you go onto your phone and you type in boiler repair. What are the questions? What are the objections that you would have to contacting the first boiler engineer that shows up on Google? Okay, so remember the scenario. You're at home. Your boiler's broken. It's freezing cold. You got a newborn in the house. This is a time critical thing. You type into Google boiler repair in your area. Up comes a website. You click on it and it says whatever get in contact, request a quote, whatever the call to action is. What are the things that you need answered before you will get in contact with someone? So, usually people say things like we need to know approximately how much it's going to cost. We need to know how quickly they can come because that's really important. We need to know are is the person good, reliable, who is actually coming out to do the boiler. Um, are they qualified? Do they work with my type of boiler? Do they service my area? So, these are all questions that you would want answered before you get in contact with someone. The mistake that people make is they think, well, if people have questions about the service, they'll just get in contact with us. Well, a very small percentage of people will just pick up the phone and just call anyone and ask them all of the questions that they've got. But most people will do some initial, not even going to call it due diligence because that sounds too deep. They'll do some initial scouting to figure out if you're even in the right ballpark. And if they can't figure out if you're in the right ballpark for them, they'll go somewhere else where they're more assured that they are in the right ballpark. So think through that exercise. That will get you into the mindset of your customer. And then you've got to think about what are your here's the exercise for you. What are the top three fears that your potential customers might have about requesting your call to action? What are the top three fears they might have about requesting your call to action? So, feel free to stop the video while you go through this. It's really important. For Exposure Ninja, for example, uh the fears that people would have about our website and marketing review, which is our call to action, would be something like, firstly, it's going to be rubbish, low value, right? It's free, so how good is "
+    },
+    "existing_units": [
+      {
+        "id": "b4b23035d2a8b4a22c379ec66053c2ac43e6a4d90eae2eb5ff97747462a66fbb",
+        "kind": "action",
+        "title": "Remove potential fears from the website CTA",
+        "claim": {
+          "text": "The source says the fear of embarrassment completely destroys the conversion rate and recommends removing potential fears so the next step is extremely obvious and inviting.",
+          "quote": "So the fear of embarrassment if you took those cocktail sticks out completely destroys the conversion rate."
+        },
+        "action": {
+          "text": "Remove any potential fears so that it is extremely obvious and inviting what the visitor is supposed to do next.",
+          "quote": "What we need to do is remove any of those potential fears so that it's extremely obvious and inviting about what you're supposed to do next."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "The fear of embarrassment if cocktail sticks are removed completely destroys the conversion rate.",
+              "quote": "So the fear of embarrassment if you took those cocktail sticks out completely destroys the conversion rate."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [
+          {
+            "text": "The next action is extremely obvious and inviting.",
+            "quote": "extremely obvious and inviting about what you're supposed to do next"
+          }
+        ],
+        "unknowns": [
+          "No measurement method for conversion-rate change is stated."
+        ],
+        "relations": []
+      },
+      {
+        "id": "fc3ec0310df91d42c31d1e0f4c3a8c10a76568f0ac70f3ce5764ee698a80071d",
+        "kind": "action",
+        "title": "Use a low-commitment CTA",
+        "claim": {
+          "text": "The source highlights Try our 30-second claim checker as having no perceived embarrassment and being a very low-commitment call to action.",
+          "quote": "Try our 30-second claim checker."
+        },
+        "action": {
+          "text": "Use low-commitment language such as Try our 30-second claim checker in the call to action.",
+          "quote": "Try our 30-second claim checker."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "The source notes there is no perceived embarrassment with the 30-second claim checker language.",
+              "quote": "which there's no perceived embarrassment there, is there?"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No general rule for when a low-commitment CTA is appropriate is stated."
+        ],
+        "relations": []
+      },
+      {
+        "id": "e8a1b6dd2cd073902b7154f6f38bc340a7302a706be904da765219a13eb30720",
+        "kind": "action",
+        "title": "Explain what the CTA gives and what technical terms mean",
+        "claim": {
+          "text": "The source says the claim assessment CTA is perfect because it tells visitors what they are going to get and mentions how much compensation they might receive, and suggests explaining the outcome of a technical term such as claim assessment.",
+          "quote": "That is perfect. It tells you what you're going to get, i.e., do you have a claim? And it also says what how much compensation you might receive."
+        },
+        "action": {
+          "text": "Tell visitors what they're going to get and explain the benefit and outcome of the free claim assessment.",
+          "quote": "So, they're actually explaining what the benefit, what the outcome from the free claim assessment is"
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "The CTA uses a technical term such as claim assessment.",
+              "quote": "claim assessment is a slightly technical term"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not state a required level of detail for explaining outcomes."
+        ],
+        "relations": []
+      },
+      {
+        "id": "f3a67f0086b0df9b7e769ca0a9b881441e525f23de0a862d4272a17080f269f3",
+        "kind": "action",
+        "title": "Ask for need details before personal information in the form",
+        "claim": {
+          "text": "The source says the first form step is injury details and that asking about injury or claim feels like a diagnosis process, while asking for personal information immediately feels like lead capture.",
+          "quote": "You see the first step is injury details. Now, that's really important. What they don't do is ask for your personal information immediately."
+        },
+        "action": {
+          "text": "Put need/problem details as the first form step and ask for personal details at step two.",
+          "quote": "Step two is your details. So at that stage, they ask for your name, email, phone number"
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Asking for personal information immediately feels like the visitor is just having lead details captured.",
+              "quote": "All it feels like is I'm just having my lead details captured."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Asking for personal information immediately.",
+              "quote": "What they don't do is ask for your personal information immediately."
+            }
+          ]
+        },
+        "completion": [
+          {
+            "text": "Step two asks for name, email and phone number after the need details.",
+            "quote": "Step two is your details. So at that stage, they ask for your name, email, phone number"
+          }
+        ],
+        "unknowns": [
+          "The number of need-detail fields is not stated beyond the injury-details example."
+        ],
+        "relations": []
+      },
+      {
+        "id": "cfc2d0505f43795a880ea4a9d84ce4680f405bc00285032e3c633ec0e47f16a4",
+        "kind": "action",
+        "title": "Use the results step to make the follow-up call okay",
+        "claim": {
+          "text": "The source says the results page says someone will be in contact from the claims team to talk through the claim and give results, making the follow-up call okay.",
+          "quote": "someone will be in contact from the claims team to talk through your claim and to give you your results. So, by saying that, we're then making it okay for the follow-up call to happen."
+        },
+        "action": {
+          "text": "On the results step, say that someone will be in contact from the claims team to talk through the claim and give the results.",
+          "quote": "someone will be in contact from the claims team to talk through your claim and to give you your results."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "The results cannot be calculated live and require human intervention.",
+              "quote": "there's no way they can calculate that. So, there has to be human intervention there."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No exact wording for the results page is prescribed beyond the example."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "f3a67f0086b0df9b7e769ca0a9b881441e525f23de0a862d4272a17080f269f3"
+          }
+        ]
+      },
+      {
+        "id": "8518c5883e6c196ae3fdfe909aa7ab4522030703e8e3444945a3c89ffd369ae2",
+        "kind": "action",
+        "title": "Do not sell your firm on the CTA page",
+        "claim": {
+          "text": "The source notes that on the page, they are not selling their solicitors firm or talking about how great they are; they are just getting the visitor to do the test.",
+          "quote": "they're not selling you their solicitors firm. They're not talking about how great they are. All they're doing is getting you to do the test."
+        },
+        "action": {
+          "text": "On the CTA page, focus on getting the visitor to do the test rather than selling your firm.",
+          "quote": "All they're doing is getting you to do the test."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "The source contrasts the CTA page with selling the solicitors firm or talking about how great they are.",
+              "quote": "they're not selling you their solicitors firm. They're not talking about how great they are."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Selling your firm or talking about how great you are on the CTA page.",
+              "quote": "they're not selling you their solicitors firm. They're not talking about how great they are."
+            }
+          ]
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not state when, if ever, to include company selling on the CTA page."
+        ],
+        "relations": []
+      },
+      {
+        "id": "1224261d8e4311ebb7b1209d2465cb8de2ac59623d80f5463ad41c0c5a5b752b",
+        "kind": "action",
+        "title": "Use plain English and common sense wording to remove fears",
+        "claim": {
+          "text": "The source says the kitchen design CTA is plain English and common sense and removes all possible fears.",
+          "quote": "It's so plain English. It's so common sense. It removes all of the possible fears."
+        },
+        "action": {
+          "text": "Use plain English and common sense wording that removes all possible fears.",
+          "quote": "It's so plain English. It's so common sense. It removes all of the possible fears."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "CTA wording can leave possible fears unresolved.",
+              "quote": "It removes all of the possible fears."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No readability standard or word list is given."
+        ],
+        "relations": []
+      },
+      {
+        "id": "003818eae9e7a95f05fa8e41febca884bc1a8bfaa914961bd8a5d18aa076f0de",
+        "kind": "action",
+        "title": "Make optional information requests optional",
+        "claim": {
+          "text": "The source says the kitchen design example asks for the home address only if the visitor would like a free home survey and does not force the visitor to give it.",
+          "quote": "If you'd like to arrange a free home survey, please don't forget to include your home address."
+        },
+        "action": {
+          "text": "Phrase optional information requests conditionally, such as saying to include the home address only if the visitor would like a free home survey.",
+          "quote": "If you'd like to arrange a free home survey, please don't forget to include your home address."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "A possible fear is not wanting someone coming around to the home.",
+              "quote": "My fear would be I don't want something someone coming around to my home."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Forcing the visitor to give their address.",
+              "quote": "But they're not forcing you to give them their address to give you to give them your address."
+            }
+          ]
+        },
+        "completion": [],
+        "unknowns": [
+          "No rule is given for other optional fields."
+        ],
+        "relations": []
+      },
+      {
+        "id": "6791deb02227ffa2a05618713a38aa99e2ec4b71ab91c263bdc2050ea703dfb7",
+        "kind": "warning",
+        "title": "Do not assume visitors with questions will contact you",
+        "claim": {
+          "text": "The source says the mistake is thinking that people with questions about the service will just get in contact; most do initial scouting to figure out if the provider is in the right ballpark, and if not, they go elsewhere.",
+          "quote": "The mistake that people make is they think, well, if people have questions about the service, they'll just get in contact with us."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Visitors have questions they need answered before they will get in contact with someone.",
+              "quote": "What are the things that you need answered before you will get in contact with someone?"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not state how many scouting visitors must be given before they convert."
+        ],
+        "relations": []
+      },
+      {
+        "id": "3c62285ac81f5e97b64757b3151531dc03c4528efbc394a6f65c8ec0f8006ee0",
+        "kind": "action",
+        "title": "Run a customer-mindset scenario exercise",
+        "claim": {
+          "text": "The source recommends a quick exercise to put you in the mindset of the customer before running through this for your business, using a boiler repair scenario and asking what questions or objections you would have to contacting the first boiler engineer on Google.",
+          "quote": "What are the questions? What are the objections that you would have to contacting the first boiler engineer that shows up on Google?"
+        },
+        "action": {
+          "text": "Run the boiler repair scenario exercise to identify the questions and objections you would have to contacting the first boiler engineer that shows up on Google.",
+          "quote": "What are the questions? What are the objections that you would have to contacting the first boiler engineer that shows up on Google?"
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "The exercise is to help put you in the mindset of the customer before running through this for your business.",
+              "quote": "to help put you in the mindset of the customer first of all before you actually uh before you actually start running through this for your business."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [
+          {
+            "text": "The exercise gets you into the mindset of your customer.",
+            "quote": "So think through that exercise. That will get you into the mindset of your customer."
+          }
+        ],
+        "unknowns": [
+          "No required number of questions or objections is stated."
+        ],
+        "relations": []
+      },
+      {
+        "id": "9ed5bf14abb16fa7d6edff4aa6ae9e1f0cfb2737455b55251474166a64f555f6",
+        "kind": "action",
+        "title": "List the top three fears about requesting your CTA",
+        "claim": {
+          "text": "The source gives the exercise of thinking about the top three fears that potential customers might have about requesting your call to action.",
+          "quote": "What are the top three fears that your potential customers might have about requesting your call to action?"
+        },
+        "action": {
+          "text": "List the top three fears that your potential customers might have about requesting your call to action.",
+          "quote": "What are the top three fears that your potential customers might have about requesting your call to action?"
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "The source says you have got to think about this after the customer-mindset exercise.",
+              "quote": "And then you've got to think about"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No method for validating or prioritising the fears is stated."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "3c62285ac81f5e97b64757b3151531dc03c4528efbc394a6f65c8ec0f8006ee0"
+          }
+        ]
+      },
+      {
+        "id": "ff6617110650d26c5284aa57c2fc03b2c84ca1484c3cc527345b5075951f4de1",
+        "kind": "example",
+        "title": "Free claim assessment page example",
+        "claim": {
+          "text": "The source presents the free claim assessment page as doing a pretty good job, answering the main objection that fear of embarrassment if I don't have a claim.",
+          "quote": "here's an example of a site which does a pretty good job"
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "The source identifies the main objection to the claim assessment CTA as fear of embarrassment if the visitor does not have a claim.",
+              "quote": "the main objection to this type of thing, it's going to be fear of embarrassment if I don't have a claim."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not state measured performance for this example."
+        ],
+        "relations": []
+      },
+      {
+        "id": "7860a065b571a5502ee4def4efe79d7d205b1b7f6368946834ca5290f65bd596",
+        "kind": "example",
+        "title": "Kitchen design CTA example",
+        "claim": {
+          "text": "The source describes the kitchen design CTA as the cocktail stick in the brownie in your face with a sign saying Please take one.",
+          "quote": "That is the cocktail stick in the brownie in your face with a sign that says"
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "The source uses the kitchen design CTA to illustrate wording that removes possible fears.",
+              "quote": "It removes all of the possible fears."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not state measured conversion results for this example."
+        ],
+        "relations": []
+      },
+      {
+        "id": "951a82fec013f9478b4894818ff89ab841214eee779993fd87467c4288bc82ae",
+        "kind": "example",
+        "title": "Fat Witch brownie free-trial sign idea",
+        "claim": {
+          "text": "The source suggests a better still option of a little tablet saying try some of this delicious Fat Witch walnut brownie free of charge, with a little price or packet the visitor can buy when they like it.",
+          "quote": "Better still would be a little tablet thing that says try some of this delicious Fat Witch walnut brownie free of charge."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "The source treats this as a better still version of an inviting free-trial sign.",
+              "quote": "Better still would be a little tablet thing"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source says this would be great but also says let's do one thing at a time here, so it is not sequenced as an immediate action."
+        ],
+        "relations": []
+      },
+      {
+        "id": "3b912df44aaa163a1b7c4a082aafa657811f2bf7ba6af9071fef9839336cf296",
+        "kind": "unresolved_claim",
+        "title": "Exposure Ninja fear list is cut off",
+        "claim": {
+          "text": "The source begins listing Exposure Ninja's fears about its website and marketing review call to action but cuts off at it's free, so how good is.",
+          "quote": "firstly, it's going to be rubbish, low value, right? It's free, so how good is"
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "The source is incomplete at the end of the passage.",
+              "quote": "It's free, so how good is"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The rest of the Exposure Ninja fears list is missing and needs continuation."
+        ],
+        "relations": []
+      },
+      {
+        "id": "9648822956afacdf4cda720b3028659e9c9b6547a9960be6905816c389b1053c",
+        "kind": "principle",
+        "title": "CTA wording is the point where the rubber meets the road",
+        "claim": {
+          "text": "The source says the wording is really important, possibly the most important wording on the website, because that is the point where the rubber really meets the road.",
+          "quote": "That wording is really important. It might be the most important wording on the website because that is the point where the rubber really meets the road."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "The visitor is about to decide whether to inquire with the company.",
+              "quote": "They're just about to decide whether to inquire with your company"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No measurement of importance or conversion impact is provided."
+        ],
+        "relations": []
+      }
+    ],
+    "review": {
+      "reviews": [
+        {
+          "candidate_id": "b4b23035d2a8b4a22c379ec66053c2ac43e6a4d90eae2eb5ff97747462a66fbb",
+          "verdict": "supported",
+          "reasons": [
+            "The excerpt explicitly applies the brownie analogy to websites and directs: “remove any of those potential fears” so the next step is “extremely obvious and inviting.”",
+            "The candidate does not add a measurement threshold or claim a measured conversion outcome."
+          ]
+        },
+        {
+          "candidate_id": "fc3ec0310df91d42c31d1e0f4c3a8c10a76568f0ac70f3ce5764ee698a80071d",
+          "verdict": "supported",
+          "reasons": [
+            "The excerpt explicitly praises “Try our 30-second claim checker” as having no perceived embarrassment and says it could not be a lower-commitment CTA.",
+            "The candidate presents this as language to use, without asserting that the exact phrase or duration is required in every setting."
+          ]
+        },
+        {
+          "candidate_id": "e8a1b6dd2cd073902b7154f6f38bc340a7302a706be904da765219a13eb30720",
+          "verdict": "supported",
+          "reasons": [
+            "The excerpt identifies “claim assessment” as somewhat technical and suggests explaining the benefits and outcomes, including whether there is a valid claim, likelihood of success, and possible compensation.",
+            "It also expressly calls out that the stronger CTA tells visitors what they will get."
+          ]
+        },
+        {
+          "candidate_id": "f3a67f0086b0df9b7e769ca0a9b881441e525f23de0a862d4272a17080f269f3",
+          "verdict": "revise",
+          "reasons": [
+            "The sequencing is supported as an example: injury details come first and name, email, and phone come at step two. However, the excerpt presents this as the design of a particular claim form, rather than establishing that every form must use exactly this sequence.",
+            "The exclusion improperly converts the problem being repaired into an exclusion. “Asking for personal information immediately” is the behavior the proposed action seeks to avoid, not a condition under which the action should be excluded."
+          ]
+        },
+        {
+          "candidate_id": "cfc2d0505f43795a880ea4a9d84ce4680f405bc00285032e3c633ec0e47f16a4",
+          "verdict": "supported",
+          "reasons": [
+            "For the stated condition—where results cannot be calculated live and need human intervention—the excerpt says the results page should explain that the claims team will contact the visitor to discuss the claim and provide results.",
+            "The excerpt expressly gives the intended consequence: stating this makes a follow-up call acceptable. The dependency on the preceding multi-step form is consistent with the described step-one, step-two, and step-three flow."
+          ]
+        },
+        {
+          "candidate_id": "8518c5883e6c196ae3fdfe909aa7ab4522030703e8e3444945a3c89ffd369ae2",
+          "verdict": "revise",
+          "reasons": [
+            "The excerpt observes that one particular claim-test page focuses on getting visitors to do the test rather than selling the solicitors’ firm. It does not establish a universal prohibition on selling a company on every CTA page.",
+            "The exclusion again turns the behavior being displaced—selling the firm on the CTA page—into an exclusion rather than stating it as the focus tradeoff or a page-specific recommendation."
+          ]
+        },
+        {
+          "candidate_id": "1224261d8e4311ebb7b1209d2465cb8de2ac59623d80f5463ad41c0c5a5b752b",
+          "verdict": "revise",
+          "reasons": [
+            "The excerpt praises the specific kitchen-design wording as plain English, common sense, and fear-removing, but it does not establish that every CTA can or must remove “all possible fears.”",
+            "Its trigger is not supported by its cited quote: “It removes all of the possible fears” does not state that CTA wording can leave fears unresolved. The candidate should instead tie the action to identified visitor fears or objections."
+          ]
+        },
+        {
+          "candidate_id": "003818eae9e7a95f05fa8e41febca884bc1a8bfaa914961bd8a5d18aa076f0de",
+          "verdict": "revise",
+          "reasons": [
+            "The conditional home-address wording is supported for the free-home-survey example, and the excerpt explicitly praises not forcing an address when a survey is optional.",
+            "However, the exclusion improperly represents “Forcing the visitor to give their address” as an exclusion condition. That is the practice the action is intended to prevent, not an exception to the action."
+          ]
+        },
+        {
+          "candidate_id": "6791deb02227ffa2a05618713a38aa99e2ec4b71ab91c263bdc2050ea703dfb7",
+          "verdict": "supported",
+          "reasons": [
+            "The warning directly reflects the excerpt’s stated mistake: assuming people with questions will simply make contact.",
+            "The excerpt further supports the warning by stating that most people do initial scouting and will go elsewhere if they cannot determine whether the provider is in the right ballpark."
+          ]
+        },
+        {
+          "candidate_id": "3c62285ac81f5e97b64757b3151531dc03c4528efbc394a6f65c8ec0f8006ee0",
+          "verdict": "supported",
+          "reasons": [
+            "The excerpt expressly instructs the reader to use the boiler-repair scenario, identify questions and objections before contacting the first Google result, and says this puts the reader in the customer’s mindset.",
+            "The candidate retains the exercise as an exercise and does not invent a required number of responses."
+          ]
+        },
+        {
+          "candidate_id": "9ed5bf14abb16fa7d6edff4aa6ae9e1f0cfb2737455b55251474166a64f555f6",
+          "verdict": "supported",
+          "reasons": [
+            "The excerpt directly gives this as “the exercise for you”: identify the top three fears potential customers have about requesting the CTA.",
+            "The stated dependency is consistent with the excerpt’s sequence: after the customer-mindset exercise, “then” consider the top three fears."
+          ]
+        },
+        {
+          "candidate_id": "ff6617110650d26c5284aa57c2fc03b2c84ca1484c3cc527345b5075951f4de1",
+          "verdict": "supported",
+          "reasons": [
+            "The excerpt explicitly introduces the free-claim-assessment page as an example that “does a pretty good job.”",
+            "It subsequently says the wording addresses the main embarrassment objection for someone unsure whether they have a claim. The candidate appropriately avoids asserting measured performance."
+          ]
+        },
+        {
+          "candidate_id": "7860a065b571a5502ee4def4efe79d7d205b1b7f6368946834ca5290f65bd596",
+          "verdict": "supported",
+          "reasons": [
+            "The excerpt uses the kitchen-design CTA as the direct illustration of a highly clear invitation, comparing it to a sign that says “Please take one.”",
+            "It explicitly says this wording is plain English and removes possible fears, while the candidate makes no unsupported performance claim."
+          ]
+        },
+        {
+          "candidate_id": "951a82fec013f9478b4894818ff89ab841214eee779993fd87467c4288bc82ae",
+          "verdict": "supported",
+          "reasons": [
+            "The source explicitly offers the Fat Witch brownie sign, together with a purchasable option after the visitor likes it, as a “better still” illustrative option.",
+            "The candidate correctly preserves it as an example and notes its non-immediate sequencing in the unknowns rather than recasting it as a required action."
+          ]
+        },
+        {
+          "candidate_id": "3b912df44aaa163a1b7c4a082aafa657811f2bf7ba6af9071fef9839336cf296",
+          "verdict": "supported",
+          "reasons": [
+            "The supplied excerpt ends mid-sentence at “It’s free, so how good is,” after beginning an Exposure Ninja-specific fear list.",
+            "The candidate accurately identifies this as unresolved due to the excerpt ending, without supplying missing content."
+          ]
+        },
+        {
+          "candidate_id": "9648822956afacdf4cda720b3028659e9c9b6547a9960be6905816c389b1053c",
+          "verdict": "supported",
+          "reasons": [
+            "The excerpt says the wording is “really important” and “might be the most important wording on the website” because the visitor is about to decide whether to inquire.",
+            "The candidate preserves the source’s qualified “might be” framing and does not claim quantified conversion impact."
+          ]
+        }
+      ],
+      "omissions": [
+        {
+          "description": "The excerpt gives a concrete checklist of information visitors may need before contacting a service provider: approximate price, response speed, reliability and who will attend, qualifications, compatibility with the visitor’s boiler type, and service area. The candidates include the exercise and general warning but do not retain these specific question categories.",
+          "quote": "we need to know approximately how much it's going to cost. We need to know how quickly they can come because that's really important. We need to know are is the person good, reliable, who is actually coming out to do the boiler. Um, are they qualified? Do they work with my type of boiler? Do they service my area?"
+        },
+        {
+          "description": "The excerpt provides a distinct rationale and follow-up wording for requesting contact details after problem details: explain that the details are needed to send the assessment to the visitor. The form-order candidate retains the sequence but not this explanatory copy or rationale.",
+          "quote": "Great, thank you for filling out your injury details so that we can send your claim assessment to the right information, you know, to the right place. Tell us where to send it."
+        }
+      ],
+      "source_limitations": [
+        "The excerpt begins mid-sentence, so preceding framing and any earlier qualifications are unavailable.",
+        "The excerpt ends mid-sentence while introducing an Exposure Ninja-specific fear list; the rest of that list and any subsequent guidance are missing.",
+        "The material is a spoken/transcribed presentation with apparent transcription errors and repetitions, which can make exact intended wording uncertain.",
+        "The excerpt offers qualitative examples and opinions but provides no conversion data, testing method, or measured results for the cited pages.",
+        "Most implementation detail is illustrated through claim, kitchen-design, and boiler-repair examples; the excerpt does not establish universal applicability or required thresholds for all websites."
+      ]
+    },
+    "review_validation_errors": []
+  },
+  "system_prompt_sha256": "9ffba68e6c84bf9ae87d0ca9d5314d3a893363576fe03a84b00b8e461910efdd"
+}

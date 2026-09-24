@@ -1,0 +1,349 @@
+{
+  "cards": [
+    {
+      "title": "Cookie Path Is Not a Security Boundary",
+      "summary": "Cookie path restrictions are not a reliable security mechanism; always set path to root and rely on domain scoping and other attributes instead.",
+      "use_when": "Configuring session or authentication cookies for a storefront, admin panel, or customer account area, and deciding what scope and attributes each cookie should carry.",
+      "steps": [
+        "Recognize that specifying a cookie path does not prevent other pages or subdomains from reaching into that cookie's DOM context; the source states it is simply unsafe to rely on path as a security control.",
+        "Do not omit path assuming the limit does something. The default path is the directory of the page that set the cookie, which produces inconsistent, unexpected scoping.",
+        "Explicitly set the cookie path to the root of the site so the visible scope matches the actual scope and you are not fooled into thinking path is protecting anything.",
+        "Layer the real controls: domain scoping (cookies can only be accessed by equal or more specific domains, not sibling subdomains), Secure to restrict transmission to HTTPS, HttpOnly to block JavaScript access, and SameSite to control cross-site sending.",
+        "Serve sensitive session cookies from a dedicated login subdomain so that other apps on sibling subdomains cannot read them, mirroring the web.stanford.edu vs cs.stanford.edu separation the source describes."
+      ],
+      "caveats": [
+        "The source is describing classroom-era browser behavior; verify current cookie default and path handling in the browsers you support before relying on any single attribute.",
+        "Path is not a security mechanism at all, so treat any existing path-based isolation as ineffective rather than merely weak."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "cookies",
+        "session-management",
+        "authentication",
+        "checkout",
+        "customer-accounts"
+      ],
+      "id": "4388ab8bc2f24c8119586e6a",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 5
+    },
+    {
+      "title": "Set Secure, HttpOnly and SameSite on Session Cookies",
+      "summary": "Configure session cookies with Secure, HttpOnly, SameSite, and an explicit expiry so ambient authority cannot be abused cross-site.",
+      "use_when": "Implementing or hardening login, cart, and session cookies for an ecommerce store, including when migrating to HTTPS or reviewing an existing Express/Node cookie configuration.",
+      "steps": [
+        "Enable Secure so cookies are only sent over HTTPS, keeping session identifiers off plaintext connections where they could be observed.",
+        "Enable HttpOnly so page JavaScript cannot read the cookie; the browser still stores it and sends it on HTTP requests to the server, which defends against script injected into the page.",
+        "Enable SameSite=Lax so the cookie is not attached to sub-resource requests (embedded images, cross-site form posts) while still being sent on normal top-level navigations. The source calls Lax the best setting for the average site.",
+        "Set Max-Age explicitly (the source used 30 days expressed as 30*24*60*60*1000 milliseconds) and refresh the cookie each time the user returns so the window resets rather than expiring mid-session.",
+        "When clearing a cookie, send the same cookie name with the same attributes (HttpOnly, SameSite, path, domain) and an expiry in the past; otherwise the browser treats it as a different cookie and the original remains."
+      ],
+      "caveats": [
+        "SameSite=Strict is more aggressive and drops cookies even on top-level links from other sites, so users clicking a link from an email or blog may appear logged out; the source calls this probably too aggressive for the average site but plausible for finance.",
+        "SameSite=Lax breaks legitimate embedding use cases such as third-party comment widgets and ad tracking; the source notes Google has proposed defaulting to Lax and requiring Secure on SameSite=None cookies.",
+        "In the source's live demo, SameSite did not take effect while the attacker used a raw localhost IP; it behaved correctly once the attacker site used a real-looking hostname, indicating hostname versus IP matters for cross-site classification."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "cookies",
+        "session-management",
+        "authentication",
+        "checkout",
+        "customer-accounts"
+      ],
+      "id": "f4015dad3b23e8f569f6e8c0",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 5
+    },
+    {
+      "title": "Convert Cookie Exfiltration to a Defensive Recognition Checklist",
+      "summary": "Understanding when a browser will attach a cookie to a request lets you identify which storefront endpoints are vulnerable to ambient-authority abuse.",
+      "use_when": "Reviewing state-changing storefront or admin endpoints (cart mutations, order creation, address or email changes, refunds, password reset) for cross-site request exposure.",
+      "steps": [
+        "Note the source's key threat: a browser automatically attaches cookies to any request matching the cookie's domain, regardless of which page initiated the request, so a request can carry the user's authority without the user intending it.",
+        "Identify which of your endpoints change state using only cookie-based authentication and no per-request secret. These are the candidates for abuse.",
+        "Understand the classic cross-site request forgery pattern the source demonstrates: a hidden form on an unrelated page posts to your transfer/checkout endpoint, the browser attaches the victim's session cookie, and the server processes it as a legitimate user action.",
+        "Recognize that the source's demo worked even though the request used POST, and worked with the form hidden inside an iframe with a prefilled recipient and amount so the victim never sees it and is not navigated away.",
+        "Treat your own ecommerce state-changing endpoints the same way: if a cross-site page can make the browser submit a valid form with the victim's cookies, the endpoint is exploitable. Apply defense in depth rather than assuming POST alone is protection."
+      ],
+      "caveats": [
+        "The source explicitly states that switching to POST does not stop the attack; forms can be submitted cross-site, which the presenter calls a legacy exception that flies in the face of the same-origin policy.",
+        "The severity scales with the privilege of the logged-in user: the source notes that hijacking an admin session can allow creating new admin users or running server-side commands, so weight admin endpoints accordingly."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "csrf",
+        "ambient-authority",
+        "form-submission",
+        "checkout",
+        "admin-panel"
+      ],
+      "id": "08daf97306073c7d57c7b1e5",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 5
+    },
+    {
+      "title": "Prefer Tokens Over Ambient Cookie Authority for State Changes",
+      "summary": "Reduce reliance on ambient cookie authority for sensitive actions by requiring an explicit per-request token, since browsers attach cookies automatically.",
+      "use_when": "Designing defensive controls for high-value ecommerce operations such as placing orders, changing stored payment methods, issuing refunds, or editing admin permissions.",
+      "steps": [
+        "Accept the source's framing: ambient authority from cookies is convenient because every request is automatically authorized, but that same automatic behavior is what enables unwanted cross-site actions.",
+        "For sensitive endpoints, do not allow authorization to rest on cookies alone. Require an additional value that a cross-site attacker cannot predict or obtain, in the spirit of the CSRF defense the source promises to cover later.",
+        "Verify the request's origin context rather than trusting that a valid session cookie means the user intended the request.",
+        "Prefer moving the most dangerous operations to server-rendered flows or out-of-band confirmation, and scope authority narrowly so a hijacked session cannot reach operations beyond the task at hand.",
+        "Keep the browser's SameSite behavior as one layer, but the source cautions it is not a complete solution, so do not treat it as the only control."
+      ],
+      "caveats": [
+        "The source does not provide a full CSRF token recipe in this section; it explicitly notes SameSite is one defense that is not a complete solution and defers the rest.",
+        "The source's demo defense appeared to work once the attacker used a hostname rather than a raw IP, so test your specific deployment rather than assuming the browser will classify your attacker surface as cross-site."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "csrf",
+        "ambient-authority",
+        "session-management",
+        "checkout",
+        "admin-panel"
+      ],
+      "id": "ae9902b8b7a86ae8d4826cdc",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 5
+    },
+    {
+      "title": "SameSite Lax versus Strict: Choose by Funnel Impact",
+      "summary": "Select SameSite policy by weighing cross-site abuse protection against legitimate embedded and referral flows your store depends on.",
+      "use_when": "Deciding the SameSite setting for storefront session cookies when your site relies on embedded widgets, affiliate links, email campaign links, or third-party checkout embeds.",
+      "steps": [
+        "Use the source's definitions: None always attaches cookies; Lax blocks cookies on sub-resource requests from other sites but sends them on top-level navigations; Strict never sends cookies to a site the user arrived at from elsewhere, including top-level navigations.",
+        "For a typical store with email and affiliate traffic, prefer Lax: a user clicking a link from your campaign email should arrive logged in, while hidden cross-site form posts and embedded sub-resource requests should not carry the session cookie.",
+        "Reserve Strict for high-assurance contexts such as finance or admin consoles, accepting that a user clicking a link from an external blog or social post will land logged out in that tab even though they are logged in elsewhere.",
+        "Audit what breaks under Lax: the source's examples are third-party comment widgets that appear logged out and ad-tracking cookies that want to attach to every request; enumerate your own embeds before switching.",
+        "Plan for defaults to change: the source cites a Google proposal to make Lax the default and require Secure on explicit SameSite=None cookies, so review cookie configuration before relying on legacy None behavior."
+      ],
+      "caveats": [
+        "The source calls Strict almost too aggressive for the average site and notes it can confuse users who are logged in elsewhere but appear logged out after clicking a link.",
+        "The source's demo defense appeared to work once the attacker used a hostname rather than a raw IP, so test your specific deployment rather than assuming the browser will classify your attacker surface as cross-site."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "cookies",
+        "samesite",
+        "checkout",
+        "customer-accounts",
+        "retention"
+      ],
+      "id": "1b76024d8b1a18e44896bf5c",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 5
+    },
+    {
+      "title": "Why Cross-Site POSTs Still Reach Your Endpoints",
+      "summary": "Forms are a legacy exception to the same-origin policy, so a cross-site page can submit a valid form to your server and the browser will attach the victim's cookies.",
+      "use_when": "Assessing whether a hidden cross-site form could trigger a state change on your order, account, or admin endpoints even though modern fetch requests would be blocked.",
+      "steps": [
+        "Classify your request paths: fetch/XHR calls are governed by the same-origin policy and a cross-site caller cannot read the response, but a plain HTML form submission from another origin is still allowed to reach your server.",
+        "For each state-changing endpoint reachable by a simple form post (no custom headers, standard content types), assume a hidden cross-site form can reach it with the victim's cookies attached.",
+        "Do not rely on the attacker being unable to read the response. The source stresses that the damage is done when the server processes the request; the attacker does not need to see the result.",
+        "Reduce the exposed surface by requiring values a cross-site form cannot supply, by verifying origin context, and by keeping privileged operations off simple form-reachable routes.",
+        "Note the source's observation that many sites still use plain HTML forms with JavaScript interception for better UX; the plain-form fallback is what keeps this legacy hole open."
+      ],
+      "caveats": [
+        "The source describes this as a backwards-compatibility exception nobody wanted to break, not an intentional feature; it may change in future browser behavior, so verify current handling.",
+        "The source's demo defense appeared to work once the attacker used a hostname rather than a raw IP, so test your specific deployment rather than assuming the browser will classify your attacker surface as cross-site."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "same-origin-policy",
+        "form-submission",
+        "csrf",
+        "checkout",
+        "admin-panel"
+      ],
+      "id": "1f075a1a02fc8501b361d3b9",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 5
+    },
+    {
+      "title": "Same-Origin Policy: What It Allows, Blocks and Leaves Open",
+      "summary": "The same-origin policy blocks cross-origin DOM access and response reading but permits embedding, navigation and resource loading, so map your storefront's cross-origin interactions against that boundary.",
+      "use_when": "Reviewing storefront widgets, embeds, iframes, third-party scripts, and CDN resource references to understand what cross-origin behavior is expected and what would be a vulnerability.",
+      "steps": [
+        "Define an origin as the tuple of protocol, hostname and port. If any component differs, the two pages are different origins; the browser enforces this consistently and the source notes it is implemented reliably across browsers.",
+        "Blocked by policy: reading another origin's response body via fetch (the source shows the CORS error and explains the browser refuses to hand back the result because cookies would be attached), and reaching into an embedded document (contentDocument returns null).",
+        "Allowed despite being cross-origin: linking from one site to another, embedding another site in an iframe, navigating an embedded frame to a new destination, and embedding resources such as images or shared JavaScript from a CDN.",
+        "Watch for gaps the source flags: form submissions cross origins (which is how the CSRF attack worked), and cookies use a looser domain-only notion of scope than the same-origin policy, which is why the two rules diverge.",
+        "When you add a third-party embedded widget or shared CDN script, note that you are deliberately granting a cross-origin resource a position in your page; there is no same-origin protection inside that relationship."
+      ],
+      "caveats": [
+        "The source notes the policy is sometimes too narrow (login.stanford.edu cannot share with cs.stanford.edu despite related ownership) and sometimes too broad (two sites from different organizations on the same origin are treated as fully trusted).",
+        "The source warns it is not enforced for legacy features like form submission, so knowing which features are exempt is necessary to know where your site is vulnerable.",
+        "Historical browser behavior: verify current same-origin and cookie scoping rules rather than assuming the classroom-era behavior still holds."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "same-origin-policy",
+        "embeds",
+        "third-party-scripts",
+        "checkout",
+        "admin-panel"
+      ],
+      "id": "55a5c844c21afe5e5910e1b0",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 5
+    },
+    {
+      "title": "Use document.domain Opt-Out Only With Full Awareness of Its Risk",
+      "summary": "The document.domain relaxation lets cooperating subdomains share origin, but the source treats it as an old, dangerous API because any sibling subdomain can join the trust group.",
+      "use_when": "Evaluating whether a legacy storefront, admin subdomain, or partner integration can rely on document.domain to share cookies or DOM access across subdomains.",
+      "steps": [
+        "Recognize the pattern: two pages each set document.domain to a more general shared parent (for example, both settings from subdomains of stanford.edu) so the same-origin policy treats them as one origin and they can share cookies and DOM.",
+        "Note the restriction the source describes: you cannot set document.domain to an arbitrary value, only to a more general version of your own domain.",
+        "Understand that both sides must opt in. If one side does not relax its domain, the other cannot force the shared origin, which limits unilateral abuse.",
+        "Treat the shared parent as a trust boundary you are expanding: the source warns that any other host under the same parent, including an attacker-controlled subdomain, can also join the group and interact with the relaxed pages.",
+        "Where possible, avoid document.domain and use modern alternatives that let you name the specific cooperating parties instead of the whole parent domain."
+      ],
+      "caveats": [
+        "The source states this is an old API with a lot of problems and recommends being scared of it; it is presented mainly so you recognize it, not as a recommended design.",
+        "The source's main demonstration of the flaw is that a sibling attacker subdomain under the same parent could potentially join the shared-origin group, so do not deploy this on a domain where subdomains are not fully controlled."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "same-origin-policy",
+        "document-domain",
+        "subdomains",
+        "authentication",
+        "legacy-integrations"
+      ],
+      "id": "cf73eace36390b0c2319d608",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 5
+    },
+    {
+      "title": "Attribute a Hijacked Session to the Right Threat Level",
+      "summary": "Evaluate what a stolen or forged session can actually do, because the same cross-site request is far more damaging against an admin than against a shopper.",
+      "use_when": "Prioritizing which ecommerce sessions to protect most tightly and where to require re-authentication, extra confirmation, or a second factor.",
+      "steps": [
+        "For a normal shopper session, the source's example damage is forced actions such as transferring funds, changing an email address, or resetting a password, all performed as the user.",
+        "For an admin session over a store or CMS, the source states the request can be far more damaging: creating a new admin user, and in some cases running shell commands on the server as the server user.",
+        "Rank your own endpoints by blast radius: customer-facing actions versus admin actions like user creation, permission changes, plugin or theme install, and server-side command execution.",
+        "Apply the strictest controls (stronger authentication, re-confirmation, network restrictions, least-privilege admin roles) to the highest-blast-radius operations, and treat admin session cookies as the most sensitive credential in the store.",
+        "Remember the attacker need not read the response; a successful state change is enough, so log and alert on anomalous admin-level state changes rather than only on errors."
+      ],
+      "caveats": [
+        "The source's damage examples come from a classroom bank and WordPress-admin scenario, not from a measured ecommerce incident; treat them as illustrations of blast radius, not benchmarks.",
+        "The source assumes the attacker knows the target endpoint path and that the victim is logged in; attacks fail if the user is not authenticated, which does not reduce the need to protect active sessions."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "session-management",
+        "admin-panel",
+        "privilege",
+        "csrf",
+        "customer-accounts"
+      ],
+      "id": "650f783b54c62d12c5e48e1a",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 5
+    },
+    {
+      "title": "Short Expiry With Rolling Renewal for Session Cookies",
+      "summary": "Set a modest cookie lifetime and renew it on each visit so legitimate users stay logged in while a stolen session has a bounded useful window.",
+      "use_when": "Choosing session and persistent-login cookie lifetimes for a storefront, balancing shopper convenience against the exposure window if a session is compromised.",
+      "steps": [
+        "Use the source's heuristic of roughly 30 days for a persistent login cookie, refreshed on each visit, so the expiry is 30 days from the most recent activity rather than from first login.",
+        "Refresh the cookie by sending a new Set-Cookie header with the same name and updated Max-Age whenever the returning user makes a request.",
+        "Keep very short lifetimes on sensitive, less convenience-dependent sessions, and reserve the long rolling cookie for ordinary shopper convenience.",
+        "When implementing expiry, express the lifetime in milliseconds and multiply out the days, hours, minutes and seconds consistently; the source writes 30 days as 30*24*60*60*1000.",
+        "Ensure the same attributes are used on renewal and on clearing so the cookie is updated or removed rather than duplicated."
+      ],
+      "caveats": [
+        "The source presents 30 days as a rule of thumb, not a measured optimum; adjust to your own risk tolerance and regulatory requirements.",
+        "Long-lived rolling sessions widen the window in which a stolen cookie remains valid, so pair them with the other cookie attributes and origin checks."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "cookies",
+        "session-management",
+        "retention",
+        "customer-accounts",
+        "authentication"
+      ],
+      "id": "56b8e42ca03f9d64d88e8752",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 5
+    },
+    {
+      "title": "Inspect Request Origin with Security Headers During Testing",
+      "summary": "Use browser-provided request origin metadata to confirm how a request was triggered, so you can validate defences like SameSite against your actual attacker surface.",
+      "use_when": "Debugging why a SameSite or CSRF defence appears not to work, and confirming whether the browser is classifying a request as same-site or cross-site for your store.",
+      "steps": [
+        "When a defence such as SameSite appears ineffective, inspect the incoming request headers that browsers and proxies add to describe where the request came from and how it was triggered.",
+        "Reproduce the test with a realistic hostname rather than a raw IP: the source found the attack still succeeded while the attacker site was addressed by localhost IP and the cookie was re-sent, then behaved correctly once the attacker site was addressed by a real hostname mapped to the same machine.",
+        "Note the source's explanation: cookies scope by domain only and ignore IP-versus-hostname distinctions, while the same-origin policy also considers protocol and port, so a same-IP setup can behave differently from a same-host setup.",
+        "Re-run the cross-site scenario after each change to cookie attributes and confirm whether the cookie is actually being attached to the outgoing request, rather than assuming the setting took effect.",
+        "Keep this validation on systems you own, using your own test domains, and do not treat a passing test on one hostname as proof of protection on another."
+      ],
+      "caveats": [
+        "The source's live debugging was inconclusive at the time and the presenter deferred the explanation to a later session, only confirming the fix after switching to a hostname; do not treat the IP-versus-hostname behaviour as universally guaranteed.",
+        "Verify the current header names and browser interface, since request-origin metadata and browser defaults change over time."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "same-origin-policy",
+        "cookies",
+        "measurement",
+        "testing",
+        "debugging"
+      ],
+      "id": "9acd8d134fbe2832405b71a3",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 5
+    }
+  ],
+  "request_id": "fb33b3f6801b657f3a81f77507d1c448634e21592898368984be481011d667a4",
+  "ecommerce_scope_version": 1
+}

@@ -1,0 +1,340 @@
+{
+  "request_id": "cd8bdd5762118efe970271c9f100057329815b149aba8a5a72b9b5663ae2aba0",
+  "provider": "deepseek",
+  "model": "deepseek-flash",
+  "effort": "none",
+  "completion_limit": 16384,
+  "usage": {
+    "prompt_tokens": 4840,
+    "completion_tokens": 3303,
+    "total_tokens": 8143,
+    "prompt_tokens_details": {
+      "cached_tokens": 512
+    },
+    "prompt_cache_hit_tokens": 512,
+    "prompt_cache_miss_tokens": 4328
+  },
+  "booked_cost_usd": 0.0054156000000000004,
+  "seconds": 19.11,
+  "finish_reason": "stop",
+  "output": {
+    "cards": [
+      {
+        "title": "Read short-term spikes as gambling products",
+        "summary": "Distinguish 'gamble' products that blow up just recently from products with sustained revenue history.",
+        "use_when": "Evaluating a product whose revenue graph shows a recent sharp spike, before committing to test it.",
+        "steps": [
+          "Switch the dashboard to the 180-day view rather than judging from a 7- or 30-day window.",
+          "Look for sustained performance, e.g. a product running at ~$2K days since early in the year while also trending up recently: that is much healthier than one that only jumped in the last few days.",
+          "If a product was doing lows of a few hundred dollars per day and is essentially spiking now, treat it as a 'gamble product'. The source still tests these sometimes, but frames them as gambles, not validated winners.",
+          "Check whether the spike coincides with one very recent piece of content or an older piece that suddenly resurfaced; the latter is a weaker signal."
+        ],
+        "caveats": [
+          "A gamble product is a judgment call, not a rule; the presenter explicitly says the risk is his own preference.",
+          "Recent spikes can be real demand or a single lucky video; the dashboard alone cannot tell which."
+        ],
+        "tags": [
+          "product-research",
+          "data-analysis",
+          "revenue-velocity",
+          "product-validation",
+          "risk-assessment"
+        ]
+      },
+      {
+        "title": "Lower revenue filters to cut competitive products",
+        "summary": "Narrowing the revenue band to roughly $36K-$70K surfaces less saturated products than a $70K+ band.",
+        "use_when": "The product list is full of products you've seen advertised many times, or you want less competitive candidates.",
+        "steps": [
+          "Start with a wider revenue range, then notice when results are dominated by products you recognize from being advertised everywhere.",
+          "Reduce the band to about $36,000 low and $70,000 high to see far fewer competitors.",
+          "Treat the lower band as a healthier hunting ground, but accept smaller upside: a validated product in a less crowded band may scale less than a big branded one.",
+          "Verify current dashboard filter behavior before relying on exact thresholds; interfaces change."
+        ],
+        "caveats": [
+          "The exact numbers are this presenter's live example, not a universal benchmark.",
+          "Low-revenue products can be low-revenue because demand is genuinely small, not only because competition is low."
+        ],
+        "tags": [
+          "product-research",
+          "filtering",
+          "revenue-velocity",
+          "competitive-analysis",
+          "product-validation"
+        ]
+      },
+      {
+        "title": "Screen out non-English creatives before testing",
+        "summary": "Products whose winning content is in Spanish are a hard skip because they don't transfer to English-speaking audiences.",
+        "use_when": "Checking a product's top-performing videos during research.",
+        "steps": [
+          "Open the product's last-7-days videos and identify the language of the top creative.",
+          "If the best-performing video is in Spanish, disqualify the product for an English-language test — the source has found these do not replicate for English speakers.",
+          "Apply the same screen to Spanish-language ads found later in the feed even when the revenue graph looks good.",
+          "Also check that live selling has not overtaken the revenue; if a large share comes from live streams rather than regular ads, the ad data is less usable."
+        ],
+        "caveats": [
+          "This is the presenter's tested heuristic for English-speaking markets; it says nothing about success when targeting Spanish-speaking audiences."
+        ],
+        "tags": [
+          "product-research",
+          "creative-strategy",
+          "market-fit",
+          "language-targeting",
+          "screening"
+        ]
+      },
+      {
+        "title": "Check how concentrated the winning videos are",
+        "summary": "Revenue spread across several videos is healthier than one dominant winning video.",
+        "use_when": "Judging whether a candidate product's recent sales are repeatable across creative.",
+        "steps": [
+          "Review the individual videos driving the past 7 days of revenue.",
+          "Look for distribution like $2K, $1.8K, $1.4K across three different videos: this indicates multiple creatives are working, which is a strong sign.",
+          "If a single winning video carries most of the revenue, treat it as more fragile — one video can be luck or an outlier.",
+          "Then check the winning video's post date: a video posted a couple of weeks ago that is still scaling is a mild red flag; content posted this week and already performing well is the stronger signal."
+        ],
+        "caveats": [
+          "One dominant video can still be a real winner; even revenue spread does not guarantee performance when you test your own offer.",
+          "Post dates only tell you about the observed creative, not about the product's long-term demand."
+        ],
+        "tags": [
+          "product-research",
+          "creative-strategy",
+          "revenue-velocity",
+          "data-analysis",
+          "product-validation"
+        ]
+      },
+      {
+        "title": "Competitor-set your niche, not just your product",
+        "summary": "When you sell a variant format you still compete with every other format of the same ingredient or niche.",
+        "use_when": "Assessing saturation for supplement-style or format-substitution products.",
+        "steps": [
+          "Identify the underlying ingredient or niche (e.g. GLP), not just the exact product (e.g. patches).",
+          "Recognize that even if nobody else sells the patch version, you are competing for the same customers who know the powder, gummies, resin, or pills.",
+          "Add competitor checks against the niches you compete in as a whole, in addition to the specific product keywords.",
+          "Use this to decide whether a healthy-looking graph is actually in a crowded customer pool."
+        ],
+        "caveats": [
+          "A niche-wide competitor set will always look large; the point is to price your differentiation, not to avoid the category entirely."
+        ],
+        "tags": [
+          "product-research",
+          "competitive-analysis",
+          "niche-selection",
+          "positioning",
+          "supplements"
+        ]
+      },
+      {
+        "title": "Pressure-test the offer before you sell the same product",
+        "summary": "Competitor offers often bundle a commodity product into a branded kit; copyable offer structure matters as much as the product.",
+        "use_when": "You found a product with an appealing graph but generic positioning, and need a differentiation angle.",
+        "steps": [
+          "Click into a competitor's store from the Facebook Ad Library result and inspect the offer page.",
+          "Note the structure rather than the product: e.g. a 'youth reset kit' on top of NAD patches, buy-one-get-one-free, plus a free ebook and an eye mask. The presenter rates this structure as strong.",
+          "Look for ingredient-level specificity over adjectives: 'youthful' is a vague adjective, while naming an active ingredient (e.g. bee venom, known to the target female audience) tells the customer why the product works.",
+          "Use that specificity — plus your own offer stack — as the reason your variant of the same product could still win."
+        ],
+        "caveats": [
+          "Strong offers still face the niche-wide competition described elsewhere.",
+          "Verify current ad library navigation before assuming a given layout."
+        ],
+        "tags": [
+          "product-research",
+          "offer-design",
+          "competitive-analysis",
+          "positioning",
+          "branding"
+        ]
+      },
+      {
+        "title": "Skip products with low perceived-value pricing",
+        "summary": "Under-$10 price points force matching price and usually fail the perceived-value test.",
+        "use_when": "A researched product shows a good graph but sells cheaply.",
+        "steps": [
+          "Check the store's selling price, e.g. a bug-bite suction device at $9.99.",
+          "If the price is low like that, recognize you will be forced to run the same low-price play, which caps margins and ad economics.",
+          "Prefer products with higher perceived value that can support a healthy price band, like the skin-tag removal cream the presenter flagged as well-priced.",
+          "Treat low price as a structural constraint on the funnel, not just a number to edit on a test."
+        ],
+        "caveats": [
+          "Low-price products can work in volume models; this is the presenter's preference for his drop-shipping tests, not a universal rule."
+        ],
+        "tags": [
+          "product-research",
+          "pricing",
+          "perceived-value",
+          "unit-economics",
+          "screening"
+        ]
+      },
+      {
+        "title": "Use the shape of the 180-day graph as a fast filter",
+        "summary": "Up-down-up with an overall uptrend is healthy; a graph already in the gutter or on a downtrend is not worth testing.",
+        "use_when": "Scanning many products and deciding which ones deserve a closer look.",
+        "steps": [
+          "Open the 180-day view first and read the overall trend rather than the last blip.",
+          "Screen out graphs that are clearly declining — the presenter rejected a tinted lip serum doing $40K in 30 days because the 180-day graph was 'in the gutter', and rejected several others as downtrends.",
+          "Keep the products whose graph oscillates but trends up overall.",
+          "Only then spend time on videos, competitor lookup and trend checks for the survivors."
+        ],
+        "caveats": [
+          "Graph reading is a screening step, not proof of demand transfer to your own store.",
+          "Tools, ranges and labels change; confirm what the chart shows in your tool's current version."
+        ],
+        "tags": [
+          "product-research",
+          "data-analysis",
+          "screening",
+          "revenue-velocity",
+          "workflow"
+        ]
+      },
+      {
+        "title": "Research candidates against Facebook Ad Library and Google Trends",
+        "summary": "A product counts as validated when it survives both a competitor search and a trend check.",
+        "use_when": "You have a candidate with a good graph and need a go/no-go before testing.",
+        "steps": [
+          "Search the product keyword in the Facebook Ad Library to gauge how many advertisers are running it right now.",
+          "Look for signals like a competitor who launched an ad only hours ago — that shows the space is live and being contested.",
+          "Search the product on Google Trends to see whether search interest is building rather than decaying.",
+          "Test only if the product looks validated across both checks; if no competition is findable at all, judge whether the trend and recency justify a speculative test."
+        ],
+        "caveats": [
+          "Keyword selection is the hard part: for unfamiliar products like gut-cleansing protocols or fulvic acid blends, the obvious terms may surface nothing even when competitors exist.",
+          "Absence of visible competitors is ambiguous, not automatically good."
+        ],
+        "tags": [
+          "product-research",
+          "validation",
+          "facebook-ad-library",
+          "google-trends",
+          "competitive-analysis"
+        ]
+      },
+      {
+        "title": "Switch filter categories to find cross-listed winners",
+        "summary": "A product can appear under a different dashboard category than the niche it truly belongs to, so loosen category filters.",
+        "use_when": "You are searching a niche and the category filter may be hiding relevant products.",
+        "steps": [
+          "Don't treat the dashboard category as truth: an arnica removal cream can sit under beauty and personal care while functionally being a supplement-driven health product.",
+          "When a promising product is not showing in your main category, widen or change the category filter so it can appear.",
+          "Once found, evaluate it on the same criteria as everything else: 7-day revenue (~$8K in the example), distribution across videos, price band and untapped feel.",
+          "Confirm the product actually has a mechanism story (e.g. removing skin tags) rather than being a random listing."
+        ],
+        "caveats": [
+          "Category filters are tool-specific and can change; verify how the platform you use organizes categories today."
+        ],
+        "tags": [
+          "product-research",
+          "filtering",
+          "niche-selection",
+          "data-analysis",
+          "workflow"
+        ]
+      },
+      {
+        "title": "Choose niches by competition level, not popularity",
+        "summary": "Beauty and personal care equals health in potential but also in competition; less-hyped niches like home, tools and appliances often have lower competition.",
+        "use_when": "Deciding which niche to hunt in before opening the product dashboard.",
+        "steps": [
+          "Treat beauty and personal care as equally viable to the health niche, with the same caveat of being equally competitive.",
+          "Also consider women's wear and underwear, men's wear and underwear, home supplies, tools and hardware, home improvement and household appliances — niches the presenter says have low competition.",
+          "Recognize that not hearing about a niche is the point: few sellers are in it, so a product with real revenue behind it is close to a validated winner.",
+          "Expect fewer candidates per session in these niches because the option pool is smaller, and sift routinely rather than expecting every product to be good."
+        ],
+        "caveats": [
+          "The presenter also notes these niches can attract passionate buyers and more product options, but quality still varies product by product.",
+          "Low competition is not the same as proven demand; the revenue graph still has to be there."
+        ],
+        "tags": [
+          "product-research",
+          "niche-selection",
+          "competitive-analysis",
+          "product-validation",
+          "category-strategy"
+        ]
+      },
+      {
+        "title": "Beware recognizable products and brands",
+        "summary": "If you've seen the product or brand many times — in ads or as an established retailer — pass on it.",
+        "use_when": "A candidate looks familiar or comes from a long-established brand.",
+        "steps": [
+          "During scanning, treat your own familiarity as a red flag: the presenter skipped a known natural shampoo brand because it has been around a long time and isn't worth testing.",
+          "Do the same for products you've personally seen advertised before (e.g. a deworming protocol ad the presenter recalled), since many other advertisers are likely running them too.",
+          "Confirm with the competitor check: a shilajit-and-collagen bundle graph looked healthy, but the presenter rejected it because he knows the product and expects heavy competition in Facebook Ad Library.",
+          "Keep scanning rather than trying to out-execute a saturated, well-known product."
+        ],
+        "caveats": [
+          "Familiarity is a heuristic for saturation, not proof; a familiar category can still contain an untapped variant."
+        ],
+        "tags": [
+          "product-research",
+          "competitive-analysis",
+          "screening",
+          "branding",
+          "saturation"
+        ]
+      },
+      {
+        "title": "Decide whether to keep hunting or switch niches",
+        "summary": "If pages of results are duds, adjust filters or switch niche rather than quitting early.",
+        "use_when": "You have scrolled several result pages without a candidate worth testing.",
+        "steps": [
+          "Check how deep you actually are: the presenter refused to give up at page five of a many-page list.",
+          "If duds dominate while your filters look reasonable, widen or change the category filter rather than assuming the whole niche is dead.",
+          "Only switch niche after adjusting filters and still finding nothing — the presenter did this after the health niche run.",
+          "Remember speed compounds: as you repeat this, you will no longer need a walkthrough video, and a single session can plausibly surface two or three strong candidates."
+        ],
+        "caveats": [
+          "There is no fixed number of pages that means 'give up'; the source only warns against quitting too early.",
+          "Sessions can produce zero winners, and that is a normal research outcome, not a failure of the method."
+        ],
+        "tags": [
+          "product-research",
+          "workflow",
+          "filtering",
+          "niche-selection",
+          "screening"
+        ]
+      },
+      {
+        "title": "Accept that validated products can still fail your test",
+        "summary": "Testing a validated product on Meta with your own ads and offer is a new experiment, not a guaranteed win.",
+        "use_when": "Planning a product test after research signals look strong.",
+        "steps": [
+          "Recognize the gap: the product was validated on its own store with its own content, while you test on Meta with more edited ads and a different offer.",
+          "Treat research as generating candidates worth a test, not as evidence of certain success.",
+          "If the test fails, reuse the same research method to find the next candidate rather than abandoning the process.",
+          "Run the test for about 2-3 days on Meta, then assess and move on to the next product if it did badly."
+        ],
+        "caveats": [
+          "The 2-3 day assessment window is the presenter's own practice for drop-shipping tests, not a universal statistical standard."
+        ],
+        "tags": [
+          "product-research",
+          "experiment-design",
+          "product-testing",
+          "meta-ads",
+          "offer-design"
+        ]
+      }
+    ]
+  },
+  "raw_content": "{\"cards\":[{\"title\": \"Read short-term spikes as gambling products\", \"summary\": \"Distinguish 'gamble' products that blow up just recently from products with sustained revenue history.\", \"use_when\": \"Evaluating a product whose revenue graph shows a recent sharp spike, before committing to test it.\", \"steps\": [\"Switch the dashboard to the 180-day view rather than judging from a 7- or 30-day window.\", \"Look for sustained performance, e.g. a product running at ~$2K days since early in the year while also trending up recently: that is much healthier than one that only jumped in the last few days.\", \"If a product was doing lows of a few hundred dollars per day and is essentially spiking now, treat it as a 'gamble product'. The source still tests these sometimes, but frames them as gambles, not validated winners.\", \"Check whether the spike coincides with one very recent piece of content or an older piece that suddenly resurfaced; the latter is a weaker signal.\"],\"caveats\": [\"A gamble product is a judgment call, not a rule; the presenter explicitly says the risk is his own preference.\", \"Recent spikes can be real demand or a single lucky video; the dashboard alone cannot tell which.\"],\"tags\": [\"product-research\",\"data-analysis\",\"revenue-velocity\",\"product-validation\",\"risk-assessment\"]},{\"title\": \"Lower revenue filters to cut competitive products\", \"summary\": \"Narrowing the revenue band to roughly $36K-$70K surfaces less saturated products than a $70K+ band.\", \"use_when\": \"The product list is full of products you've seen advertised many times, or you want less competitive candidates.\", \"steps\": [\"Start with a wider revenue range, then notice when results are dominated by products you recognize from being advertised everywhere.\", \"Reduce the band to about $36,000 low and $70,000 high to see far fewer competitors.\", \"Treat the lower band as a healthier hunting ground, but accept smaller upside: a validated product in a less crowded band may scale less than a big branded one.\", \"Verify current dashboard filter behavior before relying on exact thresholds; interfaces change.\"],\"caveats\": [\"The exact numbers are this presenter's live example, not a universal benchmark.\", \"Low-revenue products can be low-revenue because demand is genuinely small, not only because competition is low.\"],\"tags\": [\"product-research\",\"filtering\",\"revenue-velocity\",\"competitive-analysis\",\"product-validation\"]},{\"title\": \"Screen out non-English creatives before testing\", \"summary\": \"Products whose winning content is in Spanish are a hard skip because they don't transfer to English-speaking audiences.\", \"use_when\": \"Checking a product's top-performing videos during research.\", \"steps\": [\"Open the product's last-7-days videos and identify the language of the top creative.\", \"If the best-performing video is in Spanish, disqualify the product for an English-language test — the source has found these do not replicate for English speakers.\", \"Apply the same screen to Spanish-language ads found later in the feed even when the revenue graph looks good.\", \"Also check that live selling has not overtaken the revenue; if a large share comes from live streams rather than regular ads, the ad data is less usable.\"],\"caveats\": [\"This is the presenter's tested heuristic for English-speaking markets; it says nothing about success when targeting Spanish-speaking audiences.\"],\"tags\":[\"product-research\",\"creative-strategy\",\"market-fit\",\"language-targeting\",\"screening\"]},{\"title\": \"Check how concentrated the winning videos are\", \"summary\": \"Revenue spread across several videos is healthier than one dominant winning video.\", \"use_when\": \"Judging whether a candidate product's recent sales are repeatable across creative.\", \"steps\": [\"Review the individual videos driving the past 7 days of revenue.\", \"Look for distribution like $2K, $1.8K, $1.4K across three different videos: this indicates multiple creatives are working, which is a strong sign.\", \"If a single winning video carries most of the revenue, treat it as more fragile — one video can be luck or an outlier.\", \"Then check the winning video's post date: a video posted a couple of weeks ago that is still scaling is a mild red flag; content posted this week and already performing well is the stronger signal.\"],\"caveats\": [\"One dominant video can still be a real winner; even revenue spread does not guarantee performance when you test your own offer.\", \"Post dates only tell you about the observed creative, not about the product's long-term demand.\"],\"tags\":[\"product-research\",\"creative-strategy\",\"revenue-velocity\",\"data-analysis\",\"product-validation\"]},{\"title\": \"Competitor-set your niche, not just your product\", \"summary\": \"When you sell a variant format you still compete with every other format of the same ingredient or niche.\", \"use_when\": \"Assessing saturation for supplement-style or format-substitution products.\", \"steps\": [\"Identify the underlying ingredient or niche (e.g. GLP), not just the exact product (e.g. patches).\", \"Recognize that even if nobody else sells the patch version, you are competing for the same customers who know the powder, gummies, resin, or pills.\", \"Add competitor checks against the niches you compete in as a whole, in addition to the specific product keywords.\", \"Use this to decide whether a healthy-looking graph is actually in a crowded customer pool.\"],\"caveats\": [\"A niche-wide competitor set will always look large; the point is to price your differentiation, not to avoid the category entirely.\"],\"tags\":[\"product-research\",\"competitive-analysis\",\"niche-selection\",\"positioning\",\"supplements\"]},{\"title\": \"Pressure-test the offer before you sell the same product\", \"summary\": \"Competitor offers often bundle a commodity product into a branded kit; copyable offer structure matters as much as the product.\", \"use_when\": \"You found a product with an appealing graph but generic positioning, and need a differentiation angle.\", \"steps\": [\"Click into a competitor's store from the Facebook Ad Library result and inspect the offer page.\", \"Note the structure rather than the product: e.g. a 'youth reset kit' on top of NAD patches, buy-one-get-one-free, plus a free ebook and an eye mask. The presenter rates this structure as strong.\", \"Look for ingredient-level specificity over adjectives: 'youthful' is a vague adjective, while naming an active ingredient (e.g. bee venom, known to the target female audience) tells the customer why the product works.\", \"Use that specificity — plus your own offer stack — as the reason your variant of the same product could still win.\"],\"caveats\": [\"Strong offers still face the niche-wide competition described elsewhere.\", \"Verify current ad library navigation before assuming a given layout.\"],\"tags\":[\"product-research\",\"offer-design\",\"competitive-analysis\",\"positioning\",\"branding\"]},{\"title\": \"Skip products with low perceived-value pricing\", \"summary\": \"Under-$10 price points force matching price and usually fail the perceived-value test.\", \"use_when\": \"A researched product shows a good graph but sells cheaply.\", \"steps\": [\"Check the store's selling price, e.g. a bug-bite suction device at $9.99.\", \"If the price is low like that, recognize you will be forced to run the same low-price play, which caps margins and ad economics.\", \"Prefer products with higher perceived value that can support a healthy price band, like the skin-tag removal cream the presenter flagged as well-priced.\", \"Treat low price as a structural constraint on the funnel, not just a number to edit on a test.\"],\"caveats\": [\"Low-price products can work in volume models; this is the presenter's preference for his drop-shipping tests, not a universal rule.\"],\"tags\":[\"product-research\",\"pricing\",\"perceived-value\",\"unit-economics\",\"screening\"]},{\"title\": \"Use the shape of the 180-day graph as a fast filter\", \"summary\": \"Up-down-up with an overall uptrend is healthy; a graph already in the gutter or on a downtrend is not worth testing.\", \"use_when\": \"Scanning many products and deciding which ones deserve a closer look.\", \"steps\": [\"Open the 180-day view first and read the overall trend rather than the last blip.\", \"Screen out graphs that are clearly declining — the presenter rejected a tinted lip serum doing $40K in 30 days because the 180-day graph was 'in the gutter', and rejected several others as downtrends.\", \"Keep the products whose graph oscillates but trends up overall.\", \"Only then spend time on videos, competitor lookup and trend checks for the survivors.\"],\"caveats\": [\"Graph reading is a screening step, not proof of demand transfer to your own store.\", \"Tools, ranges and labels change; confirm what the chart shows in your tool's current version.\"],\"tags\":[\"product-research\",\"data-analysis\",\"screening\",\"revenue-velocity\",\"workflow\"]},{\"title\": \"Research candidates against Facebook Ad Library and Google Trends\", \"summary\": \"A product counts as validated when it survives both a competitor search and a trend check.\", \"use_when\": \"You have a candidate with a good graph and need a go/no-go before testing.\", \"steps\": [\"Search the product keyword in the Facebook Ad Library to gauge how many advertisers are running it right now.\", \"Look for signals like a competitor who launched an ad only hours ago — that shows the space is live and being contested.\", \"Search the product on Google Trends to see whether search interest is building rather than decaying.\", \"Test only if the product looks validated across both checks; if no competition is findable at all, judge whether the trend and recency justify a speculative test.\"],\"caveats\": [\"Keyword selection is the hard part: for unfamiliar products like gut-cleansing protocols or fulvic acid blends, the obvious terms may surface nothing even when competitors exist.\", \"Absence of visible competitors is ambiguous, not automatically good.\"],\"tags\":[\"product-research\",\"validation\",\"facebook-ad-library\",\"google-trends\",\"competitive-analysis\"]},{\"title\": \"Switch filter categories to find cross-listed winners\", \"summary\": \"A product can appear under a different dashboard category than the niche it truly belongs to, so loosen category filters.\", \"use_when\": \"You are searching a niche and the category filter may be hiding relevant products.\", \"steps\": [\"Don't treat the dashboard category as truth: an arnica removal cream can sit under beauty and personal care while functionally being a supplement-driven health product.\", \"When a promising product is not showing in your main category, widen or change the category filter so it can appear.\", \"Once found, evaluate it on the same criteria as everything else: 7-day revenue (~$8K in the example), distribution across videos, price band and untapped feel.\", \"Confirm the product actually has a mechanism story (e.g. removing skin tags) rather than being a random listing.\"],\"caveats\": [\"Category filters are tool-specific and can change; verify how the platform you use organizes categories today.\"],\"tags\":[\"product-research\",\"filtering\",\"niche-selection\",\"data-analysis\",\"workflow\"]},{\"title\": \"Choose niches by competition level, not popularity\", \"summary\": \"Beauty and personal care equals health in potential but also in competition; less-hyped niches like home, tools and appliances often have lower competition.\", \"use_when\": \"Deciding which niche to hunt in before opening the product dashboard.\", \"steps\": [\"Treat beauty and personal care as equally viable to the health niche, with the same caveat of being equally competitive.\", \"Also consider women's wear and underwear, men's wear and underwear, home supplies, tools and hardware, home improvement and household appliances — niches the presenter says have low competition.\", \"Recognize that not hearing about a niche is the point: few sellers are in it, so a product with real revenue behind it is close to a validated winner.\", \"Expect fewer candidates per session in these niches because the option pool is smaller, and sift routinely rather than expecting every product to be good.\"],\"caveats\": [\"The presenter also notes these niches can attract passionate buyers and more product options, but quality still varies product by product.\", \"Low competition is not the same as proven demand; the revenue graph still has to be there.\"],\"tags\":[\"product-research\",\"niche-selection\",\"competitive-analysis\",\"product-validation\",\"category-strategy\"]},{\"title\": \"Beware recognizable products and brands\", \"summary\": \"If you've seen the product or brand many times — in ads or as an established retailer — pass on it.\", \"use_when\": \"A candidate looks familiar or comes from a long-established brand.\", \"steps\": [\"During scanning, treat your own familiarity as a red flag: the presenter skipped a known natural shampoo brand because it has been around a long time and isn't worth testing.\", \"Do the same for products you've personally seen advertised before (e.g. a deworming protocol ad the presenter recalled), since many other advertisers are likely running them too.\", \"Confirm with the competitor check: a shilajit-and-collagen bundle graph looked healthy, but the presenter rejected it because he knows the product and expects heavy competition in Facebook Ad Library.\", \"Keep scanning rather than trying to out-execute a saturated, well-known product.\"],\"caveats\": [\"Familiarity is a heuristic for saturation, not proof; a familiar category can still contain an untapped variant.\"],\"tags\":[\"product-research\",\"competitive-analysis\",\"screening\",\"branding\",\"saturation\"]},{\"title\": \"Decide whether to keep hunting or switch niches\", \"summary\": \"If pages of results are duds, adjust filters or switch niche rather than quitting early.\", \"use_when\": \"You have scrolled several result pages without a candidate worth testing.\", \"steps\": [\"Check how deep you actually are: the presenter refused to give up at page five of a many-page list.\", \"If duds dominate while your filters look reasonable, widen or change the category filter rather than assuming the whole niche is dead.\", \"Only switch niche after adjusting filters and still finding nothing — the presenter did this after the health niche run.\", \"Remember speed compounds: as you repeat this, you will no longer need a walkthrough video, and a single session can plausibly surface two or three strong candidates.\"],\"caveats\": [\"There is no fixed number of pages that means 'give up'; the source only warns against quitting too early.\", \"Sessions can produce zero winners, and that is a normal research outcome, not a failure of the method.\"],\"tags\":[\"product-research\",\"workflow\",\"filtering\",\"niche-selection\",\"screening\"]},{\"title\": \"Accept that validated products can still fail your test\", \"summary\": \"Testing a validated product on Meta with your own ads and offer is a new experiment, not a guaranteed win.\", \"use_when\": \"Planning a product test after research signals look strong.\", \"steps\": [\"Recognize the gap: the product was validated on its own store with its own content, while you test on Meta with more edited ads and a different offer.\", \"Treat research as generating candidates worth a test, not as evidence of certain success.\", \"If the test fails, reuse the same research method to find the next candidate rather than abandoning the process.\", \"Run the test for about 2-3 days on Meta, then assess and move on to the next product if it did badly.\"],\"caveats\": [\"The 2-3 day assessment window is the presenter's own practice for drop-shipping tests, not a universal statistical standard.\"],\"tags\":[\"product-research\",\"experiment-design\",\"product-testing\",\"meta-ads\",\"offer-design\"]}]}",
+  "input": {
+    "source_id": "1QvRAfUQ6OUSwiF_M4V15SrlUtPUAIROU",
+    "source_sha256": "be0b4d82534d103c15bac22a9f592b74d765b9eb7f108dd21fada44ba4bf5340",
+    "source_name": "This Product Research Method Made Me $2.3M Dropshipping (LIVE HUNTING).docx",
+    "folder": "/01-PRD-product-research",
+    "domain": "product-research",
+    "section": 2,
+    "section_count": 3,
+    "text": "like products kind of like these that have kind of been out for a longer time is you have a little bit more data on like okay what's the sustainability of it right this is kind of going up. Then it's gone down a little bit. Now it's kind of going up. Like you kind of get a good a good range at to like okay like they're kind of running it for this amount of many times. They're doing lows of like $300 days. Like that's kind of like their median like they're low average like but less than 1K but they're kind of on an overall uptrend. So that's way like healthier than it is like this. But that's kind of this is like a gamble product I like to call it. Um but like we all love to gamble, don't we? So take the gamble, right? Sometimes gamles work out. Let's go ahead and try to find some more stuff. This looks like a very interesting product. I like how it's branded. I like how the graph looks. We're going to go ahead and click on that and look at it in a second. Um, this right here is a sheilleit and collagen bundle. Um, I've seen this product around so much. Although the graph looks healthy, I know exactly what this product entails and it just didn't. There's a lot of competitors for it.\n\n So, I guarantee if you were to cross reference and test it with Facebook Ad Library, you'd see how many competitors we have for it. And that's kind of what we're working with with our high amount of revenue range that we're in right now. So, considering that we're already at 70K in revenue, I'm seeing products that I've seen like a million times over again. So, this is why I continue to sit at my desk and okay, we're seeing way too much right now. Let me lower our revenue to like 36,000 and let me make it like 70,000 as a high. This is going to make it so we're we're going to start seeing a lot less competitive products and that's a lot healthier for me, right? Uh number one, let's actually review the product that I just clicked on before we go ahead and click on any more. This is a uh purely men's Ultra 60 capsules. You could market it as a 30-day supply. Yeah, that's lit exactly what they did. Two capsules a day. Um that's a good marketing angle. You can see their graph has gone up, then down, then up. So, we want to go in the last seven days, go to their videos, make sure that their live revenue hasn't overtook all the revenue, uh, which it hasn't, and go ahead and Okay. And so, you can see they're marketing it like the the top video is in Spanish. So, it's not really what they're selling once again cuz once again, that's one of my criterias. I want Englishspeaking products because a lot of times you will find products that are Spanish- speakaking. And trust me, you don't want to test it and think that it's going to do well to English speakers. It doesn't. NAD patches huge. Um, this is this is like the same exact concept as GLP. NAD is also a huge niche right now. And so if I go to next 180 days, let's look at the graph. Beautiful, beautiful, absolutely primed graph, right? 12K revenue in the past 7 days. Are you wearing this English speaking video, you're missing out? A lot of content being able to use pretty not like super distributed out. You can clearly see there's one winning video, but like these are still bringing in some pretty good sales May 21st. Um, so that was posted like two and a half, three weeks ago, which is a little bit of a red flag, but then you can go ahead and start doing um what's it called? Competitor research on Facebook ad library. So, you can search up NAD patches, right? It's like you can kind of see like we're we didn't find a lot of patches in this video, but we can go ahead and search up NAD patches, see if we can find anything. And you can see we're getting GLP patches still. NAD. Um, you seen the NAD and first competitor we found right here. They started running this 14 hours ago. You can easily click on their store right here. You can see how crazy their offer looks. They're giving a youth reset kit. So, they've made these NAD patches super branded and they've pretty much made it into a reset kit. Like a buy 1 get one free. This is a really good offer, by the way. A buy 1 get one free plus a free ebook plus like an eye mask. So, this is like a really really good offer that like honestly will crush. Um, and it's B venom. So, they literally market it as B venom, which I find very interesting. Patch form. I love taking NAD because, you know, anti-aging, gives me energy, all the good things, but I get nauseous from taking pills. So, you can stick this sticker anywhere. This is what I mean as well is when you introduce like a new ingredient into products like these, like B venom, like B Venom is known for women. If you're a woman watching this, you know exactly what B Venom does. If you don't and you're a guy, just search it up. Which is B venom? Why do women take B venom? Um, you can see like why like women love B venom. So when you kind of like introduce a product like that into your NAD patches, it makes it seem a lot better because like you're you're telling them the ingredients in it instead of just saying like youthful youthful patches. Like that's just an adjective, right? Give me like tell me why it's going to be youthful like be venom, right? So that's a lot better. Um, that's like another really example of really good product. Continuous scroll down. So, I'd say we found really two two really good products uh as of right now. Going into this one right here, this one's gummies. So, this right here is a beautiful example of like what it means to make a gummy version of a product, a pill version of a product, a powder version of a product. You're going to see that time and time again, but this graph looks absolutely disgusting. So, I just want to get off that as soon as possible. Um, this video is long, I know, but as you kind of continue to do product research, you're going to get so much faster at it. It's like you're not going to need this YouTube video anymore. This right here is a very interesting one. This is a sevenin-one energy. She legit products. Sheillegit super competitive. This is why I love to do uh research on not only my products competition, but also the niches competition as a whole, right? If you search up GLP, right, you better know that you're competing if even you're selling patches that nobody else is selling, you're also just competing for GLP customers in general. You're competing for people who know about the supplement, who know about the powder, who know about the resin, who know about the gummies. they just decide to buy your patches because maybe they tried the other ones and they didn't want to buy it. Um, so that's super crucial is to understand how many other people are in your niche actually selling your product. Once again, um, kind of continuing to scroll through here. We're not finding anything too crazy. So, I'm probably going to switch niche. This is like this happens a lot sometimes. We'll go through a bunch of pages. You can see how many pages there are. I'm only on page five, so I don't I wouldn't really give up that fast. But, uh, oh, um, this one looks really good. You can see how the graph looks up. Um, I'd want to do further investig investigation. So, I go to the past 180 days. As I always told you guys, last 30 days, it's in 46K. Uh, you can see, okay, it's been cruising for a very long time, but it's blown up recently. A lot of people are like, oh, no, we're testing, we're testing that. But tread carefully. It's been doing 2K days for since 2024, right? So, let's figure out why has it done good in the past seven days? Um, and kind of look at it from here. we use for adults looking to do a deworm cleanse. So, this comment comes Okay, I've actually seen this ad before, so that's kind of a red flag to me, but this is like a this is basically a deworming protocol type of product. This is like a detox product. You take it, you start just pooping everywhere and you just feel super detoxed, which is like actually a really good product. Um, so what I would go ahead and do is I'd search up gut cleanse um two-step kit. like that's going to be that's probably not going to be the best thing to search up on Facebook ad library, but maybe give us a general. Yeah, you can search up just gut cleanse. Um, and just get a general idea. No, we're not seeing much for gut cleanse. Um, let's see what could be something else we searched up that could be fulvic acid blend. Yeah, fulvic acid blend. Let's see if that serves up for anything. Um, so sometimes you'll find products like these and it's hard to find competition for it because you don't really know what to search. I would say the best thing to do Oh, this could be one right here. No, this is just legit gummies. Um, best thing to do is kind of like just do your research without looking at the competition. Then, like assess like, okay, if we can't see it, is it worth testing? Like, in my honest opinion, like I would go on TikTok. I would I just look at when this video was posted, make sure it's super recent, and I'd maybe try to test it cuz it's doing well for a reason recently. It's just new content doing well. This video is really good. Um, this video right here was posted on, let's go ahead and see May 22nd. So, it's a little bit of an older video. That's like a super red flag to me. If this video was posted this week and doing that well, I'd go ahead and test it. But, that video is a little bit on the older side. So, it's not really it's, you know, once again, a little bit red flag. You're looking for red flag. That's all that's all product research is. Now that we've kind of gone through the health niche, something that, you know, like I said, has really good um, you know, long-term brand potential with MR and all that good stuff. There's also different niches that are just as good that I don't want any of you guys to undermine or kind of, you know, underestimate. The beauty and personal care is equally as good as the health niche. Um, but it's also once again equally as competitive. So, keep that in mind. You'll find a lot of just random products. But the biggest thing that that you should remember is like once again, this is a completely different niche. So, you want to go ahead and click on these products because they all do matter. They all do something, right? These are all important to people's lives as well. Uh, but you need to be able to learn how to kind of sift out all the bad products as well. So, we'll find a good product in the beauty and personal care. Some other niches that I love to do is once again women's wear and underwear, uh, the men's wear and underwear as well. Um, we just went over health, home supplies, tools and hardware, home improvement, household appliances. Those are all really, really good niches to be in. Um, because they have really low competition. So, you may be like, Ben, like those I've never heard of those niches before. Like, that's kind of the point. like you don't you don't hear about it because there's there's so little people selling in it. If you're able to find a product that has really good uh revenue backed behind it, it's like pretty much a validated winner. Just with these, it's like there's so many options out there. Um and such a passionate niche, you'll typically be able to find a lot more of those type of products. All right, let's continue to search. So, it's finally loaded, but let's just literally go through the products here. You can see we're at 36 to 70K revenue again. We're at beauty and personal care. We just want to start clicking on stuff that once again we think that has a really good product and perceived value, but we know that isn't over competitive. Like products like these, like we've all seen. This is like Body Works natural and gentle shampoo. So, I've seen base before. They've been a brand for a very long time. It's not really worth going ahead and testing a product like that. But this looks cool. This is a glazed tinted lip serum. Hydrated Korean lip care. These are all words that are just triggering in my mind and screaming winning product. 40k in the last 30 days which is really good. That's 180 days. The graph not looking too good. Right? You can see it was once winning product. Now it's completely in the gutter. So that's not really worth going ahead and testing. We continue to move on and continue to find some good winners. This right here is a bug bite sucking thing. This is they're selling it for $9.99. So even though the graph looks good, once again they're selling for such a low price. You're going to have to kind of follow that same type of vibe when it comes to your product as well. This right here looks a really good product. You can see it's on a downtrend. So the data speaks for itself. Not really go ahead and not really worth it. Um this is the mug low perceived value. Be venom. Another really good niche that we just were just talking about. And this literally this is the importance of switching your filters is this could very much be a health product, right? But this is a this is a supplement people can use for arnica removal cream. Right? This graph has gone up. It's kind of going down, but it's overall gone up from over here. And so once again, this is why you can't be too strict with your filters because in the last 7 days, they've done 8K. And so it's a very untapped product. So I'd go ahead and look why this product is actually selling. They're getting rid of skin tags. Boom. Using Venom to get rid of skin tags. You can see how well distributed the revenue is between this product. 2K, 1.8, 1.4. That's really good between three different videos. It's a really good dist uh distribution. They're selling it for a pretty good price range as well. So, I'd literally do the same exact thing is figure out how many competitors there are on Facebook ad library. Search up on Google Trends and if it's validated between all both of those, go ahead and test it. That's another great product that we just found. Um, this right here is also a really good graph. This is a zero cast anti- something. That's a Oh, that's a sunscreen. So, it's very interesting, but I just go ahead and skip that. I don't really like selling sunscreens. That's just my own personal preference. But you can kind of see we're finding good products. We've already found three really, really good products. you continue to do this, you're just going to continue to find winners after winner. You may find products like these and be like, \"Oh, like, you know, this is valid. This is a super big winner.\" Now, this is in Spanish, right? So, I wouldn't go out and test it even the graph is good. Um, and you're like, \"Oh, these are these are validated winners.\" When you test it, it's not 100% well% to do well, right? Cuz once again, you're testing it as an advertiser online, not on shop, but on Meta with more edited ads, a different offer than Tik Tok. So, you're kind of testing a bunch of new stuff. That's the beauty about it. If it fails, you have the method to be able to go back and go ahead and test it again, right? I hope this video has helped you guys actually get a better understanding of what it means to do good product research. I see way too many people doing just horrible product research on the space. Um, I'm going to go ahead and end the video here. Once again, if you want to see my case studies of just basically me drop shipping and getting a bunch of cool results, I'll leave all my case studies down in the description down below. Um, if you want to see um, my student case studies of us all crushing it and them getting crazy results following the same exact method I just gave you guys in this video, I'll go ahead and uh, leave that in the description down below. But most importantly, if you guys want to learn how to drop ship for free, I'm going to add a free training down below in the description. This is basically going to teach you guys how I go ahead and drop ship in 2025 a little bit more in depth on, you know, the systems, the mindset, everything it takes to kind of drop ship 2025. Also, if you are interested in joining the uni, it's going to go over how to actually go ahead and join the uni if you do want to become one of my next students. And the reason why I'm plugging this is because my top students right here have all come from this YouTube channel. I want more top students and I'm going to acquire more of you guys from this YouTube channel, and I want that. So, I'm going to go ahead and plug my uh my coaching group. And if you want to go ahead and join it, you can go ahead and click on this first link in the description down below as well because it's going to go ahead and teach you guys how to actually um apply to become one of my students. If you want Spy Crew, I'll leave you the second link, my Instagram, the third link um and then some other, you know, links you guys can check out as well in the description. But besides that, that's all I have for this video. Go out, crush it. This is how you find winners in 2025. Test it, leave it for 2 to 3 days on meta ads and uh go ahead and assess and move on to the next if it did bad. Cheers.",
+    "prior_notes": [],
+    "id": "ae7752f70c1f5114c341e16a"
+  },
+  "system_prompt_sha256": "458942624a5ba73364ec3f25288651f604b915c91776cbe18915311c9c3637ed"
+}

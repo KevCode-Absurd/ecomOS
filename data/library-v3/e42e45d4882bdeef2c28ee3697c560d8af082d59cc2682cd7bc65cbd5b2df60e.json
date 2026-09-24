@@ -1,0 +1,353 @@
+{
+  "request_id": "e42e45d4882bdeef2c28ee3697c560d8af082d59cc2682cd7bc65cbd5b2df60e",
+  "provider": "deepseek",
+  "model": "deepseek-flash",
+  "effort": "none",
+  "completion_limit": 16384,
+  "usage": {
+    "prompt_tokens": 6466,
+    "completion_tokens": 3833,
+    "total_tokens": 10299,
+    "prompt_tokens_details": {
+      "cached_tokens": 512
+    },
+    "prompt_cache_hit_tokens": 512,
+    "prompt_cache_miss_tokens": 5954
+  },
+  "booked_cost_usd": 0.0065394,
+  "seconds": 20.45,
+  "finish_reason": "stop",
+  "output": {
+    "type": "json_object",
+    "cards": [
+      {
+        "title": "Match account complexity to business complexity",
+        "summary": "Right-size Meta account segmentation by auditing product categories, ranges, demographics and budget constraints before choosing campaign and adset layers.",
+        "use_when": "Setting up or restructuring a Meta ad account for a store with multiple product lines, seasonal ranges or creative volume goals.",
+        "steps": [
+          "Audit the business first: list product categories, core vs. seasonal/always-on ranges, distinct target demographics, and any concepts so strong you're overleveraged.",
+          "Ask which categories are treated differently by the business — different gross margin dollars/percentages, different target demographics, different budget or targeting needs.",
+          "Map each meaningful difference to a layer: campaign-level segmentation for distinct business units with different KPIs or budgets; adset-level segmentation for creative-learning variables.",
+          "Avoid two failure modes: dozens of campaigns forcing thin budgets across many tests, and one fully consolidated Advantage+ campaign where you assume 'Meta will figure it out'. The source calls the consolidated approach a bad idea for non-trivial businesses.",
+          "If genuinely one product to one persona at small scale, a single Advantage+ campaign may be acceptable.",
+          "Before finalizing, check the structure is defensible: you can explain exactly why each layer exists and how it produces usable data."
+        ],
+        "caveats": [
+          "There is no single structure that fits every account; the source explicitly rejects universal templates.",
+          "Very high category counts should not become many low-budget campaigns — consolidate by gross margin or move learning to the adset level."
+        ],
+        "tags": [
+          "ad-copy-deployment",
+          "meta-ads",
+          "campaign-structure",
+          "segmentation",
+          "product-category",
+          "budget-allocation"
+        ]
+      },
+      {
+        "title": "Judge creative at the adset level, not the ad level",
+        "summary": "Meta last-click attribution makes ad-level ROAS unreliable; move KPI evaluation and budget decisions up to the adset so data has integrity.",
+        "use_when": "Deciding which creatives to scale, pause or replicate when ad-level ROAS numbers conflict with spend.",
+        "steps": [
+          "Recognize the distortion: Meta attributes by last click while optimizing across multi-click journeys, so a top-of-funnel ad warming cold audiences can show low ROAS while a follow-up ad takes the credit.",
+          "Expect reliability to decline as you move down the account: campaign-level 7-day-click ROAS correlates reasonably with acquisition; adset is less reliable; ad level is very unreliable.",
+          "Instead of debating ad-level theories (turn it off? launch it in a new adset?), bundle 5–20 creatives per adset and evaluate the adset's overall KPI.",
+          "If the adset hits KPI, scale budget without needing to know which individual ads worked — the combination works.",
+          "Use ad spend as a proxy for performance inside a winning adset: typically only a few of the ads absorb most spend, so those are the ones to model new creative on.",
+          "Build the adset as the unit of decision-making so learnings recursively feed creative design."
+        ],
+        "caveats": [
+          "The source treats campaign and adset ROAS as directional proxies, not exact calculators.",
+          "Ad-level data can still inform rough creative reads via spend patterns, but the source says it should not drive budget decisions."
+        ],
+        "tags": [
+          "ad-copy-deployment",
+          "meta-ads",
+          "attribution",
+          "measurement",
+          "kpi-tracking",
+          "scaling"
+        ]
+      },
+      {
+        "title": "Define a concept as persona + angle + offer",
+        "summary": "Group adsets by concept — persona + angle + offer — so creative learnings roll up to a reliable, interpretable level.",
+        "use_when": "Organizing adsets for a high-volume creative testing program where you need to learn which messages work.",
+        "steps": [
+          "Write the concept formula: persona + angle + offer. Change any one variable and it is a different concept.",
+          "Build each concept as its own adset with a set of ads underneath it (e.g., for creatine gummies: people who hate creatine powder; gym beginners; wellness/focus professionals; brain-support buyers).",
+          "Expect to build many ads under each concept — the concept defines the audience insight, the ads are executions of it.",
+          "Evaluate performance at the concept-adset level (e.g., 'how did our 20 hate-powder ads do?' — at KPI at 3x means scale budget and make more like them).",
+          "Use the concept-level read instead of trying to resolve conflicting ad-level ROAS figures.",
+          "Regularly review which concepts pull the majority of spend and shift creative production toward them."
+        ],
+        "caveats": [
+          "The source's 3x example is illustrative, not a benchmark.",
+          "Concept lists may need refreshing as winning concepts get saturated."
+        ],
+        "tags": [
+          "ad-copy-deployment",
+          "meta-ads",
+          "creative-strategy",
+          "segmentation",
+          "testing",
+          "kpi-tracking"
+        ]
+      },
+      {
+        "title": "Avoid launch-date adset segmentation",
+        "summary": "Batching new ads into adsets by the date they were made destroys targeting clarity because the adset is where Meta's audience learning lives.",
+        "use_when": "You are tempted to create a fresh adset each time you produce a new batch of creative.",
+        "steps": [
+          "Stop creating adsets like 'March 7 creatives' and 'March 9 creatives' just to keep new ads separate.",
+          "Understand the cost: such an adset mixes wellness professionals, brain-support buyers, women-focused creatine angles and more, so Meta has no specific audience subset to optimize toward and broadens targeting.",
+          "Recognize that audience/targeting learning is held primarily at the adset level, not the ad level, so mixing unrelated angles in one adset confuses the model.",
+          "Instead, place new ads into the existing concept adset whose persona + angle + offer they match.",
+          "If a concept is genuinely new, create a new concept adset — not a date-stamped dump adset.",
+          "Audit gender or audience breakdowns to confirm ads inside an adset are serving to the intended group."
+        ],
+        "caveats": [
+          "The source allows some learning at ad level but stresses adset-level learning dominates.",
+          "This is presented as a common mistake observed in accounts, not a universal law for every business."
+        ],
+        "tags": [
+          "ad-copy-deployment",
+          "meta-ads",
+          "campaign-structure",
+          "segmentation",
+          "algorithms",
+          "testing"
+        ]
+      },
+      {
+        "title": "Keep conflicting personas out of one adset",
+        "summary": "Each Meta adset learns in isolation, so grouping unrelated audiences (e.g., men's and women's apparel) degrades delivery efficiency.",
+        "use_when": "Structuring adsets for a store targeting multiple distinct demographics or use cases.",
+        "steps": [
+          "Treat each adset as learning its own audience in isolation — a concept adset will optimize toward the specific people its ads resonate with.",
+          "Split adsets so each targets one coherent audience subset (e.g., gym beginners vs. brain-support buyers; men's vs. women's activewear).",
+          "Do not batch men's and women's ads together: the adset gets confused about who the ads are for, and gender breakdowns often show ads serving to both indiscriminately.",
+          "When a concept serves genuinely different personas, create separate adsets per persona even if the angle or offer overlaps.",
+          "Use this to capture better performance than a broad adset that has no specific audience to optimize toward."
+        ],
+        "caveats": [
+          "The source frames this as a core Andromeda mechanic; specifics of algorithm behavior may change, so verify against current delivery data.",
+          "Isolation does not mean zero shared learning — some ad-level learning exists."
+        ],
+        "tags": [
+          "ad-copy-deployment",
+          "meta-ads",
+          "algorithms",
+          "segmentation",
+          "targeting",
+          "creative-strategy"
+        ]
+      },
+      {
+        "title": "Use format segmentation only for new or low-spend accounts",
+        "summary": "Splitting adsets by format (image, video, DPA) stabilizes early soft-metric volatility but is counterproductive for mature accounts.",
+        "use_when": "Launching a brand-new Meta account or testing creative formats with limited conversion history.",
+        "steps": [
+          "Understand why it helps beginners: new adsets lack conversion data, so Meta over-prioritizes soft metrics (CTR, CPM, CPC, hook rate, hold rate).",
+          "Expect images and DPAs to get prioritized under these conditions — images have low CPMs (looks good on soft metrics) and DPAs pull warm, high-intent audiences for early conversion signal.",
+          "If you are just starting out, segment formats into separate adsets so spend doesn't swing between assets for reasons unrelated to conversion performance.",
+          "If you spend roughly $10,000+/month, stop using format-based segmentation — the source says it doesn't make much sense for mature accounts.",
+          "For mature accounts, revert to concept-based adsets and let the combined adset prove performance."
+        ],
+        "caveats": [
+          "The $10,000/month figure is the source's rough heuristic, not a validated benchmark.",
+          "Format splitting is described as a beginner tactic, not a permanent structure."
+        ],
+        "tags": [
+          "ad-copy-deployment",
+          "meta-ads",
+          "campaign-structure",
+          "creative-format",
+          "testing",
+          "soft-metrics"
+        ]
+      },
+      {
+        "title": "Segment by landing page only when it adds something Shopify can't tell you",
+        "summary": "Landing-page adset segmentation is possible but often redundant because Shopify already reports page-level conversion data.",
+        "use_when": "Considering whether to build adsets around homepage, product page, collection page or custom landing pages.",
+        "steps": [
+          "If the goal is just to know which landing page converts better, pull that data from Shopify analytics instead of building adsets for it.",
+          "Build landing-page adset segmentation when you are introducing a genuinely custom landing page you want tested with distinct creative and budget.",
+          "Map adsets to landing page types (homepage, PDP, collection, custom) only when there is a real hypothesis worth isolating.",
+          "Otherwise, prefer concept-based adsets over landing-page adsets for creative learning."
+        ],
+        "caveats": [
+          "The source calls landing-page segmentation 'an option' but 'probably not the best option' for most accounts.",
+          "Requires sufficient volume per landing-page adset to be readable."
+        ],
+        "tags": [
+          "ad-copy-deployment",
+          "meta-ads",
+          "landing-page",
+          "segmentation",
+          "measurement",
+          "campaign-structure"
+        ]
+      },
+      {
+        "title": "Use adset-level category segmentation to reflect margin differences",
+        "summary": "When product categories have different gross margins, adset-level splits let you set different efficiency targets and spend distribution per category.",
+        "use_when": "Setting ROAS targets and spend distribution across product categories like dresses, tops, pants and accessories.",
+        "steps": [
+          "Assign each category adset its own efficiency goal based on gross margin — e.g., a category at ~70% gross margin can afford a lower ROAS than a category at ~55% that requires heavier discounting.",
+          "Use those targets to decide budget distribution and creative volume throughput per category adset.",
+          "Decide whether categories belong at campaign level or adset level based on count: a handful of categories may run as four campaigns with adset-level testing inside; 20 categories at low campaign budgets is impractical.",
+          "When category count is high, consolidate by gross margin and move learning to the adset level.",
+          "Check commercial alignment: the structure should let you flex budget toward categories with specific business objectives."
+        ],
+        "caveats": [
+          "The 70% vs. 55% margins are illustrative examples, not targets to copy.",
+          "The source sometimes runs this at campaign level instead — it depends on business complexity."
+        ],
+        "tags": [
+          "ad-copy-deployment",
+          "meta-ads",
+          "product-category",
+          "segmentation",
+          "budget-allocation",
+          "gross-margin"
+        ]
+      },
+      {
+        "title": "Double down on winning concepts with 120 creatives instead of 50",
+        "summary": "After Pareto's principle concentrates spend in a few concepts, redirect creative production into the winners rather than spreading output evenly.",
+        "use_when": "Planning next month's creative production volume after an adset-level review shows one or two concepts dominating spend.",
+        "steps": [
+          "Expect roughly 20% of concepts to take 80% of spend; the source treats this as a recurring pattern across adsets, campaigns, products and more.",
+          "Once the winning concept is identified, reallocate creative output: instead of 50 creatives across all concepts, produce around 120 behind the winner and about 40 spread across the rest.",
+          "Treat this as the payoff of adset-level KPIing — it converts testing into a compounding feedback loop instead of a pile of unread data.",
+          "Only double down when the concept's LTV dynamics support it; the source warns that a concept can drive great short-term performance yet produce poor LTV customers, which requires different segmentation."
+        ],
+        "caveats": [
+          "The 120 vs. 50 and 80/20 splits are the source's examples, not guarantees.",
+          "Overleveraging a single angle builds business risk if the concept stops working."
+        ],
+        "tags": [
+          "ad-copy-deployment",
+          "meta-ads",
+          "creative-strategy",
+          "scaling",
+          "pareto",
+          "ltv"
+        ]
+      },
+      {
+        "title": "Cap max spend share on any single winning adset",
+        "summary": "Instead of overleveraging into one winning concept, set a max spend percentage and keep rotating new concepts in to generate consistent learnings.",
+        "use_when": "A single concept adset is absorbing most budget and you want to limit business risk while continuing to scale.",
+        "steps": [
+          "Recognize the risk: overleveraging into one ad, adset, angle or concept leaves nothing to fall back on when it stops working.",
+          "Set a maximum spend limit on the winning adset — the source's example is a 40% cap.",
+          "Continue whipping up new concepts and adsets and rotating them in to find another performer.",
+          "Let new adsets spend to a level that reaches statistical relevancy, then rotate out the ones that don't work.",
+          "Use this rotation to generate consistent new creative into the account and consistent learnings, rather than a static set of adsets.",
+          "Choose between doubling down (more creative behind the winner) and capping (spend limit plus rotation) based on how much risk the business can carry."
+        ],
+        "caveats": [
+          "The 40% cap is the source's example, not a universal rule.",
+          "Statistical relevancy threshold is not defined numerically in the source — set it based on your own data volume."
+        ],
+        "tags": [
+          "ad-copy-deployment",
+          "meta-ads",
+          "scaling",
+          "budget-allocation",
+          "risk-management",
+          "testing"
+        ]
+      },
+      {
+        "title": "Make every structure defensible and commercially aligned",
+        "summary": "Any high-volume Meta structure must pass two tests: readable, integrity-preserving data, and alignment with the store's commercial objectives.",
+        "use_when": "Auditing an existing Meta account structure or designing one before scaling creative volume.",
+        "steps": [
+          "Test one — data integrity: if an external auditor entered the account, you should be able to explain exactly why each layer exists, how it produces insights, and why the data is clean for decisions.",
+          "If you cannot defend the structure this way, the data cannot support business decisions and should be restructured.",
+          "Test two — commercial alignment: confirm the structure flexes budget toward the objectives that matter (e.g., a product category that needs a set budget, a core range that must hit specific spend).",
+          "Add segmentation where a segment's economics differ materially — for example, a concept producing poor LTV needs separation to offset its effect.",
+          "Reject copy-paste agency templates: the source says running one structure for every account ignores differences in categories, niches, audiences and LTV dynamics.",
+          "Recheck both tests whenever creative volume or product mix changes."
+        ],
+        "caveats": [
+          "The source presents these as the two requirements every structure must satisfy, not a specific layout.",
+          "Poor LTV from a high-performing concept may not be visible quickly; pair with LTV tracking."
+        ],
+        "tags": [
+          "ad-copy-deployment",
+          "meta-ads",
+          "campaign-structure",
+          "measurement",
+          "budget-allocation",
+          "ltv"
+        ]
+      },
+      {
+        "title": "Treat day-to-day bid and budget fiddling as low value",
+        "summary": "The source claims traditional media buying died around three years ago; the remaining high-leverage work is strategic account structure.",
+        "use_when": "Deciding where to spend your ad management time each week.",
+        "steps": [
+          "Deprioritize daily bid and budget tweaking, which the source says lacks a lot of value under current Meta algorithms.",
+          "Redirect that time into designing account structure: which concepts get adsets, how budget flows between product categories, and how KPIs are read.",
+          "Use structure to determine how budget flows across categories and ads, and how decision loops get built into the business.",
+          "Judge structural decisions by whether they improve the feedback loop between spend data and future creative production."
+        ],
+        "caveats": [
+          "This is the source's stated position ('media buying died like 3 years ago'), not a universal law.",
+          "Does not remove the need for periodic budget reallocation at the adset or campaign level."
+        ],
+        "tags": [
+          "ad-copy-deployment",
+          "meta-ads",
+          "campaign-structure",
+          "media-buying",
+          "budget-allocation"
+        ]
+      },
+      {
+        "title": "Support high creative volume without breaking efficiency",
+        "summary": "A concept-segmented account with adset-level KPIing can absorb large monthly creative volume while still producing actionable learnings.",
+        "use_when": "Planning a high-volume creative testing pipeline and deciding how much creative the account can actually support.",
+        "steps": [
+          "Build the concept-adset structure first; the source's worked example has four concept adsets each holding 50 creatives, enabling around 200 new ads per month.",
+          "Do not spread budget so thin that tests spend only $1–$2 and get judged too quickly — that is one of the two common failure modes.",
+          "After launch, expect one or two adsets to underperform and one to dramatically outperform; budget redistributes at adset level (or automatically via CBO).",
+          "Read the concentration as insight, then either increase creative output behind the winner or cap its spend share and rotate in new concepts.",
+          "Track whether the loop is feeding future creative design — if you can't interpret the data, volume produces no learnings."
+        ],
+        "caveats": [
+          "The 4 adsets x 50 creatives = 200 ads/month is an illustrative capacity example, not a guarantee.",
+          "CBO vs. manual redistribution is a choice the source leaves open."
+        ],
+        "tags": [
+          "ad-copy-deployment",
+          "meta-ads",
+          "creative-strategy",
+          "scaling",
+          "testing",
+          "campaign-structure"
+        ]
+      }
+    ]
+  },
+  "raw_content": "{\"type\":\"json_object\",\"cards\":[{\"title\":\"Match account complexity to business complexity\",\"summary\":\"Right-size Meta account segmentation by auditing product categories, ranges, demographics and budget constraints before choosing campaign and adset layers.\",\"use_when\":\"Setting up or restructuring a Meta ad account for a store with multiple product lines, seasonal ranges or creative volume goals.\",\"steps\":[\"Audit the business first: list product categories, core vs. seasonal/always-on ranges, distinct target demographics, and any concepts so strong you're overleveraged.\",\"Ask which categories are treated differently by the business — different gross margin dollars/percentages, different target demographics, different budget or targeting needs.\",\"Map each meaningful difference to a layer: campaign-level segmentation for distinct business units with different KPIs or budgets; adset-level segmentation for creative-learning variables.\",\"Avoid two failure modes: dozens of campaigns forcing thin budgets across many tests, and one fully consolidated Advantage+ campaign where you assume 'Meta will figure it out'. The source calls the consolidated approach a bad idea for non-trivial businesses.\",\"If genuinely one product to one persona at small scale, a single Advantage+ campaign may be acceptable.\",\"Before finalizing, check the structure is defensible: you can explain exactly why each layer exists and how it produces usable data.\"],\"caveats\":[\"There is no single structure that fits every account; the source explicitly rejects universal templates.\",\"Very high category counts should not become many low-budget campaigns — consolidate by gross margin or move learning to the adset level.\"],\"tags\":[\"ad-copy-deployment\",\"meta-ads\",\"campaign-structure\",\"segmentation\",\"product-category\",\"budget-allocation\"]},{\"title\":\"Judge creative at the adset level, not the ad level\",\"summary\":\"Meta last-click attribution makes ad-level ROAS unreliable; move KPI evaluation and budget decisions up to the adset so data has integrity.\",\"use_when\":\"Deciding which creatives to scale, pause or replicate when ad-level ROAS numbers conflict with spend.\",\"steps\":[\"Recognize the distortion: Meta attributes by last click while optimizing across multi-click journeys, so a top-of-funnel ad warming cold audiences can show low ROAS while a follow-up ad takes the credit.\",\"Expect reliability to decline as you move down the account: campaign-level 7-day-click ROAS correlates reasonably with acquisition; adset is less reliable; ad level is very unreliable.\",\"Instead of debating ad-level theories (turn it off? launch it in a new adset?), bundle 5–20 creatives per adset and evaluate the adset's overall KPI.\",\"If the adset hits KPI, scale budget without needing to know which individual ads worked — the combination works.\",\"Use ad spend as a proxy for performance inside a winning adset: typically only a few of the ads absorb most spend, so those are the ones to model new creative on.\",\"Build the adset as the unit of decision-making so learnings recursively feed creative design.\"],\"caveats\":[\"The source treats campaign and adset ROAS as directional proxies, not exact calculators.\",\"Ad-level data can still inform rough creative reads via spend patterns, but the source says it should not drive budget decisions.\"],\"tags\":[\"ad-copy-deployment\",\"meta-ads\",\"attribution\",\"measurement\",\"kpi-tracking\",\"scaling\"]},{\"title\":\"Define a concept as persona + angle + offer\",\"summary\":\"Group adsets by concept — persona + angle + offer — so creative learnings roll up to a reliable, interpretable level.\",\"use_when\":\"Organizing adsets for a high-volume creative testing program where you need to learn which messages work.\",\"steps\":[\"Write the concept formula: persona + angle + offer. Change any one variable and it is a different concept.\",\"Build each concept as its own adset with a set of ads underneath it (e.g., for creatine gummies: people who hate creatine powder; gym beginners; wellness/focus professionals; brain-support buyers).\",\"Expect to build many ads under each concept — the concept defines the audience insight, the ads are executions of it.\",\"Evaluate performance at the concept-adset level (e.g., 'how did our 20 hate-powder ads do?' — at KPI at 3x means scale budget and make more like them).\",\"Use the concept-level read instead of trying to resolve conflicting ad-level ROAS figures.\",\"Regularly review which concepts pull the majority of spend and shift creative production toward them.\"],\"caveats\":[\"The source's 3x example is illustrative, not a benchmark.\",\"Concept lists may need refreshing as winning concepts get saturated.\"],\"tags\":[\"ad-copy-deployment\",\"meta-ads\",\"creative-strategy\",\"segmentation\",\"testing\",\"kpi-tracking\"]},{\"title\":\"Avoid launch-date adset segmentation\",\"summary\":\"Batching new ads into adsets by the date they were made destroys targeting clarity because the adset is where Meta's audience learning lives.\",\"use_when\":\"You are tempted to create a fresh adset each time you produce a new batch of creative.\",\"steps\":[\"Stop creating adsets like 'March 7 creatives' and 'March 9 creatives' just to keep new ads separate.\",\"Understand the cost: such an adset mixes wellness professionals, brain-support buyers, women-focused creatine angles and more, so Meta has no specific audience subset to optimize toward and broadens targeting.\",\"Recognize that audience/targeting learning is held primarily at the adset level, not the ad level, so mixing unrelated angles in one adset confuses the model.\",\"Instead, place new ads into the existing concept adset whose persona + angle + offer they match.\",\"If a concept is genuinely new, create a new concept adset — not a date-stamped dump adset.\",\"Audit gender or audience breakdowns to confirm ads inside an adset are serving to the intended group.\"],\"caveats\":[\"The source allows some learning at ad level but stresses adset-level learning dominates.\",\"This is presented as a common mistake observed in accounts, not a universal law for every business.\"],\"tags\":[\"ad-copy-deployment\",\"meta-ads\",\"campaign-structure\",\"segmentation\",\"algorithms\",\"testing\"]},{\"title\":\"Keep conflicting personas out of one adset\",\"summary\":\"Each Meta adset learns in isolation, so grouping unrelated audiences (e.g., men's and women's apparel) degrades delivery efficiency.\",\"use_when\":\"Structuring adsets for a store targeting multiple distinct demographics or use cases.\",\"steps\":[\"Treat each adset as learning its own audience in isolation — a concept adset will optimize toward the specific people its ads resonate with.\",\"Split adsets so each targets one coherent audience subset (e.g., gym beginners vs. brain-support buyers; men's vs. women's activewear).\",\"Do not batch men's and women's ads together: the adset gets confused about who the ads are for, and gender breakdowns often show ads serving to both indiscriminately.\",\"When a concept serves genuinely different personas, create separate adsets per persona even if the angle or offer overlaps.\",\"Use this to capture better performance than a broad adset that has no specific audience to optimize toward.\"],\"caveats\":[\"The source frames this as a core Andromeda mechanic; specifics of algorithm behavior may change, so verify against current delivery data.\",\"Isolation does not mean zero shared learning — some ad-level learning exists.\"],\"tags\":[\"ad-copy-deployment\",\"meta-ads\",\"algorithms\",\"segmentation\",\"targeting\",\"creative-strategy\"]},{\"title\":\"Use format segmentation only for new or low-spend accounts\",\"summary\":\"Splitting adsets by format (image, video, DPA) stabilizes early soft-metric volatility but is counterproductive for mature accounts.\",\"use_when\":\"Launching a brand-new Meta account or testing creative formats with limited conversion history.\",\"steps\":[\"Understand why it helps beginners: new adsets lack conversion data, so Meta over-prioritizes soft metrics (CTR, CPM, CPC, hook rate, hold rate).\",\"Expect images and DPAs to get prioritized under these conditions — images have low CPMs (looks good on soft metrics) and DPAs pull warm, high-intent audiences for early conversion signal.\",\"If you are just starting out, segment formats into separate adsets so spend doesn't swing between assets for reasons unrelated to conversion performance.\",\"If you spend roughly $10,000+/month, stop using format-based segmentation — the source says it doesn't make much sense for mature accounts.\",\"For mature accounts, revert to concept-based adsets and let the combined adset prove performance.\"],\"caveats\":[\"The $10,000/month figure is the source's rough heuristic, not a validated benchmark.\",\"Format splitting is described as a beginner tactic, not a permanent structure.\"],\"tags\":[\"ad-copy-deployment\",\"meta-ads\",\"campaign-structure\",\"creative-format\",\"testing\",\"soft-metrics\"]},{\"title\":\"Segment by landing page only when it adds something Shopify can't tell you\",\"summary\":\"Landing-page adset segmentation is possible but often redundant because Shopify already reports page-level conversion data.\",\"use_when\":\"Considering whether to build adsets around homepage, product page, collection page or custom landing pages.\",\"steps\":[\"If the goal is just to know which landing page converts better, pull that data from Shopify analytics instead of building adsets for it.\",\"Build landing-page adset segmentation when you are introducing a genuinely custom landing page you want tested with distinct creative and budget.\",\"Map adsets to landing page types (homepage, PDP, collection, custom) only when there is a real hypothesis worth isolating.\",\"Otherwise, prefer concept-based adsets over landing-page adsets for creative learning.\"],\"caveats\":[\"The source calls landing-page segmentation 'an option' but 'probably not the best option' for most accounts.\",\"Requires sufficient volume per landing-page adset to be readable.\"],\"tags\":[\"ad-copy-deployment\",\"meta-ads\",\"landing-page\",\"segmentation\",\"measurement\",\"campaign-structure\"]},{\"title\":\"Use adset-level category segmentation to reflect margin differences\",\"summary\":\"When product categories have different gross margins, adset-level splits let you set different efficiency targets and spend distribution per category.\",\"use_when\":\"Setting ROAS targets and spend distribution across product categories like dresses, tops, pants and accessories.\",\"steps\":[\"Assign each category adset its own efficiency goal based on gross margin — e.g., a category at ~70% gross margin can afford a lower ROAS than a category at ~55% that requires heavier discounting.\",\"Use those targets to decide budget distribution and creative volume throughput per category adset.\",\"Decide whether categories belong at campaign level or adset level based on count: a handful of categories may run as four campaigns with adset-level testing inside; 20 categories at low campaign budgets is impractical.\",\"When category count is high, consolidate by gross margin and move learning to the adset level.\",\"Check commercial alignment: the structure should let you flex budget toward categories with specific business objectives.\"],\"caveats\":[\"The 70% vs. 55% margins are illustrative examples, not targets to copy.\",\"The source sometimes runs this at campaign level instead — it depends on business complexity.\"],\"tags\":[\"ad-copy-deployment\",\"meta-ads\",\"product-category\",\"segmentation\",\"budget-allocation\",\"gross-margin\"]},{\"title\":\"Double down on winning concepts with 120 creatives instead of 50\",\"summary\":\"After Pareto's principle concentrates spend in a few concepts, redirect creative production into the winners rather than spreading output evenly.\",\"use_when\":\"Planning next month's creative production volume after an adset-level review shows one or two concepts dominating spend.\",\"steps\":[\"Expect roughly 20% of concepts to take 80% of spend; the source treats this as a recurring pattern across adsets, campaigns, products and more.\",\"Once the winning concept is identified, reallocate creative output: instead of 50 creatives across all concepts, produce around 120 behind the winner and about 40 spread across the rest.\",\"Treat this as the payoff of adset-level KPIing — it converts testing into a compounding feedback loop instead of a pile of unread data.\",\"Only double down when the concept's LTV dynamics support it; the source warns that a concept can drive great short-term performance yet produce poor LTV customers, which requires different segmentation.\"],\"caveats\":[\"The 120 vs. 50 and 80/20 splits are the source's examples, not guarantees.\",\"Overleveraging a single angle builds business risk if the concept stops working.\"],\"tags\":[\"ad-copy-deployment\",\"meta-ads\",\"creative-strategy\",\"scaling\",\"pareto\",\"ltv\"]},{\"title\":\"Cap max spend share on any single winning adset\",\"summary\":\"Instead of overleveraging into one winning concept, set a max spend percentage and keep rotating new concepts in to generate consistent learnings.\",\"use_when\":\"A single concept adset is absorbing most budget and you want to limit business risk while continuing to scale.\",\"steps\":[\"Recognize the risk: overleveraging into one ad, adset, angle or concept leaves nothing to fall back on when it stops working.\",\"Set a maximum spend limit on the winning adset — the source's example is a 40% cap.\",\"Continue whipping up new concepts and adsets and rotating them in to find another performer.\",\"Let new adsets spend to a level that reaches statistical relevancy, then rotate out the ones that don't work.\",\"Use this rotation to generate consistent new creative into the account and consistent learnings, rather than a static set of adsets.\",\"Choose between doubling down (more creative behind the winner) and capping (spend limit plus rotation) based on how much risk the business can carry.\"],\"caveats\":[\"The 40% cap is the source's example, not a universal rule.\",\"Statistical relevancy threshold is not defined numerically in the source — set it based on your own data volume.\"],\"tags\":[\"ad-copy-deployment\",\"meta-ads\",\"scaling\",\"budget-allocation\",\"risk-management\",\"testing\"]},{\"title\":\"Make every structure defensible and commercially aligned\",\"summary\":\"Any high-volume Meta structure must pass two tests: readable, integrity-preserving data, and alignment with the store's commercial objectives.\",\"use_when\":\"Auditing an existing Meta account structure or designing one before scaling creative volume.\",\"steps\":[\"Test one — data integrity: if an external auditor entered the account, you should be able to explain exactly why each layer exists, how it produces insights, and why the data is clean for decisions.\",\"If you cannot defend the structure this way, the data cannot support business decisions and should be restructured.\",\"Test two — commercial alignment: confirm the structure flexes budget toward the objectives that matter (e.g., a product category that needs a set budget, a core range that must hit specific spend).\",\"Add segmentation where a segment's economics differ materially — for example, a concept producing poor LTV needs separation to offset its effect.\",\"Reject copy-paste agency templates: the source says running one structure for every account ignores differences in categories, niches, audiences and LTV dynamics.\",\"Recheck both tests whenever creative volume or product mix changes.\"],\"caveats\":[\"The source presents these as the two requirements every structure must satisfy, not a specific layout.\",\"Poor LTV from a high-performing concept may not be visible quickly; pair with LTV tracking.\"],\"tags\":[\"ad-copy-deployment\",\"meta-ads\",\"campaign-structure\",\"measurement\",\"budget-allocation\",\"ltv\"]},{\"title\":\"Treat day-to-day bid and budget fiddling as low value\",\"summary\":\"The source claims traditional media buying died around three years ago; the remaining high-leverage work is strategic account structure.\",\"use_when\":\"Deciding where to spend your ad management time each week.\",\"steps\":[\"Deprioritize daily bid and budget tweaking, which the source says lacks a lot of value under current Meta algorithms.\",\"Redirect that time into designing account structure: which concepts get adsets, how budget flows between product categories, and how KPIs are read.\",\"Use structure to determine how budget flows across categories and ads, and how decision loops get built into the business.\",\"Judge structural decisions by whether they improve the feedback loop between spend data and future creative production.\"],\"caveats\":[\"This is the source's stated position ('media buying died like 3 years ago'), not a universal law.\",\"Does not remove the need for periodic budget reallocation at the adset or campaign level.\"],\"tags\":[\"ad-copy-deployment\",\"meta-ads\",\"campaign-structure\",\"media-buying\",\"budget-allocation\"]},{\"title\":\"Support high creative volume without breaking efficiency\",\"summary\":\"A concept-segmented account with adset-level KPIing can absorb large monthly creative volume while still producing actionable learnings.\",\"use_when\":\"Planning a high-volume creative testing pipeline and deciding how much creative the account can actually support.\",\"steps\":[\"Build the concept-adset structure first; the source's worked example has four concept adsets each holding 50 creatives, enabling around 200 new ads per month.\",\"Do not spread budget so thin that tests spend only $1–$2 and get judged too quickly — that is one of the two common failure modes.\",\"After launch, expect one or two adsets to underperform and one to dramatically outperform; budget redistributes at adset level (or automatically via CBO).\",\"Read the concentration as insight, then either increase creative output behind the winner or cap its spend share and rotate in new concepts.\",\"Track whether the loop is feeding future creative design — if you can't interpret the data, volume produces no learnings.\"],\"caveats\":[\"The 4 adsets x 50 creatives = 200 ads/month is an illustrative capacity example, not a guarantee.\",\"CBO vs. manual redistribution is a choice the source leaves open.\"],\"tags\":[\"ad-copy-deployment\",\"meta-ads\",\"creative-strategy\",\"scaling\",\"testing\",\"campaign-structure\"]}]}",
+  "input": {
+    "source_id": "1TNrxiqHZDDWo0BmzKIvR274UZMa86jTJ",
+    "source_sha256": "ce4234fd9e7c4e81efa8c36f84157a791eec754e1dd79e29e457ef9830ac29e3",
+    "source_name": "How To Structure Meta For High Creative Volume.docx",
+    "folder": "/11-ADC-ad-copy-deployment",
+    "domain": "ad-copy-deployment",
+    "section": 0,
+    "section_count": 1,
+    "text": "11-ADC / ad copy and deployment\n\nGoes here. Ad account structure, budget distribution, adset-level KPI tracking, scaling rules, segmentation strategy (by product category vs. concept), algorithm mechanics (Andromeda), machine learning models for campaign structure, and mitigating attribution issues (last-click unreliability at the ad level).\n\nNot here.\n\nPaid social creative formats, visual hooks, script breakdown, or UGC -> 10-MCR\n\nGoogle Analytics reporting or organic site analytics -> 06-MEA\n\nHeader. url: rights: public_reference why: Details advanced Meta ad account structuring techniques, demonstrating why scaling high creative volume requires adset-level KPI tracking, concept-based segmentation to guide the Andromeda algorithm, and how to structure accounts to maintain reliable feedback loops. modules: [ADC] topics: [campaign setup and tracking, algorithms and auction dynamics, scaling] tier: 2 scope_hint: core\n\nTopics. campaign setup and tracking / Architecting Meta ad accounts to support high-volume creative testing without oversegmenting or overconsolidating (e.g., avoiding the mistake of dumping all ads into a single Advantage+ campaign). Defining segmentation layers at the campaign level based on business complexity (e.g., distinct product categories with differing gross margins and budget caps) and at the adset level based on creative concepts (e.g., \"persona + angle + offer\"). Rejecting basic adset segmentation by \"launch date\" (which confuses the targeting algorithm) in favor of structuring adsets by concept to ensure clear, reliable performance data. algorithms and auction dynamics / Managing the Meta algorithm's inherent limitations regarding last-click attribution at the individual ad level, which falsely penalizes top-of-funnel creative while over-crediting bottom-of-funnel follow-up ads within a multi-touch sequence. Shifting the primary feedback loop and KPI evaluation from the ad level up to the adset level to mitigate this attribution distortion, using ad spend as a proxy for algorithmic success. Understanding how the Andromeda algorithm isolates learning within distinct adsets, meaning that grouping conflicting personas (e.g., men’s and women’s apparel) in one adset degrades delivery efficiency. scaling / Executing budget scaling and creative volume forecasting through structured adset management. Applying Pareto's principle to anticipate that 20% of concepts will command 80% of the spend, then utilizing that data to either double down on the winning concept's creative output (producing 120 variations instead of 50) or applying a maximum spend limit (e.g., 40%) to mitigate the business risk of overleveraging a single angle.\n\nLook for. The primary flaw of evaluating performance at the individual ad level: Meta attributes via last-click, which masks the multi-ad customer journey and creates unreliable data for top-of-funnel creatives. The optimal level to evaluate creative performance and make budget decisions: the adset level. The definition of a \"concept\" for adset grouping: Persona + Angle + Offer. The fundamental rule of how Meta's algorithm learns within an account: each adset learns in isolation, meaning grouping unrelated creatives (e.g., men's and women's apparel) confuses the targeting model.\n\nSkip. General complaints about generic agency coaching groups teaching universal account structures.\n\nScope mix. Almost all core.\n\nVolume. 10 to 15.\n\nHere's how to structure your ad account for high volume creative. Everyone wants to test more. Everyone wants to put more creative in the account, but it causes one of two things. You either oversegment or you overconolidate. And both put you in a bad position because the goal isn't just to launch more ads, but it's to build an account structure that lets you test fast without destroying spend efficiency and while still getting learnings that you can feed back into future creative design. Common mistakes is people make way too many campaigns. They force budget way too thin across so many tests. You see this all the time. People test a hundred things but learn nothing. They judge ads too quickly when they really only spent$1 or $2. And they use one fully consolidated campaign and they just say, \"Hey, Meta will figure it out.\" I see a lot of this these days. Hey, just run one Advantage Plus campaign and just put all your ads in there. Terrible idea. So, let's break down how you should be thinking through this problem and how you should be structuring your account. Step number one is we need to understand the complexity of the business because the complexity of the ad account is a product of the complexity of the business. If you sell one product to one persona and you're relatively small, maybe you can get away with just one advantage plus campaign where you're dropping asset, fair enough. But if you're two products, three products, if you have some complexity in the personas that you're targeting, if you have a really high volume of creative, which if you're watching this, this is the whole point of this video. Well, then there becomes complexity. Specifically, what I mean by complexity is do you have different product categories? Do you have core verse seasonal ranges? So, always on verse uh new arrivals. Do you have differences within the core demographics that you're going after? And do you have concept winners that are doing incredibly well, but you're overleveraged into them and so you want more? Well, if product categories are treated meaningfully differently, what you then have to start to consider here is different product categories have different gross margin both in dollar value and percentages. They have different target demographics and they have different budgets in targeting particularly in large retail businesses. Now, why this is important is because segmentation allows us to do two things. It allows us to control budgets and it allows us to KPI better at the adset level. And so if you have a lot of different product categories, it makes sense to introduce some campaign level segmentation for those different product categories because they might have different KPIs. They might need different budgets. They might be treated differently by the business. And so if you have any of these things, you want to be thinking, okay, we should probably introduce a degree of segmentation at the campaign level here to be able to accommodate. Step number two is what variable do we want to gain insights on? Now probably doesn't make much sense. So let me explain. The reliability of rorowaz declines as you move down the account structure. When you look at campaign level rorowaz with 7-day click it's relatively reliable. It correlates to acquisition me in the business quite well. Once you go to the adset level becomes a little bit less reliable and once you're all the way down at the ad level it's very unreliable. The reason why it's very unreliable is because meta attributes based on last click despite meta optimizing across multi-click. So this ends up causing a lot of confusion where you're trying to optimize at the ad level. Let me give you an example. Two ads sorting by spend. Why is the highest spending ad here have a lower rorowaz? Why is meta putting spend here? Why wouldn't be putting spend into this second ad? Makes no sense. Why? What do we do in this circumstance? Firstly, do we turn the top one off? Do we go and take the second one and launch it in a second ads set? What do we do? How do we interpret the data? Well, we can't because it's unreliable. Now, why is it unreliable? Well, because we know that almost no one buys after one impression. And so if no one buys after one impression and it typically takes multiple different ads serving to you, potentially even multiple different clicks and all of the attribution just goes to the final click in the customer journey. Well then yes, this ad right here is doing well, but it might just be taking all the credit. And in fact, you could probably come up with a theory here that this top ad is getting a lot of spend because this is the first ad that's serving to cold audiences and then this second ad comes in as the follow-up ad ends up getting the click and conversion, but it wouldn't get the click and conversion if you didn't first show ad one. And so Meta is optimizing across that sequence to try to warm people up with ad one, then get them with ad two. And overall, it achieves your goal of let's say a 3x return. But when we break them down individually, the one at the top doesn't look very good because that's not its job. Its job isn't to look good on a click-based attribution. So the best option here, because it's very hard to figure out what to do, and you just start to talk about theory at this point. I could argue one thing, someone else could come in the account and argue another thing. Who's right? We don't know until we turn one of these ads off or we materially change the account. And so what's the better way to approach it? Because just having uncertainty in decision-m lacks a lot of data integrity. You end up making decisions within the business that fundamentally have very large error bars on them. So the best option is to move up to the adset level and KPI there instead. So rather than looking down at the ad level and trying to figure out what's going on, even though there's a multi-click pathway that's occurring and people are seeing multiple different ads, instead let's just go, hey, let's bundle all our creatives, 5, 10, 20 creatives, put it in an ad set. Let's not worry about the ads. Meta's going to distribute spend in the most effective way no matter what. Let's not get too deep in where the attribution is going because we're all going to tell a different story. We're all going to be wrong. And instead, let's just look at the adset as a whole and go, is this ad set with these collection of ads performing at KPI? And if it is, well, amazing. Let's increase budgets. I don't care what ads are working. The combination of them are working. There's probably going to be of those 20 ads, maybe four are spending. And so, we can use spend as a proxy for performance. And we can say those four ads are working. Let's do more like that. And then at the adset level, we can make decisions. And so adset level structuring becomes critical for making decisions within the business which loops us all the way back up to the initial statement which is what variable do we want to gain insights on at the adset level. How are we structuring to gain insights that can create a recursive feedback loop? This is ultimately the goal. This is the big missing piece with most brands at the moment, which is that they are throwing tons of creative in the account. Some works, some doesn't, but they have no loop to be able to create more of what works and less of what doesn't because they can't interpret the data at the ad level. They're throwing everything into one campaign hoping for the best. Pareto's principle always applies, which is that 20% of ads get 80% of spend, and then they go, \"What about all the other ads? Are they good? Would they have performed well?\" You don't know. Oh, and so you end up with poor creative feedback loops within the business. So, how do we actually start thinking about the different variables that we can test at the adset level? Well, variable number one, very easy. You could just think about format. Okay, we could have images in one adset, Gibson another adset, videos in another. Let's put DPAs in another one. And this is good for beginners, but it's bad for mature accounts. The reason why this is good for beginners is because when you launch a new adset or a new campaign, Meta ends up over prioritizing soft metrics. Soft metrics being click-through rates, CPMs, CPCs, hook rates, hold rates. It over prioritizes those metrics because it doesn't have any conversion data yet. And so, it can't optimize based on conversion signals. So, it goes upstream to higher intent signals or technically lower intent signals to be able to determine which ads are performing well. Now, what ends up happening when you group all these ads in one ad set is images typically always get prioritized along with DPAs. And it's because images have low CPMs. It's a soft metric that looks good, so it gets prioritized. DPAs get prioritized because they automatically prioritize warm, high intent audiences, and so they get better conversion signal out of the gates. So, if you're a beginner, if you're just starting up a new account, makes a little bit of sense to segment your formats out so you don't get spend swinging around between assets. not indicative of actual conversion performance. But for most people watching this, you're probably spending at least $10,000 a month. In which case, don't run this. Doesn't make much sense. Okay. Well, what else can we do? Well, we can do landing pages. So, we can have an adset for homepage, adset for product page, collection page, custom landing pages. This is useful, and I've seen people do this, but you can just pull this information out of Shopify. You don't need to get landing page level conversion rate data. You could just look at it in Shopify. So yeah, you could do this particularly if you're going to introduce some kind of custom landing page. Sure, you can do it. It's an option. It's probably not the best option. Well, then what about product categories? Cuz we talked about this before at the campaign level. It makes sense if you have different business units that exist within the business. Let's say you have new arrivals, you have call collection, um maybe let's say you're in CPG, you have protein powder, you have pre-workout. These are different units that exist within the business. And so we want to segment them at the campaign level. But can't we also just segment them at the adset level? Why don't we have an adset for dresses, adset for tops, ads set for pants, adset for accessories? And that's good because it allows for KPIing at the category level. And it also allows for delineation of different efficiency goals. So dresses might have 70% gross margin. The tops, because we have to discount these a little bit harder, they're not our best sellers, maybe they sit at 55%. And so on dresses we can afford a slightly worse return on ad spend. But on dresses, oh sorry on tops we know we have to have a higher return on ad spend. And so then that indicates our spend distribution and our creative volume throughput on each of these adsets. For sure this is a good option. We do this sometimes. However, often this can just be done at the campaign level. It depends really on the complexity of the business. And this is why the first statement that we made in this video was that the complexity of the ad account is a product of the complexity of the business. Because if you just have dresses, tops, pants, accessories, you could probably just run four campaigns and then do different stuff at the adset level to get different insights. If you have like 20 categories, well, we don't really want 20 campaigns running at low budgets. And so that's where we have to be more thoughtful and where are we going to consolidate these categories and going to do it across gross cross margin? Are we going to move some of this to adset level testing and keep some at the campaign level? That's where we have to start to get very thoughtful in account structure. And this is where the whole concept of media buying is dead. We do believe internally that media buying died like 3 years ago, but in the traditional sense, which is that just changing bids and changing budgets on a day-to-day basis lacks a lot of value. But thinking strategically about account structure, it's never died. still incredibly important to understand how you're structuring the account because it determines how budget flows across these different product categories across these different ads and it fundamentally changes how you read KPIs and then build these decision-m loops that exist within the business. So what else can we do? Well, we can split based on concept. Now we define concept as persona angle offer. And so if you change one of these variables, it changes the concept. Here's a couple examples for creatine gummies. So you might have a concept for people that hate creatine powder, bunch of ads you can make under that. Beginners starting at the gym, wellness, focus, professional, brain support. So these are four different concepts that you could build infinite ads under each one. Now what's good about this? It allows for KPIing at the creative concept level. So you can get creative insights without having that unreliable ad level data, without having to go down to the ad level data and try to discern what is actually going on and why a particular ad is getting more spend despite having a lower return on ad spend. Do we use spend as a proxy for performance or do we use rorowaz? Like what are we using? Instead, let's just skip that. Let's just roll up to the adset level and go, okay, we have 20 ads that we built for people who hate creatine powder. How are they doing? Well, four of them are getting spent and at the adset level, we're at KPI. We're at a 3x return, right? Amazing. Let's put more budget and then let's make more creatives like that. Very easy decision-m loop with a very reliable attributed number. Same thing applies for adset 2, adset three, adset four. Now, what is going to occur here most of the time is that a lot of performance will pull up to the top 20% of personas, but we'll talk about that in a moment. One other advantage of this structure is that it's Andromeda friendly. Now, what do I mean by that? Well, each adset learns in isolation. This is something I think a lot of people don't know or don't understand, which is that this adset goes out and it learns a particular audience. And this adset goes out and it learns its own audience. And so, all of these are going out in isolation and finding an audience that will resonate and convert through the ads that exist under the adset. Now, where this works to your advantage versus other structures is that each of these concepts will resonate with very different people. And so, this adset here is going to go and optimize towards beginners who are just starting at the gym. And so, all the ads that you go and put under this adset will go and serve to the audience that it's optimized for, which is beginners starting at the gym. This one down here is going to optimize for people that are interested in brain support. and they're all going to in isolation go and optimize for their own unique audiences. Now, this starts to break and I see this in accounts a lot of the time when you start grouping stuff together. So, an example is let's say that you didn't have this structure and you were just structuring based on when ads were getting made. I see this a lot. And so, it's like adset one is uh March 7th creatives. Adset 2 is our new ones, March 9th creatives. And so as we're making new ads, we're just dumping them in new adsets. Now, the disadvantage of this is that this ad set right here might have wellness focused professional ads and brain support ads and ads based towards women who should be using creatine. And all of these different angles are all just batched in here. The issue is who does this adset target? Who does it optimize towards? It doesn't have a specific subset of people that it should be going towards. And so instead, it optimizes towards everyone. And so the targeting becomes very broad. and you don't see as good performance as if you just segmented based on the different audiences that you're trying to reach. And this is a core component of Andromeda. And so you want to make sure that you're splitting based on the different audiences that you're trying to reach. Um anam a really easy example of this in active wear, which I've uh seen a couple times, is that people will just group men and women ads into one adset. Bit of an issue because the adset is going to get a little bit confused and go which ads are for who? And so when you go down to the ad level and you do a gender breakdown and you see what the ads are serving, you often see that they're just all serving to each other. And there's no clear delineation because the ad set is where most of the targeting learning is kept, not the ad level. Now there is a little bit of learning at the ad level of course, but it's good to think like this because it will facilitate better performance. Okay, cool. Pareto's principle will apply, right? which is that 80% of spend of results of revenue will pull to 20% of ads of adsets of campaigns of products of everything. Okay, in this case we're talking about adsets. And so what's going to end up happening here when we're going back and thinking about, okay, how do we get high creative volume through the account? Because that's ultimately the premise of this whole video. How do we get high creative volume through an account with actionable learnings and we don't decrease efficiency so that we can continue to compound? Well, let's take this structure. Let's say you have 50 creatives for each. Firstly, right away, this structure will support 200 new ads per month. Great. Secondly, what's going to end up happening? How is this actually going to play out? Well, what's going to happen is that one maybe two of these adsets won't perform at all and then one of them will end up significantly outperforming everything else and you'll end up redistributing budgets at the adset level or maybe you're using a CBO and Meta is doing it automatically for you and you end up with 80% of spend up the top here and then what? Well, there's two different parts. Number one, now you know what's working. You know where 80% of spend is going. So you start to change your creative profile accordingly. Rather than making 50 creatives for all these different concepts, go and put 80% of your energy into creatives up here. So rather than making 50, no, maybe go and make 120 and then just make 40 for the rest. And so that way you're doubling down on what's working. You're putting more creative volume behind a concept that you know is a winner. And that's going to allow you to spend more. Option number two is you can go, well, no, we actually don't want to double down here or let's double down a little bit, but we don't want to go crazy. We don't want to overlever ourselves into one particular angle because that introduced risk into the business, which is true. If you go and overlever into one ad, if you go and overlever into one adset, if you go and overlever into one angle or concept, you will inherently build risk into the business because when that ad stops working, when that concept stops working, you've got nothing to fall back on. And so as an alternative, rather than going and just heavily going into adset one here, what we end up doing is we put a max percentage spend limit on this adset. So we might set a spend limit of 40%. And then we continue to whip up new concepts and new adsets that we continue to rotate in to find something else that will work equally as well. And then with that, you can continue to put new adsets in. You can let them spend to a level that reaches statistical relevancy. And then you can rotate them out if they don't work. And this is how you generate consistent learnings. It's how you generate consistent new creative into the account. And it's how you continue to compound. The real key here of this entire video, and you can structure your account however you want. And to be completely honest, we don't have one specific account structure that we run across all of our clients. In fact, we think that's a bad idea. Most agencies, most coaching groups will have, hey, this is the structure that everyone should run. Run. This makes no sense. Everyone's running a different business with different product categories with in different niches, two different audiences, with different LTV dynamics. So running the same structure across everyone's accounts makes no sense at all. It should be bespoke to your individual commercial needs and outcomes. However, there's really two critical components that every single account structure requires. Number one, you now you need to be able to read data to make decisions effectively. And that data must have data integrity. And so if you're going to be looking at the ad account and then making decisions within the business off of that, the data needs to make sense and it needs to be still mannable. So effectively, if I was to come into your ad account and do an audit, I wouldn't be able to tear down your structure. You would be able to say, \"No, this is exactly why it's structured this way. this is how we're getting insights and these are the reasons why this is a clean way for us to get data that we can make use of. That's number one. Number two is the structure needs to be commercially aligned to the actual objectives of the business. And so you may have specific product categories that need a specific amount of budget behind them. You may have a specific segment of the m of the product category like your core range that needs to hit specific budgets. therefore needs a specific amount of spend behind it. You may have a concept that's doing incredibly well that now you are super overleveraged into and you've actually found out that this concept, this funnel is producing terrible LTV on these customers. And so because of that, you need to introduce some kind of segmentation to be able to negate that effect. And as long as you do those two things, as long as you can read data effectively to make decisions and as long as you can structure the account to be in line with the commercial goals of the business so that you can flex budgets between particular outcomes, then you should be able to introduce a high volume of creative without an issue.",
+    "prior_notes": [],
+    "id": "512823335d072d9ac4838af8"
+  },
+  "system_prompt_sha256": "f2341d28186a0dbaee868d37ce33c173f631088eb1754997556740d4905c0f2b"
+}

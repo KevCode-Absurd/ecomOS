@@ -1,0 +1,227 @@
+{
+  "cards": [
+    {
+      "title": "Clean a Fresh WordPress/WooCommerce Install",
+      "summary": "Remove identified demo content and unnecessary bundled plugins from a fresh store, then confirm its identity and timezone.",
+      "use_when": "Setting up a brand-new WooCommerce store on Hostinger and needing a clean baseline before adding products, pages or shipping rules.",
+      "steps": [
+        "Review the bundled plugins individually and remove only confirmed unused demo or promotional plugins. Keep WooCommerce and required payment, security, backup and hosting integrations; test the storefront after changes.",
+        "Go to Pages and move every Hello-World style placeholder page to Trash (select all, Bulk Actions > Move to Trash). Empty the trash so dead pages don't get indexed later.",
+        "Go to Settings > General and change the Site Title from 'My WordPress Website' to a phrase matching your search intent and market. The source's example is 'Prima Sofas for USA and Canada' rather than a generic default - this title appears in browser tabs and search results.",
+        "Set the Timezone in Settings > General to your operating region so order timestamps and scheduled tasks align with your customers and bookkeeping.",
+        "Verify the WordPress address and site URL still point to the domain you configured during the Hostinger onboarding, then load the storefront once to confirm it renders."
+      ],
+      "caveats": [
+        "Menu labels and plugin bundles vary by host and WordPress version - verify the current admin interface before following click paths.",
+        "The 'Prima Sofas' title is an illustrative naming pattern, not a keyword recommendation for your niche.",
+        "This cleanup is for a fresh installation. On an existing store, use a backup and staging site and preserve cart, checkout, account, product and order data."
+      ],
+      "tags": [
+        "store-setup",
+        "woocommerce",
+        "wordpress",
+        "hostinger",
+        "site-configuration"
+      ],
+      "id": "16eefae8f3dd2f05d73eb0d6",
+      "source_id": "1Eo73m6KopdFsRGjBWkSbOtUGiM8oYMA0",
+      "source_sha256": "977b03cc5e612499e6fa8d18ac723cb19a7d181c37441e883347893daf2e3aee",
+      "source_name": "How To Start an Online Store That Runs on Autopilot (WooCommerce Tutorial).docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 0
+    },
+    {
+      "title": "Pick the Right WooCommerce Product Type for Each Item",
+      "summary": "Map each catalog item to the correct WooCommerce product type - simple, variable, service, downloadable or affiliate - so inventory, pricing and checkout behave correctly.",
+      "use_when": "Adding products to a new WooCommerce store and choosing which product type template fits each item.",
+      "steps": [
+        "For an item with one option that ships physically (one SKU, one price), use the Simple product type and set price, stock and shipping weight.",
+        "For an item sold in multiple options (size, color, material), use the Variable product type. Install a variation swatches plugin so buyers can pick attributes visually, then generate variations and assign each one its own price and inventory count.",
+        "For a booking, repair, installation or consulting offer with no physical shipment, create a Simple product and mark it Virtual so no shipping is charged.",
+        "For digital goods (ebooks, templates, files), create a Simple product, mark it Virtual and Downloadable, then attach the file URL so buyers receive the download after purchase.",
+        "For products you promote but fulfil elsewhere, use the External/Affiliate product type and supply the destination link and button text.",
+        "Audit the catalog afterward: a wrongly typed product (e.g. physical item marked downloadable) breaks shipping and tax calculations."
+      ],
+      "caveats": [
+        "Variable products require attributes and generated variations; if you never generate variations the product shows no selectable options.",
+        "External/affiliate products leave your checkout entirely, so your payment, tax and shipping rules do not apply to them."
+      ],
+      "tags": [
+        "store-setup",
+        "woocommerce",
+        "product-types",
+        "catalog",
+        "variations",
+        "digital-products"
+      ],
+      "id": "8c5a95292bdc4ce09575e115",
+      "source_id": "1Eo73m6KopdFsRGjBWkSbOtUGiM8oYMA0",
+      "source_sha256": "977b03cc5e612499e6fa8d18ac723cb19a7d181c37441e883347893daf2e3aee",
+      "source_name": "How To Start an Online Store That Runs on Autopilot (WooCommerce Tutorial).docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 0
+    },
+    {
+      "title": "Connect Stripe and PayPal with Test Mode First",
+      "summary": "Install the official Stripe and PayPal plugins, connect via API credentials, run sandbox transactions, and choose where express checkout buttons appear on the store.",
+      "use_when": "Enabling payment collection on a new WooCommerce store and deciding where Apple Pay / Google Pay buttons show.",
+      "steps": [
+        "Install the official WooCommerce Stripe and PayPal plugins from the plugin directory so payments sync cleanly with WooCommerce orders.",
+        "In each plugin's settings, connect your account through the API keys (or the plugin's connect flow for Stripe). Keep Test Mode / sandbox enabled for your first transactions.",
+        "Place a live test order using the provider's test card while in sandbox mode, then confirm the order appears in WooCommerce with the correct status and the payment records correctly on the provider dashboard.",
+        "Decide express checkout placement: enable Apple Pay / Google Pay buttons either on product pages (faster impulse purchase) or restrict them to the checkout page (less premature checkout, cleaner product page). The plugin toggles control this.",
+        "Once sandbox orders succeed, switch to live mode, re-enter live API credentials and place a small real order to verify."
+      ],
+      "caveats": [
+        "API key locations and toggle names change across plugin versions and provider dashboards - verify the current interface.",
+        "Express buttons appearing on product pages can create a separate checkout path that bypasses some cart logic; test both placements before committing."
+      ],
+      "tags": [
+        "store-setup",
+        "payments",
+        "woocommerce",
+        "stripe",
+        "paypal",
+        "checkout",
+        "express-checkout"
+      ],
+      "id": "6a3060c2e498268447474f82",
+      "source_id": "1Eo73m6KopdFsRGjBWkSbOtUGiM8oYMA0",
+      "source_sha256": "977b03cc5e612499e6fa8d18ac723cb19a7d181c37441e883347893daf2e3aee",
+      "source_name": "How To Start an Online Store That Runs on Autopilot (WooCommerce Tutorial).docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 0
+    },
+    {
+      "title": "Set Up Flexible Table-Rate Shipping by Order Value",
+      "summary": "Use a table-rate shipping plugin to charge tiered flat rates based on cart price brackets and to unlock free shipping above a threshold, encouraging larger baskets.",
+      "use_when": "Configuring shipping charges and free-shipping thresholds in a new WooCommerce store, especially when rate should depend on order value rather than just weight.",
+      "steps": [
+        "Install the 'Table Rate Flexible Shipping' plugin (or an equivalent table-rate plugin) and add a shipping zone covering the regions you sell to.",
+        "Create a flat-rate method inside the zone and add conditional rules. The source's example: charge a flat $4.99 when the cart total is below $200, and set free shipping above $200.",
+        "Use bracket-based conditions for finer tiers. The source's example brackets: $0-$90 costs $6.99; $20-$49 costs $8.99 - demonstrating that the plugin charges shipping based on cart price brackets.",
+        "Stack conditions with care: if brackets overlap or leave gaps, some carts will have no available method and checkout will fail. Order your rules so each cart falls into exactly one bracket.",
+        "Add weight-based conditions where physical shipping cost is driven by mass, and test multiple example carts near each bracket boundary to confirm the correct rate appears.",
+        "Publish the free-shipping threshold on the site (announcement bar or cart) so customers know how much more to spend to earn free shipping."
+      ],
+      "caveats": [
+        "The dollar figures here are the source's examples, not benchmarks - set brackets from your own margin and carrier costs.",
+        "Rule priority and overlap behaviour is plugin-specific; verify how your installed version resolves conflicting conditions."
+      ],
+      "tags": [
+        "store-setup",
+        "shipping",
+        "woocommerce",
+        "table-rates",
+        "free-shipping",
+        "cart-value"
+      ],
+      "id": "6d28f39a903a0079e1c6efa5",
+      "source_id": "1Eo73m6KopdFsRGjBWkSbOtUGiM8oYMA0",
+      "source_sha256": "977b03cc5e612499e6fa8d18ac723cb19a7d181c37441e883347893daf2e3aee",
+      "source_name": "How To Start an Online Store That Runs on Autopilot (WooCommerce Tutorial).docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 0
+    },
+    {
+      "title": "Configure Standard, Reduced and Zero Tax Rates",
+      "summary": "Assign products the correct tax class and set the store's price display so tax is shown consistently with your customer type.",
+      "use_when": "Setting up tax classes and price display in WooCommerce, particularly when you sell a mix of physical goods, reduced-rate items and digital products.",
+      "steps": [
+        "Decide the tax class for each product: Standard for most physical goods, Reduced for items taxed at a lower statutory rate (the source's example is books), and Zero for digital products where no tax applies.",
+        "Assign the correct tax class on each product or variation rather than relying on a blanket default, since digital goods and books often differ from the rest of the catalog.",
+        "Turn on tax calculations in WooCommerce settings so prices and cart totals reflect the class and rate applied.",
+        "Consider the B2B/B2C hybrid display option: the source describes displaying prices exclusive of tax in the shop but inclusive of tax at checkout, which lets buyers see net prices while still showing the final gross amount before paying.",
+        "After configuring classes and display, place test orders for one product of each class and confirm the tax shown matches expectations."
+      ],
+      "caveats": [
+        "Tax law and rates vary by jurisdiction and change over time - confirm rates with a current authority or calculation service; this source only shows the mechanism, not current rates.",
+        "The exclusive-in-shop / inclusive-at-checkout display is a specific setting choice, not a universal best practice; it can confuse some consumer audiences."
+      ],
+      "tags": [
+        "store-setup",
+        "taxes",
+        "woocommerce",
+        "tax-classes",
+        "pricing-display"
+      ],
+      "id": "64c13e521d9aceea6d8c2589",
+      "source_id": "1Eo73m6KopdFsRGjBWkSbOtUGiM8oYMA0",
+      "source_sha256": "977b03cc5e612499e6fa8d18ac723cb19a7d181c37441e883347893daf2e3aee",
+      "source_name": "How To Start an Online Store That Runs on Autopilot (WooCommerce Tutorial).docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 0
+    },
+    {
+      "title": "Manually Configure US State Tax Rates in WooCommerce",
+      "summary": "Enter per-state standard tax rates manually in WooCommerce, using state codes and precise percentages sourced from a calculation service.",
+      "use_when": "Setting up tax collection in WooCommerce for US states where you need state-specific rates without an automated tax service.",
+      "steps": [
+        "Determine the exact combined percentage you should charge for the target state using a tax calculation service (the source uses TaxJar).",
+        "In WooCommerce, go to Tax > Standard Rates.",
+        "Click Insert Row to add a rate. Set the Country Code to US, then the State Code (e.g. CA for California or NV for Nevada).",
+        "Enter the exact percentage using four decimals (the source's example is 7.2500) rather than rounding, so the amount matches the service's figure.",
+        "Repeat the insert for each state you are required to collect in. Add a row per state rather than trying to approximate with a single rate.",
+        "Place a test order to a destination in each configured state and verify the tax line matches the rate you entered."
+      ],
+      "caveats": [
+        "Rates change; a manually entered rate will silently become wrong - schedule a periodic review or move to an automated service.",
+        "Nexus rules determine which states you should collect in, and this source does not cover nexus analysis - get tax advice for your specific obligations."
+      ],
+      "tags": [
+        "store-setup",
+        "taxes",
+        "woocommerce",
+        "us-states",
+        "taxjar",
+        "compliance"
+      ],
+      "id": "291aa05299b310b2ee926f8d",
+      "source_id": "1Eo73m6KopdFsRGjBWkSbOtUGiM8oYMA0",
+      "source_sha256": "977b03cc5e612499e6fa8d18ac723cb19a7d181c37441e883347893daf2e3aee",
+      "source_name": "How To Start an Online Store That Runs on Autopilot (WooCommerce Tutorial).docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 0
+    },
+    {
+      "title": "Create Legal Pages and Place Them in a Footer Menu",
+      "summary": "Generate Privacy Policy and Terms & Conditions copy, publish them as WordPress pages, build a dedicated Legal menu and attach it to the footer.",
+      "use_when": "Publishing a new ecommerce store and needing Privacy Policy and Terms & Conditions pages linked from every page for trust and compliance.",
+      "steps": [
+        "Draft the Privacy Policy and Terms & Conditions content (the source suggests generating a first draft with ChatGPT). Use it as a starting point to speed up the first version rather than as final legal advice.",
+        "Create two WordPress pages and paste the respective content into each, with clear titles such as 'Privacy Policy' and 'Terms & Conditions'.",
+        "Go to Appearance > Menus and create a dedicated menu - the source names it 'Legal' - containing only those legal page links, separate from your primary navigation.",
+        "Open the WordPress customizer and assign the Legal menu to the footer menu location so it is reachable from every page without cluttering the main header navigation.",
+        "Load the storefront and confirm the footer links resolve to the correct pages on both desktop and mobile widths."
+      ],
+      "caveats": [
+        "AI-generated legal text is a draft; review it against the regulations that apply to your business and jurisdiction before publishing - this source only describes the mechanics.",
+        "Customizer menu locations differ by theme (the source uses Blocksy), so verify where footer menus are assigned in your theme."
+      ],
+      "tags": [
+        "store-setup",
+        "legal-pages",
+        "wordpress",
+        "woocommerce",
+        "footer-menu",
+        "trust"
+      ],
+      "id": "4a64696a871835d9a4f609ce",
+      "source_id": "1Eo73m6KopdFsRGjBWkSbOtUGiM8oYMA0",
+      "source_sha256": "977b03cc5e612499e6fa8d18ac723cb19a7d181c37441e883347893daf2e3aee",
+      "source_name": "How To Start an Online Store That Runs on Autopilot (WooCommerce Tutorial).docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 0
+    }
+  ],
+  "request_id": "843ba35bacb0516bb3f4dd3c8ce90cbb31fa6e6e8c30e8f1826b2bf6e3f51a52",
+  "ecommerce_scope_version": 1,
+  "editorial_cleanup": "Qualified sampled deployment, plugin-removal and point-in-time access instructions."
+}

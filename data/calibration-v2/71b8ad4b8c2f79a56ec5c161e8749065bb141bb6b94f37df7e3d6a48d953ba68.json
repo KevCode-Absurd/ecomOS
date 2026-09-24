@@ -1,0 +1,520 @@
+{
+  "request_id": "71b8ad4b8c2f79a56ec5c161e8749065bb141bb6b94f37df7e3d6a48d953ba68",
+  "provider": "deepseek",
+  "model": "deepseek-flash",
+  "effort": "high",
+  "completion_limit": 32768,
+  "usage": {
+    "prompt_tokens": 3534,
+    "completion_tokens": 26129,
+    "total_tokens": 29663,
+    "prompt_tokens_details": {
+      "cached_tokens": 1024
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 23298
+    },
+    "prompt_cache_hit_tokens": 1024,
+    "prompt_cache_miss_tokens": 2510
+  },
+  "booked_cost_usd": 0.032415,
+  "seconds": 99.81,
+  "finish_reason": "stop",
+  "output": {
+    "units": [
+      {
+        "id": "u1",
+        "kind": "action",
+        "title": "Search a product in Magic AI to surface competitors",
+        "claim": {
+          "text": "The source shows using Magic AI to search a product, after which the software displays competitors running the product on Facebook and related products.",
+          "quote": "we can go up to Magic AI here. We can then search toothbrush cleaner. Then the software is going to show us all the other competitors who are running this product right now on Facebook"
+        },
+        "action": {
+          "text": "Use Magic AI to search a product and review the competitors and related products it shows.",
+          "quote": "we can go up to Magic AI here. We can then search toothbrush cleaner. Then the software is going to show us all the other competitors who are running this product right now on Facebook"
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not state how to evaluate the related products shown."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u2",
+        "kind": "principle",
+        "title": "Competitor-count thresholds for product research",
+        "claim": {
+          "text": "The source sets a goal of no more than 10 stores selling the product and no more than three serious competitors.",
+          "quote": "no more than 10 stores are selling it and that no more than three are serious competitors"
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not define what counts as a serious competitor."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u3",
+        "kind": "action",
+        "title": "Green-light products with weak or inactive competitors",
+        "claim": {
+          "text": "The source treats an awful-looking competitor store or a competitor that stopped selling the product as a green flag to start running it.",
+          "quote": "it's a pretty green flag to start running it"
+        },
+        "action": {
+          "text": "Start running the product when competitors are not serious or have stopped selling it.",
+          "quote": "it's a pretty green flag to start running it"
+        },
+        "trigger": {
+          "op": "any",
+          "args": [
+            {
+              "text": "A store looks like it is not a serious competitor.",
+              "quote": "he's not a very serious competitor. The store looks absolutely awful."
+            },
+            {
+              "text": "A store is no longer selling the product.",
+              "quote": "they're not even selling it anymore."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not define what makes a store absolutely awful beyond the example."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u4",
+        "kind": "action",
+        "title": "Use dropship ads scrolling as a simple product research strategy",
+        "claim": {
+          "text": "The source says the short simple strategy is to hit dropship ads and start scrolling down.",
+          "quote": "the short simple strategy is just hit drop ship ads and start scrolling down"
+        },
+        "action": {
+          "text": "Hit drop ship ads and start scrolling down.",
+          "quote": "the short simple strategy is just hit drop ship ads and start scrolling down"
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not name the platform or ad library where to hit drop ship ads."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u5",
+        "kind": "principle",
+        "title": "Mindset over research method when criteria fit",
+        "claim": {
+          "text": "The source says the research method matters less than the marketer's mindset during product research as long as the product fits the criteria.",
+          "quote": "what really matters is your mindset when you're doing product research as long as it fits the criteria"
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The criteria referenced are not restated in this passage."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u6",
+        "kind": "action",
+        "title": "Track product research in a Google sheet",
+        "claim": {
+          "text": "The source recommends making a Google sheet to write down favorite products.",
+          "quote": "make a Google sheet where you write down your favorites"
+        },
+        "action": {
+          "text": "Make a Google sheet and write down your favorite products.",
+          "quote": "make a Google sheet where you write down your favorites"
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source says the additional columns are up to you and does not require specific fields."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u7",
+        "kind": "action",
+        "title": "Run the daily three-to-one product selection routine",
+        "claim": {
+          "text": "The source recommends adding three products every day, narrowing them to three favorites, picking one favorite, and running that product.",
+          "quote": "every day let's say you add three products you niche it down to your three favorites and then you pick your one favorite out of the three favorites"
+        },
+        "action": {
+          "text": "Every day add three products, narrow them to three favorites, pick one favorite, and run that product.",
+          "quote": "every day let's say you add three products you niche it down to your three favorites and then you pick your one favorite out of the three favorites"
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source presents this as a recommendation but does not specify what time period beyond every day."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u8",
+        "kind": "principle",
+        "title": "Red vs blue ocean means finding untapped markets",
+        "claim": {
+          "text": "The source says the red/blue ocean concept means find untapped markets.",
+          "quote": "find untapped markets"
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not define a quantitative threshold for an untapped market."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u9",
+        "kind": "example",
+        "title": "Blue ocean example: selling a winning product to an untapped European country",
+        "claim": {
+          "text": "The source gives selling a winning product in an untapped European country as a good red/blue ocean example, claiming pretty much 100% success rate because people like the same products in Europe but have not been shown them.",
+          "quote": "A good example of red blue ocean drop shipping would be selling to a untapped European country. Taking a winning product that everyone else is selling and putting it there, you will have pretty much 100% success rate cuz people aren't that different. They like the same products in Europe, but they haven't been shown it to."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The 100% success rate claim is unverified; no denominator, timeframe, or source is given."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u10",
+        "kind": "action",
+        "title": "Sell to people no one is talking to instead of competing",
+        "claim": {
+          "text": "The source advises stopping competition with 100 plus other drop shippers for a small piece of the cake and instead selling to people no one is talking to.",
+          "quote": "Stop competing with 100 plus other drop shippers for a small piece of the cake. Instead, start selling to people no one is talking to."
+        },
+        "action": {
+          "text": "Start selling to people no one is talking to.",
+          "quote": "start selling to people no one is talking to"
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not define who no one is talking to operationally."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u11",
+        "kind": "action",
+        "title": "Use TikTok search to detect market opportunity",
+        "claim": {
+          "text": "The source says the easiest way to detect market opportunity is by searching up the product on TikTok.",
+          "quote": "the easiest way to detect market opportunity is by searching up the product on Tik Tok"
+        },
+        "action": {
+          "text": "Search up the product on TikTok to detect market opportunity.",
+          "quote": "the easiest way to detect market opportunity is by searching up the product on Tik Tok"
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not specify which signals in TikTok search indicate market opportunity."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u12",
+        "kind": "principle",
+        "title": "Saturation indicates demand and a new audience can revive the product",
+        "claim": {
+          "text": "The source says when a product is saturated it only means demand, and showing a saturated product to a new audience can give it a new life.",
+          "quote": "when the product is saturated, it only means one thing, demand, right? People love the product. So, if we can show a saturated product to a new audience, we can give it a new life"
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not quantify the new-life effect or provide results."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u13",
+        "kind": "action",
+        "title": "Research blue-water markets in depth",
+        "claim": {
+          "text": "The source instructs researching the market in depth for blue waters.",
+          "quote": "research the market in depth for blue waters"
+        },
+        "action": {
+          "text": "Research the market in depth for blue waters.",
+          "quote": "research the market in depth for blue waters"
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not define the scope or output of the in-depth research."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u14",
+        "kind": "action",
+        "title": "Blue ocean step 1: find a product that solves a problem",
+        "claim": {
+          "text": "The source's step one is to find a product that solves a problem.",
+          "quote": "step number one, find a product that solves a problem."
+        },
+        "action": {
+          "text": "Find a product that solves a problem.",
+          "quote": "step number one, find a product that solves a problem."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not define what counts as a problem."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u15",
+        "kind": "action",
+        "title": "Blue ocean step 2: identify blue oceans through competitor gaps",
+        "claim": {
+          "text": "The source's step two is to identify blue oceans by researching a product, finding competitors, and seeing what they're not doing.",
+          "quote": "Step two, identify blue oceans by researching a product, finding competitors, and seeing what they're not doing."
+        },
+        "action": {
+          "text": "Identify blue oceans by researching a product, finding competitors, and seeing what they're not doing.",
+          "quote": "Step two, identify blue oceans by researching a product, finding competitors, and seeing what they're not doing."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not specify how many competitors to review or what evidence counts as a blue ocean."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u14"
+          }
+        ]
+      },
+      {
+        "id": "u16",
+        "kind": "unresolved_claim",
+        "title": "Incomplete final instruction after You just have to do",
+        "claim": {
+          "text": "The passage ends with an incomplete instruction after You just have to do.",
+          "quote": "You just have to do"
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The continuation of the final instruction is missing; neighboring evidence is needed."
+        ],
+        "relations": []
+      }
+    ],
+    "more_units": true,
+    "unresolved": [
+      "Omitted due to cap: don't reinvent the wheel principle; shoe dryer moms-of-soccer-players example; older-people home workout example; slightly-overweight home workout example; competitor video/photo reuse; daily Google-sheet review on calls.",
+      "The passage refers to three product research methods, but the preceding methods are not fully visible in this excerpt.",
+      "Source ends with an incomplete instruction after You just have to do.",
+      "The 100% success rate claim for an untapped European country is unverified in the passage."
+    ]
+  },
+  "raw_content": "{\"units\":[{\"id\":\"u1\",\"kind\":\"action\",\"title\":\"Search a product in Magic AI to surface competitors\",\"claim\":{\"text\":\"The source shows using Magic AI to search a product, after which the software displays competitors running the product on Facebook and related products.\",\"quote\":\"we can go up to Magic AI here. We can then search toothbrush cleaner. Then the software is going to show us all the other competitors who are running this product right now on Facebook\"},\"action\":{\"text\":\"Use Magic AI to search a product and review the competitors and related products it shows.\",\"quote\":\"we can go up to Magic AI here. We can then search toothbrush cleaner. Then the software is going to show us all the other competitors who are running this product right now on Facebook\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source does not state how to evaluate the related products shown.\"],\"relations\":[]},{\"id\":\"u2\",\"kind\":\"principle\",\"title\":\"Competitor-count thresholds for product research\",\"claim\":{\"text\":\"The source sets a goal of no more than 10 stores selling the product and no more than three serious competitors.\",\"quote\":\"no more than 10 stores are selling it and that no more than three are serious competitors\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source does not define what counts as a serious competitor.\"],\"relations\":[]},{\"id\":\"u3\",\"kind\":\"action\",\"title\":\"Green-light products with weak or inactive competitors\",\"claim\":{\"text\":\"The source treats an awful-looking competitor store or a competitor that stopped selling the product as a green flag to start running it.\",\"quote\":\"it's a pretty green flag to start running it\"},\"action\":{\"text\":\"Start running the product when competitors are not serious or have stopped selling it.\",\"quote\":\"it's a pretty green flag to start running it\"},\"trigger\":{\"op\":\"any\",\"args\":[{\"text\":\"A store looks like it is not a serious competitor.\",\"quote\":\"he's not a very serious competitor. The store looks absolutely awful.\"},{\"text\":\"A store is no longer selling the product.\",\"quote\":\"they're not even selling it anymore.\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source does not define what makes a store absolutely awful beyond the example.\"],\"relations\":[]},{\"id\":\"u4\",\"kind\":\"action\",\"title\":\"Use dropship ads scrolling as a simple product research strategy\",\"claim\":{\"text\":\"The source says the short simple strategy is to hit dropship ads and start scrolling down.\",\"quote\":\"the short simple strategy is just hit drop ship ads and start scrolling down\"},\"action\":{\"text\":\"Hit drop ship ads and start scrolling down.\",\"quote\":\"the short simple strategy is just hit drop ship ads and start scrolling down\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source does not name the platform or ad library where to hit drop ship ads.\"],\"relations\":[]},{\"id\":\"u5\",\"kind\":\"principle\",\"title\":\"Mindset over research method when criteria fit\",\"claim\":{\"text\":\"The source says the research method matters less than the marketer's mindset during product research as long as the product fits the criteria.\",\"quote\":\"what really matters is your mindset when you're doing product research as long as it fits the criteria\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The criteria referenced are not restated in this passage.\"],\"relations\":[]},{\"id\":\"u6\",\"kind\":\"action\",\"title\":\"Track product research in a Google sheet\",\"claim\":{\"text\":\"The source recommends making a Google sheet to write down favorite products.\",\"quote\":\"make a Google sheet where you write down your favorites\"},\"action\":{\"text\":\"Make a Google sheet and write down your favorite products.\",\"quote\":\"make a Google sheet where you write down your favorites\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source says the additional columns are up to you and does not require specific fields.\"],\"relations\":[]},{\"id\":\"u7\",\"kind\":\"action\",\"title\":\"Run the daily three-to-one product selection routine\",\"claim\":{\"text\":\"The source recommends adding three products every day, narrowing them to three favorites, picking one favorite, and running that product.\",\"quote\":\"every day let's say you add three products you niche it down to your three favorites and then you pick your one favorite out of the three favorites\"},\"action\":{\"text\":\"Every day add three products, narrow them to three favorites, pick one favorite, and run that product.\",\"quote\":\"every day let's say you add three products you niche it down to your three favorites and then you pick your one favorite out of the three favorites\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source presents this as a recommendation but does not specify what time period beyond every day.\"],\"relations\":[]},{\"id\":\"u8\",\"kind\":\"principle\",\"title\":\"Red vs blue ocean means finding untapped markets\",\"claim\":{\"text\":\"The source says the red/blue ocean concept means find untapped markets.\",\"quote\":\"find untapped markets\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source does not define a quantitative threshold for an untapped market.\"],\"relations\":[]},{\"id\":\"u9\",\"kind\":\"example\",\"title\":\"Blue ocean example: selling a winning product to an untapped European country\",\"claim\":{\"text\":\"The source gives selling a winning product in an untapped European country as a good red/blue ocean example, claiming pretty much 100% success rate because people like the same products in Europe but have not been shown them.\",\"quote\":\"A good example of red blue ocean drop shipping would be selling to a untapped European country. Taking a winning product that everyone else is selling and putting it there, you will have pretty much 100% success rate cuz people aren't that different. They like the same products in Europe, but they haven't been shown it to.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The 100% success rate claim is unverified; no denominator, timeframe, or source is given.\"],\"relations\":[]},{\"id\":\"u10\",\"kind\":\"action\",\"title\":\"Sell to people no one is talking to instead of competing\",\"claim\":{\"text\":\"The source advises stopping competition with 100 plus other drop shippers for a small piece of the cake and instead selling to people no one is talking to.\",\"quote\":\"Stop competing with 100 plus other drop shippers for a small piece of the cake. Instead, start selling to people no one is talking to.\"},\"action\":{\"text\":\"Start selling to people no one is talking to.\",\"quote\":\"start selling to people no one is talking to\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source does not define who no one is talking to operationally.\"],\"relations\":[]},{\"id\":\"u11\",\"kind\":\"action\",\"title\":\"Use TikTok search to detect market opportunity\",\"claim\":{\"text\":\"The source says the easiest way to detect market opportunity is by searching up the product on TikTok.\",\"quote\":\"the easiest way to detect market opportunity is by searching up the product on Tik Tok\"},\"action\":{\"text\":\"Search up the product on TikTok to detect market opportunity.\",\"quote\":\"the easiest way to detect market opportunity is by searching up the product on Tik Tok\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source does not specify which signals in TikTok search indicate market opportunity.\"],\"relations\":[]},{\"id\":\"u12\",\"kind\":\"principle\",\"title\":\"Saturation indicates demand and a new audience can revive the product\",\"claim\":{\"text\":\"The source says when a product is saturated it only means demand, and showing a saturated product to a new audience can give it a new life.\",\"quote\":\"when the product is saturated, it only means one thing, demand, right? People love the product. So, if we can show a saturated product to a new audience, we can give it a new life\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source does not quantify the new-life effect or provide results.\"],\"relations\":[]},{\"id\":\"u13\",\"kind\":\"action\",\"title\":\"Research blue-water markets in depth\",\"claim\":{\"text\":\"The source instructs researching the market in depth for blue waters.\",\"quote\":\"research the market in depth for blue waters\"},\"action\":{\"text\":\"Research the market in depth for blue waters.\",\"quote\":\"research the market in depth for blue waters\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source does not define the scope or output of the in-depth research.\"],\"relations\":[]},{\"id\":\"u14\",\"kind\":\"action\",\"title\":\"Blue ocean step 1: find a product that solves a problem\",\"claim\":{\"text\":\"The source's step one is to find a product that solves a problem.\",\"quote\":\"step number one, find a product that solves a problem.\"},\"action\":{\"text\":\"Find a product that solves a problem.\",\"quote\":\"step number one, find a product that solves a problem.\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source does not define what counts as a problem.\"],\"relations\":[]},{\"id\":\"u15\",\"kind\":\"action\",\"title\":\"Blue ocean step 2: identify blue oceans through competitor gaps\",\"claim\":{\"text\":\"The source's step two is to identify blue oceans by researching a product, finding competitors, and seeing what they're not doing.\",\"quote\":\"Step two, identify blue oceans by researching a product, finding competitors, and seeing what they're not doing.\"},\"action\":{\"text\":\"Identify blue oceans by researching a product, finding competitors, and seeing what they're not doing.\",\"quote\":\"Step two, identify blue oceans by researching a product, finding competitors, and seeing what they're not doing.\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source does not specify how many competitors to review or what evidence counts as a blue ocean.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u14\"}]},{\"id\":\"u16\",\"kind\":\"unresolved_claim\",\"title\":\"Incomplete final instruction after You just have to do\",\"claim\":{\"text\":\"The passage ends with an incomplete instruction after You just have to do.\",\"quote\":\"You just have to do\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The continuation of the final instruction is missing; neighboring evidence is needed.\"],\"relations\":[]}],\"more_units\":true,\"unresolved\":[\"Omitted due to cap: don't reinvent the wheel principle; shoe dryer moms-of-soccer-players example; older-people home workout example; slightly-overweight home workout example; competitor video/photo reuse; daily Google-sheet review on calls.\",\"The passage refers to three product research methods, but the preceding methods are not fully visible in this excerpt.\",\"Source ends with an incomplete instruction after You just have to do.\",\"The 100% success rate claim for an untapped European country is unverified in the passage.\"]}",
+  "input": {
+    "source_id": "1kDe9GgQ-H0acmu0Atdbq4NimU9Apyn-C",
+    "source_sha256": "f2346b8756acb594827d4fb1d37898d6ace098bdb96ceb0d7ae89f422673eb15",
+    "locator": "body:13/paragraph",
+    "start": 18996,
+    "text": "ke this is so good is we can go up to Magic AI here. We can then search toothbrush cleaner. Then the software is going to show us all the other competitors who are running this product right now on Facebook and they're also going to show us obviously some other products in the same type of category. And our goal here is that no more than 10 stores are selling it and that no more than three are serious competitors. So if you look at this store, he's not a very serious competitor. The store looks absolutely awful. Then if we look at this store, they're not even selling it anymore. So what that would mean in this situation is that it's a pretty green flag to start running it. And then what we can do is we can take some of the videos, we can download it, we can use it for a website, you know, turn it into GIF, we can even go over to our competitor's website, which in this case they are not really good. And we can take some photos and inspiration and it just makes it a lot easier to have a tool like that. But the short simple strategy is just hit drop ship ads and start scrolling down because what matters isn't the research method you use. Of course, it's better to have a tool that has it all in one place, but what really matters is your mindset when you're doing product research as long as it fits the criteria. You can find these products with different methods. And that's why I've given you three. Now, as you're using these product research methods, do yourself a favor and make a Google sheet where you write down your favorites. Maybe you add some competitor pages that you can get back to later. You can add the buy price and what you intend on selling it for. That's up to you. And you can also add some notes like haven't seen it much on on Facebook, for example, but it's on Tik Tok. like it's an untab for example and then what I recommend you to do is that every day let's say you add three products you niche it down to your three favorites and then you pick your one favorite out of the three favorites which let's say it's this one and then you go ahead and run that product this is the document of one of my students so when we go on calls I review it live and we choose the best products let's talk about red blue ocean this is a concept that changed my life because 50% of the game is yeah finding winning products with tools but the second 50% is how you think about the products okay so So, I'm going to show you now a very valuable lesson on how to force any product to work. Look, for the longest time, I myself even questioned it if drop shipping worked. I remember seeing dramatic videos on YouTube of people saying that it was dead. I tested product after product. I lost money. I felt like nothing was working. And even worse is the fact that I dropped out of college to do this business model. I had no money. I was splitting a cheeseburger with a friend at McDonald's, paying $1 each level broke. So, I would ring people's doorbells to shovel their snow. I would fix their garden. I did anything to make hard earned money just to throw it into drop shipping and lose it all. And keep in mind, I even told my parents that I was going to make it, that I was going to move to LA, drive a Lambo, things I now look back on as cringe, but you can understand the hunger. So, when I tell you that I've been through it all. I really mean it. And I didn't have support like you have in this video, you probably have a 100x the chance that I had. So, I promise you, just listen now and you will reach your goals because what I'm about to show you, it just works. So, what you see on this picture right here is three people who are fishing. Okay? There's a huge water. It will be equivalent to the Pacific Ocean. I think there's three people fishing for a water that has, let's say, $20 million worth of fish. Okay? So, obviously, they're fishing. It's a super profitable market, but it also is a bit contested. So, over here, on the other hand, on the blue ocean, there is a guy. He has a smaller boat, a very big head. I don't know why that is, but he is fishing and is a bit angry at them because they're taking all the money. He is fishing in his own market. And this market is only worth $2 million worth of fish, but there is no competition. And what this guy has realized is that there is no need to compete with these three guys for $20 million worth of fish when he can have $2 million to himself. And what this concept means in short is find untapped markets. Okay? And the way that we do this is with our marketing. So these guys over here, they're going to be busting their ass, competing for the dollar. While this guy here, he's not competing with anyone. He has no pressure. He's just building. He's creating rather than competing. And that's how people get rich. A good example of red blue ocean drop shipping would be selling to a untapped European country. Taking a winning product that everyone else is selling and putting it there, you will have pretty much 100% success rate cuz people aren't that different. They like the same products in Europe, but they haven't been shown it to. And here you can see in short what it means. Red ocean versus blue ocean. Stop here for a second, okay? And take a screenshot because what these guys have to do is they have to compete with each other just to get the dollar. But there's no need to compete if you think outside of the box. So, welcome to the third chapter, blue ocean marketing. How to turn any product into a winner. Let me teach you here how to turn saturated products into an untapped gold mine. Because let's be honest, you're probably not going to hit the next jackpot, but you can hit the next winning market. Stop competing with 100 plus other drop shippers for a small piece of the cake. Instead, start selling to people no one is talking to. People scream all the time, \"Drop shipping is saturated.\" No, it is only as saturated as you make it. And the easiest way to detect market opportunity is by searching up the product on Tik Tok. And what we can see is no precise targeting. There's one guy who does it here, football parents. He's probably watched the videos or something. Absolutely genius. But what you see is that most people selling this have no real audience. They're just selling it as a foldable shoe dryer. another store here who claims to have sold 150,000 of them. Once again, it's just going broad. And going back to Red Blue Ocean, he's competing with everyone. While there is a guy right here who's thinking outside the box, who's selling this to moms of soccer players, which maybe is a bit too niche, but I like the thinking. So, let's now use the same concept for a product. Who is a buyer? Let me give you three options. Parents with kids who run around, they get their shoes dirty. Especially for me, I'm from Norway. It rains there all the time. I remember playing outside. I get my shoes dirty every single time. We had no cleaner and they would start rot. They would start smelling. But this is the perfect angle to sell to. They want to clean their shoes and sterilize them within 30 minutes is a problem every parent have. I think number two can be camping and outdoor fans. People who are out in the wild. They're living in tents. Maybe they should bring a product like this with them because if they get their stuff wet, they're absolutely screwed. This is the perfect product for campers and I can assure you they have never been targeted. Number three, people with stinky shoes, fitness people, soccer players, like that store we just saw on Tik Tok. These are genius ways to market the product as well. I guess what I'm trying to tell you is think outside the box. Because when the product is saturated, it only means one thing, demand, right? People love the product. So, if we can show a saturated product to a new audience, we can give it a new life and we start making a lot of money. Because the thing is, people usually have zero intentions behind their marketing. To beat them, you simply just have to think. So, what I want you to do is to research the market in depth for blue waters. Do you remember I showed you this product right here? They're selling it very generic, just girls who like to work at quick 10-minute workout at home. Well, I've taken matters into my own hands and I've searched up the exact product on TikTok. And what we see is a lot of people are selling it to the same exact audience, right? Young girls who want to work out at home. The first thing I'm spotting thinking about Blue Waters is that why is there no older people using this? That is the market I took for this. By the way, selling the product to older people could be smart because older people, they don't really want to commit to the gym, but their joints are stiff. They don't feel like themsel anymore. Sell them the 10-minute home workout that they can do for 15 days to take back control over their body. That's the first thing I see. The next thing I see is very small angles like this of weight loss. Most of the people are selling this are in perfect shape, so they're just selling it to people who want to work out more at home. But one of the best angles you can take for a product like this is someone like this who is a little bit overweight and is trying to take back control of their life, right? We can help them. We can give them motivation. And as you can see, everyone is busy in the red ocean here selling the product to the same exact type of woman. So if we sell it to people who maybe are slightly overweight, as you can see, these are only 10% of the ads out here. We have identified blue waters. And this is exactly how I want you to think when you're doing red blue ocean drop shipping. So, step number one, find a product that solves a problem. Step two, identify blue oceans by researching a product, finding competitors, and seeing what they're not doing. Remember, you don't have to reinvent the wheel. You just have to do ",
+    "provenance": "unverified"
+  },
+  "system_prompt_sha256": "169564fc11fb12a123446ec006b5bb473bb0bb9c6a71a491eafeedd914dc865e"
+}

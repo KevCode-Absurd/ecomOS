@@ -1,0 +1,68 @@
+# 99-multi
+
+**Goes here.** Sources where 4 or more modules get real coverage and none dominates.
+Courses, long masterclasses, general ecommerce books, founder interviews, full brand
+teardowns, seasonal strategy, and growth diagnostics.
+
+## What typically lands here
+
+- **Founder interviews and brand stories.** How a brand went from zero to a large
+  number. These always span offer, brand, creative and organic.
+- **Brand teardowns.** Creative, offers, landers and acquisition in 1 source.
+- **Seasonal strategy.** Black Friday plans cover spend, creative, offers and pacing.
+- **Growth diagnostics.** Bottlenecks, death spirals, myths. They span economics,
+  offer, retention and operations by design.
+
+## Use a module folder instead
+
+When 1 module clearly dominates, even if 3 others appear. A file whose own header says
+`modules: [COG]` belongs in 18-COG, not here. 3 modules with 1 primary goes to the
+primary.
+
+## Never split a source by hand
+
+A 4 hour video covering 7 topics stays as 1 file. The context around a claim is what
+gives the claim its conditions. When someone says "this only applies above 10 grand a
+day" 4 minutes before the claim you care about, that clause is the most valuable
+thing in the video. Cut the file in the wrong place and it is gone.
+
+## Header
+
+```
+---
+url:                   # REQUIRED. Never blank.
+rights: public_reference
+why:
+modules: [MEA, MCR, ADC, OFF, COG]    # every module it really covers, primary first
+timestamps: yes
+covers:
+  - [00:00-22:15]     generic intro, skip
+  - [22:15-48:00]     MEA / attribution windows and restatement
+  - [48:00-1:19:00]   MCR / hook types and fatigue
+  - [3:05:00-4:02:00] outro and pitch, skip
+watch:
+tier:                  # a practitioner is 3, never 1
+---
+```
+
+## The covers block is the point of this folder
+
+About 2 minutes while you skim. It gives the segmenter human anchors, and the ranges
+marked skip get discarded without a model having to decide. Until a file here has a
+covers block, it stays undifferentiated. This folder is now the second largest, so the
+covers blocks are where the most unrouted value sits.
+
+Format: `[start-end]  MODULE / topic`, or `[start-end]  what it is, skip`.
+Approximate timestamps are fine. Leave the block out if you do not have 2 minutes; the
+pipeline still segments correctly.
+
+## Twyman's law
+
+Founder stories lead with a revenue number. The number is the hook for the video, not
+evidence. Card the method and the thresholds, never the headline.
+
+## Seasonal sources
+
+Set a short review date. A Black Friday plan for 2026 is stale by January 2027.
+
+Current file counts, duplicates and holds: see `_INGESTION-STATE.yaml`.

@@ -1,0 +1,1126 @@
+{
+  "summary": {
+    "case_index": 19,
+    "provider": "deepseek",
+    "effort": "none",
+    "request_id": "5f66b4c2d0b8b52d5f6d4e6ad162cf4d40a1dc199b386fae176ec79276349181",
+    "complete": true,
+    "units": 15,
+    "held": 0,
+    "errors": [],
+    "more_units": false,
+    "cost": 0.0065030999999999995
+  },
+  "errors": [],
+  "candidates": [
+    {
+      "id": "30726e97ab11f2d9a00e8bfa6421cc66447d6f173ff998a9ee2ed1bbff59a841",
+      "unit": {
+        "id": "u1",
+        "kind": "example",
+        "title": "Illustrating top-of-funnel contributions missed by last-click attribution",
+        "claim": {
+          "text": "The source gives a hypothetical sequence in which a billboard and a TV ad (with a relatable influencer) warm a user, who then purchases after clicking a Facebook ad; the closing Facebook ad likely did not cause the purchase, and the earlier touchpoints received no attribution.",
+          "quote": "let's say someone sees a billboard and they become aware of uh the brand. They then see a TV ad which reinforces that they actually really want to buy your stuff because there was an influencer in there who they connect with. Then eventually they get an ad on Facebook. They click on the ad and they buy."
+        },
+        "action": null,
+        "trigger": {
+          "op": "any",
+          "args": [
+            {
+              "text": "A consumer purchases after a final platform click.",
+              "quote": "They click on the ad and they buy."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "This is explicitly framed as a hypothetical extreme example, not a measured case."
+        ],
+        "relations": [
+          {
+            "kind": "alternative_to",
+            "target": "u2"
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1VoLYmy_EdEqYdss2JbmmJWq3tAarNIXb",
+          "source_sha256": "7acfa49289c2d801448a5aee30cc358b48d6b88404efe8a40a7737ca33d0a86a",
+          "locator": "body:25/paragraph",
+          "start": 57087,
+          "end": 57391,
+          "quote": "let's say someone sees a billboard and they become aware of uh the brand. They then see a TV ad which reinforces that they actually really want to buy your stuff because there was an influencer in there who they connect with. Then eventually they get an ad on Facebook. They click on the ad and they buy."
+        },
+        {
+          "field": "trigger.0",
+          "source_id": "1VoLYmy_EdEqYdss2JbmmJWq3tAarNIXb",
+          "source_sha256": "7acfa49289c2d801448a5aee30cc358b48d6b88404efe8a40a7737ca33d0a86a",
+          "locator": "body:25/paragraph",
+          "start": 57357,
+          "end": 57391,
+          "quote": "They click on the ad and they buy."
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "faad52c9d26dc4471cf69e70800faabddfe832e47e070b7496af3bedc9366a01",
+      "unit": {
+        "id": "u2",
+        "kind": "unresolved_claim",
+        "title": "TikTok underattribution is described as a current, conditional observation",
+        "claim": {
+          "text": "The source says that, at the time of the video, for some very large retail brands, TikTok is substantially underattributing because it mostly gets impressions and users often do not click off the platform, or if they do, they view a product page without buying.",
+          "quote": "we're finding at the moment for some very large retail brands that Tik Tok is actually underattributing substantially because it's getting impressions. It's getting in front of people in new markets, but they don't actually click off the platform much."
+        },
+        "action": null,
+        "trigger": {
+          "op": "any",
+          "args": [
+            {
+              "text": "Users are being exposed to TikTok ads but attribution does not reflect subsequent purchases.",
+              "quote": "Tik Tok is actually underattributing substantially"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "any",
+          "args": [
+            {
+              "text": "The condition is limited to some very large retail brands, not universally.",
+              "quote": "This is a very unique circumstance"
+            },
+            {
+              "text": "The observation may change depending on when the video is watched.",
+              "quote": "this might change depending on when you're watching this video"
+            }
+          ]
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "Time period of the observation is not stated beyond \"at the moment.\"",
+          "The specific brands and markets are not named.",
+          "No causal experiment is described for this observation."
+        ],
+        "relations": [
+          {
+            "kind": "alternative_to",
+            "target": "u1"
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1VoLYmy_EdEqYdss2JbmmJWq3tAarNIXb",
+          "source_sha256": "7acfa49289c2d801448a5aee30cc358b48d6b88404efe8a40a7737ca33d0a86a",
+          "locator": "body:25/paragraph",
+          "start": 58032,
+          "end": 58284,
+          "quote": "we're finding at the moment for some very large retail brands that Tik Tok is actually underattributing substantially because it's getting impressions. It's getting in front of people in new markets, but they don't actually click off the platform much."
+        },
+        {
+          "field": "trigger.0",
+          "source_id": "1VoLYmy_EdEqYdss2JbmmJWq3tAarNIXb",
+          "source_sha256": "7acfa49289c2d801448a5aee30cc358b48d6b88404efe8a40a7737ca33d0a86a",
+          "locator": "body:25/paragraph",
+          "start": 58099,
+          "end": 58149,
+          "quote": "Tik Tok is actually underattributing substantially"
+        },
+        {
+          "field": "prerequisites.0",
+          "source_id": "1VoLYmy_EdEqYdss2JbmmJWq3tAarNIXb",
+          "source_sha256": "7acfa49289c2d801448a5aee30cc358b48d6b88404efe8a40a7737ca33d0a86a",
+          "locator": "body:25/paragraph",
+          "start": 57943,
+          "end": 57977,
+          "quote": "This is a very unique circumstance"
+        },
+        {
+          "field": "prerequisites.1",
+          "source_id": "1VoLYmy_EdEqYdss2JbmmJWq3tAarNIXb",
+          "source_sha256": "7acfa49289c2d801448a5aee30cc358b48d6b88404efe8a40a7737ca33d0a86a",
+          "locator": "body:25/paragraph",
+          "start": 57808,
+          "end": 57870,
+          "quote": "this might change depending on when you're watching this video"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "6dab3ded6d1743e7b32a580af9a03a600e4b4cc33419e3f245d24138b5f70d85",
+      "unit": {
+        "id": "u3",
+        "kind": "example",
+        "title": "TikTok-to-Meta-to-Google carryover pattern in large retail brands",
+        "claim": {
+          "text": "The source says they see a sequence where TikTok creates impressions without direct purchases, Meta retargets users once they are in the pixel and captures increased demand when TikTok spend is increased, and users who still have not bought then search the brand on Google and buy.",
+          "quote": "Then once we have them in the pixel, Meta goes and follows up and retargets them. And we end up capturing a lot of increased demand on Meta when we increase our Tik Tok spend. And then finally, people that still haven't bought after Tik Tok and Meta, they end up going to Google."
+        },
+        "action": null,
+        "trigger": {
+          "op": "any",
+          "args": [
+            {
+              "text": "Budget is increased on TikTok and users enter the Meta pixel before searching the brand on Google.",
+              "quote": "when we increase Tik Tok spend, our meta rorowaz goes up and our Google rorowaz goes up"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": [
+            {
+              "text": "The pattern is stated specifically for some very large retail brands and is not applicable to everyone.",
+              "quote": "this isn't applicable for everyone"
+            }
+          ]
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No measurement granularity or platform-attribution configuration is given.",
+          "The term rorowaz is not defined in this passage."
+        ],
+        "relations": [
+          {
+            "kind": "alternative_to",
+            "target": "u2"
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1VoLYmy_EdEqYdss2JbmmJWq3tAarNIXb",
+          "source_sha256": "7acfa49289c2d801448a5aee30cc358b48d6b88404efe8a40a7737ca33d0a86a",
+          "locator": "body:25/paragraph",
+          "start": 58390,
+          "end": 58669,
+          "quote": "Then once we have them in the pixel, Meta goes and follows up and retargets them. And we end up capturing a lot of increased demand on Meta when we increase our Tik Tok spend. And then finally, people that still haven't bought after Tik Tok and Meta, they end up going to Google."
+        },
+        {
+          "field": "trigger.0",
+          "source_id": "1VoLYmy_EdEqYdss2JbmmJWq3tAarNIXb",
+          "source_sha256": "7acfa49289c2d801448a5aee30cc358b48d6b88404efe8a40a7737ca33d0a86a",
+          "locator": "body:25/paragraph",
+          "start": 58729,
+          "end": 58816,
+          "quote": "when we increase Tik Tok spend, our meta rorowaz goes up and our Google rorowaz goes up"
+        },
+        {
+          "field": "prerequisites.0",
+          "source_id": "1VoLYmy_EdEqYdss2JbmmJWq3tAarNIXb",
+          "source_sha256": "7acfa49289c2d801448a5aee30cc358b48d6b88404efe8a40a7737ca33d0a86a",
+          "locator": "body:25/paragraph",
+          "start": 57907,
+          "end": 57941,
+          "quote": "this isn't applicable for everyone"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "181e51345325ba0da995ead3daf65ae49cfa82005656c33fc22fb4559f19cdb9",
+      "unit": {
+        "id": "u4",
+        "kind": "warning",
+        "title": "Using platform ROAS for cross-channel budget cuts can kill top-of-funnel generation",
+        "claim": {
+          "text": "The source warns that using rorowaz as an indicator for cross-business budget allocation could lead a C-suite to cut TikTok and shift budget to Google, which would be a fundamentally terrible idea because bottom-of-funnel performance stops working without top-of-funnel generation.",
+          "quote": "let's cut all the top of funnel generation and move to just bottom of funnel bottom of funnel will stop working unless there is top ofunnel generation."
+        },
+        "action": null,
+        "trigger": {
+          "op": "any",
+          "args": [
+            {
+              "text": "Platform ROAS reports show weak TikTok returns and stronger Google returns.",
+              "quote": "a seuite will see return on ad spend numbers across these different channels and go okay tik tok we should cut it's not driving returns"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not specify what replaces platform ROAS for that allocation decision beyond \"better measurement systems.\""
+        ],
+        "relations": [
+          {
+            "kind": "conflicts_with",
+            "target": "u2"
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1VoLYmy_EdEqYdss2JbmmJWq3tAarNIXb",
+          "source_sha256": "7acfa49289c2d801448a5aee30cc358b48d6b88404efe8a40a7737ca33d0a86a",
+          "locator": "body:25/paragraph",
+          "start": 59342,
+          "end": 59493,
+          "quote": "let's cut all the top of funnel generation and move to just bottom of funnel bottom of funnel will stop working unless there is top ofunnel generation."
+        },
+        {
+          "field": "trigger.0",
+          "source_id": "1VoLYmy_EdEqYdss2JbmmJWq3tAarNIXb",
+          "source_sha256": "7acfa49289c2d801448a5aee30cc358b48d6b88404efe8a40a7737ca33d0a86a",
+          "locator": "body:25/paragraph",
+          "start": 59037,
+          "end": 59172,
+          "quote": "a seuite will see return on ad spend numbers across these different channels and go okay tik tok we should cut it's not driving returns"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "75d3e79ac65fd715777d6e17223a3e3545736c52bb4bb4a2531e62d0cc94e71b",
+      "unit": {
+        "id": "u5",
+        "kind": "principle",
+        "title": "Move to better measurement systems and communicate them to decision-makers",
+        "claim": {
+          "text": "The source states that better measurement systems are needed to encapsulate and understand what is actually driving business impact and to communicate it to a C-suite or, for a small business, to the founder.",
+          "quote": "And so we need to go to better measurement systems to be able to actually encapsulate this, understand it, and then communicate it to a seauite or if you're a small business just to you as the founder."
+        },
+        "action": null,
+        "trigger": {
+          "op": "any",
+          "args": [
+            {
+              "text": "Platform attribution and ROAS are misleading decision-making and there is additional nuance in who actually drives business impact.",
+              "quote": "rorowaz ends up misleading people in terms of decision-m unless there's a lot of additional nuance in understanding what is actually driving impact in the business."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "Which specific better measurement systems are not listed in this passage."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u4"
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1VoLYmy_EdEqYdss2JbmmJWq3tAarNIXb",
+          "source_sha256": "7acfa49289c2d801448a5aee30cc358b48d6b88404efe8a40a7737ca33d0a86a",
+          "locator": "body:25/paragraph",
+          "start": 59666,
+          "end": 59867,
+          "quote": "And so we need to go to better measurement systems to be able to actually encapsulate this, understand it, and then communicate it to a seauite or if you're a small business just to you as the founder."
+        },
+        {
+          "field": "trigger.0",
+          "source_id": "1VoLYmy_EdEqYdss2JbmmJWq3tAarNIXb",
+          "source_sha256": "7acfa49289c2d801448a5aee30cc358b48d6b88404efe8a40a7737ca33d0a86a",
+          "locator": "body:25/paragraph",
+          "start": 59501,
+          "end": 59665,
+          "quote": "rorowaz ends up misleading people in terms of decision-m unless there's a lot of additional nuance in understanding what is actually driving impact in the business."
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "c4f75f79c2d1fc71fe9d7c862aa79eac80daeff5b8b2b55de275cb9e80459db7",
+      "unit": {
+        "id": "u6",
+        "kind": "principle",
+        "title": "Financial-grade KPIs use actual business financial metrics rather than in-platform attributed numbers",
+        "claim": {
+          "text": "The source describes financial-grade KPIs such as acquisition MER, profit contribution, and CAC as metrics that do not rely on in-platform attributed numbers or correlation calculations; instead they use actual new customers, actual new customer revenue, and actual ad spend.",
+          "quote": "these are all metrics that aren't relying on the inplatform attributed numbers to be able to calculate them, but instead they're using the actual financial metrics that exist within the business."
+        },
+        "action": null,
+        "trigger": {
+          "op": "any",
+          "args": [
+            {
+              "text": "In-platform attributed metrics are unreliable for higher-level business decisions.",
+              "quote": "this is fundamentally the crux of why this metric misleads you in terms of decision-making"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The concrete calculation of each financial-grade KPI is not given here beyond the described inputs."
+        ],
+        "relations": [
+          {
+            "kind": "alternative_to",
+            "target": "u4"
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1VoLYmy_EdEqYdss2JbmmJWq3tAarNIXb",
+          "source_sha256": "7acfa49289c2d801448a5aee30cc358b48d6b88404efe8a40a7737ca33d0a86a",
+          "locator": "body:25/paragraph",
+          "start": 60314,
+          "end": 60509,
+          "quote": "these are all metrics that aren't relying on the inplatform attributed numbers to be able to calculate them, but instead they're using the actual financial metrics that exist within the business."
+        },
+        {
+          "field": "trigger.0",
+          "source_id": "1VoLYmy_EdEqYdss2JbmmJWq3tAarNIXb",
+          "source_sha256": "7acfa49289c2d801448a5aee30cc358b48d6b88404efe8a40a7737ca33d0a86a",
+          "locator": "body:25/paragraph",
+          "start": 59970,
+          "end": 60060,
+          "quote": "this is fundamentally the crux of why this metric misleads you in terms of decision-making"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "6039738e4a26e089d82713a246b8567faea3fbf335cfe101e70598827222dbd0",
+      "unit": {
+        "id": "u7",
+        "kind": "principle",
+        "title": "Reliability improves up the metric pyramid while speed decreases",
+        "claim": {
+          "text": "The source says that as you move up the pyramid reliability improves, but speed decreases; financial-grade metrics move up and down and need to be viewed over slightly longer time periods for correct decisions, while in-platform metrics generally give faster feedback loops.",
+          "quote": "as we move up the pyramid reliability improves. However, speed decreases"
+        },
+        "action": null,
+        "trigger": {
+          "op": "any",
+          "args": [
+            {
+              "text": "You are choosing which metrics to use for decision-making.",
+              "quote": "You need to look at this on slightly longer time periods to be able to make correct decisions."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not state a specific minimum time period.",
+          "The term \"slightly longer\" is not quantified."
+        ],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1VoLYmy_EdEqYdss2JbmmJWq3tAarNIXb",
+          "source_sha256": "7acfa49289c2d801448a5aee30cc358b48d6b88404efe8a40a7737ca33d0a86a",
+          "locator": "body:25/paragraph",
+          "start": 60845,
+          "end": 60917,
+          "quote": "as we move up the pyramid reliability improves. However, speed decreases"
+        },
+        {
+          "field": "trigger.0",
+          "source_id": "1VoLYmy_EdEqYdss2JbmmJWq3tAarNIXb",
+          "source_sha256": "7acfa49289c2d801448a5aee30cc358b48d6b88404efe8a40a7737ca33d0a86a",
+          "locator": "body:25/paragraph",
+          "start": 60999,
+          "end": 61093,
+          "quote": "You need to look at this on slightly longer time periods to be able to make correct decisions."
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "8f2bd2a0222103243f4479f9cce21d36b0aeb525b6f620bdeb2e47a9eff4a3ec",
+      "unit": {
+        "id": "u8",
+        "kind": "principle",
+        "title": "Use in-platform ROAS and CPA for directional feedback within the siloed platform only",
+        "claim": {
+          "text": "The source says in-platform metrics like rorowaz and CPA are helpful in directional campaign feedback and ad feedback within the siloed platform, but not for comparing across platforms or zooming out to larger business-level decisions.",
+          "quote": "They are helpful in directional campaign feedback and ad feedback within the siloed platform."
+        },
+        "action": null,
+        "trigger": {
+          "op": "any",
+          "args": [
+            {
+              "text": "You want to use ROAS or CPA for campaign or ad feedback.",
+              "quote": "if we're looking at two meta campaigns next to each other, we can compare rorowaz, we can use that to make decisions"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": [
+            {
+              "text": "Comparing a ROAS number on a Google campaign to a ROAS number on a Meta campaign is a mistake because of different attribution models, funnel positions, and incremental impact.",
+              "quote": "comparing a rorowaz number on a Google campaign to a rorowaz number on a meta campaign because they have different attribution models"
+            },
+            {
+              "text": "Comparing platforms or making larger business-level decisions based on these numbers can mislead.",
+              "quote": "if we start comparing platforms, if we start zooming out and making larger business level decisions based on these numbers, that's where we can start to mislead ourselves"
+            }
+          ]
+        },
+        "completion": [],
+        "unknowns": [
+          "The term rorowaz is not defined in this passage.",
+          "The source does not specify the exact platform silo boundary beyond the platform itself."
+        ],
+        "relations": [
+          {
+            "kind": "conflicts_with",
+            "target": "u4"
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1VoLYmy_EdEqYdss2JbmmJWq3tAarNIXb",
+          "source_sha256": "7acfa49289c2d801448a5aee30cc358b48d6b88404efe8a40a7737ca33d0a86a",
+          "locator": "body:25/paragraph",
+          "start": 61288,
+          "end": 61381,
+          "quote": "They are helpful in directional campaign feedback and ad feedback within the siloed platform."
+        },
+        {
+          "field": "trigger.0",
+          "source_id": "1VoLYmy_EdEqYdss2JbmmJWq3tAarNIXb",
+          "source_sha256": "7acfa49289c2d801448a5aee30cc358b48d6b88404efe8a40a7737ca33d0a86a",
+          "locator": "body:25/paragraph",
+          "start": 61924,
+          "end": 62040,
+          "quote": "if we're looking at two meta campaigns next to each other, we can compare rorowaz, we can use that to make decisions"
+        },
+        {
+          "field": "exclusions.0",
+          "source_id": "1VoLYmy_EdEqYdss2JbmmJWq3tAarNIXb",
+          "source_sha256": "7acfa49289c2d801448a5aee30cc358b48d6b88404efe8a40a7737ca33d0a86a",
+          "locator": "body:25/paragraph",
+          "start": 61443,
+          "end": 61576,
+          "quote": "comparing a rorowaz number on a Google campaign to a rorowaz number on a meta campaign because they have different attribution models"
+        },
+        {
+          "field": "exclusions.1",
+          "source_id": "1VoLYmy_EdEqYdss2JbmmJWq3tAarNIXb",
+          "source_sha256": "7acfa49289c2d801448a5aee30cc358b48d6b88404efe8a40a7737ca33d0a86a",
+          "locator": "body:25/paragraph",
+          "start": 62046,
+          "end": 62216,
+          "quote": "if we start comparing platforms, if we start zooming out and making larger business level decisions based on these numbers, that's where we can start to mislead ourselves"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "a77a299f6dadd9b962b90d17ab6b49d22191d74ec18fe44b9051bb8cb3788a5c",
+      "unit": {
+        "id": "u9",
+        "kind": "action",
+        "title": "Run an incrementality test using a geographic holdout",
+        "claim": {
+          "text": "The source describes incrementality testing by generally taking the whole country, splitting by states (or commuting zones in Australia because there is not enough state selection), holding out a particular area or typically two neighboring states, and increasing spend everywhere else except the holdout, then measuring the differential.",
+          "quote": "You split down by states. In Australia, you have to split down by commuting zones rather than states because there's not enough state selection. And from there, you hold out a particular area."
+        },
+        "action": {
+          "text": "Run an incrementality test by taking a country, splitting by states (or commuting zones in Australia), and holding out a particular area or typically two neighboring states.",
+          "quote": "You split down by states. In Australia, you have to split down by commuting zones rather than states because there's not enough state selection. And from there, you hold out a particular area."
+        },
+        "trigger": {
+          "op": "any",
+          "args": [
+            {
+              "text": "You need to measure the incremental impact of changing different campaign types.",
+              "quote": "we can start to measure the incrementality of changing different campaign types"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "any",
+          "args": [
+            {
+              "text": "In Australia, commuting zones are required because there is not enough state selection.",
+              "quote": "In Australia, you have to split down by commuting zones rather than states because there's not enough state selection."
+            },
+            {
+              "text": "You need at least a fundamental understanding of data science before approaching this portion of the pyramid.",
+              "quote": "You need at least a fundamental understanding of data science to be able to start to approach this portion of the pyramid."
+            }
+          ]
+        },
+        "exclusions": {
+          "op": "any",
+          "args": [
+            {
+              "text": "The source explicitly does not recommend making a Google Sheet and doubling budgets in states without proper test design.",
+              "quote": "I do not recommend that you go away from this video and think, \"Oh, that was a really interesting idea. Let me just make a Google sheet and start doubling budgets in states.\" If you do that, you won't get good results."
+            }
+          ]
+        },
+        "completion": [],
+        "unknowns": [
+          "Test design has many options (holdout, increase in control, cut spend) and the source does not select one.",
+          "The source says the explanation is unbelievably simplified and the actual test design is more complicated.",
+          "No significance thresholds or validation requirements are given."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u6"
+          },
+          {
+            "kind": "alternative_to",
+            "target": "u4"
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1VoLYmy_EdEqYdss2JbmmJWq3tAarNIXb",
+          "source_sha256": "7acfa49289c2d801448a5aee30cc358b48d6b88404efe8a40a7737ca33d0a86a",
+          "locator": "body:25/paragraph",
+          "start": 62508,
+          "end": 62700,
+          "quote": "You split down by states. In Australia, you have to split down by commuting zones rather than states because there's not enough state selection. And from there, you hold out a particular area."
+        },
+        {
+          "field": "action",
+          "source_id": "1VoLYmy_EdEqYdss2JbmmJWq3tAarNIXb",
+          "source_sha256": "7acfa49289c2d801448a5aee30cc358b48d6b88404efe8a40a7737ca33d0a86a",
+          "locator": "body:25/paragraph",
+          "start": 62508,
+          "end": 62700,
+          "quote": "You split down by states. In Australia, you have to split down by commuting zones rather than states because there's not enough state selection. And from there, you hold out a particular area."
+        },
+        {
+          "field": "trigger.0",
+          "source_id": "1VoLYmy_EdEqYdss2JbmmJWq3tAarNIXb",
+          "source_sha256": "7acfa49289c2d801448a5aee30cc358b48d6b88404efe8a40a7737ca33d0a86a",
+          "locator": "body:25/paragraph",
+          "start": 63185,
+          "end": 63264,
+          "quote": "we can start to measure the incrementality of changing different campaign types"
+        },
+        {
+          "field": "prerequisites.0",
+          "source_id": "1VoLYmy_EdEqYdss2JbmmJWq3tAarNIXb",
+          "source_sha256": "7acfa49289c2d801448a5aee30cc358b48d6b88404efe8a40a7737ca33d0a86a",
+          "locator": "body:25/paragraph",
+          "start": 62534,
+          "end": 62652,
+          "quote": "In Australia, you have to split down by commuting zones rather than states because there's not enough state selection."
+        },
+        {
+          "field": "prerequisites.1",
+          "source_id": "1VoLYmy_EdEqYdss2JbmmJWq3tAarNIXb",
+          "source_sha256": "7acfa49289c2d801448a5aee30cc358b48d6b88404efe8a40a7737ca33d0a86a",
+          "locator": "body:25/paragraph",
+          "start": 64544,
+          "end": 64666,
+          "quote": "You need at least a fundamental understanding of data science to be able to start to approach this portion of the pyramid."
+        },
+        {
+          "field": "exclusions.0",
+          "source_id": "1VoLYmy_EdEqYdss2JbmmJWq3tAarNIXb",
+          "source_sha256": "7acfa49289c2d801448a5aee30cc358b48d6b88404efe8a40a7737ca33d0a86a",
+          "locator": "body:25/paragraph",
+          "start": 64126,
+          "end": 64344,
+          "quote": "I do not recommend that you go away from this video and think, \"Oh, that was a really interesting idea. Let me just make a Google sheet and start doubling budgets in states.\" If you do that, you won't get good results."
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "322237b7e16d71b1031759a4498cad7568754b708b556ac8d6cc9a5a7d5bfa36",
+      "unit": {
+        "id": "u10",
+        "kind": "example",
+        "title": "Incrementality test example: doubling TikTok budgets in holdout states",
+        "claim": {
+          "text": "The source gives an example of taking a TikTok campaign that seems to be doing poorly, doubling budgets in the held-out states, and measuring revenue realization difference over a 30-day period, where new customer revenue might double, then calculating incremental return on ad spend against the control.",
+          "quote": "we might go and take that Tik Tok campaign I was talking about before that doesn't seem to be doing well and we might double budgets in these states. And then over a 30-day period, we measure the revenue realization difference over that 30 days and maybe new customer revenue doubles."
+        },
+        "action": null,
+        "trigger": {
+          "op": "any",
+          "args": [
+            {
+              "text": "A TikTok campaign appears not to be performing well and you want a more accurate read on its impact.",
+              "quote": "take that Tik Tok campaign I was talking about before that doesn't seem to be doing well"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": [
+            {
+              "text": "You have set up a control and treatment group by holding out a large area.",
+              "quote": "when we isolate a large control verse treatment group"
+            }
+          ]
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [
+          {
+            "text": "Calculate incremental return on ad spend from the new customer revenue lift against the control.",
+            "quote": "We can do an incremental return on ad spend calculation and we end up getting a very accurate read on the impact that these campaigns are making."
+          }
+        ],
+        "unknowns": [
+          "The example is illustrative and the source says it is unbelievably simplified and more complicated in reality.",
+          "No statistical validity or power criteria are given."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u9"
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1VoLYmy_EdEqYdss2JbmmJWq3tAarNIXb",
+          "source_sha256": "7acfa49289c2d801448a5aee30cc358b48d6b88404efe8a40a7737ca33d0a86a",
+          "locator": "body:25/paragraph",
+          "start": 63273,
+          "end": 63557,
+          "quote": "we might go and take that Tik Tok campaign I was talking about before that doesn't seem to be doing well and we might double budgets in these states. And then over a 30-day period, we measure the revenue realization difference over that 30 days and maybe new customer revenue doubles."
+        },
+        {
+          "field": "trigger.0",
+          "source_id": "1VoLYmy_EdEqYdss2JbmmJWq3tAarNIXb",
+          "source_sha256": "7acfa49289c2d801448a5aee30cc358b48d6b88404efe8a40a7737ca33d0a86a",
+          "locator": "body:25/paragraph",
+          "start": 63289,
+          "end": 63377,
+          "quote": "take that Tik Tok campaign I was talking about before that doesn't seem to be doing well"
+        },
+        {
+          "field": "prerequisites.0",
+          "source_id": "1VoLYmy_EdEqYdss2JbmmJWq3tAarNIXb",
+          "source_sha256": "7acfa49289c2d801448a5aee30cc358b48d6b88404efe8a40a7737ca33d0a86a",
+          "locator": "body:25/paragraph",
+          "start": 63130,
+          "end": 63183,
+          "quote": "when we isolate a large control verse treatment group"
+        },
+        {
+          "field": "completion.0",
+          "source_id": "1VoLYmy_EdEqYdss2JbmmJWq3tAarNIXb",
+          "source_sha256": "7acfa49289c2d801448a5aee30cc358b48d6b88404efe8a40a7737ca33d0a86a",
+          "locator": "body:25/paragraph",
+          "start": 63653,
+          "end": 63798,
+          "quote": "We can do an incremental return on ad spend calculation and we end up getting a very accurate read on the impact that these campaigns are making."
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "dc0a1655ee029f60ba145bea60b8688e796ee42c8b7758c60bb96cba1742b967",
+      "unit": {
+        "id": "u11",
+        "kind": "warning",
+        "title": "Incrementality testing is slow, restricted, and not scalable",
+        "claim": {
+          "text": "The source says incrementality testing is the most reliable option but is very slow, you cannot run a lot of them, and you are quite restricted.",
+          "quote": "that is ultimately the most reliable option. It's just very slow. You can't run a lot of them and you're quite restricted."
+        },
+        "action": null,
+        "trigger": {
+          "op": "any",
+          "args": [
+            {
+              "text": "You are considering incrementality testing as a measurement approach.",
+              "quote": "incrementality testing"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not quantify how slow or how many tests are practical."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u9"
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1VoLYmy_EdEqYdss2JbmmJWq3tAarNIXb",
+          "source_sha256": "7acfa49289c2d801448a5aee30cc358b48d6b88404efe8a40a7737ca33d0a86a",
+          "locator": "body:25/paragraph",
+          "start": 64675,
+          "end": 64797,
+          "quote": "that is ultimately the most reliable option. It's just very slow. You can't run a lot of them and you're quite restricted."
+        },
+        {
+          "field": "trigger.0",
+          "source_id": "1VoLYmy_EdEqYdss2JbmmJWq3tAarNIXb",
+          "source_sha256": "7acfa49289c2d801448a5aee30cc358b48d6b88404efe8a40a7737ca33d0a86a",
+          "locator": "body:25/paragraph",
+          "start": 62331,
+          "end": 62353,
+          "quote": "incrementality testing"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "f6baa624e361573656a9fa6b004a1f8070edb11fc3f758c519124a3883e95027",
+      "unit": {
+        "id": "u12",
+        "kind": "principle",
+        "title": "Strip returning customer revenue out of MER to avoid over-crediting marketing",
+        "claim": {
+          "text": "The source says MER (revenue divided by ad spend) is fundamentally a terrible metric for indexing paid media performance over time because it includes returning customer revenue; returning customer revenue should be stripped out so marketing does not take credit for customers who would have returned anyway, yielding a new-customer MER (new customer revenue divided by ad spend).",
+          "quote": "we really want to strip returning customer revenue out of this calculation because we don't want marketing taking credit for all these returning customers that would have returned anywhere. So that's why we always want to delineate all of our finance grade metrics into new customerbased metric."
+        },
+        "action": null,
+        "trigger": {
+          "op": "any",
+          "args": [
+            {
+              "text": "You are using MER to index performance of paid media over time.",
+              "quote": "the reason why it's fundamentally a terrible metric for indexing the performance of paid media over time is that it includes a large bucket of revenue that has very little to do with paid ad, which is returning customer revenue"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source notes some people calculate MER the other way around (ad spend divided by revenue) as a percentage, versus the multiple number, but does not resolve which is preferred."
+        ],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1VoLYmy_EdEqYdss2JbmmJWq3tAarNIXb",
+          "source_sha256": "7acfa49289c2d801448a5aee30cc358b48d6b88404efe8a40a7737ca33d0a86a",
+          "locator": "body:25/paragraph",
+          "start": 65730,
+          "end": 66025,
+          "quote": "we really want to strip returning customer revenue out of this calculation because we don't want marketing taking credit for all these returning customers that would have returned anywhere. So that's why we always want to delineate all of our finance grade metrics into new customerbased metric."
+        },
+        {
+          "field": "trigger.0",
+          "source_id": "1VoLYmy_EdEqYdss2JbmmJWq3tAarNIXb",
+          "source_sha256": "7acfa49289c2d801448a5aee30cc358b48d6b88404efe8a40a7737ca33d0a86a",
+          "locator": "body:25/paragraph",
+          "start": 65493,
+          "end": 65720,
+          "quote": "the reason why it's fundamentally a terrible metric for indexing the performance of paid media over time is that it includes a large bucket of revenue that has very little to do with paid ad, which is returning customer revenue"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "68c86a111a974cab3d491fc2d8df757f55a9105f5edaa1709e2b4e845fe6d049",
+      "unit": {
+        "id": "u13",
+        "kind": "example",
+        "title": "MER calculation example and its profitability implication",
+        "claim": {
+          "text": "The source gives an example where $100 in revenue and $50 in ad spend yields an MER of 2 (every dollar of ad spend returns that much revenue), and if new-customer MER in the same example were 1.4 it might not be profitable, which could call for rethinking the acquisition strategy.",
+          "quote": "if we for example have $100 in revenue and $50 in ad spend, our me would be a two. So every dollar we spend on ad spend we get in revenue."
+        },
+        "action": null,
+        "trigger": {
+          "op": "any",
+          "args": [
+            {
+              "text": "You are calculating MER from revenue and ad spend.",
+              "quote": "if we for example have $100 in revenue and $50 in ad spend, our me would be a two"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source states that the 1.4 new-customer MER \"might not actually be profitable at all for us\" without specifying margin or breakeven threshold."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u12"
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1VoLYmy_EdEqYdss2JbmmJWq3tAarNIXb",
+          "source_sha256": "7acfa49289c2d801448a5aee30cc358b48d6b88404efe8a40a7737ca33d0a86a",
+          "locator": "body:25/paragraph",
+          "start": 65144,
+          "end": 65282,
+          "quote": "if we for example have $100 in revenue and $50 in ad spend, our me would be a two. So every dollar we spend on ad spend we get in revenue."
+        },
+        {
+          "field": "trigger.0",
+          "source_id": "1VoLYmy_EdEqYdss2JbmmJWq3tAarNIXb",
+          "source_sha256": "7acfa49289c2d801448a5aee30cc358b48d6b88404efe8a40a7737ca33d0a86a",
+          "locator": "body:25/paragraph",
+          "start": 65144,
+          "end": 65225,
+          "quote": "if we for example have $100 in revenue and $50 in ad spend, our me would be a two"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "6f1cc5e3428b9bd6d6ad8e1e13534ffcef61f9f1f66f8ff397de3bace20cca7a",
+      "unit": {
+        "id": "u14",
+        "kind": "principle",
+        "title": "LTGP to CAC contextualizes gross profit against acquisition cost",
+        "claim": {
+          "text": "The source presents LTGP to CAC as taking the gross profit on a customer divided by the cost to acquire that customer, yielding an integer, and describes it as better than the other finance-grade metrics and as a pairing metric to contextualize CAC.",
+          "quote": "this is LTGP to CAC, similar to what we talked about before when we had CAC and I said that we needed a pairing metric to be able to contextualize it. This is contextualizing those two numbers."
+        },
+        "action": null,
+        "trigger": {
+          "op": "any",
+          "args": [
+            {
+              "text": "You want a finance-grade metric that contextualizes CAC with gross profit.",
+              "quote": "This is contextualizing those two numbers"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source indicates benchmarks will be given but the passage is cut off before providing them.",
+          "The timeframe over which LTGP is measured is not stated here.",
+          "The example sentence is incomplete in the passage."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u6"
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1VoLYmy_EdEqYdss2JbmmJWq3tAarNIXb",
+          "source_sha256": "7acfa49289c2d801448a5aee30cc358b48d6b88404efe8a40a7737ca33d0a86a",
+          "locator": "body:25/paragraph",
+          "start": 66562,
+          "end": 66755,
+          "quote": "this is LTGP to CAC, similar to what we talked about before when we had CAC and I said that we needed a pairing metric to be able to contextualize it. This is contextualizing those two numbers."
+        },
+        {
+          "field": "trigger.0",
+          "source_id": "1VoLYmy_EdEqYdss2JbmmJWq3tAarNIXb",
+          "source_sha256": "7acfa49289c2d801448a5aee30cc358b48d6b88404efe8a40a7737ca33d0a86a",
+          "locator": "body:25/paragraph",
+          "start": 66713,
+          "end": 66754,
+          "quote": "This is contextualizing those two numbers"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "89825204195cd0478b339d9b71b28af278983949056d1194911233e4ada8b3a2",
+      "unit": {
+        "id": "u15",
+        "kind": "unresolved_claim",
+        "title": "Cutoff before LTGP to CAC benchmarks and example completion",
+        "claim": {
+          "text": "The passage ends mid-sentence while giving an LTGP to CAC example, after stating the metric is better than the other finance-grade metrics and that benchmarks would be provided, so the benchmark values and the complete example are not present.",
+          "quote": "as an example, if we make $100 on a customer, it costs us $33 to actually get that"
+        },
+        "action": null,
+        "trigger": {
+          "op": "any",
+          "args": [
+            {
+              "text": "You need LTGP to CAC benchmark values or a complete worked example.",
+              "quote": "I wanted to spend some time on it by itself and give you benchmarks"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The benchmark values for LTGP to CAC are not in this passage.",
+          "The example calculation is cut off before completion.",
+          "Neighboring evidence is needed for the continuation."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u14"
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1VoLYmy_EdEqYdss2JbmmJWq3tAarNIXb",
+          "source_sha256": "7acfa49289c2d801448a5aee30cc358b48d6b88404efe8a40a7737ca33d0a86a",
+          "locator": "body:25/paragraph",
+          "start": 66903,
+          "end": 66985,
+          "quote": "as an example, if we make $100 on a customer, it costs us $33 to actually get that"
+        },
+        {
+          "field": "trigger.0",
+          "source_id": "1VoLYmy_EdEqYdss2JbmmJWq3tAarNIXb",
+          "source_sha256": "7acfa49289c2d801448a5aee30cc358b48d6b88404efe8a40a7737ca33d0a86a",
+          "locator": "body:25/paragraph",
+          "start": 66488,
+          "end": 66555,
+          "quote": "I wanted to spend some time on it by itself and give you benchmarks"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    }
+  ],
+  "held": [],
+  "more_units": false,
+  "unresolved": [
+    "The passage is cut off mid-sentence at \"if we make $100 on a customer, it costs us $33 to actually get that\"; LTGP to CAC benchmarks and the completed example require neighboring evidence.",
+    "The term \"rorowaz\" is used but not defined in this passage.",
+    "The source states conflicting/platform-specific guidance about relying on platform ROAS: it says bottom-half metrics are helpful directionally within a platform but also warns platform ROAS misleads cross-channel allocation; the boundaries are stated but the exact platform-attribution model differences are not enumerated.",
+    "Some quantified statements (e.g., doubling budgets over a 30-day period and new customer revenue doubling) are illustrative example values, not guaranteed thresholds.",
+    "Attribution model differences between Google and Meta are asserted but not described in detail in this passage."
+  ]
+}

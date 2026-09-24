@@ -1,0 +1,571 @@
+{
+  "request_id": "0849c893b69758a3c8f5d47aa97fd92a0b698196f6b8bd9c4962e8b3773528e9",
+  "provider": "openai",
+  "model": "gpt-5.6-terra",
+  "effort": "high",
+  "completion_limit": 16384,
+  "usage": {
+    "prompt_tokens": 3311,
+    "completion_tokens": 8176,
+    "total_tokens": 11487,
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 3308,
+      "audio_tokens": 0
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 4941,
+      "audio_tokens": 0,
+      "accepted_prediction_tokens": 0,
+      "rejected_prediction_tokens": 0
+    }
+  },
+  "booked_cost_usd": 0.1063895,
+  "seconds": 117.52,
+  "finish_reason": "stop",
+  "output": {
+    "units": [
+      {
+        "id": "u1",
+        "kind": "action",
+        "title": "Avoid giving the subscribed product as a free gift",
+        "claim": {
+          "text": "The speaker warns that giving more of the same product as a free gift can leave a subscriber with excess inventory and lead them to delay or cancel a future order.",
+          "quote": "then you give me a free gift of more creatine, then I'm going to have a lot of creatine and I'm probably going to delay or cancel my next order with you because I have too much."
+        },
+        "action": {
+          "text": "Do not give more of the same subscribed product as the free gift.",
+          "quote": "I don't want you to give more of the same product as a part of the free gift."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "A free gift is being selected.",
+              "quote": "as a part of the free gift."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": [
+            {
+              "text": "Do not use a gift that is more of the same subscribed product.",
+              "quote": "give more of the same product as a part of the free gift."
+            }
+          ]
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not specify which complementary gifts are appropriate."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u2",
+        "kind": "action",
+        "title": "Communicate subscription gifts to subscribers",
+        "claim": {
+          "text": "The speaker says gifts have no point if they are not communicated.",
+          "quote": "there is no point of having these gifts if you don't communicate this."
+        },
+        "action": {
+          "text": "Communicate subscription gifts in subscriber messaging.",
+          "quote": "that's going to be one of the key things that we want to talk about in our subscriber messaging."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not define the required frequency or exact content of gift communications."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u3",
+        "kind": "principle",
+        "title": "Restrict subscriber communications to three stated categories",
+        "claim": {
+          "text": "The speaker says subscriber communications should consist of billing reminders, order confirmations and other notifications, plus minimal and mindful campaigns.",
+          "quote": "We should only be communicating with our subscribers in three ways. the billing reminders, order confirmations, and other notifications, and then minimal and mindful campaigns."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source calls these three ways but lists billing reminders, order confirmations and other notifications together; the exact category structure is not fully defined.",
+          "The source does not define what volume qualifies as minimal and mindful campaigns."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u4",
+        "kind": "action",
+        "title": "Send billing reminders rather than skipping them",
+        "claim": {
+          "text": "The speaker says skipping billing reminders can create legal trouble and is not good business.",
+          "quote": "there are some brands out there who skip this email entirely, which can put them in legal trouble, but it's also kind of like not good business."
+        },
+        "action": {
+          "text": "Do not skip billing reminders.",
+          "quote": "I wouldn't recommend skipping billing reminders."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "A subscriber is about to be charged on a subscription.",
+              "quote": "if somebody is about to get charged on a subscription."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source says reminders are legally required only in some states but does not identify the states, applicable law, notice timing, or exceptions."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u5",
+        "kind": "action",
+        "title": "Build the billing reminder in Claio rather than the subscription platform",
+        "claim": {
+          "text": "The speaker says the billing reminder should be moved from the subscription platform, such as Recharge SKO, into Claio.",
+          "quote": "take our billing reminder off of our platform, our subscription platform like Recharge SKO and build it into Claio."
+        },
+        "action": {
+          "text": "Build the billing reminder in Claio instead of the subscription platform.",
+          "quote": "build it into Claio."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source uses the platform name Claio; its intended product name and integration requirements are not established in the passage."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u6",
+        "kind": "action",
+        "title": "Use education and benefits in the billing reminder",
+        "claim": {
+          "text": "The speaker reports that an A/B test reduced cancellations from 8.6% to 5.8%, described as a 33% decrease, after simple billing-reminder changes.",
+          "quote": "we were able to actually get a 33% decrease in cancellations with just a couple simple changes going from 8.6% to 5.8%."
+        },
+        "action": {
+          "text": "Add proper education and highlight the benefits subscribers receive in the billing reminder.",
+          "quote": "changing this billing reminder to have proper education and highlight all the benefits that they're getting."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The test context, test design, denominator, timeframe, and whether the result generalizes are not stated.",
+          "A later standalone 28% figure is unclear and is not reconciled with the reported 33% decrease."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u7",
+        "kind": "action",
+        "title": "Offer a delay option in billing reminders",
+        "claim": {
+          "text": "The speaker identifies having too much product as the biggest reason people cancel.",
+          "quote": "Cuz the biggest reason that people cancel is they have too much product."
+        },
+        "action": {
+          "text": "Offer subscribers a way to delay the order when they need more time.",
+          "quote": "if you need more time, you can delay right here."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "The subscriber needs more time before the next order.",
+              "quote": "if you need more time"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source describes one-click delay links but does not state the delay duration, eligible subscriptions, or implementation details."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u8",
+        "kind": "action",
+        "title": "Place subscription-management access at the bottom of the billing reminder",
+        "claim": {
+          "text": "The speaker's proposed billing-reminder sequence places the manage-subscription button at the bottom after other content.",
+          "quote": "Then do we have the need to adjust your subscription manage my subscription button all the way down at the bottom."
+        },
+        "action": {
+          "text": "Place the manage-subscription button at the bottom of the billing reminder.",
+          "quote": "manage my subscription button all the way down at the bottom."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not address legal, accessibility, or platform requirements for the placement of cancellation or subscription-management controls."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u9",
+        "kind": "action",
+        "title": "Customize billing reminders by subscribed product and rebuild stage",
+        "claim": {
+          "text": "The speaker recommends tailoring billing reminders to the subscribed product and what the speaker calls the customer's rebuild stage.",
+          "quote": "customize all of your billing reminders based on the product the person is subscribed to and based on what rebuild they're on."
+        },
+        "action": {
+          "text": "Customize billing reminders by subscribed product and rebuild stage.",
+          "quote": "We want to use different messaging and customize based on what the customer might be experiencing."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The term rebuild is not defined and may refer to rebill or order number.",
+          "The source does not specify messaging for each product or rebuild stage."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u10",
+        "kind": "example",
+        "title": "Gift-focused billing reminder for an upcoming free gift",
+        "claim": {
+          "text": "As an example, the speaker says that when a customer will receive a free gift in the next bill, the billing reminder can focus on that upcoming gift.",
+          "quote": "then we can completely change our billing reminder to be focused on that cuz nobody's going to want to cancel if they're getting this free thing upcoming."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "The customer is known to receive a free gift in the next bill, such as on order three.",
+              "quote": "if you know that a customer is going to get a free gift in the next bill, like if on order three you give a free gift"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "This is presented as a simple example rather than a measured or universal outcome.",
+          "The source does not establish that all customers receiving an upcoming gift will be less likely to cancel."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u11",
+        "kind": "action",
+        "title": "Optimize the order-confirmation email",
+        "claim": {
+          "text": "The speaker reports that, in an audited eight-figure subscription brand, the largest churn spike occurred on day 30, the first rebill day.",
+          "quote": "The biggest spike by far is day 30."
+        },
+        "action": {
+          "text": "Optimize the order-confirmation email as well as the billing reminder.",
+          "quote": "that is why this email is so important to optimize as well."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source attributes the day-30 spike to the Shopify confirmation email but does not establish causation through an experiment.",
+          "The client graph, churn definition, and time period are not provided."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u12",
+        "kind": "unresolved_claim",
+        "title": "Resolve contradictory Shopify Plus instructions before disabling confirmations",
+        "claim": {
+          "text": "The source gives contradictory statements about Shopify Plus eligibility for turning off the order-notification email: it first says Shopify Plus is required to turn it off, then says Shopify Plus users must keep it on.",
+          "quote": "you have to be on Shopify Plus to turn this email off. If you are on Shopify Plus, unfortunately, you have to keep it on."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "A decision is being made about turning off a Shopify order-notification email.",
+              "quote": "turn the order notification email off"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": [
+            {
+              "text": "Do not rely on the passage alone to determine whether Shopify Plus permits disabling the email.",
+              "quote": "you have to be on Shopify Plus to turn this email off. If you are on Shopify Plus, unfortunately, you have to keep it on."
+            }
+          ]
+        },
+        "completion": [],
+        "unknowns": [
+          "Whether Shopify Plus or non-Plus stores can disable the order-notification email is unresolved.",
+          "Any live configuration relying on this behavior requires current primary-source Shopify verification."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u13",
+        "kind": "action",
+        "title": "Customize order confirmations by order type and subscription order number",
+        "claim": {
+          "text": "The speaker recommends customizing order-confirmation messaging based on whether the order is a subscription or one-time order and on the subscription order number.",
+          "quote": "Just one email is fine, but we want to customize it again based on if it's a subscription versus if it's a onetime order. And then what number order is it on subscription"
+        },
+        "action": {
+          "text": "Customize order-confirmation emails by order type and subscription order number.",
+          "quote": "we want to customize it again based on if it's a subscription versus if it's a onetime order."
+        },
+        "trigger": {
+          "op": "any",
+          "args": [
+            {
+              "text": "The order is a subscription or a one-time order.",
+              "quote": "if it's a subscription versus if it's a onetime order"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not provide a complete set of messages for each subscription order number."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u14",
+        "kind": "action",
+        "title": "Include testimonials in customized order confirmations when possible",
+        "claim": {
+          "text": "The speaker recommends including testimonials when possible to make customers feel good about their order and encourage them to stay.",
+          "quote": "Include testimonials if you can. Whatever you can do to make this less scary, make people feel good about their order to get them to stay."
+        },
+        "action": {
+          "text": "Include testimonials in the customized order confirmation when possible.",
+          "quote": "Include testimonials if you can."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not define what makes testimonial use possible or identify testimonial approval, substantiation, or disclosure requirements."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u15",
+        "kind": "warning",
+        "title": "Avoid over-sending campaigns to active subscribers",
+        "claim": {
+          "text": "The speaker warns that over-sending active subscribers produces many cancellations because each email can prompt reconsideration of the subscription.",
+          "quote": "You just get so many cancellations if you over send your active subscribers. Every email you send is a reminder or prompt for somebody to reconsider if they want to be subscribed to your product."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Campaigns are being sent to active subscribers.",
+              "quote": "how you communicate towards your active subscribers"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": [
+            {
+              "text": "Over-sending active subscribers is cautioned against.",
+              "quote": "if you over send your active subscribers"
+            }
+          ]
+        },
+        "completion": [],
+        "unknowns": [
+          "The passage does not define over send, the cancellation attribution window, or the reported metric's denominator.",
+          "The source's campaign analysis is cut off before completion."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u16",
+        "kind": "action",
+        "title": "Optimize other transactional emails in Claio",
+        "claim": {
+          "text": "The speaker says other transactional emails are also worth optimizing, moving into Claio, and applying similar messaging.",
+          "quote": "for all other transactional emails is great to optimize those and get those into Claio and use the same sort of messaging."
+        },
+        "action": {
+          "text": "Optimize other transactional emails.",
+          "quote": "for all other transactional emails is great to optimize those"
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not identify which other transactional emails should be prioritized or how they should be optimized."
+        ],
+        "relations": []
+      }
+    ],
+    "more_units": true,
+    "unresolved": [
+      "Output cap reached; omitted distinct material includes adding dynamic order content to customized confirmations, reminding recipients of product benefits in confirmations, and the cited free coffee booklet subscription example.",
+      "The passage ends mid-sentence after discussing subscriptions canceled, so neighboring source content is needed to complete the campaign-analysis extraction.",
+      "The supplied provenance is unverified; these units preserve the speaker's assertions rather than independently validating them."
+    ]
+  },
+  "raw_content": "{\"units\":[{\"id\":\"u1\",\"kind\":\"action\",\"title\":\"Avoid giving the subscribed product as a free gift\",\"claim\":{\"text\":\"The speaker warns that giving more of the same product as a free gift can leave a subscriber with excess inventory and lead them to delay or cancel a future order.\",\"quote\":\"then you give me a free gift of more creatine, then I'm going to have a lot of creatine and I'm probably going to delay or cancel my next order with you because I have too much.\"},\"action\":{\"text\":\"Do not give more of the same subscribed product as the free gift.\",\"quote\":\"I don't want you to give more of the same product as a part of the free gift.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"A free gift is being selected.\",\"quote\":\"as a part of the free gift.\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[{\"text\":\"Do not use a gift that is more of the same subscribed product.\",\"quote\":\"give more of the same product as a part of the free gift.\"}]},\"completion\":[],\"unknowns\":[\"The source does not specify which complementary gifts are appropriate.\"],\"relations\":[]},{\"id\":\"u2\",\"kind\":\"action\",\"title\":\"Communicate subscription gifts to subscribers\",\"claim\":{\"text\":\"The speaker says gifts have no point if they are not communicated.\",\"quote\":\"there is no point of having these gifts if you don't communicate this.\"},\"action\":{\"text\":\"Communicate subscription gifts in subscriber messaging.\",\"quote\":\"that's going to be one of the key things that we want to talk about in our subscriber messaging.\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source does not define the required frequency or exact content of gift communications.\"],\"relations\":[]},{\"id\":\"u3\",\"kind\":\"principle\",\"title\":\"Restrict subscriber communications to three stated categories\",\"claim\":{\"text\":\"The speaker says subscriber communications should consist of billing reminders, order confirmations and other notifications, plus minimal and mindful campaigns.\",\"quote\":\"We should only be communicating with our subscribers in three ways. the billing reminders, order confirmations, and other notifications, and then minimal and mindful campaigns.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source calls these three ways but lists billing reminders, order confirmations and other notifications together; the exact category structure is not fully defined.\",\"The source does not define what volume qualifies as minimal and mindful campaigns.\"],\"relations\":[]},{\"id\":\"u4\",\"kind\":\"action\",\"title\":\"Send billing reminders rather than skipping them\",\"claim\":{\"text\":\"The speaker says skipping billing reminders can create legal trouble and is not good business.\",\"quote\":\"there are some brands out there who skip this email entirely, which can put them in legal trouble, but it's also kind of like not good business.\"},\"action\":{\"text\":\"Do not skip billing reminders.\",\"quote\":\"I wouldn't recommend skipping billing reminders.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"A subscriber is about to be charged on a subscription.\",\"quote\":\"if somebody is about to get charged on a subscription.\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source says reminders are legally required only in some states but does not identify the states, applicable law, notice timing, or exceptions.\"],\"relations\":[]},{\"id\":\"u5\",\"kind\":\"action\",\"title\":\"Build the billing reminder in Claio rather than the subscription platform\",\"claim\":{\"text\":\"The speaker says the billing reminder should be moved from the subscription platform, such as Recharge SKO, into Claio.\",\"quote\":\"take our billing reminder off of our platform, our subscription platform like Recharge SKO and build it into Claio.\"},\"action\":{\"text\":\"Build the billing reminder in Claio instead of the subscription platform.\",\"quote\":\"build it into Claio.\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source uses the platform name Claio; its intended product name and integration requirements are not established in the passage.\"],\"relations\":[]},{\"id\":\"u6\",\"kind\":\"action\",\"title\":\"Use education and benefits in the billing reminder\",\"claim\":{\"text\":\"The speaker reports that an A/B test reduced cancellations from 8.6% to 5.8%, described as a 33% decrease, after simple billing-reminder changes.\",\"quote\":\"we were able to actually get a 33% decrease in cancellations with just a couple simple changes going from 8.6% to 5.8%.\"},\"action\":{\"text\":\"Add proper education and highlight the benefits subscribers receive in the billing reminder.\",\"quote\":\"changing this billing reminder to have proper education and highlight all the benefits that they're getting.\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The test context, test design, denominator, timeframe, and whether the result generalizes are not stated.\",\"A later standalone 28% figure is unclear and is not reconciled with the reported 33% decrease.\"],\"relations\":[]},{\"id\":\"u7\",\"kind\":\"action\",\"title\":\"Offer a delay option in billing reminders\",\"claim\":{\"text\":\"The speaker identifies having too much product as the biggest reason people cancel.\",\"quote\":\"Cuz the biggest reason that people cancel is they have too much product.\"},\"action\":{\"text\":\"Offer subscribers a way to delay the order when they need more time.\",\"quote\":\"if you need more time, you can delay right here.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"The subscriber needs more time before the next order.\",\"quote\":\"if you need more time\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source describes one-click delay links but does not state the delay duration, eligible subscriptions, or implementation details.\"],\"relations\":[]},{\"id\":\"u8\",\"kind\":\"action\",\"title\":\"Place subscription-management access at the bottom of the billing reminder\",\"claim\":{\"text\":\"The speaker's proposed billing-reminder sequence places the manage-subscription button at the bottom after other content.\",\"quote\":\"Then do we have the need to adjust your subscription manage my subscription button all the way down at the bottom.\"},\"action\":{\"text\":\"Place the manage-subscription button at the bottom of the billing reminder.\",\"quote\":\"manage my subscription button all the way down at the bottom.\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source does not address legal, accessibility, or platform requirements for the placement of cancellation or subscription-management controls.\"],\"relations\":[]},{\"id\":\"u9\",\"kind\":\"action\",\"title\":\"Customize billing reminders by subscribed product and rebuild stage\",\"claim\":{\"text\":\"The speaker recommends tailoring billing reminders to the subscribed product and what the speaker calls the customer's rebuild stage.\",\"quote\":\"customize all of your billing reminders based on the product the person is subscribed to and based on what rebuild they're on.\"},\"action\":{\"text\":\"Customize billing reminders by subscribed product and rebuild stage.\",\"quote\":\"We want to use different messaging and customize based on what the customer might be experiencing.\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The term rebuild is not defined and may refer to rebill or order number.\",\"The source does not specify messaging for each product or rebuild stage.\"],\"relations\":[]},{\"id\":\"u10\",\"kind\":\"example\",\"title\":\"Gift-focused billing reminder for an upcoming free gift\",\"claim\":{\"text\":\"As an example, the speaker says that when a customer will receive a free gift in the next bill, the billing reminder can focus on that upcoming gift.\",\"quote\":\"then we can completely change our billing reminder to be focused on that cuz nobody's going to want to cancel if they're getting this free thing upcoming.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"The customer is known to receive a free gift in the next bill, such as on order three.\",\"quote\":\"if you know that a customer is going to get a free gift in the next bill, like if on order three you give a free gift\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"This is presented as a simple example rather than a measured or universal outcome.\",\"The source does not establish that all customers receiving an upcoming gift will be less likely to cancel.\"],\"relations\":[]},{\"id\":\"u11\",\"kind\":\"action\",\"title\":\"Optimize the order-confirmation email\",\"claim\":{\"text\":\"The speaker reports that, in an audited eight-figure subscription brand, the largest churn spike occurred on day 30, the first rebill day.\",\"quote\":\"The biggest spike by far is day 30.\"},\"action\":{\"text\":\"Optimize the order-confirmation email as well as the billing reminder.\",\"quote\":\"that is why this email is so important to optimize as well.\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source attributes the day-30 spike to the Shopify confirmation email but does not establish causation through an experiment.\",\"The client graph, churn definition, and time period are not provided.\"],\"relations\":[]},{\"id\":\"u12\",\"kind\":\"unresolved_claim\",\"title\":\"Resolve contradictory Shopify Plus instructions before disabling confirmations\",\"claim\":{\"text\":\"The source gives contradictory statements about Shopify Plus eligibility for turning off the order-notification email: it first says Shopify Plus is required to turn it off, then says Shopify Plus users must keep it on.\",\"quote\":\"you have to be on Shopify Plus to turn this email off. If you are on Shopify Plus, unfortunately, you have to keep it on.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"A decision is being made about turning off a Shopify order-notification email.\",\"quote\":\"turn the order notification email off\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[{\"text\":\"Do not rely on the passage alone to determine whether Shopify Plus permits disabling the email.\",\"quote\":\"you have to be on Shopify Plus to turn this email off. If you are on Shopify Plus, unfortunately, you have to keep it on.\"}]},\"completion\":[],\"unknowns\":[\"Whether Shopify Plus or non-Plus stores can disable the order-notification email is unresolved.\",\"Any live configuration relying on this behavior requires current primary-source Shopify verification.\"],\"relations\":[]},{\"id\":\"u13\",\"kind\":\"action\",\"title\":\"Customize order confirmations by order type and subscription order number\",\"claim\":{\"text\":\"The speaker recommends customizing order-confirmation messaging based on whether the order is a subscription or one-time order and on the subscription order number.\",\"quote\":\"Just one email is fine, but we want to customize it again based on if it's a subscription versus if it's a onetime order. And then what number order is it on subscription\"},\"action\":{\"text\":\"Customize order-confirmation emails by order type and subscription order number.\",\"quote\":\"we want to customize it again based on if it's a subscription versus if it's a onetime order.\"},\"trigger\":{\"op\":\"any\",\"args\":[{\"text\":\"The order is a subscription or a one-time order.\",\"quote\":\"if it's a subscription versus if it's a onetime order\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source does not provide a complete set of messages for each subscription order number.\"],\"relations\":[]},{\"id\":\"u14\",\"kind\":\"action\",\"title\":\"Include testimonials in customized order confirmations when possible\",\"claim\":{\"text\":\"The speaker recommends including testimonials when possible to make customers feel good about their order and encourage them to stay.\",\"quote\":\"Include testimonials if you can. Whatever you can do to make this less scary, make people feel good about their order to get them to stay.\"},\"action\":{\"text\":\"Include testimonials in the customized order confirmation when possible.\",\"quote\":\"Include testimonials if you can.\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source does not define what makes testimonial use possible or identify testimonial approval, substantiation, or disclosure requirements.\"],\"relations\":[]},{\"id\":\"u15\",\"kind\":\"warning\",\"title\":\"Avoid over-sending campaigns to active subscribers\",\"claim\":{\"text\":\"The speaker warns that over-sending active subscribers produces many cancellations because each email can prompt reconsideration of the subscription.\",\"quote\":\"You just get so many cancellations if you over send your active subscribers. Every email you send is a reminder or prompt for somebody to reconsider if they want to be subscribed to your product.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Campaigns are being sent to active subscribers.\",\"quote\":\"how you communicate towards your active subscribers\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[{\"text\":\"Over-sending active subscribers is cautioned against.\",\"quote\":\"if you over send your active subscribers\"}]},\"completion\":[],\"unknowns\":[\"The passage does not define over send, the cancellation attribution window, or the reported metric's denominator.\",\"The source's campaign analysis is cut off before completion.\"],\"relations\":[]},{\"id\":\"u16\",\"kind\":\"action\",\"title\":\"Optimize other transactional emails in Claio\",\"claim\":{\"text\":\"The speaker says other transactional emails are also worth optimizing, moving into Claio, and applying similar messaging.\",\"quote\":\"for all other transactional emails is great to optimize those and get those into Claio and use the same sort of messaging.\"},\"action\":{\"text\":\"Optimize other transactional emails.\",\"quote\":\"for all other transactional emails is great to optimize those\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source does not identify which other transactional emails should be prioritized or how they should be optimized.\"],\"relations\":[]}],\"more_units\":true,\"unresolved\":[\"Output cap reached; omitted distinct material includes adding dynamic order content to customized confirmations, reminding recipients of product benefits in confirmations, and the cited free coffee booklet subscription example.\",\"The passage ends mid-sentence after discussing subscriptions canceled, so neighboring source content is needed to complete the campaign-analysis extraction.\",\"The supplied provenance is unverified; these units preserve the speaker's assertions rather than independently validating them.\"]}",
+  "input": {
+    "source_id": "1yutbBTFtsv7iRcy03QBzgOLFst9Ig28C",
+    "source_sha256": "dcdf51bb2a2fce6c6a066f512065163ce1395cc52c792dd0d84c6b03852db113",
+    "locator": "body:47/paragraph",
+    "start": 28493,
+    "text": "ke, \"Hey, try this out.\" The one thing that I don't want you to do is I don't want you to give more of the same product as a part of the free gift. Cuz let's say on month three I have creatine and then you give me a free gift of more creatine, then I'm going to have a lot of creatine and I'm probably going to delay or cancel my next order with you because I have too much. So definitely don't want to do that. So make sure you're very mindful with these gifts. And very very important, there is no point of having these gifts if you don't communicate this. So that's going to be one of the key things that we want to talk about in our subscriber messaging. We should only be communicating with our subscribers in three ways. the billing reminders, order confirmations, and other notifications, and then minimal and mindful campaigns. So, first, let's go to our billing reminders. So, it is legally required in some states to send a reminder if somebody is about to get charged on a subscription. So, essentially being like, hey, we're about to charge you in 3 days. If you need to adjust your subscription, you can do here. Now, there are some brands out there who skip this email entirely, which can put them in legal trouble, but it's also kind of like not good business. And so I wouldn't recommend skipping billing reminders. It's just good practice and you want to be kind of a good brand and do well by your customers. However, you can completely up your billing reminder email and most brands do. So the key thing here is we need to make sure we take our billing reminder off of our platform, our subscription platform like Recharge SKO and build it into Claio. Here's for example an AB test that we did optimizing this billing reminder email. Before this brand came to us, they had an 8.6% cancellation rate on this email. And this is what this standard sort of billing reminder email looks like within the platform and even brands that have been claio what it looks like. It's kind of like super scary looking. It's super transactional. It's like, oh shoot, I'm literally about to get charged for this amount. It's right in my face. There's a big button for manage my subscription. I should probably just cancel my order. Why do I even have this product? So that person is thinking all those things. And so you get a super high cancellation rate. So we were able to actually get a 33% decrease in cancellations with just a couple simple changes going from 8.6% to 5.8%. 28% and that is tens of thousands of dollars every single month. That is by changing this billing reminder to have proper education and highlight all the benefits that they're getting. This looks a lot more engaging and it's not as scary. Your next order ship soon. Get ready. Get excited. You're building a strong focus habit with every delivery. Let's keep the momentum going. Some fun motivational languages. And then right here we can see the free gifts. Again, free gifts don't mean anything if we don't talk about it. Or the perks. Like we're getting up to 20% off. We got these free gifts. And I can pause, skip, or cancel anytime. The next part of a billy reminder that we want is we want to push people to delay their order. Cuz the biggest reason that people cancel is they have too much product. So, we want to say, \"Hey, if you need more time, you can delay right here.\" And these are just oneclick action links that you can build into your subscription platform where all the person does is click this and we're automatically going to delay their order. Notice how we don't have a manage my subscription or cancel my subscription button yet. We keep going and then we upsell and cross-ell continuing to kind of distract people and get them to buy in. all the way at the bottom. Then do we have the need to adjust your subscription manage my subscription button all the way down at the bottom. And that is the sort of template we can use to get to this number. That's how to set up an optimized billing reminder. But we don't just want to set up one billing reminder for every single order. We want to have custom billing reminders based on if somebody's getting rebuild for the first time or if it's the second order or the third order or the fourth or the fifth or the sixth. We want to use different messaging and customize based on what the customer might be experiencing. I'm going to use a very simple example right here which shows a billing reminder with a free gift. So if you know that a customer is going to get a free gift in the next bill, like if on order three you give a free gift, then we can completely change our billing reminder to be focused on that cuz nobody's going to want to cancel if they're getting this free thing upcoming. Your premium supplements plus a free gift are coming soon. We can see this showing all the value of this. And this just takes all your attention from, oh I'm about to get charged. And then again reaffirming of the perks. We can see again delaying the order rather than cancel. And then all the way down here at the bottom is where if somebody did want to cancel, they have the manage my subscription button. So that's how we can customize it. And you're going to want to customize all of your billing reminders based on the product the person is subscribed to and based on what rebuild they're on. The same sort of strategy is going to apply towards the second part of our customer messaging, which is going to be our order confirmation emails. So again, legally, if somebody gets charged by us, we need to send them an email being like, \"Yo, you just got charged.\" The problem is most people just have a basic, super scary Shopify confirmation email, and the impact that it has is massive. A lot of people think optimizing your billing reminder is kind of common knowledge for people that are really tapped in with subscription, but optimizing the confirmation email isn't as much. Here's an example of a graph of a real client that I audited, an 8 figureure subscription brand, and showing the number of churns that this brand experiences. Day zero is going to be the first day that somebody is subscribed. And I'm able to see on what days do we get the most amount of churns. And what do you know? The biggest spike by far is day 30. The day that person gets that first rebell, they get that Shopify confirmation email that's like, \"Hey, you were just charged $45. Here's your receipt.\" It is literally doubled the billing reminder email which literally says we're about to charge you. And so that is why this email is so important to optimize as well. Just some other interesting things about this graph. We can see day zero you add a little bit and then it goes to nothing and once the person has delivered the product and they try it, some people aren't going to like it and immediately cancel and then it goes down and then billing reminder and then confirmed. Then again billing reminder and then the order confirmation. One caveat with this order confirmation email is that you have to be on Shopify Plus to turn this email off. If you are on Shopify Plus, unfortunately, you have to keep it on. But if you are not on Shopify Plus, you can reach out to the Shopify support team, be like, \"Hey, can I turn the order notification email off?\" And they will let you do it. And then you can build it into Claio. Another one of those things where you don't necessarily need to turn it on. Like, you're not going to get thrown into jail immediately, but you 100% should be doing it. And I recommend it for everybody. And so this, for example, is what the Shopify order confirmation looks like. It's like, \"Thank you for your purchase. View your order.\" you can see like all the charge and it's really scary. Instead, we want ones that are customized like this. And just like the billing reminder where we customize it based on the order number, that's exactly what we want to do here. So, you can see like on this one, peak performance is on the way. Your consistency is about to pay off right here. You're going to have the dynamic order content and then benefits of your product. Just reminding people of all the benefits of your product and everything that you provide and making it not scary, but really showing people why they're on your product. Include testimonials if you can. Whatever you can do to make this less scary, make people feel good about their order to get them to stay. Just one email is fine, but we want to customize it again based on if it's a subscription versus if it's a onetime order. And then what number order is it on subscription for this brand, for example, when you start your subscription? You get this free coffee booklet. So, what do they include in this? This free booklet. And that's what we want to do there. Now, for all other transactional emails is great to optimize those and get those into Claio and use the same sort of messaging. But for me, I just wanted to talk about the billing reminder and the order confirmation cuz those are the two biggest. The third power about subscriber messaging is the campaigns in the emails that you actually send them. There are all sorts of strategies out there for how you communicate towards your active subscribers. I want to show you a little stat right here. This is an 8 figureure subscription brand I was working with. They were sending it to their non- buyers and their active subscribers. We can see they were sending on June 27th and then the 24th and then 19th and 16th. And we look at this metric right here. You can see subscription canceled on recharge. We can see how many people are receiving their emails and eventually they're cancelling their order within a certain time period. You just get so many cancellations if you over send your active subscribers. Every email you send is a reminder or prompt for somebody to reconsider if they want to be subscribed to your product. And actually this brand, if you looked at subscriptions canceled, so this ",
+    "provenance": "unverified"
+  },
+  "system_prompt_sha256": "169564fc11fb12a123446ec006b5bb473bb0bb9c6a71a491eafeedd914dc865e"
+}

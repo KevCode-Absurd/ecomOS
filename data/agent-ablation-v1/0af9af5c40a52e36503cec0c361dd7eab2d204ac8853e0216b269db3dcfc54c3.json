@@ -1,0 +1,53 @@
+{
+  "case": "cro-traffic/higher-volume",
+  "mode": "curated",
+  "request_id": "0af9af5c40a52e36503cec0c361dd7eab2d204ac8853e0216b269db3dcfc54c3",
+  "complete": true,
+  "cost": 0.0129765,
+  "prompt_tokens": 1533,
+  "completion_tokens": 762,
+  "checks": [],
+  "output": {
+    "decision": "Launch this month only as a pre-registered, fully factorial experiment with limited variants and a checkout-specific sample-size check. The 600,000 monthly sessions and validated tracking indicate the business is plausibly high-volume, but neither supplied source defines the required threshold and checkout traffic may be materially lower than site traffic. Do not launch if the planned cells cannot reach the required sample at checkout within the test window or if checkout changes create material operational/payment risk.",
+    "next_steps": [
+      "Set one measurable hypothesis per factor (hero, offer, checkout), define the factorial cells, primary metric as revenue per session, and guardrails for conversion, AOV, refund/cancellation rate, and checkout errors.",
+      "Calculate required sample and duration for every cell using expected detectable effect, number of variants, allocation, and eligible checkout traffic; avoid relying on total site sessions alone.",
+      "Limit the number of versions per factor and document interaction questions; if sample is insufficient, sequence the tests or test the highest-impact factor first.",
+      "Implement persistent assignment across hero, offer, and checkout; verify analytics events, revenue attribution, offer eligibility, payment flow, and experiment exposure logging.",
+      "Conduct repeated cross-device/browser and end-to-end QA before release, then monitor guardrails during the test without making unplanned mid-test changes."
+    ],
+    "missing_inputs": [
+      "Number of variants planned for the hero, offer, and checkout, plus intended traffic allocation.",
+      "Monthly and weekly progression to checkout, purchase completion, and revenue/AOV by device and major market.",
+      "Minimum detectable revenue-per-session impact, confidence/power standard, planned duration, and decision rule.",
+      "Checkout, promotion, inventory, margin, legal, and payment-provider constraints for the proposed changes."
+    ],
+    "evidence_used": [
+      {
+        "id": "case8-u7",
+        "supports": "The supplied source recommends multivariate testing only at high volume; the brand's 600,000 monthly sessions are relevant, though the source provides no threshold."
+      },
+      {
+        "id": "case8-u9",
+        "supports": "The supplied source describes running 50,000–100,000 sessions through a test depending on placement; this supports checking exposure at the checkout level rather than using total sessions alone."
+      },
+      {
+        "id": "case8-u12",
+        "supports": "The supplied source recommends a clear, predefined, measurable hypothesis."
+      },
+      {
+        "id": "case8-u14",
+        "supports": "The supplied source recommends repeated QA before a test goes live."
+      },
+      {
+        "id": "case8-u15",
+        "supports": "The supplied source recommends prioritizing revenue per session or visitor rather than conversion rate alone."
+      }
+    ],
+    "assumptions": [
+      "Brand-provided tracking validation includes reliable experiment assignment, purchase, and revenue events; this should still be verified for the new implementation.",
+      "The supplied library is unverified guidance, not an independently validated testing standard.",
+      "At a 2% baseline purchase conversion rate, the stated traffic implies roughly 12,000 monthly purchases if the rate and session definition remain stable; this does not establish adequate sample per factorial cell or checkout exposure."
+    ]
+  }
+}

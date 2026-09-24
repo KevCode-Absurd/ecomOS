@@ -1,0 +1,194 @@
+{
+  "status": "complete",
+  "mapping": {
+    "A": "frontier_without",
+    "B": "cheap_with",
+    "C": "cheap_without",
+    "D": "frontier_with"
+  },
+  "judge_model": "gpt-5.6-terra",
+  "output": {
+    "reviews": [
+      {
+        "label": "A",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 3,
+          "uncertainty_and_questions": 4,
+          "prioritization": 4
+        },
+        "strengths": [
+          "All requested rates are calculated correctly: overall 3.00% to 2.00%, mobile 2.67% to 1.50%, and desktop remains 4.00%.",
+          "Correctly locates deterioration before completed checkout: session-to-ATC declines from 10% to 8% and ATC-to-checkout from 60% to 50%, while checkout completion remains 50%.",
+          "The device-mix decomposition is arithmetically sound and explicitly described as descriptive rather than causal.",
+          "Cleanly distinguishes observed facts from plausible explanations, without treating speed, tracking failure, creative fatigue, or traffic quality as proven.",
+          "Recommendations use TrailFold’s actual constraints and language: 13-inch sleeve, water-resistant rather than waterproof, and 4–7 business-day delivery."
+        ],
+        "issues": [
+          "The third missing-fact item combines a change log, usability evidence, and field performance evidence; it is useful but less singularly prioritized than the first two.",
+          "The action recommendation is appropriately restrained but could specify a concrete owner/team sequence within the stated 14-day resource constraints."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Overall 3% to 2%; mobile 2.667% to 1.5%; desktop stays 4%.",
+            "met": true,
+            "reason": "All three rates and changes are shown correctly."
+          },
+          {
+            "criterion": "Add-to-cart rate 10% to 8%; checkout completion remains 50%.",
+            "met": true,
+            "reason": "Correctly calculates both and also identifies the ATC-to-checkout decline."
+          },
+          {
+            "criterion": "Do not assert speed, tracking failure or creative fatigue as proven cause.",
+            "met": true,
+            "reason": "Explicitly labels technical, traffic-quality, and content explanations as unverified hypotheses."
+          }
+        ]
+      },
+      {
+        "label": "B",
+        "scores": {
+          "factual_accuracy": 3,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 4,
+          "prioritization": 3
+        },
+        "strengths": [
+          "Correctly completes the required conversion, device, funnel, AOV, and revenue-per-session calculations.",
+          "Correctly avoids using Meta reported value as reconciled or incremental revenue and notes attribution limitations.",
+          "The proposed mobile clarity test is brand-safe: it avoids a 15-inch-fit and waterproof claim, and surfaces real delivery/return information.",
+          "Uses the supplied operating constraints well, including replenishment-cash protection and the available test budget.",
+          "Questions are specific and operationally useful."
+        ],
+        "issues": [
+          "It says the “largest actionable gap is ATC-to-checkout,” but the evidence does not establish that this is the highest-impact intervention. Restoring the current ATC rate from 8% to 10%, holding current downstream rates, would imply 625 orders; restoring ATC-to-checkout from 50% to 60%, holding current ATC and completion rates, would imply 600. The upstream ATC-rate deterioration is at least as important.",
+          "“New-customer share is 72% and 90-day repeat is 14%, supporting an acquisition-heavy cold-traffic mix” overinterprets static current-period metrics. There is no prior-period comparison, channel composition, or evidence that new customers were cold paid traffic.",
+          "The stage-band discussion is caveated and sourced in the packet, but is unnecessary for the asked diagnosis and adds little decision value.",
+          "The assumption that no unrecorded sitewide change occurred is awkwardly framed: such changes are unknown, not an assumption that should be made."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Overall 3% to 2%; mobile 2.667% to 1.5%; desktop stays 4%.",
+            "met": true,
+            "reason": "All rates are accurately calculated."
+          },
+          {
+            "criterion": "Add-to-cart rate 10% to 8%; checkout completion remains 50%.",
+            "met": true,
+            "reason": "Correctly calculates funnel stage rates and identifies the ATC-to-checkout decline."
+          },
+          {
+            "criterion": "Do not assert speed, tracking failure or creative fatigue as proven cause.",
+            "met": true,
+            "reason": "Technical and creative explanations are presented as hypotheses, not findings."
+          }
+        ]
+      },
+      {
+        "label": "C",
+        "scores": {
+          "factual_accuracy": 3,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 3,
+          "uncertainty_and_questions": 4,
+          "prioritization": 3
+        },
+        "strengths": [
+          "Required overall and device conversion calculations are correct, including the valid mix decomposition.",
+          "Correctly identifies that aggregate checkout completion is unchanged at 50%, while ATC and ATC-to-checkout have worsened.",
+          "The counterfactual order calculations are arithmetically correct and usefully illustrate that both upstream transitions matter.",
+          "Uses the correct product and policy facts in its proposed content changes, without inventing 15-inch compatibility or waterproof performance.",
+          "The three missing-data requests are concrete and appropriately acknowledge unavailable device, session-recording, and incrementality data."
+        ],
+        "issues": [
+          "It states that the problem is “top and mid funnel on mobile” and that loss is spread across “mobile product-page engagement and cart-to-checkout progression.” The available stage counts are aggregate, not device-level. Mobile is clearly where overall conversion worsened, but the funnel-step deterioration cannot yet be assigned specifically to mobile.",
+          "“Final payment trust/error is not the new break” is directionally reasonable from stable aggregate checkout completion, but too broad. Stable aggregate completion does not exclude a device/browser-specific payment or checkout issue offset by another segment.",
+          "It calls discounting unlikely because AOV held and no discount change is stated. Flat AOV does not by itself rule out pricing, promotion, or product-mix effects; this should be phrased as unconfirmed rather than unlikely.",
+          "The practical test recommendation is useful, but it blends a PDP and creative change rather than choosing one clean test exposure."
+        ],
+        "critical_errors": [
+          "Attributes aggregate funnel-stage deterioration to mobile without device-level funnel evidence."
+        ],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Overall 3% to 2%; mobile 2.667% to 1.5%; desktop stays 4%.",
+            "met": true,
+            "reason": "All required conversion rates are calculated correctly."
+          },
+          {
+            "criterion": "Add-to-cart rate 10% to 8%; checkout completion remains 50%.",
+            "met": true,
+            "reason": "Correct stage calculations are shown."
+          },
+          {
+            "criterion": "Do not assert speed, tracking failure or creative fatigue as proven cause.",
+            "met": true,
+            "reason": "Creative fatigue and technical explanations are explicitly categorized as hypotheses."
+          }
+        ]
+      },
+      {
+        "label": "D",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 3,
+          "uncertainty_and_questions": 4,
+          "prioritization": 4
+        },
+        "strengths": [
+          "Accurately calculates all requested overall, mobile, desktop, and funnel rates.",
+          "Correctly identifies two observed upstream changes—lower ATC rate and lower ATC-to-checkout rate—while preserving the important fact that checkout completion stayed at 50%.",
+          "The mix decomposition is correct, clearly caveated, and does not confuse traffic mix with a causal explanation.",
+          "Strong evidence/hypothesis separation: traffic quality, product-information friction, and mobile technical problems are all plausible but unproven.",
+          "Uses precise TrailFold-safe purchase information: 13-inch sleeve, water-resistant rather than waterproof, free shipping, and the 4–7 business-day estimate.",
+          "The three missing facts are tightly prioritized and directly linked to the diagnostic uncertainty."
+        ],
+        "issues": [
+          "“Prioritize acquisition/landing-to-cart and cart-to-checkout investigation” is sensible, but could be more operational by naming the immediate low-cost test or audit sequence and responsible systems.",
+          "The requested dated change history includes tracking changes, but the response could more explicitly say that Shopify’s supplied session/order counts still show a real reported decline; tracking changes are a reconciliation question rather than an established explanation."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Overall 3% to 2%; mobile 2.667% to 1.5%; desktop stays 4%.",
+            "met": true,
+            "reason": "All calculations are accurate."
+          },
+          {
+            "criterion": "Add-to-cart rate 10% to 8%; checkout completion remains 50%.",
+            "met": true,
+            "reason": "Both required metrics are correctly computed and interpreted."
+          },
+          {
+            "criterion": "Do not assert speed, tracking failure or creative fatigue as proven cause.",
+            "met": true,
+            "reason": "It explicitly says the underlying cause is not established and does not overclaim technical causes."
+          }
+        ]
+      }
+    ],
+    "ranking": [
+      "D",
+      "A",
+      "B",
+      "C"
+    ],
+    "summary": "D is the strongest balance of accurate arithmetic, concise funnel localization, brand-safe execution, and disciplined uncertainty. A is nearly as strong and especially clear, but is slightly less operational. B is thorough and feasible but overprioritizes cart-to-checkout and makes a weak inference from new-customer/repeat metrics. C is otherwise strong, but materially overattributes aggregate funnel-stage losses to mobile without the device-level funnel data it itself identifies as missing."
+  },
+  "request_id": "fdc3cd556bb70d33ec6979ad41964e17158b57267281161a675c354225276c1c",
+  "cost_upper_estimate_usd": 0.067847125
+}

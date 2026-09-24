@@ -1,0 +1,174 @@
+specification: ecomos-ingestion-state
+version: 4
+generated: 2026-09-21T15:30Z
+pairs_with: [_INGESTION-SPEC.yaml, _GENERATOR-CONTRACT.yaml]
+note: >
+  A dated snapshot of what is in Drive. Rules live in the spec. This file goes stale
+  within hours and is regenerated, never edited.
+
+totals:
+  files: 232
+  added_since_v3: 92
+  moved_this_pass: 34
+  deleted_this_pass: 1
+  modules_with_content: 24
+  modules_empty: 0
+
+inventory:
+  07-LPG:   26
+  99-multi: 22
+  11-ADC:   18
+  10-MCR:   16
+  15-SEO:   16
+  14-EML:   13
+  04-BRD:   12
+  05-SET:   11
+  01-PRD:   10
+  03-OFF:   10
+  02-AVT:    9
+  08-SPD:    9
+  16-AEO:    9
+  09-CRO:    7
+  17-CXP:    7
+  21-OPS:    7
+  06-MEA:    6
+  20-FIN:    6
+  23-SEC:    5
+  18-COG:    4
+  22-AMZ:    4
+  19-WLD:    3
+  12-GAD:    2
+  13-ORG:    1
+
+milestone: >
+  Every module now has at least 1 source. 07-LPG went from 1 file to 26, closing the
+  largest gap in the wedge. 10-MCR, 12-GAD, 14-EML and 19-WLD all have content for the
+  first time.
+
+# ---------------------------------------------------------------------------
+# THE RECURRING ROUTING FAILURE
+# ---------------------------------------------------------------------------
+
+routing_failures:
+  this_pass: 34
+  worst_offender: 06-MEA
+  detail: >
+    06-MEA received 10 misfiled documents in this batch: 4 CRO, 4 landing page and
+    quiz funnel, 1 Google Ads, 1 general. It received 11 SEO and GEO files 2 days ago.
+    Something in the capture step is defaulting to MEA. Worth finding, because MEA is
+    the one folder where a misfile does the most damage: it is the trust gate, and a
+    measurement agent retrieving landing page tactics is exactly the wrong card.
+  other_patterns:
+    - "advertorials filed as ads (11-ADC) or creative (10-MCR). An advertorial is a
+       page type. It belongs in 07-LPG."
+    - "copywriting fundamentals filed as creative (10-MCR). See copy_decision below."
+    - "customer experience filed as store setup (05-SET)"
+    - "brand teardowns and seasonal strategy filed in single modules when they span 4"
+
+copy_decision:
+  moved: 8 copywriting sources from 10-MCR and 07-LPG into 11-ADC
+  titles: [Scientific Advertising, Cashvertising, Copy Hackers, Harry Dry,
+           8 Hour Copywriting Course, Copywriting 101, The Copy Rule,
+           How to Write Ads That Sell]
+  reasoning: >
+    11-ADC owns copy frameworks. MCR is what the viewer sees and hears, not the craft
+    of writing words. Each is tagged [ADC, LPG] or [ADC, LPG, MCR] so the page and
+    creative agents still retrieve them.
+  open_question: >
+    Copywriting is cross-surface: ads, pages, email, and product descriptions. If the
+    copy cluster keeps growing past roughly 15 sources, it earns its own module the
+    way FIN and OPS did. At 8 plus Master Email Copywriting in EML, it is close.
+
+deleted:
+  - "The Death Spiral That Kills Most eCommerce Brands, second copy in 11-ADC.
+     The first copy was already in 99-multi."
+
+# ---------------------------------------------------------------------------
+# DUPLICATE CLUSTERS, UPDATED
+# ---------------------------------------------------------------------------
+
+expect_duplicates:
+  - {cluster: advertorial guides, folder: 07-LPG, count: 10, keep: 3,
+     note: "keep the 60-minute one, the $20k/day structure, and the $100M formula"}
+  - {cluster: studied 1000 landing pages, folder: 07-LPG, count: 2, keep: 1}
+  - {cluster: hormozi landing page advice, folder: 07-LPG, count: 2, keep: 1}
+  - {cluster: facebook ad creative strategy, folder: 10-MCR, count: 2, keep: 1,
+     note: "a 2026 and a 2027 version"}
+  - {cluster: meta algorithm explainers, folder: 11-ADC, count: 2, keep: 1}
+  - {cluster: tiktok ads tutorials, folder: 11-ADC, count: 2, keep: 1}
+  - {cluster: beginner copywriting courses, folder: 11-ADC, count: 2, keep: 1}
+  - {cluster: klaviyo full courses, folder: 14-EML, count: 3, keep: 1}
+  - {cluster: sms overviews, folder: 14-EML, count: 4, keep: 2}
+  - {cluster: customer delight, folder: 17-CXP, count: 3, keep: 1}
+  - {cluster: wild bets roundups, folder: 19-WLD, count: 2, keep: 1}
+  - {cluster: shopify seo courses, folder: 15-SEO, count: 6, keep: 2}
+  - {cluster: general seo courses, folder: 15-SEO, count: 4, keep: 1}
+  - {cluster: aeo and geo explainers, folder: 16-AEO, count: 9, keep: 3}
+  - {cluster: shopify beginner setup, folder: 05-SET, count: 5, keep: 2}
+  - {cluster: woocommerce and wordpress, folder: 05-SET, count: 4, keep: 1}
+  - {cluster: ai builds a shopify store, folder: 05-SET, count: 3, keep: 0}
+  - {cluster: ecommerce page speed guides, folder: 08-SPD, count: 5, keep: 2}
+  - {cluster: ga4 beginner tutorials, folder: 06-MEA, count: 3, keep: 1}
+  - {cluster: general ecommerce security, folder: 23-SEC, count: 3, keep: 1}
+  - {cluster: avatar for facebook videos, folder: 02-AVT, count: 4, keep: 1}
+  - {cluster: i studied every ecommerce offer, folder: 03-OFF, count: 2, keep: 1}
+  - {cluster: bloom founder interview, folder: 99-multi, count: 2, keep: 1}
+  - {cluster: session replay tools, folder: 09-CRO, count: 2, keep: 1}
+  - {cluster: sourcing from china, folder: 18-COG, count: 3, keep: 2}
+  summary: "roughly 85 files collapse to about 35"
+
+expect_skips:
+  - {pattern: dropshipping, folders: [01-PRD, 07-LPG], count: 6}
+  - {pattern: amazon retail and online arbitrage, folder: 22-AMZ, count: 1}
+  - {pattern: general leadership with no ecommerce specifics, folder: 21-OPS, count: 4}
+
+expect_holds:
+  - reason: book_without_licensed_rights
+    count: 11
+    titles: [$100M Offers, Competing Against Luck, Positioning, Designing Brand Identity,
+             This Is Marketing, Influence, Multipliers, The Five Dysfunctions of a Team,
+             Scientific Advertising, Cashvertising, Buyology]
+  - reason: blank_url
+    count_approx: 12
+  - reason: no_header_at_top
+    count_approx: 8
+  - reason: duplicate_header_block
+    count_approx: 3
+  - reason: tiktok_sources_missing_platforms_tag
+    count: 3
+    detail: "tag platforms: [tiktok] rather than moving them. Platform is a field."
+
+# ---------------------------------------------------------------------------
+# TWYMAN'S LAW. The new batch is heavy on revenue-claim titles.
+# ---------------------------------------------------------------------------
+
+revenue_claim_titles:
+  count_approx: 20
+  examples: ["$535k/mo with landing pages that look bad", "$1.3m/mo using AI",
+             "$100k/day with advertorials", "20% conversions, 10x the average",
+             "$1k/day advertorials in 6 minutes"]
+  rule: >
+    Any figure that looks interesting or surprising is usually wrong. A revenue number
+    in a title is marketing for the video, not evidence. Extract the method and the
+    thresholds, never the headline number. A 20% site conversion rate claim in
+    particular should be treated as an instrumentation error until shown otherwise.
+
+module_notes:
+  07-LPG: "26 files, 10 of them advertorials. Largest folder. Wedge gap closed."
+  11-ADC: "now holds the copywriting cluster. See copy_decision."
+  09-CRO: "7 files. The CRO research doc is the anchor, rights: owned."
+  19-WLD: "first 3 sources. Every card needs a cost_ceiling."
+  13-ORG: "1 file. Now the thinnest module."
+  12-GAD: "2 files. Thin, but finally started."
+  23-SEC: "the agents/ topic family is still empty"
+
+housekeeping:
+  my_drive_root:
+    detail: >
+      Roughly 140 spent Google Docs in My Drive root. Every one of this batch's 92
+      files has a matching Doc left behind. Awaiting confirmation to bulk delete.
+    keep_unfiled:
+      - "index, 58KB Doc, unknown purpose"
+      - "The Best Landing Page Structure for 2026, Doc only, never exported"
+      - "How To Create High Converting TikTok Ad Creatives, Doc only, never exported"
+      - "Shopify speed optimization Under 30 Minutes, Doc only"

@@ -1,0 +1,323 @@
+{
+  "cards": [
+    {
+      "title": "Write descriptive alt text that serves accessibility and image SEO",
+      "summary": "How to write and apply natural-language alt text to product images so visually impaired shoppers and search engines can understand them.",
+      "use_when": "You are finalizing product or lifestyle images on a PDP, collection page or homepage and need to set alt text.",
+      "steps": [
+        "Write alt text that describes exactly what is in the image in natural language, as a screen-reader user would need it: 'Men wearing a black sports backpack outdoors.'",
+        "Include the product category plus visible attributes and the view/angle: 'Closeup of padded shoulder straps on a black sports backpack' or 'Side view of black sports backpack.'",
+        "Avoid stuffing the field with ad copy or keyword strings like 'leather wallet man black buy cheap' — the source says this is the wrong way, though still better than an empty alt field.",
+        "To scale across many images, draft a prompt for an AI tool that takes product name, visible characteristics and a list of angles, then generate one alt text per angle.",
+        "Paste each result into the image's alt text field (in Shopify, open the image in the editor's alt text field, or edit from Content and Files / media library) and save.",
+        "Verify in the live page source that the alt attribute is attached to the image element.",
+        "Applying alt text to every image is optional best practice per the source, not a speed factor — prioritize it when accessibility and image search matter for your catalog."
+      ],
+      "caveats": [
+        "The source frames this as important for visually impaired users and for Google indexing, not as a page-speed win.",
+        "AI-generated alt text must be checked against the actual image; inaccurate descriptions mislead screen-reader users."
+      ],
+      "tags": [
+        "speed",
+        "alt-text",
+        "image-seo",
+        "accessibility",
+        "product-page",
+        "shopify",
+        "image-optimization"
+      ],
+      "id": "465183671efcde8f73633d02",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 2
+    },
+    {
+      "title": "Match alt text to image angle for multi-image product galleries",
+      "summary": "Generate distinct alt text for each angle in a product gallery rather than repeating one description.",
+      "use_when": "You have several images per product (front, back, detail, lifestyle) and are populating alt fields for a PDP gallery.",
+      "steps": [
+        "List the angles you actually shoot for the product — for a backpack: front view, back view, front detail, top detail, lifestyle on shoulder.",
+        "Supply product name, visible characteristics (color, water resistance) and that angle list to your AI alt-text prompt so each output maps to one image.",
+        "Work through the gallery image by image, pasting the matching alt text into each image and saving.",
+        "Use the same angle-first approach when reordering gallery images so the main image, alternate angle, detail shots and lifestyle shots each carry a suitably descriptive alt string.",
+        "Re-open the live PDP and inspect each image element to confirm every image has its own alt text rather than a duplicated default."
+      ],
+      "caveats": [
+        "The source's angle list is an example for one backpack, not a fixed gallery structure; derive angles from what your own images show.",
+        "Some platforms auto-fill alt text from the filename, so verify overrides actually saved."
+      ],
+      "tags": [
+        "speed",
+        "alt-text",
+        "product-page",
+        "image-optimization",
+        "shopify",
+        "merchandising"
+      ],
+      "id": "fa20f325b789ca9ca8d72b4e",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 2
+    },
+    {
+      "title": "Resize images to just above their display box",
+      "summary": "Fix oversized images by resizing them to roughly the box they render in plus 100–300px, not the source file's original dimensions.",
+      "use_when": "You inspect a PDP, hero banner or content section and find the image's intrinsic size far exceeds the size it is displayed at.",
+      "steps": [
+        "Right-click the image in the browser and choose Inspect to read its rendered/intrinsic dimensions against the box it occupies.",
+        "Note the display box width — e.g. a section image shown in a 700px box.",
+        "Set the new width to the box size plus 100–300px (e.g. ~1,000px for a 700px box) so the image is neither blurry nor oversized.",
+        "In the theme customizer, open the section holding the image, click Edit on the uploaded asset, use the native editor's resize function, enter the new width and apply.",
+        "Refresh the page and visually confirm the image looks the same as before.",
+        "Use the same logic for hero banners: an image 5,712px wide shown in a site capped around 2,000–3,000px can be resized down with no visible change.",
+        "Target no more than a few hundred KB per image where possible — resizing alone may still leave a 1MB file that needs compression."
+      ],
+      "caveats": [
+        "The native Shopify resize tool reduces dimensions but gives no compression control, so compressing with a separate tool afterward is still required.",
+        "The 100–300px overshoot is the source's rule of thumb to avoid blur, not a tested universal threshold."
+      ],
+      "tags": [
+        "speed",
+        "image-optimization",
+        "product-page",
+        "shopify",
+        "landing-page",
+        "measurement"
+      ],
+      "id": "7558889b085672dc9f6f3b6e",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 2
+    },
+    {
+      "title": "Compress images to keep files small, especially for mobile shoppers",
+      "summary": "Reduce file weight via compression because resizing alone often leaves files too heavy for mobile connections.",
+      "use_when": "Your product, banner or section images are still heavy after resizing, and you want faster downloads for mobile visitors.",
+      "steps": [
+        "Audit image file weights in your media library or via page inspection; the source's practical threshold is to reduce any image larger than 500KB.",
+        "Resize first if dimensions are oversized, then run the file through a compression tool — the source names Tiny SEO and Squash as examples.",
+        "Re-upload the compressed version and confirm the visual result still looks acceptable on the live page.",
+        "Check that the new file size dropped materially — the source's example went from ~1MB after resize to roughly 100KB when compressed.",
+        "Treat image compression as user-experience work that can also support conversion rate, per the source, rather than only a technical chore."
+      ],
+      "caveats": [
+        "Compressing too aggressively can visibly degrade image quality; the source does not specify a quality setting.",
+        "The source presents conversion-rate improvement as a possibility tied to better UX, not a measured benchmark.",
+        "Compression tools and their interfaces change — verify current options before relying on named tools."
+      ],
+      "tags": [
+        "speed",
+        "image-optimization",
+        "compression",
+        "mobile",
+        "product-page",
+        "shopify",
+        "conversion-optimization"
+      ],
+      "id": "0c4e0163aff8cea625ae71f6",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 2
+    },
+    {
+      "title": "Pick the right image format and swap GIFs for MP4",
+      "summary": "Use JPEG/PNG for still images and MP4 for animation because they load faster.",
+      "use_when": "You are preparing product, banner or content imagery for upload to a storefront.",
+      "steps": [
+        "Upload stills as JPEG or PNG and let the platform (the source cites Shopify) handle conversion to modern formats like WebP.",
+        "Replace animated GIFs with MP4 video, which the source says are better and load faster.",
+        "Confirm what your platform auto-converts before doing extra format work yourself, since this reduces the value of manual conversion.",
+        "Pair format choice with resizing and compression rather than treating format alone as the fix — the source warns that bad results follow if you upload without resizing or cropping."
+      ],
+      "caveats": [
+        "The source's WebP auto-conversion claim is a Shopify behavior that may not apply to other platforms; verify your own pipeline.",
+        "Format choice will not rescue files that are still huge in dimension or weight."
+      ],
+      "tags": [
+        "speed",
+        "image-optimization",
+        "file-format",
+        "shopify",
+        "product-page",
+        "video"
+      ],
+      "id": "cf9d029b70aaae6ea77ae891",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 2
+    },
+    {
+      "title": "Name image files descriptively before upload",
+      "summary": "Give each image a meaningful filename so search engines can categorize it correctly.",
+      "use_when": "You are about to upload product or content images to your store and are naming the files on your computer.",
+      "steps": [
+        "Rename files to describe what is in the image instead of keeping camera-generated or random names.",
+        "Include the product/category and distinguishing attributes (e.g. color or view) so the filename communicates content.",
+        "Upload only after renaming, since post-upload filename changes may not carry through cleanly.",
+        "Pair descriptive filenames with descriptive alt text — the source lists naming, uploading, reordering, alt text and on-site verification as sequential steps."
+      ],
+      "caveats": [
+        "The source treats this as a straightforward SEO benefit without specifying keyword density or length limits.",
+        "Filename alone does not replace alt text for accessibility."
+      ],
+      "tags": [
+        "speed",
+        "image-seo",
+        "image-optimization",
+        "product-page",
+        "shopify"
+      ],
+      "id": "3c75d10544c6a0b34f8454ac",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 2
+    },
+    {
+      "title": "Order gallery images to answer customer questions",
+      "summary": "Sequence PDP gallery images — main, alternate angle, details, lifestyle — to match the buyer's questions.",
+      "use_when": "You are uploading and reordering product images in a PDP gallery.",
+      "steps": [
+        "Start with the main image that shows the product clearly.",
+        "Follow with an alternate angle so the buyer can see what the main shot hides.",
+        "Then add detailed shots covering specific features and materials buyers will ask about.",
+        "Finish with lifestyle images showing the product in context — the source suggests generating lifestyle imagery with AI tools like Gemini if your supplier does not provide them.",
+        "Reorder uploaded images so the sequence matches this question-answering flow rather than the order files were captured."
+      ],
+      "caveats": [
+        "The source presents this ordering as its usual convention, not a tested ordering that outperforms alternatives for every category.",
+        "AI-generated lifestyle images should be checked for accuracy against the actual product."
+      ],
+      "tags": [
+        "speed",
+        "product-page",
+        "merchandising",
+        "image-optimization",
+        "creative-strategy",
+        "shopify"
+      ],
+      "id": "b29f3cc2d36f955e1dfae900",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 2
+    },
+    {
+      "title": "Run a final image checklist before finishing a store",
+      "summary": "Verify format, size, filenames, alt text and live display before considering product imagery done.",
+      "use_when": "You have finished uploading and editing a batch of store images and want to confirm nothing was missed.",
+      "steps": [
+        "Confirm every image is a JPEG or PNG and that video content is MP4 rather than GIF.",
+        "Confirm each image has been resized and cropped for its layout rather than uploaded straight from a camera.",
+        "Confirm files over 500KB have been compressed through a tool such as Tiny SEO or Squash.",
+        "Confirm filenames are descriptive, alt text has been written, and gallery order follows main → alternate → detail → lifestyle.",
+        "Verify on the live store that images display at the right dimensions and that alt attributes are actually attached, by inspecting image elements.",
+        "Re-check any oversized image found during verification, resize it in the customizer, and refresh the page to confirm it renders identically."
+      ],
+      "caveats": [
+        "This is a workflow checklist from the source, not a guarantee of specific performance gains.",
+        "The 500KB figure is the source's practical threshold for flagging files, not a hard performance ceiling."
+      ],
+      "tags": [
+        "speed",
+        "image-optimization",
+        "quality-assurance",
+        "product-page",
+        "shopify",
+        "measurement"
+      ],
+      "id": "dc287d5fb7e6676f28741d75",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 2
+    },
+    {
+      "title": "Inspect rendered image dimensions to find wasted bandwidth",
+      "summary": "Use browser dev tools to compare an image's intrinsic size to the box it renders in, exposing over-sized assets.",
+      "use_when": "Store pages feel slow or you suspect imagery is heavier than necessary, and you need evidence before optimizing.",
+      "steps": [
+        "Right-click the suspect image on the live page and choose Inspect.",
+        "In the inspector, read the intrinsic dimensions of the image file versus the dimensions of its container.",
+        "Flag large gaps as waste — the source's example found a 5,000px-wide image displayed in a 700px box.",
+        "Also note the file's total weight where visible; the source's example showed a 6MB section image.",
+        "Use the gap to choose the resize target (box width + 100–300px) and then re-check after resizing to confirm the rendered look is unchanged.",
+        "Apply the check beyond hero banners to section images and any repeated visual blocks across the store."
+      ],
+      "caveats": [
+        "Inspector interfaces vary by browser and change over time — verify the current dev tools layout.",
+        "Resizing fixes dimension waste but not compression; a correctly sized file can still be too heavy."
+      ],
+      "tags": [
+        "speed",
+        "measurement",
+        "image-optimization",
+        "product-page",
+        "shopify",
+        "diagnostics"
+      ],
+      "id": "036e673a5a059dc2c55a7315",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 2
+    },
+    {
+      "title": "Decide whether an image is worth resizing, compressing, or both",
+      "summary": "Separate dimension waste from weight waste so you apply the right fix to each image.",
+      "use_when": "You are triaging a catalog of store images and deciding which optimization each file needs.",
+      "steps": [
+        "If dimensions exceed the display box by a wide margin, resize to roughly box size plus 100–300px.",
+        "After resizing, check the file weight again — the source reduced a hero from 5,000px to 2,700px and still ended near 1MB, which it judged too much.",
+        "If the file remains heavy, compress it; the source estimates the same visual result could come down to about 100KB.",
+        "If a file is already correctly sized but still heavy, skip resizing and compress only.",
+        "If an image is small and correctly sized, leave it and move on to other assets.",
+        "Re-verify visually on the live page after each change so optimization does not degrade the customer's impression of the product."
+      ],
+      "caveats": [
+        "The 100KB estimate is the source's illustration, not a target that every image can or should hit.",
+        "There is no single fix; the source explicitly pairs resizing with compression for the best result."
+      ],
+      "tags": [
+        "speed",
+        "image-optimization",
+        "compression",
+        "diagnostics",
+        "product-page",
+        "shopify"
+      ],
+      "id": "08b2e0e2f95d654d9cd2e5c6",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 2
+    }
+  ],
+  "request_id": "606a934bbd94a0737ab4f50788cacdadda3fef980548e3c4249900e44ef9fae8",
+  "ecommerce_scope_version": 1
+}

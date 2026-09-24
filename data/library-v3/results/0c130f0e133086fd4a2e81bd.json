@@ -1,0 +1,297 @@
+{
+  "cards": [
+    {
+      "title": "Visited-Link History Leaks and Storefront Fingerprinting Risk",
+      "summary": "Browsers mitigate visited-link sniffing with CSS whitelists, timing equalization and style lying, but rendering-timing side channels still leak which URLs a user has visited.",
+      "use_when": "Auditing storefront or marketing-site third-party scripts and ad pixels for the risk that they fingerprint visitors' browsing history, or advising engineering on what a page's own rendering performance reveals about customer behavior.",
+      "steps": [
+        "Understand the core vulnerability: browsers apply a 'visited' style to links a user has clicked before, and though the page cannot read the true computed color of a visited link, it can measure how long the browser takes to render or reflow when a link's state changes.",
+        "Recognize that browsers restricted visited-link styling to a small whitelist (color, underline, bold/italic), equalized internal code-path timing, and made style-querying APIs lie (return the unvisited color) — but these are incomplete, so don't assume visited-state is fully protected.",
+        "Treat any third-party script on your PDP, category, or landing pages as a potential timing side-channel: a script can swap an anchor's href between a never-visited made-up URL and a target URL and time the redraw via requestAnimationFrame, using a large text-shadow and thousands of links to amplify the signal.",
+        "Assess the practical risk for a store: leaking which product, category, or competitor URLs a visitor has seen enables cross-site behavioral profiling and targeted phishing; weigh it against the ad/analytics value of the script.",
+        "For your own first-party pages, keep third-party JS minimal and audited in checkout and account flows, where a history leak plus a credential-capture page is most damaging.",
+        "Verify current browser mitigations before acting: behavior described here is implementation-specific (notably Chrome) and changes over time, so re-test rather than relying on a fixed rule."
+      ],
+      "caveats": [
+        "The timing technique is unreliable — the source's demo had false negatives (a visited link measured below threshold) though no false positives; enlarging the shadow was only a hypothesis for improvement.",
+        "This is a fundamental, hard-to-fully-fix client-side problem; there is no complete mitigation, so scope decisions to risk reduction, not elimination.",
+        "Do not assume any single browser mitigation (CSS whitelist, timing equalization, lying APIs) prevents all leaks — the source explicitly calls the solution incomplete."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "fingerprinting",
+        "third-party-scripts",
+        "privacy",
+        "customer-research",
+        "frontend-security"
+      ],
+      "id": "4b3b7d325f5f103fbe74e4d9",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 14
+    },
+    {
+      "title": "Cross-Site Image Requests and Cookie-Bearing Side Channels",
+      "summary": "Images embedded on any site send the target origin's cookies automatically, so an attacker can infer login state or read sensitive images via layout and rendering side channels.",
+      "use_when": "Reviewing cookie attributes, third-party image embeds and account-state endpoints on a storefront, or threat-modeling how a competitor or attacker page could learn whether a customer is logged into your store or payment/email accounts.",
+      "steps": [
+        "Understand the mechanism: when a page loads an image from another origin, the browser automatically attaches cookies for that origin, and the response can vary (e.g. a 'log in' vs 'log out' button of slightly different width) based on those cookies.",
+        "Recognize that the embedding page cannot read the foreign image's pixels or cross-origin state, but can still infer it: differences in image dimensions can shift layout, which attacker JavaScript detects; the attacker can also just observe the rendered size.",
+        "Prevent it for your own store by setting same-site cookies (SameSite) on session and authentication cookies so they are not attached to requests initiated from other origins, which forces the cross-site request to look signed-out.",
+        "Audit any state-dependent images or endpoints (login buttons, feature flags, personalized banners) that return different content for logged-in users and are embeddable cross-site, since these are the exploitable surfaces.",
+        "Also treat sensitive images (e.g. QR codes containing keys) as leakable via side channels: because image dimensions/position are observable, avoid serving secrets as embeddable images without origin restrictions and auth checks.",
+        "Verify the current cookie defaults and SameSite behavior in target browsers before assuming protection, since defaults have changed over time."
+      ],
+      "caveats": [
+        "There is no general way around the underlying information leak from image size/layout; SameSite cookies solve the cookie-attachment variant but not all size-based inference.",
+        "This is described as an unintentional leak violating the spirit of the same-origin policy, not a designed feature to rely on.",
+        "Exact browser cookie-default behavior is version- and vendor-dependent; confirm rather than assume."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "cookies",
+        "same-site",
+        "session-security",
+        "account-security",
+        "privacy"
+      ],
+      "id": "a1ee46e37a85f0f8253c01a1",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 14
+    },
+    {
+      "title": "Ambient-Light Sensor as a Browser-History and Image-Reading Side Channel",
+      "summary": "An unpermissioned ambient-light API can be abused to infer visited links and even read sensitive images pixel-by-pixel by correlating screen output with room brightness.",
+      "use_when": "Deciding which browser sensor/permission APIs to allow or request on a storefront or PWA, or assessing privacy exposure of device-sensor features used for theming, games or interactive PDP experiences.",
+      "steps": [
+        "Understand the attack: a page can render content (e.g. a link with a black background if unvisited, white if visited, or a QR code region) and read the ambient-light sensor value (0–1) to infer what is on screen.",
+        "Calibrate first by showing a fully white page then a fully black page and reading the sensor each time; then render the target and infer its color from the sensor value against those two reference readings.",
+        "Recognize the image-reading variant: because a QR code (or any sensitive image) loads cross-origin with cookies but cannot be read as pixels, an attacker can zoom the display into one cell at a time and read black vs white via the sensor, reconstructing the whole image.",
+        "For your store, avoid using sensor-gated features that could be repurposed; if you add light-adaptive theming, know that fine-grained ambient-light access can silently expose on-screen content.",
+        "Mitigations to consider: request sensor access behind a permission prompt, limit the frequency of sensor reads, and quantize sensor precision so a site cannot extract high-resolution signal.",
+        "Check your target browsers: this API's shipping status and permission model were under reconsideration at the time of the source, so verify the current interface before building on it."
+      ],
+      "caveats": [
+        "The demonstrated attacks are described as technically real but low-practicality (they occupy the screen and are visible to the user); practicality doesn't remove the policy violation.",
+        "Browser vendors were reconsidering whether to ship the ambient-light API unpermissioned — availability and protection status must be verified and may differ per browser.",
+        "Restricting these APIs also breaks legitimate demos and features; treat this as a security-vs-capability tradeoff, not a free win."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "sensor-apis",
+        "browser-privacy",
+        "fingerprinting",
+        "permissions",
+        "product-page"
+      ],
+      "id": "5e21182dfef541f6aac2a9eb",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 14
+    },
+    {
+      "title": "Gyroscope API Eavesdropping and Sensor Permission Tradeoffs",
+      "summary": "Highly precise, unpermissioned motion sensors can pick up acoustic signals and infer speech, illustrating why sensor APIs belong behind permission prompts.",
+      "use_when": "Deciding whether a storefront, web game or interactive product experience should request motion/orientation sensor access, and auditing which sensitive device-permission APIs your site invokes.",
+      "steps": [
+        "Understand the 2014 Stanford finding: the gyroscope API could be precise enough to pick up acoustic signals so a site without microphone permission could infer what was being said near the device.",
+        "Recognize the general pattern — any unpermissioned, high-precision sensor (motion, ambient light, etc.) can be repurposed as a covert input channel and a privacy leak.",
+        "For your store, avoid requesting motion/orientation access unless a specific interactive feature genuinely needs it, and explain why when you do; users who grant access for a game are also granting whatever else the site does with the data.",
+        "Accept that once a user has granted a permission, you cannot reliably control how the data is subsequently used — the same concern applies to native apps that use granted navigation/location data for ad targeting.",
+        "Mitigations for platforms/your own features: gate sensors behind permissions, limit reading frequency and quantize precision to reduce the extractable signal.",
+        "Verify current platform state: iOS moved the gyro API behind a permission flag (reported around iOS 12/13), so check the present OS/browser behavior before relying on it."
+      ],
+      "caveats": [
+        "Locking down sensor APIs breaks legitimate orientation-based experiences; this is an explicit security-vs-capability tradeoff.",
+        "The eavesdropping demonstration was a research result, not a promise that arbitrary sites will succeed against modern devices — precision and OS gating affect feasibility.",
+        "Permission prompts do not fully solve the problem, because users may grant access for one purpose and the data may be used for another."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "sensor-apis",
+        "permissions",
+        "browser-privacy",
+        "native-apps",
+        "privacy"
+      ],
+      "id": "989b6ffaf61bca3a8c93eb92",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 14
+    },
+    {
+      "title": "Why Side Channels and Phishing Resist Full Mitigation",
+      "summary": "Side channels are pervasive and hard to eliminate, phishing is fundamentally a human problem, and browser security controls always trade off against web capabilities.",
+      "use_when": "Setting realistic security expectations for a storefront — deciding how much engineering effort to spend on browser-level hardening versus user education, monitoring and account controls.",
+      "steps": [
+        "Treat side channels as an inherent, ongoing class of leak rather than a single bug: timing, layout, image-size and sensor channels each need separate analysis, and fixing one doesn't close the others.",
+        "Treat phishing as a human problem: a phishing page becomes more effective when it first learns (via a side channel) which service the victim uses, so reducing pre-click information leaks also reduces phishing success — but no single control eliminates phishing.",
+        "Accept the security-vs-capability tension: every restriction that closes a side channel (banning link styling, gating sensor APIs) also breaks legitimate features, so design controls to target the highest-risk leaks rather than blanket bans.",
+        "For a store, combine layered defenses: minimal third-party scripts, SameSite session cookies, MFA and login-anomaly monitoring, and clear customer communication about how your store contacts them.",
+        "Distinguish login/session security from data-leak concerns when prioritizing, and don't expect any one mitigation (HTTPS, CAPTCHA, a WAF or prompt filtering) to guarantee safety against these classes.",
+        "Re-verify browser mitigations over time, since vendor behavior is implementation-specific and changes as standards evolve."
+      ],
+      "caveats": [
+        "Side channels are described as fundamentally hard, if not impossible, to fully prevent — plan for risk reduction, not elimination.",
+        "Phishing success depends on user behavior and cannot be fully engineered away.",
+        "Do not assume any single control guarantees security; treat each as one layer among several."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "phishing",
+        "side-channels",
+        "defense-in-depth",
+        "risk-management",
+        "account-security"
+      ],
+      "id": "09f369da8351a62a5a65baf8",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 14
+    },
+    {
+      "title": "Command Injection in Store Backends and the Argument-Array Fix",
+      "summary": "Combining untrusted user input into a shell command string lets attackers run OS commands on the server; use argument-array APIs that escape input instead of string concatenation.",
+      "use_when": "Reviewing or writing any store backend code or admin/integration feature that shells out — file viewers, image/asset processing, export tools, report generators or third-party CLI wrappers.",
+      "steps": [
+        "Understand the vulnerability condition: whenever code concatenates untrusted input (URL params, form fields, cookies, headers) into a shell command string, a special character such as a semicolon can terminate the intended command and start a new one the attacker controls.",
+        "Recognize that untrusted data reaches the shell wherever the client can influence a value — query strings, form bodies, cookies — so treat all of it as attacker-controlled.",
+        "Fix it by using a spawn-style API (e.g. Node's spawnSync, with equivalents in Python, Ruby and others) that takes the program name and an explicit array of arguments, so the library escapes each argument and guarantees only the intended program runs.",
+        "Avoid the insecure pattern (e.g. exec with a concatenated string); the safe pattern passes arguments as a list and returns a child-process object, so read stdout on success and stderr on non-zero status.",
+        "Note that escaping user input fixes command injection but does not fix other flaws: a file viewer that lets users choose any path still allows path traversal (e.g. ../../etc/passwd), so also restrict which files are accessible.",
+        "Verify the exact function signatures and return shapes in your language, since the API details differ and may change across versions."
+      ],
+      "caveats": [
+        "Escaping input prevents adding commands to your program but does not prevent the program itself doing something dangerous with a valid-looking input (e.g. reading arbitrary files).",
+        "The source's live demo ran on the presenter's local interface only; do not reproduce injection tests against systems you don't own or have written authorization to test.",
+        "Exact function behavior (return value, escaping rules) is language- and version-specific — confirm against current docs."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "command-injection",
+        "input-validation",
+        "backend-security",
+        "integrations",
+        "code-injection"
+      ],
+      "id": "45a137425080896448130782",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 14
+    },
+    {
+      "title": "Review store database queries for SQL injection",
+      "summary": "Find data/code mixing in login, order lookup and catalog queries and replace it with parameter binding.",
+      "use_when": "Reviewing authentication, search or account-lookup endpoints on a store for SQL injection, or testing whether an input field safely parameterizes queries.",
+      "steps": [
+        "Trace customer input and imported data into database query construction.",
+        "Use parameterized queries for values and allowlisted mappings for dynamic identifiers; avoid concatenation.",
+        "Use harmless fixtures in an owned test environment to confirm unusual input is treated as data.",
+        "Inspect query errors without interpreting every syntax error as proof of injection.",
+        "Apply least-privilege database access and review adjacent endpoints using the same query helper."
+      ],
+      "caveats": [
+        "No visible error does not prove a query is safe; code review and bounded validation are complementary."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "sql-injection",
+        "input-validation",
+        "authentication",
+        "backend-security",
+        "code-injection"
+      ],
+      "id": "bbfe8b258ef76bd9a226e897",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 14
+    },
+    {
+      "title": "Stacked SQL Injection via APIs That Allow Multiple Statements",
+      "summary": "Some database APIs permit multiple semicolon-separated statements, letting an attacker with an injection point run additional queries such as changing passwords or dropping tables.",
+      "use_when": "Choosing database query APIs for a store backend and reviewing existing endpoints that run SQL for login, logging or admin operations.",
+      "steps": [
+        "Understand the condition: if the injection point sits in code that uses an API allowing multiple statements (e.g. an exec-style call), an attacker can terminate the intended query with a semicolon and append a second one.",
+        "Recognize the impact: an appended query can update another user's password (then log in as them), insert attacker data, or drop an entire table — the source demonstrated both password takeover and dropping the users table.",
+        "Note that some APIs (e.g. a get-style single-row fetch) reject multiple statements, so a payload that fails there may still succeed elsewhere in the same app — audit every query call site, not just one.",
+        "Watch realistic second-statement surfaces: any feature that runs an extra query on the same code path (such as inserting a login-attempt log row) can become the vector that enables stacked statements.",
+        "Remediate by using parameterized queries everywhere and by selecting database APIs that disallow multiple statements in a single call where possible; never concatenate user input into query strings.",
+        "Verify current behavior of your specific driver/library, since multi-statement support and defaults vary by engine, driver and version."
+      ],
+      "caveats": [
+        "Protection against stacked queries depends on the API and database; a fix in one call path does not protect another.",
+        "The demonstrated password change and table drop are examples of impact, not guarantees that every injection yields them.",
+        "Do not test destructive payloads against systems you don't own or lack written authorization to test."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "sql-injection",
+        "backend-security",
+        "database-security",
+        "input-validation",
+        "code-injection"
+      ],
+      "id": "478efa2d244c7f99603cbfec",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 14
+    },
+    {
+      "title": "Recognize blind SQL injection signals without exposing customer data",
+      "summary": "Response and timing differences can reveal unsafe queries even when the application hides database output.",
+      "use_when": "Assessing whether a store endpoint that accepts search/filter input and gives only success/failure or timing feedback could leak database contents, and prioritizing remediation for such endpoints.",
+      "steps": [
+        "Review repeated unusual parameter probes, response differences and timing anomalies affecting store data endpoints.",
+        "Trace suspect inputs to query construction and parameterize the underlying values.",
+        "Use synthetic records and bounded tests in an owned test environment to validate the fix; do not extract real customer records.",
+        "Keep error messages generic while retaining useful restricted diagnostic logs.",
+        "Use least privilege and query/resource limits as additional containment, not a replacement for parameterization."
+      ],
+      "caveats": [
+        "Timing differences can have benign causes; confirm the root cause before declaring exploitation."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "sql-injection",
+        "blind-injection",
+        "backend-security",
+        "measurement",
+        "code-injection"
+      ],
+      "id": "ef4261b02222d4f65c2d498f",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 14
+    }
+  ],
+  "request_id": "d390f4ffc34fb37fa59f4fe14700163db91ff79b1f9f7e90c8305ce2f971f131",
+  "ecommerce_scope_version": 1
+}

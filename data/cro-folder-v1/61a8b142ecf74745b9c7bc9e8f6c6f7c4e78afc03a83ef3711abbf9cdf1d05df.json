@@ -1,0 +1,623 @@
+{
+  "request_id": "61a8b142ecf74745b9c7bc9e8f6c6f7c4e78afc03a83ef3711abbf9cdf1d05df",
+  "provider": "deepseek",
+  "model": "deepseek-flash",
+  "effort": "high",
+  "completion_limit": 32768,
+  "usage": {
+    "prompt_tokens": 3687,
+    "completion_tokens": 22676,
+    "total_tokens": 26363,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 17673
+    },
+    "prompt_cache_hit_tokens": 0,
+    "prompt_cache_miss_tokens": 3687
+  },
+  "booked_cost_usd": 0.0283173,
+  "seconds": 75.02,
+  "finish_reason": "stop",
+  "output": {
+    "units": [
+      {
+        "id": "u1",
+        "kind": "action",
+        "title": "Run a platform-native lift study",
+        "claim": {
+          "text": "The source recommends a platform-native lift study where Meta/Google randomly assigns users to exposed/holdout groups and measures the conversion difference.",
+          "quote": "Meta/Google randomly assigns users to exposed/holdout groups; measures conversion difference"
+        },
+        "action": {
+          "text": "Run a platform-native lift study where Meta/Google randomly assigns users to exposed/holdout groups and measures the conversion difference.",
+          "quote": "Meta/Google randomly assigns users to exposed/holdout groups; measures conversion difference"
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "You need to measure true incremental conversions from the ad platform.",
+              "quote": "True incremental conversions from ad platform"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not provide sample size or duration requirements for this test."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u2",
+        "kind": "action",
+        "title": "Run a DIY geo-holdout",
+        "claim": {
+          "text": "The source recommends a DIY geo-holdout by pausing ads in matched test regions and comparing to control regions.",
+          "quote": "Pause ads in matched test regions; compare to control regions"
+        },
+        "action": {
+          "text": "Run a DIY geo-holdout by pausing ads in matched test regions and comparing to control regions.",
+          "quote": "Pause ads in matched test regions; compare to control regions"
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "You need to measure channel-level incrementality across all markets.",
+              "quote": "Channel-level incrementality across all markets"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not specify how to match test and control regions."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u3",
+        "kind": "action",
+        "title": "Run an on/off experiment",
+        "claim": {
+          "text": "The source recommends an on/off experiment by turning a channel or campaign on/off in alternating periods.",
+          "quote": "Turn a channel or campaign on/off in alternating periods"
+        },
+        "action": {
+          "text": "Run an on/off experiment by turning a channel or campaign on/off in alternating periods.",
+          "quote": "Turn a channel or campaign on/off in alternating periods"
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "You need to measure the overall revenue impact of the channel.",
+              "quote": "Overall revenue impact of the channel"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not specify the length of on/off periods."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u4",
+        "kind": "action",
+        "title": "Apply difference-in-differences",
+        "claim": {
+          "text": "The source describes difference-in-differences as comparing the change in outcomes over time between a treatment group and a control group.",
+          "quote": "Compares the change in outcomes over time between a treatment group and a control group."
+        },
+        "action": {
+          "text": "Apply difference-in-differences to compare the change in outcomes over time between a treatment group and a control group when you cannot randomize at the user level but have a comparable control group.",
+          "quote": "Compares the change in outcomes over time between a treatment group and a control group."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "You cannot randomize at the user level (e.g., site-wide changes) but have a comparable control group.",
+              "quote": "When you cannot randomize at the user level (e.g., site-wide changes) but have a comparable control group."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": [
+            {
+              "text": "You have pre/post data for treatment and control.",
+              "quote": "Pre/post data for treatment and control"
+            }
+          ]
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not state how to test the parallel trends assumption."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u5",
+        "kind": "action",
+        "title": "Use CUPED for variance reduction",
+        "claim": {
+          "text": "CUPED is a variance reduction technique that uses pre-experiment data to reduce noise in experiment results.",
+          "quote": "A variance reduction technique that uses pre-experiment data (like a user's browsing history or past purchase behavior) to reduce noise in experiment results."
+        },
+        "action": {
+          "text": "Use CUPED to reduce variance in experiment results by using pre-experiment data as covariates.",
+          "quote": "A variance reduction technique that uses pre-experiment data (like a user's browsing history or past purchase behavior) to reduce noise in experiment results."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "You are running any A/B test where you have pre-experiment data on users.",
+              "quote": "For any A/B test where you have pre-experiment data on users."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": [
+            {
+              "text": "You have user-level pre-period data.",
+              "quote": "User-level pre-period data"
+            }
+          ]
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not specify which covariates to use or how to validate them."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u6",
+        "kind": "action",
+        "title": "Use switchback testing",
+        "claim": {
+          "text": "Switchback testing randomizes entire environments (regions, time periods) instead of individual users.",
+          "quote": "Randomizes entire environments (regions, time periods) instead of individual users."
+        },
+        "action": {
+          "text": "Use switchback testing by randomizing entire environments (regions, time periods) instead of individual users.",
+          "quote": "Randomizes entire environments (regions, time periods) instead of individual users."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "You are running marketplace experiments where user-level randomization would cause interference (e.g., search ranking changes, ad spend allocation).",
+              "quote": "For marketplace experiments where user-level randomization would cause interference (e.g., search ranking changes, ad spend allocation)."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": [
+            {
+              "text": "You need time-based randomization.",
+              "quote": "Time-based randomization"
+            }
+          ]
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not specify how to choose switchback period length."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u7",
+        "kind": "action",
+        "title": "Use synthetic control",
+        "claim": {
+          "text": "Synthetic control creates a composite control group by combining different imperfect control candidates with appropriate weights to match the test group as closely as possible.",
+          "quote": "Creates a \"composite\" control group by combining different imperfect control candidates with appropriate weights to match the test group as closely as possible."
+        },
+        "action": {
+          "text": "Use synthetic control to create a composite control group from imperfect control candidates when no true control group exists.",
+          "quote": "Creates a \"composite\" control group by combining different imperfect control candidates with appropriate weights to match the test group as closely as possible."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "You have no true control group but need to estimate counterfactual outcomes.",
+              "quote": "When you have no true control group but need to estimate counterfactual outcomes."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": [
+            {
+              "text": "You have panel data across markets.",
+              "quote": "Panel data across markets"
+            }
+          ]
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not detail how to select weights for synthetic control."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u8",
+        "kind": "action",
+        "title": "Use Bayesian structural time series (BSTS)",
+        "claim": {
+          "text": "BSTS is a time-series model combining Kalman filtering, spike-and-slab regression, and Bayesian model averaging to estimate causal impact in dynamic settings.",
+          "quote": "A time-series model that combines Kalman filtering (accounts for seasonality and trend), spike-and-slab regression (automated predictor selection), and Bayesian model averaging (avoids overfitting)."
+        },
+        "action": {
+          "text": "Use BSTS to estimate causal impact when you have time-series data with strong seasonality and no clean control group.",
+          "quote": "A time-series model that combines Kalman filtering (accounts for seasonality and trend), spike-and-slab regression (automated predictor selection), and Bayesian model averaging (avoids overfitting)."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "You have time-series data with strong seasonality, and you need to estimate the causal impact of an intervention without a clean control group.",
+              "quote": "When you have time-series data with strong seasonality, and you need to estimate the causal impact of an intervention without a clean control group."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": [
+            {
+              "text": "You have time-series data.",
+              "quote": "Time-series data"
+            }
+          ]
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not provide implementation details for BSTS."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u9",
+        "kind": "action",
+        "title": "Use propensity score matching (PSM)",
+        "claim": {
+          "text": "PSM matches each treated customer with a control customer who has a similar propensity of receiving the treatment based on observed covariates.",
+          "quote": "Matches each treated customer with a control customer who has a similar propensity (probability) of receiving the treatment based on observed covariates."
+        },
+        "action": {
+          "text": "Use PSM to create a comparable control group from observational data by matching treated and control customers on propensity scores.",
+          "quote": "Matches each treated customer with a control customer who has a similar propensity (probability) of receiving the treatment based on observed covariates."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "You cannot randomize but have rich customer data that can be used to create comparable groups.",
+              "quote": "When you cannot randomize but have rich customer data that can be used to create comparable groups."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": [
+            {
+              "text": "You have rich customer covariates.",
+              "quote": "Rich customer covariates"
+            }
+          ]
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not specify how to select covariates or check balance."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u10",
+        "kind": "action",
+        "title": "Use instrumental variables (IV)",
+        "claim": {
+          "text": "IV uses a variable correlated with the treatment but not directly with the outcome (except through the treatment) to estimate causal effects.",
+          "quote": "Uses a variable that is correlated with the treatment but not directly with the outcome (except through the treatment) to estimate causal effects."
+        },
+        "action": {
+          "text": "Use instrumental variables to estimate causal effects when there is selection bias or the treatment is not randomly assigned but you have a valid instrument.",
+          "quote": "Uses a variable that is correlated with the treatment but not directly with the outcome (except through the treatment) to estimate causal effects."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "There is selection bias or the treatment is not randomly assigned but you have a valid instrument.",
+              "quote": "When there is selection bias or when the treatment is not randomly assigned but you have a valid instrument."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": [
+            {
+              "text": "You have a valid instrument variable.",
+              "quote": "Valid instrument variable"
+            }
+          ]
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not provide guidance on testing instrument validity."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u11",
+        "kind": "action",
+        "title": "Use regression discontinuity design (RDD)",
+        "claim": {
+          "text": "RDD exploits a cutoff or threshold where treatment changes discontinuously.",
+          "quote": "Exploits a cutoff or threshold where treatment changes discontinuously."
+        },
+        "action": {
+          "text": "Use RDD to estimate causal effects when treatment is assigned based on a threshold.",
+          "quote": "Exploits a cutoff or threshold where treatment changes discontinuously."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Treatment is assigned based on a threshold (loyalty tiers, free shipping thresholds, discount minimums).",
+              "quote": "When treatment is assigned based on a threshold (loyalty tiers, free shipping thresholds, discount minimums)."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": [
+            {
+              "text": "You have an assignment variable with a cutoff.",
+              "quote": "Assignment variable with cutoff"
+            }
+          ]
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not specify bandwidth selection or robustness checks."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u12",
+        "kind": "action",
+        "title": "Decide what question you need to answer",
+        "claim": {
+          "text": "The source recommends deciding what question you need to answer before selecting a method.",
+          "quote": "Decide what question you need to answer."
+        },
+        "action": {
+          "text": "Decide what question you need to answer.",
+          "quote": "Decide what question you need to answer."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not provide a list of possible questions beyond examples."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u13",
+        "kind": "action",
+        "title": "Match the method to your data infrastructure and traffic",
+        "claim": {
+          "text": "The source recommends matching the method to data infrastructure and traffic, noting high-traffic stores (>100k monthly visitors) can run user-level holdouts, geo holdouts, and switchback tests, while lower-traffic stores may need BSTS, synthetic control, or longer-duration holdouts.",
+          "quote": "High-traffic stores (>100k monthly visitors) can run user-level holdouts, geo holdouts, and switchback tests. Lower-traffic stores may need to rely on BSTS, synthetic control, or longer-duration holdouts to achieve statistical power."
+        },
+        "action": {
+          "text": "Match the method to your data infrastructure and traffic.",
+          "quote": "Match the method to your data infrastructure and traffic."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not define 'longer-duration holdouts' or how to determine the needed duration."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u12"
+          }
+        ]
+      },
+      {
+        "id": "u14",
+        "kind": "action",
+        "title": "Document and compound learnings",
+        "claim": {
+          "text": "The source recommends documenting every holdout, incrementality test, and causal analysis with the question asked, method used, result and confidence interval, and business decision made.",
+          "quote": "Every holdout, incrementality test, and causal analysis should be documented with:\n\n- The question asked\n\n- The method used\n\n- The result and confidence interval\n\n- The business decision made"
+        },
+        "action": {
+          "text": "Document every holdout, incrementality test, and causal analysis with the question asked, method used, result and confidence interval, and business decision made.",
+          "quote": "Every holdout, incrementality test, and causal analysis should be documented with:\n\n- The question asked\n\n- The method used\n\n- The result and confidence interval\n\n- The business decision made"
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [
+          {
+            "text": "Over time, this creates a causal knowledge base that is far more valuable than a collection of A/B test results.",
+            "quote": "Over time, this creates a **causal knowledge base** that is far more valuable than a collection of A/B test results."
+          }
+        ],
+        "unknowns": [],
+        "relations": []
+      },
+      {
+        "id": "u15",
+        "kind": "principle",
+        "title": "A/B tests measure local effects; holdouts measure true business impact",
+        "claim": {
+          "text": "A/B tests measure local effects, while holdouts measure true business impact.",
+          "quote": "A/B tests measure local effects; holdouts measure true business impact."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": []
+      },
+      {
+        "id": "u16",
+        "kind": "example",
+        "title": "Meta geo-holdout demonstrated incremental value",
+        "claim": {
+          "text": "A Meta geo-holdout concluded that Meta drove measurable incremental value, with a 10%+ lift in conversions demonstrating it was not simply taking credit for conversions that would have happened anyway.",
+          "quote": "Meta drove measurable incremental value. The 10%+ lift in conversions demonstrated that Meta was not simply taking credit for conversions that would have happened anyway."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source states the full omni-channel lift is likely several times higher but does not quantify it."
+        ],
+        "relations": []
+      }
+    ],
+    "more_units": true,
+    "unresolved": [
+      "Omitted separate unit for the method selection table in Section 5; its mapping is partially incorporated into u13.",
+      "Omitted example unit for Meta holdout quantitative results (incremental CPA $130, incremental ROAS 0.51, new customer CPA $190, new customer ROAS 0.35).",
+      "Omitted example units for method-specific ecommerce examples (email redesign for DiD, past purchase frequency for CUPED, 1-page vs 3-page checkout switchback, Wildberries synthetic control, Black Friday BSTS, online product sampling PSM, buybox IV, $100 discount threshold RDD).",
+      "Omitted DiD formula and the 12-day switchback example with AOV +2.1% (98% significance) and 40–60% standard error reduction.",
+      "Source appears cut off after Key Takeaway 1; further key takeaways or sections may exist beyond the provided passage."
+    ]
+  },
+  "raw_content": "{\n  \"units\": [\n    {\n      \"id\": \"u1\",\n      \"kind\": \"action\",\n      \"title\": \"Run a platform-native lift study\",\n      \"claim\": {\n        \"text\": \"The source recommends a platform-native lift study where Meta/Google randomly assigns users to exposed/holdout groups and measures the conversion difference.\",\n        \"quote\": \"Meta/Google randomly assigns users to exposed/holdout groups; measures conversion difference\"\n      },\n      \"action\": {\n        \"text\": \"Run a platform-native lift study where Meta/Google randomly assigns users to exposed/holdout groups and measures the conversion difference.\",\n        \"quote\": \"Meta/Google randomly assigns users to exposed/holdout groups; measures conversion difference\"\n      },\n      \"trigger\": {\n        \"op\": \"all\",\n        \"args\": [\n          {\n            \"text\": \"You need to measure true incremental conversions from the ad platform.\",\n            \"quote\": \"True incremental conversions from ad platform\"\n          }\n        ]\n      },\n      \"prerequisites\": {\n        \"op\": \"all\",\n        \"args\": []\n      },\n      \"exclusions\": {\n        \"op\": \"any\",\n        \"args\": []\n      },\n      \"completion\": [],\n      \"unknowns\": [\n        \"The source does not provide sample size or duration requirements for this test.\"\n      ],\n      \"relations\": []\n    },\n    {\n      \"id\": \"u2\",\n      \"kind\": \"action\",\n      \"title\": \"Run a DIY geo-holdout\",\n      \"claim\": {\n        \"text\": \"The source recommends a DIY geo-holdout by pausing ads in matched test regions and comparing to control regions.\",\n        \"quote\": \"Pause ads in matched test regions; compare to control regions\"\n      },\n      \"action\": {\n        \"text\": \"Run a DIY geo-holdout by pausing ads in matched test regions and comparing to control regions.\",\n        \"quote\": \"Pause ads in matched test regions; compare to control regions\"\n      },\n      \"trigger\": {\n        \"op\": \"all\",\n        \"args\": [\n          {\n            \"text\": \"You need to measure channel-level incrementality across all markets.\",\n            \"quote\": \"Channel-level incrementality across all markets\"\n          }\n        ]\n      },\n      \"prerequisites\": {\n        \"op\": \"all\",\n        \"args\": []\n      },\n      \"exclusions\": {\n        \"op\": \"any\",\n        \"args\": []\n      },\n      \"completion\": [],\n      \"unknowns\": [\n        \"The source does not specify how to match test and control regions.\"\n      ],\n      \"relations\": []\n    },\n    {\n      \"id\": \"u3\",\n      \"kind\": \"action\",\n      \"title\": \"Run an on/off experiment\",\n      \"claim\": {\n        \"text\": \"The source recommends an on/off experiment by turning a channel or campaign on/off in alternating periods.\",\n        \"quote\": \"Turn a channel or campaign on/off in alternating periods\"\n      },\n      \"action\": {\n        \"text\": \"Run an on/off experiment by turning a channel or campaign on/off in alternating periods.\",\n        \"quote\": \"Turn a channel or campaign on/off in alternating periods\"\n      },\n      \"trigger\": {\n        \"op\": \"all\",\n        \"args\": [\n          {\n            \"text\": \"You need to measure the overall revenue impact of the channel.\",\n            \"quote\": \"Overall revenue impact of the channel\"\n          }\n        ]\n      },\n      \"prerequisites\": {\n        \"op\": \"all\",\n        \"args\": []\n      },\n      \"exclusions\": {\n        \"op\": \"any\",\n        \"args\": []\n      },\n      \"completion\": [],\n      \"unknowns\": [\n        \"The source does not specify the length of on/off periods.\"\n      ],\n      \"relations\": []\n    },\n    {\n      \"id\": \"u4\",\n      \"kind\": \"action\",\n      \"title\": \"Apply difference-in-differences\",\n      \"claim\": {\n        \"text\": \"The source describes difference-in-differences as comparing the change in outcomes over time between a treatment group and a control group.\",\n        \"quote\": \"Compares the change in outcomes over time between a treatment group and a control group.\"\n      },\n      \"action\": {\n        \"text\": \"Apply difference-in-differences to compare the change in outcomes over time between a treatment group and a control group when you cannot randomize at the user level but have a comparable control group.\",\n        \"quote\": \"Compares the change in outcomes over time between a treatment group and a control group.\"\n      },\n      \"trigger\": {\n        \"op\": \"all\",\n        \"args\": [\n          {\n            \"text\": \"You cannot randomize at the user level (e.g., site-wide changes) but have a comparable control group.\",\n            \"quote\": \"When you cannot randomize at the user level (e.g., site-wide changes) but have a comparable control group.\"\n          }\n        ]\n      },\n      \"prerequisites\": {\n        \"op\": \"all\",\n        \"args\": [\n          {\n            \"text\": \"You have pre/post data for treatment and control.\",\n            \"quote\": \"Pre/post data for treatment and control\"\n          }\n        ]\n      },\n      \"exclusions\": {\n        \"op\": \"any\",\n        \"args\": []\n      },\n      \"completion\": [],\n      \"unknowns\": [\n        \"The source does not state how to test the parallel trends assumption.\"\n      ],\n      \"relations\": []\n    },\n    {\n      \"id\": \"u5\",\n      \"kind\": \"action\",\n      \"title\": \"Use CUPED for variance reduction\",\n      \"claim\": {\n        \"text\": \"CUPED is a variance reduction technique that uses pre-experiment data to reduce noise in experiment results.\",\n        \"quote\": \"A variance reduction technique that uses pre-experiment data (like a user's browsing history or past purchase behavior) to reduce noise in experiment results.\"\n      },\n      \"action\": {\n        \"text\": \"Use CUPED to reduce variance in experiment results by using pre-experiment data as covariates.\",\n        \"quote\": \"A variance reduction technique that uses pre-experiment data (like a user's browsing history or past purchase behavior) to reduce noise in experiment results.\"\n      },\n      \"trigger\": {\n        \"op\": \"all\",\n        \"args\": [\n          {\n            \"text\": \"You are running any A/B test where you have pre-experiment data on users.\",\n            \"quote\": \"For any A/B test where you have pre-experiment data on users.\"\n          }\n        ]\n      },\n      \"prerequisites\": {\n        \"op\": \"all\",\n        \"args\": [\n          {\n            \"text\": \"You have user-level pre-period data.\",\n            \"quote\": \"User-level pre-period data\"\n          }\n        ]\n      },\n      \"exclusions\": {\n        \"op\": \"any\",\n        \"args\": []\n      },\n      \"completion\": [],\n      \"unknowns\": [\n        \"The source does not specify which covariates to use or how to validate them.\"\n      ],\n      \"relations\": []\n    },\n    {\n      \"id\": \"u6\",\n      \"kind\": \"action\",\n      \"title\": \"Use switchback testing\",\n      \"claim\": {\n        \"text\": \"Switchback testing randomizes entire environments (regions, time periods) instead of individual users.\",\n        \"quote\": \"Randomizes entire environments (regions, time periods) instead of individual users.\"\n      },\n      \"action\": {\n        \"text\": \"Use switchback testing by randomizing entire environments (regions, time periods) instead of individual users.\",\n        \"quote\": \"Randomizes entire environments (regions, time periods) instead of individual users.\"\n      },\n      \"trigger\": {\n        \"op\": \"all\",\n        \"args\": [\n          {\n            \"text\": \"You are running marketplace experiments where user-level randomization would cause interference (e.g., search ranking changes, ad spend allocation).\",\n            \"quote\": \"For marketplace experiments where user-level randomization would cause interference (e.g., search ranking changes, ad spend allocation).\"\n          }\n        ]\n      },\n      \"prerequisites\": {\n        \"op\": \"all\",\n        \"args\": [\n          {\n            \"text\": \"You need time-based randomization.\",\n            \"quote\": \"Time-based randomization\"\n          }\n        ]\n      },\n      \"exclusions\": {\n        \"op\": \"any\",\n        \"args\": []\n      },\n      \"completion\": [],\n      \"unknowns\": [\n        \"The source does not specify how to choose switchback period length.\"\n      ],\n      \"relations\": []\n    },\n    {\n      \"id\": \"u7\",\n      \"kind\": \"action\",\n      \"title\": \"Use synthetic control\",\n      \"claim\": {\n        \"text\": \"Synthetic control creates a composite control group by combining different imperfect control candidates with appropriate weights to match the test group as closely as possible.\",\n        \"quote\": \"Creates a \\\"composite\\\" control group by combining different imperfect control candidates with appropriate weights to match the test group as closely as possible.\"\n      },\n      \"action\": {\n        \"text\": \"Use synthetic control to create a composite control group from imperfect control candidates when no true control group exists.\",\n        \"quote\": \"Creates a \\\"composite\\\" control group by combining different imperfect control candidates with appropriate weights to match the test group as closely as possible.\"\n      },\n      \"trigger\": {\n        \"op\": \"all\",\n        \"args\": [\n          {\n            \"text\": \"You have no true control group but need to estimate counterfactual outcomes.\",\n            \"quote\": \"When you have no true control group but need to estimate counterfactual outcomes.\"\n          }\n        ]\n      },\n      \"prerequisites\": {\n        \"op\": \"all\",\n        \"args\": [\n          {\n            \"text\": \"You have panel data across markets.\",\n            \"quote\": \"Panel data across markets\"\n          }\n        ]\n      },\n      \"exclusions\": {\n        \"op\": \"any\",\n        \"args\": []\n      },\n      \"completion\": [],\n      \"unknowns\": [\n        \"The source does not detail how to select weights for synthetic control.\"\n      ],\n      \"relations\": []\n    },\n    {\n      \"id\": \"u8\",\n      \"kind\": \"action\",\n      \"title\": \"Use Bayesian structural time series (BSTS)\",\n      \"claim\": {\n        \"text\": \"BSTS is a time-series model combining Kalman filtering, spike-and-slab regression, and Bayesian model averaging to estimate causal impact in dynamic settings.\",\n        \"quote\": \"A time-series model that combines Kalman filtering (accounts for seasonality and trend), spike-and-slab regression (automated predictor selection), and Bayesian model averaging (avoids overfitting).\"\n      },\n      \"action\": {\n        \"text\": \"Use BSTS to estimate causal impact when you have time-series data with strong seasonality and no clean control group.\",\n        \"quote\": \"A time-series model that combines Kalman filtering (accounts for seasonality and trend), spike-and-slab regression (automated predictor selection), and Bayesian model averaging (avoids overfitting).\"\n      },\n      \"trigger\": {\n        \"op\": \"all\",\n        \"args\": [\n          {\n            \"text\": \"You have time-series data with strong seasonality, and you need to estimate the causal impact of an intervention without a clean control group.\",\n            \"quote\": \"When you have time-series data with strong seasonality, and you need to estimate the causal impact of an intervention without a clean control group.\"\n          }\n        ]\n      },\n      \"prerequisites\": {\n        \"op\": \"all\",\n        \"args\": [\n          {\n            \"text\": \"You have time-series data.\",\n            \"quote\": \"Time-series data\"\n          }\n        ]\n      },\n      \"exclusions\": {\n        \"op\": \"any\",\n        \"args\": []\n      },\n      \"completion\": [],\n      \"unknowns\": [\n        \"The source does not provide implementation details for BSTS.\"\n      ],\n      \"relations\": []\n    },\n    {\n      \"id\": \"u9\",\n      \"kind\": \"action\",\n      \"title\": \"Use propensity score matching (PSM)\",\n      \"claim\": {\n        \"text\": \"PSM matches each treated customer with a control customer who has a similar propensity of receiving the treatment based on observed covariates.\",\n        \"quote\": \"Matches each treated customer with a control customer who has a similar propensity (probability) of receiving the treatment based on observed covariates.\"\n      },\n      \"action\": {\n        \"text\": \"Use PSM to create a comparable control group from observational data by matching treated and control customers on propensity scores.\",\n        \"quote\": \"Matches each treated customer with a control customer who has a similar propensity (probability) of receiving the treatment based on observed covariates.\"\n      },\n      \"trigger\": {\n        \"op\": \"all\",\n        \"args\": [\n          {\n            \"text\": \"You cannot randomize but have rich customer data that can be used to create comparable groups.\",\n            \"quote\": \"When you cannot randomize but have rich customer data that can be used to create comparable groups.\"\n          }\n        ]\n      },\n      \"prerequisites\": {\n        \"op\": \"all\",\n        \"args\": [\n          {\n            \"text\": \"You have rich customer covariates.\",\n            \"quote\": \"Rich customer covariates\"\n          }\n        ]\n      },\n      \"exclusions\": {\n        \"op\": \"any\",\n        \"args\": []\n      },\n      \"completion\": [],\n      \"unknowns\": [\n        \"The source does not specify how to select covariates or check balance.\"\n      ],\n      \"relations\": []\n    },\n    {\n      \"id\": \"u10\",\n      \"kind\": \"action\",\n      \"title\": \"Use instrumental variables (IV)\",\n      \"claim\": {\n        \"text\": \"IV uses a variable correlated with the treatment but not directly with the outcome (except through the treatment) to estimate causal effects.\",\n        \"quote\": \"Uses a variable that is correlated with the treatment but not directly with the outcome (except through the treatment) to estimate causal effects.\"\n      },\n      \"action\": {\n        \"text\": \"Use instrumental variables to estimate causal effects when there is selection bias or the treatment is not randomly assigned but you have a valid instrument.\",\n        \"quote\": \"Uses a variable that is correlated with the treatment but not directly with the outcome (except through the treatment) to estimate causal effects.\"\n      },\n      \"trigger\": {\n        \"op\": \"all\",\n        \"args\": [\n          {\n            \"text\": \"There is selection bias or the treatment is not randomly assigned but you have a valid instrument.\",\n            \"quote\": \"When there is selection bias or when the treatment is not randomly assigned but you have a valid instrument.\"\n          }\n        ]\n      },\n      \"prerequisites\": {\n        \"op\": \"all\",\n        \"args\": [\n          {\n            \"text\": \"You have a valid instrument variable.\",\n            \"quote\": \"Valid instrument variable\"\n          }\n        ]\n      },\n      \"exclusions\": {\n        \"op\": \"any\",\n        \"args\": []\n      },\n      \"completion\": [],\n      \"unknowns\": [\n        \"The source does not provide guidance on testing instrument validity.\"\n      ],\n      \"relations\": []\n    },\n    {\n      \"id\": \"u11\",\n      \"kind\": \"action\",\n      \"title\": \"Use regression discontinuity design (RDD)\",\n      \"claim\": {\n        \"text\": \"RDD exploits a cutoff or threshold where treatment changes discontinuously.\",\n        \"quote\": \"Exploits a cutoff or threshold where treatment changes discontinuously.\"\n      },\n      \"action\": {\n        \"text\": \"Use RDD to estimate causal effects when treatment is assigned based on a threshold.\",\n        \"quote\": \"Exploits a cutoff or threshold where treatment changes discontinuously.\"\n      },\n      \"trigger\": {\n        \"op\": \"all\",\n        \"args\": [\n          {\n            \"text\": \"Treatment is assigned based on a threshold (loyalty tiers, free shipping thresholds, discount minimums).\",\n            \"quote\": \"When treatment is assigned based on a threshold (loyalty tiers, free shipping thresholds, discount minimums).\"\n          }\n        ]\n      },\n      \"prerequisites\": {\n        \"op\": \"all\",\n        \"args\": [\n          {\n            \"text\": \"You have an assignment variable with a cutoff.\",\n            \"quote\": \"Assignment variable with cutoff\"\n          }\n        ]\n      },\n      \"exclusions\": {\n        \"op\": \"any\",\n        \"args\": []\n      },\n      \"completion\": [],\n      \"unknowns\": [\n        \"The source does not specify bandwidth selection or robustness checks.\"\n      ],\n      \"relations\": []\n    },\n    {\n      \"id\": \"u12\",\n      \"kind\": \"action\",\n      \"title\": \"Decide what question you need to answer\",\n      \"claim\": {\n        \"text\": \"The source recommends deciding what question you need to answer before selecting a method.\",\n        \"quote\": \"Decide what question you need to answer.\"\n      },\n      \"action\": {\n        \"text\": \"Decide what question you need to answer.\",\n        \"quote\": \"Decide what question you need to answer.\"\n      },\n      \"trigger\": {\n        \"op\": \"all\",\n        \"args\": []\n      },\n      \"prerequisites\": {\n        \"op\": \"all\",\n        \"args\": []\n      },\n      \"exclusions\": {\n        \"op\": \"any\",\n        \"args\": []\n      },\n      \"completion\": [],\n      \"unknowns\": [\n        \"The source does not provide a list of possible questions beyond examples.\"\n      ],\n      \"relations\": []\n    },\n    {\n      \"id\": \"u13\",\n      \"kind\": \"action\",\n      \"title\": \"Match the method to your data infrastructure and traffic\",\n      \"claim\": {\n        \"text\": \"The source recommends matching the method to data infrastructure and traffic, noting high-traffic stores (>100k monthly visitors) can run user-level holdouts, geo holdouts, and switchback tests, while lower-traffic stores may need BSTS, synthetic control, or longer-duration holdouts.\",\n        \"quote\": \"High-traffic stores (>100k monthly visitors) can run user-level holdouts, geo holdouts, and switchback tests. Lower-traffic stores may need to rely on BSTS, synthetic control, or longer-duration holdouts to achieve statistical power.\"\n      },\n      \"action\": {\n        \"text\": \"Match the method to your data infrastructure and traffic.\",\n        \"quote\": \"Match the method to your data infrastructure and traffic.\"\n      },\n      \"trigger\": {\n        \"op\": \"all\",\n        \"args\": []\n      },\n      \"prerequisites\": {\n        \"op\": \"all\",\n        \"args\": []\n      },\n      \"exclusions\": {\n        \"op\": \"any\",\n        \"args\": []\n      },\n      \"completion\": [],\n      \"unknowns\": [\n        \"The source does not define 'longer-duration holdouts' or how to determine the needed duration.\"\n      ],\n      \"relations\": [\n        {\n          \"kind\": \"depends_on\",\n          \"target\": \"u12\"\n        }\n      ]\n    },\n    {\n      \"id\": \"u14\",\n      \"kind\": \"action\",\n      \"title\": \"Document and compound learnings\",\n      \"claim\": {\n        \"text\": \"The source recommends documenting every holdout, incrementality test, and causal analysis with the question asked, method used, result and confidence interval, and business decision made.\",\n        \"quote\": \"Every holdout, incrementality test, and causal analysis should be documented with:\\n\\n- The question asked\\n\\n- The method used\\n\\n- The result and confidence interval\\n\\n- The business decision made\"\n      },\n      \"action\": {\n        \"text\": \"Document every holdout, incrementality test, and causal analysis with the question asked, method used, result and confidence interval, and business decision made.\",\n        \"quote\": \"Every holdout, incrementality test, and causal analysis should be documented with:\\n\\n- The question asked\\n\\n- The method used\\n\\n- The result and confidence interval\\n\\n- The business decision made\"\n      },\n      \"trigger\": {\n        \"op\": \"all\",\n        \"args\": []\n      },\n      \"prerequisites\": {\n        \"op\": \"all\",\n        \"args\": []\n      },\n      \"exclusions\": {\n        \"op\": \"any\",\n        \"args\": []\n      },\n      \"completion\": [\n        {\n          \"text\": \"Over time, this creates a causal knowledge base that is far more valuable than a collection of A/B test results.\",\n          \"quote\": \"Over time, this creates a **causal knowledge base** that is far more valuable than a collection of A/B test results.\"\n        }\n      ],\n      \"unknowns\": [],\n      \"relations\": []\n    },\n    {\n      \"id\": \"u15\",\n      \"kind\": \"principle\",\n      \"title\": \"A/B tests measure local effects; holdouts measure true business impact\",\n      \"claim\": {\n        \"text\": \"A/B tests measure local effects, while holdouts measure true business impact.\",\n        \"quote\": \"A/B tests measure local effects; holdouts measure true business impact.\"\n      },\n      \"action\": null,\n      \"trigger\": {\n        \"op\": \"all\",\n        \"args\": []\n      },\n      \"prerequisites\": {\n        \"op\": \"all\",\n        \"args\": []\n      },\n      \"exclusions\": {\n        \"op\": \"any\",\n        \"args\": []\n      },\n      \"completion\": [],\n      \"unknowns\": [],\n      \"relations\": []\n    },\n    {\n      \"id\": \"u16\",\n      \"kind\": \"example\",\n      \"title\": \"Meta geo-holdout demonstrated incremental value\",\n      \"claim\": {\n        \"text\": \"A Meta geo-holdout concluded that Meta drove measurable incremental value, with a 10%+ lift in conversions demonstrating it was not simply taking credit for conversions that would have happened anyway.\",\n        \"quote\": \"Meta drove measurable incremental value. The 10%+ lift in conversions demonstrated that Meta was not simply taking credit for conversions that would have happened anyway.\"\n      },\n      \"action\": null,\n      \"trigger\": {\n        \"op\": \"all\",\n        \"args\": []\n      },\n      \"prerequisites\": {\n        \"op\": \"all\",\n        \"args\": []\n      },\n      \"exclusions\": {\n        \"op\": \"any\",\n        \"args\": []\n      },\n      \"completion\": [],\n      \"unknowns\": [\n        \"The source states the full omni-channel lift is likely several times higher but does not quantify it.\"\n      ],\n      \"relations\": []\n    }\n  ],\n  \"more_units\": true,\n  \"unresolved\": [\n    \"Omitted separate unit for the method selection table in Section 5; its mapping is partially incorporated into u13.\",\n    \"Omitted example unit for Meta holdout quantitative results (incremental CPA $130, incremental ROAS 0.51, new customer CPA $190, new customer ROAS 0.35).\",\n    \"Omitted example units for method-specific ecommerce examples (email redesign for DiD, past purchase frequency for CUPED, 1-page vs 3-page checkout switchback, Wildberries synthetic control, Black Friday BSTS, online product sampling PSM, buybox IV, $100 discount threshold RDD).\",\n    \"Omitted DiD formula and the 12-day switchback example with AOV +2.1% (98% significance) and 40–60% standard error reduction.\",\n    \"Source appears cut off after Key Takeaway 1; further key takeaways or sections may exist beyond the provided passage.\"\n  ]\n}",
+  "input": {
+    "source": {
+      "source_id": "13xcmKLUtePPNdWOs5tNDQCnQJxcH3vGJ",
+      "source_sha256": "9cdaed43cd0bc6ed00726991891fa1bd4ffe07c547fa616e4ee05e29a9e790e4",
+      "locator": "batch",
+      "start": 0,
+      "text": "- **Duration**: 6 weeks (May 5 – June 16, 2025). All Meta campaigns were paused in the 10 holdout DMAs.\n\n- **Results**:\n\n  - Incremental CPA: **$130** (10.4% lift at 99% confidence)\n\n  - Incremental ROAS: **0.51** (7.9% lift at 90% confidence)\n\n  - New customer CPA: **$190** (10.6% lift at 95% confidence)\n\n  - New customer ROAS: **0.35** (8.6% lift at 90% confidence)\n\n**Conclusion**: Meta drove measurable incremental value. The 10%+ lift in conversions demonstrated that Meta was not simply taking credit for conversions that would have happened anyway. Given that e-commerce is just one of Hourglass's channels, the full omni-channel lift is likely several times higher.\n\n### 3.4 Three Incrementality Tests Every Ecommerce Store Can Run\n\n| Test | Method | What It Measures |\n\n|---|---|---|\n\n| **Platform-native lift study** | Meta/Google randomly assigns users to exposed/holdout groups; measures conversion difference | True incremental conversions from ad platform |\n\n| **DIY geo-holdout** | Pause ads in matched test regions; compare to control regions | Channel-level incrementality across all markets |\n\n| **On/off experiment** | Turn a channel or campaign on/off in alternating periods | Overall revenue impact of the channel |\n\n---\n\n## 4. Causal Inference Methods: Beyond Simple A/B Testing\n\nWhen randomization is not possible—or when you need to measure effects that A/B tests cannot isolate—these methods provide causal estimates.\n\n### 4.1 Difference-in-Differences (DiD)\n\n**What it is**: Compares the change in outcomes over time between a treatment group and a control group. The \"difference in differences\" removes the effect of any underlying trends that affect both groups equally.\n\n**Ecommerce example**: An email redesign is rolled out. You measure before-and-after changes for both treatment and control groups, then subtract the differences. This isolates the effect of the redesign from underlying trends like seasonality.\n\n**Formula**: \n\nEffect = (Treatment_after − Treatment_before) − (Control_after − Control_before)\n\n**When to use**: When you cannot randomize at the user level (e.g., site-wide changes) but have a comparable control group.\n\n### 4.2 CUPED (Controlled Experiments Using Pre-Experiment Data)\n\n**What it is**: A variance reduction technique that uses pre-experiment data (like a user's browsing history or past purchase behavior) to reduce noise in experiment results. CUPED can significantly reduce required sample sizes and increase test sensitivity.\n\n**Ecommerce example**: If you know a user's past purchase frequency, you can use that as a covariate to \"control for\" baseline differences between test groups. This reduces the variance in your conversion metric, making it easier to detect real effects.\n\n**When to use**: For any A/B test where you have pre-experiment data on users. It is essentially free sensitivity—you get more reliable results from the same traffic.\n\n### 4.3 Switchback Testing\n\n**What it is**: Randomizes entire environments (regions, time periods) instead of individual users. A single unit—like a city or the entire platform—is assigned to treatment or control at different times, alternating between them.\n\n**Ecommerce example**: A marketplace runs a **12-day switchback test** rotating between 1-page and 3-page checkout **every hour**. Results: AOV increased 2.1% (98% significance) and revenue per visitor improved. This flips the conventional \"fewer steps = higher conversion\" advice.\n\n**When to use**: For marketplace experiments where user-level randomization would cause interference (e.g., search ranking changes, ad spend allocation). Switchback designs reduce standard errors by **40–60%** compared to simple item randomization.\n\n### 4.4 Synthetic Control\n\n**What it is**: Creates a \"composite\" control group by combining different imperfect control candidates with appropriate weights to match the test group as closely as possible. This is used when no single control group is truly comparable.\n\n**Ecommerce example**: Wildberries used synthetic control to conduct two quasi-experiments, training a model to answer \"How would the feature have performed if we had not implemented it?\"\n\n**When to use**: When you have no true control group but need to estimate counterfactual outcomes. Particularly useful for geo-based tests where no single market is a perfect match.\n\n### 4.5 Bayesian Structural Time Series (BSTS)\n\n**What it is**: A time-series model that combines Kalman filtering (accounts for seasonality and trend), spike-and-slab regression (automated predictor selection), and Bayesian model averaging (avoids overfitting). It is used to estimate causal impact in dynamic settings where A/B testing and DiD are not optimal.\n\n**Ecommerce example**: A brand needed to measure the impact of a CRO change during the Black Friday/Christmas period. BSTS stripped away seasonal distortion to isolate the true effect of the change.\n\n**When to use**: When you have time-series data with strong seasonality, and you need to estimate the causal impact of an intervention without a clean control group.\n\n### 4.6 Propensity Score Matching (PSM)\n\n**What it is**: Matches each treated customer with a control customer who has a similar propensity (probability) of receiving the treatment based on observed covariates. This creates a comparable control group from observational data.\n\n**Ecommerce example**: A study matched customers who responded to online product sampling with non-responders using PSM, based on time-independent and time-varying observables. This allowed the researchers to estimate the true effect of the sampling campaign.\n\n**When to use**: When you cannot randomize but have rich customer data that can be used to create comparable groups.\n\n### 4.7 Instrumental Variables (IV)\n\n**What it is**: Uses a variable that is correlated with the treatment but not directly with the outcome (except through the treatment) to estimate causal effects. This addresses endogeneity and selection bias.\n\n**Ecommerce example**: A marketplace used sellers' buybox participation behavior for other products as an instrument for buybox activation. This addressed concerns about strategic buybox participation and allowed for causal estimation of the buybox effect on orders.\n\n**When to use**: When there is selection bias or when the treatment is not randomly assigned but you have a valid instrument.\n\n### 4.8 Regression Discontinuity Design (RDD)\n\n**What it is**: Exploits a cutoff or threshold where treatment changes discontinuously. Users just above the threshold receive treatment, those just below do not. Because they are nearly identical on the assignment variable, the difference in outcomes is causal.\n\n**Ecommerce example**: An e-commerce platform measures how a discount for customers spending above **$100** affects purchase amounts. The $100 threshold is the cutoff. Customers spending $99 do not get the discount; customers spending $101 do. Comparing their purchase behavior isolates the causal effect of the discount.\n\n**When to use**: When treatment is assigned based on a threshold (loyalty tiers, free shipping thresholds, discount minimums).\n\n---\n\n## 5. How to Choose the Right Method\n\n| Method | Best For | Data Requirements | Ecommerce Use Case |\n\n|---|---|---|---|\n\n| **User-level holdout** | Email, loyalty, personalization | User-level tracking | Hold back 10% of email list from campaign |\n\n| **Geo holdout** | Ad spend, channel incrementality | Geographic segmentation | Pause Meta ads in 10 DMAs for 6 weeks |\n\n| **Difference-in-Differences** | Site-wide changes without user randomization | Pre/post data for treatment and control | Measure email redesign impact |\n\n| **CUPED** | Any A/B test with pre-experiment data | User-level pre-period data | Reduce sample size for checkout tests |\n\n| **Switchback** | Marketplace, search ranking, ad allocation | Time-based randomization | Test 1-page vs 3-page checkout hourly |\n\n| **Synthetic Control** | No true control group available | Panel data across markets | Estimate feature impact without control market |\n\n| **BSTS** | Seasonal settings, no clean control | Time-series data | Measure Black Friday CRO impact |\n\n| **PSM** | Observational data, cannot randomize | Rich customer covariates | Match sampling responders to non-responders |\n\n| **IV** | Endogeneity, selection bias | Valid instrument variable | Buybox effect on orders |\n\n| **RDD** | Threshold-based treatment | Assignment variable with cutoff | Discount threshold effect on AOV |\n\n---\n\n## 6. Putting It All Together: A Causal Measurement Framework for Ecommerce\n\n**Step 1: Decide what question you need to answer.**\n\n- \"Did this specific test win?\" → Standard A/B test\n\n- \"Does our retargeting actually drive incremental revenue?\" → User-level holdout\n\n- \"Does Meta advertising drive incremental sales?\" → Geo holdout\n\n- \"Has our entire CRO program generated value?\" → CRO program holdout\n\n- \"What was the impact of this change during peak season?\" → BSTS or DiD\n\n- \"We can't randomize—how do we estimate causality?\" → Synthetic control, PSM, or RDD\n\n**Step 2: Match the method to your data infrastructure and traffic.**\n\nHigh-traffic stores (>100k monthly visitors) can run user-level holdouts, geo holdouts, and switchback tests. Lower-traffic stores may need to rely on BSTS, synthetic control, or longer-duration holdouts to achieve statistical power.\n\n**Step 3: Document and compound learnings.**\n\nEvery holdout, incrementality test, and causal analysis should be documented with:\n\n- The question asked\n\n- The method used\n\n- The result and confidence interval\n\n- The business decision made\n\nOver time, this creates a **causal knowledge base** that is far more valuable than a collection of A/B test results. You learn not just what won, but what *actually matters* for your business.\n\n---\n\n## 7. Key Takeaways\n\n1. **A/B tests measure local effects; holdouts measure true business impact.** A test tells you which variant won. A holdout tells you whether the change created value that would not have existed otherwise."
+    },
+    "already_extracted_claims": [],
+    "instruction": "Extract remaining distinct task-sized units. Do not repeat already extracted claims."
+  },
+  "system_prompt_sha256": "f23d9572f5bf1b93a5822a96b30f4ea85c0469c454d5ce80d227418df3d2e25e"
+}

@@ -1,0 +1,3460 @@
+{
+  "batch": 8,
+  "request_id": "c9fbd4fe203dfce36274bd7fd726e4351bb1c2f47a598b418f01a646866ff24e",
+  "revision": "source-grounded-repair-v1",
+  "checked": {
+    "errors": [],
+    "candidates": [
+      {
+        "id": "cdfa66007e32a16cd3def9c2a43ba98d87afdfdb0b53bd3d9b54cec71c59843b",
+        "unit": {
+          "id": "233652d326d92f495ff60f2d804a8da453c96e76383005bb92f0f5d084f6d79c",
+          "kind": "action",
+          "title": "Judge significance against MDE and business value",
+          "claim": {
+            "text": "The source says a result can be statistically significant but too small to matter, or practically large but not yet significant, so decide against the MDE and business value rather than p<0.05 alone.",
+            "quote": "A result can be statistically significant but too small to matter, or practically large but not yet significant."
+          },
+          "action": {
+            "text": "Decide against the MDE and the business value, not just p<0.05.",
+            "quote": "Decide against the MDE and the business value, not just p<0.05."
+          },
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "A result is statistically significant but too small to matter, or practically large but not yet significant.",
+                "quote": "A result can be statistically significant but too small to matter, or practically large but not yet significant."
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "MDE and business value are not defined in the passage."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:118/paragraph",
+            "start": 39,
+            "end": 151,
+            "quote": "A result can be statistically significant but too small to matter, or practically large but not yet significant."
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:118/paragraph",
+            "start": 152,
+            "end": 215,
+            "quote": "Decide against the MDE and the business value, not just p<0.05."
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:118/paragraph",
+            "start": 39,
+            "end": 151,
+            "quote": "A result can be statistically significant but too small to matter, or practically large but not yet significant."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "879fb53eca94b1400fc87f927648025d8904f49ac296ec79ec55449660aa4f24",
+        "unit": {
+          "id": "a55aeb3f6897c74a8e1b75400c951973fb8711d5abc250d11a7132308e933ffc",
+          "kind": "principle",
+          "title": "Do not interpret significance as the probability the win is real",
+          "claim": {
+            "text": "The source states that significant does not mean 95% likely real; the 5% alpha is the false-alarm rate among true nulls, not the chance a specific win is false.",
+            "quote": "Significant does not mean 95% likely real. The 5% in alpha is the false-alarm rate among true nulls, not the chance your specific win is false."
+          },
+          "action": null,
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "A significant result is being interpreted as 95% likely real.",
+                "quote": "Significant does not mean 95% likely real."
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "The passage gives an illustrative Bayes example with 10% true ideas and 80% power; the base rates are not universal."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:119/paragraph",
+            "start": 0,
+            "end": 143,
+            "quote": "Significant does not mean 95% likely real. The 5% in alpha is the false-alarm rate among true nulls, not the chance your specific win is false."
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:119/paragraph",
+            "start": 0,
+            "end": 42,
+            "quote": "Significant does not mean 95% likely real."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "657e47a6e56943dace0ad6f8b05a7c28839de1bc6184edce4fb6b3cbb5aa8770",
+        "unit": {
+          "id": "a240c60ec72e84c9f4f45b7e5369486907a34050e1d47d0e7a547ae6b2d97070",
+          "kind": "action",
+          "title": "Do not extend an inconclusive fully-powered test; ship or move on",
+          "claim": {
+            "text": "A fully-powered test that ends inconclusive is valid evidence that the effect is smaller than the MDE, not a failure.",
+            "quote": "A fully-powered test that ends inconclusive is valid evidence that the effect is smaller than your MDE, not a failure."
+          },
+          "action": {
+            "text": "Do not extend it hoping for significance (that is peeking). Ship neither, or ship the cheaper/simpler version, and move on.",
+            "quote": "Do not extend it hoping for significance (that is peeking). Ship neither, or ship the cheaper/simpler version, and move on."
+          },
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "A fully-powered test ends inconclusive.",
+                "quote": "A fully-powered test that ends inconclusive"
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": [
+              {
+                "text": "The test is fully powered.",
+                "quote": "fully-powered"
+              }
+            ]
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [
+            {
+              "text": "Ship neither, or ship the cheaper/simpler version, and move on.",
+              "quote": "Ship neither, or ship the cheaper/simpler version, and move on."
+            }
+          ],
+          "unknowns": [
+            "The passage does not quantify what makes a test fully powered."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:120/paragraph",
+            "start": 20,
+            "end": 138,
+            "quote": "A fully-powered test that ends inconclusive is valid evidence that the effect is smaller than your MDE, not a failure."
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:120/paragraph",
+            "start": 139,
+            "end": 262,
+            "quote": "Do not extend it hoping for significance (that is peeking). Ship neither, or ship the cheaper/simpler version, and move on."
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:120/paragraph",
+            "start": 20,
+            "end": 63,
+            "quote": "A fully-powered test that ends inconclusive"
+          },
+          {
+            "field": "prerequisites.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:120/paragraph",
+            "start": 22,
+            "end": 35,
+            "quote": "fully-powered"
+          },
+          {
+            "field": "completion.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:120/paragraph",
+            "start": 199,
+            "end": 262,
+            "quote": "Ship neither, or ship the cheaper/simpler version, and move on."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "fbed6671c7e01d373e48a8ea5dfa85990f20a1b7f7cbedd60cd594e98424a576",
+        "unit": {
+          "id": "04c9c454862233e1184792f893355eb90c165a3887e6fe82085cca00098be670",
+          "kind": "warning",
+          "title": "Fail fast on significantly negative tests after two weeks",
+          "claim": {
+            "text": "Kohavi is cited saying it is of little value to extend a test that is significantly negative after two weeks; fail fast.",
+            "quote": "it is of little value to extend a test that is significantly negative after two weeks; fail fast."
+          },
+          "action": null,
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "A test is significantly negative after two weeks.",
+                "quote": "a test that is significantly negative after two weeks"
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "The passage attributes this to Kohavi without a full citation."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:120/paragraph",
+            "start": 271,
+            "end": 368,
+            "quote": "it is of little value to extend a test that is significantly negative after two weeks; fail fast."
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:120/paragraph",
+            "start": 303,
+            "end": 356,
+            "quote": "a test that is significantly negative after two weeks"
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "1b5dfe995d694160210215588477363ffe36b16d8c2ffa6a2af5616cce58ddd7",
+        "unit": {
+          "id": "ccaaf17bd097369c77d37972d965c059cfb1ec047fd5190d75bc2f52812f87e5",
+          "kind": "action",
+          "title": "Keep an institutional experiment log",
+          "claim": {
+            "text": "The source recommends keeping an institutional experiment log with hypothesis, evidence, metrics, MDE, sample and dates, result with CI, SRM check, decision, and learning.",
+            "quote": "Keep an institutional experiment log: hypothesis, evidence, primary and guardrail metrics, MDE, planned sample and dates, actual result with CI, SRM check, decision, and what was learned."
+          },
+          "action": {
+            "text": "Keep an institutional experiment log: hypothesis, evidence, primary and guardrail metrics, MDE, planned sample and dates, actual result with CI, SRM check, decision, and what was learned.",
+            "quote": "Keep an institutional experiment log: hypothesis, evidence, primary and guardrail metrics, MDE, planned sample and dates, actual result with CI, SRM check, decision, and what was learned."
+          },
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "Institutional memory is needed so the same losing idea is not re-run and surprising winners get replicated.",
+                "quote": "This builds institutional memory so the same losing idea is not re-run, and surprising winners get replicated."
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [
+            {
+              "text": "The log contains hypothesis, evidence, primary and guardrail metrics, MDE, planned sample and dates, actual result with CI, SRM check, decision, and what was learned.",
+              "quote": "hypothesis, evidence, primary and guardrail metrics, MDE, planned sample and dates, actual result with CI, SRM check, decision, and what was learned"
+            }
+          ],
+          "unknowns": [
+            "No log format, owner, or location is specified."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:121/paragraph",
+            "start": 41,
+            "end": 228,
+            "quote": "Keep an institutional experiment log: hypothesis, evidence, primary and guardrail metrics, MDE, planned sample and dates, actual result with CI, SRM check, decision, and what was learned."
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:121/paragraph",
+            "start": 41,
+            "end": 228,
+            "quote": "Keep an institutional experiment log: hypothesis, evidence, primary and guardrail metrics, MDE, planned sample and dates, actual result with CI, SRM check, decision, and what was learned."
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:121/paragraph",
+            "start": 229,
+            "end": 339,
+            "quote": "This builds institutional memory so the same losing idea is not re-run, and surprising winners get replicated."
+          },
+          {
+            "field": "completion.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:121/paragraph",
+            "start": 79,
+            "end": 227,
+            "quote": "hypothesis, evidence, primary and guardrail metrics, MDE, planned sample and dates, actual result with CI, SRM check, decision, and what was learned"
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "a6a4f123691919e12d3d98b795e51d789446864d2b7f48405576946d9f3829e3",
+        "unit": {
+          "id": "8b7dfe101c99c0b610d979bdd5ffda13c643faab9dc8dc889bd1a3991ef67d0e",
+          "kind": "example",
+          "title": "Microsoft benchmark win rates vary by optimisation level",
+          "claim": {
+            "text": "The source reports Microsoft about one-third of experiments improved the key metric, and Bing 10-20% in well-optimised domains.",
+            "quote": "Microsoft: about one-third of experiments improved the key metric; in well-optimised domains like Bing 10-20% (Kohavi)."
+          },
+          "action": null,
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "Estimating expected win rates.",
+                "quote": "Win rates (share of tests that produce a statistically significant winner), each with its source and sample:"
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "The passage also lists other organisations and samples; these are not all captured in this unit."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:124/paragraph",
+            "start": 0,
+            "end": 119,
+            "quote": "Microsoft: about one-third of experiments improved the key metric; in well-optimised domains like Bing 10-20% (Kohavi)."
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:123/paragraph",
+            "start": 0,
+            "end": 108,
+            "quote": "Win rates (share of tests that produce a statistically significant winner), each with its source and sample:"
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "dc8a930c83c5fa523bf59ba2a8d630066f2df463f5ab2f9658fc478d36291524",
+        "unit": {
+          "id": "f1ae29bc95e2aa36f74f498d3e5c7424075709fee2b6a98129b4c3b9e6c9530f",
+          "kind": "warning",
+          "title": "Treat 50%+ lift claims with suspicion",
+          "claim": {
+            "text": "The source says realistic lifts are 1-5% for mature, well-optimised pages and 10-20%+ for early-stage or unoptimised pages, and claims of 50%+ should be treated with suspicion and re-tested.",
+            "quote": "Realistic lift sizes: for mature, well-optimised pages, 1-5% lifts are realistic; for early-stage or unoptimised pages, 10-20%+ is possible. Claims of 50%+ should be treated with suspicion and re-tested (discoveredlabs.com; Twyman's law)."
+          },
+          "action": null,
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "A claim of 50%+ lift is presented.",
+                "quote": "Claims of 50%+"
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "The source does not define mature or well-optimised pages."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:130/paragraph",
+            "start": 122,
+            "end": 360,
+            "quote": "Realistic lift sizes: for mature, well-optimised pages, 1-5% lifts are realistic; for early-stage or unoptimised pages, 10-20%+ is possible. Claims of 50%+ should be treated with suspicion and re-tested (discoveredlabs.com; Twyman's law)."
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:130/paragraph",
+            "start": 263,
+            "end": 277,
+            "quote": "Claims of 50%+"
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "99aff1043fb33c8f8b88d88b6bdd6196fc5efc00fa005516fc653fa09bc921c0",
+        "unit": {
+          "id": "d30107268ba2c79e89c8ff154bb57d3def72d915f55e02a5d3a760bc65ad5c23",
+          "kind": "warning",
+          "title": "Beware winner's curse on small samples",
+          "claim": {
+            "text": "The source warns that tests run on small samples produce both false positives and inflated lift estimates, so early-stopped big winners regress hard.",
+            "quote": "The winner's curse: tests run on small samples (200 conversions instead of 2,000) produce both false positives and inflated lift estimates, so early-stopped big winners regress hard."
+          },
+          "action": null,
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "Tests are run on small samples.",
+                "quote": "tests run on small samples (200 conversions instead of 2,000)"
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:130/paragraph",
+            "start": 361,
+            "end": 543,
+            "quote": "The winner's curse: tests run on small samples (200 conversions instead of 2,000) produce both false positives and inflated lift estimates, so early-stopped big winners regress hard."
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:130/paragraph",
+            "start": 381,
+            "end": 442,
+            "quote": "tests run on small samples (200 conversions instead of 2,000)"
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "9f2cd61300282e41247200d0da31160b6df0290ece52e2be589d0500e023203c",
+        "unit": {
+          "id": "1417650f9f5ba7a596e6ffb797915b64ec9be7bb39ec58baa34d78fd3bce5ebc",
+          "kind": "principle",
+          "title": "Use monthly order volume as the binding constraint for test design",
+          "claim": {
+            "text": "The stage-gated guide assumes DTC ecommerce with roughly 2-3% site conversion rate and mostly new/anonymous traffic, and says orders per month is the binding constraint because conversions per variant drive power.",
+            "quote": "Assumptions: DTC ecommerce, roughly 2-3% site conversion rate, mostly new/anonymous traffic. Orders/month is the binding constraint because conversions per variant drive power."
+          },
+          "action": null,
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "Choosing an experimentation approach by monthly order volume.",
+                "quote": "Part B: stage-gated decision guide by monthly order volume"
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": [
+              {
+                "text": "DTC ecommerce, roughly 2-3% site conversion rate, mostly new/anonymous traffic.",
+                "quote": "DTC ecommerce, roughly 2-3% site conversion rate, mostly new/anonymous traffic."
+              }
+            ]
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "How to map non-DTC contexts to these bands is not stated."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:132/paragraph",
+            "start": 0,
+            "end": 176,
+            "quote": "Assumptions: DTC ecommerce, roughly 2-3% site conversion rate, mostly new/anonymous traffic. Orders/month is the binding constraint because conversions per variant drive power."
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:131/paragraph",
+            "start": 0,
+            "end": 58,
+            "quote": "Part B: stage-gated decision guide by monthly order volume"
+          },
+          {
+            "field": "prerequisites.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:132/paragraph",
+            "start": 13,
+            "end": 92,
+            "quote": "DTC ecommerce, roughly 2-3% site conversion rate, mostly new/anonymous traffic."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "24b18991d5bb668680168ae0c1988374b38b2ffe042a1701569cdc5ef38d21b3",
+        "unit": {
+          "id": "d8e3becb1a0f963a0bb7062d388c409dffc084837927a50a2775d803c7a5d602",
+          "kind": "action",
+          "title": "Under 30 orders/month use qualitative research and repairs, not tests",
+          "claim": {
+            "text": "In Band 1, under 30 orders/month, the source says valid work is qualitative research only, best-practice implementation of known fixes, and repairs.",
+            "quote": "Valid: qualitative research only (session replay, surveys, user testing, customer interviews, analytics funnel review). Best-practice implementation of known fixes. Repairs."
+          },
+          "action": {
+            "text": "Fix what is broken, apply proven LPG/checkout best practices without testing, build the research habit and an experiment log. Interview customers.",
+            "quote": "Do instead: fix what is broken, apply proven LPG/checkout best practices without testing, build the research habit and an experiment log. Interview customers."
+          },
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "Monthly order volume is under 30 orders/month.",
+                "quote": "Band 1: under 30 orders/month"
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": [
+              {
+                "text": "DTC ecommerce, roughly 2-3% site conversion rate, mostly new/anonymous traffic.",
+                "quote": "DTC ecommerce, roughly 2-3% site conversion rate, mostly new/anonymous traffic."
+              }
+            ]
+          },
+          "exclusions": {
+            "op": "any",
+            "args": [
+              {
+                "text": "Any A/B test, A/B/n, bandits, or before/after with statistical claims are not valid.",
+                "quote": "Not valid: any A/B test, A/B/n, bandits, or before/after with statistical claims."
+              },
+              {
+                "text": "You cannot power even a 30% lift in a reasonable window with about 120+ conversions per variant needed.",
+                "quote": "You cannot power even a 30% lift in a reasonable window (about 120+ conversions per variant needed)."
+              }
+            ]
+          },
+          "completion": [
+            {
+              "text": "Fix what is broken, apply proven LPG/checkout best practices without testing, build the research habit and an experiment log. Interview customers.",
+              "quote": "fix what is broken, apply proven LPG/checkout best practices without testing, build the research habit and an experiment log. Interview customers."
+            }
+          ],
+          "unknowns": [
+            "LPG is not defined in the passage."
+          ],
+          "relations": [
+            {
+              "kind": "depends_on",
+              "target": "1417650f9f5ba7a596e6ffb797915b64ec9be7bb39ec58baa34d78fd3bce5ebc"
+            }
+          ]
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:134/paragraph",
+            "start": 0,
+            "end": 173,
+            "quote": "Valid: qualitative research only (session replay, surveys, user testing, customer interviews, analytics funnel review). Best-practice implementation of known fixes. Repairs."
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:136/paragraph",
+            "start": 0,
+            "end": 158,
+            "quote": "Do instead: fix what is broken, apply proven LPG/checkout best practices without testing, build the research habit and an experiment log. Interview customers."
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:133/paragraph",
+            "start": 0,
+            "end": 29,
+            "quote": "Band 1: under 30 orders/month"
+          },
+          {
+            "field": "prerequisites.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:132/paragraph",
+            "start": 13,
+            "end": 92,
+            "quote": "DTC ecommerce, roughly 2-3% site conversion rate, mostly new/anonymous traffic."
+          },
+          {
+            "field": "exclusions.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:135/paragraph",
+            "start": 0,
+            "end": 81,
+            "quote": "Not valid: any A/B test, A/B/n, bandits, or before/after with statistical claims."
+          },
+          {
+            "field": "exclusions.1",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:135/paragraph",
+            "start": 82,
+            "end": 182,
+            "quote": "You cannot power even a 30% lift in a reasonable window (about 120+ conversions per variant needed)."
+          },
+          {
+            "field": "completion.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:136/paragraph",
+            "start": 12,
+            "end": 158,
+            "quote": "fix what is broken, apply proven LPG/checkout best practices without testing, build the research habit and an experiment log. Interview customers."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "7950307245750515de2518935c27f83c8d3bf884bb773152643113cf561ca136",
+        "unit": {
+          "id": "273f91a8c211fff3a55a8d956142265e78da977f940a044f2714bd6b9e08ce46",
+          "kind": "action",
+          "title": "Band 2: run one big-swing A/B test at a time",
+          "claim": {
+            "text": "In Band 2, 30 to 300 orders/month, the source says valid tests are bold, big-swing A/B tests on the highest-traffic page designed to detect 20%+ relative lifts, run 2-4 weeks with fixed sample computed in advance.",
+            "quote": "Valid: bold, big-swing A/B tests on the highest-traffic page (home, hero product, cart), designed to detect 20%+ relative lifts, run 2-4 weeks, fixed sample computed in advance."
+          },
+          "action": {
+            "text": "Run one big test at a time, research-heavy; use a sample-size calculator before every test; accept that most months you learn from research, not from a powered test.",
+            "quote": "Do instead: one big test at a time, research-heavy. Use a sample-size calculator before every test. Accept that most months you learn from research, not from a powered test."
+          },
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "Monthly order volume is 30 to 300 orders/month.",
+                "quote": "Band 2: 30 to 300 orders/month"
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": [
+              {
+                "text": "DTC ecommerce, roughly 2-3% site conversion rate, mostly new/anonymous traffic.",
+                "quote": "DTC ecommerce, roughly 2-3% site conversion rate, mostly new/anonymous traffic."
+              }
+            ]
+          },
+          "exclusions": {
+            "op": "any",
+            "args": [
+              {
+                "text": "Tweak tests needing a small MDE, A/B/n, revenue-per-visitor as primary metric, and price A/B tests on the same SKU are not valid.",
+                "quote": "Not valid: tweak tests (button colour, minor copy) that need a small MDE; A/B/n; revenue-per-visitor as primary metric (needs about 6x traffic); price A/B tests on the same SKU."
+              }
+            ]
+          },
+          "completion": [],
+          "unknowns": [
+            "The source says use a sample-size calculator but does not provide the calculation."
+          ],
+          "relations": [
+            {
+              "kind": "depends_on",
+              "target": "1417650f9f5ba7a596e6ffb797915b64ec9be7bb39ec58baa34d78fd3bce5ebc"
+            }
+          ]
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:138/paragraph",
+            "start": 0,
+            "end": 177,
+            "quote": "Valid: bold, big-swing A/B tests on the highest-traffic page (home, hero product, cart), designed to detect 20%+ relative lifts, run 2-4 weeks, fixed sample computed in advance."
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:140/paragraph",
+            "start": 0,
+            "end": 173,
+            "quote": "Do instead: one big test at a time, research-heavy. Use a sample-size calculator before every test. Accept that most months you learn from research, not from a powered test."
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:137/paragraph",
+            "start": 0,
+            "end": 30,
+            "quote": "Band 2: 30 to 300 orders/month"
+          },
+          {
+            "field": "prerequisites.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:132/paragraph",
+            "start": 13,
+            "end": 92,
+            "quote": "DTC ecommerce, roughly 2-3% site conversion rate, mostly new/anonymous traffic."
+          },
+          {
+            "field": "exclusions.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:139/paragraph",
+            "start": 0,
+            "end": 177,
+            "quote": "Not valid: tweak tests (button colour, minor copy) that need a small MDE; A/B/n; revenue-per-visitor as primary metric (needs about 6x traffic); price A/B tests on the same SKU."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "d2670e1503ae62b8aedae3bd32579f2df4c764660619f308b3ec7d0687748843",
+        "unit": {
+          "id": "43d0bbc532ecf516032b5e2ca2915dbd2871ac4774e7082cb8baf53abf7c0369",
+          "kind": "action",
+          "title": "Band 3: run regular A/B tests with guardrails and sequential monitoring",
+          "claim": {
+            "text": "In Band 3, 300 to 3,000 orders/month, the source says valid tests target 10-20% lifts on high-traffic pages, use conversion rate as primary metric, guardrails on AOV/margin/return rate, two-week minimum runtime, and SRM checks.",
+            "quote": "Valid: regular A/B tests targeting 10-20% lifts on high-traffic pages; conversion rate as primary metric; guardrails on AOV/margin/return rate; two-week minimum runtime; SRM checks."
+          },
+          "action": {
+            "text": "Build a prioritised backlog (PXL or profit-weighted), run one to a few tests, and keep a disciplined experiment log.",
+            "quote": "Do instead: build a prioritised backlog (PXL or profit-weighted), one to a few tests running, disciplined experiment log."
+          },
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "Monthly order volume is 300 to 3,000 orders/month.",
+                "quote": "Band 3: 300 to 3,000 orders/month"
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": [
+              {
+                "text": "DTC ecommerce, roughly 2-3% site conversion rate, mostly new/anonymous traffic.",
+                "quote": "DTC ecommerce, roughly 2-3% site conversion rate, mostly new/anonymous traffic."
+              }
+            ]
+          },
+          "exclusions": {
+            "op": "any",
+            "args": [
+              {
+                "text": "Detecting sub-5% lifts, many simultaneous variants, and same-SKU price tests are not valid.",
+                "quote": "Not valid: detecting sub-5% lifts; many simultaneous variants; same-SKU price tests."
+              }
+            ]
+          },
+          "completion": [],
+          "unknowns": [
+            "PXL is not defined in the passage."
+          ],
+          "relations": [
+            {
+              "kind": "depends_on",
+              "target": "1417650f9f5ba7a596e6ffb797915b64ec9be7bb39ec58baa34d78fd3bce5ebc"
+            }
+          ]
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:142/paragraph",
+            "start": 0,
+            "end": 181,
+            "quote": "Valid: regular A/B tests targeting 10-20% lifts on high-traffic pages; conversion rate as primary metric; guardrails on AOV/margin/return rate; two-week minimum runtime; SRM checks."
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:145/paragraph",
+            "start": 0,
+            "end": 121,
+            "quote": "Do instead: build a prioritised backlog (PXL or profit-weighted), one to a few tests running, disciplined experiment log."
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:141/paragraph",
+            "start": 0,
+            "end": 33,
+            "quote": "Band 3: 300 to 3,000 orders/month"
+          },
+          {
+            "field": "prerequisites.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:132/paragraph",
+            "start": 13,
+            "end": 92,
+            "quote": "DTC ecommerce, roughly 2-3% site conversion rate, mostly new/anonymous traffic."
+          },
+          {
+            "field": "exclusions.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:144/paragraph",
+            "start": 0,
+            "end": 84,
+            "quote": "Not valid: detecting sub-5% lifts; many simultaneous variants; same-SKU price tests."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "bb97f4c406a094734dddd2ceda8e47d0e9b53864139305f5a93a2518aa619a11",
+        "unit": {
+          "id": "9bbd58ddb76f43b2cb1289bbfd1b0787e140a65d5a728633440c77a9cec8fdad",
+          "kind": "action",
+          "title": "Band 4: use A/B/n, bandits, RPV, CUPED, and segment analysis",
+          "claim": {
+            "text": "In Band 4, 3,000 to 20,000 orders/month, the source says valid methods include A/B/n, bandits for short campaigns and tactical high-volume decisions, revenue-per-visitor with winsorization, CUPED, pre-registered segment analysis, and device/source splits; 5-10% lifts become feasible on hero pages.",
+            "quote": "Valid: A/B/n (multi-variant), bandits for short campaigns and tactical high-volume decisions, revenue-per-visitor with winsorization, CUPED, segment analysis (pre-registered), device/source splits. Detecting 5-10% lifts becomes feasible on hero pages."
+          },
+          "action": {
+            "text": "Run a proper experimentation programme, server-side for checkout/pricing logic (Plus), hybrid A/B + bandit, formal guardrails and stopping rules.",
+            "quote": "Do instead: run a proper experimentation programme, server-side for checkout/pricing logic (Plus), hybrid A/B + bandit, formal guardrails and stopping rules."
+          },
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "Monthly order volume is 3,000 to 20,000 orders/month.",
+                "quote": "Band 4: 3,000 to 20,000 orders/month"
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": [
+              {
+                "text": "DTC ecommerce, roughly 2-3% site conversion rate, mostly new/anonymous traffic.",
+                "quote": "DTC ecommerce, roughly 2-3% site conversion rate, mostly new/anonymous traffic."
+              }
+            ]
+          },
+          "exclusions": {
+            "op": "any",
+            "args": [
+              {
+                "text": "Still cannot reliably detect sub-2-3% lifts without long runtimes; still avoid same-SKU price discrimination.",
+                "quote": "Not valid: still cannot reliably detect sub-2-3% lifts without long runtimes; still avoid same-SKU price discrimination."
+              }
+            ]
+          },
+          "completion": [],
+          "unknowns": [
+            "(Plus) is not defined in the passage."
+          ],
+          "relations": [
+            {
+              "kind": "depends_on",
+              "target": "1417650f9f5ba7a596e6ffb797915b64ec9be7bb39ec58baa34d78fd3bce5ebc"
+            }
+          ]
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:147/paragraph",
+            "start": 0,
+            "end": 251,
+            "quote": "Valid: A/B/n (multi-variant), bandits for short campaigns and tactical high-volume decisions, revenue-per-visitor with winsorization, CUPED, segment analysis (pre-registered), device/source splits. Detecting 5-10% lifts becomes feasible on hero pages."
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:149/paragraph",
+            "start": 0,
+            "end": 157,
+            "quote": "Do instead: run a proper experimentation programme, server-side for checkout/pricing logic (Plus), hybrid A/B + bandit, formal guardrails and stopping rules."
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:146/paragraph",
+            "start": 0,
+            "end": 36,
+            "quote": "Band 4: 3,000 to 20,000 orders/month"
+          },
+          {
+            "field": "prerequisites.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:132/paragraph",
+            "start": 13,
+            "end": 92,
+            "quote": "DTC ecommerce, roughly 2-3% site conversion rate, mostly new/anonymous traffic."
+          },
+          {
+            "field": "exclusions.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:148/paragraph",
+            "start": 0,
+            "end": 120,
+            "quote": "Not valid: still cannot reliably detect sub-2-3% lifts without long runtimes; still avoid same-SKU price discrimination."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "66b1b652db0a2120fc3a81cf4fbeda3c27b7df66386d9850fd584ee7ada53929",
+        "unit": {
+          "id": "89655bc7323b8d7277d18f380fd6a0ebf79a79d6bc0dc300c969824bf55b6b03",
+          "kind": "action",
+          "title": "Band 5: operate a full experimentation programme with FDR control and holdouts",
+          "claim": {
+            "text": "In Band 5, 20,000+ orders/month, the source says valid work is a full programme with small-MDE tests (2-5%), revenue and gross-profit-per-visitor primaries, CUPED and variance reduction, always-valid sequential monitoring, multiple concurrent experiments with FDR control, bandits for personalisation, holdouts for surprising winners, and long-term novelty/primacy analysis.",
+            "quote": "Valid: full programme. Small-MDE tests (2-5%), revenue and gross-profit-per-visitor primaries, CUPED and variance reduction, always-valid sequential monitoring, multiple concurrent experiments with FDR control, bandits for personalisation, holdouts for surprising winners, long-term novelty/primacy analysis."
+          },
+          "action": {
+            "text": "Operate like Booking/Microsoft in miniature: institutional experiment log, replication of surprising results, A/A tests to validate the platform, and a culture that expects most tests to fail.",
+            "quote": "Do instead: operate like Booking/Microsoft in miniature: institutional experiment log, replication of surprising results, A/A tests to validate the platform, culture that expects most tests to fail."
+          },
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "Monthly order volume is 20,000+ orders/month.",
+                "quote": "Band 5: 20,000+ orders/month"
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": [
+              {
+                "text": "DTC ecommerce, roughly 2-3% site conversion rate, mostly new/anonymous traffic.",
+                "quote": "DTC ecommerce, roughly 2-3% site conversion rate, mostly new/anonymous traffic."
+              }
+            ]
+          },
+          "exclusions": {
+            "op": "any",
+            "args": [
+              {
+                "text": "Naive same-SKU price discrimination (ethics/legal), unplanned peeking, and uncorrected multiple comparisons are not valid.",
+                "quote": "Not valid: naive same-SKU price discrimination (ethics/legal), unplanned peeking, uncorrected multiple comparisons."
+              }
+            ]
+          },
+          "completion": [],
+          "unknowns": [
+            "FDR, CUPED, and A/A tests are not defined in this passage."
+          ],
+          "relations": [
+            {
+              "kind": "depends_on",
+              "target": "1417650f9f5ba7a596e6ffb797915b64ec9be7bb39ec58baa34d78fd3bce5ebc"
+            }
+          ]
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:151/paragraph",
+            "start": 0,
+            "end": 308,
+            "quote": "Valid: full programme. Small-MDE tests (2-5%), revenue and gross-profit-per-visitor primaries, CUPED and variance reduction, always-valid sequential monitoring, multiple concurrent experiments with FDR control, bandits for personalisation, holdouts for surprising winners, long-term novelty/primacy analysis."
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:153/paragraph",
+            "start": 0,
+            "end": 198,
+            "quote": "Do instead: operate like Booking/Microsoft in miniature: institutional experiment log, replication of surprising results, A/A tests to validate the platform, culture that expects most tests to fail."
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:150/paragraph",
+            "start": 0,
+            "end": 28,
+            "quote": "Band 5: 20,000+ orders/month"
+          },
+          {
+            "field": "prerequisites.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:132/paragraph",
+            "start": 13,
+            "end": 92,
+            "quote": "DTC ecommerce, roughly 2-3% site conversion rate, mostly new/anonymous traffic."
+          },
+          {
+            "field": "exclusions.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:152/paragraph",
+            "start": 0,
+            "end": 115,
+            "quote": "Not valid: naive same-SKU price discrimination (ethics/legal), unplanned peeking, uncorrected multiple comparisons."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "74afd9f9ebbaa50f5c55514b14a7929b096134632f9ef44a56cbf8872ad336aa",
+        "unit": {
+          "id": "2ad36b63381dbdea70e01cf5177ce24769663a223f6dad2d58c749ddbdc28ed3",
+          "kind": "action",
+          "title": "Capture the curated Tier 1-2 sources",
+          "claim": {
+            "text": "The source lists must-capture sources rated Tier 1-2.",
+            "quote": "Must-capture sources (Tier 1-2)"
+          },
+          "action": {
+            "text": "Capture the Tier 1-2 sources listed.",
+            "quote": "Must-capture sources (Tier 1-2)"
+          },
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "The passage lists multiple sources with topic codes and reasons; the list may not be exhaustive."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:155/paragraph",
+            "start": 0,
+            "end": 31,
+            "quote": "Must-capture sources (Tier 1-2)"
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:155/paragraph",
+            "start": 0,
+            "end": 31,
+            "quote": "Must-capture sources (Tier 1-2)"
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "746faa09680530c1779059cf20d4dc90b848f7c475d3f7b32edb9b409b1cfafc",
+        "unit": {
+          "id": "fe9708739c155e594c2092a050277d515cec21d26bf35e82ce3222fe6374145c",
+          "kind": "unresolved_claim",
+          "title": "Benchmark win rates are reported with their source and sample",
+          "claim": {
+            "text": "The source presents win rates as the share of tests that produce a statistically significant winner, each with its source and sample.",
+            "quote": "Win rates (share of tests that produce a statistically significant winner), each with its source and sample:"
+          },
+          "action": null,
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "The source does not state whether the listed win rates are directly comparable across sources."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:123/paragraph",
+            "start": 0,
+            "end": 108,
+            "quote": "Win rates (share of tests that produce a statistically significant winner), each with its source and sample:"
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "5bb27dea4a2bdf2147c66fa88844973a99dc7f61468e49c4cfc7f95800085a01",
+        "unit": {
+          "id": "c9424bdecc402e0961c0be5c27ea3b6f480c937edc943a516f8ab7f38f8cdc66",
+          "kind": "example",
+          "title": "Base-rate adjustment for significant wins",
+          "claim": {
+            "text": "If only 10% of ideas truly work and testing at 80% power, roughly 1 in 5 significant wins is a false positive.",
+            "quote": "If only 10% of your ideas truly work and you test at 80% power, roughly 1 in 5 of your significant wins is a false positive (nishbhana.com, applying Bayes to your own win rate)."
+          },
+          "action": null,
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "The source does not state how to estimate the proportion of true ideas in a given programme."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:119/paragraph",
+            "start": 144,
+            "end": 321,
+            "quote": "If only 10% of your ideas truly work and you test at 80% power, roughly 1 in 5 of your significant wins is a false positive (nishbhana.com, applying Bayes to your own win rate)."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "f6e95bf274c9b35331962d79ac624e5657d021755f1801df2237def56d1e259c",
+        "unit": {
+          "id": "1bce0471b314f104380f669bfd3a05ae975f72bfe141267e5b467109e3b189de",
+          "kind": "action",
+          "title": "Do not extend inconclusive tests; ship or move on",
+          "claim": {
+            "text": "A fully-powered inconclusive test should not be extended hoping for significance; ship neither or the cheaper/simpler version.",
+            "quote": "Do not extend it hoping for significance (that is peeking). Ship neither, or ship the cheaper/simpler version, and move on."
+          },
+          "action": {
+            "text": "Do not extend it hoping for significance (that is peeking). Ship neither, or ship the cheaper/simpler version, and move on.",
+            "quote": "Do not extend it hoping for significance (that is peeking). Ship neither, or ship the cheaper/simpler version, and move on."
+          },
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "A fully-powered test ends inconclusive.",
+                "quote": "A fully-powered test that ends inconclusive"
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [
+            {
+              "text": "Ship neither, or ship the cheaper/simpler version, and move on.",
+              "quote": "Ship neither, or ship the cheaper/simpler version, and move on."
+            }
+          ],
+          "unknowns": [],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:120/paragraph",
+            "start": 139,
+            "end": 262,
+            "quote": "Do not extend it hoping for significance (that is peeking). Ship neither, or ship the cheaper/simpler version, and move on."
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:120/paragraph",
+            "start": 139,
+            "end": 262,
+            "quote": "Do not extend it hoping for significance (that is peeking). Ship neither, or ship the cheaper/simpler version, and move on."
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:120/paragraph",
+            "start": 20,
+            "end": 63,
+            "quote": "A fully-powered test that ends inconclusive"
+          },
+          {
+            "field": "completion.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:120/paragraph",
+            "start": 199,
+            "end": 262,
+            "quote": "Ship neither, or ship the cheaper/simpler version, and move on."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "631a6f4b87757893e2c6cbbbd78bc90684ceff8bc95af7bbab9f1228e356acb8",
+        "unit": {
+          "id": "4c0513f6ba0067bfba95711afef55f69f094532d8ec53bb1badcd2940e4f10d4",
+          "kind": "action",
+          "title": "Use sequential or always-valid engines to monitor without peeking penalties",
+          "claim": {
+            "text": "In Band 3, sequential/always-valid engines can be used so monitoring does not incur peeking penalties.",
+            "quote": "Sequential/always-valid engines (Statsig, GrowthBook, Eppo, Optimizely) so you can monitor without peeking penalties."
+          },
+          "action": {
+            "text": "Use sequential/always-valid engines (Statsig, GrowthBook, Eppo, Optimizely) so you can monitor without peeking penalties.",
+            "quote": "Sequential/always-valid engines (Statsig, GrowthBook, Eppo, Optimizely) so you can monitor without peeking penalties."
+          },
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "Monthly order volume is 300 to 3,000 orders/month.",
+                "quote": "Band 3: 300 to 3,000 orders/month"
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": [
+              {
+                "text": "DTC ecommerce, roughly 2-3% site conversion rate, mostly new/anonymous traffic.",
+                "quote": "DTC ecommerce, roughly 2-3% site conversion rate, mostly new/anonymous traffic."
+              }
+            ]
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "The source does not specify which engine to choose or how to configure it."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:142/paragraph",
+            "start": 182,
+            "end": 299,
+            "quote": "Sequential/always-valid engines (Statsig, GrowthBook, Eppo, Optimizely) so you can monitor without peeking penalties."
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:142/paragraph",
+            "start": 182,
+            "end": 299,
+            "quote": "Sequential/always-valid engines (Statsig, GrowthBook, Eppo, Optimizely) so you can monitor without peeking penalties."
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:141/paragraph",
+            "start": 0,
+            "end": 33,
+            "quote": "Band 3: 300 to 3,000 orders/month"
+          },
+          {
+            "field": "prerequisites.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:132/paragraph",
+            "start": 13,
+            "end": 92,
+            "quote": "DTC ecommerce, roughly 2-3% site conversion rate, mostly new/anonymous traffic."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "d653da980c6985412bb53812fa6472e503cc84399ff615440234e91e05f7f279",
+        "unit": {
+          "id": "5ff1e45046d653e659f7bb9190f07e4b3f5166d183c20fd734f0d37d6af32b44",
+          "kind": "action",
+          "title": "Band 1 under 30 orders/month: avoid statistical tests; repair and research",
+          "claim": {
+            "text": "Under 30 orders/month, any A/B test, A/B/n, bandits, or before/after with statistical claims is not valid because even a 30% lift cannot be powered (about 120+ conversions per variant needed).",
+            "quote": "Not valid: any A/B test, A/B/n, bandits, or before/after with statistical claims. You cannot power even a 30% lift in a reasonable window (about 120+ conversions per variant needed)."
+          },
+          "action": {
+            "text": "Fix what is broken, apply proven LPG/checkout best practices without testing, build the research habit and an experiment log, and interview customers.",
+            "quote": "Do instead: fix what is broken, apply proven LPG/checkout best practices without testing, build the research habit and an experiment log. Interview customers."
+          },
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "Monthly order volume is under 30 orders/month.",
+                "quote": "Band 1: under 30 orders/month"
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": [
+              {
+                "text": "DTC ecommerce, roughly 2-3% site conversion rate, mostly new/anonymous traffic.",
+                "quote": "DTC ecommerce, roughly 2-3% site conversion rate, mostly new/anonymous traffic."
+              }
+            ]
+          },
+          "exclusions": {
+            "op": "any",
+            "args": [
+              {
+                "text": "Any A/B test, A/B/n, bandits, or before/after with statistical claims.",
+                "quote": "Not valid: any A/B test, A/B/n, bandits, or before/after with statistical claims."
+              }
+            ]
+          },
+          "completion": [],
+          "unknowns": [
+            "The source does not define which fixes are 'broken' or what constitutes 'proven LPG/checkout best practices'."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:135/paragraph",
+            "start": 0,
+            "end": 182,
+            "quote": "Not valid: any A/B test, A/B/n, bandits, or before/after with statistical claims. You cannot power even a 30% lift in a reasonable window (about 120+ conversions per variant needed)."
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:136/paragraph",
+            "start": 0,
+            "end": 158,
+            "quote": "Do instead: fix what is broken, apply proven LPG/checkout best practices without testing, build the research habit and an experiment log. Interview customers."
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:133/paragraph",
+            "start": 0,
+            "end": 29,
+            "quote": "Band 1: under 30 orders/month"
+          },
+          {
+            "field": "prerequisites.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:132/paragraph",
+            "start": 13,
+            "end": 92,
+            "quote": "DTC ecommerce, roughly 2-3% site conversion rate, mostly new/anonymous traffic."
+          },
+          {
+            "field": "exclusions.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:135/paragraph",
+            "start": 0,
+            "end": 81,
+            "quote": "Not valid: any A/B test, A/B/n, bandits, or before/after with statistical claims."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "0118666b96f21152cfaf00c9f6d6e0d5ff2fc05dd90194b120cb5292641d146f",
+        "unit": {
+          "id": "f703f3e0d3def85cda13cd5ca3f83f83e1f829573c132b7cd3e433b3c29aefa2",
+          "kind": "action",
+          "title": "Band 2 30-300 orders/month: avoid tweak tests and some designs; run one big test",
+          "claim": {
+            "text": "At 30-300 orders/month, tweak tests needing small MDE, A/B/n, revenue-per-visitor as primary, and same-SKU price A/B tests are not valid.",
+            "quote": "Not valid: tweak tests (button colour, minor copy) that need a small MDE; A/B/n; revenue-per-visitor as primary metric (needs about 6x traffic); price A/B tests on the same SKU."
+          },
+          "action": {
+            "text": "Do one big test at a time, research-heavy; use a sample-size calculator before every test; accept that most months you learn from research, not from a powered test.",
+            "quote": "Do instead: one big test at a time, research-heavy. Use a sample-size calculator before every test. Accept that most months you learn from research, not from a powered test."
+          },
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "Monthly order volume is 30 to 300 orders/month.",
+                "quote": "Band 2: 30 to 300 orders/month"
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": [
+              {
+                "text": "DTC ecommerce, roughly 2-3% site conversion rate, mostly new/anonymous traffic.",
+                "quote": "DTC ecommerce, roughly 2-3% site conversion rate, mostly new/anonymous traffic."
+              }
+            ]
+          },
+          "exclusions": {
+            "op": "any",
+            "args": [
+              {
+                "text": "Tweak tests (button colour, minor copy) that need a small MDE; A/B/n; revenue-per-visitor as primary metric (needs about 6x traffic); price A/B tests on the same SKU.",
+                "quote": "Not valid: tweak tests (button colour, minor copy) that need a small MDE; A/B/n; revenue-per-visitor as primary metric (needs about 6x traffic); price A/B tests on the same SKU."
+              }
+            ]
+          },
+          "completion": [],
+          "unknowns": [
+            "The source does not specify which highest-traffic page to choose."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:139/paragraph",
+            "start": 0,
+            "end": 177,
+            "quote": "Not valid: tweak tests (button colour, minor copy) that need a small MDE; A/B/n; revenue-per-visitor as primary metric (needs about 6x traffic); price A/B tests on the same SKU."
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:140/paragraph",
+            "start": 0,
+            "end": 173,
+            "quote": "Do instead: one big test at a time, research-heavy. Use a sample-size calculator before every test. Accept that most months you learn from research, not from a powered test."
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:137/paragraph",
+            "start": 0,
+            "end": 30,
+            "quote": "Band 2: 30 to 300 orders/month"
+          },
+          {
+            "field": "prerequisites.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:132/paragraph",
+            "start": 13,
+            "end": 92,
+            "quote": "DTC ecommerce, roughly 2-3% site conversion rate, mostly new/anonymous traffic."
+          },
+          {
+            "field": "exclusions.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:139/paragraph",
+            "start": 0,
+            "end": 177,
+            "quote": "Not valid: tweak tests (button colour, minor copy) that need a small MDE; A/B/n; revenue-per-visitor as primary metric (needs about 6x traffic); price A/B tests on the same SKU."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "296f4e975c28fb69441b4d4c00bad5ed8a29efa10dbf0b946ddb499b0ef22765",
+        "unit": {
+          "id": "b977bf0bd28eaaff56d0f52e3cd4f9050d10ffe1f582c63b6da2630e9fddd7a7",
+          "kind": "action",
+          "title": "Band 3 300-3,000 orders/month: borderline methods, invalid tests, and backlog discipline",
+          "claim": {
+            "text": "At 300-3,000 orders/month, revenue-per-visitor as primary is borderline, A/B/n with only 2-3 arms and CUPED with returning identified users are borderline; detecting sub-5% lifts, many simultaneous variants, and same-SKU price tests are not valid.",
+            "quote": "Borderline: revenue-per-visitor as primary (still under-powered unless near the top of the band); A/B/n with only 2-3 arms; CUPED if you have returning identified users.\n\nNot valid: detecting sub-5% lifts; many simultaneous variants; same-SKU price tests."
+          },
+          "action": {
+            "text": "Build a prioritised backlog (PXL or profit-weighted), run one to a few tests, and keep a disciplined experiment log.",
+            "quote": "Do instead: build a prioritised backlog (PXL or profit-weighted), one to a few tests running, disciplined experiment log."
+          },
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "Monthly order volume is 300 to 3,000 orders/month.",
+                "quote": "Band 3: 300 to 3,000 orders/month"
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": [
+              {
+                "text": "DTC ecommerce, roughly 2-3% site conversion rate, mostly new/anonymous traffic.",
+                "quote": "DTC ecommerce, roughly 2-3% site conversion rate, mostly new/anonymous traffic."
+              }
+            ]
+          },
+          "exclusions": {
+            "op": "any",
+            "args": [
+              {
+                "text": "Detecting sub-5% lifts; many simultaneous variants; same-SKU price tests.",
+                "quote": "Not valid: detecting sub-5% lifts; many simultaneous variants; same-SKU price tests."
+              }
+            ]
+          },
+          "completion": [],
+          "unknowns": [
+            "The source does not define PXL or profit-weighted backlog."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:143/paragraph",
+            "start": 0,
+            "end": 169,
+            "quote": "Borderline: revenue-per-visitor as primary (still under-powered unless near the top of the band); A/B/n with only 2-3 arms; CUPED if you have returning identified users."
+          },
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:144/paragraph",
+            "start": 0,
+            "end": 84,
+            "quote": "Not valid: detecting sub-5% lifts; many simultaneous variants; same-SKU price tests."
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:145/paragraph",
+            "start": 0,
+            "end": 121,
+            "quote": "Do instead: build a prioritised backlog (PXL or profit-weighted), one to a few tests running, disciplined experiment log."
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:141/paragraph",
+            "start": 0,
+            "end": 33,
+            "quote": "Band 3: 300 to 3,000 orders/month"
+          },
+          {
+            "field": "prerequisites.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:132/paragraph",
+            "start": 13,
+            "end": 92,
+            "quote": "DTC ecommerce, roughly 2-3% site conversion rate, mostly new/anonymous traffic."
+          },
+          {
+            "field": "exclusions.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:144/paragraph",
+            "start": 0,
+            "end": 84,
+            "quote": "Not valid: detecting sub-5% lifts; many simultaneous variants; same-SKU price tests."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "f980c0501ccde7a924d9a4ebd8f6dcdeec98066ad5077a17560d2f3b8323a26c",
+        "unit": {
+          "id": "59b108f81d114fb5d8f3af590230767f1d93d51f9298a3aec77f3123b48fbf10",
+          "kind": "action",
+          "title": "Band 4 3,000-20,000 orders/month: remaining invalid tests and programme operation",
+          "claim": {
+            "text": "At 3,000-20,000 orders/month, sub-2-3% lifts still cannot be reliably detected without long runtimes, and same-SKU price discrimination is still to be avoided.",
+            "quote": "Not valid: still cannot reliably detect sub-2-3% lifts without long runtimes; still avoid same-SKU price discrimination."
+          },
+          "action": {
+            "text": "Run a proper experimentation programme, server-side for checkout/pricing logic (Plus), hybrid A/B + bandit, formal guardrails and stopping rules.",
+            "quote": "Do instead: run a proper experimentation programme, server-side for checkout/pricing logic (Plus), hybrid A/B + bandit, formal guardrails and stopping rules."
+          },
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "Monthly order volume is 3,000 to 20,000 orders/month.",
+                "quote": "Band 4: 3,000 to 20,000 orders/month"
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": [
+              {
+                "text": "DTC ecommerce, roughly 2-3% site conversion rate, mostly new/anonymous traffic.",
+                "quote": "DTC ecommerce, roughly 2-3% site conversion rate, mostly new/anonymous traffic."
+              }
+            ]
+          },
+          "exclusions": {
+            "op": "any",
+            "args": [
+              {
+                "text": "Sub-2-3% lifts without long runtimes; same-SKU price discrimination.",
+                "quote": "Not valid: still cannot reliably detect sub-2-3% lifts without long runtimes; still avoid same-SKU price discrimination."
+              }
+            ]
+          },
+          "completion": [],
+          "unknowns": [
+            "The source does not define 'Plus' or 'formal guardrails'."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:148/paragraph",
+            "start": 0,
+            "end": 120,
+            "quote": "Not valid: still cannot reliably detect sub-2-3% lifts without long runtimes; still avoid same-SKU price discrimination."
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:149/paragraph",
+            "start": 0,
+            "end": 157,
+            "quote": "Do instead: run a proper experimentation programme, server-side for checkout/pricing logic (Plus), hybrid A/B + bandit, formal guardrails and stopping rules."
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:146/paragraph",
+            "start": 0,
+            "end": 36,
+            "quote": "Band 4: 3,000 to 20,000 orders/month"
+          },
+          {
+            "field": "prerequisites.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:132/paragraph",
+            "start": 13,
+            "end": 92,
+            "quote": "DTC ecommerce, roughly 2-3% site conversion rate, mostly new/anonymous traffic."
+          },
+          {
+            "field": "exclusions.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:148/paragraph",
+            "start": 0,
+            "end": 120,
+            "quote": "Not valid: still cannot reliably detect sub-2-3% lifts without long runtimes; still avoid same-SKU price discrimination."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "98300180afc3578bf589a9fea1e959373c080565a9e0232bc7090fa010501a30",
+        "unit": {
+          "id": "ead1909107c16581239101e455445347aa6929cbfa12d85bde15e309032cf336",
+          "kind": "action",
+          "title": "Band 5 20,000+ orders/month: invalid practices and full programme operation",
+          "claim": {
+            "text": "At 20,000+ orders/month, naive same-SKU price discrimination (ethics/legal), unplanned peeking, and uncorrected multiple comparisons are not valid.",
+            "quote": "Not valid: naive same-SKU price discrimination (ethics/legal), unplanned peeking, uncorrected multiple comparisons."
+          },
+          "action": {
+            "text": "Operate like Booking/Microsoft in miniature: institutional experiment log, replication of surprising results, A/A tests to validate the platform, culture that expects most tests to fail.",
+            "quote": "Do instead: operate like Booking/Microsoft in miniature: institutional experiment log, replication of surprising results, A/A tests to validate the platform, culture that expects most tests to fail."
+          },
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "Monthly order volume is 20,000+ orders/month.",
+                "quote": "Band 5: 20,000+ orders/month"
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": [
+              {
+                "text": "DTC ecommerce, roughly 2-3% site conversion rate, mostly new/anonymous traffic.",
+                "quote": "DTC ecommerce, roughly 2-3% site conversion rate, mostly new/anonymous traffic."
+              }
+            ]
+          },
+          "exclusions": {
+            "op": "any",
+            "args": [
+              {
+                "text": "Naive same-SKU price discrimination (ethics/legal), unplanned peeking, uncorrected multiple comparisons.",
+                "quote": "Not valid: naive same-SKU price discrimination (ethics/legal), unplanned peeking, uncorrected multiple comparisons."
+              }
+            ]
+          },
+          "completion": [],
+          "unknowns": [
+            "The source does not specify the FDR control method."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:152/paragraph",
+            "start": 0,
+            "end": 115,
+            "quote": "Not valid: naive same-SKU price discrimination (ethics/legal), unplanned peeking, uncorrected multiple comparisons."
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:153/paragraph",
+            "start": 0,
+            "end": 198,
+            "quote": "Do instead: operate like Booking/Microsoft in miniature: institutional experiment log, replication of surprising results, A/A tests to validate the platform, culture that expects most tests to fail."
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:150/paragraph",
+            "start": 0,
+            "end": 28,
+            "quote": "Band 5: 20,000+ orders/month"
+          },
+          {
+            "field": "prerequisites.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:132/paragraph",
+            "start": 13,
+            "end": 92,
+            "quote": "DTC ecommerce, roughly 2-3% site conversion rate, mostly new/anonymous traffic."
+          },
+          {
+            "field": "exclusions.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:152/paragraph",
+            "start": 0,
+            "end": 115,
+            "quote": "Not valid: naive same-SKU price discrimination (ethics/legal), unplanned peeking, uncorrected multiple comparisons."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "176228d9035f378efe09850953dadf4a019affed66b35c654d71d201618cfa87",
+        "unit": {
+          "id": "cb8c2ea467177e2f8d9010e08332954e05413a1a66ca61be8f8864e8d247ac98",
+          "kind": "example",
+          "title": "Published win-rate benchmarks across companies",
+          "claim": {
+            "text": "Google Ads, Booking.com, and Netflix show about 10% win rates; Airbnb Search about 8%; Thomke and Ghosh's meta-analysis of about 20,000 Optimizely experiments found just 10% significant uplift; Optimizely's 127,000 experiments found 12% win on primary metric, with clients averaging about 20% across all experiments but only 10% for revenue-tied tests and a 35-40% conclusive rate; VWO about 14% and CXL/Convert about 20%.",
+            "quote": "Google Ads, Booking.com, Netflix: about 10% (Manzi 2012; Thomke 2020).\n\nAirbnb Search: about 8% (Kohavi).\n\nHarvard's Stefan Thomke and Sourobh Ghosh, meta-analysis of about 20,000 anonymised Optimizely experiments across 1,000+ customers: \"just 10% of experiments had a statistically significant uplift for their primary metric\" (via Oliver Palmer).\n\nOptimizely's own analysis of 127,000 experiments across 1,100 companies found only 12% win on the primary metric; clients average about 20% across all experiments but only 10% for revenue-tied tests, with a 35-40% conclusive rate (Optimizely, \"Get more wins\"). Other platform-published win rates: VWO about 14%, CXL/Convert about 20%."
+          },
+          "action": null,
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "The source does not provide sample sizes for Google Ads, Booking.com, Netflix, Airbnb, or VWO/CXL benchmarks."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:125/paragraph",
+            "start": 0,
+            "end": 70,
+            "quote": "Google Ads, Booking.com, Netflix: about 10% (Manzi 2012; Thomke 2020)."
+          },
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:126/paragraph",
+            "start": 0,
+            "end": 33,
+            "quote": "Airbnb Search: about 8% (Kohavi)."
+          },
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:127/paragraph",
+            "start": 0,
+            "end": 242,
+            "quote": "Harvard's Stefan Thomke and Sourobh Ghosh, meta-analysis of about 20,000 anonymised Optimizely experiments across 1,000+ customers: \"just 10% of experiments had a statistically significant uplift for their primary metric\" (via Oliver Palmer)."
+          },
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:128/paragraph",
+            "start": 0,
+            "end": 334,
+            "quote": "Optimizely's own analysis of 127,000 experiments across 1,100 companies found only 12% win on the primary metric; clients average about 20% across all experiments but only 10% for revenue-tied tests, with a 35-40% conclusive rate (Optimizely, \"Get more wins\"). Other platform-published win rates: VWO about 14%, CXL/Convert about 20%."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "a4a1deb643188b2be5e4bdd0f075c3cfd637769558df3017f6134008b93aacd2",
+        "unit": {
+          "id": "3dc7699aebbe50e9970cfaca96f0f10c4c94ce60e29ef22885b529a8b969ee80",
+          "kind": "example",
+          "title": "DRIP ecommerce experiment database benchmarks",
+          "claim": {
+            "text": "DRIP reports 36.3% win rate, 22.1% loss, 41.6% inconclusive; decisive win rate 62.1%; median winner RPV uplift +2.77%, top quartile +5.21% or higher; higher than industry because DRIP pre-qualifies hypotheses with research.",
+            "quote": "DRIP ecommerce experiment database: 36.3% win rate, 22.1% loss, 41.6% inconclusive; decisive win rate (wins / (wins+losses)) 62.1%; median winner RPV uplift +2.77%, top quartile +5.21% or higher. Higher than industry because DRIP pre-qualifies hypotheses with research."
+          },
+          "action": null,
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "The source does not state the sample size for the DRIP database."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:129/paragraph",
+            "start": 0,
+            "end": 269,
+            "quote": "DRIP ecommerce experiment database: 36.3% win rate, 22.1% loss, 41.6% inconclusive; decisive win rate (wins / (wins+losses)) 62.1%; median winner RPV uplift +2.77%, top quartile +5.21% or higher. Higher than industry because DRIP pre-qualifies hypotheses with research."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "f7b90ce1660090aad31569b5950a6028a6a0a9641982ea985240101b9913d146",
+        "unit": {
+          "id": "c86717ed8219fe9b211184eb9726d4a3fe48f33400b1e4681d8f5954c2a3570f",
+          "kind": "example",
+          "title": "ConversionTeam audited test benchmarks",
+          "claim": {
+            "text": "ConversionTeam audited 2,288 tests: 19.1% statistically significant winners per test, 50.5% raw winners, 61.1% decisive.",
+            "quote": "ConversionTeam, 2,288 audited tests: 19.1% statistically significant winners per test, 50.5% raw winners, 61.1% decisive."
+          },
+          "action": null,
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:130/paragraph",
+            "start": 0,
+            "end": 121,
+            "quote": "ConversionTeam, 2,288 audited tests: 19.1% statistically significant winners per test, 50.5% raw winners, 61.1% decisive."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "f4eea1e8118f1cd78472dcb507e1e754233fa8d8e0f8272a67f049d7d10b7b7b",
+        "unit": {
+          "id": "b27c7648f72b867aa4a7f4157faf066faefcca5dfec72535d44fcc4cc5bfcb40",
+          "kind": "warning",
+          "title": "Peeking false-positive benchmark from Evan Miller",
+          "claim": {
+            "text": "Evan Miller provides a 26.1% peeking false-positive figure, a peek-count-to-required-significance table, and an n=16 sigma^2/delta^2 sample-size rule.",
+            "quote": "the 26.1% peeking false-positive figure, the peek-count-to-required-significance table, and the n=16 sigma^2/delta^2 sample-size rule."
+          },
+          "action": null,
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "The source does not reproduce the table or the exact conditions behind the 26.1% figure."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:157/paragraph",
+            "start": 156,
+            "end": 290,
+            "quote": "the 26.1% peeking false-positive figure, the peek-count-to-required-significance table, and the n=16 sigma^2/delta^2 sample-size rule."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "144aefae529f1a9ec98e272ff557ef5a998fbaf1963c0dc5da51a1fa74890238",
+        "unit": {
+          "id": "01d0e75393b7b8da52b2abb6916884d110d9e0574cb87736b330ccfdad99a9cc",
+          "kind": "warning",
+          "title": "Etsy peeking false-positive simulation",
+          "claim": {
+            "text": "Etsy engineering shows a false positive rate exceeding 50% after 500 observations under continuous checking at a 50% baseline and alpha 0.10, with a concrete simulation.",
+            "quote": "shows false positive rate exceeding 50% after 500 observations under continuous checking at a 50% baseline and alpha 0.10, with a concrete simulation."
+          },
+          "action": null,
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "The source does not provide the simulation code or full assumptions."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:165/paragraph",
+            "start": 188,
+            "end": 338,
+            "quote": "shows false positive rate exceeding 50% after 500 observations under continuous checking at a 50% baseline and alpha 0.10, with a concrete simulation."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "a78f6fa83df56971f3fa64de330ad22ee153c194e72ecdeadce302afaf8f4dfa",
+        "unit": {
+          "id": "f87e263249f4748d25d9a0ee3025f870bb17d205574379383686b49d7c648312",
+          "kind": "principle",
+          "title": "Spotify sequential framework choice: GST vs AVI",
+          "claim": {
+            "text": "Spotify states GST is more powerful when you can estimate sample size, while AVI is safer when you cannot.",
+            "quote": "states GST is more powerful when you can estimate sample size, AVI safer when you cannot."
+          },
+          "action": null,
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "The source does not define GST, AVI, or the full decision criteria."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:160/paragraph",
+            "start": 300,
+            "end": 389,
+            "quote": "states GST is more powerful when you can estimate sample size, AVI safer when you cannot."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "8c0666b6c2506ed59d6064c8d2a7095ac3cf9e214e868039e1a1b779577306a2",
+        "unit": {
+          "id": "3d966f29df227e0751db0c2982b32fae0460bee1ec9304b0b365af2fdbf35320",
+          "kind": "example",
+          "title": "Kohavi book coverage: SRM, OEC, Twyman's law, novelty/primacy, runtime",
+          "claim": {
+            "text": "The Kohavi book covers SRM at Microsoft ~6%, OEC, Twyman's law, novelty/primacy as external-validity threats, day-of-week runtime, from teams running 20,000+ experiments/year.",
+            "quote": "SRM at Microsoft ~6%, OEC, Twyman's law, novelty/primacy as external-validity threats, day-of-week runtime, from teams running 20,000+ experiments/year."
+          },
+          "action": null,
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "The source does not summarize the book's specific recommendations for each topic."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:156/paragraph",
+            "start": 230,
+            "end": 382,
+            "quote": "SRM at Microsoft ~6%, OEC, Twyman's law, novelty/primacy as external-validity threats, day-of-week runtime, from teams running 20,000+ experiments/year."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "b7176121b64e68ca9d27c663549af4429fe3679d628bb315b4057fea9c1c5ac3",
+        "unit": {
+          "id": "aafd995f3b84e6262337d9711c8cc787d2f76c8863614ff31105c7d2b059ae20",
+          "kind": "principle",
+          "title": "Experiment log builds institutional memory",
+          "claim": {
+            "text": "The experiment log builds institutional memory so the same losing idea is not re-run and surprising winners get replicated.",
+            "quote": "This builds institutional memory so the same losing idea is not re-run, and surprising winners get replicated."
+          },
+          "action": null,
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:121/paragraph",
+            "start": 229,
+            "end": 339,
+            "quote": "This builds institutional memory so the same losing idea is not re-run, and surprising winners get replicated."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "9d5016f4b80c4fedff0aea0710b4c1c4000c4f8ae6553555aaa8a3390b046b75",
+        "unit": {
+          "id": "964b00df11da06e41d0a377003db975c4583b21f0328699a9026b85b50f059da",
+          "kind": "action",
+          "title": "Use non-testing fixes and research under 30 orders/month",
+          "claim": {
+            "text": "The source recommends that in Band 1, instead of testing, fix what is broken, apply proven LPG/checkout best practices without testing, build the research habit and an experiment log, and interview customers.",
+            "quote": "Do instead: fix what is broken, apply proven LPG/checkout best practices without testing, build the research habit and an experiment log. Interview customers."
+          },
+          "action": {
+            "text": "Fix what is broken, apply proven LPG/checkout best practices without testing, build the research habit and an experiment log, and interview customers.",
+            "quote": "Do instead: fix what is broken, apply proven LPG/checkout best practices without testing, build the research habit and an experiment log. Interview customers."
+          },
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "The guide band is under 30 orders/month.",
+                "quote": "Band 1: under 30 orders/month"
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": [
+              {
+                "text": "DTC ecommerce, roughly 2-3% site conversion rate, mostly new/anonymous traffic.",
+                "quote": "DTC ecommerce, roughly 2-3% site conversion rate, mostly new/anonymous traffic."
+              }
+            ]
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "LPG is not defined in the supplied passage."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:136/paragraph",
+            "start": 0,
+            "end": 158,
+            "quote": "Do instead: fix what is broken, apply proven LPG/checkout best practices without testing, build the research habit and an experiment log. Interview customers."
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:136/paragraph",
+            "start": 0,
+            "end": 158,
+            "quote": "Do instead: fix what is broken, apply proven LPG/checkout best practices without testing, build the research habit and an experiment log. Interview customers."
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:133/paragraph",
+            "start": 0,
+            "end": 29,
+            "quote": "Band 1: under 30 orders/month"
+          },
+          {
+            "field": "prerequisites.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:132/paragraph",
+            "start": 13,
+            "end": 92,
+            "quote": "DTC ecommerce, roughly 2-3% site conversion rate, mostly new/anonymous traffic."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "2d696ece2a3911311d0646b22f608d110038509eae05b455cce56b94c1b6886e",
+        "unit": {
+          "id": "de87c545b2191db9bf6f980364487a5310fca7af58bcde2bab64338bef6123eb",
+          "kind": "action",
+          "title": "Run one big research-heavy test at a time and use a sample-size calculator",
+          "claim": {
+            "text": "The source recommends that in Band 2, do one big test at a time, research-heavy; use a sample-size calculator before every test; and accept that most months you learn from research, not from a powered test.",
+            "quote": "Do instead: one big test at a time, research-heavy. Use a sample-size calculator before every test. Accept that most months you learn from research, not from a powered test."
+          },
+          "action": {
+            "text": "Run one big test at a time, research-heavy; use a sample-size calculator before every test; and accept that most months you learn from research, not from a powered test.",
+            "quote": "Do instead: one big test at a time, research-heavy. Use a sample-size calculator before every test. Accept that most months you learn from research, not from a powered test."
+          },
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "The guide band is 30 to 300 orders/month.",
+                "quote": "Band 2: 30 to 300 orders/month"
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": [
+              {
+                "text": "DTC ecommerce, roughly 2-3% site conversion rate, mostly new/anonymous traffic.",
+                "quote": "DTC ecommerce, roughly 2-3% site conversion rate, mostly new/anonymous traffic."
+              }
+            ]
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "No specific sample-size calculator is named."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:140/paragraph",
+            "start": 0,
+            "end": 173,
+            "quote": "Do instead: one big test at a time, research-heavy. Use a sample-size calculator before every test. Accept that most months you learn from research, not from a powered test."
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:140/paragraph",
+            "start": 0,
+            "end": 173,
+            "quote": "Do instead: one big test at a time, research-heavy. Use a sample-size calculator before every test. Accept that most months you learn from research, not from a powered test."
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:137/paragraph",
+            "start": 0,
+            "end": 30,
+            "quote": "Band 2: 30 to 300 orders/month"
+          },
+          {
+            "field": "prerequisites.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:132/paragraph",
+            "start": 13,
+            "end": 92,
+            "quote": "DTC ecommerce, roughly 2-3% site conversion rate, mostly new/anonymous traffic."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "5c865bece3dae06f04c5039fe30981dd225d567166850b3bfcfb817363bd939d",
+        "unit": {
+          "id": "296825785ee0e89debf14f4028713ebdd4be8e621a1d4536be62252b48d0fcd0",
+          "kind": "action",
+          "title": "Build a prioritised testing backlog and disciplined log in Band 3",
+          "claim": {
+            "text": "The source recommends that in Band 3, do instead build a prioritised backlog (PXL or profit-weighted), keep one to a few tests running, and keep a disciplined experiment log.",
+            "quote": "Do instead: build a prioritised backlog (PXL or profit-weighted), one to a few tests running, disciplined experiment log."
+          },
+          "action": {
+            "text": "Build a prioritised backlog (PXL or profit-weighted), keep one to a few tests running, and keep a disciplined experiment log.",
+            "quote": "Do instead: build a prioritised backlog (PXL or profit-weighted), one to a few tests running, disciplined experiment log."
+          },
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "The guide band is 300 to 3,000 orders/month.",
+                "quote": "Band 3: 300 to 3,000 orders/month"
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": [
+              {
+                "text": "DTC ecommerce, roughly 2-3% site conversion rate, mostly new/anonymous traffic.",
+                "quote": "DTC ecommerce, roughly 2-3% site conversion rate, mostly new/anonymous traffic."
+              }
+            ]
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "PXL is not defined in the supplied passage.",
+            "profit-weighted is not defined in the supplied passage."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:145/paragraph",
+            "start": 0,
+            "end": 121,
+            "quote": "Do instead: build a prioritised backlog (PXL or profit-weighted), one to a few tests running, disciplined experiment log."
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:145/paragraph",
+            "start": 0,
+            "end": 121,
+            "quote": "Do instead: build a prioritised backlog (PXL or profit-weighted), one to a few tests running, disciplined experiment log."
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:141/paragraph",
+            "start": 0,
+            "end": 33,
+            "quote": "Band 3: 300 to 3,000 orders/month"
+          },
+          {
+            "field": "prerequisites.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:132/paragraph",
+            "start": 13,
+            "end": 92,
+            "quote": "DTC ecommerce, roughly 2-3% site conversion rate, mostly new/anonymous traffic."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "ad218798b973d5b8f410493c3eeb6c8808876ef4cb15ddde6c6342b5edcd65f4",
+        "unit": {
+          "id": "4bb1738b7f0f6a11574399933b20a3c4106cf138aa88a57c910fb6df48a8701e",
+          "kind": "action",
+          "title": "Run a proper experimentation programme with server-side logic in Band 4",
+          "claim": {
+            "text": "The source recommends that in Band 4, do instead run a proper experimentation programme, server-side for checkout/pricing logic (Plus), hybrid A/B + bandit, with formal guardrails and stopping rules.",
+            "quote": "Do instead: run a proper experimentation programme, server-side for checkout/pricing logic (Plus), hybrid A/B + bandit, formal guardrails and stopping rules."
+          },
+          "action": {
+            "text": "Run a proper experimentation programme, server-side for checkout/pricing logic (Plus), hybrid A/B + bandit, with formal guardrails and stopping rules.",
+            "quote": "Do instead: run a proper experimentation programme, server-side for checkout/pricing logic (Plus), hybrid A/B + bandit, formal guardrails and stopping rules."
+          },
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "The guide band is 3,000 to 20,000 orders/month.",
+                "quote": "Band 4: 3,000 to 20,000 orders/month"
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": [
+              {
+                "text": "DTC ecommerce, roughly 2-3% site conversion rate, mostly new/anonymous traffic.",
+                "quote": "DTC ecommerce, roughly 2-3% site conversion rate, mostly new/anonymous traffic."
+              }
+            ]
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "Plus is not defined in the supplied passage."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:149/paragraph",
+            "start": 0,
+            "end": 157,
+            "quote": "Do instead: run a proper experimentation programme, server-side for checkout/pricing logic (Plus), hybrid A/B + bandit, formal guardrails and stopping rules."
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:149/paragraph",
+            "start": 0,
+            "end": 157,
+            "quote": "Do instead: run a proper experimentation programme, server-side for checkout/pricing logic (Plus), hybrid A/B + bandit, formal guardrails and stopping rules."
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:146/paragraph",
+            "start": 0,
+            "end": 36,
+            "quote": "Band 4: 3,000 to 20,000 orders/month"
+          },
+          {
+            "field": "prerequisites.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:132/paragraph",
+            "start": 13,
+            "end": 92,
+            "quote": "DTC ecommerce, roughly 2-3% site conversion rate, mostly new/anonymous traffic."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "509a9c8aa919a39cec23d25285f7e2f09a929ea93a1356a6db899d9929a7abe8",
+        "unit": {
+          "id": "a4cabac15c3bdc823813bc7c31e478f0a6fae9e8620178e93b6ac578d94a9fb4",
+          "kind": "action",
+          "title": "Operate an experimentation programme like Booking/Microsoft in miniature",
+          "claim": {
+            "text": "The source recommends that in Band 5, do instead operate like Booking/Microsoft in miniature: institutional experiment log, replication of surprising results, A/A tests to validate the platform, and a culture that expects most tests to fail.",
+            "quote": "Do instead: operate like Booking/Microsoft in miniature: institutional experiment log, replication of surprising results, A/A tests to validate the platform, culture that expects most tests to fail."
+          },
+          "action": {
+            "text": "Operate like Booking/Microsoft in miniature: institutional experiment log, replication of surprising results, A/A tests to validate the platform, and a culture that expects most tests to fail.",
+            "quote": "Do instead: operate like Booking/Microsoft in miniature: institutional experiment log, replication of surprising results, A/A tests to validate the platform, culture that expects most tests to fail."
+          },
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "The guide band is 20,000+ orders/month.",
+                "quote": "Band 5: 20,000+ orders/month"
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": [
+              {
+                "text": "DTC ecommerce, roughly 2-3% site conversion rate, mostly new/anonymous traffic.",
+                "quote": "DTC ecommerce, roughly 2-3% site conversion rate, mostly new/anonymous traffic."
+              }
+            ]
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:153/paragraph",
+            "start": 0,
+            "end": 198,
+            "quote": "Do instead: operate like Booking/Microsoft in miniature: institutional experiment log, replication of surprising results, A/A tests to validate the platform, culture that expects most tests to fail."
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:153/paragraph",
+            "start": 0,
+            "end": 198,
+            "quote": "Do instead: operate like Booking/Microsoft in miniature: institutional experiment log, replication of surprising results, A/A tests to validate the platform, culture that expects most tests to fail."
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:150/paragraph",
+            "start": 0,
+            "end": 28,
+            "quote": "Band 5: 20,000+ orders/month"
+          },
+          {
+            "field": "prerequisites.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:132/paragraph",
+            "start": 13,
+            "end": 92,
+            "quote": "DTC ecommerce, roughly 2-3% site conversion rate, mostly new/anonymous traffic."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "21872beba23343c37c9ba91d4a5f61f06708282803e64eef4f158b3a9fc20454",
+        "unit": {
+          "id": "0ed53a9537813338f3859b3616cfb9ddb6f2dd0ad596341aadbc82c92c702663",
+          "kind": "principle",
+          "title": "At scale, avoiding self-deception is the bottleneck",
+          "claim": {
+            "text": "The source states that at Booking.com scale (1,000+ concurrent experiments), the bottleneck is not running tests but not fooling yourself with them.",
+            "quote": "At Booking.com scale (1,000+ concurrent experiments) the bottleneck is not running tests but not fooling yourself with them."
+          },
+          "action": null,
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "At Booking.com scale with 1,000+ concurrent experiments.",
+                "quote": "1,000+ concurrent experiments"
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:121/paragraph",
+            "start": 340,
+            "end": 464,
+            "quote": "At Booking.com scale (1,000+ concurrent experiments) the bottleneck is not running tests but not fooling yourself with them."
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:121/paragraph",
+            "start": 362,
+            "end": 391,
+            "quote": "1,000+ concurrent experiments"
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "a1b8b895467acf0ab9858d1ec280b8d5d46e6fcca4397d26a139011ed9960c47",
+        "unit": {
+          "id": "78657ce0daa2af793b35524fab39f13643a3a7af08038818bcd90e3b27d4fbf1",
+          "kind": "action",
+          "title": "Include Simple Sequential A/B Testing as a must-capture source",
+          "claim": {
+            "text": "The source lists Simple Sequential A/B Testing as a Tier 2 must-capture source, with the reason that it gives a hand-computable sequential stopping procedure for low-conversion settings that ignores failure counts.",
+            "quote": "Why: a hand-computable sequential stopping procedure for low-conversion settings that ignores failure counts."
+          },
+          "action": {
+            "text": "Capture or consult Simple Sequential A/B Testing for low-conversion sequential stopping.",
+            "quote": "Why: a hand-computable sequential stopping procedure for low-conversion settings that ignores failure counts."
+          },
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "When handling low-conversion settings.",
+                "quote": "low-conversion settings"
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:158/paragraph",
+            "start": 152,
+            "end": 261,
+            "quote": "Why: a hand-computable sequential stopping procedure for low-conversion settings that ignores failure counts."
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:158/paragraph",
+            "start": 152,
+            "end": 261,
+            "quote": "Why: a hand-computable sequential stopping procedure for low-conversion settings that ignores failure counts."
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:158/paragraph",
+            "start": 209,
+            "end": 232,
+            "quote": "low-conversion settings"
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "c5d674905387da91b6dd927afe78c3a6d9cb6b7e1d97c122d9f6cec513075597",
+        "unit": {
+          "id": "26f4abf58c6262a52ba62ae6cf6b1c69f22d93d83e57ef6cf21d798ad2a7a5d9",
+          "kind": "action",
+          "title": "Include Always Valid Inference as a must-capture source",
+          "claim": {
+            "text": "The source lists Always Valid Inference as a Tier 2 must-capture source, with the reason that it presents the mSPRT method behind Optimizely/Netflix/Amplitude always-valid p-values and the peeking-safe alternative to fixed horizons.",
+            "quote": "Why: the mSPRT method behind Optimizely/Netflix/Amplitude always-valid p-values; the peeking-safe alternative to fixed horizons."
+          },
+          "action": {
+            "text": "Capture or consult Always Valid Inference for the mSPRT always-valid p-value method and its peeking-safe alternative to fixed horizons.",
+            "quote": "Why: the mSPRT method behind Optimizely/Netflix/Amplitude always-valid p-values; the peeking-safe alternative to fixed horizons."
+          },
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "When needing always-valid p-values or a peeking-safe alternative to fixed horizons.",
+                "quote": "always-valid p-values"
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "mSPRT is not defined in the supplied passage."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:159/paragraph",
+            "start": 197,
+            "end": 325,
+            "quote": "Why: the mSPRT method behind Optimizely/Netflix/Amplitude always-valid p-values; the peeking-safe alternative to fixed horizons."
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:159/paragraph",
+            "start": 197,
+            "end": 325,
+            "quote": "Why: the mSPRT method behind Optimizely/Netflix/Amplitude always-valid p-values; the peeking-safe alternative to fixed horizons."
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:159/paragraph",
+            "start": 255,
+            "end": 276,
+            "quote": "always-valid p-values"
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "8e97506c6e253bd16e73e8c2be5001533ef3d749134b012c200bbfae82032c60",
+        "unit": {
+          "id": "e3fde62e478127774305bb2e97830cd2ec10bdfda452549f2d32c299c9f38322",
+          "kind": "action",
+          "title": "Include the original CUPED paper as a must-capture source",
+          "claim": {
+            "text": "The source lists Improving the Sensitivity of Online Controlled Experiments by Utilizing Pre-Experiment Data (CUPED) as a Tier 2 must-capture source, with the reason that it is the original CUPED paper and covers variance reduction using pre-period covariates.",
+            "quote": "Why: the original CUPED paper; variance reduction using pre-period covariates."
+          },
+          "action": {
+            "text": "Capture or consult the original CUPED paper for variance reduction using pre-period covariates.",
+            "quote": "Why: the original CUPED paper; variance reduction using pre-period covariates."
+          },
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "When needing variance reduction using pre-period covariates.",
+                "quote": "variance reduction using pre-period covariates"
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:161/paragraph",
+            "start": 168,
+            "end": 246,
+            "quote": "Why: the original CUPED paper; variance reduction using pre-period covariates."
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:161/paragraph",
+            "start": 168,
+            "end": 246,
+            "quote": "Why: the original CUPED paper; variance reduction using pre-period covariates."
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:161/paragraph",
+            "start": 199,
+            "end": 245,
+            "quote": "variance reduction using pre-period covariates"
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "72388fa436928e7b8e16af6336bdf510092fa09496a36eea83ad3cc3c24ae3e8",
+        "unit": {
+          "id": "11c0798eb8a140994415216a8439558032f8c0d676978acb684a075c2dfeec5c",
+          "kind": "action",
+          "title": "Include Seven Rules of Thumb for Web Site Experimenters as a must-capture source",
+          "claim": {
+            "text": "The source lists Seven Rules of Thumb for Web Site Experimenters as a Tier 2 must-capture source, with the reason that it gives concrete rules on power, runtime, and trust from large-sample practice.",
+            "quote": "Why: concrete rules on power, runtime, and trust from large-sample practice."
+          },
+          "action": {
+            "text": "Capture or consult Seven Rules of Thumb for Web Site Experimenters for concrete rules on power, runtime, and trust.",
+            "quote": "Why: concrete rules on power, runtime, and trust from large-sample practice."
+          },
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "When needing concrete rules on power, runtime, and trust.",
+                "quote": "concrete rules on power, runtime, and trust"
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:162/paragraph",
+            "start": 191,
+            "end": 267,
+            "quote": "Why: concrete rules on power, runtime, and trust from large-sample practice."
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:162/paragraph",
+            "start": 191,
+            "end": 267,
+            "quote": "Why: concrete rules on power, runtime, and trust from large-sample practice."
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:162/paragraph",
+            "start": 196,
+            "end": 239,
+            "quote": "concrete rules on power, runtime, and trust"
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "66ebe009afd1b8e0d32a0b8deb5fa503746e808f35cd8466c94d40567af605f6",
+        "unit": {
+          "id": "003a0d4d2142830d8d169766f44bbc56a86a8c9d7bb8a9ac932c6f0020144db0",
+          "kind": "warning",
+          "title": "Suspect novelty/primacy trends as artifacts, and treat test extension carefully",
+          "claim": {
+            "text": "The source cites Five Puzzling Outcomes Explained for showing that most suspected novelty/primacy trends are statistical artifacts, and for explaining when extending a test does and does not help.",
+            "quote": "Why: shows most suspected novelty/primacy trends are statistical artifacts, and when extending a test does and does not help."
+          },
+          "action": null,
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "When suspecting novelty/primacy trends or considering extending a test.",
+                "quote": "novelty/primacy trends"
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:163/paragraph",
+            "start": 201,
+            "end": 326,
+            "quote": "Why: shows most suspected novelty/primacy trends are statistical artifacts, and when extending a test does and does not help."
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:163/paragraph",
+            "start": 227,
+            "end": 249,
+            "quote": "novelty/primacy trends"
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "10832c908e33da8bbc33b467cebe095550052c633f59d20d118cc093f2eafe78",
+        "unit": {
+          "id": "d650ad7efedfbdf7ea89f01bcdb74371c23b354c05d1654e2d0532888b970114",
+          "kind": "action",
+          "title": "Include Peeking at A/B Tests as a must-capture source",
+          "claim": {
+            "text": "The source lists Peeking at A/B Tests as a Tier 2 must-capture source, with the reason that it gives a formal treatment of the peeking problem and always-valid fix.",
+            "quote": "Why: formal treatment of the peeking problem and always-valid fix."
+          },
+          "action": {
+            "text": "Capture or consult Peeking at A/B Tests for the formal treatment of the peeking problem and the always-valid fix.",
+            "quote": "Why: formal treatment of the peeking problem and always-valid fix."
+          },
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "When addressing peeking in A/B tests.",
+                "quote": "peeking problem"
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:164/paragraph",
+            "start": 164,
+            "end": 230,
+            "quote": "Why: formal treatment of the peeking problem and always-valid fix."
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:164/paragraph",
+            "start": 164,
+            "end": 230,
+            "quote": "Why: formal treatment of the peeking problem and always-valid fix."
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:164/paragraph",
+            "start": 193,
+            "end": 208,
+            "quote": "peeking problem"
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "bb5a189a8d3767c928a2d290725352d6786e2e0a95cb884612c70b129121b863",
+        "unit": {
+          "id": "794d2f2b97d9857c131ba753c22b0236527689a3efddbba87d19733a8d02e841",
+          "kind": "principle",
+          "title": "Spotify article maps sequential testing tools to methods",
+          "claim": {
+            "text": "The source cites Spotify Engineering's Choosing a Sequential Testing Framework as mapping which real tool uses which method (GST/mSPRT/GAVI/CAA) and stating that GST is more powerful when sample size can be estimated while AVI is safer when it cannot.",
+            "quote": "Why: maps which real tool uses which method (GST/mSPRT/GAVI/CAA) and states GST is more powerful when you can estimate sample size, AVI safer when you cannot."
+          },
+          "action": null,
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "When choosing a sequential testing framework.",
+                "quote": "Choosing a Sequential Testing Framework"
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "GST, mSPRT, GAVI, CAA, and AVI are not defined in the supplied passage."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:160/paragraph",
+            "start": 231,
+            "end": 389,
+            "quote": "Why: maps which real tool uses which method (GST/mSPRT/GAVI/CAA) and states GST is more powerful when you can estimate sample size, AVI safer when you cannot."
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:160/paragraph",
+            "start": 0,
+            "end": 39,
+            "quote": "Choosing a Sequential Testing Framework"
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "92bc44f0d01380427a75c9b84f7c2711c48dd3895d116de57931a34d5c8beb7b",
+        "unit": {
+          "id": "3e1b1be8106d6f8b85dbddf97c6fc9fff85caaa2ae16819050fb75c98b971bbb",
+          "kind": "example",
+          "title": "Microsoft and Bing win-rate benchmarks are reported as 33% and 15%",
+          "claim": {
+            "text": "The source reports Microsoft 33% success and Bing 15% (Kohavi, Crook, Longbotham 2009 / Kohavi, Deng, Longbotham 2014).",
+            "quote": "Microsoft 33% success, Bing 15% (Kohavi, Crook, Longbotham 2009 / Kohavi, Deng, Longbotham 2014)."
+          },
+          "action": null,
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "No sample sizes or denominators are stated for the 33% and 15% figures beyond the citations.",
+            "An earlier sentence says Bing 10-20%, while this sentence says Bing 15%."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:124/paragraph",
+            "start": 120,
+            "end": 217,
+            "quote": "Microsoft 33% success, Bing 15% (Kohavi, Crook, Longbotham 2009 / Kohavi, Deng, Longbotham 2014)."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "75f15a95c08e841a60944dd870749317c68d37ce6623776c361eb3b25aebb775",
+        "unit": {
+          "id": "96a25cefb7828f082c19bb74e62d2fd393dfac4438d466a190ed90048dce95b3",
+          "kind": "action",
+          "title": "Use micro-conversion primaries and restricted sequential before/after in Band 2",
+          "claim": {
+            "text": "The source says that in Band 2, valid tests can use micro-conversion primary metrics (add-to-cart, begin-checkout) with purchase as guardrail, and sequential before/after only for large structural changes with conditions held constant.",
+            "quote": "Micro-conversion primary metrics (add-to-cart, begin-checkout) with purchase as guardrail. Sequential before/after only for large structural changes with conditions held constant."
+          },
+          "action": {
+            "text": "Use micro-conversion primary metrics (add-to-cart, begin-checkout) with purchase as guardrail, and use sequential before/after only for large structural changes with conditions held constant.",
+            "quote": "Micro-conversion primary metrics (add-to-cart, begin-checkout) with purchase as guardrail. Sequential before/after only for large structural changes with conditions held constant."
+          },
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "The guide band is 30 to 300 orders/month.",
+                "quote": "Band 2: 30 to 300 orders/month"
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": [
+              {
+                "text": "DTC ecommerce, roughly 2-3% site conversion rate, mostly new/anonymous traffic.",
+                "quote": "DTC ecommerce, roughly 2-3% site conversion rate, mostly new/anonymous traffic."
+              }
+            ]
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:138/paragraph",
+            "start": 178,
+            "end": 357,
+            "quote": "Micro-conversion primary metrics (add-to-cart, begin-checkout) with purchase as guardrail. Sequential before/after only for large structural changes with conditions held constant."
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:138/paragraph",
+            "start": 178,
+            "end": 357,
+            "quote": "Micro-conversion primary metrics (add-to-cart, begin-checkout) with purchase as guardrail. Sequential before/after only for large structural changes with conditions held constant."
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:137/paragraph",
+            "start": 0,
+            "end": 30,
+            "quote": "Band 2: 30 to 300 orders/month"
+          },
+          {
+            "field": "prerequisites.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:132/paragraph",
+            "start": 13,
+            "end": 92,
+            "quote": "DTC ecommerce, roughly 2-3% site conversion rate, mostly new/anonymous traffic."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "60532a6c3db7f52aea75def54b14366c296f5f3b71a3d092cd957b3ee6ed8139",
+        "unit": {
+          "id": "55923a059161c6225402c1041160599cb91145243411b169fd2e9b445b1b5ed0",
+          "kind": "principle",
+          "title": "Part B is a stage-gated decision guide by monthly order volume",
+          "claim": {
+            "text": "The source organizes experimentation decisions into a stage-gated decision guide by monthly order volume.",
+            "quote": "Part B: stage-gated decision guide by monthly order volume"
+          },
+          "action": null,
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:131/paragraph",
+            "start": 0,
+            "end": 58,
+            "quote": "Part B: stage-gated decision guide by monthly order volume"
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      }
+    ],
+    "held": [],
+    "more_units": true,
+    "unresolved": [
+      "The monthly-order guidance is scoped to DTC ecommerce with roughly 2-3% site conversion and mostly new/anonymous traffic; applicability outside that setting is not established.",
+      "The excerpt does not define MDE, SRM, CUPED, FDR, PXL, LPG, A/A, GST, AVI, mSPRT, GAVI, CAA, or Plus.",
+      "The curated source list describes external works but does not reproduce their full evidence, formulas, simulations, or decision procedures.",
+      "Tool and platform descriptions are editorial assertions in the excerpt and are not independently verified there.",
+      "Many numerical benchmarks lack underlying study methods, denominators, or full sample details in the excerpt."
+    ],
+    "publication_allowed": false
+  },
+  "semantic_recheck": "required",
+  "publication_allowed": false
+}

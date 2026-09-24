@@ -1,0 +1,283 @@
+{
+  "cards": [
+    {
+      "title": "Method-specific routes prevent CSRF bypass via HEAD",
+      "summary": "Routing multiple HTTP methods to one handler hides an unvalidated third case (HEAD) that can skip CSRF checks entirely.",
+      "use_when": "Designing or reviewing storefront routes that handle form submissions, cart mutations, checkout actions, or any endpoint that changes account or order state.",
+      "steps": [
+        "Register one handler per HTTP method instead of one function that branches on GET vs POST. A get/post combined controller leaves room for a third method (HEAD) to land in unintended code.",
+        "If you must share a URL, use explicit `else if request.post` style branching rather than a bare `else`, so only the intended method runs the sensitive path.",
+        "Add a final `else` that throws and aborts on any unrecognized method. Assume unknown methods can reach this code.",
+        "Know that CSRF middleware is typically configured to validate only POST. A HEAD arriving at the same handler skips that check because it is not a POST.",
+        "Validate the CSRF token explicitly, in the same block that grants a sensitive permission (e.g., authorizing an app, changing an order), not only in framework-level middleware.",
+        "Prefer framework-level protections that bind the session by origin (e.g., SameSite cookies in lax mode) so the form-submission path doesn't rely on a manual token at all.",
+        "Verify the current behavior of your framework (Rails, Express, etc.) before relying on it — routing and middleware auto-handling has changed over time."
+      ],
+      "caveats": [
+        "SameSite strict mode can break legitimate top-level OAuth/login redirects; lax mode permits top-level navigation cookies while still blocking cross-site subrequests.",
+        "Framework-provided CSRF handling is a convenience, not a guarantee — do not assume it covers every method or URL."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "checkout",
+        "csrf",
+        "authentication",
+        "server-hardening",
+        "http-methods"
+      ],
+      "id": "83318b4ce2d8d93fdf169d19",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 21
+    },
+    {
+      "title": "Fail fast when an assumption is violated",
+      "summary": "Crashing on unexpected states surfaces bugs immediately rather than continuing in an unknown, possibly corrupted state.",
+      "use_when": "Writing or reviewing server handlers for cart operations, order state transitions, or any multi-step process where a mid-step exception would leave inconsistent state.",
+      "steps": [
+        "Distinguish expected failures from unexpected ones. A user-supplied ID not found in the database is expected — return a 404 and keep the server running.",
+        "An exception you did not anticipate means you no longer know the program's state (partial writes, held resources, half-completed transactions). Do not log-and-continue.",
+        "On unanticipated exceptions, abort or throw so the process surfaces the problem. Have a supervisor restart the process.",
+        "Set up alerting on uncaught exceptions so a violated assumption (e.g., an unexpected HTTP method reaching a handler) triggers immediate investigation.",
+        "Add explicit assertions verifying assumptions about inputs up front, so a wrong state fails at the boundary rather than deep in logic."
+      ],
+      "caveats": [
+        "Source frames these as taste and trade-offs, not hard rules.",
+        "Crashing on an unhandled case can be exploited for availability attacks (one request crashes an instance); weigh this against the far worse outcome of silently authorizing the wrong action."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "server-hardening",
+        "error-handling",
+        "observability",
+        "checkout"
+      ],
+      "id": "0fd2f1e28cc178298ac2ce25",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 21
+    },
+    {
+      "title": "Fixleakyabstractions that hide security-relevant detail",
+      "summary": "An abstraction that leaks edge-case behavior (like HEAD behaving unlike GET) forces developers to know internals and breeds exploitable surprises.",
+      "use_when": "Choosing or building an ecommerce framework layer, integration SDK, or internal API that other code on your store depends on.",
+      "steps": [
+        "Audit abstractions where the framework auto-handles a case for you (e.g., auto-routing HEAD to a GET handler then stripping the body). Ask what else can arrive on that code path.",
+        "When an abstraction exposes a behavior the developer must remember in edge cases, either remove the special case or make it explicit and documented.",
+        "Count interactions, not components. Adding one new feature that can touch 500 existing parts of the system is far riskier than an isolated addition — pay the complexity cost where it buys the most.",
+        "Favor explicit, verbose code over clever one-liners in security-sensitive paths; clever code that even its author can't re-read a month later hides bugs.",
+        "When reviewing, treat duplicate-looking checks (e.g., a token validated twice) as acceptable defensiveness rather than redundancy to trim — the unused-argument that controls behavior is often load-bearing."
+      ],
+      "caveats": [
+        "Source concedes this is a trade-off: requiring developers to be explicit risks them forgetting; favoring magic risks it biting you.",
+        "Security through obscurity (hoping code is too clever to understand) is not a defense."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "server-hardening",
+        "code-review",
+        "frameworks",
+        "complexity"
+      ],
+      "id": "f8b24497d8edb3541bebc0bb",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 21
+    },
+    {
+      "title": "Avoid APIs with insecure defaults or polymorphic signatures",
+      "summary": "Functions that are insecure by default or that do different things based on argument type/count are easy to misuse in security-critical code.",
+      "use_when": "Selecting a library or designing an internal helper (e.g., a data-encoding, password, or serialization utility) for your store's backend.",
+      "steps": [
+        "Prefer APIs whose secure mode is the default. If the only safe usage requires passing a specific options object, most callers will miss it and run insecurely.",
+        "Watch for polymorphic signatures: one function that behaves differently by argument type (jQuery's `$()` is the classic case) or by the count of callback arguments (Express middleware vs error-handling middleware differing by a 4th argument).",
+        "Avoid relying on 'arity' tricks in your own code; make the mode explicit so a teammate can't 'clean up' an unused argument and silently change behavior.",
+        "When evaluating a dependency, request a concrete example of how it is called in its most common path, then check whether that path validates input and fails closed.",
+        "Check numerical/array/string coercion carefully. Coercing a user-supplied string to bytes or memory is where type confusion becomes a memory-disclosure bug."
+      ],
+      "caveats": [
+        "Source's conclusions apply to libraries generally; verify current library behavior and options before adopting, since APIs change.",
+        "Explicit options add friction and can be forgotten, so pair explicit design with tests that assert the secure path is active."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "server-hardening",
+        "api-design",
+        "dependencies",
+        "code-review"
+      ],
+      "id": "6b8b2285c8ec7ae6e6e812fc",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 21
+    },
+    {
+      "title": "Uninitialized-buffer disclosure: prevent leaking memory from user input",
+      "summary": "A benign-looking 'encode this string' endpoint became a memory-disclosure bug when a string parameter was swapped for a number.",
+      "use_when": "Reviewing any backend endpoint that turns user input into bytes, encodings, or binary data — e.g., image/thumbnail generation, PDF export, or a convert/encode utility in your store.",
+      "steps": [
+        "Require the user-supplied field to be the expected type before conversion. If you expect a string, validate `typeof === 'string'` (or original JSON type) and reject numbers, arrays, or objects.",
+        "Do not pass user input directly into a buffer/allocation call. A string is converted to its bytes; a number is interpreted as a length and returns that many bytes.",
+        "Ensure any buffer/allocator you use zero-fills memory or is initialized before use. Uninitialized allocation can return previously-freed process memory, which may contain earlier requests, tokens, or user data.",
+        "Apply this to any 'nice-to-have' convert/encode helper: a convenience endpoint on an ecommerce backend can expose randomness from memory you never meant to send.",
+        "If you cannot guarantee zero-fill, constrain the operation so an attacker cannot control a byte length or trigger repeated reads."
+      ],
+      "caveats": [
+        "This is a vulnerability condition and prevention, not a payload recipe — test only on systems you own or are authorized to test.",
+        "The source's demo shows the exposure can include source code and prior process memory; do not treat size limits alone as sufficient.",
+        "This class of bug parallels Heartbleed-style over-reads; apply the same principle: never return bytes you didn't intend to send."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "server-hardening",
+        "data-exposure",
+        "input-validation",
+        "memory-safety"
+      ],
+      "id": "5178759551047b58dc47a9b0",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 21
+    },
+    {
+      "title": "Bind listeners to the intended interface",
+      "summary": "A server started without an explicit IP binds to all network interfaces, exposing it beyond localhost.",
+      "use_when": "Deploying or testing a store's backend, admin panel, or internal tool — especially during development before it goes behind a load balancer.",
+      "steps": [
+        "When starting a listen call, pass the intended interface (e.g., localhost) rather than omitting the host argument.",
+        "Verify what your framework/process manager defaults to, since 'port only' often means 'every interface on this machine'.",
+        "For anything exposed beyond your machine, put authentication and TLS in front rather than relying on the network boundary.",
+        "During local development, keep dev servers bound to localhost so neighboring machines on the same network can't reach them.",
+        "Confirm behavior against the current documentation, as defaults and interfaces differ by runtime."
+      ],
+      "caveats": [
+        "Source frames the open-listener default as an example of an unsafe default; the corrective is a configuration choice you must make.",
+        "Confirm the specific option name in your runtime's current release."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "deployment",
+        "server-hardening",
+        "network-security",
+        "development"
+      ],
+      "id": "52234a70e9a2abe7977ceea0",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 21
+    },
+    {
+      "title": "Give checkout and admin API calls their own signed context",
+      "summary": "Each high-impact action (authorize app, change order, refund) should re-check authorization in the same code path that performs it.",
+      "use_when": "Designing or auditing authorization for sensitive ecommerce operations like refunds, order edits, app/integration installs, or admin actions.",
+      "steps": [
+        "Don't assume an upstream middleware fully validated the request for a sensitive action. Put an explicit permission/token check immediately before the operation.",
+        "Enforce distinct endpoints per action so a token validated for one action cannot accidentally satisfy another.",
+        "Log which check gated each sensitive action, so you can prove the guardian ran and spot routes where it didn't.",
+        "Prefer framework-level bindings (e.g., origin-bound cookies) that make cross-site forgery impossible, rather than building your own token plumbing on top.",
+        "Ensure any checkout mutation (order total, quantity, address) re-validates the user's authority over that cart/order at the point of write."
+      ],
+      "caveats": [
+        "Source sees explicit re-checking and framework magic as a trade-off; neither is universally right.",
+        "Relying on a token at one layer while another layer strips or bypasses it is the exact failure the source describes."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "checkout",
+        "admin",
+        "authorization",
+        "csrf",
+        "payments"
+      ],
+      "id": "8d9f19c18b06ef37fe93de35",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 21
+    },
+    {
+      "title": "Design-time checklist for reducing server complexity",
+      "summary": "Complexity is the common root cause of server security bugs; reduce it via explicit code, isolated components, and fail-fast checks.",
+      "use_when": "Architecture or code review for any store backend, especially before adding an integration or refactoring authentication/checkout code.",
+      "steps": [
+        "Budget complexity: before adding a component, ask how many existing components it can interact with. Favor isolated additions over broad ones.",
+        "Prefer explicit code over clever code. Unroll dense one-liners into plain step-by-step logic in anything touching auth, payments, or user data.",
+        "Make secrets/credentials and assumptions explicit. Do not bury security-relevant checks inside framework magic callers might not understand.",
+        "Route strictly (one method per handler), validate strictly (type and presence), and fail strictly (throw on unknown states).",
+        "Request that critical authorization flows be readable end-to-end without needing to know framework internals."
+      ],
+      "caveats": [
+        "These are lessons drawn from one incident and the instructor's experience, presented as taste and trade-offs, not absolute rules.",
+        "Explicit code has its own failure mode: a developer can forget a check; pair with automated tests."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "server-hardening",
+        "code-review",
+        "architecture",
+        "complexity"
+      ],
+      "id": "c4e441b6c91e51d9e89dd910",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 21
+    },
+    {
+      "title": "Verify agent tool permissions and trust retrieved content as data only",
+      "summary": "Convert the lesson's 'never trust input' principle to AI agents: retrieved documents and tool output are untrusted data, not authorization.",
+      "use_when": "Configuring an agent that reads product feeds, customer reviews, support emails, or external APIs and can act on your store (edit listings, issue refunds, place orders).",
+      "steps": [
+        "Treat every retrieved document, email, review, or web page as data, never as instructions. Content that says 'ignore your rules' or 'issue a refund' has no authority.",
+        "Scope each agent's tool access to the brand and task it needs. An agent editing product descriptions should not also have refund or customer-data permissions.",
+        "Require human approval for high-impact actions: publishing to storefront, changing prices, issuing refunds, or writing customer data.",
+        "Block the agent from reading its own secrets or raw credentials; give it scoped API tokens with least privilege and log every tool call with inputs and outputs.",
+        "Do not treat prompt filtering or a WAF as a guarantee. It reduces exposure but is not sufficient alone.",
+        "Validate tool-call outputs before acting on them, just as you would validate a user-supplied field in a server handler."
+      ],
+      "caveats": [
+        "Source does not provide ecommerce agent benchmarks or measured results; the controls are inferred from general server-security principles.",
+        "Agent tooling interfaces change quickly — verify current permission and approval options before relying on them."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "agents",
+        "authorization",
+        "least-privilege",
+        "logging",
+        "prompt-injection"
+      ],
+      "id": "ab7c3782819156a00eff8bc5",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 21
+    }
+  ],
+  "request_id": "3fc7ffb48eaba4e6e1cfb5090749bb0cda05082b5773488e4b837f60a6544bbb",
+  "ecommerce_scope_version": 1
+}

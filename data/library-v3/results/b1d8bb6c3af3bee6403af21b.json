@@ -1,0 +1,633 @@
+{
+  "cards": [
+    {
+      "title": "App Portfolio Triage: Only Keep Apps That Clearly Make Money",
+      "summary": "App count is a primary Shopify speed lever; install only apps with clear revenue justification and uninstall the rest.",
+      "use_when": "Auditing installed Shopify apps to decide which to keep, before running a page-speed test.",
+      "steps": [
+        "List every installed app in the Shopify admin and write down the concrete revenue mechanism for each (e.g. sizing chart prevents non-purchase for sized products, review app supplies social proof, subscription app drives recurring orders).",
+        "If you cannot state how an app makes money, treat it as a removal candidate — the source's rule is that apps must earn their place.",
+        "Prefer apps with many reviews and good reviews, since volume signals the app actually works for other merchants.",
+        "Before installing anything new, ask whether native theme features already cover it: announcement bars, discount codes in cart and similar simple elements should not come from an app.",
+        "When uninstalling, do not assume cleanup happens: go to Online Store > Themes > Edit code, open theme.liquid, search the app's name and also search the app's store listing name (e.g. a 'free shipping bar' app whose brand is different), remove or comment out leftover script tags with Cmd/Ctrl + /.",
+        "Check the customizer's app embeds panel and turn off any embed you are not actively using, then save."
+      ],
+      "caveats": [
+        "Apps can still inject assets via Shopify's own script tags, so removing all front-end mentions does not guarantee a specific loading behaviour outside of app embeds being off.",
+        "Some apps cannot work defer/async and must stay blocking to keep functionality."
+      ],
+      "tags": [
+        "speed",
+        "app-audit",
+        "shopify",
+        "theme-code",
+        "technical-seo",
+        "performance-budget"
+      ],
+      "id": "8dbbb42b9c2e377b5dbf0a54",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 3
+    },
+    {
+      "title": "Use the Restaurant Analogy to Prioritize Above-the-Fold Loading",
+      "summary": "Deliver the visible hero first and everything else gradually, mirroring a restaurant bringing drinks before the main course.",
+      "use_when": "Deciding which storefront assets to prioritize, defer or lazy load on a homepage, landing page or PDP.",
+      "steps": [
+        "Identify everything visible without scrolling: hero banner, logo, main styling, headline copy, hero images, primary product imagery.",
+        "Treat these as the 'drinks' — they must render immediately and must not wait for app assets, reward widgets or third-party scripts.",
+        "Treat anything below the fold or non-essential (loyalty widgets, chat, extra marketing scripts) as later courses and lazy load or defer them.",
+        "Never let a non-essential app asset block the hero: check whether widget assets download before main elements and deprioritize them.",
+        "Apply the same priority logic per page type — on a PDP the product image and buy box are the 'drinks'."
+      ],
+      "caveats": [
+        "This is a prioritization heuristic, not a measurement; verify the effect with Lighthouse or PageSpeed Insights after changes."
+      ],
+      "tags": [
+        "speed",
+        "shopify",
+        "performance-budget",
+        "critical-rendering-path",
+        "lazy-loading",
+        "hero-banner"
+      ],
+      "id": "ad877c2f348ce7507af5c0ce",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 3
+    },
+    {
+      "title": "Defer Script Tags in theme.liquid, Then Fall Back to Async",
+      "summary": "Add defer to script tags that lack it, test the functionality, and downgrade to async only if defer breaks it.",
+      "use_when": "Cutting render-blocking JavaScript found in a Shopify theme during a speed optimization pass.",
+      "steps": [
+        "Run a Lighthouse audit (right-click > Inspect > Lighthouse tab) and scroll to the details section to find scripts listed under render-blocking resources.",
+        "In Themes > Edit code, open theme.liquid — the file that holds most scripts — and locate script tags missing defer or async.",
+        "Add defer so the document loads first and the script loads after; prefer defer over async (the source says defer is better).",
+        "Save, load the store, and verify the specific functionality that script powers still works; if yes, keep defer.",
+        "If the feature breaks, swap defer for async and re-test; if async also breaks it, leave the script as-is because that script genuinely must block.",
+        "Re-run the Lighthouse test to confirm the render-blocking entry disappeared and the score moved (the source saw 78 to 80 after one defer, then 81 after removing a jQuery script)."
+      ],
+      "caveats": [
+        "You must know what a script does before modifying it — blind defer/async can silently break store functionality.",
+        "Score deltas from a single script are small; the source's 1-3 point gains are illustrative of one test, not a guarantee."
+      ],
+      "tags": [
+        "speed",
+        "shopify",
+        "theme-code",
+        "lazy-loading",
+        "javascript",
+        "lighthouse",
+        "technical-seo"
+      ],
+      "id": "1dffb0dd47d108f658e11e6d",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 3
+    },
+    {
+      "title": "Self-Host Third-Party Libraries in the Shopify Assets Folder",
+      "summary": "Replace CDN links for scripts like jQuery with files uploaded to the theme assets folder so the Shopify CDN serves them.",
+      "use_when": "Adding or keeping a JavaScript library on a store, such as when legacy theme code depends on jQuery.",
+      "steps": [
+        "Open the CDN link in a new browser tab and download the file to your computer.",
+        "Upload the file into the theme's assets folder via the code editor.",
+        "Reference it the way Shopify does in its own themes: copy an existing script line that uses the asset_url variable and replace only the file name.",
+        "Hover the resulting link in the code editor — the tooltip should confirm the asset is served from the Shopify CDN for better performance.",
+        "Avoid loading jQuery at all where possible; the source says it is old technology and vanilla JavaScript should replace it — removing a jQuery script raised his test score by one point."
+      ],
+      "caveats": [
+        "The source's one-point gain from removing jQuery is a single test observation, not a benchmark.",
+        "Only remove a library if you can confirm nothing in the theme depends on it."
+      ],
+      "tags": [
+        "speed",
+        "shopify",
+        "theme-code",
+        "cdn",
+        "javascript",
+        "performance"
+      ],
+      "id": "fdbc70a82f75ac5486d519ab",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 3
+    },
+    {
+      "title": "Understand How Shopify Injects App Scripts via content_for_header",
+      "summary": "Shopify's injected scripts live behind a content_for_header tag that, when commented out, lifted the source's test from 80% to 100% but breaks apps.",
+      "use_when": "Diagnosing why a store's PageSpeed score plateaus despite a lean theme and no active app embeds.",
+      "steps": [
+        "Test with app embeds all turned off in the customizer and still observe a gap between your score and 100 — this isolates Shopify-injected scripts as the cause.",
+        "In theme.liquid, locate the content_for_header tag; this is what pulls Shopify's injected scripts into every page load.",
+        "The source demonstrates commenting it out and re-running the speed test to confirm the impact (80% jumped to 100% with it disabled).",
+        "Never do this on a live theme — the code editor flags it as an error and it will break app and platform functionality.",
+        "Instead, if you want the benefit, use a lazy-loading approach for that tag's contents: the source supplies a snippet that defers the injected scripts until user interaction, and he measured 97% and an overall claim of 10-20% gain over the current score."
+      ],
+      "caveats": [
+        "The 10-20% claim is the presenter's own estimate; he also warns the technique has small impact if the store has larger underlying speed problems.",
+        "This is a third-party snippet, not an official Shopify feature — verify current Shopify behaviour before relying on it."
+      ],
+      "tags": [
+        "speed",
+        "shopify",
+        "theme-code",
+        "app-scripts",
+        "technical-seo",
+        "measurement"
+      ],
+      "id": "b7d4c6046a25b09d792900b2",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 3
+    },
+    {
+      "title": "Compress and Resize Product and Hero Images Before Upload",
+      "summary": "Replace multi-megabyte source images with compressed files, keeping the whole store's media around 2-3 MB.",
+      "use_when": "Preparing hero banners, category images and product photography for upload to a Shopify store.",
+      "steps": [
+        "Check the file size of every image you plan to upload; the source found an 8 MB hero image on a student's store and treats 2-3 MB as the target for the entire store.",
+        "Resize first: open the image in a tool like Photopea, go to Image > Size, and set the resolution to around 2,000 px, which the source treats as sufficient.",
+        "Export as JPEG at roughly 70% quality (lower is acceptable if quality holds).",
+        "Optionally run the result through a compressor like TinyPNG/TinyJPEG; the source's example only saved a further 8% after a good export, so the export step did most of the work.",
+        "Do a visual side-by-side comparison — the source's compressed 234 KB file looked indistinguishable from the 8 MB original, and a 100 KB file matched a 400 KB one.",
+        "If manual work per image is impractical, use a bulk image-compression app in Shopify instead."
+      ],
+      "caveats": [
+        "Some themes automatically re-serve smaller derivatives of large uploads, but you should still compress before uploading rather than relying on that.",
+        "The source's file-size targets come from his own practice, not a published standard."
+      ],
+      "tags": [
+        "speed",
+        "images",
+        "shopify",
+        "asset-optimization",
+        "product-page",
+        "hero-banner"
+      ],
+      "id": "621e302f651f5e1d667c3ccf",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 3
+    },
+    {
+      "title": "Set Image Upload Dimensions Slightly Above the Container Size",
+      "summary": "Upload images 100-300 px wider than the container box to avoid blurriness without oversizing the file.",
+      "use_when": "Configuring image width settings for a section or theme setting, such as a 700 px hero container.",
+      "steps": [
+        "Find the actual rendered box width — the source's example box is 700 px.",
+        "Set the image dimension to roughly 100-300 px above the box width (he used about 1000 px for a 700 px box) rather than uploading at exactly the box size.",
+        "Uploading exactly matching dimensions risks a blurry rendering; uploading far larger wastes file size.",
+        "Apply the setting, refresh the storefront and confirm the image still renders identically.",
+        "Inspect the element to verify the served width reflects your setting.",
+        "This setting is available in the theme editor and can be docked to the side while you work."
+      ],
+      "caveats": [
+        "The 100-300 px margin is the source's working rule of thumb, not a measured optimum; check the visual result."
+      ],
+      "tags": [
+        "speed",
+        "images",
+        "shopify",
+        "theme-settings",
+        "asset-optimization",
+        "hero-banner"
+      ],
+      "id": "c9fcbc1b5513c12d422ba7f3",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 3
+    },
+    {
+      "title": "Match Image Format to Use: JPEG Default, PNG for Transparency, MP4 Over GIF",
+      "summary": "Use JPEG for photos, PNG only when transparency is genuinely needed, and HTML video tags with MP4 instead of GIFs.",
+      "use_when": "Choosing file formats when preparing product images, logos and motion assets for a store.",
+      "steps": [
+        "Default to JPEG and compress it for every photographic image.",
+        "Use PNG only when you need something cropped out or transparent, such as a logo overlaid on a background.",
+        "Never use GIFs — the source says they are huge; if you need motion or an animation, embed an MP4 inside an HTML video tag, which loads much faster.",
+        "Apply the same compression discipline to video files as to images; oversized video is equally damaging.",
+        "Treat 'media' decisions as a per-page-type choice: hero video, PDP gallery images and category thumbnails all follow the same format rules."
+      ],
+      "caveats": [
+        "Format choice does not substitute for compression — a large JPEG can still be worse than a reasonable PNG."
+      ],
+      "tags": [
+        "speed",
+        "images",
+        "video",
+        "shopify",
+        "asset-optimization",
+        "file-format"
+      ],
+      "id": "3dd6497a4d63acbba333b121",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 3
+    },
+    {
+      "title": "Preload Above-the-Fold Media and Lazy Load Everything Below",
+      "summary": "Tell the browser which media matters (preload, no lazy loading, no animation) and defer the rest until scroll.",
+      "use_when": "Setting loading behaviour on hero banners, above-the-fold product imagery and long-page sections.",
+      "steps": [
+        "Mark every asset visible without scrolling as preloaded so the browser gives it priority.",
+        "Lazy load everything underneath the fold so it downloads only when the customer scrolls to it.",
+        "Do not use animations or transitions on the hero — an animation forces the browser to download an effects library before displaying the image, delaying the hero.",
+        "If LCP readings are large, inspect the main image for fade-ins, slide-ins or similar effects and remove them.",
+        "Lazy load app widgets that are not essential to the buying process, using lazy sizes or loading=\"lazy\" attributes where appropriate, and keep essential buying-flow assets eager."
+      ],
+      "caveats": [
+        "Preload too many assets and you recreate the problem you are solving; apply it to above-the-fold only.",
+        "The source notes that a slider's first image specifically must not be lazy loaded or animated."
+      ],
+      "tags": [
+        "speed",
+        "lazy-loading",
+        "lcp",
+        "images",
+        "shopify",
+        "hero-banner",
+        "performance-budget"
+      ],
+      "id": "b4735bb55b5186b5891db6ab",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 3
+    },
+    {
+      "title": "Trim Custom Font Variations and Enable font-display: swap",
+      "summary": "Reduce custom font weights/styles to essentials and add swap so text renders before the font downloads.",
+      "use_when": "Reviewing a designed Shopify theme that ships custom typography, or troubleshooting rendering delays on text.",
+      "steps": [
+        "Inventory which font weights and styles actually appear on the storefront.",
+        "Limit yourself to roughly three variations of a custom font; the source recommends no more than three and calls five or ten variations 'not a great idea'.",
+        "In Themes > Edit code, search for the @font-face declarations that import your custom fonts.",
+        "Ensure each imported font has the font-display: swap property so the browser shows fallback text and swaps the custom font in once downloaded.",
+        "If the design does not genuinely require custom fonts, use the fonts built into Shopify themes instead — the source considers them good enough for most stores."
+      ],
+      "caveats": [
+        "The three-variation limit is the source's own recommendation, not a platform rule.",
+        "font-display swap can cause a visible flash of fallback text; whether that trade-off is acceptable is a design judgement."
+      ],
+      "tags": [
+        "speed",
+        "fonts",
+        "shopify",
+        "theme-code",
+        "asset-optimization",
+        "technical-seo"
+      ],
+      "id": "1eacf61a57a2dfabd83798f4",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 3
+    },
+    {
+      "title": "Choose a Simpler Theme Over a Feature-Rich One Unless Features Pay",
+      "summary": "Premium and feature-heavy themes ship unused libraries; free themes like Dawn and Horizon are the better default unless data justifies otherwise.",
+      "use_when": "Selecting a theme for a new Shopify store or deciding whether to upgrade from a free theme.",
+      "steps": [
+        "Default to a simple free theme; the source names Dawn and Horizon as the best starting points and warns against going for the most complex premium theme.",
+        "Do not buy a premium theme for pop-ups or features on a hunch or because a video recommended it — require a clear reason it will make more money.",
+        "If you genuinely expect to use specific features and expect them to drive revenue, a premium theme is justified.",
+        "When evaluating, remember that the extra libraries and options you never use still load and cost performance.",
+        "Note that effect-heavy designs delay display because effects libraries must load first.",
+        "Choosing a free theme also saves roughly $300 versus a premium theme, according to the source."
+      ],
+      "caveats": [
+        "The $300 saving figure and the free-theme recommendation are the presenter's guidance for beginners and lean stores, not a rule for all businesses."
+      ],
+      "tags": [
+        "speed",
+        "shopify",
+        "theme-selection",
+        "positioning",
+        "performance-budget",
+        "cost"
+      ],
+      "id": "637495534f7f6a4d574ede09",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 3
+    },
+    {
+      "title": "Weigh Migrating an Old Theme vs. Rebuilding on Dawn or Horizon",
+      "summary": "Rebuilding an established but slow theme on a modern base can be cheaper than continuously patching outdated technology.",
+      "use_when": "Deciding whether to keep optimizing a legacy Shopify theme or migrate the store.",
+      "steps": [
+        "If the store is established and cannot change theme, implement the levers in order: app audit, script defer, image compression, font trimming — these are still possible on older themes.",
+        "Accept that some fixes get technical on old themes because the technology is outdated and the theme was not built for speed.",
+        "If you have the option and the theme is the bottleneck, build the site again on Dawn or Horizon; you must rebuild every section because structure differs, but a lighter newer theme loads fewer files.",
+        "Compare the cost of repeatedly optimizing an ageing theme against the one-off cost of rebuilding — the source says optimizing an older theme can end up costing more.",
+        "Plan migrations around other store changes (redesign, revamp) rather than as an isolated emergency project."
+      ],
+      "caveats": [
+        "A migration requires rebuilding sections, apps and customizations — budget for that disruption.",
+        "The source gives no hard timeline for when a theme must be retired."
+      ],
+      "tags": [
+        "speed",
+        "shopify",
+        "theme-selection",
+        "migration",
+        "positioning",
+        "performance-budget"
+      ],
+      "id": "02c570556e30fa48f3ae2964",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 3
+    },
+    {
+      "title": "Recognize That Most Free Shopify Themes Are the Same Codebase",
+      "summary": "Twenty-three free themes reduce to two codebases — thirteen Dawn variants and ten Horizon variants — differing only in settings and JSON.",
+      "use_when": "Choosing between free Shopify themes or deciding whether switching to a differently-styled free theme changes performance.",
+      "steps": [
+        "In the theme store, filter for free themes and note the badges dividing Dawn-based from Horizon-based themes.",
+        "Understand that picking among variants of the same base changes only styling, images, colours and settings — the codebase is identical.",
+        "Check theme version numbers: all Dawn-based themes share one version (the source saw 1.5.3.0) and all Horizon-based themes share another (1.0.1).",
+        "Conclusion for selection: do not expect a performance or capability change from switching between two themes built on the same base — choose on fit and design.",
+        "If you want Horizon's structural capabilities, you must move to a Horizon-based theme, not a Dawn variant."
+      ],
+      "caveats": [
+        "Version numbers and store badges change over time — verify the current theme-store labelling.",
+        "This applies to free themes at the time of the source, not necessarily to paid themes or future releases."
+      ],
+      "tags": [
+        "speed",
+        "shopify",
+        "theme-selection",
+        "shopify-themes",
+        "product-research",
+        "positioning"
+      ],
+      "id": "943bdc967b80ee0bc3cdc4c9",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 3
+    },
+    {
+      "title": "Understand Horizon's Global Blocks vs. Dawn's Section-Scoped Blocks",
+      "summary": "Horizon lets blocks be reused across any block-accepting section, while Dawn restricts each section to its own block list.",
+      "use_when": "Designing a storefront layout and deciding how much free-form composition you need from the theme.",
+      "steps": [
+        "On a Dawn-based theme, adding a section (e.g. image with text) shows only the blocks permitted for that section; blocks cannot move between sections.",
+        "On a Horizon-based theme, sections that accept blocks accept global blocks; click Add block and see a much larger shared list (logo, accordion and more).",
+        "Global blocks themselves can contain sub-blocks — an accordion added as a block gets its own nested block options.",
+        "Check the theme's code editor: Horizon-based themes add a blocks folder alongside templates, holding the global blocks; Dawn has templates only.",
+        "Use this as the deciding factor when choosing between simple versus composable layouts — more flexibility means more layout options but also more to configure."
+      ],
+      "caveats": [
+        "Block availability and nesting behaviour are theme-version dependent; verify in your own customizer.",
+        "Customizer improvements such as copy-paste of sections and renaming apply to all themes, not just Horizon."
+      ],
+      "tags": [
+        "shopify",
+        "theme-selection",
+        "merchandising",
+        "shopify-themes",
+        "landing-page",
+        "site-design"
+      ],
+      "id": "d68b270990aba02f44c566eb",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 3
+    },
+    {
+      "title": "Benchmark Theme Speed With an Apples-to-Apples Comparison",
+      "summary": "The source tested identical stores on Horizon and Dawn with app embeds off, getting 71/74 for Horizon and 56/78 for Dawn.",
+      "use_when": "Justifying a theme migration decision or setting performance expectations before rebuilding a store.",
+      "steps": [
+        "Set up the two themes on one store with identical customizations — the source used a hero banner and a few products only.",
+        "Turn off all app embeds in the customizer for both themes so uninstalled/unused apps do not distort the comparison.",
+        "Run PageSpeed Insights on both storefront URLs and record mobile and desktop scores plus LCP and blocking-time details.",
+        "In the source's test, Horizon scored 71 mobile / 74 desktop and Dawn scored 56 mobile / 78 desktop — his conclusion was Horizon is somewhat better overall.",
+        "Read the diagnostics rather than only the headline number: the LCP in his test came from an oversized hero image, so compression was the next fix for both."
+      ],
+      "caveats": [
+        "Single-run results are noisy and store-specific — treat these numbers as an example, not a benchmark you can expect to reproduce.",
+        "The comparison held apps inactive; a real store's app mix will change the outcome."
+      ],
+      "tags": [
+        "speed",
+        "shopify",
+        "measurement",
+        "theme-selection",
+        "experiment-design",
+        "lighthouse"
+      ],
+      "id": "caf6d4c08b6d75e52c3deeb6",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 3
+    },
+    {
+      "title": "Keep Dawn for Now; Build New Stores on Horizon",
+      "summary": "The source advises not rushing a Dawn-to-Horizon migration since Horizon is young, but says Horizon is likely the future standard.",
+      "use_when": "Deciding whether to migrate an existing Shopify store to Horizon during a redesign or a new-build decision.",
+      "steps": [
+        "For an existing Dawn store with significant work invested, keep Dawn — the source says there is no reason to rush and cites merchants still running the much older Debut theme successfully.",
+        "Note that Shopify stopped releasing updates to Dawn earlier in the year, and the source does not expect Dawn to adopt the new structure.",
+        "If you are building a new store, go with Horizon or a Horizon-based free theme.",
+        "If you will redesign or revamp anyway, do it on Horizon at that point rather than as a standalone migration.",
+        "Wait for maturity: the source observed Horizon already at version 1.0.1 with a patch pushed, and expects early bugs to be ironed out."
+      ],
+      "caveats": [
+        "This is the presenter's forward-looking opinion about theme roadmaps, not an official Shopify statement.",
+        "He flagged that Dawn would likely be sunset eventually but explicitly not imminently."
+      ],
+      "tags": [
+        "speed",
+        "shopify",
+        "theme-selection",
+        "migration",
+        "shopify-themes",
+        "positioning"
+      ],
+      "id": "21280154cb299f87ac462f7e",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 3
+    },
+    {
+      "title": "Diagnose CLS by Reading Google's Rendering Screenshots",
+      "summary": "Compare PageSpeed Insights' captured screenshots frame by frame to identify which element pushes layout down.",
+      "use_when": "Investigating a poor layout-stability score on a storefront that loads but shifts while users interact.",
+      "steps": [
+        "Run PageSpeed Insights and open the rendering/screenshot sequence Google captured during load.",
+        "Compare consecutive frames to spot elements that appear suddenly and push content down, around or larger.",
+        "Note that GIF motion in the capture is expected if the store uses GIFs, but the real signal is an element appearing between frames.",
+        "Note the suspect element's on-page ID, inspect it on the storefront and search the document to trace its source.",
+        "Elements injected after load usually come from apps — the source identified a free-shipping-bar app (Hexom) creating CLS; he calls such simple announcement bars something themes already provide, so an app for it is unnecessary.",
+        "Check the desktop tab too: the source found one site with zero CLS on mobile but a large desktop reading, and his free-shipping-bar example was worse on desktop."
+      ],
+      "caveats": [
+        "The source ranks CLS as the most impactful metric in his experience, ahead of LCP — this is his qualitative ranking, not a Google-published weight.",
+        "Fixing LCP and CLS alone moved his illustrative store above 50, possibly 60 — a case observation, not a benchmark."
+      ],
+      "tags": [
+        "speed",
+        "cls",
+        "measurement",
+        "shopify",
+        "app-audit",
+        "technical-seo",
+        "layout-stability"
+      ],
+      "id": "f00068c50316a9b8880191cb",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 3
+    },
+    {
+      "title": "Fix LCP by Un-lazy-loading and De-animating the Hero Image",
+      "summary": "The largest contentful paint is usually the hero; it must load eagerly with no lazy attribute, no fade-in and maximum compression.",
+      "use_when": "Improving a poor LCP reading on a homepage, category page or any page where a large hero dominates.",
+      "steps": [
+        "Identify the largest element — typically the hero banner image or the first slide of a slider.",
+        "Remove loading=\"lazy\" and any lazy-sizes classes or loading-lazy patterns from that image; the source says this should never be lazy loaded.",
+        "Set loading=\"eager\" instead, telling the browser the image is important and should load as fast as possible.",
+        "Remove fade-in, slide-in or other entrance effects from that image, since effects force an effects library download before the image shows.",
+        "Compress the image as much as you can once the loading behaviour is correct.",
+        "In a slider, implement logic so the first image is never lazy loaded or animated while later slides can be; also check blocking time, which affects LCP too."
+      ],
+      "caveats": [
+        "In his example the image was lazy loaded and should have said eager — but LCP can also be driven by blocking time and effects, so check more than the loading attribute."
+      ],
+      "tags": [
+        "speed",
+        "lcp",
+        "images",
+        "lazy-loading",
+        "shopify",
+        "hero-banner",
+        "measurement"
+      ],
+      "id": "7a213481a9d25a111b95b669",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 3
+    },
+    {
+      "title": "Decide Whether Your Store Actually Needs a Good Speed Score",
+      "summary": "Speed scores matter for organic acquisition; stores driving all traffic with ad budget can convert without them.",
+      "use_when": "Setting speed-optimization priorities and budget for a store before committing technical work.",
+      "steps": [
+        "Assess your traffic mix: if you have a large ad budget and depend on paid traffic rather than organic, tight speed scores are less critical — the source notes big brands with lower scores still sell a lot.",
+        "If you rely on or want organic traffic from Google, prioritise the PageSpeed Insights score and fix the flagged items, especially LCP and CLS.",
+        "Separate the customer-experience case from the SEO case: the source's buying-impulse argument is that customers arrive from ads, hit a slow page and bounce within 2-3 seconds.",
+        "If you have visits but no purchases, treat speed as a candidate explanation worth testing rather than assuming it is the only cause.",
+        "Sequence your effort: fix LCP and CLS first, since the source says these two alone can move a poor score into the 50s-60s in his experience."
+      ],
+      "caveats": [
+        "The '2-3 second' expectation is the presenter's own behaviour as a shopper and his model of customer behaviour, not a measured threshold.",
+        "The claim that optimized Shopify stores get more sales is his observation from years of client work, not a controlled study."
+      ],
+      "tags": [
+        "speed",
+        "measurement",
+        "acquisition",
+        "conversion-optimization",
+        "technical-seo",
+        "prioritization"
+      ],
+      "id": "37d2f02ad6476c9a2f41a12c",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 3
+    },
+    {
+      "title": "Search a Downloaded Theme Folder for Residual App and Pixel Code",
+      "summary": "Download the theme, open it in a free code editor and search across all files for app names, pixels and libraries you no longer use.",
+      "use_when": "Deep-cleaning a storefront's code after uninstalling apps or removing tracking, beyond what theme.liquid search reveals.",
+      "steps": [
+        "In the Shopify admin go to Themes > Download theme and send it to your email; save and unzip it locally.",
+        "Install a code editor such as Cursor (free) and open the unzipped theme folder as a project.",
+        "Use the editor's global search to query an app's brand name, and also its listing name — a two-part name means two searches.",
+        "When a match appears (the source's example found a match inside a JSON file), open it and inspect the reference.",
+        "Repeat for old pixels and libraries, e.g. searching a leftover analytics provider name shows every file that still references it.",
+        "Checking file by file in the theme editor is slow, so use the global search as the efficient route."
+      ],
+      "caveats": [
+        "A downloaded copy is a snapshot — re-download if you have since changed the theme.",
+        "Reading matches still requires judgement about whether removing them is safe."
+      ],
+      "tags": [
+        "speed",
+        "shopify",
+        "theme-code",
+        "app-audit",
+        "technical-seo",
+        "measurement"
+      ],
+      "id": "10d064e032f8a5600d9ed994",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 3
+    }
+  ],
+  "request_id": "ae31108165f5de9dedad5a88b4825219ad8ae8c29137e35a8652c14ecc02ae93",
+  "ecommerce_scope_version": 1
+}

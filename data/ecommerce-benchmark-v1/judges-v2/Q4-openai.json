@@ -1,0 +1,193 @@
+{
+  "status": "complete",
+  "mapping": {
+    "A": "frontier_without",
+    "B": "frontier_with",
+    "C": "cheap_with",
+    "D": "cheap_without"
+  },
+  "judge_model": "gpt-5.6-terra",
+  "output": {
+    "reviews": [
+      {
+        "label": "A",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 4,
+          "prioritization": 4
+        },
+        "strengths": [
+          "Correctly computes implied link CPC as $0.80 previously and $1.25 currently, a 56.25% increase.",
+          "Directly answers the central question: the aggregate CPM/CTR movement is a warning, not proof of creative fatigue.",
+          "Clearly distinguishes account-level Meta trends and storewide Shopify trends from causal or Meta-specific evidence.",
+          "The proposed weekly ad-level review requests the key discriminators: frequency, reach, creative age, spend, CTR, purchases, audience, placement, and device breakdowns.",
+          "Provides useful decision patterns for fatigue versus delivery-mix versus post-click explanations.",
+          "Uses TrailFold-specific context carefully, including the mature 55%-spend asset, laptop-fit creative limitation, mobile conversion decline, and DAY18 inventory gap."
+        ],
+        "issues": [
+          "The additional Shopify, ROAS, PDP, and inventory discussion is relevant context but goes beyond the narrow calculation-and-check request; it could be shortened if brevity were paramount."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "CPC rises from 0.80 to 1.25.",
+            "met": true,
+            "reason": "Shows the formula and calculates $0.80 and $1.25, including the 56.25% increase."
+          },
+          {
+            "criterion": "Aggregate CPM/CTR shifts do not prove creative fatigue.",
+            "met": true,
+            "reason": "Explicitly says fatigue is possible but unconfirmed and names plausible alternatives."
+          },
+          {
+            "criterion": "Need asset-level frequency, age, conversion and audience mix before causal conclusions.",
+            "met": true,
+            "reason": "Its first requested check calls for creative ID/start date, frequency, purchases, and audience/placement/device data."
+          }
+        ]
+      },
+      {
+        "label": "B",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 4,
+          "prioritization": 4
+        },
+        "strengths": [
+          "Accurately calculates the requested implied CPC values and increase, with a clear treatment of CTR as a decimal.",
+          "Properly treats the calculation as implied from rounded CPM and CTR inputs rather than claiming exported CPC.",
+          "States plainly that account averages do not establish fatigue and that spend concentration in the mature asset is not evidence by itself.",
+          "Provides a particularly strong discriminating next check: a 60-day weekly ad-level export, separated between prospecting and retargeting, with delivery-change dates.",
+          "Gives practical interpretation rules that separate fatigue, auction/delivery mix, and post-click explanations.",
+          "Appropriately limits any test to replacement/reallocated spend and flags the actual DAY18 stock-coverage gap."
+        ],
+        "issues": [
+          "It is somewhat broader than necessary for the narrowly framed task, though the added storewide and inventory context remains accurate and decision-relevant."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "CPC rises from 0.80 to 1.25.",
+            "met": true,
+            "reason": "Correctly derives $12/(1,000×0.015) = $0.80 and $15/(1,000×0.012) = $1.25."
+          },
+          {
+            "criterion": "Aggregate CPM/CTR shifts do not prove creative fatigue.",
+            "met": true,
+            "reason": "Explicitly frames them as a warning rather than confirmation and identifies competing explanations."
+          },
+          {
+            "criterion": "Need asset-level frequency, age, conversion and audience mix before causal conclusions.",
+            "met": true,
+            "reason": "Requests ad-level frequency, reach, purchases/value, and audience, placement, and budget-change information."
+          }
+        ]
+      },
+      {
+        "label": "C",
+        "scores": {
+          "factual_accuracy": 2,
+          "brand_fit": 3,
+          "task_completion": 4,
+          "actionability": 3,
+          "uncertainty_and_questions": 3,
+          "prioritization": 3
+        },
+        "strengths": [
+          "The CPC arithmetic, reported ROAS calculations, Shopify conversion calculations, and Meta-versus-Shopify attribution caution are accurate.",
+          "It correctly recognizes that the mature creative’s 55% spend share and a higher CTR in a small test do not prove fatigue or conversion superiority.",
+          "It requests several important missing inputs, including ad-level frequency, reach, and creative-level conversion data.",
+          "It identifies TrailFold-specific PDP information gaps without fabricating customer quotes or unsupported product claims."
+        ],
+        "issues": [
+          "It applies optional reference heuristics too assertively. The $1.50 CPC, 3% CTR, and roughly $80 CPM figures are directional source guidance for a particular product-test context, not supplied TrailFold success thresholds or proof of a creative problem.",
+          "The claim that a 1.2% CTR “points to a creative/hook problem” overstates what aggregate data can establish, especially given missing audience, placement, and delivery-mix data.",
+          "Its proposed decision rule says frequency above 2 with flat/falling reach would “confirm” fatigue or duplicate-audience delivery. Even the reference material treats that threshold as a cold-audience heuristic and a red flag to investigate, not confirmation.",
+          "It suggests reallocating spend toward Laptop-fit before conversion evidence is supplied. A controlled comparison or a limited test is safer than treating higher CTR as sufficient reason to rebalance."
+        ],
+        "critical_errors": [
+          "Treats a frequency-above-two heuristic as confirmation rather than an investigatory signal, despite missing causal evidence and the reference caveat that frequency depends on audience, budget, and seasonality."
+        ],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "CPC rises from 0.80 to 1.25.",
+            "met": true,
+            "reason": "Correctly calculates and reports the rise from $0.80 to $1.25."
+          },
+          {
+            "criterion": "Aggregate CPM/CTR shifts do not prove creative fatigue.",
+            "met": true,
+            "reason": "Its bottom line says the data do not prove classic fatigue, although later threshold language is overly forceful."
+          },
+          {
+            "criterion": "Need asset-level frequency, age, conversion and audience mix before causal conclusions.",
+            "met": true,
+            "reason": "Requests frequency, reach, ad-level conversion data, and acknowledges missing placement/audience-mix information."
+          }
+        ]
+      },
+      {
+        "label": "D",
+        "scores": {
+          "factual_accuracy": 3,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 3,
+          "uncertainty_and_questions": 4,
+          "prioritization": 3
+        },
+        "strengths": [
+          "Correctly computes implied CPC at $0.80 and $1.25, including a valid cross-check from implied impressions and clicks.",
+          "Correctly notes that CPM and CTR changes are compatible with fatigue but do not isolate it from auction pressure, audience expansion, attribution, or post-click explanations.",
+          "Uses the Shopify funnel accurately: conversion declines from 3% to 2%, mobile declines while desktop is stable, ATC rate falls, and ATC-to-checkout falls.",
+          "The creative concentration, customer-theme, PDP-copy, and product-claim discussion is brand-specific and respects the water-resistant/not-waterproof constraint.",
+          "The test arithmetic is internally correct: $3,000 over 14 days split in two yields about $107 per arm per day, about 99,867 impressions and about 1,198 clicks per arm at the stated CPM/CTR.",
+          "It appropriately acknowledges that approximately 24 expected orders per arm would be underpowered for small purchase effects."
+        ],
+        "issues": [
+          "The opening characterization of “credible signs of top-of-funnel creative fatigue” is somewhat stronger than warranted by aggregate CPM and link CTR alone. The later caveats substantially correct this, but the conclusion should lead with ‘possible’ rather than a directional diagnosis.",
+          "It moves directly to a 14-day randomized split test before the simpler, more discriminating requested ad-level historical review. The task specifically calls for a next check; pulling frequency, age, conversion, and audience-mix data is lower-risk and more diagnostic before spending the test budget.",
+          "The recommendation calls the setup randomized without establishing that the proposed Meta configuration can produce a clean randomized experiment. It should be framed as an experiment contingent on available split-test functionality and sufficient conversion volume.",
+          "One assumption says Meta-reported purchase value ‘includes view-through.’ The stated attribution setting permits 1-day view credit, but the supplied facts do not prove the reported total includes any particular view-through conversions."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "CPC rises from 0.80 to 1.25.",
+            "met": true,
+            "reason": "Shows both correct formula calculations and the 56.25% increase."
+          },
+          {
+            "criterion": "Aggregate CPM/CTR shifts do not prove creative fatigue.",
+            "met": true,
+            "reason": "Explicitly names fatigue as non-exclusive and lists several alternative explanations."
+          },
+          {
+            "criterion": "Need asset-level frequency, age, conversion and audience mix before causal conclusions.",
+            "met": true,
+            "reason": "Lists the missing ad-level delivery and conversion data and asks for frequency/reach results across periods."
+          }
+        ]
+      }
+    ],
+    "ranking": [
+      "B",
+      "A",
+      "D",
+      "C"
+    ],
+    "summary": "B is the strongest focused response: it completes the calculation, preserves causal uncertainty, and makes the historical ad-level export the clearest next discriminator. A is nearly as strong, with useful TrailFold context but more ancillary discussion. D is accurate and brand-aware, but prioritizes a potentially underpowered experiment ahead of the lower-risk diagnostic export and makes a few stronger-than-supported assumptions. C has correct core arithmetic and useful analysis, but overconfidently promotes optional reference heuristics into diagnostic thresholds and treats frequency above two as confirmation rather than a red flag."
+  },
+  "request_id": "11108847f2729811e0d0a9658a92c730be828eb7e8ace42031a895036f7d7b7b",
+  "cost_upper_estimate_usd": 0.0670965
+}

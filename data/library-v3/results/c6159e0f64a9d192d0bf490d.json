@@ -1,0 +1,531 @@
+{
+  "cards": [
+    {
+      "title": "Audit whether you actually have an abandoned cart flow (added-to-cart vs checkout started)",
+      "summary": "Most stores think they run an abandoned cart flow but the trigger is actually 'checkout started', leaving the much larger added-to-cart audience untracked and unrecovered.",
+      "use_when": "Auditing or rebuilding your cart/checkout recovery setup, or when your existing 'abandoned cart' flow underperforms despite being live.",
+      "steps": [
+        "Open your ESP (Klaviyo, Mailchimp, etc.) and find the flow labeled 'abandoned cart' or 'abandoned checkout'. Read the actual trigger, not the name.",
+        "Distinguish the two events: 'added to cart' fires when someone puts an item in the cart on a product/landing page; 'checkout started' fires only after they click checkout and reach payment. These are one funnel step apart.",
+        "Klaviyo (via the Shopify integration) names the checkout-started flow 'abandoned cart' and adds it automatically; the added-to-cart metric is NOT installed by default. So a store can have 'an abandoned cart flow' that only catches far-down-funnel people.",
+        "Check Klaviyo > Metrics to see whether 'Added to Cart' exists. If it doesn't, you have no true cart flow and are missing everyone who carted but never reached checkout.",
+        "Install the added-to-cart snippet yourself (see the install card), then run a proper added-to-cart flow alongside the checkout-started flow. The source uses the same email content for both, cloned into two flows with different triggers."
+      ],
+      "caveats": [
+        "Source is strongly worded that ~90% of brands he audits have this mislabeled flow; that is a presenter observation, not an audited benchmark.",
+        "Added-to-cart requires a manual snippet in most setups, so it is more technical than the auto-installed checkout trigger."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "cart-recovery",
+        "klaviyo",
+        "measurement",
+        "checkout",
+        "conversion-optimization",
+        "flow-setup"
+      ],
+      "id": "d962429e9e363cbf5128ba0e",
+      "source_id": "1O7snRnsdSzGQFcGwqLifQRarAjLuQMVy",
+      "source_sha256": "0a590e4b0fb4fe7d3ac7b774f3fa114375aeffa88c529ee1b5b004f6d1d57efd",
+      "source_name": "Ecommerce Email Marketing 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 5
+    },
+    {
+      "title": "Why abandonment is so high and why recovery is high-leverage",
+      "summary": "70-85% of carts are abandoned and 26% of abandoners later buy the same item from a competitor, so an unworked cart flow is cash and market share leaking daily.",
+      "use_when": "Deciding how much to invest in cart/checkout recovery, or building the internal case to prioritize it over other store work.",
+      "steps": [
+        "Reframe the add-to-cart: it is only half the sale. The source argues that in a market with thousands of brands per niche, getting a cart add is not a strong buying signal, so you must keep working the lead.",
+        "Lead with the cost of inaction: every day a recovery flow is not live, abandoners are slipping away, and 26% of them reportedly buy the abandoned item from a competitor instead.",
+        "Segment abandoners by the reason they left so you can address each: hard objection (they weren't convinced), distraction (kid threw a plate), or 'buy later' intent (waiting for a paycheck).",
+        "Note that abandonment is now partly a browsing behavior: 59% of shoppers abandon just from browsing and use the cart as a 'save for later' / bookmark, like an Instagram like. That audience still needs a reminder.",
+        "Recognize that more than 30% of shoppers plan to buy later but don't, because they forget, change their mind, or spend the money elsewhere. Automated reminders exist to beat the forgetting and the competitor."
+      ],
+      "caveats": [
+        "Statistics in the source (70-85% abandonment, 26% competitor purchase, 59% browsing, 30% plan-to-buy-later) are cited to external sources but presented without method detail; treat as directional.",
+        "The 'burning cash' framing is the presenter's opinion about the opportunity cost of an inactive flow."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "cart-recovery",
+        "customer-research",
+        "conversion-optimization",
+        "retention",
+        "competitive-analysis"
+      ],
+      "id": "40bce4fbddfc76c61c31a187",
+      "source_id": "1O7snRnsdSzGQFcGwqLifQRarAjLuQMVy",
+      "source_sha256": "0a590e4b0fb4fe7d3ac7b774f3fa114375aeffa88c529ee1b5b004f6d1d57efd",
+      "source_name": "Ecommerce Email Marketing 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 5
+    },
+    {
+      "title": "Design the recovery flow around the customer's decision cycle, not 1-2 emails",
+      "summary": "A short recovery flow lets customers off the hook before they finish their real multi-day decision cycle, so extend it to a long, spread-out series with branching.",
+      "use_when": "Planning the length, spacing, and branching of an abandoned cart/checkout email sequence.",
+      "steps": [
+        "Don't stop at one or two emails over a couple of days. The source's target is a flow of roughly 6-8 emails (plus discount/support branches) spread across about 10 days to 1-2 weeks, to match a two-week decision window.",
+        "Map why length matters: multiple reminders stop customers forgetting, keep you top of mind, give room to overcome objections, let good content out-position competitors, and give time for a considered decision.",
+        "Branch the flow instead of sending one generic series: split by product/collection left behind (for product-specific info and testimonials), and split by prior-purchase status (for whether to offer a discount).",
+        "Sequence by job: quick reminders first, then product-specific education and social proof, then a last-chance urgency email, then a buyer/non-buyer split into support vs discount emails.",
+        "Keep the added-to-cart and checkout-started flows separate triggers but duplicate the same content so you maintain one set of emails."
+      ],
+      "caveats": [
+        "Length and spacing are the source's stated best practice, not a universal rule; every brand differs and the outline is a starting point, not a finished system.",
+        "Spacing/timing should be tested for your audience rather than assumed."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "cart-recovery",
+        "retention",
+        "flow-setup",
+        "experiment-design",
+        "conversion-optimization"
+      ],
+      "id": "ed0f5c1eb0f6376a543189e3",
+      "source_id": "1O7snRnsdSzGQFcGwqLifQRarAjLuQMVy",
+      "source_sha256": "0a590e4b0fb4fe7d3ac7b774f3fa114375aeffa88c529ee1b5b004f6d1d57efd",
+      "source_name": "Ecommerce Email Marketing 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 5
+    },
+    {
+      "title": "Write plain, item-first recovery copy that overcomes objections",
+      "summary": "Recovery emails should skip fluff and let the dynamic display of the actual abandoned item carry the sale, with copy aimed only at removing uncertainty.",
+      "use_when": "Writing copy for any abandoned cart or checkout email.",
+      "steps": [
+        "Make the item the number-one feature. Showing the exact product they left behind via dynamic product sections is described as carrying ~80% of the selling, so don't bury it under graphics or long copy.",
+        "Keep copy short and to the point; the source states too many words or graphics distract the customer from completing the order.",
+        "Focus copy on overcoming objections only: quick points on shipping, product use, customer reviews, and answers to FAQs.",
+        "Use second-person, item-specific wording ('your order ships free') rather than generic broadcast copy ('all orders ship free') so it reads as addressed to them.",
+        "Answer the questions a hesitant buyer would ask (is it healthy, how long does it last, when will it arrive) with concise facts, not a blog article.",
+        "The source's stated purpose of every recovery email is narrow: remind, give the specific info needed to decide, and remove uncertainty about the buying process."
+      ],
+      "caveats": [
+        "The '80% carried by the item' figure is the presenter's estimate, not a measured benchmark.",
+        "Tone can flex (one example uses playful copy), but the source still keeps product-specific substance central."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "cart-recovery",
+        "product-page",
+        "copywriting",
+        "objection-handling",
+        "conversion-optimization"
+      ],
+      "id": "abb2fb64e79c352922b4d261",
+      "source_id": "1O7snRnsdSzGQFcGwqLifQRarAjLuQMVy",
+      "source_sha256": "0a590e4b0fb4fe7d3ac7b774f3fa114375aeffa88c529ee1b5b004f6d1d57efd",
+      "source_name": "Ecommerce Email Marketing 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 5
+    },
+    {
+      "title": "Conversion-optimized recovery email layout",
+      "summary": "Recovery email designs should be short and focused, with a clear headline, an immediately visible CTA, the abandoned item with details, and trust/reassurance elements.",
+      "use_when": "Designing or reviewing the template/layout for abandoned cart and checkout emails.",
+      "steps": [
+        "Put a clear headline at the top that addresses the cart or states the value proposition (e.g., 'your order ships free').",
+        "Place a prominent CTA button very high in the email so the customer can click without scrolling after opening.",
+        "Display the abandoned item with all relevant info (name, price, image, link) via dynamic content.",
+        "Add supporting sections/icons only if they are useful: shipping info, use of product, reviews.",
+        "Stack risk-reversal and trust badges such as free returns, free return shipping, buy-now-pay-later, warranty, and 'talk with an expert'.",
+        "Keep the whole design short and sweet — the source repeatedly warns against fancy graphics and long layouts for recovery emails."
+      ],
+      "caveats": [
+        "The layout principles are general recommendations; the specific example email (footwear brand) is illustrative, not a guaranteed result.",
+        "Fewer elements per email risks needing more emails to cover all objections, which the source accepts as part of the spread-out flow."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "cart-recovery",
+        "email-design",
+        "landing-page",
+        "conversion-optimization",
+        "trust-building"
+      ],
+      "id": "8640fed0045ce026ce746f83",
+      "source_id": "1O7snRnsdSzGQFcGwqLifQRarAjLuQMVy",
+      "source_sha256": "0a590e4b0fb4fe7d3ac7b774f3fa114375aeffa88c529ee1b5b004f6d1d57efd",
+      "source_name": "Ecommerce Email Marketing 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 5
+    },
+    {
+      "title": "Email 1: the 30-minute quick reminder",
+      "summary": "The first recovery email is a near-pure reminder that shows the abandoned item and gets the warm, distracted customer over the edge.",
+      "use_when": "Setting up the first message and its send delay in a cart/checkout recovery flow.",
+      "steps": [
+        "Time it short: the source typically sees best results sending email 1 about 30 minutes after abandonment; test 30/45 minutes against 1 hour and 4 hours, with 30-45 minutes usually winning.",
+        "Keep the email minimal: 'take another look / we saved your items' plus a 'complete my order' CTA — do not add fancy graphics or extra words that distract.",
+        "Show the specific items left behind via the dynamic product section.",
+        "Add a short social proof line and risk reversals (e.g., ships in 1-3 days, free swatches) to nudge hesitant buyers.",
+        "Purpose is narrow: simply remind the customer what they left behind and let them finish the order."
+      ],
+      "caveats": [
+        "The 30-45 minute timing is the presenter's observed best result; validate on your own list.",
+        "A 'quick reminder' converts because the customer is still warm — it won't rescue cold or high-objection visitors."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "cart-recovery",
+        "conversion-optimization",
+        "send-timing",
+        "experiment-design"
+      ],
+      "id": "815150bfedbc7fd6dc3ba9b0",
+      "source_id": "1O7snRnsdSzGQFcGwqLifQRarAjLuQMVy",
+      "source_sha256": "0a590e4b0fb4fe7d3ac7b774f3fa114375aeffa88c529ee1b5b004f6d1d57efd",
+      "source_name": "Ecommerce Email Marketing 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 5
+    },
+    {
+      "title": "Email 2: second reminder with expanded social proof",
+      "summary": "The follow-up reminder repeats the simple format but leans harder on social proof and risk reversal to catch people who needed another look or were waiting on a paycheck.",
+      "use_when": "Writing the second message in a recovery flow, roughly a day after the first.",
+      "steps": [
+        "Reuse email 1's simple structure but add more social proof and risk-reversal than the first send.",
+        "Aim it at two groups: those who just needed another reminder, and those who were waiting (paycheck) or comparing competitors.",
+        "Include: a quick remark about the product, the dynamic product section, then expanded social proof and risk reversals (e.g., free shipping, free return shipping, buy-now-pay-later, warranty, chat with an expert).",
+        "Keep it simple and similar to email 1 rather than inventing a new format.",
+        "Let the extra reassurance carry skeptical buyers who weren't ready off a pure reminder."
+      ],
+      "caveats": [
+        "Same structure as email 1 means the value depends on the strength of your actual proof and guarantees, not the reminder itself.",
+        "Timing is 'about a day later' per the source; adjust to your cycle."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "cart-recovery",
+        "social-proof",
+        "conversion-optimization",
+        "objection-handling"
+      ],
+      "id": "e7a5c9132999c570edc5c69f",
+      "source_id": "1O7snRnsdSzGQFcGwqLifQRarAjLuQMVy",
+      "source_sha256": "0a590e4b0fb4fe7d3ac7b774f3fa114375aeffa88c529ee1b5b004f6d1d57efd",
+      "source_name": "Ecommerce Email Marketing 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 5
+    },
+    {
+      "title": "Emails 3-4: split by product for specific info, then specific testimonials",
+      "summary": "Branch the flow by the abandoned product to deliver product-specific information and then product-specific testimonials, which the source says convert skeptical customers better than generic proof.",
+      "use_when": "Building branching logic in the flow and creating product/collection-specific recovery content.",
+      "steps": [
+        "Add a Klaviyo conditional split (or trigger split) based on which SKU/product/collection was left behind; you don't need one branch per product, a few main collections are enough.",
+        "Email 3 gives product-specific information and overcomes objections specific to that product — e.g., for a cereal, the nutrition facts (sugar, carbs, protein, fiber, gluten-free) and how it compares. Keep it to the necessary facts, not a long article.",
+        "Email 4 follows with testimonials specific to that same product (e.g., jacket abandonment gets jacket reviews, a 4.9/5 star rating with review count, customer quotes).",
+        "The source's stated reason: a product-specific testimonial converts higher than a generic website testimonial in abandonments, because it speaks directly to the item and the person.",
+        "Continue to include the dynamic product section in both.",
+        "Show proof of why this works via A/B tests — the source cites a product-display test that produced ~6x more conversions (1 vs 6 purchases) on a higher-ticket product despite lower opens."
+      ],
+      "caveats": [
+        "~6x conversion on a product-display test is a single cited test example, not a promised outcome.",
+        "Targeting like the disease/health claims in the cereal example may carry compliance considerations in some categories."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "cart-recovery",
+        "social-proof",
+        "customer-research",
+        "experiment-design",
+        "klaviyo"
+      ],
+      "id": "962de4f96ab520398dea478b",
+      "source_id": "1O7snRnsdSzGQFcGwqLifQRarAjLuQMVy",
+      "source_sha256": "0a590e4b0fb4fe7d3ac7b774f3fa114375aeffa88c529ee1b5b004f6d1d57efd",
+      "source_name": "Ecommerce Email Marketing 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 5
+    },
+    {
+      "title": "Email 5: last-chance urgency email",
+      "summary": "Once the customer has all the info, send a sparse urgency email with a hard deadline to push an impulse order, and reopen shopping to other options.",
+      "use_when": "Writing the mid-to-late recovery email that precedes the discount/support branch.",
+      "steps": [
+        "Assume the customer now has the info from the product-specific and testimonial emails; the job of this email is to make them act.",
+        "Go hard on urgency: a harsh deadline and 'your order is expiring' framing to trigger an impulse finish.",
+        "Keep the format light: dynamic product section, urgency copy, social proof/risk-reversal icons, and finish-order CTA.",
+        "Add a 'keep shopping' option because some people simply don't want that specific item — by this point (roughly day five / fifth email) showing alternatives can re-capture them.",
+        "The source's rationale for delaying the 'keep shopping' suggestion: stay focused on the abandoned item in early emails, then broaden at the last-chance stage."
+      ],
+      "caveats": [
+        "Harsh deadlines only work if they are credible; the source stresses being strict on last-chance deadlines, so don't make deadlines you don't honor.",
+        "Source preference for delaying 'keep shopping' is an opinion about focus, not a validated rule."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "cart-recovery",
+        "urgency",
+        "conversion-optimization",
+        "merchandising"
+      ],
+      "id": "e99b377f856f37b26c7fc0cb",
+      "source_id": "1O7snRnsdSzGQFcGwqLifQRarAjLuQMVy",
+      "source_sha256": "0a590e4b0fb4fe7d3ac7b774f3fa114375aeffa88c529ee1b5b004f6d1d57efd",
+      "source_name": "Ecommerce Email Marketing 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 5
+    },
+    {
+      "title": "Email 6A: buyer branch — founder support email, no discount",
+      "summary": "For customers who have bought before, send a personal founder touch offering support and a final chance instead of a discount.",
+      "use_when": "Configuring the prior-purchase branch in a recovery flow and writing the no-discount variant.",
+      "steps": [
+        "Split the flow on whether the customer has purchased before; send this no-discount variant to past buyers only.",
+        "Make it a plain text-style email from the founder (e.g., 'hey it's Mike, co-founder') to stand out from the rest of the sequence — the source notes this personal touch can make it one of the best-performing emails in the flow.",
+        "Order the content: personal touch about the abandoned item, then an offer of support ('reply to this email, we'll get back to you within 24 hours'), then a final chance to order with a short urgency window.",
+        "Keep it simple: founder voice, last chance, support offer.",
+        "Rationale given: past buyers are the segment you least want to discount, and an unaddressed objection could be the reason for abandonment, so offering help may recover the sale without margin loss."
+      ],
+      "caveats": [
+        "The claim that this can be the best-performing email is the presenter's opinion based on client experience, not a guarantee.",
+        "A 24-hour reply promise requires you can actually meet it; slow support could backfire."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "cart-recovery",
+        "retention",
+        "positioning",
+        "customer-segmentation"
+      ],
+      "id": "2fd76c2c244289b25c6be9aa",
+      "source_id": "1O7snRnsdSzGQFcGwqLifQRarAjLuQMVy",
+      "source_sha256": "0a590e4b0fb4fe7d3ac7b774f3fa114375aeffa88c529ee1b5b004f6d1d57efd",
+      "source_name": "Ecommerce Email Marketing 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 5
+    },
+    {
+      "title": "Email 6B: discount opener for first-time buyers, then a discount last-chance",
+      "summary": "For non-buyers, offer a simple flash discount with urgency, then follow with a discount last-chance email; keep both extremely simple and focused on the offer and the abandoned items.",
+      "use_when": "Setting up the non-buyer branch of a recovery flow that uses a discount to acquire first-time customers.",
+      "steps": [
+        "Send this branch only to customers who have never purchased, so the discount isn't given away to buyers who would convert without it.",
+        "Email 6B: state the flash discount plainly (e.g., $10 off $200+) with urgency, plus the dynamic product section and a finish-my-order CTA. No elaborate graphics — the source says the dynamic section carries the load.",
+        "Email 7 (discount last-chance): heavy urgency on the discount ('last chance, 25% off your cart, code expires today'). Keep it minimal and strict on the deadline.",
+        "Email 8: for discount recipients who still didn't buy, mirror the founder support email but include the discount — personal founder touch, last chance to claim with the discount for a set window, and an offer of support with a reply-to-email.",
+        "Rationale given: first-order discounts are accepted because once someone tries the product they're much more likely to come back, so the discount is an acquisition cost, not a margin giveaway to loyal buyers."
+      ],
+      "caveats": [
+        "Whether to discount at all, and the size/value threshold, is the presenter's choice ('depending on how averse you are to discounts'); he typically discounts only non-buyers or non-buyers in the last 60-90 days.",
+        "Discount depth and urgency must be honored; non-credible deadlines hurt trust."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "cart-recovery",
+        "offer-design",
+        "acquisition",
+        "urgency",
+        "customer-segmentation"
+      ],
+      "id": "b9c909970c5b9bf53e0b0fb9",
+      "source_id": "1O7snRnsdSzGQFcGwqLifQRarAjLuQMVy",
+      "source_sha256": "0a590e4b0fb4fe7d3ac7b774f3fa114375aeffa88c529ee1b5b004f6d1d57efd",
+      "source_name": "Ecommerce Email Marketing 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 5
+    },
+    {
+      "title": "Install the added-to-cart metric and trigger in Klaviyo",
+      "summary": "The added-to-cart event requires a two-step manual install (snippet on site, then verify in Klaviyo) because it is not added automatically like checkout-started.",
+      "use_when": "Setting up or troubleshooting a true abandoned cart flow that captures add-to-cart abandoners.",
+      "steps": [
+        "Check Klaviyo > Metrics. If 'Added to Cart' is missing, you need to install it. Verify against Klaviyo's current help doc since the interface changes.",
+        "On the Shopify store, if your theme has custom liquid blocks and a section you can edit, go to the homepage/product section and paste the provided snippet in a custom liquid block, then Save.",
+        "If you don't have an editable custom liquid block, edit theme code instead: insert the snippet under the body tag, wrapped with an 'if product' condition above and 'endif' below, per the guide, then Save.",
+        "Test the snippet: append a UTM (email=whatever@youwant.com) to your store URL, visit the store, and add an item to the cart.",
+        "In Klaviyo, search the email from the UTM and open the profile's activity feed; confirm an 'Added to Cart' event appears and the metric now exists.",
+        "Set the flow trigger to 'Added to Cart' with filters: checkout started 0 times (so checkout abandoners route to the checkout flow instead), placed order 0 times, and not in this flow in the last 30 days. For the checkout-started flow, use the same filters minus the checkout exclusion."
+      ],
+      "caveats": [
+        "Klaviyo's snippet and metric setup can change; verify against Klaviyo's current documentation rather than relying on a saved snippet.",
+        "Editing theme code incorrectly can break the store; the source says to contact Klaviyo support to get the correct dynamic sections if you get stuck."
+      ],
+      "tags": [
+        "klaviyo",
+        "cart-recovery",
+        "flow-setup",
+        "shopify",
+        "measurement",
+        "email-lifecycle"
+      ],
+      "id": "34204d0c3ce5f6f58182a412",
+      "source_id": "1O7snRnsdSzGQFcGwqLifQRarAjLuQMVy",
+      "source_sha256": "0a590e4b0fb4fe7d3ac7b774f3fa114375aeffa88c529ee1b5b004f6d1d57efd",
+      "source_name": "Ecommerce Email Marketing 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 5
+    },
+    {
+      "title": "Set up dynamic abandoned-item content (careful: cart and checkout variables differ)",
+      "summary": "Dynamic product sections are the core of recovery emails, but the added-to-cart and checkout-started variables are different, so content built for one won't work in the other.",
+      "use_when": "Building the item-display block in recovery emails and troubleshooting broken/altered images or links.",
+      "steps": [
+        "For added-to-cart dynamic content, use a split block: image on the left using the event image URL variable, and text on the right with item name and price variables. Point the checkout/cart link to your cart page (e.g., yoursite.com/cart) if you have one, otherwise Klaviyo's link sends them to the item they viewed.",
+        "For checkout-started, the dynamic content is built as a table block that must be set to dynamic and customized, and it exposes more data because checkout passes more information from Shopify.",
+        "Always preview with Klaviyo's preview feature to confirm the dynamic content loads before the flow goes live.",
+        "Do not copy checkout dynamic content into the cart flow (or vice versa) — the triggers feed different information, so the variables won't map correctly.",
+        "If the dynamic sections won't work, ask Klaviyo support (chat) for the correct variables for your trigger."
+      ],
+      "caveats": [
+        "Exact variable names and block options can change in Klaviyo; confirm current behavior in the app or with support.",
+        "Source says ideally you have a cart page; without one, the fallback link sends people to a single item, which is a weaker recovery experience."
+      ],
+      "tags": [
+        "klaviyo",
+        "cart-recovery",
+        "email-design",
+        "flow-setup",
+        "checkout",
+        "measurement"
+      ],
+      "id": "c42f60fa5fca9bcad71633e1",
+      "source_id": "1O7snRnsdSzGQFcGwqLifQRarAjLuQMVy",
+      "source_sha256": "0a590e4b0fb4fe7d3ac7b774f3fa114375aeffa88c529ee1b5b004f6d1d57efd",
+      "source_name": "Ecommerce Email Marketing 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 5
+    },
+    {
+      "title": "Set up A/B tests inside the flow rather than on the email",
+      "summary": "The source prefers a conditional random-sample split within the Klaviyo flow over Klaviyo's built-in email test, because numbers are visible in the flow at a glance.",
+      "use_when": "Running experiments on recovery emails and wanting quick visibility into results.",
+      "steps": [
+        "Add a conditional split to the flow and create a random sample so branches split the audience evenly.",
+        "Copy and paste the prior email into one branch as the variant.",
+        "Reconnect the flow so both branches rejoin the main path afterward.",
+        "Compare against Klaviyo's native 'create a test' option on the email itself; the source finds that harder to read because you must click into the email to see the data, whereas the flow method shows the numbers at a glance.",
+        "Use the flow-level view to decide winners and iterate."
+      ],
+      "caveats": [
+        "The preference for flow-level splits is the presenter's workflow opinion, not an accuracy claim; both can be valid.",
+        "Random-sample sizing and statistical significance are not covered here — don't over-read small test results."
+      ],
+      "tags": [
+        "klaviyo",
+        "experiment-design",
+        "email-lifecycle",
+        "measurement",
+        "cart-recovery"
+      ],
+      "id": "74b2b4379cdbd72d01e75f4c",
+      "source_id": "1O7snRnsdSzGQFcGwqLifQRarAjLuQMVy",
+      "source_sha256": "0a590e4b0fb4fe7d3ac7b774f3fa114375aeffa88c529ee1b5b004f6d1d57efd",
+      "source_name": "Ecommerce Email Marketing 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 5
+    },
+    {
+      "title": "Small A/B tests can compound into large revenue gains",
+      "summary": "The source argues small, iterative A/B tests on recovery emails (subject lines, format, layout) can each add meaningful revenue that compounds, so the outline is only a starting point.",
+      "use_when": "Planning an ongoing optimization cadence for cart/checkout flows after initial launch.",
+      "steps": [
+        "Treat the provided email outline as a starting point, not a finished system; every brand needs its own optimizations.",
+        "Test small iterations, because the source says small changes can make or break the success of abandonment flows.",
+        "Prioritize tests the source ran: subject line (one cited test tripled placed-order rate and roughly doubled click rate on the same volume), long-form vs short-form email (short-form reportedly better), content alignment (center vs left, cited at ~$5K extra in a month), product display (cited at ~6x conversions), text-based layout (cited at ~40% conversion boost), and email content (cited at ~2x conversions).",
+        "Do the math on compounding: the source frames repeated 25-50% revenue boosts as compounding over time, using a Warren Buffett analogy.",
+        "Run tests continuously rather than as one-offs, and pick one variable per test to keep results readable."
+      ],
+      "caveats": [
+        "All the percentage examples are the source's reported client test results, not guaranteed outcomes; do not treat them as benchmarks.",
+        "The 25-50% revenue-boost range is the presenter's characterization of small-test upside; actual lift depends on your baseline and traffic."
+      ],
+      "tags": [
+        "experiment-design",
+        "email-lifecycle",
+        "measurement",
+        "conversion-optimization",
+        "cart-recovery"
+      ],
+      "id": "608aaa1e7d792d4a730b3cc5",
+      "source_id": "1O7snRnsdSzGQFcGwqLifQRarAjLuQMVy",
+      "source_sha256": "0a590e4b0fb4fe7d3ac7b774f3fa114375aeffa88c529ee1b5b004f6d1d57efd",
+      "source_name": "Ecommerce Email Marketing 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 5
+    },
+    {
+      "title": "Separate cart and checkout flows to avoid double-messaging",
+      "summary": "Because added-to-cart and checkout-started are different funnel events, you need two flows with exclusion filters so people aren't messaged twice or dropped from the wrong sequence.",
+      "use_when": "Configuring the triggers and filters of both recovery flows in Klaviyo.",
+      "steps": [
+        "Build two flows: one triggered by 'Added to Cart', one triggered by 'Checkout Started'. Duplicate the same content into both so you maintain one set of emails.",
+        "On the added-to-cart flow, add filters: 'Checkout Started = 0 times since starting this flow' (so anyone who moves to checkout exits and enters the checkout flow instead), 'Placed Order = 0 times since starting this flow', and 'has not been in this flow in the last 30 days'.",
+        "On the checkout-started flow, use the same 'Placed Order = 0 times since starting this flow' and 'not in this flow in the last 30 days' filters, without the checkout exclusion (it's the trigger itself).",
+        "Confirm both flows fire correctly and that a person who adds to cart then proceeds to checkout doesn't receive both sequences simultaneously."
+      ],
+      "caveats": [
+        "The 'last 30 days' re-entry window is the source's reset choice; adjust to your purchase frequency.",
+        "Exclusion logic depends on trigger direction; verify in Klaviyo that your filters behave as intended."
+      ],
+      "tags": [
+        "klaviyo",
+        "cart-recovery",
+        "flow-setup",
+        "email-lifecycle",
+        "checkout",
+        "measurement"
+      ],
+      "id": "b6389565ed83cc169d986be1",
+      "source_id": "1O7snRnsdSzGQFcGwqLifQRarAjLuQMVy",
+      "source_sha256": "0a590e4b0fb4fe7d3ac7b774f3fa114375aeffa88c529ee1b5b004f6d1d57efd",
+      "source_name": "Ecommerce Email Marketing 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 5
+    },
+    {
+      "title": "Adapt to the 2024 more-competitive buyer who does due diligence",
+      "summary": "With more stores and a warier, thinner-walleted buyer who shops around, recovery messaging must overcome distrust and comparison shopping, not just remind.",
+      "use_when": "Setting the tone and content strategy of recovery and lifecycle messaging in a crowded niche.",
+      "steps": [
+        "Assume the buyer has been burned online before (late shipping, not just non-delivery), so proactively answer logistics and quality questions: when will it arrive, will it arrive intact, what do reviews say, how long does it last.",
+        "Assume the buyer is comparing you against many other brands in the same niche and may have added competitors' items to their cart too; your objection handling and content quality decide the win.",
+        "Lead with risk reversal and specifics (shipping time, returns, warranty, reviews) rather than broad claims.",
+        "Recognize shopping is entertainment for many buyers and carting is a bookmarking behavior, so reminders — not pressure — are often what's needed.",
+        "Account for tighter budgets versus the stimulus-era spend; a discount targeted only at non-buyers can help first-time acquisition."
+      ],
+      "caveats": [
+        "This 2024 framing is the presenter's market read; timing-specific claims may age.",
+        "Not every niche has thousands of brands or scam-scarred buyers — calibrate the level of proof to your category."
+      ],
+      "tags": [
+        "positioning",
+        "customer-research",
+        "trust-building",
+        "retention",
+        "email-lifecycle",
+        "objection-handling"
+      ],
+      "id": "099c7444116a3e290eb2f472",
+      "source_id": "1O7snRnsdSzGQFcGwqLifQRarAjLuQMVy",
+      "source_sha256": "0a590e4b0fb4fe7d3ac7b774f3fa114375aeffa88c529ee1b5b004f6d1d57efd",
+      "source_name": "Ecommerce Email Marketing 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 5
+    }
+  ],
+  "request_id": "ab60a81707dc4162b628a3ba627887853e6fc2d76eaa560a4251e6419e682e06",
+  "ecommerce_scope_version": 1
+}

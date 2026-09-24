@@ -1,0 +1,580 @@
+{
+  "request_id": "f5d178484e44f1e63325d69b4aceb9eb6e6d3812e2102188f8e8df3e48fdb36c",
+  "provider": "deepseek",
+  "model": "deepseek-flash",
+  "effort": "high",
+  "completion_limit": 65536,
+  "usage": {
+    "prompt_tokens": 3561,
+    "completion_tokens": 20203,
+    "total_tokens": 23764,
+    "prompt_tokens_details": {
+      "cached_tokens": 1152
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 16810
+    },
+    "prompt_cache_hit_tokens": 1152,
+    "prompt_cache_miss_tokens": 2409
+  },
+  "booked_cost_usd": 0.0253119,
+  "seconds": 71.38,
+  "finish_reason": "stop",
+  "output": {
+    "units": [
+      {
+        "id": "u1",
+        "kind": "action",
+        "title": "Show total cost up front for subscription pricing",
+        "claim": {
+          "text": "Source says an example where total cost wasn't shown up front and price jumps at cart gives customers a reason to abandon, and if not transparent on pricing, this should be split tested and monitored.",
+          "quote": "the total cost wasn't shown up front"
+        },
+        "action": {
+          "text": "Split test and monitor pricing transparency when total cost is not shown up front.",
+          "quote": "it's definitely something to be split testing and keeping an eye on"
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Quarterly subscription price jumps at cart from around $300 to $400.",
+              "quote": "immediately the price jumps to like $300 to $400"
+            },
+            {
+              "text": "Customers abandon when total cost is revealed late.",
+              "quote": "it gives them a reason to abandon"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No specific target conversion rate or test duration stated for this pricing transparency test."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u2",
+        "kind": "action",
+        "title": "Split test one-page versus multi-step checkout",
+        "claim": {
+          "text": "Source says one-page versus multi-step checkout needs split testing, and their data shows one page converts a little better.",
+          "quote": "from our data, one page does convert a little bit better"
+        },
+        "action": {
+          "text": "Run a split test comparing one-page and multi-step checkout.",
+          "quote": "it's going to be something that you need to split test at the end of the day"
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No test duration or sample size given for this specific comparison."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u3",
+        "kind": "action",
+        "title": "Reinforce free shipping threshold to upsell and handle cost objections",
+        "claim": {
+          "text": "Source says a callout on the free shipping threshold reinforces an upsell and objection handles the number one concern of extra costs.",
+          "quote": "we're reinforcing again trying to get an upsell and we're objection handling the number one thing here"
+        },
+        "action": {
+          "text": "Display a free shipping threshold callout so customers can spend more to qualify.",
+          "quote": "we also have a call out on the free shipping threshold"
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Extra costs are the number one objection.",
+              "quote": "if the extra costs are too high"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "Threshold amount and incentive vary by store; source gives example $12 more and free shipping over $75."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u4",
+        "kind": "action",
+        "title": "Offer accelerated payment options",
+        "claim": {
+          "text": "Source lists fast pay options Shop Pay, Apple Pay, and Google Pay in the good checkout.",
+          "quote": "there's all the fast pay option, shop pay, Apple Pay, Google Pay"
+        },
+        "action": {
+          "text": "Provide accelerated checkout options such as Shop Pay, Apple Pay, and Google Pay.",
+          "quote": "there's all the fast pay option, shop pay, Apple Pay, Google Pay"
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Bad checkout lacks accelerated checkout options.",
+              "quote": "There's no accelerated checkout options"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": []
+      },
+      {
+        "id": "u5",
+        "kind": "action",
+        "title": "Default to guest checkout",
+        "claim": {
+          "text": "Source says the good checkout does not require account creation and checks out as guest by default, while forced account creation is a leak.",
+          "quote": "By default, they're checking out as guest."
+        },
+        "action": {
+          "text": "Set guest checkout as the default instead of requiring account creation.",
+          "quote": "By default, they're checking out as guest."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Account creation is forced in the bad checkout.",
+              "quote": "Account creation is forced."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": []
+      },
+      {
+        "id": "u6",
+        "kind": "action",
+        "title": "Shorten checkout form to essentials only",
+        "claim": {
+          "text": "Source says the delivery address was shortened enormously by having essentials only, while a bloated form with extra fields leaks conversions.",
+          "quote": "We've shortened the delivery address enormously by having essentials only."
+        },
+        "action": {
+          "text": "Include only essential form fields and remove extra fields.",
+          "quote": "We've shortened the delivery address enormously by having essentials only."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Form is bloated with extra fields.",
+              "quote": "The form is super bloated with a bunch of extra fields that we just don't need."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [
+          {
+            "text": "Getting as little information as possible while still verifying the transaction is genuine.",
+            "quote": "We're getting as little amount of information as possible whilst also still being able to verify if it's a genuine transaction."
+          }
+        ],
+        "unknowns": [],
+        "relations": []
+      },
+      {
+        "id": "u7",
+        "kind": "action",
+        "title": "Make returns policy obvious and reinforced",
+        "claim": {
+          "text": "Source says returns are made very obvious and reinforced down the bottom, while hiding the returns policy is a leak.",
+          "quote": "Returns are made very obvious and reinforced down the bottom here."
+        },
+        "action": {
+          "text": "Display a clear return policy near the bottom, such as 30-day free returns, rather than an obscure linked policy.",
+          "quote": "Returns are made very obvious and reinforced down the bottom here."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Bad checkout hides the returns policy.",
+              "quote": "the returns policy is hidden over here"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [
+          {
+            "text": "Clearly shows 30-day free returns.",
+            "quote": "it's very clear that they're getting 30-day free returns"
+          }
+        ],
+        "unknowns": [],
+        "relations": []
+      },
+      {
+        "id": "u8",
+        "kind": "action",
+        "title": "Place express checkout at the top",
+        "claim": {
+          "text": "Source says express checkout is right at the top, which it should always be.",
+          "quote": "The express checkout is right at the top, which it should always be."
+        },
+        "action": {
+          "text": "Put express checkout at the top of the checkout page.",
+          "quote": "The express checkout is right at the top, which it should always be."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": []
+      },
+      {
+        "id": "u9",
+        "kind": "action",
+        "title": "Send email and SMS abandonment flows",
+        "claim": {
+          "text": "Source says the good checkout sends an email and SMS abandonment flow, whereas the bad one does not.",
+          "quote": "we're also sending an email at an SMS abandonment flow"
+        },
+        "action": {
+          "text": "Set up email and SMS abandonment flows for checkout abandonment.",
+          "quote": "we're also sending an email at an SMS abandonment flow"
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": []
+      },
+      {
+        "id": "u10",
+        "kind": "warning",
+        "title": "Layering extra fees at checkout tanks conversion",
+        "claim": {
+          "text": "Source warns that adding shipping, tax, and handling fees at checkout creates an extra $26 that suddenly gets layered in and tanks conversion rates.",
+          "quote": "Shipping's getting added, tax is getting added, handling fees are getting added. So, there's an extra $26 that suddenly gets layered in."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Shipping, tax, and handling fees are added at checkout.",
+              "quote": "Shipping's getting added, tax is getting added, handling fees are getting added."
+            },
+            {
+              "text": "Extra costs suddenly layer in.",
+              "quote": "there's an extra $26 that suddenly gets layered in"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": []
+      },
+      {
+        "id": "u11",
+        "kind": "principle",
+        "title": "Require sufficient conversions and sessions before trusting AB test results",
+        "claim": {
+          "text": "Source says that to trust a 10 to 20% lift, roughly a,000 conversions per variant are needed, and at a 2.5% conversion rate that is about 40,000 sessions per variant.",
+          "quote": "To trust a 10 to 20% conversion left, you need roughly a,000 conversions per variant. At a 2.5% conversion rate, that's about 40,000 sessions per variant."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Agencies may show green AB test results after short periods with low conversions.",
+              "quote": "when an agency goes and shows you a green AB test result after 2 weeks on a page doing a 100 conversions, it's not a win"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "Source says roughly a,000 conversions per variant; the exact intended number is ambiguous due to transcription."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u12",
+        "kind": "warning",
+        "title": "Do not stop AB tests early or peek daily",
+        "claim": {
+          "text": "Source says most people check tests every day and stop when it looks significant, which substantially inflates the false positive rate, so tests that look valid often are not.",
+          "quote": "most people run these tests by checking them every single day and they stop the moment it starts to look like a significant outcome, which substantially inflates your false positive rate"
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Daily checking and stopping when it looks significant.",
+              "quote": "most people run these tests by checking them every single day and they stop the moment it starts to look like a significant outcome"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [
+          {
+            "text": "Let the test run for the required duration to hit statistical relevancy on the session volume.",
+            "quote": "you haven't actually let it run for one, two, three, four weeks or whatever time duration you need to hit statistical relevancy on the session volume"
+          }
+        ],
+        "unknowns": [],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u11"
+          }
+        ]
+      },
+      {
+        "id": "u13",
+        "kind": "action",
+        "title": "Isolate landing-page AB tests from email traffic",
+        "claim": {
+          "text": "Source says Klaviyo campaigns cause an artificial spike in conversion rates and revenue, and if email traffic can hit the landing pages it can throw the entire test off.",
+          "quote": "anytime you send a Clavio campaign, uh it will cause an artificial spike in conversion rates and revenue"
+        },
+        "action": {
+          "text": "Run tests on custom landing pages that only drive cold traffic from Meta.",
+          "quote": "you really need to do them on custom landing pages that are only driving cold traffic from Meta"
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Email campaigns can contaminate landing page tests.",
+              "quote": "anytime you send a Clavio campaign, uh it will cause an artificial spike in conversion rates and revenue"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": []
+      },
+      {
+        "id": "u14",
+        "kind": "warning",
+        "title": "Account for multi-click journeys in AB tests",
+        "claim": {
+          "text": "Source says tests are still flawed if time to purchase is extended because a percentage of customers have a multi-click journey, and on average it takes 1.5 clicks across a meta ad for a user to convert.",
+          "quote": "Even when you do that, like these are still flawed if you have extended time to purchase because a certain percentage of customers will have a multi-click journey, which means that they won't buy on first click. It will take them a few clicks potentially across a few channels to actually convert. And we've looked at this pretty closely on a lot of big brands that we work with. It tends to be like about 1.5. And so on average it takes 1.5 clicks across a meta ad for a user to convert."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Extended time to purchase creates multi-click journeys.",
+              "quote": "these are still flawed if you have extended time to purchase because a certain percentage of customers will have a multi-click journey"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "Source does not state a full correction or test design to account for multi-click journeys."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u15",
+        "kind": "action",
+        "title": "Match unaware VSSL traffic with a landing page",
+        "claim": {
+          "text": "Source says scalable VSSLs or long-form unaware targeting always need to be matched with a landing page, not a product page, unless the product page is heavily manipulated into almost a landing page.",
+          "quote": "they really always need to be matched with a landing page, not with a product page"
+        },
+        "action": {
+          "text": "Drive scalable VSSL or long-form unaware traffic to a landing page rather than a product page.",
+          "quote": "they really always need to be matched with a landing page, not with a product page"
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": [
+            {
+              "text": "Product page may work if heavily manipulated into almost a landing page.",
+              "quote": "Unless the product page is heavily manipulated into being almost a landing page"
+            }
+          ]
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": []
+      },
+      {
+        "id": "u16",
+        "kind": "action",
+        "title": "Use standard landing page structure",
+        "claim": {
+          "text": "Source says the generic structure for these landing pages is to start with a hook, go into the problem, the mechanism, the objections, the proof, a risk reversal, and a CTA, and this is the same structure as a VSSL script.",
+          "quote": "The generic structure for these landing pages is to start with a hook, go into the problem, the mechanism, the objections, the proof, a risk reversal, and a CTA."
+        },
+        "action": {
+          "text": "Structure landing pages and VSSL scripts with hook, problem, mechanism, objections, proof, risk reversal, and CTA.",
+          "quote": "start with a hook, go into the problem, the mechanism, the objections, the proof, a risk reversal, and a CTA"
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": []
+      }
+    ],
+    "more_units": true,
+    "unresolved": [
+      "Passage ends mid-sentence at 'whether that's a landing '; the continuation is missing.",
+      "Omitted due to 16-unit cap: tax-line clarification for inclusive tax, trust badges versus trust, landing pages underleveraged principle, CRO service prerequisites for 8-9 figure brands, and trust badge replacement.",
+      "Source uses 'Clavio' and 'a,000'; these appear to be transcription errors but were preserved in quotes."
+    ]
+  },
+  "raw_content": "{\"units\":[{\"id\":\"u1\",\"kind\":\"action\",\"title\":\"Show total cost up front for subscription pricing\",\"claim\":{\"text\":\"Source says an example where total cost wasn't shown up front and price jumps at cart gives customers a reason to abandon, and if not transparent on pricing, this should be split tested and monitored.\",\"quote\":\"the total cost wasn't shown up front\"},\"action\":{\"text\":\"Split test and monitor pricing transparency when total cost is not shown up front.\",\"quote\":\"it's definitely something to be split testing and keeping an eye on\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Quarterly subscription price jumps at cart from around $300 to $400.\",\"quote\":\"immediately the price jumps to like $300 to $400\"},{\"text\":\"Customers abandon when total cost is revealed late.\",\"quote\":\"it gives them a reason to abandon\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"No specific target conversion rate or test duration stated for this pricing transparency test.\"],\"relations\":[]},{\"id\":\"u2\",\"kind\":\"action\",\"title\":\"Split test one-page versus multi-step checkout\",\"claim\":{\"text\":\"Source says one-page versus multi-step checkout needs split testing, and their data shows one page converts a little better.\",\"quote\":\"from our data, one page does convert a little bit better\"},\"action\":{\"text\":\"Run a split test comparing one-page and multi-step checkout.\",\"quote\":\"it's going to be something that you need to split test at the end of the day\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"No test duration or sample size given for this specific comparison.\"],\"relations\":[]},{\"id\":\"u3\",\"kind\":\"action\",\"title\":\"Reinforce free shipping threshold to upsell and handle cost objections\",\"claim\":{\"text\":\"Source says a callout on the free shipping threshold reinforces an upsell and objection handles the number one concern of extra costs.\",\"quote\":\"we're reinforcing again trying to get an upsell and we're objection handling the number one thing here\"},\"action\":{\"text\":\"Display a free shipping threshold callout so customers can spend more to qualify.\",\"quote\":\"we also have a call out on the free shipping threshold\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Extra costs are the number one objection.\",\"quote\":\"if the extra costs are too high\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"Threshold amount and incentive vary by store; source gives example $12 more and free shipping over $75.\"],\"relations\":[]},{\"id\":\"u4\",\"kind\":\"action\",\"title\":\"Offer accelerated payment options\",\"claim\":{\"text\":\"Source lists fast pay options Shop Pay, Apple Pay, and Google Pay in the good checkout.\",\"quote\":\"there's all the fast pay option, shop pay, Apple Pay, Google Pay\"},\"action\":{\"text\":\"Provide accelerated checkout options such as Shop Pay, Apple Pay, and Google Pay.\",\"quote\":\"there's all the fast pay option, shop pay, Apple Pay, Google Pay\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Bad checkout lacks accelerated checkout options.\",\"quote\":\"There's no accelerated checkout options\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[],\"relations\":[]},{\"id\":\"u5\",\"kind\":\"action\",\"title\":\"Default to guest checkout\",\"claim\":{\"text\":\"Source says the good checkout does not require account creation and checks out as guest by default, while forced account creation is a leak.\",\"quote\":\"By default, they're checking out as guest.\"},\"action\":{\"text\":\"Set guest checkout as the default instead of requiring account creation.\",\"quote\":\"By default, they're checking out as guest.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Account creation is forced in the bad checkout.\",\"quote\":\"Account creation is forced.\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[],\"relations\":[]},{\"id\":\"u6\",\"kind\":\"action\",\"title\":\"Shorten checkout form to essentials only\",\"claim\":{\"text\":\"Source says the delivery address was shortened enormously by having essentials only, while a bloated form with extra fields leaks conversions.\",\"quote\":\"We've shortened the delivery address enormously by having essentials only.\"},\"action\":{\"text\":\"Include only essential form fields and remove extra fields.\",\"quote\":\"We've shortened the delivery address enormously by having essentials only.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Form is bloated with extra fields.\",\"quote\":\"The form is super bloated with a bunch of extra fields that we just don't need.\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[{\"text\":\"Getting as little information as possible while still verifying the transaction is genuine.\",\"quote\":\"We're getting as little amount of information as possible whilst also still being able to verify if it's a genuine transaction.\"}],\"unknowns\":[],\"relations\":[]},{\"id\":\"u7\",\"kind\":\"action\",\"title\":\"Make returns policy obvious and reinforced\",\"claim\":{\"text\":\"Source says returns are made very obvious and reinforced down the bottom, while hiding the returns policy is a leak.\",\"quote\":\"Returns are made very obvious and reinforced down the bottom here.\"},\"action\":{\"text\":\"Display a clear return policy near the bottom, such as 30-day free returns, rather than an obscure linked policy.\",\"quote\":\"Returns are made very obvious and reinforced down the bottom here.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Bad checkout hides the returns policy.\",\"quote\":\"the returns policy is hidden over here\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[{\"text\":\"Clearly shows 30-day free returns.\",\"quote\":\"it's very clear that they're getting 30-day free returns\"}],\"unknowns\":[],\"relations\":[]},{\"id\":\"u8\",\"kind\":\"action\",\"title\":\"Place express checkout at the top\",\"claim\":{\"text\":\"Source says express checkout is right at the top, which it should always be.\",\"quote\":\"The express checkout is right at the top, which it should always be.\"},\"action\":{\"text\":\"Put express checkout at the top of the checkout page.\",\"quote\":\"The express checkout is right at the top, which it should always be.\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[],\"relations\":[]},{\"id\":\"u9\",\"kind\":\"action\",\"title\":\"Send email and SMS abandonment flows\",\"claim\":{\"text\":\"Source says the good checkout sends an email and SMS abandonment flow, whereas the bad one does not.\",\"quote\":\"we're also sending an email at an SMS abandonment flow\"},\"action\":{\"text\":\"Set up email and SMS abandonment flows for checkout abandonment.\",\"quote\":\"we're also sending an email at an SMS abandonment flow\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[],\"relations\":[]},{\"id\":\"u10\",\"kind\":\"warning\",\"title\":\"Layering extra fees at checkout tanks conversion\",\"claim\":{\"text\":\"Source warns that adding shipping, tax, and handling fees at checkout creates an extra $26 that suddenly gets layered in and tanks conversion rates.\",\"quote\":\"Shipping's getting added, tax is getting added, handling fees are getting added. So, there's an extra $26 that suddenly gets layered in.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Shipping, tax, and handling fees are added at checkout.\",\"quote\":\"Shipping's getting added, tax is getting added, handling fees are getting added.\"},{\"text\":\"Extra costs suddenly layer in.\",\"quote\":\"there's an extra $26 that suddenly gets layered in\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[],\"relations\":[]},{\"id\":\"u11\",\"kind\":\"principle\",\"title\":\"Require sufficient conversions and sessions before trusting AB test results\",\"claim\":{\"text\":\"Source says that to trust a 10 to 20% lift, roughly a,000 conversions per variant are needed, and at a 2.5% conversion rate that is about 40,000 sessions per variant.\",\"quote\":\"To trust a 10 to 20% conversion left, you need roughly a,000 conversions per variant. At a 2.5% conversion rate, that's about 40,000 sessions per variant.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Agencies may show green AB test results after short periods with low conversions.\",\"quote\":\"when an agency goes and shows you a green AB test result after 2 weeks on a page doing a 100 conversions, it's not a win\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"Source says roughly a,000 conversions per variant; the exact intended number is ambiguous due to transcription.\"],\"relations\":[]},{\"id\":\"u12\",\"kind\":\"warning\",\"title\":\"Do not stop AB tests early or peek daily\",\"claim\":{\"text\":\"Source says most people check tests every day and stop when it looks significant, which substantially inflates the false positive rate, so tests that look valid often are not.\",\"quote\":\"most people run these tests by checking them every single day and they stop the moment it starts to look like a significant outcome, which substantially inflates your false positive rate\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Daily checking and stopping when it looks significant.\",\"quote\":\"most people run these tests by checking them every single day and they stop the moment it starts to look like a significant outcome\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[{\"text\":\"Let the test run for the required duration to hit statistical relevancy on the session volume.\",\"quote\":\"you haven't actually let it run for one, two, three, four weeks or whatever time duration you need to hit statistical relevancy on the session volume\"}],\"unknowns\":[],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u11\"}]},{\"id\":\"u13\",\"kind\":\"action\",\"title\":\"Isolate landing-page AB tests from email traffic\",\"claim\":{\"text\":\"Source says Klaviyo campaigns cause an artificial spike in conversion rates and revenue, and if email traffic can hit the landing pages it can throw the entire test off.\",\"quote\":\"anytime you send a Clavio campaign, uh it will cause an artificial spike in conversion rates and revenue\"},\"action\":{\"text\":\"Run tests on custom landing pages that only drive cold traffic from Meta.\",\"quote\":\"you really need to do them on custom landing pages that are only driving cold traffic from Meta\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Email campaigns can contaminate landing page tests.\",\"quote\":\"anytime you send a Clavio campaign, uh it will cause an artificial spike in conversion rates and revenue\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[],\"relations\":[]},{\"id\":\"u14\",\"kind\":\"warning\",\"title\":\"Account for multi-click journeys in AB tests\",\"claim\":{\"text\":\"Source says tests are still flawed if time to purchase is extended because a percentage of customers have a multi-click journey, and on average it takes 1.5 clicks across a meta ad for a user to convert.\",\"quote\":\"Even when you do that, like these are still flawed if you have extended time to purchase because a certain percentage of customers will have a multi-click journey, which means that they won't buy on first click. It will take them a few clicks potentially across a few channels to actually convert. And we've looked at this pretty closely on a lot of big brands that we work with. It tends to be like about 1.5. And so on average it takes 1.5 clicks across a meta ad for a user to convert.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Extended time to purchase creates multi-click journeys.\",\"quote\":\"these are still flawed if you have extended time to purchase because a certain percentage of customers will have a multi-click journey\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"Source does not state a full correction or test design to account for multi-click journeys.\"],\"relations\":[]},{\"id\":\"u15\",\"kind\":\"action\",\"title\":\"Match unaware VSSL traffic with a landing page\",\"claim\":{\"text\":\"Source says scalable VSSLs or long-form unaware targeting always need to be matched with a landing page, not a product page, unless the product page is heavily manipulated into almost a landing page.\",\"quote\":\"they really always need to be matched with a landing page, not with a product page\"},\"action\":{\"text\":\"Drive scalable VSSL or long-form unaware traffic to a landing page rather than a product page.\",\"quote\":\"they really always need to be matched with a landing page, not with a product page\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[{\"text\":\"Product page may work if heavily manipulated into almost a landing page.\",\"quote\":\"Unless the product page is heavily manipulated into being almost a landing page\"}]},\"completion\":[],\"unknowns\":[],\"relations\":[]},{\"id\":\"u16\",\"kind\":\"action\",\"title\":\"Use standard landing page structure\",\"claim\":{\"text\":\"Source says the generic structure for these landing pages is to start with a hook, go into the problem, the mechanism, the objections, the proof, a risk reversal, and a CTA, and this is the same structure as a VSSL script.\",\"quote\":\"The generic structure for these landing pages is to start with a hook, go into the problem, the mechanism, the objections, the proof, a risk reversal, and a CTA.\"},\"action\":{\"text\":\"Structure landing pages and VSSL scripts with hook, problem, mechanism, objections, proof, risk reversal, and CTA.\",\"quote\":\"start with a hook, go into the problem, the mechanism, the objections, the proof, a risk reversal, and a CTA\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[],\"relations\":[]}],\"more_units\":true,\"unresolved\":[\"Passage ends mid-sentence at 'whether that's a landing '; the continuation is missing.\",\"Omitted due to 16-unit cap: tax-line clarification for inclusive tax, trust badges versus trust, landing pages underleveraged principle, CRO service prerequisites for 8-9 figure brands, and trust badge replacement.\",\"Source uses 'Clavio' and 'a,000'; these appear to be transcription errors but were preserved in quotes.\"]}",
+  "input": {
+    "source": {
+      "source_id": "1wv9Trf2egAaS3LXa54YHIRZSTkcr6H8R",
+      "source_sha256": "33935f0073ec7c3281b3953817ec5913d9fd50c9b4a130d4c7b02c71b4c402b5",
+      "locator": "batch",
+      "start": 0,
+      "text": "n, but it's a quarterly subscription only. So when you hit add to cart and then you open up the cart slider, immediately the price jumps to like $300 to $400. So that would be an example of where the total cost wasn't shown up front, but once they actually reach the cart and reach the checkout, it gives them a reason to abandon. Now, I don't think most people have to worry about this cuz most people are transparent on pricing up front, but if you're not like IM8, it's definitely something to be split testing and keeping an eye on. So, let's go to an example of a bad checkout and a good checkout. Uh, right away on the right is a onepage checkout rather than a multistep. Now, onepage versus multi-step, it's going to be something that you need to split test at the end of the day. Um, from our data, one page does convert a little bit better. Right up the top here, we also have a call out on the free shipping threshold. So, we're reinforcing again trying to get an upsell and we're objection handling the number one thing here, which is that if the extra costs are too high, well, if you just spend $12 more, you'd get free shipping. And there's all the fast pay option, shop pay, Apple Pay, Google Pay. Moving down, we then don't need to create an account here. By default, they're checking out as guest. Over here, they need to make an account. We've shortened the delivery address enormously by having essentials only. We don't have all these extra lines. We haven't split it out to be this enormous field. It's just very quick. We don't have all these unnecessary trust badges as well. Then down the bottom, we have free returns and free shipping over $75. So, we're reinforcing that they can save this $6 if they just get their cart value up. Actually, looks like we made a mistake here. These guys should be getting free shipping, but oh well. What I don't like, and this is something that you just have to weigh up, is for the sake of this, we took the tax amount out. Issue is people might misinterpret this as they are also getting stung with an extra $8. That's not the case. The tax was inclusive within the original pricing. We're just breaking this out for them to clearly. So, we're just reinforcing that we're not actually charging them extra and that that's included. However, I also understand just removing that or minimizing it or changing the language to be able to make it clearer that we're not charging them extra. This has been included within the actual price. Then on the right, obviously, we've made an extreme version here. Shipping's getting added, tax is getting added, handling fees are getting added. So, there's an extra $26 that suddenly gets layered in. This is going to tank conversion rates. This is the worst thing that you could do. Um, so many people won't convert because of this. So, what's leaking on the left? all of the extra costs, no total visible up front. So, if we go up to the landing page from before, the price that was there is not the price now. Account creation is forced. The form is super bloated with a bunch of extra fields that we just don't need. Make sure it's as tight as possible. Um, the checkout is too long. Trust badges instead of trust. There's no accelerated checkout options. And the returns policy is hidden over here. The express checkout is right at the top, which it should always be. Guest checkout is default. Full cost is shown up front. Super lean form. We're getting as little amount of information as possible whilst also still being able to verify if it's a genuine transaction. We've got a onepage checkout. We've got free shipping progress tied to average order value. Returns are made very obvious and reinforced down the bottom here. We're not having some obscure privacy and returns policy that people can click out to. Instead, it's very clear that they're getting 30-day free returns. And then in this case, we're also sending an email at an SMS abandonment flow, whereas in the one on the left, they're not. Now, I want to run you through the math that anyone selling you on CRO services is never going to run you through. To trust a 10 to 20% conversion left, you need roughly a,000 conversions per variant. At a 2.5% conversion rate, that's about 40,000 sessions per variant. So, if you were to do just a simple AB split test, you would need to push 80,000 sessions through this split test. Most brands at seven figures can't produce that on a single product page in a month. So, when an agency goes and shows you a green AB test result after 2 weeks on a page doing a 100 conversions, it's not a win. It's just noise that they're trying to convince you there's a statistical confident outcome on. Now, it also gets a lot worse than this because most people run these tests by checking them every single day and they stop the moment it starts to look like a significant outcome, which substantially inflates your false positive rate. So that even tests that look valid often aren't because you stop the moment it told you what you wanted to hear. So people will run these tests and then they'll just cut them short because it looks like, oh, obviously this one's more positive, but you haven't actually let it run for one, two, three, four weeks or whatever time duration you need to hit statistical relevancy on the session volume. And there's really good examples of how this gets contaminated all the time. For example, anytime you send a Clavio campaign, uh it will cause an artificial spike in conversion rates and revenue. And if this isn't set up really meticulously and well and the Clavio traffic can't hit these landing pages in any way, and this is obviously very dependent on the test design, it will completely throw the entire test off and ruin it. And some people will just run abs tests using a software on the landing page which is just going to fork traffic between the two landers. And if you do that, you're going to fork traffic from your Clavio email which is just going to completely throw the numbers around. And so if you're doing these tests, you really need to do them on custom landing pages that are only driving cold traffic from Meta. Even when you do that, like these are still flawed if you have extended time to purchase because a certain percentage of customers will have a multi-click journey, which means that they won't buy on first click. It will take them a few clicks potentially across a few channels to actually convert. And we've looked at this pretty closely on a lot of big brands that we work with. It tends to be like about 1.5. And so on average it takes 1.5 clicks across a meta ad for a user to convert. Which means that about 50% of people are taking more than one click to actually follow through and make the conversion which means that they could have clicked here on the first ad and then they click here on the second ad. Now technically yes. Could you set up an ad set or campaign structure with an ABsplit test within meta to fork traffic as well? Yeah. And there's there's good ways to do tests and as long as your test design is pretty good, you can try your best to do uh strong absplit testing on landing pages, but there is so much that goes into it and there is so much volume of sessions required and you need to be able to ensure that there's not too much contamination that would impact the results and most of that is rarely considered. Statistical relevancy is rarely considered and so you end up just and CRO really ends up kind of just being star signs for ecom. Like it's just people are putting tests together, saying they're getting statistical outcomes, they're not getting statistical outcomes, and then they're just continuing to optimize all day long, and then you zoom out and look at a 2-year trend, and you're like, \"Hey, revenue per session is the same. Revenue per visitor is the same. Conversion rates, for what they're worth, are the same.\" And so, what are we even doing here? Now, that's not to say that you shouldn't be AB split testing. That's not to say that conversion rate agencies are bad and you shouldn't use them. I think conversion rate agencies are actually good. And I think that we could probably put together an incredible conversion rate service that is ongoing tests on a monthly basis that would be very high leverage for 8 9 figure brands. There needs to be enough session volume to have statistical relevancy. The structure within the ad accounts needs to meet it and it needs to be in a category where this makes a lot of sense. Aka time to purchase isn't really extended and it's bunched on a it's based on a bunch of other factors, not the landing page. Now let's go back to my laptop and dive into the difference between a product page and a landing page. Landing pages are substantially underleveraged within most direct to consumer ecom brands and they're one of the easiest ways to substantially increase conversion rates and cut through on unaware audiences. When we're talking about really scalable VSSLs or really scalable long form uh unaware or problemaw aare targeting, they really always need to be matched with a landing page, not with a product page. Unless the product page is heavily manipulated into being almost a landing page, then you're going to struggle. And so what I've put together here is an example of an advertorial that we would want to drive to off the back of a very unaware level VSSL. The generic structure for these landing pages is to start with a hook, go into the problem, the mechanism, the objections, the proof, a risk reversal, and a CTA. What you'll notice is that this is the exact same structure as to how you should put together a VSSL script. And it's because good landing pages is just good copywriting. And good ads are just good copywriting. And so at the end of the day, we're all just converging back to the fundamentals of copywriting. And then that is emanating into whatever format it presents itself in, whether that's a landing "
+    },
+    "already_extracted_claims": [],
+    "instruction": "Extract remaining distinct task-sized units. Do not repeat already extracted claims."
+  },
+  "system_prompt_sha256": "f23d9572f5bf1b93a5822a96b30f4ea85c0469c454d5ce80d227418df3d2e25e"
+}

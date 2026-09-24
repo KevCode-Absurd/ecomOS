@@ -1,0 +1,538 @@
+{
+  "cards": [
+    {
+      "title": "Slice a Figma email into image sections before importing to Klaviyo",
+      "summary": "Cut a designed email into separate exported images so each block loads fast and can carry its own product link.",
+      "use_when": "Importing a Figma-designed campaign into Klaviyo or another ESP, or diagnosing slow/clipped campaign emails.",
+      "steps": [
+        "Do not export the whole email as one image: the file is large, loads slowly in the inbox, can cause deliverability problems, and allows only one link for the entire email.",
+        "In Figma, switch the tool from Frame to Slice and select logical sections: hero/header, section titles, each product block, call-to-action button, footer.",
+        "Leave short text elements (headings, section labels, legal lines) out of the slices if you plan to rebuild them as real text in the ESP, because real text helps deliverability.",
+        "Export each slice as PNG or JPG, then compress all of them (e.g. TinyPNG, Squoosh, iLoveIMG) — one example reduced the hero from ~2 MB to ~522 KB and other slices by 50–74%.",
+        "Upload the compressed images into the ESP and reconstruct the email block by block, then add text blocks, padding, links and alt text.",
+        "Keep the mandatory unsubscribe block; delete other default ESP blocks before rebuilding.",
+        "Verify the current Figma export and ESP upload interfaces, since both change."
+      ],
+      "caveats": [
+        "Compression ratios vary by image; check quality after compression.",
+        "Slicing is only needed for image-heavy designed emails; text-heavy templates may not need it."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "email-design",
+        "klaviyo",
+        "figma",
+        "image-optimization",
+        "deliverability",
+        "campaign-production"
+      ],
+      "id": "8f1c460f5eed6737d712e53a",
+      "source_id": "1gAs1Y6DDO4ld3V07pv7EQ4Hq585FJEwm",
+      "source_sha256": "5d0fcefa9fd4199b4c5c5dcc8c43a38a40850839509c4fc3dd1d1082a6c262d3",
+      "source_name": "_Klaviyo Email Marketing FULL COURSE 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 4
+    },
+    {
+      "title": "Set alt text, deep links and auto-applied discount codes on email images",
+      "summary": "Every email image needs descriptive alt text and a deep link, ideally with the discount code embedded so it applies automatically at checkout.",
+      "use_when": "Building or QAing a campaign in an ESP, specifically linking product images and setting alt attributes.",
+      "steps": [
+        "Fill in alt text for every image: it shows if the image fails to load and is read by inbox providers such as Gmail to understand the email.",
+        "Write the alt text as a short description including the offer, e.g. '20% off shower products with code DIRTYDISCOUNT'.",
+        "Link each image to the most specific relevant page — a category/collection page or a single product page — never just the homepage.",
+        "Embed the discount code in the URL if the platform supports it (the source demonstrates a redirect parameter after the domain containing the code and destination collection), so the code is applied automatically at checkout.",
+        "Test each modified URL in a browser before sending to confirm it resolves and the discount applies.",
+        "Run through every link in the ESP preview on desktop and mobile to catch broken or wrong destinations."
+      ],
+      "caveats": [
+        "The exact URL/discount parameter format depends on the store platform; the source's example is one implementation — verify what your platform supports.",
+        "Auto-applying the code reduces friction, but is not a replacement for showing the code in the email copy."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "klaviyo",
+        "email-design",
+        "product-page",
+        "checkout",
+        "discounts",
+        "conversion-optimization",
+        "qa"
+      ],
+      "id": "17b5705e3605d9cb63df4a17",
+      "source_id": "1gAs1Y6DDO4ld3V07pv7EQ4Hq585FJEwm",
+      "source_sha256": "5d0fcefa9fd4199b4c5c5dcc8c43a38a40850839509c4fc3dd1d1082a6c262d3",
+      "source_name": "_Klaviyo Email Marketing FULL COURSE 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 4
+    },
+    {
+      "title": "Size, pad and fix email images so they render correctly on mobile",
+      "summary": "Import images with generous padding and toggle full-width text on mobile to avoid awkward desktop padding on small screens.",
+      "use_when": "Finalizing email layout in an ESP drag-and-drop builder and checking the mobile preview.",
+      "steps": [
+        "Set base text styles before assembling: roughly 18px desktop and at least 16px mobile, line spacing around 1.5, and a chosen alignment — adjust to brand.",
+        "After importing each image, set block padding — the source adds about 20px top and bottom between sections to recreate the whitespace from the design file, since whitespace makes content easier to digest.",
+        "Where sections sit directly above each other, add padding only on the bottom to avoid doubling spacing.",
+        "When a text block keeps desktop side padding in the mobile preview (visible as an over-indented paragraph), enable the full-width-on-mobile toggle on that block.",
+        "Use the preview to compare desktop and mobile against the original design before scheduling.",
+        "Verify padding controls, since ESP builders change their padding UI over time."
+      ],
+      "caveats": [
+        "Exact pixel values are the source's preference, not a rule; match the original design and brand.",
+        "Sending a real test to your own inbox and checking mobile and desktop is the final step before scheduling."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "klaviyo",
+        "email-design",
+        "mobile-optimization",
+        "campaign-production",
+        "qa"
+      ],
+      "id": "046d714ac94c430a60c35737",
+      "source_id": "1gAs1Y6DDO4ld3V07pv7EQ4Hq585FJEwm",
+      "source_sha256": "5d0fcefa9fd4199b4c5c5dcc8c43a38a40850839509c4fc3dd1d1082a6c262d3",
+      "source_name": "_Klaviyo Email Marketing FULL COURSE 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 4
+    },
+    {
+      "title": "Cap products per campaign email at three to four and keep the offer above the fold",
+      "summary": "Limit product blocks in a campaign and make offer, code and CTA visible without scrolling to protect both deliverability and choice.",
+      "use_when": "Designing or reviewing a promotional campaign's layout and product selection.",
+      "steps": [
+        "Put the headline offer, the discount code and a large CTA in the above-the-fold hero so nothing important requires scrolling.",
+        "In the source's Dollar Shave Club example, the original email only showed the discount code far below a small button; the revamp moved code and a big CTA to the top.",
+        "Limit the email to a maximum of three to four product blocks — the source argues too many links hurt deliverability and too many options stop people choosing.",
+        "Use a zigzag or other visual hierarchy to present the chosen product blocks rather than a flat list.",
+        "Repeat the offer and code with another CTA in the closing body copy.",
+        "Include multiple category links in the footer so recipients who don't want the promoted category can still find something relevant."
+      ],
+      "caveats": [
+        "The three-to-four maximum is the source's recommendation, not a measured benchmark.",
+        "The example is a redesign illustration, not a reported conversion result."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "email-design",
+        "conversion-optimization",
+        "campaign-production",
+        "product-selection",
+        "deliverability"
+      ],
+      "id": "46502d7fa9bc21027f43a166",
+      "source_id": "1gAs1Y6DDO4ld3V07pv7EQ4Hq585FJEwm",
+      "source_sha256": "5d0fcefa9fd4199b4c5c5dcc8c43a38a40850839509c4fc3dd1d1082a6c262d3",
+      "source_name": "_Klaviyo Email Marketing FULL COURSE 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 4
+    },
+    {
+      "title": "Build reusable universal blocks for footer and repeated email sections",
+      "summary": "Save recurring email sections as ESP universal blocks so one edit updates every campaign that includes them.",
+      "use_when": "Setting up an ESP template system or updating a footer/category block across past and future campaigns.",
+      "steps": [
+        "Build the section once (commonly the footer with category links and social icons) inside the ESP.",
+        "Save it as a universal/reusable block rather than rebuilding it per campaign.",
+        "Insert the universal block into every campaign and flow email that needs it.",
+        "When a change is needed — e.g. adding a product category — edit the universal block once and it updates across all emails using it, instead of editing each campaign.",
+        "Also export the footer slice from design files so the block has consistent imagery."
+      ],
+      "caveats": [
+        "Only sections that should be identical everywhere belong in a universal block; campaign-specific content should stay local.",
+        "Feature naming and behavior vary by ESP — confirm in your platform's current docs."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "klaviyo",
+        "templates",
+        "campaign-production",
+        "workflow",
+        "retention"
+      ],
+      "id": "46ef575d23c2216220371735",
+      "source_id": "1gAs1Y6DDO4ld3V07pv7EQ4Hq585FJEwm",
+      "source_sha256": "5d0fcefa9fd4199b4c5c5dcc8c43a38a40850839509c4fc3dd1d1082a6c262d3",
+      "source_name": "_Klaviyo Email Marketing FULL COURSE 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 4
+    },
+    {
+      "title": "Use the four segmentation types to decide what to build first",
+      "summary": "Choose segment logic from behavioral, demographic, engagement-level and purchase-history dimensions before building in the ESP.",
+      "use_when": "Planning a store's segmentation structure or assigning messages to different customer groups.",
+      "steps": [
+        "Behavioral: group by actions — recent purchasers, frequent site visitors, or product viewers who didn't buy — useful for triggering personalized emails.",
+        "Demographic: group by age, gender or location — useful for regional promotions or demographic-specific collections (e.g. fashion lines).",
+        "Engagement-level: group by how people interact with your emails — frequent openers, rare openers, and those who haven't opened in a while.",
+        "Purchase history: group by past purchases, total spend or purchase frequency — useful for recommending similar products or loyalty offers.",
+        "Map each planned campaign, flow or offer to the segment type that carries the right intent, then build only those segments."
+      ],
+      "caveats": [
+        "Types overlap in practice; the point is choosing the right logic per message, not using all four everywhere."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "segmentation",
+        "customer-research",
+        "retention",
+        "personalization"
+      ],
+      "id": "b0096ce3ba62b3ea72297ac5",
+      "source_id": "1gAs1Y6DDO4ld3V07pv7EQ4Hq585FJEwm",
+      "source_sha256": "5d0fcefa9fd4199b4c5c5dcc8c43a38a40850839509c4fc3dd1d1082a6c262d3",
+      "source_name": "_Klaviyo Email Marketing FULL COURSE 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 4
+    },
+    {
+      "title": "Build engaged segments across 30/60/90/120-day windows including website activity",
+      "summary": "Create cloneable engaged segments that blend order, checkout, cart, product-view and site-activity signals, then clone for each time window.",
+      "use_when": "Deciding who receives regular campaigns, or building the audience logic for retention and reactivation.",
+      "steps": [
+        "Start with the condition that the person can receive email marketing so suppressed profiles are excluded.",
+        "Add conditions (using OR between engagement events): placed order at least once, started checkout at least once, added to cart at least once, viewed product at least once, active on site at least once — all within the window (the source uses 120 days as the base).",
+        "The source includes website activity alongside email opens/clicks because someone may ignore emails but still browse the brand.",
+        "Optionally create a second version using email metrics only (opened email or clicked email in the window) if you want email-specific engagement.",
+        "Clone the 120-day segment and change the window to 90, 60 and 30 days rather than rebuilding from scratch; add 14/7 or 180/365-day versions as needed.",
+        "Expect segment computation to run in the background; you can leave the page while the ESP processes it."
+      ],
+      "caveats": [
+        "The 30/60/90/120 ladder is a source recommendation, not a settled standard.",
+        "Segments may be auto-moved to inactive after a period (the source mentions ~45 days in Klaviyo) and require reactivation."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "segmentation",
+        "klaviyo",
+        "retention",
+        "measurement",
+        "campaign-production"
+      ],
+      "id": "ff7571c5eb9934519d8216de",
+      "source_id": "1gAs1Y6DDO4ld3V07pv7EQ4Hq585FJEwm",
+      "source_sha256": "5d0fcefa9fd4199b4c5c5dcc8c43a38a40850839509c4fc3dd1d1082a6c262d3",
+      "source_name": "_Klaviyo Email Marketing FULL COURSE 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 4
+    },
+    {
+      "title": "Build buyer, non-buyer and repeat-buyer segments for tailored messaging",
+      "summary": "Segment buyers by purchase count and separate non-buyers, since a first-time buyer and a five-time buyer need different treatment.",
+      "use_when": "Planning campaigns and flows that treat new, repeat and never-purchased customers differently.",
+      "steps": [
+        "All buyers: person can receive email marketing AND placed order at least once over all time.",
+        "First-time buyers: clone the buyers segment and set placed order equals 1 over all time.",
+        "2x buyers: placed order equals 2 over all time; 3x+ (VIP candidates): placed order at least 3 over all time.",
+        "Non-buyers: placed order 0 times over all time — this list-only, never-purchased group should get different campaigns and flows than repeat buyers because their mindset differs.",
+        "Use these groups to size your customer base (how many buyers, first-timers, repeat buyers, never-bought) and to target appropriate offers."
+      ],
+      "caveats": [
+        "Cloning and editing one base segment is faster than building each from scratch.",
+        "Thresholds (e.g. 3+ = VIP candidate) are starting points, not fixed definitions."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "segmentation",
+        "klaviyo",
+        "retention",
+        "personalization",
+        "measurement"
+      ],
+      "id": "7ccc6c565f867390e76167f0",
+      "source_id": "1gAs1Y6DDO4ld3V07pv7EQ4Hq585FJEwm",
+      "source_sha256": "5d0fcefa9fd4199b4c5c5dcc8c43a38a40850839509c4fc3dd1d1082a6c262d3",
+      "source_name": "_Klaviyo Email Marketing FULL COURSE 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 4
+    },
+    {
+      "title": "Build abandonment and window-shopper segments for targeted recovery campaigns",
+      "summary": "Segment people who started checkout or added to cart but didn't buy, and high-intent browsers who never purchased.",
+      "use_when": "Designing cart/checkout abandonment campaigns and browser-targeting flows.",
+      "steps": [
+        "Abandoners: person can receive email marketing AND (started checkout at least once in last 90 days OR added to cart at least once in last 90 days) AND placed order 0 times in last 90 days.",
+        "Send this group a specific recovery campaign, e.g. a final-chance offer.",
+        "Window shoppers: (viewed product at least twice in last 30 days OR active on site at least twice in last 30 days OR clicked an email twice in last 30 days) AND placed order 0 times overall AND person can receive email marketing.",
+        "Adjust the 'twice' threshold up or down based on your traffic volume and check the resulting segment size before building the flow.",
+        "Give each segment its own tailored flow rather than one generic abandoned-browse email."
+      ],
+      "caveats": [
+        "The 90-day and 30-day windows and the 'twice' threshold are source defaults to test against your own data, not benchmarks."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "segmentation",
+        "klaviyo",
+        "cart-abandonment",
+        "retention",
+        "conversion-optimization"
+      ],
+      "id": "b97e06f650c6a81d0a9b4c8c",
+      "source_id": "1gAs1Y6DDO4ld3V07pv7EQ4Hq585FJEwm",
+      "source_sha256": "5d0fcefa9fd4199b4c5c5dcc8c43a38a40850839509c4fc3dd1d1082a6c262d3",
+      "source_name": "_Klaviyo Email Marketing FULL COURSE 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 4
+    },
+    {
+      "title": "Define VIP segments by purchase count or spend relative to AOV",
+      "summary": "Combine a repeat-purchase threshold with a spend threshold around four times AOV to identify VIPs, tuned to your brand.",
+      "use_when": "Setting up loyalty or VIP targeting, or deciding which customers get premium treatment.",
+      "steps": [
+        "Start with person can receive email marketing.",
+        "Add a purchase-count condition (the source's example: placed order at least 4 times over all time) OR a revenue condition (e.g. revenue at least $200 over all time where the revenue metric is available from the store integration).",
+        "Set the revenue threshold as a multiple of AOV — the source suggests roughly 4x AOV as a base (AOV $50 → $200 minimum).",
+        "Adjust the multiple (some brands treat 2x AOV or two purchases as VIP) and decide whether to use all-time or a trailing period such as one year.",
+        "Use the VIP segment for loyalty rewards or premium offers."
+      ],
+      "caveats": [
+        "The 4x AOV figure is the source's suggested starting point, explicitly described as not set in stone and brand-dependent.",
+        "The revenue condition requires a connected store integration; without it, only purchase-count logic is available."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "segmentation",
+        "klaviyo",
+        "retention",
+        "loyalty",
+        "pricing",
+        "measurement"
+      ],
+      "id": "14037b1971118ad079ac6ee1",
+      "source_id": "1gAs1Y6DDO4ld3V07pv7EQ4Hq585FJEwm",
+      "source_sha256": "5d0fcefa9fd4199b4c5c5dcc8c43a38a40850839509c4fc3dd1d1082a6c262d3",
+      "source_name": "_Klaviyo Email Marketing FULL COURSE 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 4
+    },
+    {
+      "title": "Build unengaged segments, then suppress or exclude them",
+      "summary": "Identify recipients with no opens, clicks, orders or site activity plus enough received emails, then suppress them or send a sunset flow.",
+      "use_when": "List hygiene, deliverability protection and building a sunset/re-engagement flow.",
+      "steps": [
+        "Person can receive email marketing AND placed order 0, started checkout 0, added to cart 0 and viewed product 0 times in the window. Include all website metrics — the source notes that 'active on site' sometimes fails to fire, so redundant events prevent false positives.",
+        "Add email metrics: opened email 0 times AND clicked email 0 times in the window.",
+        "Add a 'received at least N emails' condition so people had a chance to engage. The source suggests at least 6 emails in the window if you send roughly three campaigns a week; treat this as trial-and-error and check segment size.",
+        "Clone the 120-day version and change windows to 90, 60, 30, 180 and 365 days. For the 365-day version the source uses email-only metrics — e.g. 0 opens and 0 clicks in 365 days with at least ~12 emails received — as a strict clean-up list.",
+        "To act on it, use the ESP's 'suppress current members' option on the segment rather than exporting/importing CSVs, and use the unengaged segment as the trigger for a sunset flow."
+      ],
+      "caveats": [
+        "The six-email and window values are tuning parameters, not universal thresholds.",
+        "Suppressing is irreversible for future sends; review the segment contents before suppressing.",
+        "Do not exclude soft bouncers immediately — see the bounce segment approach."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "segmentation",
+        "klaviyo",
+        "deliverability",
+        "retention",
+        "list-hygiene",
+        "sunset-flow"
+      ],
+      "id": "171bd57ff25123fe2cfb3fdf",
+      "source_id": "1gAs1Y6DDO4ld3V07pv7EQ4Hq585FJEwm",
+      "source_sha256": "5d0fcefa9fd4199b4c5c5dcc8c43a38a40850839509c4fc3dd1d1082a6c262d3",
+      "source_name": "_Klaviyo Email Marketing FULL COURSE 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 4
+    },
+    {
+      "title": "Create bounced-email and spam-complaint segments and exclude them by default",
+      "summary": "Segment hard and soft bounces and spam complaints separately, suppress hard bounces immediately and exclude all three from every campaign.",
+      "use_when": "Protecting sender reputation and cleaning your sending list in the ESP.",
+      "steps": [
+        "Spam complaints: person can receive email marketing AND person has marked email as spam at least once over all time. Exclude this segment from all campaigns by default and suppress them.",
+        "Hard bounces: bounced email at least once over all time where bounce type equals hard — suppress immediately.",
+        "Soft bounces: bounced email at least 4 times over all time where bounce type equals soft — tolerate a few because inboxes can be temporarily full, but exclude after repeated soft bounces.",
+        "Instead of suppressing daily by hand, add these segments to your campaigns' default exclusion list; suppress only when you want them gone for good.",
+        "Note the bounce-type and spam-marked conditions require the relevant integration/event data to be available in the account."
+      ],
+      "caveats": [
+        "The 4x soft-bounce threshold is the source's example; tune to your list.",
+        "Suppression removes the profile from future sends; exclusions are reversible — choose per intent."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "segmentation",
+        "klaviyo",
+        "deliverability",
+        "list-hygiene",
+        "retention"
+      ],
+      "id": "62ea5bc24ef694b19ca2d83b",
+      "source_id": "1gAs1Y6DDO4ld3V07pv7EQ4Hq585FJEwm",
+      "source_sha256": "5d0fcefa9fd4199b4c5c5dcc8c43a38a40850839509c4fc3dd1d1082a6c262d3",
+      "source_name": "_Klaviyo Email Marketing FULL COURSE 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 4
+    },
+    {
+      "title": "Split subject line and preview text to stay readable on mobile",
+      "summary": "Short subject lines plus a complementary preview text raise the chance the whole first impression is read on a small screen.",
+      "use_when": "Writing campaign subject lines and preheaders for a store's promotions or content sends.",
+      "steps": [
+        "Treat the subject line's only job as getting the open; it must create curiosity or intrigue and stand out in a crowded inbox.",
+        "Treat the preview text as a second subject line — many brands skip or waste it by focusing only on the subject line.",
+        "Follow up on the subject line's promise in the preview text and tease the content without lying; a high open rate from a broken promise leads to spam complaints or unsubscribes.",
+        "Avoid full sentences: use a few words in the subject line and a few in the preview text. Because most opens happen on mobile, a long subject line is cut off — split one long idea between the two fields.",
+        "Do not promise in subject/preview what the email doesn't deliver."
+      ],
+      "caveats": [
+        "The segment cuts off after listing the email's headline; exact character limits are not specified in the source.",
+        "Open rates are not the only goal — delivering the promise protects sender reputation."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "email-copywriting",
+        "subject-lines",
+        "mobile-optimization",
+        "conversion-optimization"
+      ],
+      "id": "589fc4bc3d9b3135629f70f8",
+      "source_id": "1gAs1Y6DDO4ld3V07pv7EQ4Hq585FJEwm",
+      "source_sha256": "5d0fcefa9fd4199b4c5c5dcc8c43a38a40850839509c4fc3dd1d1082a6c262d3",
+      "source_name": "_Klaviyo Email Marketing FULL COURSE 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 4
+    },
+    {
+      "title": "Write email headlines as outcomes, not features",
+      "summary": "Headlines in the header section should sell the reader's benefit or outcome rather than product specifications.",
+      "use_when": "Writing the hero/header copy for a product or promotional campaign email.",
+      "steps": [
+        "Make the headline the first thing readers see in the header section, so it carries the hook.",
+        "Translate features into outcomes. The source's Apple examples: '1,000 songs in your pocket' (iPod) resonates more than the storage spec, 'it's all screen' (iPhone X) and 'full screen ahead' (Apple Watch).",
+        "Ask what the reader gets, not what the product has, and phrase the headline that way.",
+        "In the Dollar Shave Club example the headline was the offer itself — 20% off shower products — because it is immediately clear what to expect and grabs attention.",
+        "Keep it short enough to survive mobile rendering in the header block."
+      ],
+      "caveats": [
+        "The Apple and Dollar Shave Club examples are illustrations of the principle, not performance benchmarks."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "email-copywriting",
+        "product-page",
+        "conversion-optimization",
+        "positioning"
+      ],
+      "id": "98dec094905b7101be79f0d7",
+      "source_id": "1gAs1Y6DDO4ld3V07pv7EQ4Hq585FJEwm",
+      "source_sha256": "5d0fcefa9fd4199b4c5c5dcc8c43a38a40850839509c4fc3dd1d1082a6c262d3",
+      "source_name": "_Klaviyo Email Marketing FULL COURSE 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 4
+    },
+    {
+      "title": "Apply reading-level, brevity and one-message rules to email body copy",
+      "summary": "Body copy should read at roughly a fifth-grade level, cut 20–30% of words, focus on one thing, and flow sentence to sentence.",
+      "use_when": "Drafting or editing campaign body copy and product-block descriptions.",
+      "steps": [
+        "Write at approximately a fifth-grade reading level — the source cites marketing research that this is easiest to understand — and check drafts with a readability tool such as Hemingway.",
+        "Use the tool as a guide, not an absolute: keep the brand's tone and voice.",
+        "Read the copy aloud and delete fluff; the source finds most drafts can lose about 20–30% of words once spoken.",
+        "Focus each email on one thing. Ten emails about one benefit is more digestible than one email covering many things; short attention spans mean multiple messages are forgotten.",
+        "Make every sentence pull the reader to the next one, so the copy flows naturally toward the CTA.",
+        "Keep sentences short and snappy, and use tools like Grammarly to catch spelling/grammar errors that look unprofessional."
+      ],
+      "caveats": [
+        "The fifth-grade and 20–30% figures come from the source's cited research and experience; treat as heuristics.",
+        "Readability scores can conflict with brand voice — balance them."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "email-copywriting",
+        "conversion-optimization",
+        "content-creation"
+      ],
+      "id": "c5f693b5c2778f15e06a2823",
+      "source_id": "1gAs1Y6DDO4ld3V07pv7EQ4Hq585FJEwm",
+      "source_sha256": "5d0fcefa9fd4199b4c5c5dcc8c43a38a40850839509c4fc3dd1d1082a6c262d3",
+      "source_name": "_Klaviyo Email Marketing FULL COURSE 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 4
+    },
+    {
+      "title": "Do audience research before writing, and use copy frameworks as invisible scaffolding",
+      "summary": "Spend most of the copywriting effort on understanding the audience; let frameworks like AIDA or PAS shape copy without forcing the structure.",
+      "use_when": "Preparing to write a campaign or flow sequence for a specific customer group.",
+      "steps": [
+        "Before writing, research the target audience: pain points, what makes them happy, what they want to hear from you, what makes them tick. The source estimates roughly 80% research and 20% writing, especially early on.",
+        "Write copy that answers 'would I read my own newsletter?' — make it interesting to the recipient, not just about the product.",
+        "Use frameworks as reference points: AIDA (attention, interest, desire, action) or PAS (pain, agitate, solve). The source notes these are rarely applied literally in modern email.",
+        "Check completed copy against the frameworks — good copy almost always fits one of them naturally.",
+        "Show personality and sound human; the source observes top brands all inject personality rather than generic lines.",
+        "Use humor where it fits the brand and audience — the source suggests it works especially well for younger (roughly under-30) audiences — and use contractions ('you're', 'you'd', 'they've') to sound like talking to a friend.",
+        "Provide value above all: frameworks, active voice and readability only finish copy that is genuinely useful."
+      ],
+      "caveats": [
+        "The 80/20 research-to-writing split is the source's heuristic, not a measured benchmark.",
+        "Humor and voice must match the brand and audience; it is not universal."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "email-copywriting",
+        "customer-research",
+        "positioning",
+        "content-creation"
+      ],
+      "id": "618c171671403a349860b573",
+      "source_id": "1gAs1Y6DDO4ld3V07pv7EQ4Hq585FJEwm",
+      "source_sha256": "5d0fcefa9fd4199b4c5c5dcc8c43a38a40850839509c4fc3dd1d1082a6c262d3",
+      "source_name": "_Klaviyo Email Marketing FULL COURSE 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 4
+    },
+    {
+      "title": "Cut copy: easy words, active voice, no fluff",
+      "summary": "Final-pass editing removes adverbs, passive voice, alliteration and complexity so copy reads fast and sounds human.",
+      "use_when": "Final editing pass on campaign copy, PDP copy or ad copy before scheduling.",
+      "steps": [
+        "Read the draft aloud, then remove words and sentences that add nothing — target cutting roughly 20–30%.",
+        "Delete adverbs.",
+        "Convert passive voice to active voice.",
+        "Avoid alliteration and complicated/rare words; keep language simple.",
+        "Use contractions (they've, you'd, you're) to make copy conversational.",
+        "Confirm the remaining copy still conveys one clear message and leads to the CTA."
+      ],
+      "caveats": [
+        "This is the source's editing checklist, not a guaranteed conversion improvement.",
+        "Brand tone may justify keeping some stylistic language — judge against the audience."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "email-copywriting",
+        "conversion-optimization",
+        "content-creation"
+      ],
+      "id": "737d5783fddcf0b09e4fdd12",
+      "source_id": "1gAs1Y6DDO4ld3V07pv7EQ4Hq585FJEwm",
+      "source_sha256": "5d0fcefa9fd4199b4c5c5dcc8c43a38a40850839509c4fc3dd1d1082a6c262d3",
+      "source_name": "_Klaviyo Email Marketing FULL COURSE 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 4
+    }
+  ],
+  "request_id": "dd300e49163e0d4d7be5e82a43425436e64e0ecde0b7dd7b440b032df7751cba",
+  "ecommerce_scope_version": 1
+}

@@ -1,0 +1,447 @@
+{
+  "cards": [
+    {
+      "title": "Engagement windows as sliding retargeting filters",
+      "summary": "Add recent site activity to an engaged segment so returning non-openers get inbox access again, but only for a limited window.",
+      "use_when": "Building or auditing your campaign send segments, and deciding whether dormant subscribers should still receive campaigns.",
+      "steps": [
+        "Define engagement with four OR conditions, each time-bounded: opened email at least once in the last 180 days (with Apple privacy open = false), clicked email at least once in the last 180 days (with bot click = false), subscribed to list at least once in the last 14 days, or been active on site at least once in the last 14 days.",
+        "Treat site activity as intent evidence the same way you would treat a site visitor from a paid ad you retarget for a week or two. Someone browsing your store again is showing intent, so let them back into the campaign audience.",
+        "Cap the grace period. A returning visitor who then stops opening should stay in the engaged segment for roughly two weeks, not six months; if they do not engage again in that window, remove them.",
+        "Combine the OR engagement block with AND conditions for mailability and purchase status, then save and check the profile count preview before sending.",
+        "Re-verify the current Klaviyo filter names and privacy/bot filter labels, since interface naming changes."
+      ],
+      "caveats": [
+        "The 180/14-day windows are the source's chosen settings, not a universal benchmark; adjust for your send cadence and list size.",
+        "Using OR for the mailability condition would include nearly everyone, so mailability and order history must be AND-ed to the engagement block."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "segmentation",
+        "retention",
+        "klaviyo",
+        "deliverability",
+        "campaign-sending"
+      ],
+      "id": "1d456b02f48388f3a60a4817",
+      "source_id": "1grdlATLu0lJAmHQTZ_0MyExN3jVkt8xi",
+      "source_sha256": "6305409b97bb58ef4e8967d3ff99f3cde0bf6725a849a0291792799883f8c0dd",
+      "source_name": "2026 Klaviyo Email Marketing Full Course (3+ Hours).docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 2
+    },
+    {
+      "title": "Build prospect and customer segments by cloning one definition",
+      "summary": "Create the six core segments by changing only the order-count condition and the engagement window, not by writing new definitions each time.",
+      "use_when": "Setting up your initial Klaviyo segment structure before launching campaigns or flows.",
+      "steps": [
+        "Build the prospect segment first: any engagement condition met AND can receive email marketing AND placed order zero times overall time.",
+        "Clone it and change only the final condition to placed order at least once overall time to produce the one-time/existing customer version.",
+        "Create three engagement windows per group: 90-day, 180-day and 365-day engaged, for both prospects and existing customers — six segments in total.",
+        "Use the preview count in the segment builder to sanity-check each segment's size before creating it.",
+        "Verify the current Klaviyo segment builder condition wording before rebuilding, since filter labels change between interface versions."
+      ],
+      "caveats": [
+        "Segment definitions only matter if the list feeding them is clean; prospects are defined as never-purchased, so order tracking must be wired to your store correctly."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "segmentation",
+        "klaviyo",
+        "list-building",
+        "campaign-sending",
+        "measurement"
+      ],
+      "id": "bf989ee22bb113ef51444d59",
+      "source_id": "1grdlATLu0lJAmHQTZ_0MyExN3jVkt8xi",
+      "source_sha256": "6305409b97bb58ef4e8967d3ff99f3cde0bf6725a849a0291792799883f8c0dd",
+      "source_name": "2026 Klaviyo Email Marketing Full Course (3+ Hours).docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 2
+    },
+    {
+      "title": "Match offer intensity to engagement window",
+      "summary": "Send evergreen content to the most recently engaged segment and reserve big offers for the widest window.",
+      "use_when": "Deciding which campaign content and offers go to your 90-day versus 365-day engaged segments.",
+      "steps": [
+        "Send evergreen content — no huge offers, no huge new product announcements — to the 90-day engaged segment, because these people have shown recent interest and will keep engaging without a discount incentive.",
+        "Send major sale moments such as Black Friday and large product launches to the 365-day engaged segment to attempt re-engagement with people who only want to hear from you a few times a year.",
+        "Think of the customer type who shops a brand once a year specifically for the big deal — they do not want constant updates but do want the announcement, so the big offer is your reason to reach them.",
+        "Keep evergreen, non-discount creative in the cadence for recent engagers so you are not training your best subscribers to wait for discounts."
+      ],
+      "caveats": [
+        "This is the source's agency practice at Dispatch, not a tested universal rule; the split between evergreen and promotional content should follow what your audience responds to.",
+        "The 90/180/365 bands are source-specific heuristics, not calculated thresholds."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "segmentation",
+        "campaign-sending",
+        "retention",
+        "promotion-strategy",
+        "offer-design"
+      ],
+      "id": "3f50ca527fa4071825d40531",
+      "source_id": "1grdlATLu0lJAmHQTZ_0MyExN3jVkt8xi",
+      "source_sha256": "6305409b97bb58ef4e8967d3ff99f3cde0bf6725a849a0291792799883f8c0dd",
+      "source_name": "2026 Klaviyo Email Marketing Full Course (3+ Hours).docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 2
+    },
+    {
+      "title": "Never send campaigns to the full list — and never to segments that are too small",
+      "summary": "Require an engagement filter on every campaign, but avoid slicing your sends so narrowly that you cut your monthly shots at converting a subscriber.",
+      "use_when": "Planning campaign send frequency and audience selection across your prospect and purchaser segments.",
+      "steps": [
+        "Always include some engagement criteria in the campaign audience; never send a campaign to your entire list.",
+        "Avoid splitting two weekly campaigns across two different small segments (for example one send to prospects only, one to one-time purchasers only), because it halves your recipients and each person gets half as many chances to buy.",
+        "Recognize that you cannot know whether a given person will buy on Tuesday or Friday, so cutting their exposure removes shots on goal rather than improving relevance.",
+        "Unless you have millions of subscribers and the resources to send high volumes to small segments, send broader evergreen content to all engaged subscribers and personalize within the email using dynamic content instead of segment exclusion.",
+        "The source puts the cutoff at brands doing under roughly $20M a year, where broad engaged sending is the better trade."
+      ],
+      "caveats": [
+        "This is the presenter's strongly held opinion based on agency experience; it is a distribution argument, not a claim that personalization is worthless — pair it with dynamic content."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "segmentation",
+        "campaign-sending",
+        "list-growth",
+        "promotion-strategy",
+        "dynamic-content"
+      ],
+      "id": "0ca859db0b003e673593f19d",
+      "source_id": "1grdlATLu0lJAmHQTZ_0MyExN3jVkt8xi",
+      "source_sha256": "6305409b97bb58ef4e8967d3ff99f3cde0bf6725a849a0291792799883f8c0dd",
+      "source_name": "2026 Klaviyo Email Marketing Full Course (3+ Hours).docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 2
+    },
+    {
+      "title": "Build filters so each flow only fires for the right lifecycle state",
+      "summary": "Profile filters are checked before every flow send, letting a welcome series stop the moment someone purchases.",
+      "use_when": "Setting up or debugging any automated flow where purchase or customer-type status should change who receives it.",
+      "steps": [
+        "Add a profile filter to the welcome series requiring that the person has placed order zero times overall time.",
+        "Rely on the fact that Klaviyo re-checks filters immediately before each email in the flow, so a subscriber who buys between email one and email two does not receive email two.",
+        "Extend the same pattern to other flow logic: for example, filter out known B2B customers from a DTC welcome series when your brand serves both segments.",
+        "Avoid using Klaviyo default flow templates for these flows; the source recommends building from scratch (build your own) so triggers, filters and timing match your actual customer journey.",
+        "Verify current filter names and trigger options in your Klaviyo account before configuring."
+      ],
+      "caveats": [
+        "Profile filters only work as well as the data behind them; order and tag data must flow from your store into the profile."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "automation",
+        "klaviyo",
+        "flows",
+        "segmentation",
+        "trigger-logic"
+      ],
+      "id": "07f1b027ac4eba4b24ac1659",
+      "source_id": "1grdlATLu0lJAmHQTZ_0MyExN3jVkt8xi",
+      "source_sha256": "6305409b97bb58ef4e8967d3ff99f3cde0bf6725a849a0291792799883f8c0dd",
+      "source_name": "2026 Klaviyo Email Marketing Full Course (3+ Hours).docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 2
+    },
+    {
+      "title": "Micro-commitment first step in the pop-up form",
+      "summary": "Split the pop-up into a 'claim the offer?' step before asking for the email, then collect SMS, then show a success page.",
+      "use_when": "Building or redesigning your sitewide pop-up form to convert more site traffic into subscribers.",
+      "steps": [
+        "Step one, micro yes: present only the offer and two buttons, e.g. 'Claim 20% off' versus 'I'm not interested', with nothing asked in return. The micro commitment principle means someone who commits to wanting the offer is far more likely to give their email next.",
+        "Step two, email opt-in: make the email field required with a 'field is required' message and set the button action to submit form, routing to your master email list.",
+        "Step three, SMS opt-in: collect phone subscribers here even if you have not built out SMS marketing yet; you are otherwise leaving subscribers uncollected for no setup cost.",
+        "Step four, success page: either show the code or send it to the inbox/phone. The source prefers sending it, because the first open and click boosts your sender reputation.",
+        "Turn on the teaser so that if someone exits the form mid-way, a teaser stays on site and can reopen the form."
+      ],
+      "caveats": [
+        "The micro-commitment structure is based on the source's agency A/B testing across hundreds of forms, but the results are their client data, not a guarantee for your brand.",
+        "Nine times out of ten the micro-commitment step tests better, per the source, but it is still worth an A/B test."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "list-growth",
+        "popup-forms",
+        "conversion-optimization",
+        "klaviyo",
+        "offer-design",
+        "sms"
+      ],
+      "id": "4be0db20360fbc017190f11e",
+      "source_id": "1grdlATLu0lJAmHQTZ_0MyExN3jVkt8xi",
+      "source_sha256": "6305409b97bb58ef4e8967d3ff99f3cde0bf6725a849a0291792799883f8c0dd",
+      "source_name": "2026 Klaviyo Email Marketing Full Course (3+ Hours).docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 2
+    },
+    {
+      "title": "Form behavior settings that stop accidental opt-out loss",
+      "summary": "Small behavior toggles — no click-outside close, immediate load, no images — prevent losing subscribers who never see the offer.",
+      "use_when": "Configuring display and behavior settings on a pop-up form before going live.",
+      "steps": [
+        "Uncheck 'click outside form to close' so the only exit is the X button. Otherwise a browsing visitor who clicks a product at the exact moment the pop-up appears closes the form never to reopen it.",
+        "Set the form to load immediately rather than on a time delay, which the source reports performs better.",
+        "Build without side images: with no image, attention goes straight to the offer, and the source says forms without images typically outperform those with images (still a good A/B test).",
+        "Show the form to all website visitors who are not already subscribed, and keep frequency rules in mind if you do not want repeat visitors to see it daily.",
+        "Check that the form renders correctly on both mobile and desktop rather than only on the device you are building on; most of your site traffic is mobile.",
+        "Verify current setting labels in your form builder, since interface wording changes."
+      ],
+      "caveats": [
+        "Targeting all non-subscribers is the source's recommendation for maximum capture, but you may still exclude specific URLs such as the cart page where a discount could cut into margin on an imminent purchase."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "list-growth",
+        "popup-forms",
+        "conversion-optimization",
+        "klaviyo",
+        "mobile"
+      ],
+      "id": "4bb4a381c9897df6ba93c3da",
+      "source_id": "1grdlATLu0lJAmHQTZ_0MyExN3jVkt8xi",
+      "source_sha256": "6305409b97bb58ef4e8967d3ff99f3cde0bf6725a849a0291792799883f8c0dd",
+      "source_name": "2026 Klaviyo Email Marketing Full Course (3+ Hours).docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 2
+    },
+    {
+      "title": "Offer choice is the highest-leverage pop-up test",
+      "summary": "Run monthly A/B tests on the form offer first, then behavior, then copy, then design.",
+      "use_when": "Planning your recurring pop-up form experiment roadmap.",
+      "steps": [
+        "Test the offer first: percent off versus dollar off, 10% versus 15%, free shipping, cash back, or free gift with purchase, since offer makes the biggest difference to opt-in rate.",
+        "If testing dollar off against percentage, take your AOV and pick a dollar amount that equals roughly 10% of that AOV, so the comparison is at least in the same value range.",
+        "Test behavior second: micro-commitment step versus none, zero-party data questions in the form, load timing (immediate versus delay), which pages trigger it, and exit intent.",
+        "Test copy third: short versus long copy, and whether to reveal the offer versus teasing a 'mystery offer'.",
+        "Test design last: image versus no image, product versus lifestyle imagery, and text sizes, especially if your customer base skews older.",
+        "Run a test every month; even a form already converting well is unlikely to be at its ceiling. Take the conversion-rate numbers the source cites for its own agency clients as an illustration of headroom, not as your target."
+      ],
+      "caveats": [
+        "The source's claim that Klaviyo's 'excellent' badge threshold is not actually excellent is the presenter's opinion, not a verified platform fact; treat it as a reason to keep testing.",
+        "Offer data is audience-specific — your demographic may respond better to dollar off or free shipping than to percentage off."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "list-growth",
+        "popup-forms",
+        "experiment-design",
+        "conversion-optimization",
+        "offer-design",
+        "klaviyo"
+      ],
+      "id": "ea0cb89619ebe513a7feed2a",
+      "source_id": "1grdlATLu0lJAmHQTZ_0MyExN3jVkt8xi",
+      "source_sha256": "6305409b97bb58ef4e8967d3ff99f3cde0bf6725a849a0291792799883f8c0dd",
+      "source_name": "2026 Klaviyo Email Marketing Full Course (3+ Hours).docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 2
+    },
+    {
+      "title": "Targeting and location rules for offer differentiation",
+      "summary": "Use URL, geography, UTM source and cart value rules to show the right offer in the right place.",
+      "use_when": "Setting up pop-up targeting rules for a sitewide form, a sale form, or a channel-specific offer test.",
+      "steps": [
+        "Use URL rules to suppress the sitewide discount form where it hurts: for example exclude the cart page so an about-to-purchase visitor does not get handed extra margin away, and exclude a sale landing page if the sitewide discount cannot be stacked with the sale.",
+        "Use location rules, driven by IP-based location, to show different offers by country — for example a different offer for Canadian versus US visitors.",
+        "Use UTM parameters to target by traffic source: if traffic from one paid channel is much cheaper, you could test a richer offer for that source while showing the standard offer to everyone else.",
+        "Use cart content value to trigger a form only above a threshold, such as over $1,000 in cart, so a strong offer lands on a high-value basket.",
+        "Use targeting modes deliberately: show to all visitors for a sale link, show to email subscribers only when you want existing subscribers to opt into SMS if they skipped it.",
+        "Do not restrict the sitewide form to the homepage only; the source explicitly discourages that.",
+        "Verify the current targeting options and labels in your ESP, since these change."
+      ],
+      "caveats": [
+        "Cart-value thresholds such as $1,000 are examples of what the tool supports, not recommended thresholds for your store.",
+        "Source-specific channel advice (for example TikTok versus Meta offers) depends on your own cost per acquisition and margin."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "list-growth",
+        "popup-forms",
+        "segmentation",
+        "acquisition",
+        "klaviyo",
+        "offer-design"
+      ],
+      "id": "4d0639885e1aab3cc5738992",
+      "source_id": "1grdlATLu0lJAmHQTZ_0MyExN3jVkt8xi",
+      "source_sha256": "6305409b97bb58ef4e8967d3ff99f3cde0bf6725a849a0291792799883f8c0dd",
+      "source_name": "2026 Klaviyo Email Marketing Full Course (3+ Hours).docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 2
+    },
+    {
+      "title": "Master list plus engaged segments as the base setup",
+      "summary": "Create one master email list that all forms and checkout feed, and build engagement segments on top of it.",
+      "use_when": "Setting up or cleaning up your ESP account before building flows and campaigns.",
+      "steps": [
+        "Create a single master email list fed by your pop-up form and checkout, so every acquisition source writes into the same list.",
+        "Use the segment builder for audiences built from behaviour, properties and events — lists for who opted in, segments for what they have done.",
+        "Know the condition types available: whether someone can receive email marketing (not unsubscribed or suppressed), what someone has or has not done across tracked metrics with either a date range or overall time, location proximity, and profile properties including store tags.",
+        "Use property and tag conditions to target, for example, people carrying a specific Shopify tag or people who viewed specific items, so campaigns and flows can be personalized on that data.",
+        "Connect SMS subscribers to a separate list, as recommended, rather than mixing phone and email subscribers on one list.",
+        "Verify current Klaviyo list/segment tabs and builder condition names before implementing."
+      ],
+      "caveats": [
+        "A list implies opt-in consent; using segments to send to people who never opted in creates deliverability and compliance risk.",
+        "The segment builder's exact property and metric names depend on your integrations and may differ from the example."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "segmentation",
+        "klaviyo",
+        "list-building",
+        "deliverability",
+        "integration"
+      ],
+      "id": "f24ba64fabd7c04a8ac1f53e",
+      "source_id": "1grdlATLu0lJAmHQTZ_0MyExN3jVkt8xi",
+      "source_sha256": "6305409b97bb58ef4e8967d3ff99f3cde0bf6725a849a0291792799883f8c0dd",
+      "source_name": "2026 Klaviyo Email Marketing Full Course (3+ Hours).docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 2
+    },
+    {
+      "title": "Campaigns versus flows, and stopping message overlap",
+      "summary": "Flows capture behaviour-triggered lifecycle revenue; campaigns capture time-sensitive moments — and the two must be coordinated.",
+      "use_when": "Deciding whether a recurring send should become an automation, and diagnosing high unsubscribe or spam complaint rates.",
+      "steps": [
+        "Route repetitive sends into flows: if you find yourself sending the same campaign weekly, monthly, or daily, it is probably a behaviour-triggered automation instead.",
+        "Keep campaigns for genuinely one-off, time-sensitive moments such as a new sale, a product launch, seasonal content, or a new blog post.",
+        "Use flows to extract lifetime value from the customer journey and campaigns to capitalize on moments that will not repeat.",
+        "Before sending a campaign, check whether the same person is also due a welcome, abandoned cart, or post-purchase email in the same period; overlapping sends in a 24-hour window are a common cause of unsubscribes and spam complaints.",
+        "Audit the campaign and flow calendars together as one customer journey rather than as separate programs."
+      ],
+      "caveats": [
+        "The source's observation about high unsubscribe and spam rates among audited brands is anecdotal from their agency work, not a measured benchmark."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "automation",
+        "campaign-sending",
+        "flows",
+        "deliverability",
+        "retention"
+      ],
+      "id": "24b8079fe1fe07c0850a8fde",
+      "source_id": "1grdlATLu0lJAmHQTZ_0MyExN3jVkt8xi",
+      "source_sha256": "6305409b97bb58ef4e8967d3ff99f3cde0bf6725a849a0291792799883f8c0dd",
+      "source_name": "2026 Klaviyo Email Marketing Full Course (3+ Hours).docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 2
+    },
+    {
+      "title": "Welcome series: trigger, filter and immediate code delivery",
+      "summary": "Trigger the welcome series on list addition, gate it to never-purchasers, and send the signup offer code immediately.",
+      "use_when": "Building your first automated welcome flow after someone subscribes via pop-up or checkout.",
+      "steps": [
+        "Set the trigger to 'added to list' on the same master list your pop-up form writes to, so every new subscriber enters the flow.",
+        "Add a profile filter requiring zero orders overall time, so checkout subscribers and past purchasers are excluded.",
+        "Remove any initial time delay for the first email: send the redemption code as soon as someone signs up so the promise made in the pop-up is fulfilled while intent is highest.",
+        "Set email one's sender on your authenticated brand domain, and set reply-to to your customer support address so replies land in the service inbox.",
+        "Structure the series so that by the end, the subscriber fully understands why your brand is the one to buy from in your category, not just that a discount exists.",
+        "Use standardised flow and email naming (for example 'welcome series email number 1') so reporting views can trace performance back to its source.",
+        "Verify current trigger, filter and naming fields in your ESP before building."
+      ],
+      "caveats": [
+        "Filter requirements differ by brand; the source adds B2B exclusions for brands serving both B2B and DTC, which may not apply to you."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "automation",
+        "flows",
+        "klaviyo",
+        "welcome-series",
+        "trigger-logic",
+        "list-growth"
+      ],
+      "id": "ef1cb30f5c9544d04e9e071d",
+      "source_id": "1grdlATLu0lJAmHQTZ_0MyExN3jVkt8xi",
+      "source_sha256": "6305409b97bb58ef4e8967d3ff99f3cde0bf6725a849a0291792799883f8c0dd",
+      "source_name": "2026 Klaviyo Email Marketing Full Course (3+ Hours).docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 2
+    },
+    {
+      "title": "Design emails outside the ESP with image slices",
+      "summary": "Build email creative in a design tool and slice it, so brand fonts render consistently instead of being replaced by fallbacks.",
+      "use_when": "Producing welcome, cart, post-purchase and campaign creative that must match your brand across devices and inboxes.",
+      "steps": [
+        "Design in an external tool and export image slices, so the layout renders pixel for pixel the same on desktop and mobile; inside a template editor, headline wrapping and spacing differ across devices and inboxes, making QA harder.",
+        "Understand the font problem: custom fonts need a web-safe fallback, and whether the brand font actually displays depends on the recipient's device and inbox provider, so what you see in the preview is not what every recipient sees.",
+        "Keep the brand consistent from ad to site to pop-up to first email, because these touchpoints are where initial trust is built; a font that does not match the rest of the funnel breaks that consistency.",
+        "Place the product block inside your externally designed email if you want products in it, since the product block is the one thing that must be set up in the ESP.",
+        "Add a proper footer with social links and your organisation details and unsubscribe language; the ESP inserts a required unsubscribe link regardless, but a default one is ugly.",
+        "Verify current editor capabilities and footer compliance requirements in your ESP."
+      ],
+      "caveats": [
+        "Fully image-sliced emails trade rendering control for reduced live-text accessibility and searchability; the source advocates the approach for branding fidelity, not as a universal standard.",
+        "If you lack design resources, the source says choosing a template is acceptable, while noting template images often cannot be edited in the ESP."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "email-design",
+        "branding",
+        "klaviyo",
+        "creative-strategy",
+        "product-page",
+        "rendering"
+      ],
+      "id": "5fde08efd3f8a160ce72c241",
+      "source_id": "1grdlATLu0lJAmHQTZ_0MyExN3jVkt8xi",
+      "source_sha256": "6305409b97bb58ef4e8967d3ff99f3cde0bf6725a849a0291792799883f8c0dd",
+      "source_name": "2026 Klaviyo Email Marketing Full Course (3+ Hours).docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 2
+    },
+    {
+      "title": "Dynamic product feeds for emails",
+      "summary": "Use the ESP product block to insert static or rule-based dynamic products from your store into emails.",
+      "use_when": "Adding product recommendations to welcome, browse, cart or campaign emails, especially when inventory and bestsellers change often.",
+      "steps": [
+        "Place a product block in the email; choose static products when you want fixed SKUs, or dynamic products when the selection should be recalculated each send.",
+        "For dynamic feeds, set criteria such as bestselling products over a chosen window — the source shows options like the last 3 days or last 90 days — so the email reflects current demand.",
+        "Add filters to avoid unhelpful recommendations: exclude a category, set a minimum price, or exclude products with very low stock.",
+        "Choose deliberately between dynamic and static: a brand with constantly turning inventory and new styles may want current bestsellers, while a brand with ten always-in-stock SKUs may prefer to always show its two or three consistent bestsellers.",
+        "Save the feed and attach it to the email; the ESP recalculates the products at send time as the underlying data changes.",
+        "Verify current product-feed criteria and filter options in your ESP, since these change."
+      ],
+      "caveats": [
+        "Dynamic feeds depend on accurate product, price and stock data flowing from your store; stale data will produce stale or out-of-stock recommendations.",
+        "The source's window examples (3 days, 90 days) are illustrations of available settings, not recommended values."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "email-design",
+        "klaviyo",
+        "automation",
+        "merchandising",
+        "product-recommendations"
+      ],
+      "id": "66bb08b24b5cc9be2cdcc6d6",
+      "source_id": "1grdlATLu0lJAmHQTZ_0MyExN3jVkt8xi",
+      "source_sha256": "6305409b97bb58ef4e8967d3ff99f3cde0bf6725a849a0291792799883f8c0dd",
+      "source_name": "2026 Klaviyo Email Marketing Full Course (3+ Hours).docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 2
+    }
+  ],
+  "request_id": "65bca6b532a8573b0f3e59f3935dfe439bd83a9d7587f518c19da4a786e49762",
+  "ecommerce_scope_version": 1
+}

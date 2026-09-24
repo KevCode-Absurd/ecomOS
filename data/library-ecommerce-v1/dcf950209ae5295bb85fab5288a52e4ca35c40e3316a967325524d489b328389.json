@@ -1,0 +1,827 @@
+{
+  "request_id": "dcf950209ae5295bb85fab5288a52e4ca35c40e3316a967325524d489b328389",
+  "provider": "openai",
+  "model": "gpt-5.6-terra",
+  "effort": "low",
+  "completion_limit": 16384,
+  "usage": {
+    "prompt_tokens": 6171,
+    "completion_tokens": 5100,
+    "total_tokens": 11271,
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 6168,
+      "audio_tokens": 0
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 269,
+      "audio_tokens": 0,
+      "accepted_prediction_tokens": 0,
+      "rejected_prediction_tokens": 0
+    }
+  },
+  "booked_cost_usd": 0.0766275,
+  "seconds": 100.52,
+  "finish_reason": "stop",
+  "output": {
+    "cards": [
+      {
+        "title": "Choose big swings or comprehensive CRO based on monthly sessions",
+        "summary": "Use traffic volume to decide whether a store needs high-impact funnel changes or can support a high-velocity, isolated A/B-testing program.",
+        "use_when": "Choosing a CRO investment approach for a store based on its monthly traffic and ability to generate purchase data.",
+        "steps": [
+          "Use the source's internal rule of thumb: below roughly 300,000 monthly sessions, favor bigger changes rather than micro-tests such as button colors or minor copy edits.",
+          "Prioritize high-impact levers: a data-led PDP or landing-page redesign, monthly offer and price tests, cart/checkout shipping tests, post-purchase upsells and surveys, and tighter ad-to-page message alignment.",
+          "Above roughly 300,000 sessions, provided order volume is sufficient, build a comprehensive program: qualitative and quantitative research, isolated tests, a roadmap, documented learning loops, and a stack such as GA4, heatmaps, surveys, and session recordings.",
+          "At higher volume, the source suggests a possible operating pace of four to eight A/B tests monthly; at lower volume, use research to make fewer, larger bets."
+        ],
+        "caveats": [
+          "The 300,000-session line is the source's revised internal benchmark, not a universal cutoff.",
+          "Assess actual orders, baseline conversion, expected effect size, and required sample size before deciding that a test is viable."
+        ],
+        "tags": [
+          "testing",
+          "conversion-optimization",
+          "experiment-design",
+          "traffic-volume",
+          "research",
+          "offer-design",
+          "landing-page"
+        ]
+      },
+      {
+        "title": "Prioritize revenue per visitor over conversion rate",
+        "summary": "Evaluate CRO primarily through revenue per visitor or session so price, conversion rate, and average order value are considered together.",
+        "use_when": "Selecting success metrics for a PDP, landing-page, cart, checkout, bundle, or offer experiment.",
+        "steps": [
+          "Make revenue per visitor or revenue per session the primary outcome for most purchase-journey tests, as the source recommends, and report conversion rate and AOV alongside it.",
+          "Avoid declaring a conversion-rate win without checking revenue: a steep price reduction could increase purchases while reducing revenue per visitor.",
+          "For each result, diagnose the components: did more visitors purchase, did AOV change, or did both move? This matters especially for discounts, free-shipping thresholds, bundles, and upsells.",
+          "Use the same metric when comparing major changes such as a new landing page, PDP design, price point, or cart offer, so local conversion gains do not obscure a weaker commercial outcome."
+        ],
+        "caveats": [
+          "Revenue per visitor does not by itself establish profitability; assess margin, discount cost, shipping cost, and acquisition cost where the decision requires it.",
+          "The source provides no prescribed attribution window or target value for this metric."
+        ],
+        "tags": [
+          "testing",
+          "measurement",
+          "conversion-optimization",
+          "revenue-per-visitor",
+          "aov",
+          "offer-design"
+        ]
+      },
+      {
+        "title": "Plan A/B tests around calculated sample size, duration, randomization, and QA",
+        "summary": "Use randomized traffic, adequate duration and calculated sample requirements before acting on an A/B-test result.",
+        "use_when": "Launching a purchase-conversion experiment on a product page, landing page, cart, checkout, or navigation flow.",
+        "steps": [
+          "Define the primary purchase metric and calculate the sample size needed from the baseline rate, minimum meaningful effect, confidence requirement, and desired power before launch.",
+          "The source commonly runs roughly 50,000–100,000 sessions depending on test location and recommends at least two weeks, preferably two to four, so weekday effects repeat.",
+          "Randomize visitors between control and variation. Use multiple variations or multivariate designs only when traffic is high enough to support them.",
+          "Distinguish statistical significance from statistical power: a result may look unlikely to be random without having enough data to be reliably repeatable or commercially meaningful.",
+          "Do not run conflicting tests on the same page area. Separate tests can run on, for example, a homepage and cart, or clearly distinct page regions.",
+          "QA each experience two or three times before launch; broken tracking, layouts, or CTAs can turn a viable variation into an apparent loser."
+        ],
+        "caveats": [
+          "The source's traffic and duration ranges are operating conventions, not replacements for an actual sample-size calculation.",
+          "Its preference for above-the-fold, larger changes reflects the source's testing bias rather than a rule for every experiment."
+        ],
+        "tags": [
+          "testing",
+          "a-b-testing",
+          "experiment-design",
+          "statistical-power",
+          "measurement",
+          "qa",
+          "conversion-optimization"
+        ]
+      },
+      {
+        "title": "Turn research into a scored CRO hypothesis",
+        "summary": "Write every experiment as a specific change, expected purchase outcome, and data-backed rationale, then prioritize the strongest feasible ideas.",
+        "use_when": "Converting funnel analysis, survey responses, review mining, or session-recording findings into a product-page, landing-page, or checkout test backlog.",
+        "steps": [
+          "State the exact change, such as adding a results-timeline section below the PDP fold or moving guarantee copy beside add-to-cart.",
+          "State the expected measurable outcome, such as improved revenue per visitor, purchase conversion, or AOV, based on the research rather than intuition alone.",
+          "Document the rationale and evidence. The source example used post-purchase feedback showing buyers were uncertain about how long supplement results would take; the proposed change made that timeframe clear near the top of the page.",
+          "Score hypotheses with a framework such as PXL. The source mentions factors including whether a change is above the fold, noticeable within five seconds, and easy to implement.",
+          "Start with highly visible, feasible ideas with strong evidence, while retaining lower-ranked ideas for later learning."
+        ],
+        "caveats": [
+          "PXL is an externally credited prioritization framework, not a guarantee that high-scoring ideas will win.",
+          "A compelling hypothesis is not proof; validate it with the appropriate research or experiment method."
+        ],
+        "tags": [
+          "testing",
+          "hypothesis",
+          "prioritization",
+          "experiment-design",
+          "customer-research",
+          "product-page",
+          "conversion-optimization"
+        ]
+      },
+      {
+        "title": "Use funnel analysis and heatmaps to locate purchase friction",
+        "summary": "Map drop-off, clicks, scroll depth, and false clicks to identify where shoppers fail to reach or complete purchase.",
+        "use_when": "Beginning a CRO audit or diagnosing a drop in PDP-to-cart, cart-to-checkout, or checkout-to-purchase performance.",
+        "steps": [
+          "Map the journey from paid ad or entry page through PDP, cart, checkout, thank-you page, and any upsell flow; identify the largest abandonment points.",
+          "Use analytics to understand where people leave, even if a full GA4 audit is not practical at lower traffic volumes.",
+          "Install a heatmap tool on key product pages and inspect click maps, scroll behavior, and scroll depth. The source names Microsoft Clarity as a free option and Heatmap.com as a revenue-oriented alternative; verify current tool capabilities and setup.",
+          "Check whether important selling points are placed where shoppers actually see them. The source cites a case where a critical factor near the footer reached only about 6% of visitors.",
+          "Identify false and rage clicks, especially on elements that resemble buttons, links, or controls but do not work, then remove that friction.",
+          "Use findings to form test hypotheses or fix clear defects, and pair them with qualitative research to learn why behavior occurred."
+        ],
+        "caveats": [
+          "The source's 6% visibility example is a single case, not a target or benchmark.",
+          "Heatmaps identify behavioral patterns but do not by themselves explain shopper intent."
+        ],
+        "tags": [
+          "testing",
+          "analytics",
+          "heatmaps",
+          "funnel-analysis",
+          "research",
+          "product-page",
+          "friction-reduction"
+        ]
+      },
+      {
+        "title": "Gather qualitative evidence from buyers, usability sessions, and reviews",
+        "summary": "Use surveys, interviews, observed usability, and review mining to reveal the objections and language behind shopper behavior.",
+        "use_when": "Analytics shows where shoppers abandon but the store needs evidence for PDP copy, product education, trust content, or checkout-friction changes.",
+        "steps": [
+          "Run usability sessions in which people attempt to browse and buy, then ask what confused them or prevented confidence.",
+          "Interview customers or call selected buyers to understand why they purchased, what was unclear, and whether the buying experience met expectations.",
+          "Implement a post-purchase survey with, at minimum, questions equivalent to what prompted the purchase today and what almost prevented it. The source treats this feedback as a central optimization input.",
+          "If post-purchase collection is unavailable, send a one-time survey to customers or VIPs. The source suggests an incentive such as entry into a $250 Amazon gift-card draw to increase response volume.",
+          "When the store has hundreds of reviews, export them and use AI-assisted analysis to group repeated motivations, objections, phrases, and tone. Use those findings in customer-facing copy and research hypotheses."
+        ],
+        "caveats": [
+          "Verify current survey-tool availability and integrations before implementation.",
+          "No sample size, survey cadence, or interview protocol is specified; avoid treating a few anecdotes as conclusive."
+        ],
+        "tags": [
+          "testing",
+          "customer-research",
+          "surveys",
+          "usability-testing",
+          "reviews",
+          "voice-of-customer",
+          "copywriting"
+        ]
+      },
+      {
+        "title": "Translate post-purchase objections into PDP and landing-page copy",
+        "summary": "Use what nearly stopped buyers from purchasing to decide which objections deserve prominent front-end answers.",
+        "use_when": "Updating PDP, landing-page, product-quiz, or cart messaging after collecting post-purchase survey responses.",
+        "steps": [
+          "Aggregate answers to the question about what almost prevented purchase; the source considers this the highest-value survey question for conversion work.",
+          "Group answers into recurring objections, such as uncertainty about product quality, expected results, fit, shipping, guarantee, or how to use the product.",
+          "Place a direct answer where the objection can affect a decision: in the headline, benefits, proof section, buy box, FAQ, or a section just below the fold.",
+          "The source example involved supplement buyers who did not know when results would appear. The proposed solution was a prominent, accurate results-timeline message rather than leaving this information buried lower on the page.",
+          "Use responses about why customers did purchase to reinforce high-value motivations, but give special attention to objections that create hesitation.",
+          "Combine the qualitative theme with drop-off and heatmap evidence before prioritizing the change."
+        ],
+        "caveats": [
+          "Any performance, timing, quality, or guarantee claim must be truthful, substantiated, and compliant for the product and market.",
+          "The supplement example illustrates the reasoning; it does not show that adding a timeframe will lift every store's conversion rate."
+        ],
+        "tags": [
+          "testing",
+          "customer-research",
+          "product-page",
+          "landing-page",
+          "copywriting",
+          "objection-handling",
+          "conversion-optimization"
+        ]
+      },
+      {
+        "title": "Pre-sell cold paid traffic with a congruent landing page",
+        "summary": "Test a pre-sell landing page between ad click and product or collection page to educate cold visitors and preserve message continuity.",
+        "use_when": "Improving paid-social or other cold-traffic journeys that currently send visitors directly to a homepage, collection, or PDP.",
+        "steps": [
+          "Create a landing page between the ad and the store's money page so cold visitors can understand the product, problem, and reason to believe before shopping.",
+          "Test formats such as listicles and advertorial-style educational pages, along with distinct messaging angles rather than only layout differences.",
+          "Maintain message congruence: the ad's promise, audience, and visual angle should be recognizable on the landing page and in the onward PDP experience.",
+          "For audiences needing easier readability, the source's example used larger type, scannable sections, bold subheads, a clear value-led headline, numbered points, and a simple benefit-led buy box.",
+          "Measure the entire journey through purchase and revenue per visitor, not merely landing-page click-through rate.",
+          "Use landing-page research and results to improve both creative and PDP positioning."
+        ],
+        "caveats": [
+          "Advertorial-style content must remain truthful and comply with applicable advertising, disclosure, and platform requirements.",
+          "The source's case examples are not evidence that a landing page will outperform a direct-to-PDP route for every product or traffic source."
+        ],
+        "tags": [
+          "testing",
+          "acquisition",
+          "landing-page",
+          "creative-strategy",
+          "advertorial",
+          "message-match",
+          "conversion-optimization"
+        ]
+      },
+      {
+        "title": "Make PDP purchase drivers visible near the buy box",
+        "summary": "Move proof, savings, guarantees, scannable benefits, and usable product media into prominent PDP locations rather than burying them below the fold.",
+        "use_when": "Redesigning or testing a product detail page, particularly when research indicates shoppers need more trust or clarity before adding to cart.",
+        "steps": [
+          "Move reviews and relevant social proof toward the primary CTA so shoppers see validation during the purchase decision.",
+          "Make genuine savings and key purchase terms clear, and test a sticky add-to-cart where it improves access to the buying action.",
+          "Use visible thumbnails instead of ambiguous carousel dots. Treat the product-media carousel as a compact selling surface for benefits, testimonials, UGC, video, and applicable guarantee signals.",
+          "Make a money-back guarantee visible near the CTA when research indicates it matters, rather than hiding it in a collapsed area.",
+          "Replace dense feature descriptions with benefit-led bullets and bold the phrases shoppers need to scan quickly.",
+          "Validate which elements matter with customer research and a properly designed experiment; the source's pro-age-brand guarantee test increased paid-media revenue per PDP visitor by about $0.50, but that was a category-specific result."
+        ],
+        "caveats": [
+          "Guarantee, savings, testimonial, and product claims must be accurate and supported.",
+          "The importance of guarantees, reviews, and media varies by product, traffic temperature, and customer demographic."
+        ],
+        "tags": [
+          "testing",
+          "product-page",
+          "conversion-optimization",
+          "social-proof",
+          "sticky-add-to-cart",
+          "product-media",
+          "copywriting"
+        ]
+      },
+      {
+        "title": "Design mega menus to move new visitors toward products",
+        "summary": "Use navigation research to make a mega menu a product-discovery surface rather than a list of equally weighted links.",
+        "use_when": "Testing navigation for homepages or store pages that receive substantial new-visitor traffic.",
+        "steps": [
+          "Review session recordings to confirm whether new visitors open the mega menu to understand available categories and products.",
+          "Use prominent menu real estate for a bestseller carousel or curated products when evidence shows visitors need help choosing what to browse.",
+          "Add clear visual cues such as category icons and relevant proof signals, while keeping product discovery more prominent than secondary links.",
+          "Move lower-intent, non-shopping destinations such as contact, reviews, and FAQ links lower in the menu so they do not compete with product paths.",
+          "Measure downstream behavior: product-page visits, add-to-cart rate, purchase conversion, and revenue per visitor—not menu clicks alone.",
+          "Treat the change as a substantial navigation test and QA it across mobile and desktop."
+        ],
+        "caveats": [
+          "This approach is drawn from the source's pro-age beauty case study and may not fit stores with complex catalogs or visitors who primarily seek a known category.",
+          "The source does not prescribe the number of products to feature or a bestseller-selection method."
+        ],
+        "tags": [
+          "testing",
+          "navigation",
+          "mega-menu",
+          "merchandising",
+          "product-discovery",
+          "session-recordings",
+          "conversion-optimization"
+        ]
+      },
+      {
+        "title": "Remove an unused coupon field and replace it with purchase reassurance",
+        "summary": "When no promotion is active, an exposed discount field can trigger code hunting; use cart trust messaging instead of inviting that detour.",
+        "use_when": "Auditing a cart or checkout that displays a coupon-code box despite having no active discount campaign.",
+        "steps": [
+          "Confirm whether the store currently offers a usable discount. If not, test removing the visible coupon or discount-code field from the cart or applicable checkout step.",
+          "The source's rationale is behavioral: a coupon field can signal that a deal exists, prompting shoppers to leave and search coupon sites, encounter invalid codes, and abandon the purchase.",
+          "Replace some of that visual space with concise reassurance relevant to purchase risk, such as easy returns, support access, satisfaction terms, or a money-back guarantee.",
+          "Track cart-to-checkout rate, checkout completion, purchase conversion, revenue per visitor, and any effect on support contacts or promotion-related complaints.",
+          "Keep promotion redemption easy when a genuine campaign is running; this is not advice to make valid offers difficult to use."
+        ],
+        "caveats": [
+          "The source's approximately $40,000 monthly-revenue case result combined coupon-field removal with a trust-policy bar and is not an isolated or guaranteed effect.",
+          "Checkout customization may be limited by the ecommerce platform, plan, payment method, or local consumer requirements."
+        ],
+        "tags": [
+          "testing",
+          "cart",
+          "checkout",
+          "friction-reduction",
+          "trust",
+          "promotion-strategy",
+          "conversion-optimization"
+        ]
+      },
+      {
+        "title": "Merchandise collection grids for rapid choice and repeat purchase",
+        "summary": "Keep collection pages product-forward, use selective decision cues, and consider direct card-level purchasing for suitable repeat-buy products.",
+        "use_when": "Optimizing a mobile collection page for product discovery, merchandising, or repeat orders in consumable categories.",
+        "steps": [
+          "Keep the collection grid focused on products and filtering. Avoid oversized hero blocks or text that push products down the mobile viewport; the source's design preference is to expose about four products above the fold on mobile.",
+          "Use selective labels such as bestseller, new, trending, or low stock to reduce decision paralysis and guide attention. Apply labels to only a few neighboring products rather than labeling everything.",
+          "For simple, repeat-purchase consumables, test showing price and enabling add-to-cart directly from the collection card so returning shoppers need not revisit the PDP.",
+          "Evaluate the combination as a coherent merchandising change, measuring product clicks, add-to-cart rate, purchase conversion, AOV, and revenue per visitor.",
+          "Retain PDP access for shoppers who need product education, variant selection, or detailed evidence before purchase."
+        ],
+        "caveats": [
+          "The source's direct collection-card pricing example came from a consumable makeup brand and may not work for complex, high-consideration, or variant-heavy products.",
+          "The cited roughly $30,000 monthly case outcome is an example, not a benchmark."
+        ],
+        "tags": [
+          "testing",
+          "collection-page",
+          "merchandising",
+          "product-discovery",
+          "repeat-purchase",
+          "mobile-commerce",
+          "conversion-optimization"
+        ]
+      },
+      {
+        "title": "Test bundles, price points, and cart thresholds as paid-acquisition levers",
+        "summary": "When cold acquisition is expensive, test commercially viable offers that improve conversion or AOV rather than relying solely on creative or site tweaks.",
+        "use_when": "Developing offers for paid traffic, increasing AOV, or finding a profitable path to scale a low-price or repeat-purchase product.",
+        "steps": [
+          "Test offer structures over time: bundles, build-a-bundle flows, alternative price points, and promotion mechanics such as buy-one-get-one offers where economically viable.",
+          "For lower-priced products, consider a bundle near add-to-cart that lets shoppers choose variants in a modal or simple picker. The source's sunglasses example used a buy-three-and-save-20% offer with color selection.",
+          "Use cart progress prompts for free shipping, free gifts, and relevant upsells to encourage a larger order when the incremental economics support it.",
+          "Measure revenue per visitor alongside AOV, purchase conversion, discount cost, margin, fulfillment cost, and acquisition cost; a larger basket is not automatically more profitable.",
+          "Test one coherent offer system at a time so the store can identify whether price, bundle composition, threshold, or upsell caused the outcome."
+        ],
+        "caveats": [
+          "The source discloses a sponsorship relationship with a price-testing tool it mentions; choose tools and methods independently and verify current capabilities.",
+          "Its cited sunglasses and apparel revenue increases are case studies, not expected outcomes.",
+          "Avoid offers that create misleading urgency, unprofitable discounting, or operational complexity the fulfillment team cannot support."
+        ],
+        "tags": [
+          "testing",
+          "offer-design",
+          "bundles",
+          "price-testing",
+          "cart",
+          "aov",
+          "acquisition"
+        ]
+      },
+      {
+        "title": "Build homepage and sales-page heroes around the main purchase objection",
+        "summary": "Use a single outcome-led hero with visible proof and a clear CTA, informed by the customer concern most likely to block purchase.",
+        "use_when": "Running a major above-the-fold homepage or sales-page test for new shoppers arriving from paid or organic traffic.",
+        "steps": [
+          "Write one clear benefit- and outcome-led headline explaining what the product is, who it helps, and why a shopper should care.",
+          "Bring relevant proof above the fold: review signals, accurate guarantee markers, certifications or product attributes, and featured-in logos only where legitimate.",
+          "Use short, benefit-led bullets instead of dense feature lists so the visitor can scan the value quickly.",
+          "Use one clear CTA, such as a route to bestsellers when appropriate, and make the next destination understandable.",
+          "Use post-purchase research to identify the dominant objection and answer it in the hero. In the source's sandal-brand example, customers questioned leather quality, so the page foregrounded craftsmanship, sourcing, and quality.",
+          "Test the hero against the current version using downstream purchase and revenue metrics, not headline engagement alone."
+        ],
+        "caveats": [
+          "All quality, guarantee, certification, and publication claims must be accurate and authorized.",
+          "The source's sandal case, which reported about $77,000 in monthly incremental revenue, is an illustration rather than a forecast."
+        ],
+        "tags": [
+          "testing",
+          "homepage",
+          "landing-page",
+          "copywriting",
+          "social-proof",
+          "trust",
+          "conversion-optimization"
+        ]
+      },
+      {
+        "title": "Audit the real purchase flow across devices to uncover friction bugs",
+        "summary": "Regularly buy through the store on real devices and observe unfamiliar users to identify overlays, dead clicks, and other preventable purchase barriers.",
+        "use_when": "Starting a CRO audit, investigating unexplained conversion loss, or validating a new theme, app, popup, or checkout change.",
+        "steps": [
+          "Complete a real purchase journey on mobile, desktop, and tablet, checking product selection, cart, promotions, shipping, payment, confirmation, and post-purchase paths.",
+          "Give a phone to someone unfamiliar with the store and observe them attempting a purchase without coaching; note where they hesitate, miss controls, or misunderstand the interface.",
+          "Inspect for overlays that obstruct buying actions, including exit-intent popups, cookie notices covering PDP CTAs, and cookie bars interfering with cart buttons.",
+          "Check that links and visual controls behave as they imply. Cross-reference suspected issues with false-click and rage-click data from recordings or heatmaps.",
+          "Log each issue with device, browser, page, reproduction steps, and expected revenue impact; fix clear defects before treating them as A/B-test hypotheses.",
+          "Repeat the audit after theme, app, promotion, or checkout changes."
+        ],
+        "caveats": [
+          "The source frames a past-four-weeks self-purchase check as an exercise, not a universal mandatory cadence.",
+          "Internal testing cannot replace research with actual target customers or broad device/browser QA."
+        ],
+        "tags": [
+          "testing",
+          "ux-audit",
+          "qa",
+          "mobile-commerce",
+          "checkout",
+          "friction-reduction",
+          "session-recordings"
+        ]
+      },
+      {
+        "title": "Run CRO as a learning system, not a sequence of guaranteed wins",
+        "summary": "Expect many experiments to lose, preserve validated gains, and document why results occurred so future tests improve.",
+        "use_when": "Setting CRO-program expectations, deciding test velocity, or managing a backlog of purchase-journey experiments.",
+        "steps": [
+          "Treat losing tests as information rather than automatic failure. The source considers a 30–35% win rate strong in its experience, meaning most tests may not beat control.",
+          "For every completed test, record the hypothesis, implementation, audience, duration, primary and guardrail metrics, result, and likely explanation.",
+          "Keep validated winning treatments live unless product, audience, traffic source, economics, or page context has changed enough to justify retesting.",
+          "Investigate losses: the hypothesis may have been wrong, the implementation weak, the audience mismatched, or the test underpowered. Feed the conclusion into subsequent research and prioritization.",
+          "Scale test velocity only when traffic, engineering/design capacity, and research quality support it. The source suggests four to eight A/B tests monthly for higher-traffic programs.",
+          "Protect gains through change-management documentation so theme redesigns or leadership transitions do not accidentally overwrite them."
+        ],
+        "caveats": [
+          "The source's 30–35% hit rate and its 13 wins from 135 Ezra case-study tests are contextual experience, not industry standards.",
+          "Do not assume gains compound indefinitely; monitor results as traffic mix, promotions, competition, and product assortment change."
+        ],
+        "tags": [
+          "testing",
+          "experiment-design",
+          "learning-loop",
+          "measurement",
+          "documentation",
+          "conversion-optimization",
+          "change-management"
+        ]
+      }
+    ]
+  },
+  "raw_content": "{\"cards\":[{\"title\":\"Choose big swings or comprehensive CRO based on monthly sessions\",\"summary\":\"Use traffic volume to decide whether a store needs high-impact funnel changes or can support a high-velocity, isolated A/B-testing program.\",\"use_when\":\"Choosing a CRO investment approach for a store based on its monthly traffic and ability to generate purchase data.\",\"steps\":[\"Use the source's internal rule of thumb: below roughly 300,000 monthly sessions, favor bigger changes rather than micro-tests such as button colors or minor copy edits.\",\"Prioritize high-impact levers: a data-led PDP or landing-page redesign, monthly offer and price tests, cart/checkout shipping tests, post-purchase upsells and surveys, and tighter ad-to-page message alignment.\",\"Above roughly 300,000 sessions, provided order volume is sufficient, build a comprehensive program: qualitative and quantitative research, isolated tests, a roadmap, documented learning loops, and a stack such as GA4, heatmaps, surveys, and session recordings.\",\"At higher volume, the source suggests a possible operating pace of four to eight A/B tests monthly; at lower volume, use research to make fewer, larger bets.\"],\"caveats\":[\"The 300,000-session line is the source's revised internal benchmark, not a universal cutoff.\",\"Assess actual orders, baseline conversion, expected effect size, and required sample size before deciding that a test is viable.\"],\"tags\":[\"testing\",\"conversion-optimization\",\"experiment-design\",\"traffic-volume\",\"research\",\"offer-design\",\"landing-page\"]},{\"title\":\"Prioritize revenue per visitor over conversion rate\",\"summary\":\"Evaluate CRO primarily through revenue per visitor or session so price, conversion rate, and average order value are considered together.\",\"use_when\":\"Selecting success metrics for a PDP, landing-page, cart, checkout, bundle, or offer experiment.\",\"steps\":[\"Make revenue per visitor or revenue per session the primary outcome for most purchase-journey tests, as the source recommends, and report conversion rate and AOV alongside it.\",\"Avoid declaring a conversion-rate win without checking revenue: a steep price reduction could increase purchases while reducing revenue per visitor.\",\"For each result, diagnose the components: did more visitors purchase, did AOV change, or did both move? This matters especially for discounts, free-shipping thresholds, bundles, and upsells.\",\"Use the same metric when comparing major changes such as a new landing page, PDP design, price point, or cart offer, so local conversion gains do not obscure a weaker commercial outcome.\"],\"caveats\":[\"Revenue per visitor does not by itself establish profitability; assess margin, discount cost, shipping cost, and acquisition cost where the decision requires it.\",\"The source provides no prescribed attribution window or target value for this metric.\"],\"tags\":[\"testing\",\"measurement\",\"conversion-optimization\",\"revenue-per-visitor\",\"aov\",\"offer-design\"]},{\"title\":\"Plan A/B tests around calculated sample size, duration, randomization, and QA\",\"summary\":\"Use randomized traffic, adequate duration and calculated sample requirements before acting on an A/B-test result.\",\"use_when\":\"Launching a purchase-conversion experiment on a product page, landing page, cart, checkout, or navigation flow.\",\"steps\":[\"Define the primary purchase metric and calculate the sample size needed from the baseline rate, minimum meaningful effect, confidence requirement, and desired power before launch.\",\"The source commonly runs roughly 50,000–100,000 sessions depending on test location and recommends at least two weeks, preferably two to four, so weekday effects repeat.\",\"Randomize visitors between control and variation. Use multiple variations or multivariate designs only when traffic is high enough to support them.\",\"Distinguish statistical significance from statistical power: a result may look unlikely to be random without having enough data to be reliably repeatable or commercially meaningful.\",\"Do not run conflicting tests on the same page area. Separate tests can run on, for example, a homepage and cart, or clearly distinct page regions.\",\"QA each experience two or three times before launch; broken tracking, layouts, or CTAs can turn a viable variation into an apparent loser.\"],\"caveats\":[\"The source's traffic and duration ranges are operating conventions, not replacements for an actual sample-size calculation.\",\"Its preference for above-the-fold, larger changes reflects the source's testing bias rather than a rule for every experiment.\"],\"tags\":[\"testing\",\"a-b-testing\",\"experiment-design\",\"statistical-power\",\"measurement\",\"qa\",\"conversion-optimization\"]},{\"title\":\"Turn research into a scored CRO hypothesis\",\"summary\":\"Write every experiment as a specific change, expected purchase outcome, and data-backed rationale, then prioritize the strongest feasible ideas.\",\"use_when\":\"Converting funnel analysis, survey responses, review mining, or session-recording findings into a product-page, landing-page, or checkout test backlog.\",\"steps\":[\"State the exact change, such as adding a results-timeline section below the PDP fold or moving guarantee copy beside add-to-cart.\",\"State the expected measurable outcome, such as improved revenue per visitor, purchase conversion, or AOV, based on the research rather than intuition alone.\",\"Document the rationale and evidence. The source example used post-purchase feedback showing buyers were uncertain about how long supplement results would take; the proposed change made that timeframe clear near the top of the page.\",\"Score hypotheses with a framework such as PXL. The source mentions factors including whether a change is above the fold, noticeable within five seconds, and easy to implement.\",\"Start with highly visible, feasible ideas with strong evidence, while retaining lower-ranked ideas for later learning.\"],\"caveats\":[\"PXL is an externally credited prioritization framework, not a guarantee that high-scoring ideas will win.\",\"A compelling hypothesis is not proof; validate it with the appropriate research or experiment method.\"],\"tags\":[\"testing\",\"hypothesis\",\"prioritization\",\"experiment-design\",\"customer-research\",\"product-page\",\"conversion-optimization\"]},{\"title\":\"Use funnel analysis and heatmaps to locate purchase friction\",\"summary\":\"Map drop-off, clicks, scroll depth, and false clicks to identify where shoppers fail to reach or complete purchase.\",\"use_when\":\"Beginning a CRO audit or diagnosing a drop in PDP-to-cart, cart-to-checkout, or checkout-to-purchase performance.\",\"steps\":[\"Map the journey from paid ad or entry page through PDP, cart, checkout, thank-you page, and any upsell flow; identify the largest abandonment points.\",\"Use analytics to understand where people leave, even if a full GA4 audit is not practical at lower traffic volumes.\",\"Install a heatmap tool on key product pages and inspect click maps, scroll behavior, and scroll depth. The source names Microsoft Clarity as a free option and Heatmap.com as a revenue-oriented alternative; verify current tool capabilities and setup.\",\"Check whether important selling points are placed where shoppers actually see them. The source cites a case where a critical factor near the footer reached only about 6% of visitors.\",\"Identify false and rage clicks, especially on elements that resemble buttons, links, or controls but do not work, then remove that friction.\",\"Use findings to form test hypotheses or fix clear defects, and pair them with qualitative research to learn why behavior occurred.\"],\"caveats\":[\"The source's 6% visibility example is a single case, not a target or benchmark.\",\"Heatmaps identify behavioral patterns but do not by themselves explain shopper intent.\"],\"tags\":[\"testing\",\"analytics\",\"heatmaps\",\"funnel-analysis\",\"research\",\"product-page\",\"friction-reduction\"]},{\"title\":\"Gather qualitative evidence from buyers, usability sessions, and reviews\",\"summary\":\"Use surveys, interviews, observed usability, and review mining to reveal the objections and language behind shopper behavior.\",\"use_when\":\"Analytics shows where shoppers abandon but the store needs evidence for PDP copy, product education, trust content, or checkout-friction changes.\",\"steps\":[\"Run usability sessions in which people attempt to browse and buy, then ask what confused them or prevented confidence.\",\"Interview customers or call selected buyers to understand why they purchased, what was unclear, and whether the buying experience met expectations.\",\"Implement a post-purchase survey with, at minimum, questions equivalent to what prompted the purchase today and what almost prevented it. The source treats this feedback as a central optimization input.\",\"If post-purchase collection is unavailable, send a one-time survey to customers or VIPs. The source suggests an incentive such as entry into a $250 Amazon gift-card draw to increase response volume.\",\"When the store has hundreds of reviews, export them and use AI-assisted analysis to group repeated motivations, objections, phrases, and tone. Use those findings in customer-facing copy and research hypotheses.\"],\"caveats\":[\"Verify current survey-tool availability and integrations before implementation.\",\"No sample size, survey cadence, or interview protocol is specified; avoid treating a few anecdotes as conclusive.\"],\"tags\":[\"testing\",\"customer-research\",\"surveys\",\"usability-testing\",\"reviews\",\"voice-of-customer\",\"copywriting\"]},{\"title\":\"Translate post-purchase objections into PDP and landing-page copy\",\"summary\":\"Use what nearly stopped buyers from purchasing to decide which objections deserve prominent front-end answers.\",\"use_when\":\"Updating PDP, landing-page, product-quiz, or cart messaging after collecting post-purchase survey responses.\",\"steps\":[\"Aggregate answers to the question about what almost prevented purchase; the source considers this the highest-value survey question for conversion work.\",\"Group answers into recurring objections, such as uncertainty about product quality, expected results, fit, shipping, guarantee, or how to use the product.\",\"Place a direct answer where the objection can affect a decision: in the headline, benefits, proof section, buy box, FAQ, or a section just below the fold.\",\"The source example involved supplement buyers who did not know when results would appear. The proposed solution was a prominent, accurate results-timeline message rather than leaving this information buried lower on the page.\",\"Use responses about why customers did purchase to reinforce high-value motivations, but give special attention to objections that create hesitation.\",\"Combine the qualitative theme with drop-off and heatmap evidence before prioritizing the change.\"],\"caveats\":[\"Any performance, timing, quality, or guarantee claim must be truthful, substantiated, and compliant for the product and market.\",\"The supplement example illustrates the reasoning; it does not show that adding a timeframe will lift every store's conversion rate.\"],\"tags\":[\"testing\",\"customer-research\",\"product-page\",\"landing-page\",\"copywriting\",\"objection-handling\",\"conversion-optimization\"]},{\"title\":\"Pre-sell cold paid traffic with a congruent landing page\",\"summary\":\"Test a pre-sell landing page between ad click and product or collection page to educate cold visitors and preserve message continuity.\",\"use_when\":\"Improving paid-social or other cold-traffic journeys that currently send visitors directly to a homepage, collection, or PDP.\",\"steps\":[\"Create a landing page between the ad and the store's money page so cold visitors can understand the product, problem, and reason to believe before shopping.\",\"Test formats such as listicles and advertorial-style educational pages, along with distinct messaging angles rather than only layout differences.\",\"Maintain message congruence: the ad's promise, audience, and visual angle should be recognizable on the landing page and in the onward PDP experience.\",\"For audiences needing easier readability, the source's example used larger type, scannable sections, bold subheads, a clear value-led headline, numbered points, and a simple benefit-led buy box.\",\"Measure the entire journey through purchase and revenue per visitor, not merely landing-page click-through rate.\",\"Use landing-page research and results to improve both creative and PDP positioning.\"],\"caveats\":[\"Advertorial-style content must remain truthful and comply with applicable advertising, disclosure, and platform requirements.\",\"The source's case examples are not evidence that a landing page will outperform a direct-to-PDP route for every product or traffic source.\"],\"tags\":[\"testing\",\"acquisition\",\"landing-page\",\"creative-strategy\",\"advertorial\",\"message-match\",\"conversion-optimization\"]},{\"title\":\"Make PDP purchase drivers visible near the buy box\",\"summary\":\"Move proof, savings, guarantees, scannable benefits, and usable product media into prominent PDP locations rather than burying them below the fold.\",\"use_when\":\"Redesigning or testing a product detail page, particularly when research indicates shoppers need more trust or clarity before adding to cart.\",\"steps\":[\"Move reviews and relevant social proof toward the primary CTA so shoppers see validation during the purchase decision.\",\"Make genuine savings and key purchase terms clear, and test a sticky add-to-cart where it improves access to the buying action.\",\"Use visible thumbnails instead of ambiguous carousel dots. Treat the product-media carousel as a compact selling surface for benefits, testimonials, UGC, video, and applicable guarantee signals.\",\"Make a money-back guarantee visible near the CTA when research indicates it matters, rather than hiding it in a collapsed area.\",\"Replace dense feature descriptions with benefit-led bullets and bold the phrases shoppers need to scan quickly.\",\"Validate which elements matter with customer research and a properly designed experiment; the source's pro-age-brand guarantee test increased paid-media revenue per PDP visitor by about $0.50, but that was a category-specific result.\"],\"caveats\":[\"Guarantee, savings, testimonial, and product claims must be accurate and supported.\",\"The importance of guarantees, reviews, and media varies by product, traffic temperature, and customer demographic.\"],\"tags\":[\"testing\",\"product-page\",\"conversion-optimization\",\"social-proof\",\"sticky-add-to-cart\",\"product-media\",\"copywriting\"]},{\"title\":\"Design mega menus to move new visitors toward products\",\"summary\":\"Use navigation research to make a mega menu a product-discovery surface rather than a list of equally weighted links.\",\"use_when\":\"Testing navigation for homepages or store pages that receive substantial new-visitor traffic.\",\"steps\":[\"Review session recordings to confirm whether new visitors open the mega menu to understand available categories and products.\",\"Use prominent menu real estate for a bestseller carousel or curated products when evidence shows visitors need help choosing what to browse.\",\"Add clear visual cues such as category icons and relevant proof signals, while keeping product discovery more prominent than secondary links.\",\"Move lower-intent, non-shopping destinations such as contact, reviews, and FAQ links lower in the menu so they do not compete with product paths.\",\"Measure downstream behavior: product-page visits, add-to-cart rate, purchase conversion, and revenue per visitor—not menu clicks alone.\",\"Treat the change as a substantial navigation test and QA it across mobile and desktop.\"],\"caveats\":[\"This approach is drawn from the source's pro-age beauty case study and may not fit stores with complex catalogs or visitors who primarily seek a known category.\",\"The source does not prescribe the number of products to feature or a bestseller-selection method.\"],\"tags\":[\"testing\",\"navigation\",\"mega-menu\",\"merchandising\",\"product-discovery\",\"session-recordings\",\"conversion-optimization\"]},{\"title\":\"Remove an unused coupon field and replace it with purchase reassurance\",\"summary\":\"When no promotion is active, an exposed discount field can trigger code hunting; use cart trust messaging instead of inviting that detour.\",\"use_when\":\"Auditing a cart or checkout that displays a coupon-code box despite having no active discount campaign.\",\"steps\":[\"Confirm whether the store currently offers a usable discount. If not, test removing the visible coupon or discount-code field from the cart or applicable checkout step.\",\"The source's rationale is behavioral: a coupon field can signal that a deal exists, prompting shoppers to leave and search coupon sites, encounter invalid codes, and abandon the purchase.\",\"Replace some of that visual space with concise reassurance relevant to purchase risk, such as easy returns, support access, satisfaction terms, or a money-back guarantee.\",\"Track cart-to-checkout rate, checkout completion, purchase conversion, revenue per visitor, and any effect on support contacts or promotion-related complaints.\",\"Keep promotion redemption easy when a genuine campaign is running; this is not advice to make valid offers difficult to use.\"],\"caveats\":[\"The source's approximately $40,000 monthly-revenue case result combined coupon-field removal with a trust-policy bar and is not an isolated or guaranteed effect.\",\"Checkout customization may be limited by the ecommerce platform, plan, payment method, or local consumer requirements.\"],\"tags\":[\"testing\",\"cart\",\"checkout\",\"friction-reduction\",\"trust\",\"promotion-strategy\",\"conversion-optimization\"]},{\"title\":\"Merchandise collection grids for rapid choice and repeat purchase\",\"summary\":\"Keep collection pages product-forward, use selective decision cues, and consider direct card-level purchasing for suitable repeat-buy products.\",\"use_when\":\"Optimizing a mobile collection page for product discovery, merchandising, or repeat orders in consumable categories.\",\"steps\":[\"Keep the collection grid focused on products and filtering. Avoid oversized hero blocks or text that push products down the mobile viewport; the source's design preference is to expose about four products above the fold on mobile.\",\"Use selective labels such as bestseller, new, trending, or low stock to reduce decision paralysis and guide attention. Apply labels to only a few neighboring products rather than labeling everything.\",\"For simple, repeat-purchase consumables, test showing price and enabling add-to-cart directly from the collection card so returning shoppers need not revisit the PDP.\",\"Evaluate the combination as a coherent merchandising change, measuring product clicks, add-to-cart rate, purchase conversion, AOV, and revenue per visitor.\",\"Retain PDP access for shoppers who need product education, variant selection, or detailed evidence before purchase.\"],\"caveats\":[\"The source's direct collection-card pricing example came from a consumable makeup brand and may not work for complex, high-consideration, or variant-heavy products.\",\"The cited roughly $30,000 monthly case outcome is an example, not a benchmark.\"],\"tags\":[\"testing\",\"collection-page\",\"merchandising\",\"product-discovery\",\"repeat-purchase\",\"mobile-commerce\",\"conversion-optimization\"]},{\"title\":\"Test bundles, price points, and cart thresholds as paid-acquisition levers\",\"summary\":\"When cold acquisition is expensive, test commercially viable offers that improve conversion or AOV rather than relying solely on creative or site tweaks.\",\"use_when\":\"Developing offers for paid traffic, increasing AOV, or finding a profitable path to scale a low-price or repeat-purchase product.\",\"steps\":[\"Test offer structures over time: bundles, build-a-bundle flows, alternative price points, and promotion mechanics such as buy-one-get-one offers where economically viable.\",\"For lower-priced products, consider a bundle near add-to-cart that lets shoppers choose variants in a modal or simple picker. The source's sunglasses example used a buy-three-and-save-20% offer with color selection.\",\"Use cart progress prompts for free shipping, free gifts, and relevant upsells to encourage a larger order when the incremental economics support it.\",\"Measure revenue per visitor alongside AOV, purchase conversion, discount cost, margin, fulfillment cost, and acquisition cost; a larger basket is not automatically more profitable.\",\"Test one coherent offer system at a time so the store can identify whether price, bundle composition, threshold, or upsell caused the outcome.\"],\"caveats\":[\"The source discloses a sponsorship relationship with a price-testing tool it mentions; choose tools and methods independently and verify current capabilities.\",\"Its cited sunglasses and apparel revenue increases are case studies, not expected outcomes.\",\"Avoid offers that create misleading urgency, unprofitable discounting, or operational complexity the fulfillment team cannot support.\"],\"tags\":[\"testing\",\"offer-design\",\"bundles\",\"price-testing\",\"cart\",\"aov\",\"acquisition\"]},{\"title\":\"Build homepage and sales-page heroes around the main purchase objection\",\"summary\":\"Use a single outcome-led hero with visible proof and a clear CTA, informed by the customer concern most likely to block purchase.\",\"use_when\":\"Running a major above-the-fold homepage or sales-page test for new shoppers arriving from paid or organic traffic.\",\"steps\":[\"Write one clear benefit- and outcome-led headline explaining what the product is, who it helps, and why a shopper should care.\",\"Bring relevant proof above the fold: review signals, accurate guarantee markers, certifications or product attributes, and featured-in logos only where legitimate.\",\"Use short, benefit-led bullets instead of dense feature lists so the visitor can scan the value quickly.\",\"Use one clear CTA, such as a route to bestsellers when appropriate, and make the next destination understandable.\",\"Use post-purchase research to identify the dominant objection and answer it in the hero. In the source's sandal-brand example, customers questioned leather quality, so the page foregrounded craftsmanship, sourcing, and quality.\",\"Test the hero against the current version using downstream purchase and revenue metrics, not headline engagement alone.\"],\"caveats\":[\"All quality, guarantee, certification, and publication claims must be accurate and authorized.\",\"The source's sandal case, which reported about $77,000 in monthly incremental revenue, is an illustration rather than a forecast.\"],\"tags\":[\"testing\",\"homepage\",\"landing-page\",\"copywriting\",\"social-proof\",\"trust\",\"conversion-optimization\"]},{\"title\":\"Audit the real purchase flow across devices to uncover friction bugs\",\"summary\":\"Regularly buy through the store on real devices and observe unfamiliar users to identify overlays, dead clicks, and other preventable purchase barriers.\",\"use_when\":\"Starting a CRO audit, investigating unexplained conversion loss, or validating a new theme, app, popup, or checkout change.\",\"steps\":[\"Complete a real purchase journey on mobile, desktop, and tablet, checking product selection, cart, promotions, shipping, payment, confirmation, and post-purchase paths.\",\"Give a phone to someone unfamiliar with the store and observe them attempting a purchase without coaching; note where they hesitate, miss controls, or misunderstand the interface.\",\"Inspect for overlays that obstruct buying actions, including exit-intent popups, cookie notices covering PDP CTAs, and cookie bars interfering with cart buttons.\",\"Check that links and visual controls behave as they imply. Cross-reference suspected issues with false-click and rage-click data from recordings or heatmaps.\",\"Log each issue with device, browser, page, reproduction steps, and expected revenue impact; fix clear defects before treating them as A/B-test hypotheses.\",\"Repeat the audit after theme, app, promotion, or checkout changes.\"],\"caveats\":[\"The source frames a past-four-weeks self-purchase check as an exercise, not a universal mandatory cadence.\",\"Internal testing cannot replace research with actual target customers or broad device/browser QA.\"],\"tags\":[\"testing\",\"ux-audit\",\"qa\",\"mobile-commerce\",\"checkout\",\"friction-reduction\",\"session-recordings\"]},{\"title\":\"Run CRO as a learning system, not a sequence of guaranteed wins\",\"summary\":\"Expect many experiments to lose, preserve validated gains, and document why results occurred so future tests improve.\",\"use_when\":\"Setting CRO-program expectations, deciding test velocity, or managing a backlog of purchase-journey experiments.\",\"steps\":[\"Treat losing tests as information rather than automatic failure. The source considers a 30–35% win rate strong in its experience, meaning most tests may not beat control.\",\"For every completed test, record the hypothesis, implementation, audience, duration, primary and guardrail metrics, result, and likely explanation.\",\"Keep validated winning treatments live unless product, audience, traffic source, economics, or page context has changed enough to justify retesting.\",\"Investigate losses: the hypothesis may have been wrong, the implementation weak, the audience mismatched, or the test underpowered. Feed the conclusion into subsequent research and prioritization.\",\"Scale test velocity only when traffic, engineering/design capacity, and research quality support it. The source suggests four to eight A/B tests monthly for higher-traffic programs.\",\"Protect gains through change-management documentation so theme redesigns or leadership transitions do not accidentally overwrite them.\"],\"caveats\":[\"The source's 30–35% hit rate and its 13 wins from 135 Ezra case-study tests are contextual experience, not industry standards.\",\"Do not assume gains compound indefinitely; monitor results as traffic mix, promotions, competition, and product assortment change.\"],\"tags\":[\"testing\",\"experiment-design\",\"learning-loop\",\"measurement\",\"documentation\",\"conversion-optimization\",\"change-management\"]}]}",
+  "input": {
+    "source_name": "Conversion Rate Optimization Framework Revealed - Step By Step Breakdown.docx",
+    "domain": "testing",
+    "cards": [
+      {
+        "title": "Choose big swings or comprehensive CRO based on monthly sessions",
+        "summary": "Bucket optimization strategy by session volume: under 300,000 monthly sessions favors big swings; over that threshold supports full high-velocity A/B testing.",
+        "use_when": "Deciding whether to invest in micro A/B tests or larger redesigns/offer tests for an ecommerce store.",
+        "steps": [
+          "Use the source's internal benchmark: under 300,000 sessions per month, focus on much bigger swings rather than micro A/B tests (button color, above-fold image swaps, small text changes).",
+          "For brands under 300,000 sessions, the source lists big-swing levers including landing page design concepts, PDP redesigns based on data, offer and price testing month to month, free-shipping and price tests in cart/checkout, post-purchase upsells and surveys, and creative-to-landing-page alignment.",
+          "Over 300,000 sessions — assuming conversion rate and order volume are good enough to produce enough data — run comprehensive CRO: deep qualitative and quantitative audits, isolated A/B tests, higher experiment velocity (the source cites four to eight A/B tests per month), a full data stack (GA4, heatmaps, surveys, session recordings), a roadmap, learning loops from wins and losses, and cross-functional teamwork.",
+          "Note the source explicitly revised this threshold in light of harder attribution and rising CPMs, so treat 300,000 as a situational internal benchmark, not a universal law.",
+          "The source says under the threshold you need an agency or must invest the time and resource yourself to run the essential analyses."
+        ],
+        "caveats": [
+          "300,000 monthly sessions is described as an internal benchmark that changed in the last six to 12 months, not a proven universal cutoff.",
+          "'Good enough' conversion rate and 'enough orders' are not defined.",
+          "The source says there are six to eight big-swing items but does not enumerate a clean list; the count is inconsistent."
+        ],
+        "tags": [
+          "testing",
+          "conversion-optimization",
+          "experiment-design",
+          "traffic-thresholds",
+          "offer-design",
+          "landing-page"
+        ]
+      },
+      {
+        "title": "Prioritize revenue per visitor over conversion rate",
+        "summary": "Because conversion rate can be inflated by cutting prices, the source says the primary metric should be revenue per visitor or revenue per session.",
+        "use_when": "Choosing the primary success metric for CRO work or interpreting A/B test results.",
+        "steps": [
+          "Make revenue per visitor (or revenue per session) the primary metric nine times out of ten, per the source, because it combines conversion rate and average order value.",
+          "Use the source's illustration of why conversion rate alone misleads: halving prices would raise conversion rate almost instantly while reducing revenue per visitor.",
+          "Pair revenue-per-visitor tracking with conversion rate and AOV so you can see which component moved.",
+          "Keep this as the organizing metric when evaluating big swings (landing pages, PDP redesigns, offer tests) and comprehensive A/B tests."
+        ],
+        "caveats": [
+          "The source gives no formula, target level, or attribution window for revenue per visitor/session.",
+          "The source's example figures (e.g., unoptimized vs. optimized revenue per click/person) are rhetorical illustrations without stated baselines, time periods, or traffic levels."
+        ],
+        "tags": [
+          "testing",
+          "measurement",
+          "conversion-optimization",
+          "revenue-per-visitor",
+          "aov"
+        ]
+      },
+      {
+        "title": "Structure A/B tests with adequate sample, duration, and power",
+        "summary": "Set test parameters — 50–100k sessions, two to four weeks, randomization, and statistical power — before trusting an A/B result.",
+        "use_when": "Planning or scoping an A/B test and deciding when to call a winner.",
+        "steps": [
+          "Run 50,000 to 100,000 sessions through a test, depending on where on the site the test lives.",
+          "Run tests for at least two weeks and preferably two to four weeks so each weekday repeats (two Mondays, two Tuesdays, etc.). This guards against a competitor's Monday sale making your test look like a loser when it may be a winner.",
+          "Randomize traffic between the control (current version) and variation(s); ABC or multivariate designs are possible, but multivariate should only be used at high volume.",
+          "Use statistical significance from your testing tool, but recognize the distinction the source draws: significance is like a coin landing heads twice in three flips, while statistical power means the dataset is large enough to prove the result is repeatable and will make more money.",
+          "Avoid running conflicting tests on the same page area; the source says you can test a homepage and a cart simultaneously, or above-the-fold and below-the-fold, but not two competing PDP tests at once.",
+          "QA the test two or three times before launch — bugs can make a winning variation look like a loser."
+        ],
+        "caveats": [
+          "Sample sizes, durations, and the significance/power framing are the source's conventions, not universal thresholds.",
+          "The source says 80% of its tests focus on larger, above-the-fold swings, which reflects its own operating bias."
+        ],
+        "tags": [
+          "testing",
+          "experiment-design",
+          "measurement",
+          "statistical-power",
+          "a-b-testing",
+          "qa"
+        ]
+      },
+      {
+        "title": "Write hypotheses with change, expected outcome, and rationale",
+        "summary": "Every test idea should specify what changes, the expected result, and the data-backed reason you believe it will work.",
+        "use_when": "Turning research findings into testable CRO hypotheses.",
+        "steps": [
+          "State the change — exactly what you plan to alter on the page or offer.",
+          "State the expected outcome — the result you anticipate, which requires enough prior research and data analysis to be credible.",
+          "State the rationale — why you believe this change will cause that outcome, citing the data that backs it.",
+          "Illustrative example from the source: post-purchase surveys showed buyers didn't realize how long results would take, so add a section just below the fold showing how quickly results appear.",
+          "Then score and rank ideas in a prioritization framework — the source references the PXL framework and scoring each idea 1–10 on factors such as whether it is above the fold, noticeable within five seconds, and ease of implementation.",
+          "Start with the highest-scoring, easiest-to-implement, above-the-fold ideas."
+        ],
+        "caveats": [
+          "The PXL framework is not the source's invention; the source credits it externally.",
+          "The source says CRO is common sense in principle but not easy in practice — it depends on doing the underlying data work."
+        ],
+        "tags": [
+          "testing",
+          "experiment-design",
+          "conversion-optimization",
+          "prioritization",
+          "pxl-framework",
+          "hypothesis"
+        ]
+      },
+      {
+        "title": "Gather quantitative data to discover what is happening",
+        "summary": "Funnel/drop-off analysis, heatmaps, and price/offer testing reveal where and what users do on the site.",
+        "use_when": "Starting CRO research or diagnosing where on the funnel you are losing visitors.",
+        "steps": [
+          "Do funnel and drop-off analysis: map the path from ad to PDP to cart to checkout to thank-you page to upsell, and identify the biggest drop-off points. Full GA4 analysis is not mandatory under 300,000 sessions, but find where people leave.",
+          "Install heatmaps on your product page. The source uses 10,000 and 10 million sessions as examples of traffic levels, not a stated boundary; it says everyone should have one. Clarity by Microsoft is free but laggy per the source; heatmap.com is cited as tracking by revenue rather than clicks.",
+          "Analyze clicks, scroll behavior, and scroll depth. The source says brands frequently hide key selling points below the fold and cites an example where an important selling factor just above the footer was seen by about 6% of the audience.",
+          "Look for false clicks and rage clicks — users clicking elements that look like buttons or links but are not. The source cites uplifts from eliminating false clicks on high-volume stores.",
+          "Test price and offer to find what sells through cold media and profitable paid acquisition."
+        ],
+        "caveats": [
+          "The source does not specify sample sizes, measurement windows, or which heatmap metric to act on.",
+          "The 6% example is a single case, not a benchmark."
+        ],
+        "tags": [
+          "testing",
+          "research",
+          "analytics",
+          "heatmaps",
+          "funnel-analysis",
+          "measurement"
+        ]
+      },
+      {
+        "title": "Gather qualitative data to explain why users behave as they do",
+        "summary": "Surveys, interviews, user testing, and review mining surface objections and friction that analytics alone cannot explain.",
+        "use_when": "You know what is happening in the funnel but not why, or you need front-end copy and angle ideas.",
+        "steps": [
+          "Run user testing and usability studies: recruit people to use the site, survey them, and conduct user interviews. The source's team also calls customers directly to ask why they purchased, whether the experience was good, and what was unclear.",
+          "Set up post-purchase surveys and ask at least two questions: 'What made you purchase today?' and 'What made you almost not purchase today?' The source treats this as a non-negotiable and calls it probably the single most effective optimization lever.",
+          "If you do not have a post-purchase survey, send a one-time survey to VIPs and customers using a tool such as Typeform, ask the key feedback questions, and offer a chance to win a $250 Amazon gift card to increase responses.",
+          "If you have 500+ or 1,000+ reviews, export them to CSV and upload to an AI to mine for commonalities, tone of voice, buzzwords, key phrases, friction points, and objections, then answer those on the front end."
+        ],
+        "caveats": [
+          "No sample size, cadence, or interview protocol is specified.",
+          "The tool wording in the transcript for the post-purchase survey app is ambiguous and should be verified for current availability."
+        ],
+        "tags": [
+          "research",
+          "customer-research",
+          "surveys",
+          "reviews",
+          "usability-testing",
+          "voice-of-customer"
+        ]
+      },
+      {
+        "title": "Turn post-purchase survey answers into front-end copy",
+        "summary": "Answers about what almost stopped a purchase give you the friction points to address in headlines, copy, and page sections.",
+        "use_when": "You have post-purchase survey responses and need to translate them into test hypotheses and copy changes.",
+        "steps": [
+          "Collect responses to 'What made you almost not purchase today?' — the source calls this the gold question.",
+          "Example from the source: buyers said they did not know how long it would take to see results from a supplement. The fix was front-end copy stating 'see noticeable results in the first six weeks.'",
+          "Use the answers to change your angle, headline, or add a section just below the fold that directly addresses the stated objection.",
+          "Use the positive answers ('What made you purchase today?') for insight into the motivations that resonate, but the source treats the negative answers as the higher-value conversion lever.",
+          "Combine these qualitative answers with quantitative drop-off and heatmap data so you know both what is broken and why."
+        ],
+        "caveats": [
+          "The source's example is illustrative, not a guarantee that a specific claim will lift conversion.",
+          "Any claim you put in copy (like a timeframe for results) must be accurate for your product and compliant."
+        ],
+        "tags": [
+          "research",
+          "customer-research",
+          "copywriting",
+          "conversion-optimization",
+          "product-page",
+          "surveys"
+        ]
+      },
+      {
+        "title": "Insert a landing page between ad click and money pages",
+        "summary": "Send paid traffic to a pre-sell landing page (listicle, advertorial, or sales page) instead of straight to PDPs, homepages, or collections.",
+        "use_when": "Running cold paid traffic to product pages and looking for a bigger-swing acquisition lever.",
+        "steps": [
+          "Put a landing page in between the ad click and the store's money pages (product pages and collection pages), where the visitor is pre-sold before entering the store.",
+          "Test landing page formats including listicles (e.g., 'top five reasons why people are loving this new supplement') and advertorials (content pieces written in first or third person that review a product while pre-educating the reader).",
+          "Test different angles, not just different layouts.",
+          "Align landing page messaging with the creative for congruence; the source says mismatched creative and landing pages lose money.",
+          "For older demographics, the source's example used larger fonts, scannable text with bolded headers, a clear value-driven headline, a numbered bullet list, and a simple benefit-driven buy box."
+        ],
+        "caveats": [
+          "The source's landing-page example results are case-study outcomes, not promised results.",
+          "No template, length, or compliance boundary for advertorials is given."
+        ],
+        "tags": [
+          "acquisition",
+          "landing-page",
+          "advertorial",
+          "listicle",
+          "creative-strategy",
+          "conversion-optimization"
+        ]
+      },
+      {
+        "title": "Optimize the PDP with reviews, savings, sticky cart, and thumbnails",
+        "summary": "Move social proof up, make savings and guarantees visible near the CTA, use a sticky add-to-cart, and use image thumbnails instead of dots.",
+        "use_when": "Redesigning a product page as a big swing, especially for an older or less-online demographic.",
+        "steps": [
+          "Move reviews and social proof higher on the page, near or above the primary CTA.",
+          "Make savings visually prominent and add a sticky add-to-cart.",
+          "Replace carousel dots with visible thumbnails. The source says more people scroll through an image carousel in full than scroll the entire page, so treat the carousel as a mini landing page: add testimonials, benefits, UGC, video, and guarantee seals.",
+          "Surface the money-back guarantee near the call to action rather than leaving it collapsed; the source's pro-age brand test found older buyers cared about the guarantee and placing it visibly produced an extra 50 cents per paid-media visitor to the PDP.",
+          "Convert big blocks of description text into benefit-driven bullet points with bolded key phrases, focused on outcomes rather than features."
+        ],
+        "caveats": [
+          "Case-study revenue figures are examples, not promises.",
+          "Different demographics may weight guarantee visibility differently; the source frames this as a data-led finding for a pro-age brand."
+        ],
+        "tags": [
+          "product-page",
+          "conversion-optimization",
+          "social-proof",
+          "carousel",
+          "copywriting",
+          "ecommerce"
+        ]
+      },
+      {
+        "title": "Optimize mega menus for new visitors with bestsellers and icons",
+        "summary": "New visitors open the mega menu to browse; a bestsellers carousel, icons, and separated non-money links push them toward products.",
+        "use_when": "Designing or testing navigation on a homepage or store page where new traffic lands.",
+        "steps": [
+          "Recognize from session recordings that most new visitors directed to a homepage or store page click the mega menu to see what categories and products exist.",
+          "Replace plain default-theme links with a bestsellers carousel in the top real estate of the mega menu, using herd behavior and FOMO to nudge browsing visitors toward a product.",
+          "Add icons to draw attention, and include social proof where appropriate.",
+          "Move non-money links (contact, reviews, FAQs) to the bottom of the mega menu so products remain primary.",
+          "Test this as a larger navigation change for a store under the comprehensive-CRO traffic level, since it affects a high-traffic entry point."
+        ],
+        "caveats": [
+          "This reflects the source's case study for a pro-age beauty brand; results may differ by category and audience.",
+          "No rules for how many bestsellers to show or how to select them are given."
+        ],
+        "tags": [
+          "conversion-optimization",
+          "navigation",
+          "mega-menu",
+          "social-proof",
+          "ecommerce",
+          "testing"
+        ]
+      },
+      {
+        "title": "Remove discount boxes when no promotion is active",
+        "summary": "An empty discount/coupon field invites users to leave the site to hunt for codes, often abandoning the purchase.",
+        "use_when": "Your cart or checkout shows a discount code box but you have no active promotion.",
+        "steps": [
+          "Remove the discount code box from the cart or coupon area if you do not currently offer discounts.",
+          "The source's stated rationale: users see the box, leave the site to search for coupons, land on coupon sites full of popups and dead codes, get frustrated, and abandon the purchase.",
+          "Replace the box with a trust policy bar inside the cart that reinforces easy returns, support, satisfaction guarantee, and money-back guarantee as the user moves down the funnel.",
+          "In the source's case study, this combination of removing the discount box and adding a trust policy bar produced about $40,000 in monthly revenue for a pro-age beauty brand."
+        ],
+        "caveats": [
+          "The case-study figure is an example, not a promise.",
+          "If you regularly run promotions, the reasoning changes — the source's advice is specifically for the no-active-discount situation."
+        ],
+        "tags": [
+          "checkout",
+          "cart",
+          "conversion-optimization",
+          "trust",
+          "friction-reduction",
+          "ecommerce"
+        ]
+      },
+      {
+        "title": "Optimize collection pages with labels and on-card pricing",
+        "summary": "Collection pages should show products quickly, reduce decision paralysis with bestseller/new/low-stock labels, and enable repeat purchases directly from the grid.",
+        "use_when": "Redesigning a collection page or optimizing for repeat-purchase categories such as consumables.",
+        "steps": [
+          "Keep collection pages focused on showing products and enabling easy filtering. Avoid large hero banners or blocks of text that push products below the fold on mobile; the source says you should see four products above the fold on mobile.",
+          "Use labels such as bestseller, new, low in stock, or trending to guide herd behavior and reduce decision paralysis. Do not label every product — use labels on a couple of products when they appear side by side, whether on the collection, homepage, or 'often bought with' sections.",
+          "For consumable or repeat-purchase products, consider showing the price directly on the collection page card so returning customers can add to cart from the collection rather than clicking through to the PDP. The source's example brand sold makeup and produced about $30,000 in monthly revenue from just these two changes.",
+          "Combine labels and on-card pricing as one collection-page test rather than isolated small changes."
+        ],
+        "caveats": [
+          "On-card pricing does not work for every product or niche, per the source; it worked for a consumable makeup brand.",
+          "Case-study figures are examples only."
+        ],
+        "tags": [
+          "collection-page",
+          "conversion-optimization",
+          "product-page",
+          "ecommerce",
+          "labels",
+          "aov"
+        ]
+      },
+      {
+        "title": "Test offers and bundles as acquisition levers",
+        "summary": "Finding a profitable offer for cold traffic is the primary way to scale paid media; test bundles and price points month to month.",
+        "use_when": "Paid media is getting expensive and conversion rate is not improving from creative or site tweaks alone.",
+        "steps": [
+          "Test different offers month to month: buy one get one free, bundles, build-a-bundle pages, and different price points.",
+          "Run price testing; the source mentions a tool called Intelligence (a conference sponsor) and offers to run price testing for clients, but you can test with other methods.",
+          "Consider bundle offers for low-price, repeat-purchase products. The source's example: a sunglass brand where sunglasses cost roughly $30–$40 added a 'buy three and save 20%' bundle just below add-to-cart with a custom modal to pick colors, producing over $180,000 in monthly revenue increase.",
+          "Gamify the cart with free-shipping thresholds, free-gift thresholds, and in-cart upsells to raise AOV. The source's clothing-brand example (AOV stuck between $60 and $80) added free shipping prompts, free gift thresholds, and upsells such as sticker sets, gift cards, and bundles, producing nearly $60,000 in monthly revenue increase."
+        ],
+        "caveats": [
+          "The source discloses a sponsorship relationship with the price-testing tool it recommends.",
+          "Case-study figures are examples, not benchmarks or promises.",
+          "The source's phrase 'three for the power of two' is likely a transcription artifact; treat the offer list as illustrative."
+        ],
+        "tags": [
+          "offer-design",
+          "aov",
+          "bundles",
+          "cart",
+          "price-testing",
+          "acquisition"
+        ]
+      },
+      {
+        "title": "Redesign the homepage and sales page hero around a benefit-driven above-the-fold",
+        "summary": "Push social proof up, use one outcome-driven headline and CTA, and reinforce with guarantee seals and featured-in logos.",
+        "use_when": "Running a big-swing test on a homepage hero or a sales page above the fold.",
+        "steps": [
+          "Lead with a clear, benefit- and outcome-driven headline that explains what the product is, who it is for, and why you would use it.",
+          "Move social proof and trust elements higher: review stars, guarantee seals (money-back guarantee, 'over 10,000 happy customers', vegan-friendly, made in the US), and featured-in logos where applicable.",
+          "Use benefit-driven bullet points rather than feature lists, so visitors understand the outcome in scannable text.",
+          "Use one clear call to action and set expectations about what happens after clicking and where the user goes next. The source says 'shop bestsellers' often works well as a CTA label.",
+          "Use post-purchase insights to find common objections and friction points and address them in the hero copy. The source's sandal-brand example: customers' biggest objection was uncertainty about leather quality, so the hero copy was changed to focus on craftsmanship, leather sourcing, and quality, producing about $77,000 in monthly incremental revenue."
+        ],
+        "caveats": [
+          "Case-study revenue figures are examples, not promises.",
+          "Copy claims (quality, guarantees) must be accurate and compliant for your product."
+        ],
+        "tags": [
+          "landing-page",
+          "homepage",
+          "conversion-optimization",
+          "copywriting",
+          "trust",
+          "social-proof"
+        ]
+      },
+      {
+        "title": "Use dashboards and device checks to find friction bugs",
+        "summary": "Buy from your own store on mobile, desktop, and tablet, watch someone else buy, and audit the full UX/UI for overlays and dead clicks.",
+        "use_when": "Starting a CRO audit or looking for quick friction fixes without a testing program.",
+        "steps": [
+          "Buy your own product from your own store on mobile, desktop, and tablet; the source asks how many brands have done this in the past month.",
+          "Hand your mobile phone to someone unfamiliar with the site, such as an older relative, and watch them try to buy. The source says you will spot annoying bugs.",
+          "Look specifically for exit popups, cookie modals appearing above or overlaying the CTA on product pages, and cookie bars overlaying the cart button so it is hard to click.",
+          "Run full UX/UI audits to confirm the buying experience is smooth, and repeat the self-purchase check periodically rather than once.",
+          "Use these findings as quick wins alongside your bigger-swing tests, since fixing a broken button or overlay can remove an unforced error."
+        ],
+        "caveats": [
+          "The source says testing your own store in the past four weeks but frames it as an exercise, not a strict requirement.",
+          "The specific bug examples are illustrative of what to look for, not a complete bug list."
+        ],
+        "tags": [
+          "conversion-optimization",
+          "ux",
+          "qa",
+          "mobile",
+          "audit",
+          "friction-reduction"
+        ]
+      },
+      {
+        "title": "Expect more tests to lose than win and build a learning loop",
+        "summary": "A 30–35% win rate is described as strong; winning tests compound, so capture learnings from losses and re-run ideas when pages change.",
+        "use_when": "Setting expectations for a CRO program or deciding how many tests to run.",
+        "steps": [
+          "Accept that more tests lose than win; the source describes a 30–35% winning-test hit rate as very good.",
+          "Understand that winning tests matter far more than losing tests because improvements to revenue per visitor compound month over month and year over year when kept live.",
+          "Take time to understand why losing tests lost and feed those learnings into future tests.",
+          "Keep winning tests in place; the source notes a case where winning tests were overwritten when leadership changed and had to be reinstated, since a win usually holds.",
+          "Run at the source's suggested velocity only if you have the data: four to eight A/B tests per month for higher-traffic stores.",
+          "In the source's Ezra case studies, 13 of 135 tests won."
+        ],
+        "caveats": [
+          "The 30–35% win rate is the source's stated experience, not an industry benchmark.",
+          "Projecting compounding gains assumes winning tests remain live and are not overwritten."
+        ],
+        "tags": [
+          "testing",
+          "experiment-design",
+          "measurement",
+          "learning-loop",
+          "conversion-optimization"
+        ]
+      }
+    ]
+  },
+  "system_prompt_sha256": "06c5a885855424815f0ffcd8eef8a0734023ced8f11f12b1efa20c53e86b55ec"
+}

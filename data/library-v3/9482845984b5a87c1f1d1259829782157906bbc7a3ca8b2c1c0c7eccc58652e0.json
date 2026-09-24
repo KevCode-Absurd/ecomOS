@@ -1,0 +1,243 @@
+{
+  "request_id": "9482845984b5a87c1f1d1259829782157906bbc7a3ca8b2c1c0c7eccc58652e0",
+  "provider": "deepseek",
+  "model": "deepseek-flash",
+  "effort": "none",
+  "completion_limit": 16384,
+  "usage": {
+    "prompt_tokens": 4590,
+    "completion_tokens": 2300,
+    "total_tokens": 6890,
+    "prompt_tokens_details": {
+      "cached_tokens": 512
+    },
+    "prompt_cache_hit_tokens": 512,
+    "prompt_cache_miss_tokens": 4078
+  },
+  "booked_cost_usd": 0.004137,
+  "seconds": 12.74,
+  "finish_reason": "stop",
+  "output": {
+    "cards": [
+      {
+        "title": "Measure purchase conversion rate, not raw key event rate",
+        "summary": "GA4's 'key events' bundle purchases with other actions, so you must manually filter to the purchase event before reading any conversion rate.",
+        "use_when": "Judging whether your store's or a channel's conversion rate is healthy before making merchandising or media-spend decisions.",
+        "steps": [
+          "Understand the trap: in GA4, key events are not only purchase events; page views, add-to-carts and other actions can be marked as key events.",
+          "When you add the 'session key event rate' metric to any report, drill into the metric and set the event filter explicitly to 'purchase'.",
+          "Only then read the percentage as your conversion rate.",
+          "Sanity-check the result against total revenue in the same table so you are not reading a rate built on the wrong event set.",
+          "Re-check this filter after any GA4 configuration change, since the key-event set can drift over time."
+        ],
+        "caveats": [
+          "The source's own store showed ~1.7% conversion rate after filtering to purchase; treat that as an example, not a benchmark.",
+          "GA4's interface changes over time, so verify the current click path before relying on it."
+        ],
+        "tags": [
+          "measurement",
+          "conversion-optimization",
+          "ga4",
+          "event-contracts",
+          "analytics"
+        ]
+      },
+      {
+        "title": "Find conversion rate by traffic channel",
+        "summary": "Customize the Traffic Acquisition report to add session key event rate filtered to purchase so you can compare conversion performance across organic, CPC and email.",
+        "use_when": "Deciding where to shift acquisition budget or fix a channel that drives traffic but no sales.",
+        "steps": [
+          "Go to Reports -> Life Cycle -> Traffic Acquisition.",
+          "Click 'Customize report', then under Metrics add 'Session key event rate'.",
+          "Filter that metric to the purchase event only, as raw key events overstate conversion.",
+          "Optionally add the 'medium' dimension to split further, e.g. distinguishing organic from CPC and identifying specific senders like an email platform.",
+          "Save the customized report so you can return to it without redoing the setup.",
+          "Compare conversion rate across channels: a channel with strong sessions but weak purchase rate is a targeting or landing-page problem, not a volume problem."
+        ],
+        "caveats": [
+          "Channel grouping depends on correct UTM tagging; untagged campaigns will fall into the wrong bucket and distort the comparison."
+        ],
+        "tags": [
+          "measurement",
+          "acquisition",
+          "ga4",
+          "traffic-acquisition",
+          "conversion-optimization"
+        ]
+      },
+      {
+        "title": "Read engaged sessions as a traffic-relevance signal",
+        "summary": "GA4 counts a session as engaged when it lasts longer than 10 seconds, making it a quick relevance check on the traffic you are buying or earning.",
+        "use_when": "Diagnosing whether paid or organic traffic is actually reaching a page that matches the visitor's intent.",
+        "steps": [
+          "Open the Traffic Acquisition report and read engaged sessions, engagement rate and average engagement time by channel.",
+          "Treat a very low engaged-session count on a channel as a signal that visitors are not finding what they searched for or that the landing page does not match the query.",
+          "Cross-reference with the Landing Pages report to see whether specific entry pages are dragging the channel's engagement down.",
+          "If paid traffic shows low engagement, check ad-to-landing-page message match before increasing spend.",
+          "If organic shows low engagement, review whether the ranking page's content and product selection match the search intent."
+        ],
+        "caveats": [
+          "The 10-second threshold is GA4's definition of an engaged session, not a performance target you must hit.",
+          "Low engagement can also come from bot traffic or mis-tagged campaigns, so rule those out first."
+        ],
+        "tags": [
+          "measurement",
+          "ga4",
+          "traffic-quality",
+          "landing-page",
+          "acquisition"
+        ]
+      },
+      {
+        "title": "Compare product-page conversion rates in the Landing Pages report",
+        "summary": "Add the purchase-filtered session key event rate to the Landing Pages report to see which product pages convert and which are leaking.",
+        "use_when": "Deciding which product pages need new copy, photography or price tests, or whether a page's traffic is simply mismatched.",
+        "steps": [
+          "Go to Reports -> Engagement -> Landing Pages.",
+          "Click to edit the report and add the 'session key event rate' metric.",
+          "Filter the metric to the purchase event so the rate reflects buyers, not all key events.",
+          "Compare rates across your top product pages, looking for outliers far above or far below the others.",
+          "Interpret a low outlier as one of three causes: wrong traffic being sent to that page, a page that needs more work, or a product that is simply less appealing.",
+          "Investigate the cause before rewriting the page, since a traffic mismatch will not be fixed by design changes."
+        ],
+        "caveats": [
+          "Small traffic volumes produce noisy rates; a page with a handful of sessions can look dramatically better or worse than it is.",
+          "Shopify's native analytics does not expose this page-level conversion rate, which is why the GA4 setup matters."
+        ],
+        "tags": [
+          "measurement",
+          "product-page",
+          "conversion-optimization",
+          "ga4",
+          "merchandising"
+        ]
+      },
+      {
+        "title": "Diagnose funnel drop-off with the Purchase Journey report",
+        "summary": "The Monetization -> Purchase Journey report shows drop-off between session start, product view, add to cart, checkout and purchase so you can localise friction.",
+        "use_when": "Investigating where shoppers abandon so you can decide whether to fix navigation, cart, pricing or checkout trust.",
+        "steps": [
+          "Go to Reports -> Monetization -> Purchase Journey and set your date range.",
+          "Read the step-by-step progression: session started, viewed product, added to cart, began checkout, purchased.",
+          "Treat the drop between session started and viewed product as largely normal—many visitors are just browsing.",
+          "Focus on the drops between add to cart, checkout and purchase, which are the diagnostically meaningful ones.",
+          "If many sessions never view a product, question collection clarity, navigation and search rather than the product pages themselves.",
+          "If shoppers drop between add to cart and checkout, suspect the cart page; if they drop between checkout and purchase, suspect shipping cost, trust or checkout process friction."
+        ],
+        "caveats": [
+          "In the source example, roughly half of sessions viewed a product, most viewers added to cart, 63% of those began checkout and 50% of those purchased—these are illustrative, not targets.",
+          "Funnel steps depend on correct event tracking; missing add-to-cart or checkout events will show fake drop-offs."
+        ],
+        "tags": [
+          "measurement",
+          "ga4",
+          "funnel-analysis",
+          "checkout",
+          "cart"
+        ]
+      },
+      {
+        "title": "Segment traffic by channel and medium together",
+        "summary": "Adding the medium dimension to the Traffic Acquisition report gives a second layer of detail, separating CPC from paid social and identifying specific senders like your email platform.",
+        "use_when": "Working out which specific paid or owned channel is producing sessions, before shifting budget or cadence.",
+        "steps": [
+          "Open Traffic Acquisition and customize the report to display the medium dimension alongside session primary channel group.",
+          "Read the resulting rows to separate, for example, CPC campaigns from paid social placements and email sends.",
+          "Use the split to spot channels that consume budget or send volume without contributing purchases.",
+          "Combine with the purchase-filtered session key event rate to rank mediums by conversion, not just volume.",
+          "Save the view and re-check on a regular cadence rather than a single snapshot."
+        ],
+        "caveats": [
+          "Medium values come from UTM parameters, so discipline in tagging determines whether this view is trustworthy."
+        ],
+        "tags": [
+          "measurement",
+          "ga4",
+          "traffic-acquisition",
+          "utm",
+          "acquisition"
+        ]
+      },
+      {
+        "title": "Customize and save GA4 reports instead of reading defaults",
+        "summary": "Default GA4 tables omit the metrics you actually need; adding metrics under Customize Report -> Metrics and saving the view is the core workflow.",
+        "use_when": "Setting up a repeatable weekly reporting routine you do not want to rebuild each time.",
+        "steps": [
+          "Open the report you want to change (Traffic Acquisition or Landing Pages are the reported starting points).",
+          "Click 'Customize report', then under Metrics add the fields you care about—session key event rate, engagement rate, average engagement time, total revenue.",
+          "Apply the metric, then set any event filters (notably purchase) so the numbers mean what you think they mean.",
+          "Save the customized report so it persists for future sessions.",
+          "Use the Library section to add or remove report elements if the default navigation is distracting, but keeping defaults is also a valid choice."
+        ],
+        "caveats": [
+          "The source explicitly warns that key events include more than purchases, so any added key-event-based metric must be filtered before interpretation.",
+          "GA4's customization interface is subject to change; confirm current labels before writing internal documentation."
+        ],
+        "tags": [
+          "measurement",
+          "ga4",
+          "reporting",
+          "analytics",
+          "process"
+        ]
+      },
+      {
+        "title": "Use GA4 to fill gaps Shopify analytics leaves",
+        "summary": "GA4's traffic-source and per-page detail exceeds what the Shopify dashboard reports, so treat GA4 as the channel and page diagnostic layer and Shopify as the order-level view.",
+        "use_when": "Deciding which analytics tool to check for a given question about traffic or page performance.",
+        "steps": [
+          "Keep the GA4 home dashboard for a quick overview only; the source notes most of those numbers duplicate Shopify.",
+          "Use GA4 Reports for channel-level traffic detail, engagement quality and per-landing-page conversion, which Shopify does not provide at this granularity.",
+          "Use Shopify for order and product sales totals, and GA4's e-commerce purchases report to explore product-level purchase behaviour.",
+          "If you run Google Ads, link GA4 to Google Ads and to your store through the Shopify integration so advertising results surface inside GA4.",
+          "Walk the Life Cycle report set in GA4 as a standing review habit rather than relying on the default home screen."
+        ],
+        "caveats": [
+          "Numbers will differ between GA4 and Shopify due to different attribution and session definitions; decide which system is your source of truth per question."
+        ],
+        "tags": [
+          "measurement",
+          "ga4",
+          "shopify",
+          "reporting",
+          "attribution"
+        ]
+      },
+      {
+        "title": "Read GA4's AI Insights for quick answers, not deep analysis",
+        "summary": "The Insights tool offers predefined suggested questions and short answers, useful for fast orientation when you are new to the platform.",
+        "use_when": "Getting a fast orientation answer such as which countries your visitors come from, before digging into a full report.",
+        "steps": [
+          "Open the Insights tool from the GA4 home area and browse the suggested questions.",
+          "Pick a question relevant to the decision at hand—for example demographics or country distribution.",
+          "Read the short answer as a starting pointer, then verify in the underlying report before acting on it.",
+          "Do not treat the predefined question list as comprehensive; it is limited by what GA4 offers."
+        ],
+        "caveats": [
+          "The question set is limited and predefined by GA4; it cannot answer arbitrary business questions.",
+          "The source treats this as a convenience only, not a substitute for the Traffic Acquisition and Landing Pages reports."
+        ],
+        "tags": [
+          "measurement",
+          "ga4",
+          "analytics",
+          "reporting"
+        ]
+      }
+    ]
+  },
+  "raw_content": "{\"cards\":[{\"title\":\"Measure purchase conversion rate, not raw key event rate\",\"summary\":\"GA4's 'key events' bundle purchases with other actions, so you must manually filter to the purchase event before reading any conversion rate.\",\"use_when\":\"Judging whether your store's or a channel's conversion rate is healthy before making merchandising or media-spend decisions.\",\"steps\":[\"Understand the trap: in GA4, key events are not only purchase events; page views, add-to-carts and other actions can be marked as key events.\",\"When you add the 'session key event rate' metric to any report, drill into the metric and set the event filter explicitly to 'purchase'.\",\"Only then read the percentage as your conversion rate.\",\"Sanity-check the result against total revenue in the same table so you are not reading a rate built on the wrong event set.\",\"Re-check this filter after any GA4 configuration change, since the key-event set can drift over time.\"],\"caveats\":[\"The source's own store showed ~1.7% conversion rate after filtering to purchase; treat that as an example, not a benchmark.\",\"GA4's interface changes over time, so verify the current click path before relying on it.\"],\"tags\":[\"measurement\",\"conversion-optimization\",\"ga4\",\"event-contracts\",\"analytics\"]},{\"title\":\"Find conversion rate by traffic channel\",\"summary\":\"Customize the Traffic Acquisition report to add session key event rate filtered to purchase so you can compare conversion performance across organic, CPC and email.\",\"use_when\":\"Deciding where to shift acquisition budget or fix a channel that drives traffic but no sales.\",\"steps\":[\"Go to Reports -> Life Cycle -> Traffic Acquisition.\",\"Click 'Customize report', then under Metrics add 'Session key event rate'.\",\"Filter that metric to the purchase event only, as raw key events overstate conversion.\",\"Optionally add the 'medium' dimension to split further, e.g. distinguishing organic from CPC and identifying specific senders like an email platform.\",\"Save the customized report so you can return to it without redoing the setup.\",\"Compare conversion rate across channels: a channel with strong sessions but weak purchase rate is a targeting or landing-page problem, not a volume problem.\"],\"caveats\":[\"Channel grouping depends on correct UTM tagging; untagged campaigns will fall into the wrong bucket and distort the comparison.\"],\"tags\":[\"measurement\",\"acquisition\",\"ga4\",\"traffic-acquisition\",\"conversion-optimization\"]},{\"title\":\"Read engaged sessions as a traffic-relevance signal\",\"summary\":\"GA4 counts a session as engaged when it lasts longer than 10 seconds, making it a quick relevance check on the traffic you are buying or earning.\",\"use_when\":\"Diagnosing whether paid or organic traffic is actually reaching a page that matches the visitor's intent.\",\"steps\":[\"Open the Traffic Acquisition report and read engaged sessions, engagement rate and average engagement time by channel.\",\"Treat a very low engaged-session count on a channel as a signal that visitors are not finding what they searched for or that the landing page does not match the query.\",\"Cross-reference with the Landing Pages report to see whether specific entry pages are dragging the channel's engagement down.\",\"If paid traffic shows low engagement, check ad-to-landing-page message match before increasing spend.\",\"If organic shows low engagement, review whether the ranking page's content and product selection match the search intent.\"],\"caveats\":[\"The 10-second threshold is GA4's definition of an engaged session, not a performance target you must hit.\",\"Low engagement can also come from bot traffic or mis-tagged campaigns, so rule those out first.\"],\"tags\":[\"measurement\",\"ga4\",\"traffic-quality\",\"landing-page\",\"acquisition\"]},{\"title\":\"Compare product-page conversion rates in the Landing Pages report\",\"summary\":\"Add the purchase-filtered session key event rate to the Landing Pages report to see which product pages convert and which are leaking.\",\"use_when\":\"Deciding which product pages need new copy, photography or price tests, or whether a page's traffic is simply mismatched.\",\"steps\":[\"Go to Reports -> Engagement -> Landing Pages.\",\"Click to edit the report and add the 'session key event rate' metric.\",\"Filter the metric to the purchase event so the rate reflects buyers, not all key events.\",\"Compare rates across your top product pages, looking for outliers far above or far below the others.\",\"Interpret a low outlier as one of three causes: wrong traffic being sent to that page, a page that needs more work, or a product that is simply less appealing.\",\"Investigate the cause before rewriting the page, since a traffic mismatch will not be fixed by design changes.\"],\"caveats\":[\"Small traffic volumes produce noisy rates; a page with a handful of sessions can look dramatically better or worse than it is.\",\"Shopify's native analytics does not expose this page-level conversion rate, which is why the GA4 setup matters.\"],\"tags\":[\"measurement\",\"product-page\",\"conversion-optimization\",\"ga4\",\"merchandising\"]},{\"title\":\"Diagnose funnel drop-off with the Purchase Journey report\",\"summary\":\"The Monetization -> Purchase Journey report shows drop-off between session start, product view, add to cart, checkout and purchase so you can localise friction.\",\"use_when\":\"Investigating where shoppers abandon so you can decide whether to fix navigation, cart, pricing or checkout trust.\",\"steps\":[\"Go to Reports -> Monetization -> Purchase Journey and set your date range.\",\"Read the step-by-step progression: session started, viewed product, added to cart, began checkout, purchased.\",\"Treat the drop between session started and viewed product as largely normal—many visitors are just browsing.\",\"Focus on the drops between add to cart, checkout and purchase, which are the diagnostically meaningful ones.\",\"If many sessions never view a product, question collection clarity, navigation and search rather than the product pages themselves.\",\"If shoppers drop between add to cart and checkout, suspect the cart page; if they drop between checkout and purchase, suspect shipping cost, trust or checkout process friction.\"],\"caveats\":[\"In the source example, roughly half of sessions viewed a product, most viewers added to cart, 63% of those began checkout and 50% of those purchased—these are illustrative, not targets.\",\"Funnel steps depend on correct event tracking; missing add-to-cart or checkout events will show fake drop-offs.\"],\"tags\":[\"measurement\",\"ga4\",\"funnel-analysis\",\"checkout\",\"cart\"]},{\"title\":\"Segment traffic by channel and medium together\",\"summary\":\"Adding the medium dimension to the Traffic Acquisition report gives a second layer of detail, separating CPC from paid social and identifying specific senders like your email platform.\",\"use_when\":\"Working out which specific paid or owned channel is producing sessions, before shifting budget or cadence.\",\"steps\":[\"Open Traffic Acquisition and customize the report to display the medium dimension alongside session primary channel group.\",\"Read the resulting rows to separate, for example, CPC campaigns from paid social placements and email sends.\",\"Use the split to spot channels that consume budget or send volume without contributing purchases.\",\"Combine with the purchase-filtered session key event rate to rank mediums by conversion, not just volume.\",\"Save the view and re-check on a regular cadence rather than a single snapshot.\"],\"caveats\":[\"Medium values come from UTM parameters, so discipline in tagging determines whether this view is trustworthy.\"],\"tags\":[\"measurement\",\"ga4\",\"traffic-acquisition\",\"utm\",\"acquisition\"]},{\"title\":\"Customize and save GA4 reports instead of reading defaults\",\"summary\":\"Default GA4 tables omit the metrics you actually need; adding metrics under Customize Report -> Metrics and saving the view is the core workflow.\",\"use_when\":\"Setting up a repeatable weekly reporting routine you do not want to rebuild each time.\",\"steps\":[\"Open the report you want to change (Traffic Acquisition or Landing Pages are the reported starting points).\",\"Click 'Customize report', then under Metrics add the fields you care about—session key event rate, engagement rate, average engagement time, total revenue.\",\"Apply the metric, then set any event filters (notably purchase) so the numbers mean what you think they mean.\",\"Save the customized report so it persists for future sessions.\",\"Use the Library section to add or remove report elements if the default navigation is distracting, but keeping defaults is also a valid choice.\"],\"caveats\":[\"The source explicitly warns that key events include more than purchases, so any added key-event-based metric must be filtered before interpretation.\",\"GA4's customization interface is subject to change; confirm current labels before writing internal documentation.\"],\"tags\":[\"measurement\",\"ga4\",\"reporting\",\"analytics\",\"process\"]},{\"title\":\"Use GA4 to fill gaps Shopify analytics leaves\",\"summary\":\"GA4's traffic-source and per-page detail exceeds what the Shopify dashboard reports, so treat GA4 as the channel and page diagnostic layer and Shopify as the order-level view.\",\"use_when\":\"Deciding which analytics tool to check for a given question about traffic or page performance.\",\"steps\":[\"Keep the GA4 home dashboard for a quick overview only; the source notes most of those numbers duplicate Shopify.\",\"Use GA4 Reports for channel-level traffic detail, engagement quality and per-landing-page conversion, which Shopify does not provide at this granularity.\",\"Use Shopify for order and product sales totals, and GA4's e-commerce purchases report to explore product-level purchase behaviour.\",\"If you run Google Ads, link GA4 to Google Ads and to your store through the Shopify integration so advertising results surface inside GA4.\",\"Walk the Life Cycle report set in GA4 as a standing review habit rather than relying on the default home screen.\"],\"caveats\":[\"Numbers will differ between GA4 and Shopify due to different attribution and session definitions; decide which system is your source of truth per question.\"],\"tags\":[\"measurement\",\"ga4\",\"shopify\",\"reporting\",\"attribution\"]},{\"title\":\"Read GA4's AI Insights for quick answers, not deep analysis\",\"summary\":\"The Insights tool offers predefined suggested questions and short answers, useful for fast orientation when you are new to the platform.\",\"use_when\":\"Getting a fast orientation answer such as which countries your visitors come from, before digging into a full report.\",\"steps\":[\"Open the Insights tool from the GA4 home area and browse the suggested questions.\",\"Pick a question relevant to the decision at hand—for example demographics or country distribution.\",\"Read the short answer as a starting pointer, then verify in the underlying report before acting on it.\",\"Do not treat the predefined question list as comprehensive; it is limited by what GA4 offers.\"],\"caveats\":[\"The question set is limited and predefined by GA4; it cannot answer arbitrary business questions.\",\"The source treats this as a convenience only, not a substitute for the Traffic Acquisition and Landing Pages reports.\"],\"tags\":[\"measurement\",\"ga4\",\"analytics\",\"reporting\"]}]}",
+  "input": {
+    "source_id": "19zPkTFzbRWj1MTf9vQAbowNTQsmeQrpY",
+    "source_sha256": "b58bba311194e64b5999fd7df3957a116ac68fbfd7c279f81ef89f591b1e154f",
+    "source_name": "Google Analytics 4 For eCommerce 2025 ( Perfect for beginners).docx",
+    "folder": "/06-MEA-measurement",
+    "domain": "measurement",
+    "section": 0,
+    "section_count": 1,
+    "text": "06-MEA / measurement and economics\n\nGoes here. Whether any number can be trusted, and what the numbers mean. Event contracts, deduplication, match quality, attribution windows and restatement, profit and contribution formulas, landed cost, return rate, incrementality, consent, UTM integrity. Specifically covering the mechanics of reading and customizing Google Analytics 4 (GA4) reports for e-commerce, including traffic acquisition analysis, engagement metrics, product page conversion rates, and the purchase journey funnel.\n\nNot here.\n\nDeciding whether a difference between two product page layouts is statistically real -> 09-CRO\n\nInstalling or configuring the GA4 pixel/tracking integration -> 05-SET\n\nHeader.\n\nurl:\n\nrights: public_reference\n\nwhy: Provides baseline mechanics for navigating Google Analytics 4 (GA4), explicitly detailing how to customize the Traffic Acquisition and Landing Page reports to calculate conversion rates per traffic source and per product page.\n\nmodules: [MEA]\n\ntopics: [event contracts]\n\ntier: 3\n\nscope_hint: baseline\n\nTopics. event contracts / Differentiating between raw \"events\" and \"key events\" (specifically filtering for 'purchase') to accurately calculate conversion rates. Understanding engagement metrics: defining an \"engaged session\" as one lasting longer than 10 seconds, which indicates traffic relevance and intent. Traffic Acquisition: using the 'session primary channel group' and 'medium' dimensions to track organic, CPC, and email traffic performance. Landing Page reporting: modifying standard GA4 tables to include the 'session key event rate' filtered by purchases to track the conversion rate of specific product pages. The Purchase Journey funnel: tracking drop-off percentages between Session Started -> Viewed Product -> Add to Cart -> Checkout -> Purchase to diagnose UX or pricing friction.\n\nLook for. The definition of an \"engaged session\" in GA4: a session lasting longer than 10 seconds. The specific step-by-step click path to track conversion rates by traffic source: Reports -> Life Cycle -> Traffic Acquisition -> Customize Report -> Metrics -> add 'Session key event rate' -> filter the table view to 'purchase'. The click path to find product page conversion rates: Reports -> Engagement -> Landing Pages -> add 'Session key event rate' -> filter to 'purchase'. The click path to view the checkout funnel drop-offs: Reports -> Monetization -> Purchase Journey. The specific warning that GA4 counts multiple actions as \"events\" (e.g., page views, add to carts), making it critical to manually select \"purchase\" when calculating conversion rate percentages.\n\nSkip. The basic introduction to the GA4 homepage/dashboard. The brief mention of the AI \"Insights\" search bar tool. Plugs for other YouTube videos.\n\nScope mix. Almost all baseline.\n\nVolume. 15 to 20.\n\nGoogle analytics is one of these tools that everyone or almost everyone dislikes but we must use because it's very good and it gives us data and reports that Shopify dashboard doesn't in today's video I'm going to try to simplify Google analytics for you and show you the most important reports and metrics that you should be looking at in Google analytics I know the platform is not user friendly at all I don't like it as well but in this video I will try to simplify it as much much as possible so you can understand how to use it and you can understand how you can read the data in there in order to make more informed decisions that will help you to increase your sales and make more money so let's get started so here I am inside of Google analytics 4 and the first thing you are going to see on in the home screen are some data that Google analytics think are the most important for you and for your business based on the type of business you are running and so on since we are into e-commerce so this dashboard is mostly probably showing metrix related to e-commerce I don't usually spend a lot of time in here but you can always look in here to have like an overview of your business and how things are going so for example in here I am checking the results for the last 60 days you can change this to any window you want so you can choose up to last 12 months and so on and in here the first uh graph we are seeing are the active users and you can change what you you want to see in here and choose between these options so if you are into e-commerce you might go in here and choose to see any of these metrics as I told you before I don't spend a lot of time in here because most of these data in here are things that I can find on Shopify so I don't spend a lot of time in here so if you scroll down you will find some more information about your store like some things like this but we are going to discuss all of this later uh there is something in here that I want you to check out and it's this tool in here and it's called insights it helps you a lot especially if you are just starting out with Google analytics and if you are searching for like quick answers for common questions so you go in here and you click on suggested questions and you will see a list of questions that you can ask the AI of Google analytics to answer uh to so for example I can go to demographics and ask for example about what countries do my users come from so they provide a quick answer to my question as I can see in here like the top countries the number of questions you will find in here is limited and it's predefined by Google analytics but it's a it's a nice tool if you want to get like some quick answers I always use it if I'm looking for a very quick answer okay after the dashboard in here you have from the left your sidebar and this is where you are going to spend most of your time so you have reports explore and advertising and if you are running Google ads I highly recommend you to link your Google analytics to your Google ad your Shopify store and you can can do all of this using the Shopify integration it's quite simple um if you are doing Google ads you will see some of the results in here so you will have an idea about your results also in here okay let's go first to the report section and depending on if you have ever touched this sidebar or not you might see different things in here and you can modify what you are seeing in here if you want but I like to keep it as it is so let's start first by reports and this is where I recommend you to spend a lot of your times and as you can see in here you will find your report divided between business objectives life cycle search Council and user and if you click on library in here this is where you can decide how you are going to choose your uh dashboard view so you can for example add elements in here or remove elements from here again I like to keep it as it is I think it's fine it's not distracting to me or anything now let's start talking about the first report that you should be looking at from your Google analytics dashboard you go in here to reports and I want you to go to the life cycle report section okay and from there I want you to go to traffic acquisition this report is very important because it will give you a lot of data concerning the traffic you are receiving and from where you are receiving this traffic okay first in here you can Define like the window the time window that you want to see so for example I'm seeing the last 28 days and in here I can change the graph view whether I want to see daily or weekly or monthly and as you can see in here I'm seeing my different traffic and what I'm seeing I'm seeing the sessions by session primary Channel group so I'm seeing like how much I've received as organic search cross Network paid advertising and so on and you can see in this graph in here like the same view and in here you have the same data but in different type of charts if you scroll down in here you will have your full report and as you can see in here you have the different like primary sources of traffic and then here you have data related to this traffic why this report is important because this type of data doesn't exist on Shopify with this much details so in here I Can See For example that I'm receiving a lot of traffic coming from organic search and this is super important for any e-commerce business and in here you can know more about each type of your let's say traffic and how this traffic is interacting and engaging with your business and when you hold over over any of these metrics you will read what each of these metrics means so for example the engaged sessions is a metric that tells you uh the number of sessions that lasted longer than 10 seconds if someone spend more than 10 seconds on a page it means that this page was interesting for them so what they are searching for was in parallel of what they have found on this page which is a very good thing so for example if you have a very low number of engaged sessions on the organic search this is a bad sign because it means like like so many people are searching for something and they are landing on your page but they are not like finding what they have searched for or your page is not 100% related or relevant to what they have searched for if you scroll you will find more and more metrics and all of these metrics are important but you can also improve this report more by in here deciding to also see the medium by doing this you will know more about your traffic so for example in here I can know the amount of traffic I receive from my CPC campaigns from paid on Facebook and so on this is like gives you a second level of knowledge when it comes to the traffic so for example in here this is my omnisend email marketing traffic this is what I have received last month and it gives me data about each of my traffic uh channels and traffic mediums okay if you want to change this table to add more metrics in here all you need to do is to click on customize report and you can go in here and under Matrix add more metrix okay it depends on you I have changed a little bit this table added some metrix that mean a lot to me so for example I like to know the conversion rate by traffic channel so I added this metric which is the session key event rate but you need to take care of something in here but in here you need to uh know something key events on Google analytics are not only purchase events that's why you need in here to go and to choose purchase so by doing this for example I know that my overall conversion rate is 1.7 and I can see my conversion rate by uh traffic channel this is going to be super useful if you want to check the uh conversion rate of a certain product page or a certain collection page and this is going to be super important if you are looking to know the conversion rate of a specific product page and I'm going to show you how to do that in a few minutes so again you can modify everything about the Sleep port and save it I think it's very important to spend some time in here figuring out if your customers are engaging with your with your pages if they are spending enough time on your pages to make sure that you are receiving and you are driving relevant traffic to your store as you can see in this report I have sessions I have the number of engag sessions I have the engagement rate which gives me an idea about like how much people are engaging with my uh Pages which is super important to me and I have average engagement time this is going to give me an idea about how much time people spend on my pages and it's also very important then I have the number of events or the average number of events per session and again events doesn't mean only purchases it's a list of events and then here I have in the I have the event count and as you can see if you click on all events you can filter by the event type and you can see that there are so many events happening in here you need to choose what events mean the most to you so are you do you want to check the number of add to cards the number of purchases and so so on so you can filter and check from here then you have key events then you have like the session key event rate which is the one we talked about and we have the total revenue again you can change all of these like metrics in the way that makes more sense to you in order to read your data and the best way possible but if you want to change it you just need to click here on customize report and you go in here to Matrix and you can choose mat Matrix you want to add and you just click on apply now the second report I need you to look at it's your lending page Pages report and this report is going to figure out the conversion rates of specific pages on your store I personally find this is super important because I want to know if one of my product pages is performing better than others especially if I have different layouts or different setups so from your Google analytics dashboard you go to reports and from there you go to acquisition and this time under engagement you go to lending pages and as you can see in here you will have a list of landing pages on your store plus some metrics that will tell you about your traffic performance or your visitors performance on these Pages well the metric that I like to add and it's not there by default is the key event rate because I want to know again the conversion rate per product page so I have added this metric by clicking in here and going to the editor dashboard and I just need here to filter to see purchase like I have told you before it's very important to filter but bu purchase and this way I can see if one of my product pages for example is performing better than other product pages so now I can know the conversion rate of each of my product pages specifically my top product pages and I can compare with them and see if one page is performing way better or maybe way worse than others okay this is a very important metric and you can't find it on Shopify analytics so when you look at this table in here you can notice for example that I have very high conversion rates for for these two products compared to this one for example so either I'm driving the wrong traffic for this product page or maybe this product page needs more work or maybe this product is not as appealing as the others I need to analyze my numbers and see what's happening in order to understand why my customers are not buying this product as frequent as they are buying the other products the next report I want you to look at and it's actually very beneficial for e-commerce Brands it's under monetization in here and under purchase Journey this report is very nice because it's going to tell you about how your customers are navigating your stores what events they are making what actions they are making and it will give you an idea about what might be the problem if you want to increase your sales this is a report that you must check so first in here we have the number of session started and as you can see in this graph we can see like the Journey of your customers so for example in the last 30 days in here we have received almost 10 10K like sessions but only 53% of them viewed a product and then after this only 99.2% of these people actually added to cart then we have like 63% of these people actually began check out and 50% of them purchased why this is important because looking at this graph you can see what's happening with your customers how they are moving from one step to another so for example if you noticed a huge drop between your ATO card and the checkout maybe there is a problem in there maybe there is a problem with your card page if you are noticing a big a big drop for example between check out and purchase this is also a very important thing to look at maybe it's happening because your shipping rates are very for example high or maybe your checkout page is not trustworthy or there is something wrong in the checkout process look at this report and try to understand it and try to use it in order to see if there is something wrong happening on your store and how you can improve your customers Journey it's very important to note one thing this drop between like session started and viewed product is normal the drops that are scary are mainly between add to cards check out and purchases but again in here you can improve a lot so if you are noticing that many people like they are they are visiting the website but they are not checking products you need to ask yourself what's happening maybe your collections are not very clear maybe they are not easily finding what they are searching for maybe you need to improve your search bar and so on so this report is going to tell you a lot and it's a very important report that you must check in addition to the reports I have showed you there are so many other reports in Google analytics that are super important and that you can explore but I tried to mention or point out the most important reports and the ones that you can't find in Shopify if you go to your Shopify analytics dashboard from the left I highly recommend you to check out all the different reports under the life cycle all of them are important and all of them will give you a lot of data and a lot of knowledge about your traffic and your store one additional report that I usually like to explore for example is the ecommer e-commerce purchases so I like to know for example more about my products how much purchases I've made out of each product how the customers behaved and so on again there is so many reports in here that you can explore and I highly recommend you to spend some time on Google analytics to get more familiar with it in order to be able to use it to increase your sales and improve your business I hope that this video will help you to know more about Google analytics and how to use it if you are into Matrix and you like to make a lot of informed decisions when it comes to your business and this is actually something amazing I highly recommend you to check this video on my YouTube channel where I talk about three metrics that you should never miss these metrics are super important and they will greatly help you to improve your business and to take the right actions toward making more money and more sales so check it out [Music]",
+    "prior_notes": [],
+    "id": "da8f127ae852662291c46026"
+  },
+  "system_prompt_sha256": "f2341d28186a0dbaee868d37ce33c173f631088eb1754997556740d4905c0f2b"
+}

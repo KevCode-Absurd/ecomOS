@@ -1,0 +1,334 @@
+{
+  "request_id": "b76ded54a7035a939b6289f423695614c6f5cbc7a3a30bcd29a1f1af298bb88d",
+  "provider": "deepseek",
+  "model": "deepseek-flash",
+  "effort": "none",
+  "completion_limit": 16384,
+  "usage": {
+    "prompt_tokens": 4770,
+    "completion_tokens": 3801,
+    "total_tokens": 8571,
+    "prompt_tokens_details": {
+      "cached_tokens": 640
+    },
+    "prompt_cache_hit_tokens": 640,
+    "prompt_cache_miss_tokens": 4130
+  },
+  "booked_cost_usd": 0.0059922,
+  "seconds": 20.47,
+  "finish_reason": "stop",
+  "output": {
+    "cards": [
+      {
+        "title": "Prioritize A/B tests by recipient volume, not by ease",
+        "summary": "Focus split tests on the emails and flows in your account that reach the most recipients so any win compounds across revenue.",
+        "use_when": "Deciding which email or flow to test next when you can only run a limited number of experiments per month on your store's lifecycle program.",
+        "steps": [
+          "Map each flow and campaign to its monthly recipient volume and revenue contribution before choosing a test target.",
+          "Rank the biggest levers first: welcome series, abandoned checkout, abandoned cart, and post-purchase/winback flows, plus the first 2-3 emails of each.",
+          "Within those, test high-recipient emails before testing minor flows that only reach tens of recipients per month.",
+          "Treat improvements on a 20-recipient flow as marginal: it may lift that flow's conversion, but it will not move overall store revenue materially.",
+          "Allocate test slots so at least the majority of experiments land on the top flows and top campaign sends."
+        ],
+        "caveats": [
+          "The source frames this as advice for general ecommerce stores, especially under roughly $100K/month; large multi-million-dollar stores can afford to chase smaller levers.",
+          "Recipient volume ranking depends on your own account data, not a fixed universal list."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "experiment-design",
+          "retention",
+          "flows",
+          "measurement",
+          "conversion-optimization"
+        ]
+      },
+      {
+        "title": "Test send time against place order rate, not open rate",
+        "summary": "Run send-time split tests with place order rate as the winning metric because the hour with the best open rate is often not the hour with the most orders.",
+        "use_when": "Scheduling campaign sends and deciding whether to trust Klaviyo's Smart Send Time or run your own send-time test.",
+        "steps": [
+          "Create an A/B test on the campaign and choose 'test send time' rather than relying only on Smart Send Time.",
+          "Pick two clearly different times (for example 7 a.m. versus 7 p.m.) to start with a meaningful contrast.",
+          "In the test settings, set the winning metric to place order rate, not click rate and definitely not open rate, since revenue and placed orders are the KPIs that matter.",
+          "Keep size distribution at 100 and track links separately per variation so you can attribute results correctly.",
+          "Run the comparison across roughly 5-10 campaigns before concluding; one campaign is effectively zero data.",
+          "Once a winner emerges, narrow the test (for example 7 a.m. versus 11 a.m., then 11 a.m. versus 2 p.m.) to pinpoint the best window."
+        ],
+        "caveats": [
+          "The source states it has repeatedly seen the best open-rate time differ from the best place-order time, but notes this is not universal across all brands.",
+          "The 5-10 campaign range is a heuristic that depends on audience size and revenue level, not a fixed rule."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "experiment-design",
+          "send-time",
+          "measurement",
+          "campaigns",
+          "conversion-optimization",
+          "klaviyo"
+        ]
+      },
+      {
+        "title": "Test content structure in campaigns, not just subject lines",
+        "summary": "Run campaign content tests (product blocks vs none, bestsellers vs categories) because the learning transfers to flows and future sends, unlike one-off subject line tests.",
+        "use_when": "Planning campaign experiments and choosing which content variables to vary in your store's promotional and evergreen sends.",
+        "steps": [
+          "Set up an A/B test on content rather than only on subject lines, since subject-line results on a one-time campaign cannot be reused elsewhere.",
+          "Version A: original email with product blocks. Version B: same email without product blocks. Compare results.",
+          "Run a second variant type on sitewide sales: one version highlighting three bestsellers versus one version highlighting product categories or new arrivals.",
+          "Set the winning metric to place order rate where possible; the source notes Klaviyo does not allow place order rate for subject-line tests, so click rate is the next-best option there.",
+          "Run each content test across multiple campaigns before drawing conclusions and before applying the pattern to flows."
+        ],
+        "caveats": [
+          "Subject-line tests on one-off campaigns yield data you cannot act on elsewhere; the source recommends deprioritizing them for that reason.",
+          "Place order rate is not selectable as a winner metric for all test types in Klaviyo; verify the current interface."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "experiment-design",
+          "campaigns",
+          "content-strategy",
+          "merchandising",
+          "conversion-optimization",
+          "klaviyo"
+        ]
+      },
+      {
+        "title": "Use 50/50 manual distribution for email A/B tests",
+        "summary": "Turn off Klaviyo's automatic distribution and split traffic 50/50 so you keep control of the test and have enough data for a sound winner decision.",
+        "use_when": "Configuring test settings for subject line or content A/B tests in campaigns and flows.",
+        "steps": [
+          "In the test settings, turn off 'automatically chosen distribution' and set the split manually to 50/50.",
+          "Expect automatic distribution to shift more sends toward whichever variant Klaviyo currently favors, which can bias the comparison.",
+          "Accept the tradeoff: manual 50/50 requires you to check and analyze the test yourself, which the source's agency prefers because it wants full control.",
+          "If you lack time to monitor tests, the source says enabling automatic distribution is acceptable.",
+          "For winner selection, the default is click rate; configure to open rate if needed, but note place order rate is not available for subject-line tests, and click rate is the better fallback.",
+          "Leave the winner-selection method on 'test by statistical significance' or choose the time limit; alternatively switch it off and pick the winner manually.",
+          "Write a note on the test explaining your hypothesis so you can interpret it later."
+        ],
+        "caveats": [
+          "These are the source's stated preferences from agency practice, not universal requirements.",
+          "Automatic distribution behavior and test-setting labels in Klaviyo may change; verify the current interface."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "experiment-design",
+          "klaviyo",
+          "measurement",
+          "campaigns",
+          "flows"
+        ]
+      },
+      {
+        "title": "A/B test abandonment flow timing with conditional splits",
+        "summary": "Test the delay before your abandoned cart and abandoned browse emails by building two flow paths with different wait times, then narrow toward the best delay.",
+        "use_when": "Optimizing abandoned cart, abandoned checkout, or browse abandonment flow timing to lift placed orders while watching spam complaint rate.",
+        "steps": [
+          "Add a conditional split at the top of the flow and set the condition to a random sample of 50%.",
+          "Set the 'yes' path to one delay (for example 2 hours) and the 'no' path to another (for example 1 hour) so the difference at the start is meaningful.",
+          "Duplicate every email so each path carries the full sequence rather than rejoining after the first email; the source prefers this because email 1 may perform worse at the longer delay while emails 2-3 perform better, and you want the full picture.",
+          "After results come in, narrow the comparison (for example test 2 hours versus 3 hours) to pinpoint the ideal delay.",
+          "Monitor spam complaint rate alongside placed order rate, since timing changes affect both.",
+          "Repeat the same conditional-split approach for browse abandonment, starting with a wider gap such as 1 hour versus 3 hours."
+        ],
+        "caveats": [
+          "Splitting every email into two paths multiplies maintenance work; the source prefers it for full-sequence visibility, but it is a tradeoff.",
+          "Ideal delays are store-specific; the 1/2/3/4-hour values are illustrative test values, not benchmarks."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "flows",
+          "abandoned-cart",
+          "browse-abandonment",
+          "experiment-design",
+          "klaviyo",
+          "conversion-optimization"
+        ]
+      },
+      {
+        "title": "Flow subject lines are worth testing, campaign subject lines usually are not",
+        "summary": "Test subject lines in flows because they run indefinitely, but deprioritize campaign subject-line tests whose results you cannot reuse.",
+        "use_when": "Deciding where to spend subject-line testing effort across your welcome, abandonment, and post-purchase flows versus one-time campaigns.",
+        "steps": [
+          "For flow emails, go to the email you want to test, hit 'create a test', and enter an alternative subject line (for example 'did you see something you liked' versus 'oops you forgot something').",
+          "Run the subject-line test on flows because they send continuously, so a winning line keeps producing results over time.",
+          "For campaigns, treat subject-line testing as low-value: the send is one-time, so a winner gives you little actionable information afterward.",
+          "Instead of campaign subject lines, direct campaign test effort toward send times and content variations that inform your flows and future campaigns.",
+          "Still set the winning metric responsibly: use click rate when place order rate is not selectable."
+        ],
+        "caveats": [
+          "This is the source's stated preference and a judgment about actionability, not a claim that subject lines never matter.",
+          "Klaviyo's test-creation flow and available metrics may change; verify the current interface."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "subject-lines",
+          "flows",
+          "campaigns",
+          "experiment-design",
+          "klaviyo"
+        ]
+      },
+      {
+        "title": "Skip CTA-color split tests at small store scale",
+        "summary": "Button-color A/B tests (yellow vs red) are generally not worth running for stores under roughly $100K/month because the expected lift is too small.",
+        "use_when": "Deciding how to allocate limited testing capacity for a small or mid-size store's email program, signup forms, or above-the-fold email content.",
+        "steps": [
+          "Recognize that CTA color tests usually show meaningful differences only for very large senders, in the source's experience brands doing multiple millions per month with very large audiences.",
+          "For stores under about $100K/month, redirect that test slot to bigger levers: flow timing, content structure, and first-email variants in top flows.",
+          "If you do test above-the-fold email content, test headlines and calls to action rather than only button color.",
+          "Note that color tests are technically possible and can produce a difference; the source's position is that the gain is minor relative to effort at small scale."
+        ],
+        "caveats": [
+          "The ~$100K/month threshold and the 'millions per month' scale are the source's heuristics based on agency observation, not measured benchmarks.",
+          "A large-audience brand may legitimately find color tests worthwhile."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "experiment-design",
+          "conversion-optimization",
+          "cta",
+          "measurement",
+          "small-business"
+        ]
+      },
+      {
+        "title": "Write email copy that earns attention through value, not cleverness alone",
+        "summary": "Voice and personality make copy less robotic, but value to the reader is what drives response; build the email around a clear, useful offer first.",
+        "use_when": "Drafting campaign or flow email copy for product launches, promos, or category sales that need to fit your brand voice.",
+        "steps": [
+          "Lead with value: the source frames value as more than half the battle, with tone and formatting tips finishing the job.",
+          "Make the headline immediately clear about what the reader gets, for example a percent-off product sale, so attention is grabbed by clarity as well as offers.",
+          "Write body copy in the brand's voice rather than generic promo language; a line that is a little edgy or funny fits a brand like Dollar Shave Club, whereas a generic 'hurry, selling out fast' line can convert but fits worse.",
+          "Call out the discount code explicitly and pair it with a clear call-to-action button such as 'save now'.",
+          "Insert recommended product blocks, then close with body copy that continues the same on-brand tone rather than reverting to generic urgency.",
+          "Keep sentences short and snappy as a finishing pass after the value and voice are right."
+        ],
+        "caveats": [
+          "The Dollar Shave Club example is the source's constructed demo, not a measured performance case study.",
+          "Brand-voice edginess is not a universal rule; a generic line may still convert."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "copywriting",
+          "campaigns",
+          "brand-voice",
+          "content-strategy",
+          "offer-design"
+        ]
+      },
+      {
+        "title": "Structure promo emails around headline, code, CTA, products, and closing copy",
+        "summary": "A tested promotional email layout moves from a clear attention-grabbing headline through an explicit discount code and CTA to recommended products and on-brand closing copy.",
+        "use_when": "Building the layout and copy order for a discount or category-sale email in your store's campaign calendar.",
+        "steps": [
+          "Open with an attention-grabbing headline that makes the offer immediately clear, such as '20% off shower products'.",
+          "Follow with body copy written in your brand's tone so the email reads as a fit for your audience rather than a template.",
+          "State the discount code prominently and place a clear call-to-action button, for example 'save now'.",
+          "Add 'recommended for you' product blocks so recipients can act on the offer without leaving the email's context.",
+          "Close with additional body copy that reinforces the sale and repeats the code, keeping the same voice throughout.",
+          "Compare your draft against the generic alternative (plain percent-off plus urgency) to check whether your version is genuinely more on-brand."
+        ],
+        "caveats": [
+          "This layout comes from the source's demo campaign, not from a documented A/B test result.",
+          "A generic urgency line may perform acceptably; brand fit is the differentiator the source argues for."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "copywriting",
+          "campaigns",
+          "email-design",
+          "product-page",
+          "offer-design",
+          "merchandising"
+        ]
+      },
+      {
+        "title": "Track place order rate as the primary email KPI hierarchy",
+        "summary": "Optimize emails for revenue and place order rate first, then click rate, and treat open rate as the least important metric in the chain.",
+        "use_when": "Choosing the winning metric for any email A/B test or deciding which send-time or content variant to adopt in your store.",
+        "steps": [
+          "Set revenue and place order rate as the top-level KPIs for email decisions.",
+          "Rank click rate second and open rate last, since higher opens do not reliably translate to more orders.",
+          "When comparing send times or content variants, prefer the option producing more placed orders even if its open rate is lower.",
+          "Where a platform does not allow place order rate as the winner metric (the source notes this limitation for subject-line tests in Klaviyo), fall back to click rate rather than open rate.",
+          "Check the platform's current metric options before configuring, since available selections can change."
+        ],
+        "caveats": [
+          "The source reports that the best open-rate time often differs from the best place-order time, but this is agency observation rather than a universal law.",
+          "Metric availability in Klaviyo varies by test type."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "measurement",
+          "conversion-optimization",
+          "experiment-design",
+          "klaviyo",
+          "retention"
+        ]
+      },
+      {
+        "title": "Sequence send-time tests from wide contrast to narrow pinpointing",
+        "summary": "Find your best send time by first testing two very different hours, then progressively narrowing around the winner across multiple campaigns.",
+        "use_when": "Establishing a default campaign send time for your store instead of relying on a single Smart Send Time suggestion.",
+        "steps": [
+          "Start with a wide contrast between the two test times so any real difference is detectable.",
+          "Let the test run across several campaigns (the source suggests roughly 5-10) rather than judging from one send.",
+          "Take the winning hour and pair it against a neighboring hour in the next round, for example 7 a.m. versus 11 a.m.",
+          "Repeat with a progressively tighter bracket, for example 11 a.m. versus 2 p.m., converging on the best window.",
+          "Apply the resulting send time as your default, but keep monitoring place order rate rather than assuming the optimum is fixed."
+        ],
+        "caveats": [
+          "The number of campaigns needed scales with audience size and revenue in the source's framing; 5-10 is a heuristic.",
+          "Results are brand-specific and may shift with seasonality or list changes."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "send-time",
+          "experiment-design",
+          "campaigns",
+          "measurement",
+          "klaviyo"
+        ]
+      },
+      {
+        "title": "Expect to customize templates to your brand instead of copying them",
+        "summary": "Templates and flows give you a starting blueprint, but each store must test which retargeting flows, designs, and campaigns its own customers respond to.",
+        "use_when": "Rolling out a new email program or onboarding templates into your store and setting realistic expectations for iteration.",
+        "steps": [
+          "Treat any provided template as a starting point, not a finished system; the source states not every template will fit a brand's needs.",
+          "Determine through testing which flows retarget your customers best, which email design engages them most, and which campaigns they want to see.",
+          "Accept trial and error as part of finding the right system, strategy, design, and flows for your specific store.",
+          "Prioritize iteration on high-recipient flows and sends so your trial and error produces compounding learning."
+        ],
+        "caveats": [
+          "The source promotes a paid service with a stated 20% revenue guarantee in 60 days; such claims are the presenter's marketing and are not independent evidence.",
+          "No specific template or design is guaranteed to fit a given store."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "flows",
+          "email-design",
+          "experiment-design",
+          "retention",
+          "template"
+        ]
+      }
+    ]
+  },
+  "raw_content": "{\"cards\": [{\"title\": \"Prioritize A/B tests by recipient volume, not by ease\", \"summary\": \"Focus split tests on the emails and flows in your account that reach the most recipients so any win compounds across revenue.\", \"use_when\": \"Deciding which email or flow to test next when you can only run a limited number of experiments per month on your store's lifecycle program.\", \"steps\": [\"Map each flow and campaign to its monthly recipient volume and revenue contribution before choosing a test target.\", \"Rank the biggest levers first: welcome series, abandoned checkout, abandoned cart, and post-purchase/winback flows, plus the first 2-3 emails of each.\", \"Within those, test high-recipient emails before testing minor flows that only reach tens of recipients per month.\", \"Treat improvements on a 20-recipient flow as marginal: it may lift that flow's conversion, but it will not move overall store revenue materially.\", \"Allocate test slots so at least the majority of experiments land on the top flows and top campaign sends.\"], \"caveats\": [\"The source frames this as advice for general ecommerce stores, especially under roughly $100K/month; large multi-million-dollar stores can afford to chase smaller levers.\", \"Recipient volume ranking depends on your own account data, not a fixed universal list.\"], \"tags\": [\"email-lifecycle\", \"experiment-design\", \"retention\", \"flows\", \"measurement\", \"conversion-optimization\"]}, {\"title\": \"Test send time against place order rate, not open rate\", \"summary\": \"Run send-time split tests with place order rate as the winning metric because the hour with the best open rate is often not the hour with the most orders.\", \"use_when\": \"Scheduling campaign sends and deciding whether to trust Klaviyo's Smart Send Time or run your own send-time test.\", \"steps\": [\"Create an A/B test on the campaign and choose 'test send time' rather than relying only on Smart Send Time.\", \"Pick two clearly different times (for example 7 a.m. versus 7 p.m.) to start with a meaningful contrast.\", \"In the test settings, set the winning metric to place order rate, not click rate and definitely not open rate, since revenue and placed orders are the KPIs that matter.\", \"Keep size distribution at 100 and track links separately per variation so you can attribute results correctly.\", \"Run the comparison across roughly 5-10 campaigns before concluding; one campaign is effectively zero data.\", \"Once a winner emerges, narrow the test (for example 7 a.m. versus 11 a.m., then 11 a.m. versus 2 p.m.) to pinpoint the best window.\"], \"caveats\": [\"The source states it has repeatedly seen the best open-rate time differ from the best place-order time, but notes this is not universal across all brands.\", \"The 5-10 campaign range is a heuristic that depends on audience size and revenue level, not a fixed rule.\"], \"tags\": [\"email-lifecycle\", \"experiment-design\", \"send-time\", \"measurement\", \"campaigns\", \"conversion-optimization\", \"klaviyo\"]}, {\"title\": \"Test content structure in campaigns, not just subject lines\", \"summary\": \"Run campaign content tests (product blocks vs none, bestsellers vs categories) because the learning transfers to flows and future sends, unlike one-off subject line tests.\", \"use_when\": \"Planning campaign experiments and choosing which content variables to vary in your store's promotional and evergreen sends.\", \"steps\": [\"Set up an A/B test on content rather than only on subject lines, since subject-line results on a one-time campaign cannot be reused elsewhere.\", \"Version A: original email with product blocks. Version B: same email without product blocks. Compare results.\", \"Run a second variant type on sitewide sales: one version highlighting three bestsellers versus one version highlighting product categories or new arrivals.\", \"Set the winning metric to place order rate where possible; the source notes Klaviyo does not allow place order rate for subject-line tests, so click rate is the next-best option there.\", \"Run each content test across multiple campaigns before drawing conclusions and before applying the pattern to flows.\"], \"caveats\": [\"Subject-line tests on one-off campaigns yield data you cannot act on elsewhere; the source recommends deprioritizing them for that reason.\", \"Place order rate is not selectable as a winner metric for all test types in Klaviyo; verify the current interface.\"], \"tags\": [\"email-lifecycle\", \"experiment-design\", \"campaigns\", \"content-strategy\", \"merchandising\", \"conversion-optimization\", \"klaviyo\"]}, {\"title\": \"Use 50/50 manual distribution for email A/B tests\", \"summary\": \"Turn off Klaviyo's automatic distribution and split traffic 50/50 so you keep control of the test and have enough data for a sound winner decision.\", \"use_when\": \"Configuring test settings for subject line or content A/B tests in campaigns and flows.\", \"steps\": [\"In the test settings, turn off 'automatically chosen distribution' and set the split manually to 50/50.\", \"Expect automatic distribution to shift more sends toward whichever variant Klaviyo currently favors, which can bias the comparison.\", \"Accept the tradeoff: manual 50/50 requires you to check and analyze the test yourself, which the source's agency prefers because it wants full control.\", \"If you lack time to monitor tests, the source says enabling automatic distribution is acceptable.\", \"For winner selection, the default is click rate; configure to open rate if needed, but note place order rate is not available for subject-line tests, and click rate is the better fallback.\", \"Leave the winner-selection method on 'test by statistical significance' or choose the time limit; alternatively switch it off and pick the winner manually.\", \"Write a note on the test explaining your hypothesis so you can interpret it later.\"], \"caveats\": [\"These are the source's stated preferences from agency practice, not universal requirements.\", \"Automatic distribution behavior and test-setting labels in Klaviyo may change; verify the current interface.\"], \"tags\": [\"email-lifecycle\", \"experiment-design\", \"klaviyo\", \"measurement\", \"campaigns\", \"flows\"]}, {\"title\": \"A/B test abandonment flow timing with conditional splits\", \"summary\": \"Test the delay before your abandoned cart and abandoned browse emails by building two flow paths with different wait times, then narrow toward the best delay.\", \"use_when\": \"Optimizing abandoned cart, abandoned checkout, or browse abandonment flow timing to lift placed orders while watching spam complaint rate.\", \"steps\": [\"Add a conditional split at the top of the flow and set the condition to a random sample of 50%.\", \"Set the 'yes' path to one delay (for example 2 hours) and the 'no' path to another (for example 1 hour) so the difference at the start is meaningful.\", \"Duplicate every email so each path carries the full sequence rather than rejoining after the first email; the source prefers this because email 1 may perform worse at the longer delay while emails 2-3 perform better, and you want the full picture.\", \"After results come in, narrow the comparison (for example test 2 hours versus 3 hours) to pinpoint the ideal delay.\", \"Monitor spam complaint rate alongside placed order rate, since timing changes affect both.\", \"Repeat the same conditional-split approach for browse abandonment, starting with a wider gap such as 1 hour versus 3 hours.\"], \"caveats\": [\"Splitting every email into two paths multiplies maintenance work; the source prefers it for full-sequence visibility, but it is a tradeoff.\", \"Ideal delays are store-specific; the 1/2/3/4-hour values are illustrative test values, not benchmarks.\"], \"tags\": [\"email-lifecycle\", \"flows\", \"abandoned-cart\", \"browse-abandonment\", \"experiment-design\", \"klaviyo\", \"conversion-optimization\"]}, {\"title\": \"Flow subject lines are worth testing, campaign subject lines usually are not\", \"summary\": \"Test subject lines in flows because they run indefinitely, but deprioritize campaign subject-line tests whose results you cannot reuse.\", \"use_when\": \"Deciding where to spend subject-line testing effort across your welcome, abandonment, and post-purchase flows versus one-time campaigns.\", \"steps\": [\"For flow emails, go to the email you want to test, hit 'create a test', and enter an alternative subject line (for example 'did you see something you liked' versus 'oops you forgot something').\", \"Run the subject-line test on flows because they send continuously, so a winning line keeps producing results over time.\", \"For campaigns, treat subject-line testing as low-value: the send is one-time, so a winner gives you little actionable information afterward.\", \"Instead of campaign subject lines, direct campaign test effort toward send times and content variations that inform your flows and future campaigns.\", \"Still set the winning metric responsibly: use click rate when place order rate is not selectable.\"], \"caveats\": [\"This is the source's stated preference and a judgment about actionability, not a claim that subject lines never matter.\", \"Klaviyo's test-creation flow and available metrics may change; verify the current interface.\"], \"tags\": [\"email-lifecycle\", \"subject-lines\", \"flows\", \"campaigns\", \"experiment-design\", \"klaviyo\"]}, {\"title\": \"Skip CTA-color split tests at small store scale\", \"summary\": \"Button-color A/B tests (yellow vs red) are generally not worth running for stores under roughly $100K/month because the expected lift is too small.\", \"use_when\": \"Deciding how to allocate limited testing capacity for a small or mid-size store's email program, signup forms, or above-the-fold email content.\", \"steps\": [\"Recognize that CTA color tests usually show meaningful differences only for very large senders, in the source's experience brands doing multiple millions per month with very large audiences.\", \"For stores under about $100K/month, redirect that test slot to bigger levers: flow timing, content structure, and first-email variants in top flows.\", \"If you do test above-the-fold email content, test headlines and calls to action rather than only button color.\", \"Note that color tests are technically possible and can produce a difference; the source's position is that the gain is minor relative to effort at small scale.\"], \"caveats\": [\"The ~$100K/month threshold and the 'millions per month' scale are the source's heuristics based on agency observation, not measured benchmarks.\", \"A large-audience brand may legitimately find color tests worthwhile.\"], \"tags\": [\"email-lifecycle\", \"experiment-design\", \"conversion-optimization\", \"cta\", \"measurement\", \"small-business\"]}, {\"title\": \"Write email copy that earns attention through value, not cleverness alone\", \"summary\": \"Voice and personality make copy less robotic, but value to the reader is what drives response; build the email around a clear, useful offer first.\", \"use_when\": \"Drafting campaign or flow email copy for product launches, promos, or category sales that need to fit your brand voice.\", \"steps\": [\"Lead with value: the source frames value as more than half the battle, with tone and formatting tips finishing the job.\", \"Make the headline immediately clear about what the reader gets, for example a percent-off product sale, so attention is grabbed by clarity as well as offers.\", \"Write body copy in the brand's voice rather than generic promo language; a line that is a little edgy or funny fits a brand like Dollar Shave Club, whereas a generic 'hurry, selling out fast' line can convert but fits worse.\", \"Call out the discount code explicitly and pair it with a clear call-to-action button such as 'save now'.\", \"Insert recommended product blocks, then close with body copy that continues the same on-brand tone rather than reverting to generic urgency.\", \"Keep sentences short and snappy as a finishing pass after the value and voice are right.\"], \"caveats\": [\"The Dollar Shave Club example is the source's constructed demo, not a measured performance case study.\", \"Brand-voice edginess is not a universal rule; a generic line may still convert.\"], \"tags\": [\"email-lifecycle\", \"copywriting\", \"campaigns\", \"brand-voice\", \"content-strategy\", \"offer-design\"]}, {\"title\": \"Structure promo emails around headline, code, CTA, products, and closing copy\", \"summary\": \"A tested promotional email layout moves from a clear attention-grabbing headline through an explicit discount code and CTA to recommended products and on-brand closing copy.\", \"use_when\": \"Building the layout and copy order for a discount or category-sale email in your store's campaign calendar.\", \"steps\": [\"Open with an attention-grabbing headline that makes the offer immediately clear, such as '20% off shower products'.\", \"Follow with body copy written in your brand's tone so the email reads as a fit for your audience rather than a template.\", \"State the discount code prominently and place a clear call-to-action button, for example 'save now'.\", \"Add 'recommended for you' product blocks so recipients can act on the offer without leaving the email's context.\", \"Close with additional body copy that reinforces the sale and repeats the code, keeping the same voice throughout.\", \"Compare your draft against the generic alternative (plain percent-off plus urgency) to check whether your version is genuinely more on-brand.\"], \"caveats\": [\"This layout comes from the source's demo campaign, not from a documented A/B test result.\", \"A generic urgency line may perform acceptably; brand fit is the differentiator the source argues for.\"], \"tags\": [\"email-lifecycle\", \"copywriting\", \"campaigns\", \"email-design\", \"product-page\", \"offer-design\", \"merchandising\"]}, {\"title\": \"Track place order rate as the primary email KPI hierarchy\", \"summary\": \"Optimize emails for revenue and place order rate first, then click rate, and treat open rate as the least important metric in the chain.\", \"use_when\": \"Choosing the winning metric for any email A/B test or deciding which send-time or content variant to adopt in your store.\", \"steps\": [\"Set revenue and place order rate as the top-level KPIs for email decisions.\", \"Rank click rate second and open rate last, since higher opens do not reliably translate to more orders.\", \"When comparing send times or content variants, prefer the option producing more placed orders even if its open rate is lower.\", \"Where a platform does not allow place order rate as the winner metric (the source notes this limitation for subject-line tests in Klaviyo), fall back to click rate rather than open rate.\", \"Check the platform's current metric options before configuring, since available selections can change.\"], \"caveats\": [\"The source reports that the best open-rate time often differs from the best place-order time, but this is agency observation rather than a universal law.\", \"Metric availability in Klaviyo varies by test type.\"], \"tags\": [\"email-lifecycle\", \"measurement\", \"conversion-optimization\", \"experiment-design\", \"klaviyo\", \"retention\"]}, {\"title\": \"Sequence send-time tests from wide contrast to narrow pinpointing\", \"summary\": \"Find your best send time by first testing two very different hours, then progressively narrowing around the winner across multiple campaigns.\", \"use_when\": \"Establishing a default campaign send time for your store instead of relying on a single Smart Send Time suggestion.\", \"steps\": [\"Start with a wide contrast between the two test times so any real difference is detectable.\", \"Let the test run across several campaigns (the source suggests roughly 5-10) rather than judging from one send.\", \"Take the winning hour and pair it against a neighboring hour in the next round, for example 7 a.m. versus 11 a.m.\", \"Repeat with a progressively tighter bracket, for example 11 a.m. versus 2 p.m., converging on the best window.\", \"Apply the resulting send time as your default, but keep monitoring place order rate rather than assuming the optimum is fixed.\"], \"caveats\": [\"The number of campaigns needed scales with audience size and revenue in the source's framing; 5-10 is a heuristic.\", \"Results are brand-specific and may shift with seasonality or list changes.\"], \"tags\": [\"email-lifecycle\", \"send-time\", \"experiment-design\", \"campaigns\", \"measurement\", \"klaviyo\"]}, {\"title\": \"Expect to customize templates to your brand instead of copying them\", \"summary\": \"Templates and flows give you a starting blueprint, but each store must test which retargeting flows, designs, and campaigns its own customers respond to.\", \"use_when\": \"Rolling out a new email program or onboarding templates into your store and setting realistic expectations for iteration.\", \"steps\": [\"Treat any provided template as a starting point, not a finished system; the source states not every template will fit a brand's needs.\", \"Determine through testing which flows retarget your customers best, which email design engages them most, and which campaigns they want to see.\", \"Accept trial and error as part of finding the right system, strategy, design, and flows for your specific store.\", \"Prioritize iteration on high-recipient flows and sends so your trial and error produces compounding learning.\"], \"caveats\": [\"The source promotes a paid service with a stated 20% revenue guarantee in 60 days; such claims are the presenter's marketing and are not independent evidence.\", \"No specific template or design is guaranteed to fit a given store.\"], \"tags\": [\"email-lifecycle\", \"flows\", \"email-design\", \"experiment-design\", \"retention\", \"template\"]}]}",
+  "input": {
+    "source_id": "1gAs1Y6DDO4ld3V07pv7EQ4Hq585FJEwm",
+    "source_sha256": "5d0fcefa9fd4199b4c5c5dcc8c43a38a40850839509c4fc3dd1d1082a6c262d3",
+    "source_name": "_Klaviyo Email Marketing FULL COURSE 2025.docx",
+    "folder": "/14-EML-email-lifecycle",
+    "domain": "email-lifecycle",
+    "section": 5,
+    "section_count": 6,
+    "text": " you can sound less robotic but if you're not providing value then people are just not liking it so that's why you do want to provide value that's the most important thing if you provide value then you're already like halfway or even further and then you can use the rest of these tips to like finalize it and make it like short to Snappy and sweet and that's basically what I want to share with you about copyrighting if you're just going to check the campaign that we made for Dollar Shave Club then you can actually see what we did so first of all we have this attention grabbing headline 20% off show product so we grab your attention because it's immediately clear what they can expect and they're like oh 20% off that grabs your attention for people then we have some body copy it's time to upgraded set soap scrum Kingdom you call a shower so this is not a boring text this is like a a text that fits the brand of Dollar Shave Club it has a certain tone to it that makes people laugh or like it's a bit edgy so that's basically what you want then clearly we call out the the discount code and course action button save now that's also a good one to use and then recommend it for you we have th\n\ne product blocks and finally in here we have some body copy so that's right we're throwing a shower category sale so epic even your rubber duck is going to feel Posh use go dirty discount for 20% off so this again it's not a generic line we could have said oh we're having 20% off our shower product hurry it's selling out fast something like that so that would be like a generic text which can convert but this is way more on brand and way better fit to target audience Shave Club this shows personality instead of just a generic line and that's what I wanted to point out with this example email that we made and that's what I wanted to discuss on email copywriting for ecommer Brands so we discussed picking the right software for your email marketing we discussed setting up a Cayo account we talked about Sil forms flows campaigns email design copywriting segmentation one last final thing that I want to discuss is AB testing or split testing so this is actually a really important part of email marketing as well and all the way in the beginning when we talked about sign forms I already discussed what you can ab test just for your sign of forms so I won't be talking about that anymore you can check it all the way in the beginning of this course but there's a lot more that you can do with AB testing I just want to discuss a few things about what you should AB test for your own e-commerce brand because again there's a lot that you can ab test but I'm always a big fan of just a testing of things that make a difference for your brand so first first of all let's start with campaigns and one thing that I often see with e-commerce brands that are like oh yeah we're doing a testing we're split testing different subject clients for our campaigns and then I'm like okay but what are you doing with it information so let's say you have a winner what what is like the hypothesis behind it what are you going to do with this data and then they're like oh yeah nothing but yeah we're just sending a part of the audience subject line a a part of the audience subject line B and then to a part of it we send them the winner and that's it but then after that you don't have anything that you can do with that data so in my opinion that's like an AB test that's not going to make a big difference for your brand so what you can do in terms of a testing for your campaigns one thing that I'm a big fan of first of all is a testing descending time and this again is something that should go wrong often times a lot of times what I see is that people when they're going to schedule the campaigns they're going to do something that's called a smart send test uh so actually we can't really show that right now because this is a demo account but basically they're going to set up a smart send send test where cavio is going to find out which time yields the the the highest op rate and that's it and then they found the specific time for the smart send time and then they know okay at this time I get the highest op rate and that's it while that information can be useful you op rate is not the main metric that you want to optimize for the main metric you want to optimize for is your revenue and your place order rate and after that your your click rate and after that you operate but operate is not the most important thing because at least what we noed for our clients at some sometimes a certain time gives us a lower own rate but it gives us a higher placed order rate so people are way more likely to actually buy at a certain moment than at another moment which gives a higher op rate so then it's nice that you've done a smart send time and use that time as your as your ascending time but it might not give you the the highest amount of Revenue so what I would do instead is set up an AP test for this campaign so if you continue to content which is demo campaign that we made then you can hit create a be test in here and if you hit that button you can now click on test send time and then you can select a time so let's say I want to test 7 a.m. versus 7 p.m. oh that's also 700 a.m. 7 p.m. so like that and now you're going to run this and then after a while you get the data on this campaign if you scroll down select your send time test settings so you want to have the winning metric to be the place order rate not open rate not click rate but place order rate again main kpi is your Revenue not your click rate and definitely not your oper rate size distribution I would keep it at 100 track link separately in each variation and then you can schedule the campaign like this so you basically want to run this for a few campaigns because one campaign is like zero data you really want to run this for like depending on the size of your audience and the size of your brand in terms of Revenue you want to run this for like 5 to 10 campaigns and then analyze the data and see which on average which sending time generates the most Revenue so you test 7:00 a.m. versus 7 p.m. and let's say 7 a.m. is the winner after that you run another AP test for like 7 A.M versus 11: a.m. and let that run for 5 to 10 campaigns and let's say then 11:00 a.m. seems to be generating more Revenue then you can do 11:00 a.m. versus 2 p.m. and this way you can try to pinpoint the exact sing time that yields the best results for your brand so this is a really important AB test I would highly encourage you to do but again most important thing optimize for your place order rate not for click rate not for open rate again we've seen it a lot of times the best setting times in terms of open rate is not the best sending time for your placed order rate it could be but it's not definitely the the case for for all Ecommerce breads so do it like this and that's way better while we're in this view you can also see that you can hit test content so this way you can test like multiple subject clients obviously but also your content and that's also a good thing to do test mult variations of your content you always want to test it based on place or that's the most important metric but what we could do we made this demo account with these product blocks what we could do is a version a call it original with product blocks and make a version B new without product blocks and see what happens so then we'll edit this version B basically just get rid of the product blocks for you keep it like this so now we we have a version with the product blocks and a version without product blocks and run an AB test with this and as again you should run this from multiple campaigns and then like analyze the data are the product blocks G doing you a favor or are they not doing a favor there could be an interesting AB test another AB test that you can do if you have like a sitewide sale with multiple product categories is that you test a version where you highlight like certain bestsellers so for example like we did in here we highlight three bestsellers or when you highlight product categories that could be an interesting a test as well it might be that people are converting better if you share product categories compared to bestsellers or compared to new rals so those are also really valuable AB tests that you can run so I'm a bigger fan of running such a test compared to like testing subject lines where there's nothing that you can do with that information because with the IB test that I just mentioned that's valuable information that you can use with your flows and with upcoming campaigns as well other things that you can do is AP test your above theault section so test different headlines test different call to action but asly there's also like a big stream of especially unlike cro agencies that are a big fan of split testing colors of call to action buttons and stuff like that those can make a difference but in general we only see that it really makes a big difference for like the big big big companies who are doing multiple Millions a month of Revenue then you have such large audience and then it makes sense toat such fig but those are making such minor improvements that for the general e-commerce store doing less than 100K a month it doesn't make sense to do such a bet test to be honest but asly it is offish you could a B test so a yellow call to action button versus a red call to action button for example we already talked about that with with the sign forms as well that that's a possible AP test that you can do but it's not like the biggest lever that's going to make the biggest difference for your campaign strategy and your overall Revenue these are some examples of ab test of like content and campaigns if we dive into flows there's also a lot of AB testing that you can do with your flows and we already talked about that a little bit in the flow section of this course but let's recap quickly so for example with your welcome series what you want to AB test is like first of all different subject clients to get like the highest op rate possible flows it does make sense compared to campaigns because flows are something that are running like on and on and on campaigns is a onetime thing so with sub clients it does make sense to a test like subject clients another thing that I'm a big fan of in terms of flows is just testing like the biggest levers so which flows are generating the most Revenue in general that would be the welcome series abandon checkout abandon card and PR benit so focus on these flows when you're going to do a test because any positive change to these flows will generate a lot more Revenue than when you're AB testing like a minor cross cell flow which gets like 20 recipients per month that is nice that it gets a conversion boost but yeah that's not like something that's going to make a major major difference for your e-commerce Brands while a b tesing the first email of your welcome series flow this will get a lot of recipients so any positive change to this email that's going to be a big big big money maker for your brand so focus on like the first two to three emails of your welcome flow first two to three emails of your Bandon card checkout and browser band flow and that's what's going to make the biggest difference so subject lines but also content so for example just as I mentioned with campaigns product blocks versus no product blocks different type of product blocks headlines call to action buttons all that good stuff those are things that you can beest with with your welcome series flow and also the other flows that I just mentioned which abandonment series what also good to MP test also mentioned that when we were setting up these flows are the time delays because that's really something that can make a difference not only for your place order rate but also for your spend complaint rate that's always something that you have to keep in mind as well so as I mentioned before with the side you could test 1 hour versus four hours see what happens and then let's say four hours is performing better then you can test three hours versus four hours and then this way you can exactly pinpoint the the best timing for your side bent flow and you can do the same with your browser Ben flow so test 1 hour versus 3 hours and then see what works best then for test that versus two hours then you can find the ideal timing for your browser benit flow uh again if you don't know how to set up such an AB test I already explained it earlier but let me show you again so you create a conditional split let's put it on top we select a condition random sample 50% hit save and now we have a yes path with weigh 2 hours Let's create a no path and let's make this is 3 hours let's make this 1 hour so there's a bit of a bigger difference at the beginning now later we can like narrow it down and put a focus towards a certain time delay so one hour ver three hours and then we would just simply duplicate this version put it in here and then also do it with the rest of the flow so we set up all the the time delays the same you basically want to have two paths you could connect it after one email if you want but I like to like duplicate every single email and have it on two separate path because could be that emo one is like performing less when you wait three hours but then emo2 emo three is performing better so you want to have a good picture of the whole situation so that's why I like to do it like this so this is how you can create like an AB test for your flows like this if you just want to like a test a subject line that's way easier you just go to the email that you want to test you hit create a test and then in here you can change the subject line so the original one is did you see something you liked and then second one can be oops you forgot something and then if you scroll down you can select your test settings one thing that I like to do is turn off automatically chosen distribution and just put it manually on 50/50 kind of depends on like how much time you have to check everything for our agency we like to do it manually because we check our accounts like very frequent and we just want to have like full control about situation because if you put it on automatic what will happen is that clayi will like analyze the data and then the decide if they think that subject line a is before together they will send more emails to variant a instead of to variant B so then it will put that version in favor of version B for example and I just like to put it on 50/50 and then analyze the data myself because I notied that and obiously this will improve over time but sometimes Cayo makes a bad choice in terms of optimizing it and yeah I just want to be in control about this but if you don't have a lot of time then hly I would encourage you to turn this on and let Cay your decide but for us if you have the time just put it on manual 50/50 winner selection is really important especially if you have it on automatic so on default it's on click rate if you hit configure you can also do op rate unfortunately it's not possible to do it with placed order rate that's a bit of a shame but yeah in that case we'll use click rate because that's like a better metric to focus on than your open rate then automatic winner selection you can do it and test by statistical significance or send a time limit or just turn it off either way and just fully manual selected I just in general leave it on end test by statistical significance that doesn't happen that fast to be honest but that way then CFO can already decide who's like the winner and because you have it on 50/50 there will be sufficient data to work with for for for CFO and you can even leave some notes so you can fully like explain what this AB test is about so later when you look back you can see like a this was my thought process about running the detest and stuff like that so that can be useful to leave in your notes as well so that's how you set up an AP test for like subject line and content and stuff like that and I also showed you like the conditional splits we talked about AP testing for your cop forum for your campaigns so that quite sums up what you can do with a testing so quick recap focus on the biggest levers first emails of your welcome flow first emails of your abandoned checkout flow and abandoned card flow and the first emails of your PR bment flow those are the emails that get the most recipients so any positive change to these flows will generate you a lot more Revenue focus on these flows not on flows that just get like 20 recipients per month it's nice that those will be performing better obviously but that's not going to make you a lot more Revenue so focus on biggest levers that's my biggest advice focus on data that you can actually use for other things so don't test like subject lines for campaigns it's a onetime thing only and yeah you can't do anything with it rather focus on sending times and content changes that you make that can make a difference for your flows as well and for order campaigns that's what's going to make a difference and now you know how to do your email marketing from start to finish we've covered selecting a software the technical setup within an account and ensuring you're following the newest guidelines to be able to send emails to your customers collecting email subscribers creating beautiful designed emails building email flows building out an email strategy segmentation of your list a full email copyrighting guide and how to run a test effectively and how to read your data properly you will start converting more customers getting more sales if you follow this video step by step but it can be quite daunting to do it all by yourself although the full blueprint is laid out for you you will have to do some triy on error to find the right system the right strategy the right design and the right flows that fits your brand because not every template will fit your Brand's needs you will have to determine What flows retargets your customers the best what email design engages your customers the most and what campaigns your customers like to see with your attention already being pulled away in 100 different directions with running ads dealing with inventory suppliers and managing a team figuring out email marketing is the last thing that you want to do I will personally handhold you through this journey and increase your Revenue by at least 20% in 60 days if not I will return whatever you had invested in us if you want a guaranteed part two success click on the link in the description to book a call with me I'll see you in the next one",
+    "prior_notes": [],
+    "id": "178b826fb3b97dfcd6826058"
+  },
+  "system_prompt_sha256": "f2341d28186a0dbaee868d37ce33c173f631088eb1754997556740d4905c0f2b"
+}

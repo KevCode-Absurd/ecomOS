@@ -1,0 +1,192 @@
+{
+  "cards": [
+    {
+      "title": "Identify and Prioritize Node.js Core vs Dependency vs App Vulnerabilities",
+      "summary": "Separate vulnerabilities into three layers (core runtime, ecosystem packages/embedded deps, your own app) and treat each with its own patching and threat-model response so storefront fixes target the right layer.",
+      "use_when": "Planning a vulnerability review or patch cycle for an ecommerce storefront/backend running on Node.js, or deciding whether a scanner finding is your code, a package, or the runtime.",
+      "steps": [
+        "Classify every finding into one of three layers: (1) Node.js core/platform, where a single bug affects every Node app on the internet; (2) the package ecosystem you depend on; (3) your own application code. Treat these as distinct in your threat model, not one bucket.",
+        "Remember that Node core itself embeds C/C++ dependencies (OpenSSL, V8, libuv, zlib, ICU, HTTP parser and others). A vulnerability in shipped embedded code means the runtime is vulnerable — the source notes a non-trivial share of Node security releases over a two-year span were patching OpenSSL. Track core runtime patch releases, not just npm advisories.",
+        "Because ecosystem packages become part of your application, run dependency scanning on your lockfile and map findings to the direct or transitive package that actually pulls them in.",
+        "For each layer, decide the response: upgrade runtime version, bump/replace a package, or patch your own code. Prioritize based on reachability and your store's exposure (e.g., a DoS in a request-parsing path used on checkout is higher priority than an unused dev dependency).",
+        "Maintain a standing process: subscribe to your runtime's security release announcements so you patch proactively rather than reacting after an exploit is public."
+      ],
+      "caveats": [
+        "The source describes open-source volunteer project process; exact announcement channels and tooling change over time — verify current Node.js security release notification methods.",
+        "A core bug is broadly impactful but may not be reachable in your deployment; score by your own threat model rather than treating all core CVEs as automatically critical."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "dependency-management",
+        "vulnerability-management",
+        "nodejs",
+        "patching",
+        "threat-modeling"
+      ],
+      "id": "e19ee93824c2fab9fea481ad",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 19
+    },
+    {
+      "title": "Use CVE, CWE and CVSS as a Shared Vocabulary for Storefront Findings",
+      "summary": "Adopt MITRE's CVE/CWE databases and the CVSS calculator as a common language to catalog, describe and score vulnerabilities so your team can compare and prioritize store security findings consistently.",
+      "use_when": "Documenting or triaging a security finding in an ecommerce stack, or deciding how severely to treat a reported bug in your runtime or a package.",
+      "steps": [
+        "Use CWE (Common Weakness Enumeration) to name the class of weakness — for example improper input validation, authentication bypass, or improper interaction between multiple correctly-behaving entities. This is a shared vocabulary for describing what went wrong.",
+        "Use CVE (Common Vulnerability and Exposures) to look up known, disclosed findings per project. Search for your runtime or package (e.g., a CVE list for nodejs) and cross-reference version numbers against what you run in production. This lets an operations team scan what's deployed and know whether it's vulnerable.",
+        "Score a candidate finding with the CVSS base-score calculator, working through attack vector (network vs adjacent vs local vs physical), attack complexity, privileges required, user interaction, scope, and the confidentiality/integrity/availability impacts. Network-vector, low-complexity, no-privilege, no-user-interaction findings score highest.",
+        "Interpret the score against your own environment: the source stresses that a high CVSS score does not automatically mean high risk for your specific system — CVSS is a fairly general threat model. Combine the score with whether the vulnerable path is reachable in your store.",
+        "Lesson for merchants: even a pure availability bug (a DoS requiring user interaction) can score in the mid-6s, so availability issues should not be dismissed as cosmetic."
+      ],
+      "caveats": [
+        "CVSS is a general-purpose scoring model, not a substitute for your own threat model; the source explicitly warns the score may overstate or understate real risk in your environment.",
+        "CVE database entries and calculator interfaces change; verify current tools rather than assuming a fixed layout."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "vulnerability-management",
+        "risk-scoring",
+        "cve",
+        "cvss",
+        "cwe",
+        "threat-modeling"
+      ],
+      "id": "0ef686a163b4746a9e13eccf",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 19
+    },
+    {
+      "title": "Threat-Model Your Whole Domain, Not Just Your Software",
+      "summary": "Treat your entire external footprint — including DNS records and abandoned subdomains — as attack surface, using a real domain-takeover case as the model for finding non-code vulnerabilities.",
+      "use_when": "Auditing the security of your store's external estate (DNS, subdomains, marketing pages, CDN configuration) or setting up a threat-modeling exercise for your ecommerce operation.",
+      "steps": [
+        "Enumerate everything your store or brand exposes, not just application code: subdomains, DNS records, CNAMEs, landing pages, marketing microsites, package-registry names, and third-party service integrations.",
+        "For each domain/DNS record, verify it still points to a service you control and activity maintains. The source describes an abandoned subdomain that pointed to a CDN provider which did not require proof of domain ownership to register a distribution under that hostname — enabling an effective takeover of the brand's subdomain.",
+        "When you migrate or decommission a service, audit and delete stale CNAME and DNS records rather than leaving them pointing at third-party infrastructure.",
+        "Because these domains may be the canonical source of information customers and package managers rely on, an attacker controlling one could distribute bad content or credentials before you react. Rank domain/DNS issues as genuine attack vectors, not just website trivia.",
+        "Regularly audit your DNS estate and third-party integrations as part of a standing threat-model review, and after any infrastructure or vendor change."
+      ],
+      "caveats": [
+        "The takeover described was reported by a good-faith researcher in a specific project context; the exact CDN ownership-verification behavior may differ across providers and over time — verify each provider's current policy.",
+        "The source presents this as one project's experience, not a benchmark of how often such takeovers occur."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "threat-modeling",
+        "dns",
+        "domain-takeover",
+        "attack-surface",
+        "third-party-risk"
+      ],
+      "id": "a1984ffa45bb735dd7dc8cbd",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 19
+    },
+    {
+      "title": "Never Expose Node Inspector/Debug Ports on Storefront Servers",
+      "summary": "Close and credential-protect debug ports like the Node inspector (e.g., port 5858) because internet scanners constantly probe them and exposure lets attackers gain full code execution on the host.",
+      "use_when": "Running or debugging a Node.js storefront or backend on a server, or reviewing server configuration for exposed management/debug endpoints.",
+      "steps": [
+        "Understand the risk condition: if a Node.js inspector/debug port (−−inspect, commonly port 5858) is reachable, an attacker can connect as a debugger and get full code execution. A DNS-rebinding attack demonstrated that even a malicious website open on the same machine, or another machine on the local network, could trick the browser into reaching a localhost debug port and gaining code execution.",
+        "Do not leave the debug port open on production or on any host with network exposure. The source notes bots continuously crawl the internet looking for systems with the debug port open.",
+        "If remote debugging is required, restrict access: bind to localhost only, use an IP address and/or SSH tunnel rather than a hostname, and lock the port down with credentials or a cookie.",
+        "Frame this as a bounded internal validation: confirm on your own host which ports are listening, test from an external network that the debug port is not reachable, then close or gate it. Do not attempt the attack against systems you do not own.",
+        "Track this across environments — the same risk applies to a laptop demo, a staging box, or a cloud VM, not just production."
+      ],
+      "caveats": [
+        "The DNS-rebinding technique and exact mitigation were specific to a reported Node.js CVE and affected versions; verify current Node.js documentation, since defaults and mitigations may have changed.",
+        "Mitigation can break legitimate remote-debugging workflows; plan an alternative (IP/SSH tunnel) rather than simply reopening the port."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "nodejs",
+        "debug-ports",
+        "dns-rebinding",
+        "remote-code-execution",
+        "server-hardening"
+      ],
+      "id": "d730c5ae8ab286391e5ecb37",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 19
+    },
+    {
+      "title": "Design an Embargo and Coordinated-Disclosure Process for Security Findings",
+      "summary": "Keep vulnerability details strictly need-to-know until public disclosure, using time-bounded embargoes and staged notification so you can patch before attackers learn the vulnerability.",
+      "use_when": "Coordinating a fix for a known vulnerability in your store's stack, briefing contractors/vendors, or scoping who on your team can access a security finding before it is public.",
+      "steps": [
+        "Treat reported vulnerabilities as embargoed: restrict details to those who need them to develop and test the fix. The source describes a project policy where even team members could not share embargoed vulnerabilities with colleagues at their own (or other) employers before public disclosure, and leaking could cost them their position.",
+        "Define who is 'in scope' for embargoed information and keep the flow need-to-know. Because an early-access program for downstream runtimes was hard to implement politically and technically, employees on the security team could not pre-notify their own product teams — meaning downstream teams sometimes had breaking changes land with no warning.",
+        "Plan the disclosure sequence: confirm and fix, cut the release, then publish the CVE, CVSS score, a blog post and an announcement. Only after public disclosure do broader teams and customers get full details.",
+        "Where possible, use pre-announcement or advance-access channels for critical downstream partners so they can patch and test, minimizing the window between zero-day and production patching — but recognize this is difficult to run and may not be feasible for a small team.",
+        "For your store, adopt the same discipline: brief only the engineers and vendors who must act, and set a target disclosure/patch timeline."
+      ],
+      "caveats": [
+        "The source describes an open-source volunteer project's policy and its real problems (leaks gave some vendors a competitive advantage); it is not a legal opinion and embargo rules vary by organization.",
+        "Advance-notification programs are presented as desirable but hard to implement — do not assume they are easy or standard."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "coordinated-disclosure",
+        "embargo",
+        "incident-response",
+        "vendor-management"
+      ],
+      "id": "20e8867f0d35a447dcdc3253",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 19
+    },
+    {
+      "title": "Set Explicit Response SLAs for Security Reports",
+      "summary": "Commit to and track concrete response times for incoming vulnerability reports so third-party researchers and your own team know what to expect and gaps become visible.",
+      "use_when": "Running a bug-report intake for your storefront, or setting expectations with a security researcher, agency, or bug-bounty platform.",
+      "steps": [
+        "Publish a clear acknowledgement-and-update commitment. The source project's stated SLA is to acknowledge within 24 hours and provide an update within 48 hours, tracked by a third-party platform that measures adherence.",
+        "Use a management platform (the source uses HackerOne) to log each report, store its CVSS score and CWE, and track resolution times — the platform reports metrics such as average time to first response and to triage.",
+        "Monitor your adherence rate to the SLA over a rolling window (the source cites meeting its standard about 92% of the time over 90 days with a team of under 20 volunteers). Treat recurring misses as a resourcing or triage-quality problem to fix.",
+        "Where a bug-bounty platform is used, consider that it may pre-triage reports before they reach your team to filter non-issues, but pre-triage by generalists can mischaracterize platform-specific issues — so retain an internal triage step.",
+        "Have a documented channel for reporting issues in your dependencies versus your own code, so researchers are routed correctly and your team's time is not wasted."
+      ],
+      "caveats": [
+        "Numeric SLA figures (24/48 hours, 92%) are this project's specific commitments and measured results, not universal benchmarks — set targets appropriate to your team size.",
+        "Platform features, scoring and reputation mechanics change; verify the current interface and policy of any bug-bounty platform you use."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "vulnerability-management",
+        "sla",
+        "triage",
+        "bug-bounty",
+        "incident-response"
+      ],
+      "id": "085d0d5d996b7abd9e6b5048",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 19
+    }
+  ],
+  "request_id": "ebda202c6999465ab0dfc7906b485a03f55b715eb7a51febe6fb25f288c5c910",
+  "ecommerce_scope_version": 1
+}

@@ -1,0 +1,434 @@
+{
+  "cards": [
+    {
+      "title": "Map DNS resolution to counter store-domain hijacking",
+      "summary": "Walk through the recursive DNS resolution chain so you can identify and defend every point where a storefront domain can be rerouted and validate protection with TLS.",
+      "use_when": "Hardening your storefront domain, or diagnosing why customers report landing on a look-alike checkout or phishing page for your brand, or selecting DNS providers and records.",
+      "steps": [
+        "Model the resolution chain the browser actually follows: client → recursive resolver → root nameserver → TLD nameserver (e.g. .com) → your domain's authoritative nameserver → IP address. Each hop is an attack surface, because classic DNS queries are plain text.",
+        "Enumerate the hijack points: malware editing a customer's local hosts file, a compromised recursive resolver (often the ISP-supplied one), a compromised router, a hacked authoritative nameserver, or a registrar account takeover. Any of these can return a malicious IP and send shoppers to an attacker-controlled server posing as your store.",
+        "Mitigate on owned systems: lock registrar accounts with strong unique credentials and MFA, restrict who can edit DNS records, and prefer resolvers that support encrypted DNS where available.",
+        "Understand the TLS counter and its limit: HTTPS uses signatures so clients detect the wrong server, but if an attacker answers the domain lookup, a free certificate authority that only verifies domain control can be induced to issue them a valid certificate. Confirm current provider behavior before relying on any specific check.",
+        "Validate defensively: from your own environment verify records and certificates resolve and match expectations; do not attempt to hijack third-party domains to test."
+      ],
+      "caveats": [
+        "Encrypted-DNS support and certificate-issuance rules change; verify current browser and CA behavior rather than assuming a fixed state.",
+        "HTTPS alone does not guarantee the request reached your real server if the domain lookup was subverted during issuance."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "dns",
+        "checkout",
+        "phishing",
+        "domain-security",
+        "tls",
+        "storefront-infrastructure"
+      ],
+      "id": "2117b632489b5ee0dd1f55aa",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 2
+    },
+    {
+      "title": "HTTPS, integrity and authenticity for storefront trust",
+      "summary": "Explain why TLS/HTTPS gives integrity and authenticity, not just confidentiality, so those properties guide how you protect customer data and admin sessions.",
+      "use_when": "Deciding how to protect checkout pages, login flows and admin panels, or evaluating what HTTPS actually buys you against tampering and impersonation.",
+      "steps": [
+        "Treat HTTPS as three guarantees: confidentiality, integrity (responses cannot be silently modified without the client detecting it) and authenticity (you are talking to the server holding the certificate's private key).",
+        "Use integrity to reason about injected content: an intermediary that wants to alter your checkout page or inject a crypto-miner script cannot do so undetected if they lack the private key matching the served certificate.",
+        "Use authenticity to reason about impersonation: a wrong-server attack fails because the attacker cannot present a certificate whose private key they control for your domain — this is the core defense against DNS-hijack phishing.",
+        "Do not assume a padlock equals a legitimately-operated store: cheaper CAs verify only that the requester controls the domain, so a hijacked domain can still obtain a valid cert. Combine TLS with registrar hardening and account MFA."
+      ],
+      "caveats": [
+        "Confidentiality, integrity and authenticity are distinct properties; the source stresses they come as a set for HTTPS but each addresses a different threat.",
+        "Certificate-issuance verification practices vary and change; verify current CA policies."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "tls",
+        "https",
+        "checkout",
+        "authentication",
+        "phishing",
+        "account-security"
+      ],
+      "id": "4d85411c726fd4a838bfd2ae",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 2
+    },
+    {
+      "title": "Encrypt DNS queries to protect customer browsing privacy",
+      "summary": "Understand how plain-text DNS leaks a store's and shoppers' domain lookups to ISPs and how DNS-over-HTTPS reduces that exposure.",
+      "use_when": "Choosing DNS configuration for your organization or advising on privacy of traffic to and from your store, or evaluating whether ISP DNS behavior affects your customers.",
+      "steps": [
+        "Recognize the privacy risk: classic DNS queries are plain text, so the recursive resolver — often the ISP — can log and even sell lists of domains a user looked up, including which stores and services they visit.",
+        "Switch to a provider with an explicit privacy policy stating they do not sell DNS queries, as a partial fix. Note that without encryption, an observing ISP can still see queries even if you point them elsewhere.",
+        "Prefer DNS-over-HTTPS (DoH) where it is available, which tunnels queries over an encrypted connection so observers cannot read them. The source notes Firefox made DoH a default and other browsers were testing it, and that OS-level support was limited — verify current support before relying on it.",
+        "Application to the store: enable DoH at the browser/OS or router level where supported so internal admin lookups and vendor tooling traffic are not trivially readable; assess whether your outbound traffic reveals sensitive internal domains.",
+        "Recognize that ISPs sometimes DNS-hijack invalid domains to show ad/search pages; this is a behavior to be aware of, not a control you administer."
+      ],
+      "caveats": [
+        "Configuring DoH at the router leaves traffic on the local network visible; setting it only in the browser covers just that browser.",
+        "DoH support and default settings change over time; verify the current state of browsers and operating systems."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "dns",
+        "privacy",
+        "encryption",
+        "dns-over-https",
+        "storefront-infrastructure"
+      ],
+      "id": "cc819036c4e00450edb286d9",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 2
+    },
+    {
+      "title": "Read HTTP request and response structure to audit store traffic",
+      "summary": "Parse HTTP's textual request/response format and header model so you can inspect and debug what your storefront actually sends and receives.",
+      "use_when": "Debugging storefront requests in dev tools, understanding method/header usage when integrating an API or CDN, or auditing whether sensitive data leaks into URLs.",
+      "steps": [
+        "Read a request as: a first line naming the method (GET, POST, PUT, DELETE, etc.), the requested path/resource, and the HTTP version (commonly 1.1), followed by key-value headers. HTTP/1.1 is plain text and human-readable; HTTP/2 and 3 are binary and not directly typeable.",
+        "Read a response as: protocol version and a status code with message, followed by headers and the body. Use the status code category to triage: 2xx success, 3xx redirect, 4xx client error, 5xx server error.",
+        "Leverage extensibility: because headers are just keys and values, servers ignore headers they do not understand, so you can add features (caching, range, conditional requests) without a protocol change.",
+        "Account for statelessness: two consecutive requests have no inherent relationship, so anything that looks like state — a login that persists across clicks — is layered on top via mechanisms like cookies, not the base protocol.",
+        "For the store: audit whether cart tokens, session IDs or customer identifiers are placed in URLs (which get logged and shared) versus headers or cookies."
+      ],
+      "caveats": [
+        "HTTP is transport-agnostic (it can run over channels other than TCP), but TCP is the typical transport; do not assume the transport from the protocol version.",
+        "Later HTTP versions are not human-readable; use tooling to inspect them."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "http",
+        "headers",
+        "storefront-infrastructure",
+        "debugging",
+        "cart"
+      ],
+      "id": "e3b4454386cb1b5d0cb0bc10",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 2
+    },
+    {
+      "title": "Use HTTP status codes to drive caching and retry logic",
+      "summary": "Apply the meaningful status codes — 200/206, 301/302, 304, and 4xx/5xx — to caching, redirect and retry behavior in a storefront.",
+      "use_when": "Tuning caching/CDN rules, redirects and retry behavior for storefront and checkout endpoints, or diagnosing why a cached page or redirect misbehaves.",
+      "steps": [
+        "For content serving: 200 means success with the full resource; 206 means a partial response to a range request. Range requests let a client fetch a byte offset (e.g. seeking into a video) without downloading the whole file; if a server ignores the range header it falls back to 200 with the whole file, so clients must handle both.",
+        "For redirects: understand the 301 vs 302 difference. A permanent 301 says the resource is permanently moved, so the browser caches it and stops asking — which breaks any feature that should land on a different page each visit (e.g. a 'random page' link). Use 302 (temporary) when the destination can vary.",
+        "For caching: 304 'not modified' supports conditional requests where the browser sends a version (or a since-date) it already holds and the server replies 304 without resending the body when nothing changed, saving bandwidth. If the client does not include that condition, it gets a 200.",
+        "For errors: 4xx means the client's request was wrong (bad URL, no permission) while 5xx means the server erred (uncaught exception) — this distinction tells you whether retrying is worthwhile.",
+        "For proxy/gateway layers: 502 (bad gateway), 503 (service unavailable/overloaded) and 504 (timeout) reflect failures between a proxy and backend servers."
+      ],
+      "caveats": [
+        "Numeric status meanings come from the protocol spec; specific caching durations and validation values are implementation choices, not fixed numbers.",
+        "A 301 that varies by request will silently break; confirm your redirect choice matches the intended caching behavior."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "http",
+        "caching",
+        "status-codes",
+        "cdn",
+        "redirects",
+        "storefront-infrastructure"
+      ],
+      "id": "b4d32aeac67fbdcc0dc24989",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 2
+    },
+    {
+      "title": "HTTP methods and range requests in practice",
+      "summary": "Place the common request methods and partial-content fetching in context so storefront integrations send the correct verb and handle partial media.",
+      "use_when": "Choosing GET vs POST/PUT/DELETE for a storefront or API integration, or implementing video/audio delivery and seeking on product pages.",
+      "steps": [
+        "Use GET for requests that fetch a resource and POST/PUT/DELETE for operations that change something. The source treats GET as the common default; do not use GET for actions that mutate state (aligning with the general principle that GET requests should be safe and not change data).",
+        "Recognize the request line groups the method, the path (the requested resource name) and the protocol version, then headers follow. In modern dynamic servers the path need not map to a literal file.",
+        "For media on PDPs, rely on range requests: the client asks for a byte offset and the server can respond 206 with just that slice, enabling seeking into a video before the whole file downloads.",
+        "Build clients to tolerate a 200 response when a range was requested, since servers that do not understand the range header return the full file instead of a 206."
+      ],
+      "caveats": [
+        "The source lists common methods and notes others exist; consult the HTTP spec for the authoritative method list and their safety/idempotency properties.",
+        "Range behavior depends on server/CDN support; test against your actual delivery stack."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "http",
+        "methods",
+        "range-requests",
+        "media-delivery",
+        "api-integration"
+      ],
+      "id": "501cf413306cf34cef15f57b",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 2
+    },
+    {
+      "title": "Use URL parsing to distinguish commands from user input",
+      "summary": "Break URLs into scheme, host, port, path, query and fragment so you can build safer routing and detect where user input could be interpreted as structure.",
+      "use_when": "Building or auditing storefront routing, query-parameter handling, search/filter URLs, or debugging why a URL escaped or failed to resolve.",
+      "steps": [
+        "Decompose a URL into its parts: scheme (protocol), host (server domain), port, path (the requested resource — dynamic today, not necessarily a file), query (key=value pairs starting with ? and separated by &), and fragment (a # anchor scrolling to a labeled point in the page).",
+        "In query strings, disambiguate delimiter vs data: if a key or value must contain an ampersand, it must be escaped; otherwise it will be read as a separator. This escaping is the core of where user input can be confused with structure.",
+        "Treat this confusion — separating the command from user input — as the root issue behind many web attacks; when building search, filters or redirects from user-supplied values, escape and validate so input cannot become structure.",
+        "For prompts longer than the standard fragment behavior: standard fragments only scroll to anchors the page author pre-defined; a newer spec (which the source says was under consideration) allows control-F-style text matching after the hash. Verify current browser support before depending on it."
+      ],
+      "caveats": [
+        "Path may point to a real file or be fully dynamic; do not assume filesystem semantics.",
+        "The text-matching fragment behavior was described as a proposal, not established; verify current support."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "url-parsing",
+        "input-handling",
+        "storefront-infrastructure",
+        "routing",
+        "search"
+      ],
+      "id": "b705e189b1eb82e410c152a3",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 2
+    },
+    {
+      "title": "Relative vs absolute vs fragment URLs in storefront links",
+      "summary": "Master how relative, absolute and fragment URLs resolve against the current page so navigation, catalog links and anchors behave predictably.",
+      "use_when": "Building link generation, breadcrumbs, category pagination or deep links so shoppers land on the intended path rather than a 404.",
+      "steps": [
+        "Full URLs embed the entire address; relative URLs resolve against the current page's location, effectively appending to the current 'folder'.",
+        "Watch the trailing slash: on a page ending in '/2019/October', a relative link to 'September' resolves to '/2019/September' (the last path segment is replaced), but if the current URL ended with a trailing slash the resolution differs — the source stresses the trailing slash matters.",
+        "Absolute URLs beginning with '/' resolve from the site root, replacing the entire path (e.g. a link to '/events' resolves to same-domain.com/events regardless of the current path).",
+        "Fragment URLs append a #fragment to the current URL, scrolling to a matching labeled element on the page — useful for linking to a specific section of a PDP or help page without the author pre-defining an anchor only if the newer matching behavior applies.",
+        "For the store: standardize link generation (root-relative for internal links) so category, CMS and templated links do not accidentally drop or carry a path segment and produce 404s."
+      ],
+      "caveats": [
+        "Relative resolution quirks (especially trailing slashes) are easy to get wrong; test generated links against real nesting levels.",
+        "The source notes a fragment text-matching enhancement was under development; do not assume universal behavior."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "urls",
+        "navigation",
+        "storefront-infrastructure",
+        "catalog",
+        "seo"
+      ],
+      "id": "5338235ba0c825c1992d3578",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 2
+    },
+    {
+      "title": "Treat link/style/script tags as the primary attack surface",
+      "summary": "Focus security review on <link>, <style> and <script> because these tags load external resources and are where the source says attacks concentrate.",
+      "use_when": "Reviewing how your storefront loads CSS, JavaScript, fonts and third-party scripts, or setting a content-security and dependency-review policy.",
+      "steps": [
+        "Know the loading model: CSS is loaded externally with <link> and inline with <style>; JavaScript is loaded externally via <script src=...> and inline by pasting it inside <script>. The inconsistency (script vs link) is historical.",
+        "Because these tags pull in external and inline code, treat every third-party tag manager, analytics, chat, pixel and hosted font as untrusted code that executes in your storefront's context — this is the surface the source says most attacks use.",
+        "When auditing: enumerate every link/style/script (including inline) on a checkout or account page, and decide which are truly necessary, since each is a potential tampering or data-exfiltration vector.",
+        "Understand that the web cannot break backwards compatibility, so these historical tag decisions persist and you must design controls around them rather than assuming they will change."
+      ],
+      "caveats": [
+        "The source presents these tags as where the class's attacks live; that is a strong emphasis, not a claim that only these tags are ever involved.",
+        "Specific mitigations (CSP, SRI) are covered in later material; verify current browser support for any control before relying on it."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "script-tags",
+        "third-party-scripts",
+        "content-security",
+        "storefront-infrastructure",
+        "checkout"
+      ],
+      "id": "3cb8c041325753ee940b509e",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 2
+    },
+    {
+      "title": "Distinguish JS language, DOM and Node APIs when auditing code",
+      "summary": "Separate the JavaScript language spec from browser-provided DOM APIs and Node-provided APIs so you correctly attribute behavior and risk.",
+      "use_when": "Reviewing storefront script code, blaming or debugging unexpected behavior, or deciding whether code belongs in the browser or a server environment.",
+      "steps": [
+        "Classify each API you encounter: features built into the language itself (e.g. arrays) come from the JS spec; document/createElement-style calls come from the browser's Document Object Model; file-reading and networking calls belong to Node.js, not the browser.",
+        "Recognize that the browser supplies DOM APIs because the language alone would have no page to manipulate, and the source attributes most 'bad' APIs to the DOM rather than the language.",
+        "For the store: keep browser and server responsibilities distinct — file reads and socket connections belong on the server (Node), never in client-side storefront JavaScript, which should only manipulate the DOM.",
+        "Note that Node.js added scripting-language capabilities the browser language lacked — filesystem, HTTP, DNS, sockets, a module system for requiring code, and binary data support (before which everything was strings, awkward for media). Modern JS has absorbed some of these needs."
+      ],
+      "caveats": [
+        "Node itself is just 'JavaScript on the command line' with added platform APIs; do not confuse Node's APIs with the language spec.",
+        "The source notes JS was famously created quickly (Brendan Eich, ~10 days) and its flexibility was a deliberate trade-off; this is historical context, not a security control."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "javascript",
+        "node-js",
+        "dom",
+        "code-review",
+        "storefront-infrastructure"
+      ],
+      "id": "2333b45a16ebc552e1a89d44",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 2
+    },
+    {
+      "title": "Assume the browser can move and resize windows (pop-up risk)",
+      "summary": "Recognize that browser APIs like window.open, moveTo and resizeTo mean a loaded page can open pop-ups and move windows, so don't treat such behavior as impossible.",
+      "use_when": "Assessing how your storefront handles third-party or user-generated scripts, or explaining unexpected pop-up/window behavior to stakeholders.",
+      "steps": [
+        "Note the legacy APIs the source flags: window.open opens a new window (the pop-up API), and moveTo/resizeTo let a page reposition and resize a window; the source notes a browser in 2019 could still do this, and students could build demos making a window follow the cursor.",
+        "Treat this as an attack and abuse surface: any script you embed (ads, third-party tags, user-generated content) inherits the page's ability to open pop-ups, which is why script-sourcing policy matters for a storefront.",
+        "Practical storefront action: control which scripts load on checkout and account pages, and treat pop-up/open-window behavior from embedded third parties as something to constrain rather than assume impossible.",
+        "For users, browsers attempt to restrict pop-up behavior in various versions — but do not assume any given trick is blocked; verify current browser behavior rather than trusting a fixed rule."
+      ],
+      "caveats": [
+        "These APIs' actual behavior and trigger restrictions (e.g. requiring a user gesture) vary by browser and change over time; verify the current interface.",
+        "The source's window-following demo is an educational demonstration, not a description of a storefront attack."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "browser-apis",
+        "pop-ups",
+        "third-party-scripts",
+        "script-control"
+      ],
+      "id": "0754a8a795edfa02dbae2c54",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 2
+    },
+    {
+      "title": "Use range and conditional requests to speed storefront media and content",
+      "summary": "Explain how partial-content (206) and conditional (304) requests cut bandwidth for media and repeat content delivery on a store.",
+      "use_when": "Delivering product video/audio and large assets, configuring CDN caching, or debugging repeated full downloads of unchanged pages or images.",
+      "steps": [
+        "Implement range requests for media: a client requests a byte offset (e.g. seeking mid-video or mid-song) and the server can return a 206 with only that slice, avoiding a full sequential download before playback.",
+        "Handle the fallback: if a server does not understand the range header, it returns 200 with the whole file, so clients must check the status code and adjust (a 200 when a 206 was expected signals a non-range server).",
+        "Implement conditional requests for caching: the browser sends the version (or a since-date) of a resource it holds; the server returns 304 'not modified' without a body if nothing changed, saving bandwidth, or a 200 with fresh content if it changed.",
+        "Confirm the mechanism requires the client to include the condition header each time; without it, the server always returns 200."
+      ],
+      "caveats": [
+        "The source frames 206 as the reason range requests work; specific offsets and caching windows are implementation choices.",
+        "CDN and server range/conditional support varies; test your actual delivery path."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "http",
+        "caching",
+        "range-requests",
+        "cdn",
+        "media-delivery"
+      ],
+      "id": "1474555029875c49117e441c",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 2
+    },
+    {
+      "title": "Design for statelessness and layer state deliberately",
+      "summary": "Understand that HTTP is stateless and that any persistent behavior — like a logged-in cart — is state you must knowingly layer on and secure.",
+      "use_when": "Architecting sessions, carts and login persistence, or reasoning about why two requests have no inherent relationship.",
+      "steps": [
+        "Treat the base protocol as stateless: two consecutive requests have no built-in relationship, so nothing is remembered by default.",
+        "Recognize that anything that appears stateful in a real storefront — persisting login across clicks, a cart that survives navigation — means the service deliberately layered state on top of HTTP (via mechanisms like cookies, covered in later material).",
+        "When adding state for carts or sessions, decide explicitly what is remembered, for how long, and how it is protected, because the base protocol provides none of these guarantees.",
+        "The source notes a server can implement per-visitor behavior (e.g. counting requests) — but that is the application building state, not HTTP holding it."
+      ],
+      "caveats": [
+        "The source defers the actual state mechanism (cookies) to later material; the mechanism's security details are not covered here.",
+        "Do not assume statelessness means requests are isolated in practice; application-layer state can still couple them."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "http",
+        "sessions",
+        "cart",
+        "statelessness",
+        "cookies"
+      ],
+      "id": "150b0b5ae2205362b78b4b4f",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 2
+    },
+    {
+      "title": "Handle proxy/gateway failure codes for resilient checkouts",
+      "summary": "Use the 502/503/504 family to reason about proxy-to-backend failures and configure sensible timeouts and retries for storefront infrastructure.",
+      "use_when": "Operating a storefront behind a load balancer or proxy, setting timeouts and retry policy, or debugging intermittent checkout errors.",
+      "steps": [
+        "Understand the architecture: a proxy can sit in front of many backend servers so users see one server, and big web services scale this way. Failures between the proxy and backends produce specific gateway codes rather than client or server errors.",
+        "Map the codes: 502 (bad gateway — the backend is down or unreachable), 503 (service unavailable — temporarily down or overloaded), 504 (timeout — the backend took too long).",
+        "Configure the proxy's timeout deliberately: a backend may be online but slow, and the proxy should give up after a bounded time rather than tie up a connection on a never-ending request.",
+        "Use the code distinction for retry logic: because these indicate a backend/transient problem, a retry may succeed, whereas a 4xx indicates a client mistake that should not be blindly retried."
+      ],
+      "caveats": [
+        "The source presents these as examples of proxy failure modes; specific timeout and retry values are configuration choices, not fixed recommendations.",
+        "Exact behavior depends on your proxy/load balancer; verify its timeout and retry semantics."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "http",
+        "status-codes",
+        "proxy",
+        "checkout",
+        "retries",
+        "storefront-infrastructure"
+      ],
+      "id": "613eb3ed91ea2d79cec7bb79",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 2
+    }
+  ],
+  "request_id": "d83930f694c93f34baf3ac5ed34c941dd6135dfe96217b9641bb5ac4e611ea93",
+  "ecommerce_scope_version": 1
+}

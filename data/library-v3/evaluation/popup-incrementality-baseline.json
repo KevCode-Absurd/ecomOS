@@ -1,0 +1,57 @@
+{
+  "case": {
+    "name": "popup-incrementality",
+    "query": "Our popup increased email signups. How do we decide whether to keep it?",
+    "brand": "DTC coffee brand; email signups rose 40% after adding a discount popup; revenue impact and margin impact are unknown.",
+    "complexity": "focused"
+  },
+  "variant": "baseline",
+  "model": "gpt-5.6-terra",
+  "answer": {
+    "diagnosis": "A 40% increase in email signups is not enough to decide whether to keep the discount popup. The popup may create profitable new customers, merely shift signups that would have happened anyway, reduce first-order margin through discounting, annoy visitors, or affect conversion and repeat purchase. The decision should be based on incremental contribution profit and customer quality, not signup volume alone.",
+    "actions": [
+      "Define the primary decision metric as incremental contribution profit per visitor: incremental gross profit from orders attributable to the popup, minus discount cost, email/SMS costs, popup/software costs, and any operational costs.",
+      "Run a randomized holdout test: show the popup to one visitor group and suppress it for a comparable control group. Keep all other site, offer, traffic, and email-program conditions the same.",
+      "Measure at the visitor level for both groups: email signup rate, site conversion rate, revenue per visitor, orders per visitor, average order value, discount redemption rate, gross margin after discount, contribution profit per visitor, unsubscribe rate, and repeat-purchase/cohort revenue over a defined follow-up window.",
+      "Separate outcomes for popup-acquired subscribers versus other subscribers. Compare welcome-flow engagement, first purchase rate, time to first purchase, average discount use, repeat order rate, and contribution margin to determine whether the additional signups are valuable customers.",
+      "Check for cannibalization: identify whether customers who used the popup discount would likely have purchased without it, whether existing subscribers are receiving or using the offer, and whether the popup reduces full-price conversion.",
+      "Evaluate the customer experience impact by monitoring exit rate, product-page/cart progression, checkout completion, complaint/support volume, and unsubscribe/spam-complaint rates. Segment these results by device, traffic source, new versus returning visitor, and popup timing/behavior.",
+      "If the popup is profitable but has negative experience effects, test less costly variants before removing it: smaller discount, free-shipping threshold, non-discount incentive, delayed trigger, exit-intent trigger, frequency caps, or exclusion of visitors already subscribed or returning customers.",
+      "Keep the popup only if the test shows positive incremental contribution profit and acceptable customer-quality and experience outcomes relative to the control. If results are inconclusive, continue the controlled test rather than relying on the signup increase."
+    ],
+    "missing_information": [
+      "The popup offer, discount amount, eligibility rules, expiration, and whether it can stack with other promotions.",
+      "Popup trigger details: timing, pages shown, device behavior, frequency cap, and suppression rules for existing subscribers/customers.",
+      "Pre- and post-launch site conversion rate, revenue per visitor, average order value, discount redemption, and gross margin by order.",
+      "Variable costs needed for contribution margin, including product cost, fulfillment, payment fees, shipping subsidy, and email/SMS/platform costs.",
+      "Traffic volume, traffic-source mix, seasonality, concurrent campaigns, pricing changes, inventory constraints, and other site changes during the comparison period.",
+      "Email welcome-flow performance and downstream customer behavior for popup subscribers, including purchase, unsubscribe, repeat purchase, and refund rates.",
+      "Whether a randomized control/holdout can be implemented and the intended measurement window for first and repeat orders."
+    ],
+    "caveats": [
+      "A before-versus-after comparison is vulnerable to seasonality, campaign mix, and other changes; it cannot reliably establish that the popup caused revenue or profit changes.",
+      "Revenue is not profit: a discount-driven order can increase revenue while reducing contribution margin.",
+      "Short-term first-order results can miss longer-term value or harm, especially if the popup changes the mix of customers acquired.",
+      "Do not assume every new signup is incremental; some visitors may have subscribed or purchased without the popup."
+    ]
+  },
+  "usage": {
+    "prompt_tokens": 125,
+    "completion_tokens": 733,
+    "total_tokens": 858,
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "audio_tokens": 0
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 0,
+      "audio_tokens": 0,
+      "accepted_prediction_tokens": 0,
+      "rejected_prediction_tokens": 0
+    }
+  },
+  "estimated_cost_usd": 0.0091085,
+  "knowledge_tokens": 0,
+  "retrieved_titles": []
+}

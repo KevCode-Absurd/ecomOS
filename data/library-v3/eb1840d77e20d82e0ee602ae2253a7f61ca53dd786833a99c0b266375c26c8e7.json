@@ -1,0 +1,461 @@
+{
+  "request_id": "eb1840d77e20d82e0ee602ae2253a7f61ca53dd786833a99c0b266375c26c8e7",
+  "provider": "deepseek",
+  "model": "deepseek-flash",
+  "effort": "none",
+  "completion_limit": 16384,
+  "usage": {
+    "prompt_tokens": 3581,
+    "completion_tokens": 5949,
+    "total_tokens": 9530,
+    "prompt_tokens_details": {
+      "cached_tokens": 768
+    },
+    "prompt_cache_hit_tokens": 768,
+    "prompt_cache_miss_tokens": 2813
+  },
+  "booked_cost_usd": 0.008213100000000001,
+  "seconds": 31.49,
+  "finish_reason": "stop",
+  "output": {
+    "cards": [
+      {
+        "title": "Judge Q4 creative at ad set level, not ad level",
+        "summary": "During Black Friday, ROAS is unreliable at ad level because of multi-touch optimization plus last-click attribution; evaluate creative at ad set level instead.",
+        "use_when": "Deciding which Q4/Black Friday creatives to scale, pause or refresh when ad-level ROAS looks noisy or contradictory across the account.",
+        "steps": [
+          "Recognize that ROAS degrades during the Q4 window: you are running multi-touch optimization but reporting on last-click attribution, so ad-level numbers are even more broken than usual. The source treats this as a general rule that matters more at Black Friday.",
+          "Pull the account's historical CPC-vs-ROAS or spend-vs-ROAS correlation for prior periods. The source notes R-squared is very low and the data is muddy, meaning CPCs and core KPIs often do not track each other reliably.",
+          "Because of that, judge creative performance at the ad set level rather than the ad level during the sale window. Ad set level aggregates enough signal to survive the attribution noise.",
+          "Treat the ROAS number during Black Friday as directional rather than precise, and lean more heavily on the supplementary metrics (CPC, CPM, spend pacing, contribution margin) that remain more stable.",
+          "Flag that Meta's breakdown effect compounds the unreliability of ad-level ROAS, so don't make pause/scale calls on a single ad's ROAS reading.",
+          "Verify the current Meta reporting interface and attribution options before acting, since breakdown behavior and available windows change."
+        ],
+        "caveats": [
+          "This is a source-specific recommendation, not a platform rule; the reliability gap still exists the rest of the year, it just worsens during the sale window.",
+          "Even ad set level numbers can be distorted if the account structure is unusual or spend is very concentrated.",
+          "LTV/CAC and contribution margin remain the underlying truth metrics when ROAS is unreliable."
+        ],
+        "tags": [
+          "multi",
+          "conversion-optimization",
+          "measurement",
+          "creative-strategy",
+          "black-friday",
+          "meta-ads",
+          "attribution"
+        ]
+      },
+      {
+        "title": "Creative is a CPM lever — build volume and diversity to win the auction",
+        "summary": "Source data shows better creative quality, diversity and volume are qualitatively tied to lower CPMs, so treat creative as your main CPM control during the expensive Q4 window.",
+        "use_when": "Planning Q4 creative inventory or trying to control rising CPMs during the Black Friday auction when media is materially more expensive.",
+        "steps": [
+          "Reframe the mental model: creative is a CPM lever, not a conversion lever. In Q4 your biggest controllable cost input is often how efficiently your creative wins auctions.",
+          "Look at your own account's historical relationship between creative volume/diversity and CPM. The source found a qualitative relationship in last year's Black Friday data: accounts with more diverse and higher-volume creative pushed CPMs down.",
+          "Hypothesize why: with more creative variety, you have more opportunities to win auctions and accrue more impressions, which likely explains the CPM benefit.",
+          "Set a creative volume target from forecast spend, not from a fixed number of ads. During the September planning window, estimate required creative volume for your target spend and check whether you have enough Facebook pages or ad accounts to support that volume.",
+          "Phase that inventory across the sale: before-launch/teaser/early-access, launch, mid-sale refresh, and final 24–48 hour scarcity/deadline messaging.",
+          "Recognize that in Q4 creative volume, not budget, becomes the binding constraint at higher spend levels."
+        ],
+        "caveats": [
+          "The correlation is qualitative, not a controlled causal proof; the source itself attributes the relationship to higher impression volume winning more auctions.",
+          "Do not assume the same CPM benefit at any spend level; it is a directional pattern from a specific dataset.",
+          "Facebook page/account limits and Meta policies change; verify current platform rules before scaling page count."
+        ],
+        "tags": [
+          "multi",
+          "creative-strategy",
+          "black-friday",
+          "acquisition",
+          "cpm",
+          "meta-ads",
+          "creative-volume"
+        ]
+      },
+      {
+        "title": "Phase creative across the Black Friday window",
+        "summary": "Build Q4 creative as a scheduled sequence: teaser/early access to launch to mid-sale refresh to final scarcity, so creative matches the demand curve rather than running one static set.",
+        "use_when": "Planning and scheduling Q4 creative production and launches so the store isn't running the same assets from early November through Cyber Monday.",
+        "steps": [
+          "Split your Q4 creative plan into phases: (1) before-launch teaser and early-access content, (2) launch content, (3) mid-sale refresh, (4) final 24–48 hour scarcity and deadline messaging.",
+          "Produce assets for each phase before the window starts; the source treats this as table stakes but stresses the production load falls on the brand.",
+          "During the November 17–December 2 peak, refresh creative on schedule based on the mid-sale refresh point and the final 24–48 hour deadline push, rather than reacting only when performance drops.",
+          "Use the phased structure to also prevent offer fatigue by rolling through multiple offers rather than one static offer across the whole window.",
+          "Lock offers before making creative, since you cannot produce launch/scarcity assets until you know the offer.",
+          "Coordinate the phase boundaries with your actual sale calendar (Black Friday, Cyber Monday, and the cheaper post-peak window) so the last phase lands inside the true deadline period."
+        ],
+        "caveats": [
+          "The exact phase timing depends on your own sale calendar and offer ladder; the source gives the sequence, not fixed dates for each phase.",
+          "Creative production capacity is the limiter — if you can't produce all phases, prioritize launch and final 24–48 hour deadline assets."
+        ],
+        "tags": [
+          "multi",
+          "creative-strategy",
+          "black-friday",
+          "merchandising",
+          "offer-design",
+          "campaign-planning"
+        ]
+      },
+      {
+        "title": "Model November cohort LTV before setting CAC tolerance",
+        "summary": "November-acquired customers often repeat substantially worse than February cohorts, so check your own cohort data before carrying the same CAC allowance into Black Friday.",
+        "use_when": "Setting Q4 CAC targets, ad efficiency goals, or aggressive spend allowances during the Black Friday window.",
+        "steps": [
+          "Pull 6-month repeat-rate cohort data for November-acquired customers versus a normal month (the source used February as the comparison) for the last two years.",
+          "In the source's 10-brand sample, the November cohort delivered an average 38.5% 6-month repeat lift versus 63% for February — roughly half — but two of the ten brands showed no difference at all. So this is a per-brand question, not an assumption.",
+          "If November customers are materially worse, tighten CAC tolerance for the Q4 window and expect lower 12-month LTV from those customers.",
+          "If there is no difference in your data, keep CAC tolerance unchanged; the source explicitly says nothing else in the plan needs to change in that case.",
+          "Where the difference is real, adjust efficiency targets on two fronts: (a) discount compression of gross profit, and (b) reduced lifetime value of the acquired cohort. The source describes the default CAC allowance as 'wrong twice' if both are ignored."
+        ],
+        "caveats": [
+          "The 50%/63%/38.5% figures are an average across one specific client portfolio, not a benchmark for your store.",
+          "Two of the ten brands showed identical November/February behavior, so do not assume your November cohort is worse.",
+          "This depends on reliable cohort tracking; if you don't have it, treat the assumption as unverified."
+        ],
+        "tags": [
+          "multi",
+          "retention",
+          "measurement",
+          "black-friday",
+          "ltv",
+          "customer-research",
+          "pricing"
+        ]
+      },
+      {
+        "title": "Recompute break-even ROAS after discounting compresses gross margin",
+        "summary": "Discount depth raises required break-even ROAS exponentially because gross profit per order falls, so re-model targets before committing to Q4 promo depth.",
+        "use_when": "Choosing a Black Friday discount depth or setting the ROAS/contribution-margin target that acquisition spend is measured against during the sale.",
+        "steps": [
+          "Take your normal break-even ROAS and gross margin. The source's example: if you break even at 2x at normal margin and then discount 40%, your break-even ROAS moves to roughly 4.5x because gross profit per order compresses.",
+          "Increase required ROAS exponentially with discount depth, not linearly. Deeper discounts move the target further and faster than intuition suggests.",
+          "Model this using your actual gross margin numbers and your actual discount. The source notes it cannot compute the target without visibility into margin and discount.",
+          "Carry the adjusted ROAS target into your scaling rules — do not judge Q4 ad performance against normal-period efficiency targets.",
+          "Layer this on top of any November-cohort LTV adjustment as a separate correction; the source treats discount compression and customer-quality as two distinct adjustments.",
+          "Combine the modeled break-even with your own elasticity assumptions to decide how deep a discount your CAC allowance can tolerate."
+        ],
+        "caveats": [
+          "The 2x → 4.5x example is illustrative math for a 40% discount, not a universal formula; results depend on your margin structure.",
+          "Elasticity is assumed, not derived in the source — treat higher discount as a hypothesis to test rather than a guaranteed revenue lift.",
+          "Requires accurate gross margin and discount data; without it, the model cannot be built."
+        ],
+        "tags": [
+          "multi",
+          "pricing",
+          "measurement",
+          "black-friday",
+          "offer-design",
+          "margin",
+          "roas"
+        ]
+      },
+      {
+        "title": "Scale on three-day rolling marginal returns, not daily averages",
+        "summary": "Write scaling rules that act on three-day rolling marginal contribution and require consecutive poor reads before cutting, so you don't overreact to noisy holiday days.",
+        "use_when": "Running day-to-day Q4 budget and bid decisions during the Black Friday/Cyber Monday peak, especially when daily numbers swing wildly.",
+        "steps": [
+          "Write the scaling rules down before the window starts, so decisions during the sale follow a pre-committed plan instead of live emotion.",
+          "Use three-day rolling marginal averages as the default read, rather than day-over-day. Sometimes the source uses day-to-day based on total spend and how fast spend is moving in the pacing sheet.",
+          "Rule up: if marginal contribution margin is improving over the three-day rolling window, increase spend and scale.",
+          "Rule hold: if marginal returns are flat, do nothing.",
+          "Rule down: if there are two consecutive poor reads, decrease spend.",
+          "Do not read daily performance against an 8:00 a.m. morning target during the peak window; the source explicitly warns against this during Nov 17–Dec 2.",
+          "Apply the pacing sheet as the budget yardstick during the peak, since holiday hours distort daily comparisons."
+        ],
+        "caveats": [
+          "Three-day rolling is a source-specific default; brands with very high or very low spend may need a different window.",
+          "Marginal returns — not averages — should drive spend decisions; do not spend if the marginal return isn't there.",
+          "The rules require a pacing sheet with hourly revenue and spend curves from prior years to be meaningful."
+        ],
+        "tags": [
+          "multi",
+          "measurement",
+          "black-friday",
+          "budget-pacing",
+          "conversion-optimization",
+          "media-buying",
+          "campaign-planning"
+        ]
+      },
+      {
+        "title": "Build a Black Friday pacing sheet from prior-year hourly curves",
+        "summary": "Pull last year's hourly revenue and spend curves into a pacing sheet so budget decisions during the sale reference actual intraday patterns rather than flat daily targets.",
+        "use_when": "Preparing the operational budget-control tool for the Black Friday through Cyber Monday window, before committing spend schedules.",
+        "steps": [
+          "Pull last year's hourly revenue and spend curves for the sale period; the source treats this as an early September task.",
+          "Build a pacing sheet that maps expected spend against expected revenue by time block, so you can see whether current spend is ahead or behind where it should be.",
+          "Use the pacing sheet as the primary budget yardstick during Nov 17–Dec 2 rather than fixed daily caps.",
+          "Attach the scaling rules to the pacing sheet — three-day rolling marginal contribution improvement, no action when flat, and decrease after two consecutive poor reads.",
+          "Plan an attribution multiplier into the sheet because early spend is understated and the Black Friday weekend is flattered by last-click reporting; the source treats this bias as significant.",
+          "Do not read daily performance against an 8:00 a.m. target during the peak; hourly and rolling reads are more informative."
+        ],
+        "caveats": [
+          "Hourly curves from prior years may not transfer cleanly if your promotion timing or offer structure changes.",
+          "The sheet is only as useful as its attribution adjustment; without one, early spend will look worse and the peak will look better than reality."
+        ],
+        "tags": [
+          "multi",
+          "measurement",
+          "black-friday",
+          "budget-pacing",
+          "analytics",
+          "campaign-planning"
+        ]
+      },
+      {
+        "title": "Front-load preseason spend (roughly a third of Q4 budget in Sep–Oct)",
+        "summary": "Source data suggests 31–43% of the September-to-December budget should sit in September and October, so fund preseason rather than saving everything for the peak.",
+        "use_when": "Deciding how to allocate Q4 budget between preseason (September/October), the Black Friday/Cyber Monday peak, and the post-peak cheap window.",
+        "steps": [
+          "Use the source's observed range — 31–43% of the September-to-December budget — as a starting point for preseason spend, and adjust based on your own sales calendar and offer ladder.",
+          "Fund preseason for concrete purposes: building creative delivery data before the peak, ramping Google spend early, dialing in offers, and having an offer ladder ready if you need to switch offers reactively during the sale.",
+          "Use the accumulation of delivery data to decide which creative to press into during the peak rather than launching it cold on Black Friday.",
+          "Be deliberate with early Google ramps; the source flags the need for care while increasing spend there.",
+          "Plan an offer ladder, not a single fixed Black Friday offer, so you can switch during the window in response to trade.",
+          "Model preseason as spend that enables the peak, not as separate branding spend — its payoff is peak-window efficiency."
+        ],
+        "caveats": [
+          "The 31–43% range is an observation from the source's own data, not a universal target; brands with different seasonality will differ.",
+          "Over-investing preseason without enough creative to deliver it just inflates spend without building useful delivery data."
+        ],
+        "tags": [
+          "multi",
+          "budget-pacing",
+          "black-friday",
+          "campaign-planning",
+          "offer-design",
+          "acquisition",
+          "google-ads"
+        ]
+      },
+      {
+        "title": "Apply an attribution multiplier to correct Q4 reporting bias",
+        "summary": "Q4 reporting understates early spend and flatters the Black Friday weekend; use historical click-window analysis to build an attribution multiplier rather than trusting raw numbers.",
+        "use_when": "Forecasting Q4 performance or judging whether a given spend level is working in the run-up to and during Black Friday.",
+        "steps": [
+          "Recognize the structural bias before building any forecast: last-click reporting understates spend earlier in the window and flatters the Black Friday weekend itself.",
+          "In October, run the 7-day-click vs 1-day-click historical analysis to estimate how much you underspent last year and what attribution multiplier to apply to in-period performance.",
+          "Apply a post-treatment window adjustment to the numbers so early-window performance is judged on the same basis as the peak.",
+          "Use the adjusted reads when making scaling decisions — otherwise you will cut spend too early because the raw number looks worse than it is.",
+          "Treat this as an ongoing discussion during October, since the multiplier depends on how attribution behaves in your account.",
+          "Verify the current attribution window options in your ad platform before relying on any specific window setting."
+        ],
+        "caveats": [
+          "The required multiplier is account-specific; there is no universal value.",
+          "Attribution windows and defaults change over time; confirm current settings before recomputing.",
+          "This corrects reporting bias, not economic reality — you still need the margin and LTV adjustments as separate corrections."
+        ],
+        "tags": [
+          "multi",
+          "measurement",
+          "attribution",
+          "black-friday",
+          "analytics",
+          "roas",
+          "campaign-planning"
+        ]
+      },
+      {
+        "title": "Reverse-engineer required creative volume from spend targets",
+        "summary": "To know whether a Q4 revenue and spend target is achievable, model required creative volume from the spend plan and flag when creative, not budget, is the constraint.",
+        "use_when": "Setting Q4 revenue and ad-spend targets, or deciding how much creative the brand must produce to support planned peak-level spend.",
+        "steps": [
+          "Start from two inputs: your Q4 revenue expectations and your ad spend expectations. The source won't build the model without them — they are the necessary starting point.",
+          "Model required creative volume against that spend using your historical data. The source frames this as a data-driven estimate, not a guess, and gives the illustrative example that a specific target might imply 365 creatives.",
+          "If the required creative volume exceeds what you can produce, either reduce the spend target or increase production capacity and page/account capacity before the window.",
+          "Address the structural constraint directly: at higher spend levels, creative is the binding constraint, so adding budget without adding creative does not produce the target.",
+          "Score your offer against the target before the window: if you don't believe the offer can generate the outcome, say so and propose changes before everyone is committed.",
+          "Reconcile the offer, target and creative plan in the September/October planning cycle so production time is available."
+        ],
+        "caveats": [
+          "The 365-creative figure is an illustrative example from a specific model, not a benchmark for your store.",
+          "The model depends on the reliability of your historical creative-to-spend relationship, which varies by brand.",
+          "Extra Facebook pages to support more creative volume are subject to current platform policy — verify before assuming this route is available."
+        ],
+        "tags": [
+          "multi",
+          "creative-volume",
+          "black-friday",
+          "campaign-planning",
+          "acquisition",
+          "meta-ads",
+          "measurement"
+        ]
+      },
+      {
+        "title": "Use the cheap post-peak window for a Q5 offer",
+        "summary": "From roughly December 16 the auction gets the cheapest it ever is, making it a window where a Q5 offer can capture demand at low CPMs after gifting pressure fades.",
+        "use_when": "Deciding whether to run a post-Christmas Q5 promotion or whether to keep spending through early December's still-expensive window.",
+        "steps": [
+          "Plan the calendar in three zones: the expensive peak window (Black Friday/Cyber Monday), early December (still expensive because gifting demand stays high around Dec 1–16), and the cheap window that begins around December 16.",
+          "Treat the cheap window as an opportunity: CPMs there are the lowest of the cycle, so incremental spend can be efficient.",
+          "If a Q5 offer is relevant to your catalog, workshop it in advance — the source suggests brands raise interest early so the offer, creative and messaging can be built before the window opens.",
+          "Don't pull spend out of early December thinking it's post-peak; gifting demand and pressure typically persist through mid-month.",
+          "Pair a Q5 offer with the cheapest CPMs to reach audiences you couldn't affordably reach during the peak.",
+          "Verify the exact cheap-window start against your own category's demand pattern; the source gives a heuristic date, not a guarantee."
+        ],
+        "caveats": [
+          "The December 16 date is a source-provided heuristic; actual auction dynamics vary by category and year.",
+          "A Q5 offer only works if the catalog and margin support it; not every store should run one."
+        ],
+        "tags": [
+          "multi",
+          "black-friday",
+          "offer-design",
+          "budget-pacing",
+          "acquisition",
+          "campaign-planning",
+          "q5"
+        ]
+      },
+      {
+        "title": "Don't carry last year's CPMs into this year's forecast",
+        "summary": "Use 2025 as a caution, not a baseline: the source expects higher CPMs into a weaker consumer, so plan Q4 forecasts around more expensive media and softer demand.",
+        "use_when": "Building Q4 revenue and spend forecasts, or setting efficiency and scaling expectations for the upcoming Black Friday.",
+        "steps": [
+          "Treat the prior year's CPM levels as misleading baseline data rather than a forecast input. The source expects this year's CPMs to be materially higher and doubts they will return to last year's lows.",
+          "Combine the two factors explicitly in your forecast: higher media costs and a weaker consumer. The source frames going at higher CPMs into softer demand as the core planning risk.",
+          "Set lower efficiency expectations before the window rather than adjusting during it, since the scaling plan depends on hitting the marginal-returns thresholds.",
+          "Build the forecast from your own spend, offer and margin data, and treat the source's numbers as directional context rather than a benchmark.",
+          "Use scenario planning (a higher-CPM case and a softer-demand case) rather than a single point forecast, so the scaling rules have room to act."
+        ],
+        "caveats": [
+          "This is the source's expectation, not a measured outcome; CPMs and consumer conditions vary by category and region.",
+          "No specific CPM increase percentage is given, so do not invent one.",
+          "Forecast inputs should still be validated against your own account's actual Q4 trends as the window develops."
+        ],
+        "tags": [
+          "multi",
+          "measurement",
+          "black-friday",
+          "campaign-planning",
+          "cpm",
+          "forecasting",
+          "acquisition"
+        ]
+      },
+      {
+        "title": "Roll multiple offers instead of one static Black Friday offer",
+        "summary": "Rolling through several offers across the Q4 window prevents offer fatigue and preserves an offer ladder you can react with if the original trade underperforms.",
+        "use_when": "Designing the Black Friday through Cyber Monday promotion schedule and building the creative plan that depends on knowing the offer.",
+        "steps": [
+          "Plan an offer ladder — a sequence of offers across the window — rather than a single fixed Black Friday promotion.",
+          "Map offers to the creative phases: teaser/early access, launch, mid-sale refresh, and final 24–48 hour scarcity/deadline messaging.",
+          "Lock the offers before producing creative, since you cannot make launch or scarcity assets without knowing the offer.",
+          "Build in flexibility so the offer can be switched reactively if trade underperforms expectations; that requires the ladder to exist in advance.",
+          "Use the offer ladder as an input to the CAC and break-even modeling, because discount depth changes required ROAS.",
+          "Test whether offer switching is worth the operational cost for your brand; not every promo calendar needs multiple changes."
+        ],
+        "caveats": [
+          "Offer fatigue prevention is the source's rationale, not a measured result; the trade-off between freshness and operational complexity is brand-specific.",
+          "Switching offers late can require creative that isn't ready — build the assets before the window, not after the decision."
+        ],
+        "tags": [
+          "multi",
+          "offer-design",
+          "black-friday",
+          "merchandising",
+          "creative-strategy",
+          "pricing",
+          "campaign-planning"
+        ]
+      },
+      {
+        "title": "Judge spend on marginal returns, not average returns",
+        "summary": "Scale only where marginal returns are positive; do not spend just because the average ROAS or contribution margin still looks acceptable.",
+        "use_when": "Making incremental budget decisions during Q4, especially when deciding whether to keep pushing spend into the most expensive days.",
+        "steps": [
+          "Separate marginal from average: an account can hold a healthy average ROAS while a new increment of spend loses money, so use marginal reads for the decision.",
+          "Use the three-day rolling marginal contribution margin as the primary signal; improve for three days, scale; flat, hold; two consecutive poor reads, decrease.",
+          "Refuse to spend where marginal returns aren't there, even if the account average is fine. The source is explicit: don't spend unless marginal returns are present.",
+          "Let the pacing sheet set the shape of the spend, and the marginal-returns rule set the size of the adjustments.",
+          "Apply the same marginal logic to individual campaign or ad set decisions at whatever aggregation level survives the attribution noise.",
+          "Revisit the marginal thresholds if the break-even ROAS has moved due to discount depth."
+        ],
+        "caveats": [
+          "This is the source's recommendation, not a universal rule; some brands accept negative marginal returns during key sale days for strategic reasons, and that trade-off should be explicit.",
+          "Marginal reads require enough spend per period to be statistically meaningful; very small accounts may not get clean signals."
+        ],
+        "tags": [
+          "multi",
+          "measurement",
+          "budget-pacing",
+          "conversion-optimization",
+          "media-buying",
+          "black-friday",
+          "roas"
+        ]
+      },
+      {
+        "title": "Stand up a separate November CAC allowance",
+        "summary": "Set a Q4-specific CAC target that reflects November cohort quality and discount compression, rather than carrying your normal allowance into Black Friday.",
+        "use_when": "Setting Q4 acquisition efficiency targets and deciding how much you can pay for a November customer.",
+        "steps": [
+          "Start from the November cohort repeat behavior (see the cohort-LTV check) to decide whether November customers are worth materially less in your business.",
+          "Adjust the CAC allowance for discount compression, since gross profit per order falls while discount depth rises.",
+          "Model discount depth against your own margin and elasticity to decide where the CAC allowance should move further and what scaling potential remains. This requires knowing your offers.",
+          "If November customers behave like your normal-month customers, keep the CAC allowance unchanged; the source says everything else in the plan stays the same.",
+          "If November customers are materially worse, be conservative and lower the allowance — the source describes most default allowances as wrong twice when discount and LTV are both ignored.",
+          "Review the allowance as offers firm up, since it moves with the actual discount you decide to run."
+        ],
+        "caveats": [
+          "The adjustment size is brand-specific; there is no universal percentage reduction to apply.",
+          "Elasticity assumptions may not hold; treat the modeled scaling potential as a hypothesis.",
+          "Requires both cohort data and gross margin visibility, which some brands won't have."
+        ],
+        "tags": [
+          "multi",
+          "measurement",
+          "acquisition",
+          "black-friday",
+          "ltv",
+          "pricing",
+          "roas"
+        ]
+      },
+      {
+        "title": "Treat Q4 attribution and LTV as reporting problems you must correct before forecasting",
+        "summary": "Q4 planning is only credible when you first correct reporting bias and cohort value, then model creative and spend against the corrected targets.",
+        "use_when": "Building the Q4 forecast and scaling plan end to end, and deciding which inputs you need from the business before modeling.",
+        "steps": [
+          "Get two inputs from the business first: the offer (and offer ladder) and the revenue/spend expectations, even if roughly stated. Without these the model can't start.",
+          "Correct the reporting basis: apply an attribution multiplier derived from prior-year 7-day vs 1-day click analysis so early spend isn't understated and the peak isn't flattered.",
+          "Correct the customer-value basis: use November cohort repeat data to set a November-specific CAC allowance.",
+          "Correct the margin basis: model discount depth against gross margin to derive the true break-even ROAS for the window.",
+          "Then model required creative volume from the corrected spend target and check the scaling plan against the pacing sheet.",
+          "Present the reality back: if the offer can't support the target, say so and propose changes rather than accepting an unachievable plan."
+        ],
+        "caveats": [
+          "This is a planning framework, not a guarantee of results; each correction depends on data quality you may not have.",
+          "Forecasts built on assumptions should be revisited as Q4 data accumulates."
+        ],
+        "tags": [
+          "multi",
+          "campaign-planning",
+          "measurement",
+          "black-friday",
+          "attribution",
+          "ltv",
+          "margin",
+          "forecasting"
+        ]
+      }
+    ]
+  },
+  "raw_content": "{\"cards\": [{\"title\": \"Judge Q4 creative at ad set level, not ad level\", \"summary\": \"During Black Friday, ROAS is unreliable at ad level because of multi-touch optimization plus last-click attribution; evaluate creative at ad set level instead.\", \"use_when\": \"Deciding which Q4/Black Friday creatives to scale, pause or refresh when ad-level ROAS looks noisy or contradictory across the account.\", \"steps\": [\"Recognize that ROAS degrades during the Q4 window: you are running multi-touch optimization but reporting on last-click attribution, so ad-level numbers are even more broken than usual. The source treats this as a general rule that matters more at Black Friday.\", \"Pull the account's historical CPC-vs-ROAS or spend-vs-ROAS correlation for prior periods. The source notes R-squared is very low and the data is muddy, meaning CPCs and core KPIs often do not track each other reliably.\", \"Because of that, judge creative performance at the ad set level rather than the ad level during the sale window. Ad set level aggregates enough signal to survive the attribution noise.\", \"Treat the ROAS number during Black Friday as directional rather than precise, and lean more heavily on the supplementary metrics (CPC, CPM, spend pacing, contribution margin) that remain more stable.\", \"Flag that Meta's breakdown effect compounds the unreliability of ad-level ROAS, so don't make pause/scale calls on a single ad's ROAS reading.\", \"Verify the current Meta reporting interface and attribution options before acting, since breakdown behavior and available windows change.\"], \"caveats\": [\"This is a source-specific recommendation, not a platform rule; the reliability gap still exists the rest of the year, it just worsens during the sale window.\", \"Even ad set level numbers can be distorted if the account structure is unusual or spend is very concentrated.\", \"LTV/CAC and contribution margin remain the underlying truth metrics when ROAS is unreliable.\"], \"tags\": [\"multi\", \"conversion-optimization\", \"measurement\", \"creative-strategy\", \"black-friday\", \"meta-ads\", \"attribution\"]}, {\"title\": \"Creative is a CPM lever — build volume and diversity to win the auction\", \"summary\": \"Source data shows better creative quality, diversity and volume are qualitatively tied to lower CPMs, so treat creative as your main CPM control during the expensive Q4 window.\", \"use_when\": \"Planning Q4 creative inventory or trying to control rising CPMs during the Black Friday auction when media is materially more expensive.\", \"steps\": [\"Reframe the mental model: creative is a CPM lever, not a conversion lever. In Q4 your biggest controllable cost input is often how efficiently your creative wins auctions.\", \"Look at your own account's historical relationship between creative volume/diversity and CPM. The source found a qualitative relationship in last year's Black Friday data: accounts with more diverse and higher-volume creative pushed CPMs down.\", \"Hypothesize why: with more creative variety, you have more opportunities to win auctions and accrue more impressions, which likely explains the CPM benefit.\", \"Set a creative volume target from forecast spend, not from a fixed number of ads. During the September planning window, estimate required creative volume for your target spend and check whether you have enough Facebook pages or ad accounts to support that volume.\", \"Phase that inventory across the sale: before-launch/teaser/early-access, launch, mid-sale refresh, and final 24–48 hour scarcity/deadline messaging.\", \"Recognize that in Q4 creative volume, not budget, becomes the binding constraint at higher spend levels.\"], \"caveats\": [\"The correlation is qualitative, not a controlled causal proof; the source itself attributes the relationship to higher impression volume winning more auctions.\", \"Do not assume the same CPM benefit at any spend level; it is a directional pattern from a specific dataset.\", \"Facebook page/account limits and Meta policies change; verify current platform rules before scaling page count.\"], \"tags\": [\"multi\", \"creative-strategy\", \"black-friday\", \"acquisition\", \"cpm\", \"meta-ads\", \"creative-volume\"]}, {\"title\": \"Phase creative across the Black Friday window\", \"summary\": \"Build Q4 creative as a scheduled sequence: teaser/early access to launch to mid-sale refresh to final scarcity, so creative matches the demand curve rather than running one static set.\", \"use_when\": \"Planning and scheduling Q4 creative production and launches so the store isn't running the same assets from early November through Cyber Monday.\", \"steps\": [\"Split your Q4 creative plan into phases: (1) before-launch teaser and early-access content, (2) launch content, (3) mid-sale refresh, (4) final 24–48 hour scarcity and deadline messaging.\", \"Produce assets for each phase before the window starts; the source treats this as table stakes but stresses the production load falls on the brand.\", \"During the November 17–December 2 peak, refresh creative on schedule based on the mid-sale refresh point and the final 24–48 hour deadline push, rather than reacting only when performance drops.\", \"Use the phased structure to also prevent offer fatigue by rolling through multiple offers rather than one static offer across the whole window.\", \"Lock offers before making creative, since you cannot produce launch/scarcity assets until you know the offer.\", \"Coordinate the phase boundaries with your actual sale calendar (Black Friday, Cyber Monday, and the cheaper post-peak window) so the last phase lands inside the true deadline period.\"], \"caveats\": [\"The exact phase timing depends on your own sale calendar and offer ladder; the source gives the sequence, not fixed dates for each phase.\", \"Creative production capacity is the limiter — if you can't produce all phases, prioritize launch and final 24–48 hour deadline assets.\"], \"tags\": [\"multi\", \"creative-strategy\", \"black-friday\", \"merchandising\", \"offer-design\", \"campaign-planning\"]}, {\"title\": \"Model November cohort LTV before setting CAC tolerance\", \"summary\": \"November-acquired customers often repeat substantially worse than February cohorts, so check your own cohort data before carrying the same CAC allowance into Black Friday.\", \"use_when\": \"Setting Q4 CAC targets, ad efficiency goals, or aggressive spend allowances during the Black Friday window.\", \"steps\": [\"Pull 6-month repeat-rate cohort data for November-acquired customers versus a normal month (the source used February as the comparison) for the last two years.\", \"In the source's 10-brand sample, the November cohort delivered an average 38.5% 6-month repeat lift versus 63% for February — roughly half — but two of the ten brands showed no difference at all. So this is a per-brand question, not an assumption.\", \"If November customers are materially worse, tighten CAC tolerance for the Q4 window and expect lower 12-month LTV from those customers.\", \"If there is no difference in your data, keep CAC tolerance unchanged; the source explicitly says nothing else in the plan needs to change in that case.\", \"Where the difference is real, adjust efficiency targets on two fronts: (a) discount compression of gross profit, and (b) reduced lifetime value of the acquired cohort. The source describes the default CAC allowance as 'wrong twice' if both are ignored.\"], \"caveats\": [\"The 50%/63%/38.5% figures are an average across one specific client portfolio, not a benchmark for your store.\", \"Two of the ten brands showed identical November/February behavior, so do not assume your November cohort is worse.\", \"This depends on reliable cohort tracking; if you don't have it, treat the assumption as unverified.\"], \"tags\": [\"multi\", \"retention\", \"measurement\", \"black-friday\", \"ltv\", \"customer-research\", \"pricing\"]}, {\"title\": \"Recompute break-even ROAS after discounting compresses gross margin\", \"summary\": \"Discount depth raises required break-even ROAS exponentially because gross profit per order falls, so re-model targets before committing to Q4 promo depth.\", \"use_when\": \"Choosing a Black Friday discount depth or setting the ROAS/contribution-margin target that acquisition spend is measured against during the sale.\", \"steps\": [\"Take your normal break-even ROAS and gross margin. The source's example: if you break even at 2x at normal margin and then discount 40%, your break-even ROAS moves to roughly 4.5x because gross profit per order compresses.\", \"Increase required ROAS exponentially with discount depth, not linearly. Deeper discounts move the target further and faster than intuition suggests.\", \"Model this using your actual gross margin numbers and your actual discount. The source notes it cannot compute the target without visibility into margin and discount.\", \"Carry the adjusted ROAS target into your scaling rules — do not judge Q4 ad performance against normal-period efficiency targets.\", \"Layer this on top of any November-cohort LTV adjustment as a separate correction; the source treats discount compression and customer-quality as two distinct adjustments.\", \"Combine the modeled break-even with your own elasticity assumptions to decide how deep a discount your CAC allowance can tolerate.\"], \"caveats\": [\"The 2x → 4.5x example is illustrative math for a 40% discount, not a universal formula; results depend on your margin structure.\", \"Elasticity is assumed, not derived in the source — treat higher discount as a hypothesis to test rather than a guaranteed revenue lift.\", \"Requires accurate gross margin and discount data; without it, the model cannot be built.\"], \"tags\": [\"multi\", \"pricing\", \"measurement\", \"black-friday\", \"offer-design\", \"margin\", \"roas\"]}, {\"title\": \"Scale on three-day rolling marginal returns, not daily averages\", \"summary\": \"Write scaling rules that act on three-day rolling marginal contribution and require consecutive poor reads before cutting, so you don't overreact to noisy holiday days.\", \"use_when\": \"Running day-to-day Q4 budget and bid decisions during the Black Friday/Cyber Monday peak, especially when daily numbers swing wildly.\", \"steps\": [\"Write the scaling rules down before the window starts, so decisions during the sale follow a pre-committed plan instead of live emotion.\", \"Use three-day rolling marginal averages as the default read, rather than day-over-day. Sometimes the source uses day-to-day based on total spend and how fast spend is moving in the pacing sheet.\", \"Rule up: if marginal contribution margin is improving over the three-day rolling window, increase spend and scale.\", \"Rule hold: if marginal returns are flat, do nothing.\", \"Rule down: if there are two consecutive poor reads, decrease spend.\", \"Do not read daily performance against an 8:00 a.m. morning target during the peak window; the source explicitly warns against this during Nov 17–Dec 2.\", \"Apply the pacing sheet as the budget yardstick during the peak, since holiday hours distort daily comparisons.\"], \"caveats\": [\"Three-day rolling is a source-specific default; brands with very high or very low spend may need a different window.\", \"Marginal returns — not averages — should drive spend decisions; do not spend if the marginal return isn't there.\", \"The rules require a pacing sheet with hourly revenue and spend curves from prior years to be meaningful.\"], \"tags\": [\"multi\", \"measurement\", \"black-friday\", \"budget-pacing\", \"conversion-optimization\", \"media-buying\", \"campaign-planning\"]}, {\"title\": \"Build a Black Friday pacing sheet from prior-year hourly curves\", \"summary\": \"Pull last year's hourly revenue and spend curves into a pacing sheet so budget decisions during the sale reference actual intraday patterns rather than flat daily targets.\", \"use_when\": \"Preparing the operational budget-control tool for the Black Friday through Cyber Monday window, before committing spend schedules.\", \"steps\": [\"Pull last year's hourly revenue and spend curves for the sale period; the source treats this as an early September task.\", \"Build a pacing sheet that maps expected spend against expected revenue by time block, so you can see whether current spend is ahead or behind where it should be.\", \"Use the pacing sheet as the primary budget yardstick during Nov 17–Dec 2 rather than fixed daily caps.\", \"Attach the scaling rules to the pacing sheet — three-day rolling marginal contribution improvement, no action when flat, and decrease after two consecutive poor reads.\", \"Plan an attribution multiplier into the sheet because early spend is understated and the Black Friday weekend is flattered by last-click reporting; the source treats this bias as significant.\", \"Do not read daily performance against an 8:00 a.m. target during the peak; hourly and rolling reads are more informative.\"], \"caveats\": [\"Hourly curves from prior years may not transfer cleanly if your promotion timing or offer structure changes.\", \"The sheet is only as useful as its attribution adjustment; without one, early spend will look worse and the peak will look better than reality.\"], \"tags\": [\"multi\", \"measurement\", \"black-friday\", \"budget-pacing\", \"analytics\", \"campaign-planning\"]}, {\"title\": \"Front-load preseason spend (roughly a third of Q4 budget in Sep–Oct)\", \"summary\": \"Source data suggests 31–43% of the September-to-December budget should sit in September and October, so fund preseason rather than saving everything for the peak.\", \"use_when\": \"Deciding how to allocate Q4 budget between preseason (September/October), the Black Friday/Cyber Monday peak, and the post-peak cheap window.\", \"steps\": [\"Use the source's observed range — 31–43% of the September-to-December budget — as a starting point for preseason spend, and adjust based on your own sales calendar and offer ladder.\", \"Fund preseason for concrete purposes: building creative delivery data before the peak, ramping Google spend early, dialing in offers, and having an offer ladder ready if you need to switch offers reactively during the sale.\", \"Use the accumulation of delivery data to decide which creative to press into during the peak rather than launching it cold on Black Friday.\", \"Be deliberate with early Google ramps; the source flags the need for care while increasing spend there.\", \"Plan an offer ladder, not a single fixed Black Friday offer, so you can switch during the window in response to trade.\", \"Model preseason as spend that enables the peak, not as separate branding spend — its payoff is peak-window efficiency.\"], \"caveats\": [\"The 31–43% range is an observation from the source's own data, not a universal target; brands with different seasonality will differ.\", \"Over-investing preseason without enough creative to deliver it just inflates spend without building useful delivery data.\"], \"tags\": [\"multi\", \"budget-pacing\", \"black-friday\", \"campaign-planning\", \"offer-design\", \"acquisition\", \"google-ads\"]}, {\"title\": \"Apply an attribution multiplier to correct Q4 reporting bias\", \"summary\": \"Q4 reporting understates early spend and flatters the Black Friday weekend; use historical click-window analysis to build an attribution multiplier rather than trusting raw numbers.\", \"use_when\": \"Forecasting Q4 performance or judging whether a given spend level is working in the run-up to and during Black Friday.\", \"steps\": [\"Recognize the structural bias before building any forecast: last-click reporting understates spend earlier in the window and flatters the Black Friday weekend itself.\", \"In October, run the 7-day-click vs 1-day-click historical analysis to estimate how much you underspent last year and what attribution multiplier to apply to in-period performance.\", \"Apply a post-treatment window adjustment to the numbers so early-window performance is judged on the same basis as the peak.\", \"Use the adjusted reads when making scaling decisions — otherwise you will cut spend too early because the raw number looks worse than it is.\", \"Treat this as an ongoing discussion during October, since the multiplier depends on how attribution behaves in your account.\", \"Verify the current attribution window options in your ad platform before relying on any specific window setting.\"], \"caveats\": [\"The required multiplier is account-specific; there is no universal value.\", \"Attribution windows and defaults change over time; confirm current settings before recomputing.\", \"This corrects reporting bias, not economic reality — you still need the margin and LTV adjustments as separate corrections.\"], \"tags\": [\"multi\", \"measurement\", \"attribution\", \"black-friday\", \"analytics\", \"roas\", \"campaign-planning\"]}, {\"title\": \"Reverse-engineer required creative volume from spend targets\", \"summary\": \"To know whether a Q4 revenue and spend target is achievable, model required creative volume from the spend plan and flag when creative, not budget, is the constraint.\", \"use_when\": \"Setting Q4 revenue and ad-spend targets, or deciding how much creative the brand must produce to support planned peak-level spend.\", \"steps\": [\"Start from two inputs: your Q4 revenue expectations and your ad spend expectations. The source won't build the model without them — they are the necessary starting point.\", \"Model required creative volume against that spend using your historical data. The source frames this as a data-driven estimate, not a guess, and gives the illustrative example that a specific target might imply 365 creatives.\", \"If the required creative volume exceeds what you can produce, either reduce the spend target or increase production capacity and page/account capacity before the window.\", \"Address the structural constraint directly: at higher spend levels, creative is the binding constraint, so adding budget without adding creative does not produce the target.\", \"Score your offer against the target before the window: if you don't believe the offer can generate the outcome, say so and propose changes before everyone is committed.\", \"Reconcile the offer, target and creative plan in the September/October planning cycle so production time is available.\"], \"caveats\": [\"The 365-creative figure is an illustrative example from a specific model, not a benchmark for your store.\", \"The model depends on the reliability of your historical creative-to-spend relationship, which varies by brand.\", \"Extra Facebook pages to support more creative volume are subject to current platform policy — verify before assuming this route is available.\"], \"tags\": [\"multi\", \"creative-volume\", \"black-friday\", \"campaign-planning\", \"acquisition\", \"meta-ads\", \"measurement\"]}, {\"title\": \"Use the cheap post-peak window for a Q5 offer\", \"summary\": \"From roughly December 16 the auction gets the cheapest it ever is, making it a window where a Q5 offer can capture demand at low CPMs after gifting pressure fades.\", \"use_when\": \"Deciding whether to run a post-Christmas Q5 promotion or whether to keep spending through early December's still-expensive window.\", \"steps\": [\"Plan the calendar in three zones: the expensive peak window (Black Friday/Cyber Monday), early December (still expensive because gifting demand stays high around Dec 1–16), and the cheap window that begins around December 16.\", \"Treat the cheap window as an opportunity: CPMs there are the lowest of the cycle, so incremental spend can be efficient.\", \"If a Q5 offer is relevant to your catalog, workshop it in advance — the source suggests brands raise interest early so the offer, creative and messaging can be built before the window opens.\", \"Don't pull spend out of early December thinking it's post-peak; gifting demand and pressure typically persist through mid-month.\", \"Pair a Q5 offer with the cheapest CPMs to reach audiences you couldn't affordably reach during the peak.\", \"Verify the exact cheap-window start against your own category's demand pattern; the source gives a heuristic date, not a guarantee.\"], \"caveats\": [\"The December 16 date is a source-provided heuristic; actual auction dynamics vary by category and year.\", \"A Q5 offer only works if the catalog and margin support it; not every store should run one.\"], \"tags\": [\"multi\", \"black-friday\", \"offer-design\", \"budget-pacing\", \"acquisition\", \"campaign-planning\", \"q5\"]}, {\"title\": \"Don't carry last year's CPMs into this year's forecast\", \"summary\": \"Use 2025 as a caution, not a baseline: the source expects higher CPMs into a weaker consumer, so plan Q4 forecasts around more expensive media and softer demand.\", \"use_when\": \"Building Q4 revenue and spend forecasts, or setting efficiency and scaling expectations for the upcoming Black Friday.\", \"steps\": [\"Treat the prior year's CPM levels as misleading baseline data rather than a forecast input. The source expects this year's CPMs to be materially higher and doubts they will return to last year's lows.\", \"Combine the two factors explicitly in your forecast: higher media costs and a weaker consumer. The source frames going at higher CPMs into softer demand as the core planning risk.\", \"Set lower efficiency expectations before the window rather than adjusting during it, since the scaling plan depends on hitting the marginal-returns thresholds.\", \"Build the forecast from your own spend, offer and margin data, and treat the source's numbers as directional context rather than a benchmark.\", \"Use scenario planning (a higher-CPM case and a softer-demand case) rather than a single point forecast, so the scaling rules have room to act.\"], \"caveats\": [\"This is the source's expectation, not a measured outcome; CPMs and consumer conditions vary by category and region.\", \"No specific CPM increase percentage is given, so do not invent one.\", \"Forecast inputs should still be validated against your own account's actual Q4 trends as the window develops.\"], \"tags\": [\"multi\", \"measurement\", \"black-friday\", \"campaign-planning\", \"cpm\", \"forecasting\", \"acquisition\"]}, {\"title\": \"Roll multiple offers instead of one static Black Friday offer\", \"summary\": \"Rolling through several offers across the Q4 window prevents offer fatigue and preserves an offer ladder you can react with if the original trade underperforms.\", \"use_when\": \"Designing the Black Friday through Cyber Monday promotion schedule and building the creative plan that depends on knowing the offer.\", \"steps\": [\"Plan an offer ladder — a sequence of offers across the window — rather than a single fixed Black Friday promotion.\", \"Map offers to the creative phases: teaser/early access, launch, mid-sale refresh, and final 24–48 hour scarcity/deadline messaging.\", \"Lock the offers before producing creative, since you cannot make launch or scarcity assets without knowing the offer.\", \"Build in flexibility so the offer can be switched reactively if trade underperforms expectations; that requires the ladder to exist in advance.\", \"Use the offer ladder as an input to the CAC and break-even modeling, because discount depth changes required ROAS.\", \"Test whether offer switching is worth the operational cost for your brand; not every promo calendar needs multiple changes.\"], \"caveats\": [\"Offer fatigue prevention is the source's rationale, not a measured result; the trade-off between freshness and operational complexity is brand-specific.\", \"Switching offers late can require creative that isn't ready — build the assets before the window, not after the decision.\"], \"tags\": [\"multi\", \"offer-design\", \"black-friday\", \"merchandising\", \"creative-strategy\", \"pricing\", \"campaign-planning\"]}, {\"title\": \"Judge spend on marginal returns, not average returns\", \"summary\": \"Scale only where marginal returns are positive; do not spend just because the average ROAS or contribution margin still looks acceptable.\", \"use_when\": \"Making incremental budget decisions during Q4, especially when deciding whether to keep pushing spend into the most expensive days.\", \"steps\": [\"Separate marginal from average: an account can hold a healthy average ROAS while a new increment of spend loses money, so use marginal reads for the decision.\", \"Use the three-day rolling marginal contribution margin as the primary signal; improve for three days, scale; flat, hold; two consecutive poor reads, decrease.\", \"Refuse to spend where marginal returns aren't there, even if the account average is fine. The source is explicit: don't spend unless marginal returns are present.\", \"Let the pacing sheet set the shape of the spend, and the marginal-returns rule set the size of the adjustments.\", \"Apply the same marginal logic to individual campaign or ad set decisions at whatever aggregation level survives the attribution noise.\", \"Revisit the marginal thresholds if the break-even ROAS has moved due to discount depth.\"], \"caveats\": [\"This is the source's recommendation, not a universal rule; some brands accept negative marginal returns during key sale days for strategic reasons, and that trade-off should be explicit.\", \"Marginal reads require enough spend per period to be statistically meaningful; very small accounts may not get clean signals.\"], \"tags\": [\"multi\", \"measurement\", \"budget-pacing\", \"conversion-optimization\", \"media-buying\", \"black-friday\", \"roas\"]}, {\"title\": \"Stand up a separate November CAC allowance\", \"summary\": \"Set a Q4-specific CAC target that reflects November cohort quality and discount compression, rather than carrying your normal allowance into Black Friday.\", \"use_when\": \"Setting Q4 acquisition efficiency targets and deciding how much you can pay for a November customer.\", \"steps\": [\"Start from the November cohort repeat behavior (see the cohort-LTV check) to decide whether November customers are worth materially less in your business.\", \"Adjust the CAC allowance for discount compression, since gross profit per order falls while discount depth rises.\", \"Model discount depth against your own margin and elasticity to decide where the CAC allowance should move further and what scaling potential remains. This requires knowing your offers.\", \"If November customers behave like your normal-month customers, keep the CAC allowance unchanged; the source says everything else in the plan stays the same.\", \"If November customers are materially worse, be conservative and lower the allowance — the source describes most default allowances as wrong twice when discount and LTV are both ignored.\", \"Review the allowance as offers firm up, since it moves with the actual discount you decide to run.\"], \"caveats\": [\"The adjustment size is brand-specific; there is no universal percentage reduction to apply.\", \"Elasticity assumptions may not hold; treat the modeled scaling potential as a hypothesis.\", \"Requires both cohort data and gross margin visibility, which some brands won't have.\"], \"tags\": [\"multi\", \"measurement\", \"acquisition\", \"black-friday\", \"ltv\", \"pricing\", \"roas\"]}, {\"title\": \"Treat Q4 attribution and LTV as reporting problems you must correct before forecasting\", \"summary\": \"Q4 planning is only credible when you first correct reporting bias and cohort value, then model creative and spend against the corrected targets.\", \"use_when\": \"Building the Q4 forecast and scaling plan end to end, and deciding which inputs you need from the business before modeling.\", \"steps\": [\"Get two inputs from the business first: the offer (and offer ladder) and the revenue/spend expectations, even if roughly stated. Without these the model can't start.\", \"Correct the reporting basis: apply an attribution multiplier derived from prior-year 7-day vs 1-day click analysis so early spend isn't understated and the peak isn't flattered.\", \"Correct the customer-value basis: use November cohort repeat data to set a November-specific CAC allowance.\", \"Correct the margin basis: model discount depth against gross margin to derive the true break-even ROAS for the window.\", \"Then model required creative volume from the corrected spend target and check the scaling plan against the pacing sheet.\", \"Present the reality back: if the offer can't support the target, say so and propose changes rather than accepting an unachievable plan.\"], \"caveats\": [\"This is a planning framework, not a guarantee of results; each correction depends on data quality you may not have.\", \"Forecasts built on assumptions should be revisited as Q4 data accumulates.\"], \"tags\": [\"multi\", \"campaign-planning\", \"measurement\", \"black-friday\", \"attribution\", \"ltv\", \"margin\", \"forecasting\"]}]}",
+  "input": {
+    "source_id": "1Y9a5rf6nghxCi7BesfDmjIUeCyMAbLJT",
+    "source_sha256": "e63f5bbaac0d5a44012e86189fceb29abc66c49da3c08e33826892b42faad095",
+    "source_name": "Black Friday 2026 Strategy_ Spend, Creative, Offers, Pacing.docx",
+    "folder": "/99-multi",
+    "domain": "multi",
+    "section": 2,
+    "section_count": 3,
+    "text": " is you pull up a graph, you put CPCs, you put spend, or you put CPCs and ROAS, like whatever you want to use as your core KPI, and you look is there any correlation between ROAS and CPC, and there isn't. It's very muddy data, there's very low R squared value. But, during Black Friday, you need to lean into these metrics more because ROAS becomes unreliable. You want to try your best to judge creative at the ad set level rather than the ad level. The reason for that is that you're going to have multi-touch optimization, but you're going to have last-click attribution. And so, it's going to get even worse due to Meta's breakdown effect, uh when you're looking at the reliability of ROAS at an ad level. Now, this is We say this all the time anyway. Like, we do this evergreen. It's just if you're looking at Black Friday, this becomes a little bit more important, and also plays into the structure that you're going to use. Creative is a CPM lever, not a conversion lever. This was really interesting in the data that we pulled, which is that when we reviewed last year's Black Friday data, we found a qualitative relationship between creative quality, diversity and volume, and CPM inflation.\n\n So, in a window where the auction is 72% more expensive, anytime we saw an ad account with better creative quality, measured by how diverse and how much volume, and ended up pushing CPMs down. Now, that is likely a function of there being a lot more impressions last year, and you win more auctions if you have more diverse creative and more of it. And so, that's probably why this was the case. You want to phase your creative across Black Friday. Almost everyone watching this should know this already, but has to go into the deck, which is that you want to have your build, so your before launch teaser early access content goes into the launch content, goes into a mid-sale refresh, goes into final 24 to 48-hour scarcity and deadline messaging. Now, the metric that is missing from the entire conversation is LTV to CAC. This is obviously our North Star, something that we'll look at on a month-by-month basis for brands. It's the core thing that we assess during the audit process. Why does this matter at all? Well, we've kind of talked about CAC this whole time, but we haven't talked about lifetime value. On lifetime value, November customers repeat as a generalization, as an average across our client portfolio, 50% worse. So, a November cohort does not behave at all like a February cohort. From the 10 client sample size that I went and pulled for this, cuz this was a pretty manual process, I averaged everyone's cohort data, and a November cohort delivered an average of 38.5% 6-month repeat lift. February cohort delivered 63%. So, nearly two times better. Very big caveat here. This is not the case for every brand. In fact, two of the brands that I looked at in this 10 sample size had no difference. November repeat rate lift identical to February repeat rate lift. So, you need to look at this for your individual business. Now, we'll do this. For all clients, we're going to look at uh repeat rate cohort lift for November for the last 2 years, and we'll see if there's a difference. If there's no difference, great. Doesn't change anything we've gone through. CAC tolerance remains the same, everything remains the same. If November customers are considerably worse, it does change a lot, because it means that our expectations on your CAC tolerance need to be more conservative, because these are fundamentally worse quality customers. So, your CAC allowance is wrong twice if that's the case. Firstly, most people don't include the discount in their CAC allowance, and so their gross profit per order assumes business as usual and it doesn't. So, obviously we need to adjust all KPIs based on discounting and gross margin compression. And then number two is that the customers that you acquired are worth less over an annual LTV. And so, we need to substantially change whatever your efficiency targets are during this period. Discounting obviously needs to move your target. This is pretty obvious, but as you increase discount depth, which is on the x-axis here, your required return on ad spend to either break even or to hit a particular contribution margin target or a ROAS target, it increases exponentially due to the uh compression in GP. So, if you were breaking even previously at a two, but you discount by 40%, your break even ROAS is now a 4.5. So, we need to model this, which we do for all brands, but it requires you telling us what your discount is and what your gross margin numbers are. If we don't have visibility over your gross margin, if we don't have visibility over the discount and how that's affecting gross margin, then we can't do this. And we won't be able to tell you what your efficiency should be cuz we don't know. We can't model it. There is 75 days to Black Friday by the time you're watching this video, there's probably going to be about 70 days to Black Friday. Here's what you should be doing. Number one, write the scaling rules down. Now, we'll work on this with you, but we typically will scale based on three-day rolling marginal averages. So, rather than scaling day to day, we'll scale on three-day rollings. Sometimes we'll do day to day based on total spend and how quickly spend is moving around in the pacing sheet. We'll set the pacing sheet up and we will set up rules. And so, on a three-day rolling, if we are marginally improving contribution margin three, we will increase and we will scale. If we are not, we will do nothing. If there are two consecutive reads that are poor, we will decrease. On the calendar, we have Black Friday, Cyber Monday. This is the expensive window, and then we have the cheap window. You want to be planning uh what your offers are actually going to roll through over this period. Generally, rolling through multiple offers is good because it allows you to prevent offer fatigue. Now through to the 30th of September, five things that we'll be working on uh we'll be pulling last year's hourly revenue and spend curves and we'll build out that pacing sheet. We will set a separate November CAC allowance based on your November cohort behavior, so we'll be looking at previous cohort performance. We will model discount depth against your own margin and elasticity to know where the CAC allowance should be changed further and what your scaling potential looks like. This requires you telling us what your offers are. Number four is we will model out our creative volume requirements and after that we'll tell you whether you need to have more Facebook pages to be able to support that kind of volume. Moving into October, we want to be funding preseason properly. Our data says that 31 to 43% of September to December budget should sit in October and September. Now we will start working on the 7-day click, 1-day click analysis of historical data to try to identify to try to identify how much you underspent last year and what the attribution multiplier is that we should put on performance during this period. So this will be an ongoing discussion as we do that analysis. We want to be measuring with a post-treatment window adjustment, which is exactly what I said we would just do. Build creative inventory required to hit daily peaks, so this is really on you. You need to be really working on building up as much creative as possible for that period based on what we estimate through September as the required creative volume. And then you want to lock in offers. We won't be able to do a lot of these things until we know what the offer actually is. And obviously you won't be able to make creative probably until you know what the offer is. Then you hit November through to the 16th, we want to be ramping up budgets on a schedule. We want to get creative live early enough to start accumulating delivery data so that we can press into it and we want to begin ramping Google spend and optimizing and preparing everything that's required on Google, but obviously being very careful there. From the 17th of November to the 2nd of December, we want to be judging budgets based on that pacing sheet. We're going to be likely judging on a 3-day rolling average. We want to be refreshing creative on schedule based on that mid-sale refresh and then the 24 to 48 hours of the sale left. And we do not want to be reading daily performance based on an 8:00 a.m. target. In December, early December stays expensive cuz there's still gifting and likely a lot of people continue pressing through that period while gifting and demand stays high. Then from December 16th, the auction gets the cheapest it ever is. So, that is a good opportunity to have a Q5 offer if that is something that you're interested. If it is, if it's something that you want to workshop with the team, please let us know. Just tell us that you're interested in Q5 sales and we can start workshopping what those ideas could be. The five core things to take away from this presentation is number one, this year there's going to be significantly more expensive media. CPMs will be higher. I highly doubt CPMs will be as low as they were last year. And we're going at higher CPMs into a weaker consumer. So, 2025 is a misleading baseline and I just encourage you to think about those two factors when you're going in with expectation and forecasting which we will work on alongside you. Number two is that your reporting will understate early spend and it will flatter the weekend or the Black Friday period. It's super biased and so we need to remove that by having attribution multiple applied which we will work on and we will present to you. Number three is we want to be scaling based on a marginal returns not averages and we wouldn't recommend spending unless marginal returns are there. Number four is the preseason needs more spend than you're currently giving it and the preseason is really important in prep for Google and creative and dialing in offers and having the offer ladder in case you are going to be reactive to trade and you want to switch the offer at the last minute. And then number five is that creative is the constraint at higher spend levels. And so we really need to understand what creative volume is going to be required to hit your spend and your targets. It's really important that all of this really comes from first, we need to know what is your offer and what is your revenue and spend expectations roughly. Like you don't have to tell us exactly what they are. We can model it ourselves, and we'll give you our own forecast, but we need those two things, and then we can start everything on our end. Because until we know roughly what you're looking to do in revenue and ad spend, and then what your offer is going to be, then we can go away and do our due diligence and say, \"Well, no, we don't believe that offer is going to generate that outcome. Here is what we would change. And okay, if we are going to do this, and if that is your expectation, well, we are going to require 365 creatives because of this data set and this model.\" So, we can do all this work and we present you with the reality and all the things that we need to do to be able to actually achieve your targets. Uh we just need the targets first. We need an idea of what's going on. And that is Black Friday 2026. Thanks for watching the video. Obviously, our team is going to be starting to work on all of these things over the course of the next few weeks. If you have any questions at all, uh please let the team know. Uh the team has been across this video way in advance of you ever receiving it. And good luck for Black Friday.",
+    "prior_notes": [],
+    "id": "fbb62bde42ca80cb9bbb76dc"
+  },
+  "system_prompt_sha256": "73b9b3269ca7ebc0cc91e8d1b21d23ade03fee8e9184303165139ea9178b5013"
+}

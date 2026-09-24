@@ -1,0 +1,1078 @@
+{
+  "batch": 44,
+  "request_id": "07c0cf7863426c8d8937e5c790d21a7708068764ecb89dbcd8a5de6dd9a2e78a",
+  "revision": "source-grounded-repair-v1",
+  "checked": {
+    "errors": [],
+    "candidates": [
+      {
+        "id": "91a30b0e50502dd3a35a1825f54018b03db143a0855e32fb97053752b41224c0",
+        "unit": {
+          "id": "b32d691ee3ae8c1451cea82bd8b506b99df85cd17619b3f655ab4e0a932ab76c",
+          "kind": "action",
+          "title": "Route each persona to a matching landing page and PDP",
+          "claim": {
+            "text": "The source says you cannot talk about menopause and muscle growth on the same landing page above the fold and must pick one persona, then drive each persona to a relevant PDP on separate landing pages.",
+            "quote": "we need to pick out a persona cuz we can't talk about menopause and muscle growth on the same landing page above the fold. Okay? We need to pick one. And so, we want to drive the menopause persona to a menopause related PDP that talks about all the benefits and speaks to that individual. And then we have a muscle building PDP. and we drive this two separate landing pages."
+          },
+          "action": {
+            "text": "Pick one persona per landing page and drive each persona to a persona-specific PDP.",
+            "quote": "we need to pick out a persona cuz we can't talk about menopause and muscle growth on the same landing page above the fold. Okay? We need to pick one."
+          },
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "Trying to put all information above the fold.",
+                "quote": "We want to get all that stuff above the fold."
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": [
+              {
+                "text": "Cannot discuss two personas such as menopause and muscle growth on the same landing page above the fold.",
+                "quote": "we can't talk about menopause and muscle growth on the same landing page above the fold"
+              }
+            ]
+          },
+          "completion": [],
+          "unknowns": [
+            "Criteria for choosing which persona to prioritize are not stated."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1wv9Trf2egAaS3LXa54YHIRZSTkcr6H8R",
+            "source_sha256": "33935f0073ec7c3281b3953817ec5913d9fd50c9b4a130d4c7b02c71b4c402b5",
+            "locator": "body:35/paragraph",
+            "start": 28554,
+            "end": 28928,
+            "quote": "we need to pick out a persona cuz we can't talk about menopause and muscle growth on the same landing page above the fold. Okay? We need to pick one. And so, we want to drive the menopause persona to a menopause related PDP that talks about all the benefits and speaks to that individual. And then we have a muscle building PDP. and we drive this two separate landing pages."
+          },
+          {
+            "field": "action",
+            "source_id": "1wv9Trf2egAaS3LXa54YHIRZSTkcr6H8R",
+            "source_sha256": "33935f0073ec7c3281b3953817ec5913d9fd50c9b4a130d4c7b02c71b4c402b5",
+            "locator": "body:35/paragraph",
+            "start": 28554,
+            "end": 28703,
+            "quote": "we need to pick out a persona cuz we can't talk about menopause and muscle growth on the same landing page above the fold. Okay? We need to pick one."
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1wv9Trf2egAaS3LXa54YHIRZSTkcr6H8R",
+            "source_sha256": "33935f0073ec7c3281b3953817ec5913d9fd50c9b4a130d4c7b02c71b4c402b5",
+            "locator": "body:35/paragraph",
+            "start": 28492,
+            "end": 28537,
+            "quote": "We want to get all that stuff above the fold."
+          },
+          {
+            "field": "exclusions.0",
+            "source_id": "1wv9Trf2egAaS3LXa54YHIRZSTkcr6H8R",
+            "source_sha256": "33935f0073ec7c3281b3953817ec5913d9fd50c9b4a130d4c7b02c71b4c402b5",
+            "locator": "body:35/paragraph",
+            "start": 28588,
+            "end": 28675,
+            "quote": "we can't talk about menopause and muscle growth on the same landing page above the fold"
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "b8b4d52e0a7f70173f73a47fc3ecb64195cfe0dcd26843b62207770a578e26dd",
+        "unit": {
+          "id": "8e71ff0451fe4c7b7c8a687a83cc305b72cabccfb170307cbc28d2f3d32f23cb",
+          "kind": "action",
+          "title": "Use a unique PDP for each distinct offer",
+          "claim": {
+            "text": "The source states that if the offer changes, you need a different PDP; bundles, single products, and different products each need a unique PDP.",
+            "quote": "Obviously, if you change the offer, you need to go to a different PDP because the offer is different, right? If you're doing like a bundle versus a single product versus a different product entirely, needs a unique PDP."
+          },
+          "action": {
+            "text": "Use a different PDP when the offer changes.",
+            "quote": "if you change the offer, you need to go to a different PDP"
+          },
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "The offer changes, such as bundle versus single product versus a different product.",
+                "quote": "if you change the offer"
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "No implementation details for creating the unique PDP."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1wv9Trf2egAaS3LXa54YHIRZSTkcr6H8R",
+            "source_sha256": "33935f0073ec7c3281b3953817ec5913d9fd50c9b4a130d4c7b02c71b4c402b5",
+            "locator": "body:35/paragraph",
+            "start": 28985,
+            "end": 29204,
+            "quote": "Obviously, if you change the offer, you need to go to a different PDP because the offer is different, right? If you're doing like a bundle versus a single product versus a different product entirely, needs a unique PDP."
+          },
+          {
+            "field": "action",
+            "source_id": "1wv9Trf2egAaS3LXa54YHIRZSTkcr6H8R",
+            "source_sha256": "33935f0073ec7c3281b3953817ec5913d9fd50c9b4a130d4c7b02c71b4c402b5",
+            "locator": "body:35/paragraph",
+            "start": 28996,
+            "end": 29054,
+            "quote": "if you change the offer, you need to go to a different PDP"
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1wv9Trf2egAaS3LXa54YHIRZSTkcr6H8R",
+            "source_sha256": "33935f0073ec7c3281b3953817ec5913d9fd50c9b4a130d4c7b02c71b4c402b5",
+            "locator": "body:35/paragraph",
+            "start": 28996,
+            "end": 29019,
+            "quote": "if you change the offer"
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "58e8097df407cc122c804122df185a7ad0a771f20332af39fa7dcbb00c371e59",
+        "unit": {
+          "id": "e46e524b72b38fb697abb84b31c3555740f0bad60976aff51020c154553a8c0f",
+          "kind": "action",
+          "title": "Keep the landing page angle consistent",
+          "claim": {
+            "text": "The source says you get better conversion rates and better continuity on the landing page if you keep the angle the same, even though multiple angles could be stacked.",
+            "quote": "generally you will get better conversion rates and better continuity on the landing page if you can keep the angle the same"
+          },
+          "action": {
+            "text": "Keep the landing page angle the same.",
+            "quote": "if you can keep the angle the same"
+          },
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "You are leaning into different unique mechanisms.",
+                "quote": "this is if we're leaning into different unique mechanisms"
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "No threshold for how much angle variation is acceptable."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1wv9Trf2egAaS3LXa54YHIRZSTkcr6H8R",
+            "source_sha256": "33935f0073ec7c3281b3953817ec5913d9fd50c9b4a130d4c7b02c71b4c402b5",
+            "locator": "body:35/paragraph",
+            "start": 29599,
+            "end": 29722,
+            "quote": "generally you will get better conversion rates and better continuity on the landing page if you can keep the angle the same"
+          },
+          {
+            "field": "action",
+            "source_id": "1wv9Trf2egAaS3LXa54YHIRZSTkcr6H8R",
+            "source_sha256": "33935f0073ec7c3281b3953817ec5913d9fd50c9b4a130d4c7b02c71b4c402b5",
+            "locator": "body:35/paragraph",
+            "start": 29688,
+            "end": 29722,
+            "quote": "if you can keep the angle the same"
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1wv9Trf2egAaS3LXa54YHIRZSTkcr6H8R",
+            "source_sha256": "33935f0073ec7c3281b3953817ec5913d9fd50c9b4a130d4c7b02c71b4c402b5",
+            "locator": "body:35/paragraph",
+            "start": 29269,
+            "end": 29326,
+            "quote": "this is if we're leaning into different unique mechanisms"
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "256626034f9a2120c8b0ad361c0557e20007a1a9d290e2e41a68b114746824d6",
+        "unit": {
+          "id": "c568eba48c311517164f1eb460316370f1d95d04f4a3f2d4ac7bd49ab7a0f2b7",
+          "kind": "action",
+          "title": "Use specificity over broad application on landing pages and ads",
+          "claim": {
+            "text": "The source recommends specificity over broad application anytime on a landing page and in an ad.",
+            "quote": "So, you want specificity over broad application anytime on a landing page and anytime in an ad."
+          },
+          "action": {
+            "text": "Use specificity over broad application on landing pages and in ads.",
+            "quote": "So, you want specificity over broad application anytime on a landing page and anytime in an ad."
+          },
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "No method for selecting the specific angle."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1wv9Trf2egAaS3LXa54YHIRZSTkcr6H8R",
+            "source_sha256": "33935f0073ec7c3281b3953817ec5913d9fd50c9b4a130d4c7b02c71b4c402b5",
+            "locator": "body:35/paragraph",
+            "start": 32034,
+            "end": 32129,
+            "quote": "So, you want specificity over broad application anytime on a landing page and anytime in an ad."
+          },
+          {
+            "field": "action",
+            "source_id": "1wv9Trf2egAaS3LXa54YHIRZSTkcr6H8R",
+            "source_sha256": "33935f0073ec7c3281b3953817ec5913d9fd50c9b4a130d4c7b02c71b4c402b5",
+            "locator": "body:35/paragraph",
+            "start": 32034,
+            "end": 32129,
+            "quote": "So, you want specificity over broad application anytime on a landing page and anytime in an ad."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "5715e132d7b98be305cfdf27f5564d1184668f83fc6bfe563e1e36c7fe6bee4e",
+        "unit": {
+          "id": "73b0deb828aec70319894350bb6c814086e0a521141abe2fc7965e05d00ae662",
+          "kind": "action",
+          "title": "Problem agitate into one specific person in ads",
+          "claim": {
+            "text": "The source says an ad listing all benefits won't do well; you need to problem agitate into one and talk to one specific person.",
+            "quote": "You need to problem agitate into one and talk to one specific person."
+          },
+          "action": {
+            "text": "Problem agitate into one specific problem and person in the ad.",
+            "quote": "You need to problem agitate into one and talk to one specific person."
+          },
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "Ad lists all product benefits.",
+                "quote": "an ad listing all these benefits isn't going to do well"
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "No guidance on choosing the single problem and person."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1wv9Trf2egAaS3LXa54YHIRZSTkcr6H8R",
+            "source_sha256": "33935f0073ec7c3281b3953817ec5913d9fd50c9b4a130d4c7b02c71b4c402b5",
+            "locator": "body:35/paragraph",
+            "start": 32192,
+            "end": 32261,
+            "quote": "You need to problem agitate into one and talk to one specific person."
+          },
+          {
+            "field": "action",
+            "source_id": "1wv9Trf2egAaS3LXa54YHIRZSTkcr6H8R",
+            "source_sha256": "33935f0073ec7c3281b3953817ec5913d9fd50c9b4a130d4c7b02c71b4c402b5",
+            "locator": "body:35/paragraph",
+            "start": 32192,
+            "end": 32261,
+            "quote": "You need to problem agitate into one and talk to one specific person."
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1wv9Trf2egAaS3LXa54YHIRZSTkcr6H8R",
+            "source_sha256": "33935f0073ec7c3281b3953817ec5913d9fd50c9b4a130d4c7b02c71b4c402b5",
+            "locator": "body:35/paragraph",
+            "start": 32135,
+            "end": 32190,
+            "quote": "an ad listing all these benefits isn't going to do well"
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "0175a939bbdcd1392709084f9a6a6f74f5ef05603cc592db010617e43491a37b",
+        "unit": {
+          "id": "5632f03d84cdb3954cd0dc4a7e88ed99fb8527f622c61dd3f757da2e3afbc3ee",
+          "kind": "warning",
+          "title": "Ad angle and PDP benefit list mismatch reduces trust",
+          "claim": {
+            "text": "The source describes that when an ad targets a specific problem and the PDP lists that benefit among many, consumers question whether the supplement will support their actual problem, and conversion worsens.",
+            "quote": "Do I trust that this supplement that apparently does a million things is going to support the one problem that I actually need it for?"
+          },
+          "action": null,
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "Ad targets one problem, but landing page says it solves everything.",
+                "quote": "But then the landing page is saying this is the solution to everything that exists on the planet."
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "No quantified conversion impact."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1wv9Trf2egAaS3LXa54YHIRZSTkcr6H8R",
+            "source_sha256": "33935f0073ec7c3281b3953817ec5913d9fd50c9b4a130d4c7b02c71b4c402b5",
+            "locator": "body:35/paragraph",
+            "start": 31623,
+            "end": 31757,
+            "quote": "Do I trust that this supplement that apparently does a million things is going to support the one problem that I actually need it for?"
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1wv9Trf2egAaS3LXa54YHIRZSTkcr6H8R",
+            "source_sha256": "33935f0073ec7c3281b3953817ec5913d9fd50c9b4a130d4c7b02c71b4c402b5",
+            "locator": "body:35/paragraph",
+            "start": 31508,
+            "end": 31605,
+            "quote": "But then the landing page is saying this is the solution to everything that exists on the planet."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "55ba397991f9b6dc3a5ea63637d24dd024afe803f1391b58867c7be6ea21cf87",
+        "unit": {
+          "id": "0aa7c48e1035e3fc45aec34d2c09117c364d8da5af80e5719b584e5e6cd8d1b8",
+          "kind": "action",
+          "title": "Write about the person, not the product",
+          "claim": {
+            "text": "The source says the most common copywriting mistake on landing pages is writing about the product instead of the person, with too much about what it is and not enough about why it matters.",
+            "quote": "The most common mistake that people make in copywriting on landing pages is that they write about the product instead of writing about the person."
+          },
+          "action": {
+            "text": "Write benefit-led copy about the person rather than feature-led copy about the product.",
+            "quote": "You need to be benefitled, not feature."
+          },
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "Copy is too focused on what the product is.",
+                "quote": "Too much about what it is and not enough about why it actually matters."
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "No process for identifying the person's priorities."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1wv9Trf2egAaS3LXa54YHIRZSTkcr6H8R",
+            "source_sha256": "33935f0073ec7c3281b3953817ec5913d9fd50c9b4a130d4c7b02c71b4c402b5",
+            "locator": "body:35/paragraph",
+            "start": 32296,
+            "end": 32442,
+            "quote": "The most common mistake that people make in copywriting on landing pages is that they write about the product instead of writing about the person."
+          },
+          {
+            "field": "action",
+            "source_id": "1wv9Trf2egAaS3LXa54YHIRZSTkcr6H8R",
+            "source_sha256": "33935f0073ec7c3281b3953817ec5913d9fd50c9b4a130d4c7b02c71b4c402b5",
+            "locator": "body:35/paragraph",
+            "start": 32515,
+            "end": 32554,
+            "quote": "You need to be benefitled, not feature."
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1wv9Trf2egAaS3LXa54YHIRZSTkcr6H8R",
+            "source_sha256": "33935f0073ec7c3281b3953817ec5913d9fd50c9b4a130d4c7b02c71b4c402b5",
+            "locator": "body:35/paragraph",
+            "start": 32443,
+            "end": 32514,
+            "quote": "Too much about what it is and not enough about why it actually matters."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "281556f5084d5a63cfd3dc63ab355a7ef391f1f8a12f0620540cf7dda1853215",
+        "unit": {
+          "id": "6179229496f9ebd64043c559dd568ca475c7a87fd937bad0187a91070526e3cd",
+          "kind": "action",
+          "title": "Pass every line through the so what test",
+          "claim": {
+            "text": "The source says every line on the landing page must pass the so what test by explaining why the statement is being mentioned.",
+            "quote": "Every line in the copy within the landing page needs to pass what we call the so what test, which is that anytime you say something, we need to explain so what."
+          },
+          "action": {
+            "text": "Make every copy line explain why it is being mentioned.",
+            "quote": "we need to explain so what"
+          },
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [
+            {
+              "text": "The line explains why it is being mentioned.",
+              "quote": "we need to explain so what"
+            }
+          ],
+          "unknowns": [
+            "No list of acceptable explanations."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1wv9Trf2egAaS3LXa54YHIRZSTkcr6H8R",
+            "source_sha256": "33935f0073ec7c3281b3953817ec5913d9fd50c9b4a130d4c7b02c71b4c402b5",
+            "locator": "body:35/paragraph",
+            "start": 32555,
+            "end": 32715,
+            "quote": "Every line in the copy within the landing page needs to pass what we call the so what test, which is that anytime you say something, we need to explain so what."
+          },
+          {
+            "field": "action",
+            "source_id": "1wv9Trf2egAaS3LXa54YHIRZSTkcr6H8R",
+            "source_sha256": "33935f0073ec7c3281b3953817ec5913d9fd50c9b4a130d4c7b02c71b4c402b5",
+            "locator": "body:35/paragraph",
+            "start": 32688,
+            "end": 32714,
+            "quote": "we need to explain so what"
+          },
+          {
+            "field": "completion.0",
+            "source_id": "1wv9Trf2egAaS3LXa54YHIRZSTkcr6H8R",
+            "source_sha256": "33935f0073ec7c3281b3953817ec5913d9fd50c9b4a130d4c7b02c71b4c402b5",
+            "locator": "body:35/paragraph",
+            "start": 32688,
+            "end": 32714,
+            "quote": "we need to explain so what"
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "a94a6bc10275370f578bb12a501da2eb468c7e75acc857d59bc149fbf35ada62",
+        "unit": {
+          "id": "7e3c55df3ec514b332e5e07b3a829c84a7f5b85e080c9e43c7cb1dad0e0459c8",
+          "kind": "example",
+          "title": "So what test example: triple peptide complex",
+          "claim": {
+            "text": "The source gives the example of putting triple peptide complex on a landing page and answering so what with firmer skin in four weeks.",
+            "quote": "you can put triple peptide complex onto the landing page. So what what does this mean to anyone? Well, it gives you firmer skin in four weeks."
+          },
+          "action": null,
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1wv9Trf2egAaS3LXa54YHIRZSTkcr6H8R",
+            "source_sha256": "33935f0073ec7c3281b3953817ec5913d9fd50c9b4a130d4c7b02c71b4c402b5",
+            "locator": "body:35/paragraph",
+            "start": 32769,
+            "end": 32911,
+            "quote": "you can put triple peptide complex onto the landing page. So what what does this mean to anyone? Well, it gives you firmer skin in four weeks."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "d7ff48bf5a0045c0807cee272a9d13fc1fc0060834a5daf9f31b9836c4dd2b95",
+        "unit": {
+          "id": "1bfa4aa255b0256499b541500e9aafb466ec7487478831b943a398bb6d8bbe65",
+          "kind": "action",
+          "title": "Lead with outcome, then justify with feature",
+          "claim": {
+            "text": "The source says you always want to lead with the outcome and then justify it with the feature underneath.",
+            "quote": "you always want to lead with the outcome and then you want to justify it with the feature underneath."
+          },
+          "action": {
+            "text": "Lead with the outcome and then justify it with the feature underneath.",
+            "quote": "you always want to lead with the outcome and then you want to justify it with the feature underneath."
+          },
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "Copy currently leads with feature first.",
+                "quote": "instead of saying triple peptide complex, firmer skin in 4 weeks"
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [
+            {
+              "text": "The example output puts benefit before feature.",
+              "quote": "you want to say firmer skin in 4 weeks using a triple peptide complex"
+            }
+          ],
+          "unknowns": [],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1wv9Trf2egAaS3LXa54YHIRZSTkcr6H8R",
+            "source_sha256": "33935f0073ec7c3281b3953817ec5913d9fd50c9b4a130d4c7b02c71b4c402b5",
+            "locator": "body:35/paragraph",
+            "start": 33291,
+            "end": 33392,
+            "quote": "you always want to lead with the outcome and then you want to justify it with the feature underneath."
+          },
+          {
+            "field": "action",
+            "source_id": "1wv9Trf2egAaS3LXa54YHIRZSTkcr6H8R",
+            "source_sha256": "33935f0073ec7c3281b3953817ec5913d9fd50c9b4a130d4c7b02c71b4c402b5",
+            "locator": "body:35/paragraph",
+            "start": 33291,
+            "end": 33392,
+            "quote": "you always want to lead with the outcome and then you want to justify it with the feature underneath."
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1wv9Trf2egAaS3LXa54YHIRZSTkcr6H8R",
+            "source_sha256": "33935f0073ec7c3281b3953817ec5913d9fd50c9b4a130d4c7b02c71b4c402b5",
+            "locator": "body:35/paragraph",
+            "start": 33396,
+            "end": 33460,
+            "quote": "instead of saying triple peptide complex, firmer skin in 4 weeks"
+          },
+          {
+            "field": "completion.0",
+            "source_id": "1wv9Trf2egAaS3LXa54YHIRZSTkcr6H8R",
+            "source_sha256": "33935f0073ec7c3281b3953817ec5913d9fd50c9b4a130d4c7b02c71b4c402b5",
+            "locator": "body:35/paragraph",
+            "start": 33495,
+            "end": 33564,
+            "quote": "you want to say firmer skin in 4 weeks using a triple peptide complex"
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "d485da8d24f3aff4a02fb9372f0e624b5e85f9319571f1494761650d899d9539",
+        "unit": {
+          "id": "16585911f60d685127090c07706ad1fed7674213184b6e41f3b79096c39b6adc",
+          "kind": "action",
+          "title": "Use a pain-led or benefit-led headline and split test it",
+          "claim": {
+            "text": "The source says a pain-led or benefit-led headline beats a feature-led one, and it is one of the few things worth split testing on a landing page because it is a big swing above the fold.",
+            "quote": "A painled or benefitled headline beats a featureled one every single day of the week. And that's one of the few things that's actually worth split testing on a landing page because it's a big swing."
+          },
+          "action": {
+            "text": "Use a pain-led or benefit-led headline and split test it.",
+            "quote": "A painled or benefitled headline beats a featureled one every single day of the week."
+          },
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "No test duration or sample size stated."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1wv9Trf2egAaS3LXa54YHIRZSTkcr6H8R",
+            "source_sha256": "33935f0073ec7c3281b3953817ec5913d9fd50c9b4a130d4c7b02c71b4c402b5",
+            "locator": "body:35/paragraph",
+            "start": 32995,
+            "end": 33193,
+            "quote": "A painled or benefitled headline beats a featureled one every single day of the week. And that's one of the few things that's actually worth split testing on a landing page because it's a big swing."
+          },
+          {
+            "field": "action",
+            "source_id": "1wv9Trf2egAaS3LXa54YHIRZSTkcr6H8R",
+            "source_sha256": "33935f0073ec7c3281b3953817ec5913d9fd50c9b4a130d4c7b02c71b4c402b5",
+            "locator": "body:35/paragraph",
+            "start": 32995,
+            "end": 33080,
+            "quote": "A painled or benefitled headline beats a featureled one every single day of the week."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "da9cb526914c97205f0d5eba9f4049fc8d1cb57519afc3052611f6bc4c348c23",
+        "unit": {
+          "id": "b7ad9e6000e27d57094abf49f38ad69f61e077c3335d01ceec759f2984d61bab",
+          "kind": "action",
+          "title": "Reposition product as one of one",
+          "claim": {
+            "text": "The source says step one of copywriting is to reposition yourself as one of one because your product is not unique and if you do what everyone else does you will sound like everyone else.",
+            "quote": "And so, step one of copywriting is to reposition yourself as one of one."
+          },
+          "action": {
+            "text": "Reposition the product as one of one.",
+            "quote": "reposition yourself as one of one"
+          },
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "Your product is not unique or sounds like everyone else.",
+                "quote": "Your product is not unique."
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "No specific method for repositioning in this unit."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1wv9Trf2egAaS3LXa54YHIRZSTkcr6H8R",
+            "source_sha256": "33935f0073ec7c3281b3953817ec5913d9fd50c9b4a130d4c7b02c71b4c402b5",
+            "locator": "body:35/paragraph",
+            "start": 34186,
+            "end": 34258,
+            "quote": "And so, step one of copywriting is to reposition yourself as one of one."
+          },
+          {
+            "field": "action",
+            "source_id": "1wv9Trf2egAaS3LXa54YHIRZSTkcr6H8R",
+            "source_sha256": "33935f0073ec7c3281b3953817ec5913d9fd50c9b4a130d4c7b02c71b4c402b5",
+            "locator": "body:35/paragraph",
+            "start": 34224,
+            "end": 34257,
+            "quote": "reposition yourself as one of one"
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1wv9Trf2egAaS3LXa54YHIRZSTkcr6H8R",
+            "source_sha256": "33935f0073ec7c3281b3953817ec5913d9fd50c9b4a130d4c7b02c71b4c402b5",
+            "locator": "body:35/paragraph",
+            "start": 33627,
+            "end": 33654,
+            "quote": "Your product is not unique."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "34f502456e1a52beb40060b8300445cb7b96bc34e0c6eb14afbf5008381a93c3",
+        "unit": {
+          "id": "abb3279385412c53603078c4de46f1d6ed038d53482aae5048edfac9e0e44a56",
+          "kind": "action",
+          "title": "Mine customer reviews with an LLM for unique differentiators",
+          "claim": {
+            "text": "The source recommends exporting all reviews and running them through a large language model to find unique feedback that differentiates you from others.",
+            "quote": "You want to go and export all of the reviews that you have right now. Hopefully you have some reviews. Uh you want to run it through a large language model, run it through claw, run it through chat jbt, run it through something and ask it, can you find unique feedback on my product that differentiates me from others?"
+          },
+          "action": {
+            "text": "Export all reviews and ask an LLM to find unique feedback that differentiates the product.",
+            "quote": "you want to run it through a large language model, run it through claw, run it through chat jbt, run it through something and ask it, can you find unique feedback on my product that differentiates me from others?"
+          },
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "Specific LLM and review export method not specified; output not guaranteed."
+          ],
+          "relations": [
+            {
+              "kind": "alternative_to",
+              "target": "467d876c7dc56fa2e6fedee355d4758f923d454c5befd5701713c19ae7b92844"
+            },
+            {
+              "kind": "alternative_to",
+              "target": "missing:cce7bd88d551f69027e26503463e0e99bb7a68dad7314a65894b908981f37056:u15"
+            }
+          ]
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1wv9Trf2egAaS3LXa54YHIRZSTkcr6H8R",
+            "source_sha256": "33935f0073ec7c3281b3953817ec5913d9fd50c9b4a130d4c7b02c71b4c402b5",
+            "locator": "body:35/paragraph",
+            "start": 34361,
+            "end": 34679,
+            "quote": "You want to go and export all of the reviews that you have right now. Hopefully you have some reviews. Uh you want to run it through a large language model, run it through claw, run it through chat jbt, run it through something and ask it, can you find unique feedback on my product that differentiates me from others?"
+          },
+          {
+            "field": "action",
+            "source_id": "1wv9Trf2egAaS3LXa54YHIRZSTkcr6H8R",
+            "source_sha256": "33935f0073ec7c3281b3953817ec5913d9fd50c9b4a130d4c7b02c71b4c402b5",
+            "locator": "body:35/paragraph",
+            "start": 34467,
+            "end": 34679,
+            "quote": "you want to run it through a large language model, run it through claw, run it through chat jbt, run it through something and ask it, can you find unique feedback on my product that differentiates me from others?"
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "b3fffa45254bc8555359b3aaaeb7fe0070d3a63879ee8363c433cb545d75bdc3",
+        "unit": {
+          "id": "467d876c7dc56fa2e6fedee355d4758f923d454c5befd5701713c19ae7b92844",
+          "kind": "action",
+          "title": "Combine multiple benefits to create uniqueness",
+          "claim": {
+            "text": "The source says you can become unique by tactically adding multiple benefits together, such as solving for acne and being comfortable to sleep on.",
+            "quote": "Another option here is that you can become unique by tactically adding multiple benefits together."
+          },
+          "action": {
+            "text": "Combine multiple benefits tactically to create unique positioning.",
+            "quote": "Another option here is that you can become unique by tactically adding multiple benefits together."
+          },
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": [
+              {
+                "text": "Cannot just string a bunch of benefits together and expect uniqueness.",
+                "quote": "you can't just string a bunch of benefits together and hope that it makes you unique in some way"
+              },
+              {
+                "text": "Free shipping, great service, and fast delivery are givens and not differentiators.",
+                "quote": "No one cares about your free shipping or your great service or your fast delivery."
+              }
+            ]
+          },
+          "completion": [],
+          "unknowns": [
+            "How to choose complementary benefits is not specified."
+          ],
+          "relations": [
+            {
+              "kind": "alternative_to",
+              "target": "abb3279385412c53603078c4de46f1d6ed038d53482aae5048edfac9e0e44a56"
+            },
+            {
+              "kind": "alternative_to",
+              "target": "missing:cce7bd88d551f69027e26503463e0e99bb7a68dad7314a65894b908981f37056:u15"
+            }
+          ]
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1wv9Trf2egAaS3LXa54YHIRZSTkcr6H8R",
+            "source_sha256": "33935f0073ec7c3281b3953817ec5913d9fd50c9b4a130d4c7b02c71b4c402b5",
+            "locator": "body:35/paragraph",
+            "start": 34942,
+            "end": 35040,
+            "quote": "Another option here is that you can become unique by tactically adding multiple benefits together."
+          },
+          {
+            "field": "action",
+            "source_id": "1wv9Trf2egAaS3LXa54YHIRZSTkcr6H8R",
+            "source_sha256": "33935f0073ec7c3281b3953817ec5913d9fd50c9b4a130d4c7b02c71b4c402b5",
+            "locator": "body:35/paragraph",
+            "start": 34942,
+            "end": 35040,
+            "quote": "Another option here is that you can become unique by tactically adding multiple benefits together."
+          },
+          {
+            "field": "exclusions.0",
+            "source_id": "1wv9Trf2egAaS3LXa54YHIRZSTkcr6H8R",
+            "source_sha256": "33935f0073ec7c3281b3953817ec5913d9fd50c9b4a130d4c7b02c71b4c402b5",
+            "locator": "body:35/paragraph",
+            "start": 35484,
+            "end": 35580,
+            "quote": "you can't just string a bunch of benefits together and hope that it makes you unique in some way"
+          },
+          {
+            "field": "exclusions.1",
+            "source_id": "1wv9Trf2egAaS3LXa54YHIRZSTkcr6H8R",
+            "source_sha256": "33935f0073ec7c3281b3953817ec5913d9fd50c9b4a130d4c7b02c71b4c402b5",
+            "locator": "body:35/paragraph",
+            "start": 35805,
+            "end": 35887,
+            "quote": "No one cares about your free shipping or your great service or your fast delivery."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "56b19668ba82188c380911ba16f880f22b27fb56bd23475e3f25b0f083b678e5",
+        "unit": {
+          "id": "759fb11de19a687f5fbe8ac4f70cddff7ba566cd46866169208cd3c56034c37f",
+          "kind": "example",
+          "title": "Bloom greens powder women-specific positioning example",
+          "claim": {
+            "text": "The source, with the speaker's caveat that he might be getting this wrong, gives the example of Bloom launching a greens powder in a saturated space by identifying that greens powder was not marketed or positioned well towards women, so no women-specific greens powder existed.",
+            "quote": "Now, I might be getting this wrong, but I'm going to take this as an example uh from the founder of Bloom, who puts out really good content. And his point was that their first product that they launched with that was a success. This was the first hero product was a greens powder. Now, everyone was doing a greens powder at the time. So, why would they launch a greens powder, right? They launched a product in one of the most saturated spaces at the time, but it worked and they cut through. And the way that it worked and the way that it cut throat was that they effectively identified that greens powder wasn't being marketed well or positioned well towards women. And so as a product of that there was no greens powder that was women specific."
+          },
+          "action": null,
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "Speaker is unsure whether Bloom's formula was better or different."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1wv9Trf2egAaS3LXa54YHIRZSTkcr6H8R",
+            "source_sha256": "33935f0073ec7c3281b3953817ec5913d9fd50c9b4a130d4c7b02c71b4c402b5",
+            "locator": "body:35/paragraph",
+            "start": 37519,
+            "end": 38266,
+            "quote": "Now, I might be getting this wrong, but I'm going to take this as an example uh from the founder of Bloom, who puts out really good content. And his point was that their first product that they launched with that was a success. This was the first hero product was a greens powder. Now, everyone was doing a greens powder at the time. So, why would they launch a greens powder, right? They launched a product in one of the most saturated spaces at the time, but it worked and they cut through. And the way that it worked and the way that it cut throat was that they effectively identified that greens powder wasn't being marketed well or positioned well towards women. And so as a product of that there was no greens powder that was women specific."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "8f1ccdef1a3abe78cba8081d553d35b605d74ce9c4ae42252f20b44c11219f38",
+        "unit": {
+          "id": "missing:cce7bd88d551f69027e26503463e0e99bb7a68dad7314a65894b908981f37056:u15",
+          "kind": "action",
+          "title": "Reposition into white space or a purple ocean",
+          "claim": {
+            "text": "The source says the best thing you can do is reposition yourself into white space, or think of it as a purple ocean, by using marketing to reposition a commoditized product as differentiated without changing the product.",
+            "quote": "Now, the best thing you can possibly do here is reposition yourself into whites space. Or you could think about this as a purple ocean."
+          },
+          "action": {
+            "text": "Reposition the product into white space, or a purple ocean, using marketing.",
+            "quote": "reposition yourself into whites space"
+          },
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "Source does not provide a step-by-step method for identifying white space."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1wv9Trf2egAaS3LXa54YHIRZSTkcr6H8R",
+            "source_sha256": "33935f0073ec7c3281b3953817ec5913d9fd50c9b4a130d4c7b02c71b4c402b5",
+            "locator": "body:35/paragraph",
+            "start": 35991,
+            "end": 36126,
+            "quote": "Now, the best thing you can possibly do here is reposition yourself into whites space. Or you could think about this as a purple ocean."
+          },
+          {
+            "field": "action",
+            "source_id": "1wv9Trf2egAaS3LXa54YHIRZSTkcr6H8R",
+            "source_sha256": "33935f0073ec7c3281b3953817ec5913d9fd50c9b4a130d4c7b02c71b4c402b5",
+            "locator": "body:35/paragraph",
+            "start": 36039,
+            "end": 36076,
+            "quote": "reposition yourself into whites space"
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      }
+    ],
+    "held": [],
+    "more_units": true,
+    "unresolved": [
+      "Criteria for choosing which persona to prioritize are not stated.",
+      "Source does not quantify the conversion impact of ad/PDP angle mismatch.",
+      "No test duration or sample size is stated for headline split testing.",
+      "Source does not provide a step-by-step method for identifying white space or purple ocean positioning.",
+      "Source begins mid-thought and ends during the Bloom example, so adjacent context is missing."
+    ],
+    "publication_allowed": false
+  },
+  "normalizations": [],
+  "semantic_recheck": "required",
+  "publication_allowed": false
+}

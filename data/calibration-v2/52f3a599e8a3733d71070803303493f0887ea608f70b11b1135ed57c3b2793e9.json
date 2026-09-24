@@ -1,0 +1,590 @@
+{
+  "request_id": "52f3a599e8a3733d71070803303493f0887ea608f70b11b1135ed57c3b2793e9",
+  "provider": "deepseek",
+  "model": "deepseek-flash",
+  "effort": "high",
+  "completion_limit": 32768,
+  "usage": {
+    "prompt_tokens": 3350,
+    "completion_tokens": 22879,
+    "total_tokens": 26229,
+    "prompt_tokens_details": {
+      "cached_tokens": 1024
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 19508
+    },
+    "prompt_cache_hit_tokens": 1024,
+    "prompt_cache_miss_tokens": 2326
+  },
+  "booked_cost_usd": 0.0284598,
+  "seconds": 81.06,
+  "finish_reason": "stop",
+  "output": {
+    "units": [
+      {
+        "id": "u1",
+        "kind": "action",
+        "title": "Build a detailed landed-cost spreadsheet",
+        "claim": {
+          "text": "The source says it is important to build a detailed spreadsheet breaking down product, freight, packaging, duties, taxes, warehousing, platform fees, transaction costs, and payment transfer fees, and to include courier fees for landed cost.",
+          "quote": "it's important to build out a detailed spreadsheet breaking down everything: product, freight, packaging, duties, taxes, warehousing, platform fees, transaction costs, and payment transfer fees. If you want to understand your landed cost for customers, you'll also need courier fees."
+        },
+        "action": {
+          "text": "Build out a detailed spreadsheet breaking down product, freight, packaging, duties, taxes, warehousing, platform fees, transaction costs, and payment transfer fees.",
+          "quote": "it's important to build out a detailed spreadsheet breaking down everything: product, freight, packaging, duties, taxes, warehousing, platform fees, transaction costs, and payment transfer fees."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "Exact spreadsheet template is not provided in the passage."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u2",
+        "kind": "action",
+        "title": "Use Chat TBT to generate hidden-cost template",
+        "claim": {
+          "text": "If help is needed building the spreadsheet, the source says to go to Chat TBT and prompt it for all of these hidden costs and then fill out the template.",
+          "quote": "If you need help building the spreadsheet, just go to Chat TBT and prompt it asking for all of these hidden costs and then fill out the template."
+        },
+        "action": {
+          "text": "Go to Chat TBT and prompt it asking for all of these hidden costs and then fill out the template.",
+          "quote": "just go to Chat TBT and prompt it asking for all of these hidden costs and then fill out the template."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "You need help building the spreadsheet.",
+              "quote": "If you need help building the spreadsheet"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [
+          {
+            "text": "Fill out the template.",
+            "quote": "and then fill out the template."
+          }
+        ],
+        "unknowns": [],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u1"
+          }
+        ]
+      },
+      {
+        "id": "u3",
+        "kind": "principle",
+        "title": "Prioritize early flexibility over lowest unit cost",
+        "claim": {
+          "text": "Most founders chase the lowest possible unit cost and end up with unsold products, while early flexibility is worth more than margin.",
+          "quote": "Most founders chase the lowest possible unit cost, thinking it's the key to profit, and end up sitting in warehouses full of unsold products."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No numeric threshold for 'slightly more per unit' is stated."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u4",
+        "kind": "principle",
+        "title": "Use first production runs for learning",
+        "claim": {
+          "text": "The first few production runs might be about learning how fast stock sells, how consistent quality is, and where delays happen rather than maximizing profit.",
+          "quote": "Your first few production runs might not be about maximizing profit. They might be about learning, such as how fast does the stock sell, how consistent is quality, and where delays happen."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No specific measurement method for learning metrics is detailed."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u5",
+        "kind": "action",
+        "title": "Negotiate confidently after learning from early runs",
+        "claim": {
+          "text": "Once the answers about sell-through, quality consistency, and delays are known, the source says that is when you can negotiate confidently.",
+          "quote": "Once you know those answers, that's when you can negotiate confidently."
+        },
+        "action": {
+          "text": "Negotiate confidently once you know those answers.",
+          "quote": "Once you know those answers, that's when you can negotiate confidently."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": [
+            {
+              "text": "You know the answers from early production runs.",
+              "quote": "Once you know those answers"
+            }
+          ]
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u4"
+          }
+        ]
+      },
+      {
+        "id": "u6",
+        "kind": "principle",
+        "title": "Treat negotiation as partnership",
+        "claim": {
+          "text": "Negotiation is not just about price; it is about partnership.",
+          "quote": "And remember, negotiation isn't just about price."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": [
+            {
+              "text": "Squeezing a supplier too hard can lead to cheaper materials, skipped quality control, or slower timelines.",
+              "quote": "If you squeeze a supplier too hard, they'll make up the difference somewhere else, such as cheaper materials, skipped quality control, or sometimes even slower timelines."
+            }
+          ]
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": []
+      },
+      {
+        "id": "u7",
+        "kind": "action",
+        "title": "Get quotes or samples from another supplier",
+        "claim": {
+          "text": "No factory will lower price or offer better payment terms unless they know you have options, so it is smart to get quotes or samples from at least one other supplier.",
+          "quote": "Now, no factory will ever lower their price or offer better payment terms unless they know that you have options."
+        },
+        "action": {
+          "text": "Get quotes or samples from at least one other supplier.",
+          "quote": "That's why it's smart to get quotes or samples from at least one other supplier."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "A factory will not lower price or offer better payment terms unless it knows you have options.",
+              "quote": "no factory will ever lower their price or offer better payment terms unless they know that you have options"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": []
+      },
+      {
+        "id": "u8",
+        "kind": "action",
+        "title": "Be transparent about negotiation goal and share forecast",
+        "claim": {
+          "text": "The source advises being transparent about your goal, sharing your forecast, and showing you are serious about scaling.",
+          "quote": "Be transparent about your goal. Share your forecast and show them your serious about scaling."
+        },
+        "action": {
+          "text": "Be transparent about your goal.",
+          "quote": "Be transparent about your goal."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [
+          {
+            "text": "Share your forecast and show you are serious about scaling.",
+            "quote": "Share your forecast and show them your serious about scaling."
+          }
+        ],
+        "unknowns": [
+          "What specific forecast details to share is not stated."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u9",
+        "kind": "action",
+        "title": "Plan lead times backwards and reorder when current shipment lands",
+        "claim": {
+          "text": "Waiting until nearly out of stock to reorder is already too late; start planning the next shipment the moment the current one lands.",
+          "quote": "Start planning your next shipment the moment your current one lands."
+        },
+        "action": {
+          "text": "Start planning your next shipment the moment your current one lands.",
+          "quote": "Start planning your next shipment the moment your current one lands."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Waiting until nearly out of stock to reorder is already too late.",
+              "quote": "That means that if you wait until you are nearly out of stock to reorder, you're already too late."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No specific reorder point formula is given."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u10",
+        "kind": "action",
+        "title": "Use a hybrid air and sea freight strategy based on product size and weight",
+        "claim": {
+          "text": "Most successful brands use a hybrid strategy: air freight a small batch to start selling quickly, then follow up with sea shipments to restock at lower cost.",
+          "quote": "Most successful brands use a hybrid strategy."
+        },
+        "action": {
+          "text": "Use a hybrid strategy: air freight a small batch to start selling quickly, then follow up with C shipments to restock at lower cost.",
+          "quote": "Air freight, a small batch to start selling quickly, then follow up with C shipments to restock at lower cost."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": [
+            {
+              "text": "This depends on product size and weight.",
+              "quote": "But this really depends on your product size and weight."
+            }
+          ]
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No exact split between air and sea volumes is given."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u11",
+        "kind": "action",
+        "title": "Use a freight forwarder to manage shipping complexity",
+        "claim": {
+          "text": "Freight forwarders manage booking containers, customs, and coordinating delivery to your warehouse, and a good forwarder updates you before problems happen and helps navigate global delays.",
+          "quote": "These companies manage the complex stuff for you."
+        },
+        "action": {
+          "text": "Use freight forwarders.",
+          "quote": "That's where freight forwarders come in."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Handling shipping yourself is chaos.",
+              "quote": "If you've ever tried to handle shipping yourself, you know it's chaos."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [
+          {
+            "text": "A good forwarder will update you before problems happen and help you navigate global delays.",
+            "quote": "A good forwarder will update you before problems happen and help you navigate global delays."
+          }
+        ],
+        "unknowns": [
+          "No specific forwarder selection criteria or rates are given."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u12",
+        "kind": "warning",
+        "title": "Do not always chase the cheapest freight rate",
+        "claim": {
+          "text": "The source warns against always chasing the cheapest freight rate because the cheapest forwarder might leave goods sitting at a port for weeks.",
+          "quote": "And again, don't always chase the cheapest rate. The cheapest freight forer might leave your goods sitting at a port for weeks and fill a container instead."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No specific rate-selection method is stated."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u13",
+        "kind": "action",
+        "title": "Book a final inspection before the container leaves the factory",
+        "claim": {
+          "text": "Before the container leaves the factory, book a final inspection as the last chance to catch mistakes before they multiply.",
+          "quote": "Finally, before that container leaves the factory, book your final inspection."
+        },
+        "action": {
+          "text": "Book your final inspection before the container leaves the factory.",
+          "quote": "Finally, before that container leaves the factory, book your final inspection."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": [
+            {
+              "text": "The container has not yet left the factory.",
+              "quote": "before that container leaves the factory"
+            }
+          ]
+        },
+        "exclusions": {
+          "op": "any",
+          "args": [
+            {
+              "text": "Once the shipment is on the water, it is too late.",
+              "quote": "Once it's on the water, it's just too late."
+            }
+          ]
+        },
+        "completion": [
+          {
+            "text": "Approve or reject the shipment based on the report and only release final payment once everything passes.",
+            "quote": "You approve or reject the shipment based on that report and only release final payment once everything passes."
+          }
+        ],
+        "unknowns": [
+          "No inspection provider or exact report format is specified."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u14",
+        "kind": "action",
+        "title": "Select a 3PL by asking operational questions and visiting the warehouse",
+        "claim": {
+          "text": "To pick the right 3PL, ask questions that expose accuracy, speed, communication, scalability, returns/damages/restocks, and never skip visiting their warehouse.",
+          "quote": "Ask questions that really expose how they operate, such as accuracy."
+        },
+        "action": {
+          "text": "Ask questions that really expose how they operate.",
+          "quote": "Ask questions that really expose how they operate"
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": [
+            {
+              "text": "Do not just compare prices or promises.",
+              "quote": "Don't just compare prices or promises."
+            }
+          ]
+        },
+        "completion": [
+          {
+            "text": "Once you have seen two or three, you realize who the true players actually are.",
+            "quote": "Once you've seen two or three, you realize who the true players actually are."
+          }
+        ],
+        "unknowns": [
+          "Specific threshold values for error rate, speed, and scalability are not stated."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u15",
+        "kind": "principle",
+        "title": "Run fulfillment as a living system with weekly tracking and monthly reviews",
+        "claim": {
+          "text": "Fulfillment is not a set-and-forget system; the best operators track inventory turnover weekly, maintain shared dashboards with warehouses, and hold monthly reviews with 3PL partners.",
+          "quote": "The best operators track inventory turnover weekly, maintain shared dashboards with their warehouses, and hold monthly reviews with their 3PL partners."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No specific dashboard metrics beyond inventory turnover are stated."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u16",
+        "kind": "unresolved_claim",
+        "title": "Forecasting chapter is cut off",
+        "claim": {
+          "text": "The passage ends mid-sentence while describing damage from poor planning in the forecasting chapter.",
+          "quote": "Worse, it damaged the"
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "Continuation after the mid-sentence cut-off is missing.",
+          "The forecasting and reordering procedure is incomplete."
+        ],
+        "relations": []
+      }
+    ],
+    "more_units": true,
+    "unresolved": [
+      "Omitted due to output cap: alternative recommendation to join Daily Mentor for templates.",
+      "Omitted due to output cap: using real cost per unit to inform marketing spend, ad testing, offer strategy, pricing, and negotiation.",
+      "Omitted due to output cap: 3PL collapse example during Q4 with lost revenue and news coverage.",
+      "Omitted due to output cap: fulfillment is a living part of the business, not a set-and-forget system.",
+      "Omitted due to output cap: forecasting as one of the most important parts of sourcing.",
+      "Omitted due to output cap: logistics as the bloodstream and idle inventory burning cash.",
+      "Omitted due to output cap: QC cost example of a $200 check saving $20,000.",
+      "Omitted due to output cap: asking 3PL about returns, damages, restocks, and proactive issue flagging.",
+      "Omitted due to output cap: fulfillment success defined as predictable, repeatable, reliable, and calm.",
+      "Source passage ends mid-sentence in forecasting chapter; continuation needed."
+    ]
+  },
+  "raw_content": "{\"units\":[{\"id\":\"u1\",\"kind\":\"action\",\"title\":\"Build a detailed landed-cost spreadsheet\",\"claim\":{\"text\":\"The source says it is important to build a detailed spreadsheet breaking down product, freight, packaging, duties, taxes, warehousing, platform fees, transaction costs, and payment transfer fees, and to include courier fees for landed cost.\",\"quote\":\"it's important to build out a detailed spreadsheet breaking down everything: product, freight, packaging, duties, taxes, warehousing, platform fees, transaction costs, and payment transfer fees. If you want to understand your landed cost for customers, you'll also need courier fees.\"},\"action\":{\"text\":\"Build out a detailed spreadsheet breaking down product, freight, packaging, duties, taxes, warehousing, platform fees, transaction costs, and payment transfer fees.\",\"quote\":\"it's important to build out a detailed spreadsheet breaking down everything: product, freight, packaging, duties, taxes, warehousing, platform fees, transaction costs, and payment transfer fees.\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"Exact spreadsheet template is not provided in the passage.\"],\"relations\":[]},{\"id\":\"u2\",\"kind\":\"action\",\"title\":\"Use Chat TBT to generate hidden-cost template\",\"claim\":{\"text\":\"If help is needed building the spreadsheet, the source says to go to Chat TBT and prompt it for all of these hidden costs and then fill out the template.\",\"quote\":\"If you need help building the spreadsheet, just go to Chat TBT and prompt it asking for all of these hidden costs and then fill out the template.\"},\"action\":{\"text\":\"Go to Chat TBT and prompt it asking for all of these hidden costs and then fill out the template.\",\"quote\":\"just go to Chat TBT and prompt it asking for all of these hidden costs and then fill out the template.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"You need help building the spreadsheet.\",\"quote\":\"If you need help building the spreadsheet\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[{\"text\":\"Fill out the template.\",\"quote\":\"and then fill out the template.\"}],\"unknowns\":[],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u1\"}]},{\"id\":\"u3\",\"kind\":\"principle\",\"title\":\"Prioritize early flexibility over lowest unit cost\",\"claim\":{\"text\":\"Most founders chase the lowest possible unit cost and end up with unsold products, while early flexibility is worth more than margin.\",\"quote\":\"Most founders chase the lowest possible unit cost, thinking it's the key to profit, and end up sitting in warehouses full of unsold products.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"No numeric threshold for 'slightly more per unit' is stated.\"],\"relations\":[]},{\"id\":\"u4\",\"kind\":\"principle\",\"title\":\"Use first production runs for learning\",\"claim\":{\"text\":\"The first few production runs might be about learning how fast stock sells, how consistent quality is, and where delays happen rather than maximizing profit.\",\"quote\":\"Your first few production runs might not be about maximizing profit. They might be about learning, such as how fast does the stock sell, how consistent is quality, and where delays happen.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"No specific measurement method for learning metrics is detailed.\"],\"relations\":[]},{\"id\":\"u5\",\"kind\":\"action\",\"title\":\"Negotiate confidently after learning from early runs\",\"claim\":{\"text\":\"Once the answers about sell-through, quality consistency, and delays are known, the source says that is when you can negotiate confidently.\",\"quote\":\"Once you know those answers, that's when you can negotiate confidently.\"},\"action\":{\"text\":\"Negotiate confidently once you know those answers.\",\"quote\":\"Once you know those answers, that's when you can negotiate confidently.\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[{\"text\":\"You know the answers from early production runs.\",\"quote\":\"Once you know those answers\"}]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u4\"}]},{\"id\":\"u6\",\"kind\":\"principle\",\"title\":\"Treat negotiation as partnership\",\"claim\":{\"text\":\"Negotiation is not just about price; it is about partnership.\",\"quote\":\"And remember, negotiation isn't just about price.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[{\"text\":\"Squeezing a supplier too hard can lead to cheaper materials, skipped quality control, or slower timelines.\",\"quote\":\"If you squeeze a supplier too hard, they'll make up the difference somewhere else, such as cheaper materials, skipped quality control, or sometimes even slower timelines.\"}]},\"completion\":[],\"unknowns\":[],\"relations\":[]},{\"id\":\"u7\",\"kind\":\"action\",\"title\":\"Get quotes or samples from another supplier\",\"claim\":{\"text\":\"No factory will lower price or offer better payment terms unless they know you have options, so it is smart to get quotes or samples from at least one other supplier.\",\"quote\":\"Now, no factory will ever lower their price or offer better payment terms unless they know that you have options.\"},\"action\":{\"text\":\"Get quotes or samples from at least one other supplier.\",\"quote\":\"That's why it's smart to get quotes or samples from at least one other supplier.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"A factory will not lower price or offer better payment terms unless it knows you have options.\",\"quote\":\"no factory will ever lower their price or offer better payment terms unless they know that you have options\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[],\"relations\":[]},{\"id\":\"u8\",\"kind\":\"action\",\"title\":\"Be transparent about negotiation goal and share forecast\",\"claim\":{\"text\":\"The source advises being transparent about your goal, sharing your forecast, and showing you are serious about scaling.\",\"quote\":\"Be transparent about your goal. Share your forecast and show them your serious about scaling.\"},\"action\":{\"text\":\"Be transparent about your goal.\",\"quote\":\"Be transparent about your goal.\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[{\"text\":\"Share your forecast and show you are serious about scaling.\",\"quote\":\"Share your forecast and show them your serious about scaling.\"}],\"unknowns\":[\"What specific forecast details to share is not stated.\"],\"relations\":[]},{\"id\":\"u9\",\"kind\":\"action\",\"title\":\"Plan lead times backwards and reorder when current shipment lands\",\"claim\":{\"text\":\"Waiting until nearly out of stock to reorder is already too late; start planning the next shipment the moment the current one lands.\",\"quote\":\"Start planning your next shipment the moment your current one lands.\"},\"action\":{\"text\":\"Start planning your next shipment the moment your current one lands.\",\"quote\":\"Start planning your next shipment the moment your current one lands.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Waiting until nearly out of stock to reorder is already too late.\",\"quote\":\"That means that if you wait until you are nearly out of stock to reorder, you're already too late.\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"No specific reorder point formula is given.\"],\"relations\":[]},{\"id\":\"u10\",\"kind\":\"action\",\"title\":\"Use a hybrid air and sea freight strategy based on product size and weight\",\"claim\":{\"text\":\"Most successful brands use a hybrid strategy: air freight a small batch to start selling quickly, then follow up with sea shipments to restock at lower cost.\",\"quote\":\"Most successful brands use a hybrid strategy.\"},\"action\":{\"text\":\"Use a hybrid strategy: air freight a small batch to start selling quickly, then follow up with C shipments to restock at lower cost.\",\"quote\":\"Air freight, a small batch to start selling quickly, then follow up with C shipments to restock at lower cost.\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[{\"text\":\"This depends on product size and weight.\",\"quote\":\"But this really depends on your product size and weight.\"}]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"No exact split between air and sea volumes is given.\"],\"relations\":[]},{\"id\":\"u11\",\"kind\":\"action\",\"title\":\"Use a freight forwarder to manage shipping complexity\",\"claim\":{\"text\":\"Freight forwarders manage booking containers, customs, and coordinating delivery to your warehouse, and a good forwarder updates you before problems happen and helps navigate global delays.\",\"quote\":\"These companies manage the complex stuff for you.\"},\"action\":{\"text\":\"Use freight forwarders.\",\"quote\":\"That's where freight forwarders come in.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Handling shipping yourself is chaos.\",\"quote\":\"If you've ever tried to handle shipping yourself, you know it's chaos.\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[{\"text\":\"A good forwarder will update you before problems happen and help you navigate global delays.\",\"quote\":\"A good forwarder will update you before problems happen and help you navigate global delays.\"}],\"unknowns\":[\"No specific forwarder selection criteria or rates are given.\"],\"relations\":[]},{\"id\":\"u12\",\"kind\":\"warning\",\"title\":\"Do not always chase the cheapest freight rate\",\"claim\":{\"text\":\"The source warns against always chasing the cheapest freight rate because the cheapest forwarder might leave goods sitting at a port for weeks.\",\"quote\":\"And again, don't always chase the cheapest rate. The cheapest freight forer might leave your goods sitting at a port for weeks and fill a container instead.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"No specific rate-selection method is stated.\"],\"relations\":[]},{\"id\":\"u13\",\"kind\":\"action\",\"title\":\"Book a final inspection before the container leaves the factory\",\"claim\":{\"text\":\"Before the container leaves the factory, book a final inspection as the last chance to catch mistakes before they multiply.\",\"quote\":\"Finally, before that container leaves the factory, book your final inspection.\"},\"action\":{\"text\":\"Book your final inspection before the container leaves the factory.\",\"quote\":\"Finally, before that container leaves the factory, book your final inspection.\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[{\"text\":\"The container has not yet left the factory.\",\"quote\":\"before that container leaves the factory\"}]},\"exclusions\":{\"op\":\"any\",\"args\":[{\"text\":\"Once the shipment is on the water, it is too late.\",\"quote\":\"Once it's on the water, it's just too late.\"}]},\"completion\":[{\"text\":\"Approve or reject the shipment based on the report and only release final payment once everything passes.\",\"quote\":\"You approve or reject the shipment based on that report and only release final payment once everything passes.\"}],\"unknowns\":[\"No inspection provider or exact report format is specified.\"],\"relations\":[]},{\"id\":\"u14\",\"kind\":\"action\",\"title\":\"Select a 3PL by asking operational questions and visiting the warehouse\",\"claim\":{\"text\":\"To pick the right 3PL, ask questions that expose accuracy, speed, communication, scalability, returns/damages/restocks, and never skip visiting their warehouse.\",\"quote\":\"Ask questions that really expose how they operate, such as accuracy.\"},\"action\":{\"text\":\"Ask questions that really expose how they operate.\",\"quote\":\"Ask questions that really expose how they operate\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[{\"text\":\"Do not just compare prices or promises.\",\"quote\":\"Don't just compare prices or promises.\"}]},\"completion\":[{\"text\":\"Once you have seen two or three, you realize who the true players actually are.\",\"quote\":\"Once you've seen two or three, you realize who the true players actually are.\"}],\"unknowns\":[\"Specific threshold values for error rate, speed, and scalability are not stated.\"],\"relations\":[]},{\"id\":\"u15\",\"kind\":\"principle\",\"title\":\"Run fulfillment as a living system with weekly tracking and monthly reviews\",\"claim\":{\"text\":\"Fulfillment is not a set-and-forget system; the best operators track inventory turnover weekly, maintain shared dashboards with warehouses, and hold monthly reviews with 3PL partners.\",\"quote\":\"The best operators track inventory turnover weekly, maintain shared dashboards with their warehouses, and hold monthly reviews with their 3PL partners.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"No specific dashboard metrics beyond inventory turnover are stated.\"],\"relations\":[]},{\"id\":\"u16\",\"kind\":\"unresolved_claim\",\"title\":\"Forecasting chapter is cut off\",\"claim\":{\"text\":\"The passage ends mid-sentence while describing damage from poor planning in the forecasting chapter.\",\"quote\":\"Worse, it damaged the\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"Continuation after the mid-sentence cut-off is missing.\",\"The forecasting and reordering procedure is incomplete.\"],\"relations\":[]}],\"more_units\":true,\"unresolved\":[\"Omitted due to output cap: alternative recommendation to join Daily Mentor for templates.\",\"Omitted due to output cap: using real cost per unit to inform marketing spend, ad testing, offer strategy, pricing, and negotiation.\",\"Omitted due to output cap: 3PL collapse example during Q4 with lost revenue and news coverage.\",\"Omitted due to output cap: fulfillment is a living part of the business, not a set-and-forget system.\",\"Omitted due to output cap: forecasting as one of the most important parts of sourcing.\",\"Omitted due to output cap: logistics as the bloodstream and idle inventory burning cash.\",\"Omitted due to output cap: QC cost example of a $200 check saving $20,000.\",\"Omitted due to output cap: asking 3PL about returns, damages, restocks, and proactive issue flagging.\",\"Omitted due to output cap: fulfillment success defined as predictable, repeatable, reliable, and calm.\",\"Source passage ends mid-sentence in forecasting chapter; continuation needed.\"]}",
+  "input": {
+    "source_id": "1FiwNYMNjTIvmwNZVGywVhaM3xH2lJYGp",
+    "source_sha256": "8d9d01f01cfde65a9ae22f50f05dbc4af95c4190bdbcf58f7f52911e7c8ab753",
+    "locator": "body:14/paragraph",
+    "start": 9499,
+    "text": "it's important to build out a detailed spreadsheet breaking down everything: product, freight, packaging, duties, taxes, warehousing, platform fees, transaction costs, and payment transfer fees. If you want to understand your landed cost for customers, you'll also need courier fees. If you need help building the spreadsheet, just go to Chat TBT and prompt it asking for all of these hidden costs and then fill out the template. Alternatively, you can join Daily Mentor. We've got so many templates like this. So, when you know your real cost per unit, you can start making smarter choices everywhere else. Marketing spend, ad testing, even offer strategy, pricing, and negotiation. Once you understand your costs, it's time to focus on how pricing and negotiation really works. Most founders chase the lowest possible unit cost, thinking it's the key to profit, and end up sitting in warehouses full of unsold products. Sure, they saved $2 a unit, but they killed their cash flow in the process. Because you see, early on, flexibility is worth more than margin. Paying slightly more per unit gives you room to test, pivot, and adjust without overcommitting. Your first few production runs might not be about maximizing profit. They might be about learning, such as how fast does the stock sell, how consistent is quality, and where delays happen. Once you know those answers, that's when you can negotiate confidently. And remember, negotiation isn't just about price. It's about partnership. If you squeeze a supplier too hard, they'll make up the difference somewhere else, such as cheaper materials, skipped quality control, or sometimes even slower timelines. Factories have margins, too. And when they're under pressure, your brand usually pays for it later. Good negotiation means balancing what works for both sides. Now, no factory will ever lower their price or offer better payment terms unless they know that you have options. That's why it's smart to get quotes or samples from at least one other supplier. It keeps the conversation honest and gives you leverage without hostility. Be transparent about your goal. Share your forecast and show them your serious about scaling. Now that you know your margins and have your deal locked in, it's time to learn how to move that product. And that's where freight and fulfillment come in next. Chapter four, freight, customs, and fulfillment. Getting your product from the factory floor to your hands of your customers without losing your sanity or your profit can be very, very painful. Logistics is the bloodstream of your business. Every day your inventory sits idle, it's burning cash. Every time you touch it, it's burning cash. The faster and cleaner you can move your stock through the supply chain, the stronger your cash flow and the calmer your business will feel. Freight forwarders and planning lead times. There are really only two ways to move your product. Air or C. Air is fast and expensive, which is perfect for small or urgent batches or if you've got a tiny product. C is slower but dramatically cheaper. It's what keeps your margins healthy once you're scaling. Most successful brands use a hybrid strategy. Air freight, a small batch to start selling quickly, then follow up with C shipments to restock at lower cost. But this really depends on your product size and weight. For small items, a mix works well. For larger or heavier items, C freight is almost always the best option. But moving stock isn't just about picking a transport method. It's about planning lead times backwards. Freight isn't instant. Sea can take 30 to 40 days doortodoor. Air might take 7 to 10 and production itself can often add another 20 or 30 days. That means that if you wait until you are nearly out of stock to reorder, you're already too late. Start planning your next shipment the moment your current one lands. The biggest reason brands panic ship or run out of stock isn't bad luck, it's just bad forecasting. From the moment your PO is signed, your countdown begins. You need visibility from factory to warehouse at all times. That's where freight forwarders come in. These companies manage the complex stuff for you. Booking containers, handling customs, and coordinating delivery to your warehouse. A good forwarder will update you before problems happen and help you navigate global delays. If you've ever tried to handle shipping yourself, you know it's chaos. Different time zones, customs forms, endless email chains. A strong forwarder simplifies all of that. They'll quote you based on route, wait, and deadlights. And more importantly, they'll tell you what's realistic. And again, don't always chase the cheapest rate. The cheapest freight forer might leave your goods sitting at a port for weeks and fill a container instead. Finally, before that container leaves the factory, book your final inspection. This is your last chance to catch mistakes before they multiply. A $200 QC check, quality control check, can save $20,000 in damage or inconsistent stock in that last check stage. Your QC agent will test random units, check measurements, verify packaging, labeling, and carton weight. And they'll take photos of everything. [music] They'll flag even small inconsistencies that could become massive issues later. If they find problems, the factory can fix them before the shipment leaves. Once it's on the water, it's just too late. You need to think beyond just product quality and more about protecting your reputation and customer experience. Think of it like insurance, a small cost that keeps your entire operation safe. You approve or reject the shipment based on that report and only release final payment once everything passes. Fulfillment and 3PLs. If all goes smoothly and your goods arrive, your job still isn't finished. It's now just shifted from production to delivery. Disorganization can kill brands at this step. You need to learn more about 3PL's. A 3PL, also known as third party logistics provider, is the bridge between your factory and your customers. They store, pick, pack, and ship your orders, manage returns, and often integrate directly with Shopify or your warehouse management tools. However, the difference between a good 3PL and a bad one can make or break your experience with e-commerce. When we were scaling the Udy, fulfillment became our biggest threat overnight. During one of our Q4, we were forecasting record numbers, $45, $50 million in sales, and everything looked perfect until one of our 3PL collapsed under the pressure. We lost tens of millions in potential revenue and even ended up in the news because customers thought we were scamming them. It was one of the hardest lessons that I've ever learned. That experience made me realize how critical fulfillment partners are. You can do everything right, product, marketing, sourcing, and still lose it all if your logistics partner fails you. So, how do you pick the right one? Don't just compare prices or promises. Ask questions that really expose how they operate, such as accuracy. What's their error rate on orders shipped? Speed. How fast do they process during peak volume and how do they do that? Communication. Who's your direct contact when problems [music] actually hit? Scalability. How have they handled previous Q4 surges for other brands? And never skip going to visit their warehouse to see how it all operates. Once you've seen two or three, you realize who the true players actually are. You also want to ask them how do they handle returns, damages, and restocks. Do they flag issues proactively or wait for you to notice? Those answers tell you who will protect your brand when orders start flying. Our coaches at Daily Mentor always hammer home that fulfillment isn't a set and forget system. It's a living part of your business. The best operators track inventory turnover weekly, maintain shared dashboards with their warehouses, and hold monthly reviews with their 3PL partners. These habits prevent the exact disaster we went through. Once you built a setup like this, your logistics should start to feel very, very calm. And that's the goal, predictable, repeatable, and reliable. When fulfillment runs on autopilot and nothing feels urgent, that's when you know it's working. Next, let's look at the final piece of the puzzle. Forecasting, cash flow, and reordering. How do you actually keep up this whole system running without ever running out of stock again? [music] Chapter 5, forecasting and planning. You might think the hardest part of sourcing is over once your product is shipping smoothly and orders are being fulfilled. But that's actually where most brands slip. Everything you've built up to this point, your supplier relationships, your logistics, your product quality, only matters if you can keep it consistent. A lot of founders treat forecasting like an afterthought, but it's one of the most important parts of sourcing. Because sourcing isn't just about finding great products. [music] It's about keeping them in stock, profitable, and moving through your supply chain. If you followed everything up to now, this is the final step that ties it all together. This part will decide whether your sourcing process scales or collapses. The real cost of poor planning. Back in the early days of the Udie, I thought we had it all figured out. Our products were selling fast, ads were converting, and everything looked like it was working perfectly. But then co hit. I remember watching sales skyrocket overnight, $200,000 days back to back and thinking we'd hit the jackpot. But I didn't realize how big the demand spike would be. Within a week, we were completely sold out. It doesn't sound like a problem, right? Wrong. We had zero stock, monthsl long production lead times, and no forecasting system in place to keep catching up. For almost two months, we couldn't fulfill orders, couldn't capitalize on demand, and lost millions in potential sales. Worse, it damaged the ",
+    "provenance": "unverified"
+  },
+  "system_prompt_sha256": "169564fc11fb12a123446ec006b5bb473bb0bb9c6a71a491eafeedd914dc865e"
+}

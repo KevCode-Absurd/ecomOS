@@ -1,0 +1,190 @@
+{
+  "request_id": "46b5f67b9da1f502d7e7843d1b5f1cd06350cf2dea19a3c650271826488b62db",
+  "provider": "deepseek",
+  "model": "deepseek-flash",
+  "effort": "none",
+  "completion_limit": 16384,
+  "usage": {
+    "prompt_tokens": 1581,
+    "completion_tokens": 1892,
+    "total_tokens": 3473,
+    "prompt_tokens_details": {
+      "cached_tokens": 512
+    },
+    "prompt_cache_hit_tokens": 512,
+    "prompt_cache_miss_tokens": 1069
+  },
+  "booked_cost_usd": 0.0027446999999999997,
+  "seconds": 11.16,
+  "finish_reason": "stop",
+  "output": {
+    "cards": [
+      {
+        "title": "Launch Google Ads ecommerce account in funnel order",
+        "summary": "Build a Google Ads ecommerce account bottom-up: Search and Shopping first, then remarketing/PMax, then Demand Gen on top.",
+        "use_when": "Planning the initial campaign rollout calendar for a new or relaunched ecommerce Google Ads account",
+        "steps": [
+          "Start with bottom- and mid-funnel intent: non-branded Standard Shopping (new customer acquisition) plus branded Search/Shopping (cheap high-intent conversion capture). Do not open with top-of-funnel prospecting.",
+          "Once baseline conversion data stabilizes, layer in mid-funnel remarketing via video/display or Feed-Only Performance Max to re-engage visitors who did not purchase.",
+          "Only after exhausting bottom- and mid-funnel intent, add top-of-funnel Demand Gen on YouTube and Discover for incremental reach.",
+          "Fund the sequence deliberately: bottom-funnel campaigns produce the conversion data that eventually justifies spending on more expensive upper-funnel inventory.",
+          "Treat each layer as gated by data, not by calendar — if conversion volume has not stabilized, hold the next layer rather than launching it on schedule."
+        ],
+        "caveats": [
+          "The ordering is the source's recommended blueprint for a structured ecommerce account; account history, catalog size and budget can make some layers viable earlier.",
+          "Demand Gen additions without sufficient bottom-funnel conversion data give the algorithm weak signals to optimize against."
+        ],
+        "tags": [
+          "google-ads",
+          "campaign-setup",
+          "funnel-strategy",
+          "shopping",
+          "performance-max",
+          "demand-gen",
+          "scaling"
+        ],
+        "domain": "google-ads"
+      },
+      {
+        "title": "Isolate branded traffic with exact-match negatives",
+        "summary": "Add branded terms as exact-match negative keywords in non-branded campaigns so branded and non-branded performance and attribution stay separable.",
+        "use_when": "Structuring segmentation and reporting for any ecommerce Search or Shopping campaign so branded and non-branded ROAS are not conflated",
+        "steps": [
+          "Compile a list of the store's brand terms, misspellings and common variants.",
+          "Add those terms as exact-match negative keywords to every non-branded Search and Shopping campaign (and other non-branded campaigns where the control applies).",
+          "Keep branded terms eligible only in dedicated branded campaigns, and use campaign priority settings where multiple campaigns could match the same query.",
+          "Use the separation in reporting: judge new-customer acquisition on non-branded ROAS and cheap high-intent capture on branded ROAS, never on a blended number.",
+          "Maintain the negative list as a living document — add new brand variants as they appear in search terms reports, and review the list whenever campaign structure changes."
+        ],
+        "caveats": [
+          "Without this rule the source warns branded queries leak into non-branded campaigns and distort attribution, making non-branded performance look better than it is.",
+          "Exact-match negatives block only the exact query forms listed; misspellings and variants must be enumerated explicitly."
+        ],
+        "tags": [
+          "google-ads",
+          "brand-segmentation",
+          "negative-keywords",
+          "attribution",
+          "reporting",
+          "campaign-setup",
+          "roas"
+        ],
+        "domain": "google-ads"
+      },
+      {
+        "title": "Feed branded campaigns cheap conversions to train the account",
+        "summary": "Run low-budget, high-ROAS branded campaigns whose cheap conversion data feeds the algorithm's learning for costlier non-branded campaigns.",
+        "use_when": "Deciding how much budget to devote to branded Search/Shopping when non-branded acquisition is still data-starved",
+        "steps": [
+          "Keep branded campaigns at low budget relative to their conversion efficiency — they are cheap high-intent conversions, not the growth engine.",
+          "Let branded conversions accumulate as training signal at the account level, so machine learning models serving the more expensive non-branded campaigns have more data to learn from.",
+          "Watch the blended account conversion volume, not just each campaign in isolation, to gauge when the account has enough signal to push spend into non-branded.",
+          "Use the branded-versus-non-branded split to explain cost differences internally: a high-ROAS branded line and a lower-ROAS non-branded line are doing different jobs.",
+          "Reallocate incremental budget toward non-branded once the account's conversion history supports it, rather than scaling branded further."
+        ],
+        "caveats": [
+          "The source presents this as an efficiency and modeling strategy, not a claim that branded spend itself acquires new customers.",
+          "Do not judge branded and non-branded campaigns against the same ROAS target."
+        ],
+        "tags": [
+          "google-ads",
+          "brand-segmentation",
+          "budget-allocation",
+          "machine-learning",
+          "roas",
+          "campaign-setup"
+        ],
+        "domain": "google-ads"
+      },
+      {
+        "title": "Move bids from Maximize Clicks to value bidding at threshold",
+        "summary": "Transition from Maximize Clicks for data gathering to Maximize Conversion Value or Target ROAS once the account reaches roughly 15–30 conversions per month.",
+        "use_when": "Choosing or switching the bidding strategy for ecommerce Search and Shopping campaigns based on available conversion volume",
+        "steps": [
+          "Start new campaigns on Maximize Clicks while gathering initial data, so the account can accumulate conversion signal without a value target it cannot yet meet.",
+          "Track conversions per month across the campaigns that will share the bidding strategy.",
+          "When that volume reaches roughly 15–30 conversions per month, switch to Maximize Conversion Value or Target ROAS, which optimizes toward revenue rather than clicks.",
+          "Set an initial ROAS target grounded in the account's own observed performance rather than an arbitrary aspirational figure, then adjust deliberately rather than reacting to short-term swings.",
+          "When launching a new campaign or a new segment, expect to need a fresh data-gathering period before value bidding is appropriate for it."
+        ],
+        "caveats": [
+          "The 15–30 conversions-per-month figure is the source's heuristic threshold, not a guaranteed algorithmic requirement.",
+          "Switching to Target ROAS below adequate conversion volume starves the algorithm of signal and can stall delivery."
+        ],
+        "tags": [
+          "google-ads",
+          "bidding-strategy",
+          "target-roas",
+          "maximize-conversion-value",
+          "campaign-setup",
+          "scaling"
+        ],
+        "domain": "google-ads"
+      },
+      {
+        "title": "Build Feed-Only Performance Max for product remarketing",
+        "summary": "Strip a Performance Max campaign of text, image and video assets so the algorithm relies solely on the Merchant Center feed, forcing product-level remarketing.",
+        "use_when": "Setting up a mid-funnel product remarketing layer once baseline conversion data from Search and Shopping is stable",
+        "steps": [
+          "Create a Performance Max campaign but omit all text assets, image assets and video assets.",
+          "Connect it to the Google Merchant Center feed so the only creative input is product data from the feed.",
+          "Because there are no broader creatives to distract the system, it serves product-level remarketing against the feed — re-engaging shoppers with items they have shown interest in.",
+          "Position this layer in the account after Search and Shopping are producing stable conversion data, and before investing in upper-funnel Demand Gen.",
+          "Review the campaign against feed quality: product titles and attributes are now the primary lever, so feed accuracy and completeness directly bound performance."
+        ],
+        "caveats": [
+          "The source describes Feed-Only PMax specifically as a mid-funnel remarketing configuration, not as a full-funnel replacement for standard PMax.",
+          "Because all non-feed assets are removed, creative testing and messaging are unavailable in this campaign type."
+        ],
+        "tags": [
+          "google-ads",
+          "performance-max",
+          "feed-only",
+          "middle-funnel",
+          "remarketing",
+          "merchant-center"
+        ],
+        "domain": "google-ads"
+      },
+      {
+        "title": "Give performance the time its intent tier requires",
+        "summary": "Judge upper-funnel campaigns on their role in the sequence rather than by immediate ROAS, because the source frames each funnel tier as serving a different buying intent and timeline.",
+        "use_when": "Evaluating whether to keep, cut or scale Demand Gen and remarketing campaigns that underperform direct-response ROAS targets",
+        "steps": [
+          "Label each campaign by its funnel role at setup — bottom (non-branded Shopping, branded Search), middle (remarketing, Feed-Only PMax), top (Demand Gen on YouTube and Discover).",
+          "When reviewing performance, compare each campaign against the goal of its tier rather than a single blended ROAS target: bottom-tier campaigns carry the direct-response burden.",
+          "Fund the tiers in sequence and treat top-tier spend as something earned by proven bottom- and mid-funnel efficiency, not as a parallel bet from day one.",
+          "Watch the account-level trend when deciding to expand reach: if lower-funnel campaigns are efficient and constrained by audience size, upper-funnel investment has a clearer rationale.",
+          "Avoid cutting an upper-funnel campaign purely on last-click ROAS before its role in the sequence has had a chance to contribute, but also avoid scaling it without an account-level case."
+        ],
+        "caveats": [
+          "The source's sequencing emphasis means top-funnel campaigns are judged on enabling later lower-funnel volume, not on standalone ROAS.",
+          "Attribution limits mean the exact contribution of upper-funnel spend is hard to isolate; treat tier labels as a planning framework."
+        ],
+        "tags": [
+          "google-ads",
+          "funnel-strategy",
+          "demand-gen",
+          "reporting",
+          "roas",
+          "scaling"
+        ],
+        "domain": "google-ads"
+      }
+    ]
+  },
+  "raw_content": "{\"cards\":[{\"title\":\"Launch Google Ads ecommerce account in funnel order\",\"summary\":\"Build a Google Ads ecommerce account bottom-up: Search and Shopping first, then remarketing/PMax, then Demand Gen on top.\",\"use_when\":\"Planning the initial campaign rollout calendar for a new or relaunched ecommerce Google Ads account\",\"steps\":[\"Start with bottom- and mid-funnel intent: non-branded Standard Shopping (new customer acquisition) plus branded Search/Shopping (cheap high-intent conversion capture). Do not open with top-of-funnel prospecting.\",\"Once baseline conversion data stabilizes, layer in mid-funnel remarketing via video/display or Feed-Only Performance Max to re-engage visitors who did not purchase.\",\"Only after exhausting bottom- and mid-funnel intent, add top-of-funnel Demand Gen on YouTube and Discover for incremental reach.\",\"Fund the sequence deliberately: bottom-funnel campaigns produce the conversion data that eventually justifies spending on more expensive upper-funnel inventory.\",\"Treat each layer as gated by data, not by calendar — if conversion volume has not stabilized, hold the next layer rather than launching it on schedule.\"],\"caveats\":[\"The ordering is the source's recommended blueprint for a structured ecommerce account; account history, catalog size and budget can make some layers viable earlier.\",\"Demand Gen additions without sufficient bottom-funnel conversion data give the algorithm weak signals to optimize against.\"],\"tags\":[\"google-ads\",\"campaign-setup\",\"funnel-strategy\",\"shopping\",\"performance-max\",\"demand-gen\",\"scaling\"],\"domain\":\"google-ads\"},{\"title\":\"Isolate branded traffic with exact-match negatives\",\"summary\":\"Add branded terms as exact-match negative keywords in non-branded campaigns so branded and non-branded performance and attribution stay separable.\",\"use_when\":\"Structuring segmentation and reporting for any ecommerce Search or Shopping campaign so branded and non-branded ROAS are not conflated\",\"steps\":[\"Compile a list of the store's brand terms, misspellings and common variants.\",\"Add those terms as exact-match negative keywords to every non-branded Search and Shopping campaign (and other non-branded campaigns where the control applies).\",\"Keep branded terms eligible only in dedicated branded campaigns, and use campaign priority settings where multiple campaigns could match the same query.\",\"Use the separation in reporting: judge new-customer acquisition on non-branded ROAS and cheap high-intent capture on branded ROAS, never on a blended number.\",\"Maintain the negative list as a living document — add new brand variants as they appear in search terms reports, and review the list whenever campaign structure changes.\"],\"caveats\":[\"Without this rule the source warns branded queries leak into non-branded campaigns and distort attribution, making non-branded performance look better than it is.\",\"Exact-match negatives block only the exact query forms listed; misspellings and variants must be enumerated explicitly.\"],\"tags\":[\"google-ads\",\"brand-segmentation\",\"negative-keywords\",\"attribution\",\"reporting\",\"campaign-setup\",\"roas\"],\"domain\":\"google-ads\"},{\"title\":\"Feed branded campaigns cheap conversions to train the account\",\"summary\":\"Run low-budget, high-ROAS branded campaigns whose cheap conversion data feeds the algorithm's learning for costlier non-branded campaigns.\",\"use_when\":\"Deciding how much budget to devote to branded Search/Shopping when non-branded acquisition is still data-starved\",\"steps\":[\"Keep branded campaigns at low budget relative to their conversion efficiency — they are cheap high-intent conversions, not the growth engine.\",\"Let branded conversions accumulate as training signal at the account level, so machine learning models serving the more expensive non-branded campaigns have more data to learn from.\",\"Watch the blended account conversion volume, not just each campaign in isolation, to gauge when the account has enough signal to push spend into non-branded.\",\"Use the branded-versus-non-branded split to explain cost differences internally: a high-ROAS branded line and a lower-ROAS non-branded line are doing different jobs.\",\"Reallocate incremental budget toward non-branded once the account's conversion history supports it, rather than scaling branded further.\"],\"caveats\":[\"The source presents this as an efficiency and modeling strategy, not a claim that branded spend itself acquires new customers.\",\"Do not judge branded and non-branded campaigns against the same ROAS target.\"],\"tags\":[\"google-ads\",\"brand-segmentation\",\"budget-allocation\",\"machine-learning\",\"roas\",\"campaign-setup\"],\"domain\":\"google-ads\"},{\"title\":\"Move bids from Maximize Clicks to value bidding at threshold\",\"summary\":\"Transition from Maximize Clicks for data gathering to Maximize Conversion Value or Target ROAS once the account reaches roughly 15–30 conversions per month.\",\"use_when\":\"Choosing or switching the bidding strategy for ecommerce Search and Shopping campaigns based on available conversion volume\",\"steps\":[\"Start new campaigns on Maximize Clicks while gathering initial data, so the account can accumulate conversion signal without a value target it cannot yet meet.\",\"Track conversions per month across the campaigns that will share the bidding strategy.\",\"When that volume reaches roughly 15–30 conversions per month, switch to Maximize Conversion Value or Target ROAS, which optimizes toward revenue rather than clicks.\",\"Set an initial ROAS target grounded in the account's own observed performance rather than an arbitrary aspirational figure, then adjust deliberately rather than reacting to short-term swings.\",\"When launching a new campaign or a new segment, expect to need a fresh data-gathering period before value bidding is appropriate for it.\"],\"caveats\":[\"The 15–30 conversions-per-month figure is the source's heuristic threshold, not a guaranteed algorithmic requirement.\",\"Switching to Target ROAS below adequate conversion volume starves the algorithm of signal and can stall delivery.\"],\"tags\":[\"google-ads\",\"bidding-strategy\",\"target-roas\",\"maximize-conversion-value\",\"campaign-setup\",\"scaling\"],\"domain\":\"google-ads\"},{\"title\":\"Build Feed-Only Performance Max for product remarketing\",\"summary\":\"Strip a Performance Max campaign of text, image and video assets so the algorithm relies solely on the Merchant Center feed, forcing product-level remarketing.\",\"use_when\":\"Setting up a mid-funnel product remarketing layer once baseline conversion data from Search and Shopping is stable\",\"steps\":[\"Create a Performance Max campaign but omit all text assets, image assets and video assets.\",\"Connect it to the Google Merchant Center feed so the only creative input is product data from the feed.\",\"Because there are no broader creatives to distract the system, it serves product-level remarketing against the feed — re-engaging shoppers with items they have shown interest in.\",\"Position this layer in the account after Search and Shopping are producing stable conversion data, and before investing in upper-funnel Demand Gen.\",\"Review the campaign against feed quality: product titles and attributes are now the primary lever, so feed accuracy and completeness directly bound performance.\"],\"caveats\":[\"The source describes Feed-Only PMax specifically as a mid-funnel remarketing configuration, not as a full-funnel replacement for standard PMax.\",\"Because all non-feed assets are removed, creative testing and messaging are unavailable in this campaign type.\"],\"tags\":[\"google-ads\",\"performance-max\",\"feed-only\",\"middle-funnel\",\"remarketing\",\"merchant-center\"],\"domain\":\"google-ads\"},{\"title\":\"Give performance the time its intent tier requires\",\"summary\":\"Judge upper-funnel campaigns on their role in the sequence rather than by immediate ROAS, because the source frames each funnel tier as serving a different buying intent and timeline.\",\"use_when\":\"Evaluating whether to keep, cut or scale Demand Gen and remarketing campaigns that underperform direct-response ROAS targets\",\"steps\":[\"Label each campaign by its funnel role at setup — bottom (non-branded Shopping, branded Search), middle (remarketing, Feed-Only PMax), top (Demand Gen on YouTube and Discover).\",\"When reviewing performance, compare each campaign against the goal of its tier rather than a single blended ROAS target: bottom-tier campaigns carry the direct-response burden.\",\"Fund the tiers in sequence and treat top-tier spend as something earned by proven bottom- and mid-funnel efficiency, not as a parallel bet from day one.\",\"Watch the account-level trend when deciding to expand reach: if lower-funnel campaigns are efficient and constrained by audience size, upper-funnel investment has a clearer rationale.\",\"Avoid cutting an upper-funnel campaign purely on last-click ROAS before its role in the sequence has had a chance to contribute, but also avoid scaling it without an account-level case.\"],\"caveats\":[\"The source's sequencing emphasis means top-funnel campaigns are judged on enabling later lower-funnel volume, not on standalone ROAS.\",\"Attribution limits mean the exact contribution of upper-funnel spend is hard to isolate; treat tier labels as a planning framework.\"],\"tags\":[\"google-ads\",\"funnel-strategy\",\"demand-gen\",\"reporting\",\"roas\",\"scaling\"],\"domain\":\"google-ads\"}]}",
+  "input": {
+    "source_id": "1EOpXnuoFKBJtNAVVfYuVfvZnIbC2XRrj",
+    "source_sha256": "739c9cd0b8cf9c1e56df1be47dbdb4df15b4052509e4084f0ccc4febf9dc9bd3",
+    "source_name": "Ecommerce Google Ads 2026 Free Course.docx",
+    "folder": "/12-GAD-google-ads",
+    "domain": "google-ads",
+    "section": 0,
+    "section_count": 7,
+    "text": "12-GAD / google ads\n\nGoes here. Google Ads ecosystem mechanics, advanced search marketing operations, core architecture (Search, Standard Shopping, Performance Max, Demand Gen, YouTube), auction mechanics (Ad Rank formula, Quality Score diagnostics, second-price logic), technical feed engineering (Google Merchant Center, product title architecture, diagnostics), conversion tracking (GTM, enhanced conversions, server-side attribution), and advanced scaling/bidding strategies (intent-tiered keyword research, brand vs. non-brand segmentation, surface-area catalog scaling, target ROAS/maximize conversion value).\n\nNot here.\n\nPaid social creative production, hook writing, direct response video frameworks, creator/UGC scripting, static ad design, messaging strategies, evaluating stages of awareness, identifying new ad formats/angles, advertorials, unique mechanisms, and creative strategist workflows -> 10-MCR Multi-platform channel structures, campaign deployment settings, platform infrastructure, pixel tracking, budget distribution, scaling workflows, and attribution models -> 11-ADC Conversion rate optimization (CRO) on core website pages or general analytics -> 06-MEA\n\nHeader. url: rights: public_reference why: Details a complete, step-by-step blueprint for building a high-performing e-commerce Google Ads architecture—emphasizing the strategic separation of branded vs. non-branded traffic, the deployment of core Search and Shopping layers before scaling into Performance Max remarketing, and topping the funnel with visual Demand Gen campaigns. modules: [GAD] topics: [campaign setup and tracking, return on ad spend (ROAS)] tier: 2 scope_hint: core\n\nTopics. campaign setup and tracking / Architecting a structured, multi-stage e-commerce Google Ads account by deploying foundational layers first. Establishing baseline data through Non-Branded Shopping (for new customer acquisition) and Branded Search/Shopping (to capture cheap, high-intent conversions). Layering in remarketing via video/display or Feed-Only Performance Max once baseline conversion data stabilizes. Scaling with top-of-funnel Demand Gen (YouTube/Discover) campaigns only after exhausting bottom- and mid-funnel intent. return on ad spend (ROAS) / Optimizing budget efficiency and attribution by strictly isolating branded from non-branded traffic via negative keyword lists and priority settings. Utilizing low-budget, high-ROAS branded campaigns to feed the algorithm cheap conversion data, thereby improving the machine learning models that drive more expensive, new-customer non-branded campaigns. Transitioning bidding strategies from \"Maximize Clicks\" (for initial data gathering) to \"Maximize Conversion Value\" or \"Target ROAS\" once a threshold of 15–30 conversions per month is reached.\n\nLook for. The recommended chronological order for launching e-commerce Google Ads campaigns: starting with Search and Shopping (bottom/mid funnel), adding remarketing/PMax (mid funnel), and scaling with Demand Gen (top funnel) last. The core structural rule for non-branded campaigns: explicitly adding branded terms as exact-match negative keywords to prevent attribution distortion. The specific definition of a \"feed-only\" Performance Max campaign: a PMax campaign stripped of all text, image, and video assets, forcing the algorithm to rely solely on the Google Merchant Center shopping feed for product remarketing.\n\nSkip. General agency promotional pitches, requests to book strategy calls, or basic Shopify interface navigation instructions.\n\nScope mix. Almost all core.\n\nVolume. 15 to 20.",
+    "prior_notes": [],
+    "id": "4cdabcf0008a293d288b0703"
+  },
+  "system_prompt_sha256": "f2341d28186a0dbaee868d37ce33c173f631088eb1754997556740d4905c0f2b"
+}

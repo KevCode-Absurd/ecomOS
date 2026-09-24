@@ -1,0 +1,599 @@
+{
+  "cards": [
+    {
+      "title": "Platform lift tests vs geo-lift tests: choosing your incrementality method",
+      "summary": "Compare in-platform lift experiments and geo-lift experiments on speed, cost, verifiability, and effort so you pick the right one for your paid media validation.",
+      "use_when": "You need to validate whether a paid channel (Meta, TikTok, Google, YouTube) is driving genuinely incremental purchases rather than just claiming credit for existing demand.",
+      "steps": [
+        "Understand the in-platform lift test mechanism: the platform splits users individually into a treatment bucket (sees ads) and control bucket (no ads), then measures purchase behavior via pixel and computes incremental impact.",
+        "Know the in-platform lift pros: fast, can run continuously (Meta allows always-on runs), and works at individual user level so no country splitting is needed.",
+        "Know the in-platform lift cons: you rely entirely on the platform's data science and cannot verify their math or see raw data; it also depends on attribution being accurate.",
+        "Know geo-lift pros: you control the experimental design, own all the data, and can verify everything end-to-end.",
+        "Know geo-lift cons: slow to run, requires large spend to reach statistical significance, and requires holding variables constant across states and the test period.",
+        "Watch for minimum spend hurdles: the source notes TikTok (and similarly Google) may require roughly $200k spend before you can actually run the test; verify current platform minimums.",
+        "Source position: use both methods in one experiment design strategy rather than treating either as a silver bullet.",
+        "Ecommerce application: for a store deciding whether to keep or scale a channel, run a platform lift test when budget is limited and speed matters, and reserve geo-lift tests for high-revenue scenarios where you need verifiable causation."
+      ],
+      "caveats": [
+        "Platform lift experiments cannot be independently verified — you trust the vendor's readout.",
+        "Geo-lift tests require large budgets and long timelines and are not easy to run."
+      ],
+      "tags": [
+        "multi",
+        "incrementality",
+        "experiment-design",
+        "measurement",
+        "acquisition",
+        "paid-media",
+        "attribution"
+      ],
+      "id": "96e6e856fd7bd726bed92db5",
+      "source_id": "1w9MQLP9B1Mcf18GlrqIX515g-3KLGcW2",
+      "source_sha256": "1141c07f0c7cc9ea53849a8a5e7089c31336e616a5d0dbd3132fc703e0aa348c",
+      "source_name": "The #1 Bottleneck I See in 80% of eCommerce Audits.docx",
+      "folder": "/99-multi",
+      "domain": "multi",
+      "section": 2
+    },
+    {
+      "title": "Using causal impact / counterfactual modeling for retroactive channel analysis",
+      "summary": "Apply Google's open-source causal impact package to retrospectively estimate what revenue would have been without a channel intervention, using third-party confounding variables.",
+      "use_when": "You introduced a channel or campaign (e.g., YouTube, TikTok) at some point in the past and want a directional retrospective read on whether it actually drove revenue.",
+      "steps": [
+        "Recognize the core problem: with no geo split you cannot prove causation, so you use a predictive model to build a counterfactual of what revenue would have been absent the intervention.",
+        "Identify predictive confounding variables for your daily revenue, such as ad spend, keyword seasonality, influencer spend, and inflation data.",
+        "Load those variables plus the intervention point into Google's open-source causal impact package (the source misspoke initially as 'causal inference').",
+        "Read the output as a predicted counterfactual revenue line versus actual revenue; the gap over the period is your directional incremental impact.",
+        "Apply the pack to real decisions: the source's example found an extra ~$10k revenue against $10k ad spend — roughly a 1x ROI — showing the channel was far less effective than assumed.",
+        "Use it as an add-on to your tooling to go back and analyze a past TikTok, YouTube, or similar launch.",
+        "Ecommerce application: before reallocating budget to a channel you launched during a strong season, run this analysis to avoid crediting the channel for what seasonality or spend already drove."
+      ],
+      "caveats": [
+        "Causal impact is a predictive model using third-party variables, not true experimental proof — treat it as directional only.",
+        "It is Bayesian/statistical inference, not a substitute for a real geo-lift experiment when causation matters."
+      ],
+      "tags": [
+        "multi",
+        "incrementality",
+        "measurement",
+        "attribution",
+        "causal-impact",
+        "analytics",
+        "experiment-design"
+      ],
+      "id": "c049a4fab120c6557f696531",
+      "source_id": "1w9MQLP9B1Mcf18GlrqIX515g-3KLGcW2",
+      "source_sha256": "1141c07f0c7cc9ea53849a8a5e7089c31336e616a5d0dbd3132fc703e0aa348c",
+      "source_name": "The #1 Bottleneck I See in 80% of eCommerce Audits.docx",
+      "folder": "/99-multi",
+      "domain": "multi",
+      "section": 2
+    },
+    {
+      "title": "Why launch timing confuses channel results (Black Friday and Q4 era)",
+      "summary": "Brands wrongly credit a new channel for a strong period because they launched it during seasonality peaks without any measurement system.",
+      "use_when": "You are deciding whether to keep a channel you launched in October/November or during any peak season based on a good subsequent month.",
+      "steps": [
+        "Identify the trap: introducing YouTube, TikTok, or another channel in October and then seeing a strong November leads many to assume the channel worked.",
+        "Ask how the uplift was actually measured — the source notes most cannot answer this; there is no test design, only correlation drawn from a good period.",
+        "Recognize that 'revenue went up after we launched' is not evidence the campaign caused it when seasonality is a strong confounding variable.",
+        "Demand a causal experimental design before treating the channel as a winner; without it, you may find your assumptions are wrong.",
+        "Ecommerce application: for a store planning a new channel launch, avoid launching it into peak season or, if you must, build the counterfactual model before drawing conclusions about its incremental value."
+      ],
+      "caveats": [
+        "The source example is illustrative, not a quantified benchmark."
+      ],
+      "tags": [
+        "multi",
+        "incrementality",
+        "measurement",
+        "attribution",
+        "seasonality",
+        "experiment-design"
+      ],
+      "id": "33775b73749d392c1166e885",
+      "source_id": "1w9MQLP9B1Mcf18GlrqIX515g-3KLGcW2",
+      "source_sha256": "1141c07f0c7cc9ea53849a8a5e7089c31336e616a5d0dbd3132fc703e0aa348c",
+      "source_name": "The #1 Bottleneck I See in 80% of eCommerce Audits.docx",
+      "folder": "/99-multi",
+      "domain": "multi",
+      "section": 2
+    },
+    {
+      "title": "Setting up Conversions API (CAPI) on Meta for better tracking and optimization",
+      "summary": "Route purchase events server-side through Meta's Conversions API to bypass unreliable browser tracking and improve event matching and optimization.",
+      "use_when": "You are auditing or fixing Meta ad tracking for an ecommerce store and want to improve data quality feeding the ad platform.",
+      "steps": [
+        "Install the Conversions API (CAPI) on Meta; the source says to make sure it is set up and working.",
+        "Understand the mechanism: instead of purchase events firing from the browser pixel, they fire on your own local server, which then reroutes them to Meta.",
+        "Know why it matters: this removes reliance on the browser, which is unreliable due to iOS changes, ad blockers, and privacy regulations.",
+        "Understand the matching benefit: CAPI passes back first-party data (email, phone number, customer ID), all hashed/privatized, which improves event match rates.",
+        "Use it for offline conversions: if someone buys in store using an email or phone, CAPI can link that purchase back to an ad served on the platform.",
+        "Accept the optimization payoff: better tracking means more data flowing into the platform, which improves ad optimization.",
+        "Ecommerce application: prioritize CAPI setup before scaling Meta spend, since poor tracking degrades optimization for every campaign you run."
+      ],
+      "caveats": [
+        "Tool interfaces and setup steps change over time — verify current Meta CAPI setup instructions.",
+        "The source says brands doing $10-20M+/year should already have tracking configured, so this is more of a check than a from-scratch rebuild at that scale."
+      ],
+      "tags": [
+        "multi",
+        "measurement",
+        "attribution",
+        "meta-ads",
+        "tracking",
+        "conversions-api",
+        "capi"
+      ],
+      "id": "2c720c61a3755f9ab26ca915",
+      "source_id": "1w9MQLP9B1Mcf18GlrqIX515g-3KLGcW2",
+      "source_sha256": "1141c07f0c7cc9ea53849a8a5e7089c31336e616a5d0dbd3132fc703e0aa348c",
+      "source_name": "The #1 Bottleneck I See in 80% of eCommerce Audits.docx",
+      "folder": "/99-multi",
+      "domain": "multi",
+      "section": 2
+    },
+    {
+      "title": "Avoid Shopify marketing/attribution reports for decisions",
+      "summary": "The source finds Shopify's marketing and attribution reports unreliable and recommends not using them for business decisions.",
+      "use_when": "You are setting up your measurement stack for an ecommerce store and deciding which data sources to trust for spend and revenue decisions.",
+      "steps": [
+        "Do not rely on Shopify's marketing or attribution reports for decision-making; the source says it has rarely seen helpful data there.",
+        "Recognize this is fundamentally the same attribution problem you face elsewhere — the attribution models in Shopify are not reliable for understanding true impact.",
+        "Instead, build your decision dashboard on financial-based KPIs and platform data, not Shopify's attribution models.",
+        "Use G4 and Shopify only as needed; the source treats them as secondary or redundancy layers rather than primary decision dashboards.",
+        "Ecommerce application: when deciding budget shifts between channels, pull the numbers from your own incrementality testing and financial KPIs rather than the Shopify attribution report."
+      ],
+      "caveats": [
+        "The source's assessment is as of May 2026 and reflects its own client experience — verify whether Shopify has updated its reporting."
+      ],
+      "tags": [
+        "multi",
+        "measurement",
+        "attribution",
+        "shopify",
+        "analytics",
+        "reporting"
+      ],
+      "id": "7a6b5c93b85573a1d3099c68",
+      "source_id": "1w9MQLP9B1Mcf18GlrqIX515g-3KLGcW2",
+      "source_sha256": "1141c07f0c7cc9ea53849a8a5e7089c31336e616a5d0dbd3132fc703e0aa348c",
+      "source_name": "The #1 Bottleneck I See in 80% of eCommerce Audits.docx",
+      "folder": "/99-multi",
+      "domain": "multi",
+      "section": 2
+    },
+    {
+      "title": "Treat GA4 as a redundancy layer, not a daily decision dashboard",
+      "summary": "GA4 should collect data properly as a fallback, but should not drive day-to-day ecommerce decisions because it offers nothing you can't get from Shopify or the ad platforms.",
+      "use_when": "You are deciding what to actually open each day to make budget and campaign decisions for your store.",
+      "steps": [
+        "Position GA4 as a redundancy layer: if your platform tracking breaks, GA4 gives quick directional insight as a fallback.",
+        "Ensure GA4 is set up properly — firing correctly, with campaigns segmented — so the fallback data has been collecting all along.",
+        "Do not use GA4 as your primary daily decision dashboard; the source says there is nothing in GA4 you cannot get from Shopify or the ad platforms.",
+        "Prioritize more important financial and incrementality metrics for indexing against your decisions instead.",
+        "Ecommerce application: for daily budget or scaling calls, work from new-customer revenue, acquisition CAC, and profit contribution dashboards; keep GA4 configured only so it is there when you need a backup read."
+      ],
+      "caveats": [
+        "Source opinion as of May 2026; GA4 capabilities may change — verify before relying on this."
+      ],
+      "tags": [
+        "multi",
+        "measurement",
+        "attribution",
+        "ga4",
+        "analytics",
+        "reporting"
+      ],
+      "id": "38c80ae68029672e69cd13ce",
+      "source_id": "1w9MQLP9B1Mcf18GlrqIX515g-3KLGcW2",
+      "source_sha256": "1141c07f0c7cc9ea53849a8a5e7089c31336e616a5d0dbd3132fc703e0aa348c",
+      "source_name": "The #1 Bottleneck I See in 80% of eCommerce Audits.docx",
+      "folder": "/99-multi",
+      "domain": "multi",
+      "section": 2
+    },
+    {
+      "title": "One-day view attribution overattribution mistake",
+      "summary": "Running one-day view through all campaigns inflates reported ROAS with massive overattribution, so remove it to see reality.",
+      "use_when": "You are auditing Meta (or similar) campaign reporting and wondering why reported ROAS looks great but the business results disagree.",
+      "steps": [
+        "Check whether one-day view attribution is enabled across all campaigns and being used in reporting.",
+        "Recognize this causes massive overattribution — the source cites 30-50% of reported ROAS coming from view-throughs.",
+        "Remove one-day view from reporting to get a more realistic read of what is actually occurring in the business.",
+        "Ecommerce application: before scaling budget on the strength of reported ROAS, strip view-through attribution and recalculate so your scaling decisions are based on real impact."
+      ],
+      "caveats": [
+        "The 30-50% figure is the source's observation from audits, not a universal benchmark."
+      ],
+      "tags": [
+        "multi",
+        "measurement",
+        "attribution",
+        "meta-ads",
+        "roas",
+        "audit"
+      ],
+      "id": "2dbf871d15aa5d3ec18f710d",
+      "source_id": "1w9MQLP9B1Mcf18GlrqIX515g-3KLGcW2",
+      "source_sha256": "1141c07f0c7cc9ea53849a8a5e7089c31336e616a5d0dbd3132fc703e0aa348c",
+      "source_name": "The #1 Bottleneck I See in 80% of eCommerce Audits.docx",
+      "folder": "/99-multi",
+      "domain": "multi",
+      "section": 2
+    },
+    {
+      "title": "Account for Google's halo effect when judging ROAS",
+      "summary": "Google overattributes by taking credit for conversions that other platforms drove, so its ROAS should be reconsidered with skepticism.",
+      "use_when": "You are evaluating a PMax or Google campaign showing very high ROAS and deciding whether to increase spend.",
+      "steps": [
+        "Understand the halo effect: Google's reported ROAS looks better than reality because it absorbs credit for what other platforms drove.",
+        "Do not conclude Google cannot acquire new customers — the source says you can profitably spend $100-200k/month on Google, but only if it is genuinely net incremental.",
+        "Stress-test the number: if a PMax campaign (even with brand excluded) shows 20x ROAS, skeptically consider putting an extra $1,000 in and checking whether you actually get $20,000 back in topline — likely you will not.",
+        "Treat Google's incrementality as usually overstated and account for the halo when reporting.",
+        "Ecommerce application: when deciding to scale Google spend for your store, validate with an incrementality test rather than trusting reported ROAS."
+      ],
+      "caveats": [
+        "High Google ROAS is not proof of no incremental value — it means the reported figure overstates incremental impact."
+      ],
+      "tags": [
+        "multi",
+        "measurement",
+        "attribution",
+        "google-ads",
+        "roas",
+        "incrementality"
+      ],
+      "id": "71083548afed377ee687b4c2",
+      "source_id": "1w9MQLP9B1Mcf18GlrqIX515g-3KLGcW2",
+      "source_sha256": "1141c07f0c7cc9ea53849a8a5e7089c31336e616a5d0dbd3132fc703e0aa348c",
+      "source_name": "The #1 Bottleneck I See in 80% of eCommerce Audits.docx",
+      "folder": "/99-multi",
+      "domain": "multi",
+      "section": 2
+    },
+    {
+      "title": "Brand spend waste caused by over-prioritizing ROAS",
+      "summary": "Chasing ROAS as the north star leads accounts to leave brand search in, causing large waste even at 8-figure retailers.",
+      "use_when": "You are structuring paid search or campaign budgets and deciding whether to suppress brand terms.",
+      "steps": [
+        "Recognize why brand waste happens: because ROAS is the north star metric, teams leave brand in to keep ROAS high.",
+        "Note the source sees this even in large 8-figure retailers, causing significant waste within the account.",
+        "Exclude brand where it is not genuinely incremental, and minimize brand search spend in your account structure.",
+        "Ecommerce application: in a store's paid search budget, separate brand and non-brand, and do not let brand conversions inflate the portfolio ROAS that justifies further spend."
+      ],
+      "caveats": [
+        "Brand terms are not always non-incremental; the source's point is that ROAS-driven incentives cause over-investment in them."
+      ],
+      "tags": [
+        "multi",
+        "measurement",
+        "attribution",
+        "brand-search",
+        "roas",
+        "google-ads",
+        "audit"
+      ],
+      "id": "606c03936b6f0804ee7d2795",
+      "source_id": "1w9MQLP9B1Mcf18GlrqIX515g-3KLGcW2",
+      "source_sha256": "1141c07f0c7cc9ea53849a8a5e7089c31336e616a5d0dbd3132fc703e0aa348c",
+      "source_name": "The #1 Bottleneck I See in 80% of eCommerce Audits.docx",
+      "folder": "/99-multi",
+      "domain": "multi",
+      "section": 2
+    },
+    {
+      "title": "Over-segmentation causes measurement fragmentation",
+      "summary": "Too many campaigns relative to business complexity and spend fragments data and makes decision-making convoluted.",
+      "use_when": "You are reviewing account structure and considering splitting campaigns further, or auditing why reporting is hard to interpret.",
+      "steps": [
+        "Check whether your number of campaigns is disproportionate to your business complexity or spend level.",
+        "Understand the compounding effect: over-segmentation fragments data, which creates a measurement problem.",
+        "Recognize that with fragmented data, decision-making becomes very convoluted.",
+        "Consolidate campaigns to match business complexity and spend level to keep data readable.",
+        "Ecommerce application: for a store running many campaigns with modest budgets, simplify account structure so measurement and decisions stay clear rather than splitting further."
+      ],
+      "caveats": [
+        "Over-segmentation is a judgment call; there is no fixed campaign count — assess against business complexity and spend."
+      ],
+      "tags": [
+        "multi",
+        "account-structure",
+        "measurement",
+        "paid-media",
+        "audit",
+        "reporting"
+      ],
+      "id": "e7a390a101745fe5c84323ae",
+      "source_id": "1w9MQLP9B1Mcf18GlrqIX515g-3KLGcW2",
+      "source_sha256": "1141c07f0c7cc9ea53849a8a5e7089c31336e616a5d0dbd3132fc703e0aa348c",
+      "source_name": "The #1 Bottleneck I See in 80% of eCommerce Audits.docx",
+      "folder": "/99-multi",
+      "domain": "multi",
+      "section": 2
+    },
+    {
+      "title": "Beware overattribution on low-spend tertiary channels",
+      "summary": "Small third-party channels like Snapchat, Pinterest, and Reddit show inflated ROAS because low spend defaults to reaching warm pixel audiences rather than driving new growth.",
+      "use_when": "You are deciding whether a small tertiary channel's high ROAS justifies keeping or growing it.",
+      "steps": [
+        "Identify the tertiary channels: Snapchat, Pinterest, Reddit, and similar channels with very low spend allocation.",
+        "Understand the mechanism: at low spend, the algorithm prioritizes the warm audience already hitting your site (with pixel) rather than new users.",
+        "Recognize the result: incredibly high reported ROAS on channels that are not actually driving new incremental growth.",
+        "Treat these high ROAS numbers with skepticism before crediting them for growth or scaling them.",
+        "Ecommerce application: for a store testing a small channel, measure new-customer impact or run an incrementality test rather than trusting the channel's reported ROAS."
+      ],
+      "caveats": [
+        "The overattribution problem is driven by low spend, so larger budgets on these channels may behave differently and should be tested."
+      ],
+      "tags": [
+        "multi",
+        "measurement",
+        "attribution",
+        "roas",
+        "snapchat",
+        "pinterest",
+        "reddit",
+        "incrementality"
+      ],
+      "id": "94dc95d044bc02743fe0e79d",
+      "source_id": "1w9MQLP9B1Mcf18GlrqIX515g-3KLGcW2",
+      "source_sha256": "1141c07f0c7cc9ea53849a8a5e7089c31336e616a5d0dbd3132fc703e0aa348c",
+      "source_name": "The #1 Bottleneck I See in 80% of eCommerce Audits.docx",
+      "folder": "/99-multi",
+      "domain": "multi",
+      "section": 2
+    },
+    {
+      "title": "Stop existing-customer overspend that inflates metrics",
+      "summary": "Spending more on existing customers because ROAS looks good inflates all numbers and drives further misallocation.",
+      "use_when": "You are setting campaign objectives and budgets and need to decide whether to exclude existing customers.",
+      "steps": [
+        "Look for budget increases justified by strong ROAS that are actually driven by existing-customer spend.",
+        "Recognize this inflates all the numbers and leads teams to increase budgets further based on misleading ROAS.",
+        "Exclude existing customers from top-of-funnel campaigns so results reflect acquisition.",
+        "Ecommerce application: in a store's prospecting campaigns, suppress past purchasers so reported returns reflect new-customer acquisition rather than repeat buyers who would have purchased anyway."
+      ],
+      "caveats": [
+        "Excluding existing customers is specific to top-of-funnel campaigns; retention campaigns intentionally target them."
+      ],
+      "tags": [
+        "multi",
+        "measurement",
+        "attribution",
+        "acquisition",
+        "audit",
+        "roas"
+      ],
+      "id": "b2092d04659e514e9bfdb1fe",
+      "source_id": "1w9MQLP9B1Mcf18GlrqIX515g-3KLGcW2",
+      "source_sha256": "1141c07f0c7cc9ea53849a8a5e7089c31336e616a5d0dbd3132fc703e0aa348c",
+      "source_name": "The #1 Bottleneck I See in 80% of eCommerce Audits.docx",
+      "folder": "/99-multi",
+      "domain": "multi",
+      "section": 2
+    },
+    {
+      "title": "Top-funnel Meta objectives (traffic/reach) need a measurement system",
+      "summary": "Running traffic or reach campaigns on Meta without any measurement system means unmeasurable spend and false confidence drawn from correlation.",
+      "use_when": "You are considering traffic or reach campaigns for your store, or auditing whether existing ones are justified.",
+      "steps": [
+        "Recognize that traffic/reach campaigns have no ROAS, which is why they are often run on assumed performance.",
+        "Understand the typical failure: almost no one running traffic campaigns has a way to actually measure their impact — they attribute revenue lift to correlation from agency reporting.",
+        "Evaluate the source's critique: running a traffic campaign at 3% of budget during Black Friday has essentially no measurable impact, and before/after correlation cannot prove it did.",
+        "Choose one path: if you run traffic or reach campaigns, fine, but have a measurement system (e.g., lift study or causal impact) in place to validate them.",
+        "Otherwise, do not run spend you cannot measure — the source's position is it is just wasting budget on something unvalidated.",
+        "Ecommerce application: for a store testing awareness-style objectives, predefine the lift test or counterfactual method before launching, not after."
+      ],
+      "caveats": [
+        "This is the source's strong position that unmeasured top-funnel spend is not worth running; it does not forbid these objectives, it demands measurement."
+      ],
+      "tags": [
+        "multi",
+        "measurement",
+        "experiment-design",
+        "meta-ads",
+        "top-of-funnel",
+        "audit"
+      ],
+      "id": "703558b831843f92939ba48f",
+      "source_id": "1w9MQLP9B1Mcf18GlrqIX515g-3KLGcW2",
+      "source_sha256": "1141c07f0c7cc9ea53849a8a5e7089c31336e616a5d0dbd3132fc703e0aa348c",
+      "source_name": "The #1 Bottleneck I See in 80% of eCommerce Audits.docx",
+      "folder": "/99-multi",
+      "domain": "multi",
+      "section": 2
+    },
+    {
+      "title": "DPA overspend driven by attractive ROAS",
+      "summary": "Scaling dynamic product ads because ROAS looks good leads to non-incremental spend since DPAs sit at the bottom of funnel.",
+      "use_when": "You are deciding whether to increase DPA budget based on strong reported ROAS.",
+      "steps": [
+        "Identify the pattern: DPAs show attractive ROAS, prompting people to spend more and more.",
+        "Recognize this is not actually incremental because DPAs sit at the bottom of the funnel and harvest existing demand.",
+        "Apply the same skepticism you use for brand and retargeting when reviewing DPA returns.",
+        "Ecommerce application: for a store scaling catalog/DPA campaigns, validate incrementality before raising budget rather than scaling purely on ROAS."
+      ],
+      "caveats": [
+        "Bottom-funnel campaigns can still be valuable for conversion; the warning is against treating their ROAS as evidence of incremental growth."
+      ],
+      "tags": [
+        "multi",
+        "measurement",
+        "attribution",
+        "dpa",
+        "roas",
+        "incrementality",
+        "audit"
+      ],
+      "id": "79b6665ba35dd3acdb3ee213",
+      "source_id": "1w9MQLP9B1Mcf18GlrqIX515g-3KLGcW2",
+      "source_sha256": "1141c07f0c7cc9ea53849a8a5e7089c31336e616a5d0dbd3132fc703e0aa348c",
+      "source_name": "The #1 Bottleneck I See in 80% of eCommerce Audits.docx",
+      "folder": "/99-multi",
+      "domain": "multi",
+      "section": 2
+    },
+    {
+      "title": "Build a measurement and testing structure so every decision is validated",
+      "summary": "Without a testing/experimental design, you cannot validate whether anything is working, which the source considers a core scaling failure.",
+      "use_when": "You are setting up or auditing the measurement foundation for a store's paid media and need to decide what to test and how.",
+      "steps": [
+        "Recognize the core diagnosis: most brands that fail to scale paid media have a measurement problem, not a paid media problem.",
+        "Understand the consequence: they optimize to numbers that do not match what is actually occurring in the business.",
+        "Establish a testing or experimental design before running any new initiative — if you cannot validate whether something works, the source argues it is not worth doing.",
+        "Connect this to the traffic/reach campaign problem: running something with no measurement system means you are just making assumptions.",
+        "Ecommerce application: for a store, define what outcome each new channel or campaign is meant to drive and the method (lift study, geo-lift, causal impact) that will validate it before spending."
+      ],
+      "caveats": [
+        "The source's framing ('if you can't validate it, there's no point') is a strong position; smaller stores may still run low-cost exploratory spend."
+      ],
+      "tags": [
+        "multi",
+        "measurement",
+        "experiment-design",
+        "incrementality",
+        "audit",
+        "strategy"
+      ],
+      "id": "a7b82c68d543e6b5a6d9f170",
+      "source_id": "1w9MQLP9B1Mcf18GlrqIX515g-3KLGcW2",
+      "source_sha256": "1141c07f0c7cc9ea53849a8a5e7089c31336e616a5d0dbd3132fc703e0aa348c",
+      "source_name": "The #1 Bottleneck I See in 80% of eCommerce Audits.docx",
+      "folder": "/99-multi",
+      "domain": "multi",
+      "section": 2
+    },
+    {
+      "title": "Action items for $1-5M revenue stores: fix reporting basics",
+      "summary": "At $1-5M revenue, switch to 7-day click on Meta, tag COGS in Shopify, build a profit-focused dashboard, and exclude existing customers from top-of-funnel.",
+      "use_when": "You run an ecommerce store in the $1-5M revenue range and want the right baseline measurement actions.",
+      "steps": [
+        "Switch to 7-day click reporting on Meta — the source says it correlates much better to acquisition metrics in the business.",
+        "Tag up Shopify cost of goods on all products so you get real-time visibility into gross margin.",
+        "Set up a dashboard giving a daily read on: acquisition new-customer profit contribution, new-customer revenue, new-customer orders, and blended CAC.",
+        "Exclude existing customers from top-of-funnel campaigns.",
+        "Minimize brand search spend.",
+        "Ecommerce application: implement these as the foundation for a store at this revenue level before layering in more advanced incrementality testing."
+      ],
+      "caveats": [
+        "These are revenue-band heuristics from the source, not proven thresholds; apply based on your actual situation."
+      ],
+      "tags": [
+        "multi",
+        "measurement",
+        "analytics",
+        "meta-ads",
+        "shopify",
+        "cogs",
+        "cac",
+        "acquisition",
+        "dashboard"
+      ],
+      "id": "23010ab3b69101cf7443e978",
+      "source_id": "1w9MQLP9B1Mcf18GlrqIX515g-3KLGcW2",
+      "source_sha256": "1141c07f0c7cc9ea53849a8a5e7089c31336e616a5d0dbd3132fc703e0aa348c",
+      "source_name": "The #1 Bottleneck I See in 80% of eCommerce Audits.docx",
+      "folder": "/99-multi",
+      "domain": "multi",
+      "section": 2
+    },
+    {
+      "title": "Action items for $5-20M revenue stores: layer in lift studies",
+      "summary": "At $5-20M revenue, add in-platform lift studies for top-funnel experimentation and use incremental attribution as a second validation layer beyond 7-day click.",
+      "use_when": "You run an ecommerce store in the $5-20M revenue range and have the basics in place, ready to add validation infrastructure.",
+      "steps": [
+        "Retain all the $1-5M basics (7-day click, COGS tagging, profit dashboard, existing-customer exclusion, brand minimization).",
+        "Start layering in lift studies within the platforms.",
+        "Run top-funnel experimentation measured against those lift studies.",
+        "Use incremental attribution as a second validation layer beyond 7-day click reporting.",
+        "Ecommerce application: for a store at this scale, use lift studies to validate top-funnel spend that ROAS cannot measure, feeding incrementality factors back into reporting."
+      ],
+      "caveats": [
+        "Revenue bands are source heuristics, not fixed rules; also note in-platform lift studies cannot be independently verified."
+      ],
+      "tags": [
+        "multi",
+        "measurement",
+        "incrementality",
+        "lift-study",
+        "experiment-design",
+        "attribution"
+      ],
+      "id": "99402b442662448e3a1cb2e1",
+      "source_id": "1w9MQLP9B1Mcf18GlrqIX515g-3KLGcW2",
+      "source_sha256": "1141c07f0c7cc9ea53849a8a5e7089c31336e616a5d0dbd3132fc703e0aa348c",
+      "source_name": "The #1 Bottleneck I See in 80% of eCommerce Audits.docx",
+      "folder": "/99-multi",
+      "domain": "multi",
+      "section": 2
+    },
+    {
+      "title": "Action items for $20M+ revenue stores: geo-lift tests and incrementality factors",
+      "summary": "At $20M+, run geo-lift tests outside the platform and apply resulting incrementality factors to attributed ROAS numbers for a realistic view.",
+      "use_when": "You run an ecommerce store at $20M+ revenue with a complex channel and revenue capture mix and need verifiable incrementality measurement.",
+      "steps": [
+        "Run geo-lift tests outside the platform for channels where you need verifiable causation.",
+        "Build a dashboard that pulls in omnichannel metrics from every revenue capture place, not just platform data.",
+        "Add one or two additional metrics on top of the baseline dashboard as your scale allows.",
+        "Apply incrementality factors: when a geo-lift gives an incremental return output, use it as a factor applied to in-platform attributed ROAS numbers to get a more realistic incremental view across campaigns and platforms.",
+        "Run consistent geo-lift tests at high frequency so you can derive incrementality factors across all channels and campaign types.",
+        "Ecommerce application: for a large store making big budget allocations, use these factors to correct platform ROAS before reallocating spend."
+      ],
+      "caveats": [
+        "Requires very high frequency testing to build factors across all channels; geo-lift tests take significant time and spend.",
+        "Revenue bands are source heuristics."
+      ],
+      "tags": [
+        "multi",
+        "incrementality",
+        "measurement",
+        "geo-lift",
+        "attribution",
+        "experiment-design",
+        "dashboard"
+      ],
+      "id": "28067949e7684395bacb87a8",
+      "source_id": "1w9MQLP9B1Mcf18GlrqIX515g-3KLGcW2",
+      "source_sha256": "1141c07f0c7cc9ea53849a8a5e7089c31336e616a5d0dbd3132fc703e0aa348c",
+      "source_name": "The #1 Bottleneck I See in 80% of eCommerce Audits.docx",
+      "folder": "/99-multi",
+      "domain": "multi",
+      "section": 2
+    },
+    {
+      "title": "Shift from ROAS to financial-based KPIs for scaling decisions",
+      "summary": "The source argues winning brands move toward financial-based KPIs and incrementality testing rather than optimizing to platform ROAS.",
+      "use_when": "You are setting the north-star metric for your store's paid media and deciding what to optimize.",
+      "steps": [
+        "Identify the trap: optimizing to numbers that do not match what is actually occurring in the business, often ROAS inflated by view-throughs, brand, and bottom-funnel capture.",
+        "Understand the consequences chain: a measurement problem drives bad decision-making loops, and brands attribute credit to the wrong funnel stage.",
+        "Move toward financial-based KPIs (e.g., new-customer profit contribution, blended CAC, incremental return) rather than platform-reported ROAS as the north star.",
+        "Add incrementality tests at larger revenue levels to validate those financial KPIs.",
+        "At any level, prioritize cleaning up in-platform reporting as the first step.",
+        "Ecommerce application: for a store deciding where to scale, base the call on new-customer profit and CAC rather than a reported ROAS that may overattribute."
+      ],
+      "caveats": [
+        "This is the source's strategic opinion, framed as where winning brands are headed in 2026-2027; the source also has a commercial interest in providing audits."
+      ],
+      "tags": [
+        "multi",
+        "measurement",
+        "attribution",
+        "kpi",
+        "cac",
+        "incrementality",
+        "strategy"
+      ],
+      "id": "17393d9c2d71e4abeecfdd45",
+      "source_id": "1w9MQLP9B1Mcf18GlrqIX515g-3KLGcW2",
+      "source_sha256": "1141c07f0c7cc9ea53849a8a5e7089c31336e616a5d0dbd3132fc703e0aa348c",
+      "source_name": "The #1 Bottleneck I See in 80% of eCommerce Audits.docx",
+      "folder": "/99-multi",
+      "domain": "multi",
+      "section": 2
+    }
+  ],
+  "request_id": "e1edb19812672a3d35466cbc1c7d5891c2d7a93a73a676c5bfa97bb8d4a7571e",
+  "ecommerce_scope_version": 1
+}

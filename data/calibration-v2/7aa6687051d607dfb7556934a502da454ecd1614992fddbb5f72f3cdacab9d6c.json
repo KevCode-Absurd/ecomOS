@@ -1,0 +1,267 @@
+{
+  "request_id": "7aa6687051d607dfb7556934a502da454ecd1614992fddbb5f72f3cdacab9d6c",
+  "provider": "openai",
+  "model": "gpt-5.6-terra",
+  "effort": "high",
+  "completion_limit": 8192,
+  "usage": {
+    "prompt_tokens": 1933,
+    "completion_tokens": 599,
+    "total_tokens": 2532,
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 1930,
+      "audio_tokens": 0
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 118,
+      "audio_tokens": 0,
+      "accepted_prediction_tokens": 0,
+      "rejected_prediction_tokens": 0
+    }
+  },
+  "booked_cost_usd": 0.0120205,
+  "seconds": 11.59,
+  "finish_reason": "stop",
+  "output": {
+    "decision": "No—do not reallocate budget solely because reported ROAS is 5 for Google brand search versus 2 for TikTok prospecting. These are different platforms and funnel roles; Google brand search may capture demand that TikTok helped create. Keep budget stable while validating incremental new-customer and profit impact before making a material shift.",
+    "next_steps": [
+      "Separate reporting by new versus returning customers and evaluate contribution after product margin, discounts, and variable costs.",
+      "Run a controlled TikTok budget test (for example, matched-market or time-based holdout where feasible) and track downstream branded-search, new-customer, and total-sales effects.",
+      "Audit attribution settings, windows, conversion definitions, and overlap between TikTok exposure and Google brand-search conversions.",
+      "If testing requires reallocation, use small staged changes with predefined guardrails and review over a period long enough to observe financial outcomes.",
+      "Use within-platform ROAS for tactical optimization, rather than using these two reported ROAS figures as a cross-platform ranking."
+    ],
+    "missing_inputs": [
+      "Gross margin and variable fulfillment/discount costs by item or order.",
+      "New-customer revenue/orders and returning-customer treatment by channel.",
+      "Attribution windows, conversion definitions, and deduplication rules for Google and TikTok.",
+      "Spend levels, saturation indicators, and a feasible incrementality-test design."
+    ],
+    "evidence_used": [
+      {
+        "id": "case19-u2",
+        "supports": "The supplied source warns against comparing ROAS across platforms because attribution models, funnel positions, and incremental effects differ."
+      },
+      {
+        "id": "case19-u6",
+        "supports": "The supplied source gives a non-generalizable example in which TikTok can be underattributed when later channels, including Google, receive credit; this is relevant as a hypothesis, not proof for this brand."
+      },
+      {
+        "id": "case19-u4",
+        "supports": "The supplied source recommends using longer periods for slower-moving financial-grade KPI decisions, without defining a required duration."
+      }
+    ],
+    "assumptions": [
+      "The reported 5 and 2 are platform-attributed ROAS, not experimentally measured incremental ROAS.",
+      "Google brand search primarily targets high-intent branded demand, while TikTok prospecting targets earlier-funnel audiences; this should be verified in account setup.",
+      "The recommendation is a risk-control proposal based on general measurement practice and the supplied unverified source, not a claim that TikTok is necessarily more incremental."
+    ]
+  },
+  "raw_content": "{\"decision\":\"No—do not reallocate budget solely because reported ROAS is 5 for Google brand search versus 2 for TikTok prospecting. These are different platforms and funnel roles; Google brand search may capture demand that TikTok helped create. Keep budget stable while validating incremental new-customer and profit impact before making a material shift.\",\"next_steps\":[\"Separate reporting by new versus returning customers and evaluate contribution after product margin, discounts, and variable costs.\",\"Run a controlled TikTok budget test (for example, matched-market or time-based holdout where feasible) and track downstream branded-search, new-customer, and total-sales effects.\",\"Audit attribution settings, windows, conversion definitions, and overlap between TikTok exposure and Google brand-search conversions.\",\"If testing requires reallocation, use small staged changes with predefined guardrails and review over a period long enough to observe financial outcomes.\",\"Use within-platform ROAS for tactical optimization, rather than using these two reported ROAS figures as a cross-platform ranking.\"],\"missing_inputs\":[\"Gross margin and variable fulfillment/discount costs by item or order.\",\"New-customer revenue/orders and returning-customer treatment by channel.\",\"Attribution windows, conversion definitions, and deduplication rules for Google and TikTok.\",\"Spend levels, saturation indicators, and a feasible incrementality-test design.\"],\"evidence_used\":[{\"id\":\"case19-u2\",\"supports\":\"The supplied source warns against comparing ROAS across platforms because attribution models, funnel positions, and incremental effects differ.\"},{\"id\":\"case19-u6\",\"supports\":\"The supplied source gives a non-generalizable example in which TikTok can be underattributed when later channels, including Google, receive credit; this is relevant as a hypothesis, not proof for this brand.\"},{\"id\":\"case19-u4\",\"supports\":\"The supplied source recommends using longer periods for slower-moving financial-grade KPI decisions, without defining a required duration.\"}],\"assumptions\":[\"The reported 5 and 2 are platform-attributed ROAS, not experimentally measured incremental ROAS.\",\"Google brand search primarily targets high-intent branded demand, while TikTok prospecting targets earlier-funnel audiences; this should be verified in account setup.\",\"The recommendation is a risk-control proposal based on general measurement practice and the supplied unverified source, not a claim that TikTok is necessarily more incremental.\"]}",
+  "input": {
+    "question": "Can we allocate more budget to the item with the higher reported ROAS?",
+    "brand_facts": {
+      "business": "established retail brand",
+      "reported_roas_a": 5,
+      "reported_roas_b": 2,
+      "measurement_period_days": 30,
+      "item_a": "Google brand search",
+      "item_b": "TikTok prospecting"
+    },
+    "library": [
+      {
+        "id": "case19-u1",
+        "kind": "action",
+        "title": "Use ROAS directionally within a single platform",
+        "claim": {
+          "text": "The source says ROAS and CPA are useful for directional campaign and ad feedback within a siloed platform.",
+          "quote": "They are helpful in directional campaign feedback and ad feedback within the siloed platform."
+        },
+        "action": {
+          "text": "Compare ROAS between campaigns within the same platform to make decisions.",
+          "quote": "if we're looking at two meta campaigns next to each other, we can compare rorowaz, we can use that to make decisions."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "The comparison concerns two campaigns on the same platform.",
+              "quote": "if we're looking at two meta campaigns next to each other"
+            }
+          ]
+        },
+        "unknowns": [
+          "The source does not specify a decision threshold or measurement window for within-platform comparisons."
+        ],
+        "provenance": "unverified_source; model-reviewed evaluation candidate"
+      },
+      {
+        "id": "case19-u2",
+        "kind": "warning",
+        "title": "Do not compare ROAS across advertising platforms",
+        "claim": {
+          "text": "The source warns that comparing ROAS between Google and Meta campaigns would be a major mistake because their attribution models, funnel positions, and incremental impacts differ.",
+          "quote": "what would be a big mistake is comparing a rorowaz number on a Google campaign to a rorowaz number on a meta campaign because they have different attribution models. They're sitting at different points in the funnel. They're driving different incremental impact to the business."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "A decision compares campaign ROAS across platforms.",
+              "quote": "if we start comparing platforms"
+            }
+          ]
+        },
+        "unknowns": [
+          "The source does not identify circumstances in which cross-platform ROAS could be normalized or made comparable."
+        ],
+        "provenance": "unverified_source; model-reviewed evaluation candidate"
+      },
+      {
+        "id": "case19-u4",
+        "kind": "action",
+        "title": "Evaluate financial-grade KPI changes over longer periods",
+        "claim": {
+          "text": "The source says financial-grade KPIs become more reliable higher in the measurement pyramid, but their feedback is slower.",
+          "quote": "because of that the reliability is much better as we move up the pyramid reliability improves. However, speed decreases"
+        },
+        "action": {
+          "text": "Use slightly longer time periods when financial-grade metrics move up or down to make correct decisions.",
+          "quote": "You need to look at this on slightly longer time periods to be able to make correct decisions."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Financial-grade metrics are moving up and down.",
+              "quote": "what ends up being the case with these metrics is them going up and down."
+            }
+          ]
+        },
+        "unknowns": [
+          "The source does not define the appropriate longer time period."
+        ],
+        "provenance": "unverified_source; model-reviewed evaluation candidate"
+      },
+      {
+        "id": "case19-u6",
+        "kind": "example",
+        "title": "TikTok can be underattributed in a TikTok-to-Meta-to-Google path",
+        "claim": {
+          "text": "As a current, non-generalizable example for some large retail brands, the source says TikTok may be substantially underattributed when it creates impressions and later Meta retargets users and Google captures brand searches.",
+          "quote": "we're finding at the moment for some very large retail brands that Tik Tok is actually underattributing substantially because it's getting impressions. It's getting in front of people in new markets, but they don't actually click off the platform much."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "The source frames this as a unique circumstance that may change and does not apply to everyone.",
+              "quote": "this might change depending on when you're watching this video, is Tik Tok to Meta to Google. Now, this isn't applicable for everyone. This is a very unique circumstance"
+            }
+          ]
+        },
+        "unknowns": [
+          "The source does not provide the brands, markets, attribution settings, or magnitude of the reported underattribution.",
+          "The source explicitly says this example may change over time and is not applicable to everyone."
+        ],
+        "provenance": "unverified_source; model-reviewed evaluation candidate"
+      },
+      {
+        "id": "case19-u13",
+        "kind": "warning",
+        "title": "Do not use total revenue-to-ad-spend MER to index paid-media performance over time",
+        "claim": {
+          "text": "The source says MER, defined as revenue divided by ad spend, is fundamentally a poor metric for indexing paid-media performance over time because it includes returning-customer revenue that has little to do with paid ads.",
+          "quote": "the reason why it's fundamentally a terrible metric for indexing the performance of paid media over time is that it includes a large bucket of revenue that has very little to do with paid ad, which is returning customer revenue."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "The metric indexes total media spend across all media channels against total revenue.",
+              "quote": "a good way to index the performance of total spend across all of our media channels against total revenue"
+            }
+          ]
+        },
+        "unknowns": [
+          "The source does not state whether total MER has other valid uses outside indexing paid-media performance over time."
+        ],
+        "provenance": "unverified_source; model-reviewed evaluation candidate"
+      },
+      {
+        "id": "case19-u14",
+        "kind": "action",
+        "title": "Exclude returning-customer revenue from the paid-media calculation",
+        "claim": {
+          "text": "The source says returning-customer revenue should be stripped from the calculation so marketing does not receive credit for customers who would have returned anyway.",
+          "quote": "we really want to strip returning customer revenue out of this calculation because we don't want marketing taking credit for all these returning customers that would have returned anywhere."
+        },
+        "action": {
+          "text": "Strip returning-customer revenue out of the paid-media performance calculation.",
+          "quote": "we really want to strip returning customer revenue out of this calculation"
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "The calculation includes returning-customer revenue.",
+              "quote": "it includes a large bucket of revenue that has very little to do with paid ad, which is returning customer revenue."
+            }
+          ]
+        },
+        "unknowns": [
+          "The source does not define the customer-return attribution method or the data treatment for mixed new and returning orders."
+        ],
+        "relations": [
+          {
+            "kind": "alternative_to",
+            "target": "case19-u13"
+          }
+        ],
+        "provenance": "unverified_source; model-reviewed evaluation candidate"
+      },
+      {
+        "id": "case19-u15",
+        "kind": "action",
+        "title": "Use a new-customer-revenue-to-ad-spend metric instead of MER",
+        "claim": {
+          "text": "The source says finance-grade metrics should be delineated into new-customer-based metrics.",
+          "quote": "that's why we always want to delineate all of our finance grade metrics into new customerbased metric."
+        },
+        "action": {
+          "text": "Instead of MER, use the metric defined as new-customer revenue divided by ad spend.",
+          "quote": "rather than looking at me, we want to look at a me, which is new customer revenue divided by ad spend."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "MER is being used to index paid-media performance.",
+              "quote": "me is revenue divided by ad spend."
+            }
+          ]
+        },
+        "unknowns": [
+          "The transcript calls the replacement metric \"a me\"; its intended formal metric name is unclear from this passage.",
+          "The source's example value of 1.4 may not be profitable, but it does not state the profitability threshold."
+        ],
+        "relations": [
+          {
+            "kind": "alternative_to",
+            "target": "case19-u13"
+          },
+          {
+            "kind": "depends_on",
+            "target": "case19-u14"
+          }
+        ],
+        "provenance": "unverified_source; model-reviewed evaluation candidate"
+      }
+    ]
+  },
+  "system_prompt_sha256": "7dc3dfaec961d2e1bf4d87e8f0024baecfafc5c2fe9e49fd3d0c323e298c7ef4"
+}

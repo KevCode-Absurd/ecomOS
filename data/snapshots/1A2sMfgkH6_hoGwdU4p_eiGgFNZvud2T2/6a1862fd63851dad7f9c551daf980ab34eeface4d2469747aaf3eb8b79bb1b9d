@@ -1,0 +1,87 @@
+# 23-SEC / bot and agent security
+
+**Goes here.** Detecting and stopping automated abuse of the store and the ad
+accounts. Card testing, credential stuffing and account takeover, scalping, discount
+and referral abuse, gift card brute forcing, scraping, fake accounts and review spam,
+click fraud, bot traffic polluting analytics, and layer 7 flooding. Plus the defences,
+and the monitoring that tells you an attack is running.
+
+## The thing that makes this module different in 2026
+
+You no longer want to block all automated traffic. Some of it is your distribution. An
+answer engine crawling your specification tables is how you get cited, and an AI
+shopping assistant completing a purchase for a customer is a real order. Blanket bot
+blocking kills your GEO strategy and turns away buyers.
+
+**So the job is not "block bots". It is telling wanted agents from unwanted ones, and
+treating them differently.**
+
+## The gap this folder has
+
+The sources collected so far are general ecommerce security: threats, admin hygiene,
+best practices. That is commodity knowledge. **None yet addresses wanted versus
+unwanted agents**, and the `agents /` topic family is empty. That is the priority.
+
+Look for: verified crawler and agent identification, agent allowlists, robots and
+agent directives, handling agentic checkout, and how answer-engine crawlers identify
+themselves versus how scrapers disguise themselves.
+
+## Not here
+
+- Which crawlers to attract and citation strategy -> 16-AEO
+- What a chargeback costs and how reserves work -> 20-FIN
+- Defining which metrics are correct -> 06-MEA
+- Amazon account health -> 22-AMZ
+- Store configuration and SSL setup -> 05-SET
+- Who holds admin access and how it is reviewed -> 21-OPS
+
+**AEO wants agents in. SEC decides which ones.** **MEA defines a real session. SEC
+detects the fake ones.** **FIN accounts for chargebacks. SEC prevents the attack.**
+
+## Header
+
+```
+---
+url:                   # REQUIRED. Never blank.
+rights: public_reference
+why:
+modules: [SEC]         # add MEA where bot traffic corrupts the numbers
+platform: []           # [shopify] | [woocommerce] where it does not transfer
+jurisdiction: []       # only for privacy or disclosure law
+topics: []
+tier:                  # a practitioner is 3, never 1
+scope_hint: mixed
+---
+```
+
+## Topics
+
+`attacks /` card testing, credential stuffing, scalping, discount abuse, gift card
+brute forcing, scraping, fake accounts, click fraud, layer 7 flooding.
+`defence /` WAF and bot management, rate limiting, velocity rules, device
+fingerprinting, checkout and login protection, CAPTCHA conversion cost, app and plugin
+permission risk.
+`agents /` wanted versus unwanted agents, allowlists, agent directives, verified agent
+traffic, agentic checkout.
+`detection /` traffic anomalies, bot traffic in analytics, conversion rate anomalies
+as a signal, chargeback spikes.
+`response /` incident playbooks, disclosure obligations, cleaning polluted data.
+
+## Skip
+
+Enterprise frameworks with no ecommerce specifics. Vendor fear marketing with no
+detection method. Blanket bot blocking that ignores wanted agents. Several near-
+identical "threats and best practices" overviews: keep 1.
+
+## Why it earns its place
+
+Bot traffic corrupts the inputs the whole OS runs on. SEC findings feed 06-MEA as a
+signal-quality input: a brand under an undetected attack should not get a profit
+ranking at all.
+
+## Scope mix
+
+Real baseline: bot protection at checkout and login, rate limiting present, bot
+traffic excluded from analytics, admin 2FA on, no app holding unaccounted write scope.
+
+Current file counts, duplicates and holds: see `_INGESTION-STATE.yaml`.

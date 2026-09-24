@@ -1,0 +1,381 @@
+{
+  "cards": [
+    {
+      "title": "Certificate Transparency: Detection, Not Prevention, for Storefront TLS",
+      "summary": "CT makes mis-issued TLS certificates publicly discoverable rather than blocking them, so ecommerce operators should monitor logs for their own domains instead of treating CT as attack prevention.",
+      "use_when": "Deciding how to monitor for fraudulent or mistakenly issued TLS certificates on your store's customer-facing domains.",
+      "steps": [
+        "Understand the distinction the source draws: CT is detection, not prevention (unlike certificate key pinning, which aimed to block malicious certs). There is a window where an attacker can use a mis-issued certificate before it surfaces in logs.",
+        "Because any certificate (issued intentionally, accidentally, or maliciously) can be submitted to CT logs by the CA, the site operator, or even crawlers like Googlebot, assume certificates for your domain may appear without your involvement.",
+        "Use CT monitoring as one layer of defense-in-depth: watch public logs for certificates on your domains that you did not request, and treat unexpected entries as a trigger to investigate your CAs and resellers/vendors.",
+        "Treat CT coverage as a noisy-attack deterrent and hygiene tool (the source notes Facebook discovered accidentally issued certs via CT, and CAs have been caught violating requirements) — not a guarantee that malicious certs are blocked.",
+        "Do not rely on CT as your only control; pair it with other transport and authentication protections."
+      ],
+      "caveats": [
+        "CT does not provide the security properties of key pinning; mis-issued certs remain usable for a period.",
+        "A malicious log could delay or selectively omit certificates, and detection timing is unspecified.",
+        "The source describes CT deployments as still evolving, so verify current browser/log behavior before depending on it."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "tls",
+        "certificate-transparency",
+        "monitoring",
+        "defense-in-depth",
+        "infrastructure-security"
+      ],
+      "id": "46771a8e61d2b9d86cc0fb5b",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 16
+    },
+    {
+      "title": "Authentication vs Authorization: Keep Session Tokens Out of the Permission Business",
+      "summary": "Authentication verifies identity while authorization decides permissions; store session IDs that map to server-side authorization checks rather than embedding permissions in client tokens.",
+      "use_when": "Designing login, session, and admin-role handling for a storefront or its backend (customer accounts, staff/admin panels).",
+      "steps": [
+        "Separate the two concepts: authentication answers 'who is this user'; authorization answers 'what is this user allowed to do' (the source notes NIST stresses authentication does not determine access privileges).",
+        "When you issue a session ID to a logged-in customer, issue an identifier only, then look up their current authorizations server-side on each protected request.",
+        "Avoid handing clients signed tokens that literally encode 'I am allowed to do X' — the source notes you cannot expire or update embedded permissions when rights change.",
+        "Model permissions with an ACL (user → allowed actions) or a capability token (a unique hard-to-guess URL token, like a Google Docs link) depending on the access pattern you need.",
+        "For store admin and fulfillment roles, re-check authorization on the server per request so revoking staff access takes effect immediately."
+      ],
+      "caveats": [
+        "The source presents this as general guidance; exact mechanisms (ACL vs capability tokens) trade off revocation and simplicity.",
+        "Capability-style URL tokens remain valid as long as the URL leaks, so treat them as bearer credentials."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "authentication",
+        "authorization",
+        "session-management",
+        "access-control",
+        "admin-security"
+      ],
+      "id": "d63cc78167711c7d616f01ad",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 16
+    },
+    {
+      "title": "Username Handling Rules: Case-Insensitive Uniqueness, Preserved Display Case",
+      "summary": "Store usernames case-insensitively with enforced uniqueness while preserving the user's preferred capitalization for display, to avoid duplicate accounts and impersonation collisions.",
+      "use_when": "Implementing customer account creation and login for a storefront where usernames or display handles are used.",
+      "steps": [
+        "Enforce that usernames are unique so a second user cannot register an easily-confused variant of an existing account.",
+        "For lookup, normalize the typed username (e.g., lowercase it) and compare against a stored normalized column so logins are not case-sensitive in a way that creates duplicates.",
+        "Add a second stored column holding the user's preferred capitalization and render that version in the UI.",
+        "Reject registration attempts that collide after normalization, not just after exact match.",
+        "Apply the same normalization thinking to any account identifier your admin/fulfillment tooling keys on."
+      ],
+      "caveats": [
+        "The source treats case-insensitive uniqueness as the goal; some systems deliberately allow case-sensitive identifiers — decide deliberately rather than by accident."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "authentication",
+        "customer-accounts",
+        "data-modeling",
+        "account-takeover",
+        "input-validation"
+      ],
+      "id": "9b569cd2522a5a66a8a9ecac",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 16
+    },
+    {
+      "title": "Modern Password Policy: Length Over Complexity, Breach-List Checks, No Forced Rotation",
+      "summary": "The source's updated password guidance is to allow long passwords, enforce a minimum length, drop complexity/rotation rules, and screen new passwords against known breach data.",
+      "use_when": "Setting password rules for your store's customer accounts or admin logins.",
+      "steps": [
+        "Stop requiring a mix of upper/lowercase, numbers, and symbols: the source argues 'complex is not necessarily strong' and such rules push users toward predictable patterns like trailing digits.",
+        "Stop forcing periodic password changes and password histories; the source calls three-month rotation outdated advice that yields trivial incrementing.",
+        "Encourage passphrases: multiple words from a large dictionary were shown by the source to yield more entropy than symbol substitution, and are easier to remember.",
+        "Allow long passwords (the source suggests permitting up to ~64 characters) but set a sensible maximum to avoid password-denial-of-service via slow hashing on huge inputs.",
+        "Enforce a minimum length (the source calls 8 characters the bare minimum, and notes even that is low).",
+        "Screen chosen passwords against known breach databases — the source cites this as NIST's current recommendation."
+      ],
+      "caveats": [
+        "Breach-list blocking can reject a user's legitimate existing password if it has ever leaked — a usability/security tradeoff the source acknowledges, so weigh it against how sensitive the account is.",
+        "The source frames these numeric thresholds as heuristics, not universal law; the entropy claim depends on dictionary size and attacker assumptions."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "authentication",
+        "password-policy",
+        "customer-accounts",
+        "nist-guidance",
+        "credential-stuffing"
+      ],
+      "id": "81c60e09127fead56af1c0dc",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 16
+    },
+    {
+      "title": "Password Handling Mistakes That Break Security and Usability",
+      "summary": "A catalog of password anti-patterns the source flags — silent truncation, blocked paste, weak hints, on-screen keyboards, and max-length caps — that weaken real security while annoying users.",
+      "use_when": "Reviewing a login/signup implementation before launch or when auditing an existing storefront's authentication.",
+      "steps": [
+        "Do not silently truncate long passwords: the source notes bcrypt caps at 72 ASCII characters and requires only 72 bytes of input, so if you allow longer you must hash first or accept truncation ambiguity.",
+        "Do not disable cut-and-paste in password fields — this breaks password managers, which the source calls out as a real security loss.",
+        "Do not set low maximum password lengths for legacy reasons; the source describes banks capping at ~10 characters as an anti-pattern.",
+        "Avoid password hints with tiny answer sets (the source cites an airline whose hint answers were a dropdown of ~8 options, giving roughly a 1-in-8 guess).",
+        "Do not rely on on-screen click keyboards against keyloggers; the source notes screen recording and click interception defeat them while harming usability.",
+        "Allow arbitrary Unicode (including emoji) in passwords, then hash the password before feeding it to length-limited algorithms like bcrypt.",
+        "Never log passwords in plaintext — the source cites incidents where logs captured credentials; scrub auth fields from request logging."
+      ],
+      "caveats": [
+        "The bcrypt 72-byte limit is a specific library behavior; verify your hashing library's limits rather than assuming.",
+        "Some of these patterns (e.g., max length) may be forced by legacy systems — the source treats them as mistakes to migrate away from."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "authentication",
+        "password-policy",
+        "bcrypt",
+        "logging",
+        "password-managers"
+      ],
+      "id": "656bf5b54a5b05520907355c",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 16
+    },
+    {
+      "title": "Defending Against Network-Based Guessing: Rate Limiting, Lockouts, CAPTCHA",
+      "summary": "Brute force, credential stuffing, and password spraying are distinct online guessing attacks; the source's defenses are rate limiting by username and IP, delays/rejections, and CAPTCHA as a human check.",
+      "use_when": "Hardening the login endpoint of a storefront or admin panel against automated credential guessing.",
+      "steps": [
+        "Distinguish the three attacks: brute force iterates passwords against one account; credential stuffing replays username/password pairs from another site's breach (users reuse passwords); password spraying tries a few common weak passwords across many accounts.",
+        "Rate limit authentication attempts by username so no single account gets too many tries in a window.",
+        "Also rate limit by source IP so an attacker cannot spread attempts across accounts.",
+        "When a limit trips, either delay the response (hold the request) or reject with an HTTP error telling the client to slow down.",
+        "Optionally insert a human-verification step (e.g., CAPTCHA) and unblock the user once they pass.",
+        "Because credential-stuffing lists come from real breaches, pair rate limiting with breach-checked passwords and encourage a second factor."
+      ],
+      "caveats": [
+        "The source cites a stress-test assumption of ~1,000 guesses/second as generous for an online attack, but notes it is an assumption, not a benchmark.",
+        "CAPTCHA is not a strong stand-alone control — the source describes solving farms and cheap solve APIs."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "authentication",
+        "rate-limiting",
+        "credential-stuffing",
+        "brute-force",
+        "captcha"
+      ],
+      "id": "f753de594e4c840934919fab",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 16
+    },
+    {
+      "title": "CAPTCHA Limits: Why Human Checks Alone Won't Stop Bots",
+      "summary": "The source shows text CAPTCHAs were broken by automated solvers and that relay/outsourcing services and solver APIs defeat CAPTCHAs, so treat them as friction, not proof of humanity.",
+      "use_when": "Deciding how much to rely on CAPTCHA to protect signup, login, or high-abuse store actions (e.g., promo-code redemption, inventory hoarding).",
+      "steps": [
+        "Assume text-based CAPTCHAs are defeatable: the source cites research solving real-world schemes with high accuracy (e.g., reCAPTCHA at 33%, CNN at 51%, Yahoo at 5%) and notes 'over 1% breakage' is considered broken.",
+        "Account for relay attacks, where an attacker forwards your CAPTCHA to other users (e.g., a free-content site) and returns the answer in real time.",
+        "Account for commercial solver APIs, which the source describes as inexpensive (it cites ~$0.50 per 1,000 solves).",
+        "Prefer risk-based/interactive verification that scores behavior (mouse, scroll, IP reputation) over static text challenges, but still treat it as one layer.",
+        "Layer CAPTCHA with rate limiting, anomaly detection, and (for sensitive flows) strong authentication."
+      ],
+      "caveats": [
+        "CAPTCHA vendors and solvers evolve; verify current effectiveness rather than assuming these figures still hold.",
+        "Interactive/risk-based CAPTCHAs are harder but not proven impossible to bypass."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "captcha",
+        "bot-defense",
+        "rate-limiting",
+        "abuse-prevention",
+        "fraud-prevention"
+      ],
+      "id": "115d25c9c19dd9100fe18f12",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 16
+    },
+    {
+      "title": "Offline Cracking Realities Shape Password-Length Guidance",
+      "summary": "Password strength should be judged against three attack scenarios — online guessing (slow, network-bound) and offline cracking on a single machine or GPU array (fast) — which is why the source pushes for longer passwords.",
+      "use_when": "Choosing minimum password length and hash settings for customer or admin accounts based on how exposed your credential database is.",
+      "steps": [
+        "Model three scenarios: online attacks (attacker sends login attempts over the network, limited by rate limits and detection), offline on one machine (attacker has a stolen hash database and cracks locally), and offline on a GPU array (the source cites a ~$20,000 rig as cheap for a determined attacker).",
+        "Because offline attacks are far faster than online, assume any leaked hash database will be worked on at high speed — so raise length requirements rather than relying on login throttling alone.",
+        "The source's mapping suggests passwords under roughly 12 characters are at high risk against a motivated offline attacker; treat that as a heuristic to justify longer minimums.",
+        "Note that exhaustive search isn't the only method: attackers also use known-password lists, which the source says can significantly shorten cracking time.",
+        "Since customers reuse passwords, combine length guidance with breach-list checks and a second factor for high-value accounts."
+      ],
+      "caveats": [
+        "The source presents crack-time figures as illustrative assumptions about guessing rates and hardware, not fixed benchmarks.",
+        "Do not put real passwords into third-party strength/crack-time testing sites, even ones claiming not to transmit them."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "password-policy",
+        "offline-cracking",
+        "hashing",
+        "data-breach",
+        "risk-assessment"
+      ],
+      "id": "813fb79b2bef6ba017be332b",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 16
+    },
+    {
+      "title": "Multi-Factor Authentication: Knows, Has, Is — and Why Biometrics Stay on Device",
+      "summary": "Authentication factors fall into something you know, have, or are; combining factors raises assurance, and biometric data should be handled to avoid the 'can't reset a fingerprint' problem.",
+      "use_when": "Deciding which authentication factors to offer for customer logins and which to require for admin/staff or high-value store actions (e.g., payouts, price changes).",
+      "steps": [
+        "Classify your factors: knowledge (password/PIN), possession (phone, badge, hardware key, passkey), and inherence (fingerprint, face).",
+        "Combine categories for two-factor authentication — the source uses the ATM example (card you have + PIN you know) — rather than stacking two of the same category.",
+        "Avoid depending on biometrics as transmittable secrets: the source stresses biometric data is not changeable, so if stolen you cannot reset it.",
+        "Follow the on-device pattern the source describes: use local biometrics only to unlock a cryptographic key store, then authenticate with a key, never sending the raw biometric to the server.",
+        "For sensitive store functions, require a second factor rather than merely encouraging it; for low-sensitivity accounts, encouraging it may be proportionate."
+      ],
+      "caveats": [
+        "The source notes uncertainty about what can be extracted from devices with physical access — assume device compromise can threaten local keys.",
+        "WebAuthn support (the source mentions GitHub adopting it) is evolving; verify current browser and platform support."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "authentication",
+        "multi-factor-authentication",
+        "biometrics",
+        "webauthn",
+        "admin-security"
+      ],
+      "id": "a55298b2b401168a38fd013c",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 16
+    },
+    {
+      "title": "Fake Security Indicators: Anti-Phishing Images and Positive UI Cues Don't Work",
+      "summary": "Security images and other positive UI indicators are ignored or easily spoofed, so don't build phishing defense on customer-visible badges that attackers can replicate.",
+      "use_when": "Evaluating whether any trust badge, security image, or pre-login indicator on your storefront actually protects customers from phishing lookalikes.",
+      "steps": [
+        "Do not treat a user-selected security image as phishing protection: the source cites a study where ~72% of participants entered their password even when the security image and caption were removed.",
+        "Recognize that attackers can fetch the victim's image dynamically — the source describes looking up a victim's username on the real site and loading the returned image into a phishing page.",
+        "Recall the broader warning from the source: positive UI indicators are often ignored by users, so a badge appearing in a phishing clone doesn't reliably alert anyone.",
+        "Instead, invest in protections the attacker cannot copy: strong authentication (e.g., passkeys/WebAuthn-style origin-bound credentials), breach-checked passwords, and second factors.",
+        "If you run a brand that is frequently spoofed, treat customer education as a supplement, not a control."
+      ],
+      "caveats": [
+        "The source describes these indicators as deprecated and ineffective, acknowledging they may once have helped; effectiveness studies are dated relative to current phishing tooling."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "phishing",
+        "authentication",
+        "customer-protection",
+        "mfa",
+        "usability"
+      ],
+      "id": "b6d76d1c801a7aa030114372",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 16
+    },
+    {
+      "title": "Security-vs-Usability Tradeoffs: Match Friction to the Value at Risk",
+      "summary": "Password and authentication rules are balances between usability and security, so calibrate strictness to the sensitivity of the account rather than applying one policy everywhere.",
+      "use_when": "Deciding how strict login policy should be for different account tiers in a store (casual shopper accounts vs. accounts with stored payment, payout, or admin access).",
+      "steps": [
+        "Ask what an attacker gains from the account: the source contrasts a low-stakes account (it cites streaming history) where heavy restriction may not be worth the friction against financial accounts where a second factor should be required.",
+        "Reserve strict controls — mandatory MFA, breach-list rejection, tighter rate limits — for high-consequence functions like payments, refunds, and admin panels.",
+        "Accept that some policies (for example, rejecting any breached password) will block some users who reuse passwords elsewhere; decide whether that tradeoff is right for your service.",
+        "Expect the attacker to know your scheme: the source says to assume the attacker knows your word list or policy, and to remain safe even then — so don't rely on secrecy of the rule for strength.",
+        "Document the policy per account tier so the tradeoff is a deliberate decision rather than an accident."
+      ],
+      "caveats": [
+        "The source's examples of account sensitivity (streaming vs. financial) are its own illustrations, not measured outcomes for any named service.",
+        "Overly lax policy on accounts with saved payment methods shifts risk to customers and to you."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "authentication",
+        "risk-assessment",
+        "password-policy",
+        "mfa",
+        "usability"
+      ],
+      "id": "7234ed15210a15b1bb4abdd0",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 16
+    },
+    {
+      "title": "Defense-in-Depth: Assume the Password Is Already Compromised",
+      "summary": "The source frames authentication design around building systems that stay secure even when an attacker holds the user's password, using layers rather than a single strong credential.",
+      "use_when": "Architecting login and account protection for a storefront where credentials commonly leak or get reused across sites.",
+      "steps": [
+        "Adopt the source's working question — how can we build a system that stays secure when the attacker has the user's password? — as the frame for designing your login flow.",
+        "Layer controls: strong, length-based password policy, breach-list screening, rate limiting, a second factor, and monitoring for anomalous login behavior.",
+        "Because credential stuffing relies on reuse, verify login activity against indicators like new device/geography patterns rather than trusting the password alone (the source's broader security context emphasizes detecting failures rather than assuming none).",
+        "For sensitive actions (changing stored payment details, exporting customer data), require re-authentication or a fresh second factor even inside an active session.",
+        "Treat each layer as fallible on its own; the goal is that no single failure (e.g., a leaked password) becomes a full account compromise."
+      ],
+      "caveats": [
+        "The source gives this as a design principle, not a specific product recommendation; pick concrete controls that match your stack and sensitivity.",
+        "No single control (password strength, MFA, CAPTCHA) is presented as sufficient alone."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "authentication",
+        "defense-in-depth",
+        "account-takeover",
+        "mfa",
+        "risk-assessment"
+      ],
+      "id": "103d992322b16d85fe847aa4",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 16
+    }
+  ],
+  "request_id": "692850b91a3a47865ce9b758cb0ba10f3a447275b6969b8242dc4ee1a57e0285",
+  "ecommerce_scope_version": 1
+}

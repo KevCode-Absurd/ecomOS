@@ -1,0 +1,595 @@
+{
+  "task": "E8",
+  "model": "gpt-5.6-sol",
+  "method": "selected",
+  "first": {
+    "request_id": "0e4481e303f43dc1de6e02a9ae6de48c0ac833a7784f30b34db6c01a230a4e62",
+    "provider": "openai",
+    "model": "gpt-5.6-sol",
+    "effort": "medium",
+    "completion_limit": 12288,
+    "usage": {
+      "prompt_tokens": 3446,
+      "completion_tokens": 3238,
+      "total_tokens": 6684,
+      "prompt_tokens_details": {
+        "cached_tokens": 0,
+        "cache_write_tokens": 3443,
+        "audio_tokens": 0
+      },
+      "completion_tokens_details": {
+        "reasoning_tokens": 1786,
+        "audio_tokens": 0,
+        "accepted_prediction_tokens": 0,
+        "rejected_prediction_tokens": 0
+      }
+    },
+    "booked_cost_usd": 0.08199,
+    "seconds": 58.2,
+    "finish_reason": "stop",
+    "output": {
+      "answer_markdown": "## TrailFold first-time Daypack post-purchase flow\n\nBuild as a draft until the agency verifies shipment, delivery, refund, return and support-status fields. The flow is educational first, requests an honest review only after confirmed delivery, then offers accessories without a discount.\n\n**Entry trigger:** Placed Order containing SKU `DAY18`.\n\n**Audience:** Customers whose triggering order is their first TrailFold order. Re-check eligibility before every send. Email 1 may be sent only to profiles permitted to receive it under TrailFold’s approved transactional/marketing setup; Emails 2–3 require marketing eligibility.\n\n**Delivery protection:** Email 1 waits for shipment confirmation. Emails 2–3 require a confirmed Delivered event. If delivery is not confirmed within 30 days of shipment, end the flow and flag the order for operational review—do not substitute an estimated delivery date for the review request.\n\n**Measurement:** Randomly hold out 10% of eligible entrants from all three messages. Compare 60-day net post-purchase product revenue per entrant, excluding the triggering order and deducting refunds. Treat review submissions and accessory revenue as diagnostics, not proof of incremental repeat-purchase lift.",
+      "actions": {
+        "launch_status": "draft",
+        "flow_name": "DAY18 | First Purchase | Post-Purchase",
+        "entry_event": "Placed Order",
+        "eligibility": [
+          "Triggering order contains SKU DAY18 with quantity greater than 0",
+          "Placed Order count equals 1 over all time at entry",
+          "Order has not been cancelled and the DAY18 line has not been fully refunded",
+          "Profile has the required email permission for the message type"
+        ],
+        "holdout_percent": 10,
+        "measurement_window_days": 60,
+        "primary_metric": "60-day net post-purchase product revenue per eligible entrant, excluding the triggering order and net of refunds",
+        "secondary_metrics": [
+          "Review submissions per confirmed-delivered recipient",
+          "Accessory net revenue per confirmed-delivered recipient",
+          "Unsubscribe and spam-complaint rates"
+        ],
+        "emails": [
+          {
+            "name": "Daypack onboarding",
+            "subject": "Your Daypack: a few useful details",
+            "timing": "Send 1 hour after the verified shipment/fulfillment event. If no shipment event arrives within 14 days of order placement, do not send and flag for review.",
+            "body": "Hi {{ first_name|default:'there' }},\n\nYour Daypack 18L is on the way. You can follow the latest carrier updates here:\n\n[TRACK YOUR ORDER]\n\nOur US delivery estimate is 4–7 business days. Carrier timing can change, so the tracking page is the best source for the latest update.\n\nA few details before it arrives:\n• The padded sleeve is designed for a 13-inch laptop. We have not confirmed that a 15-inch laptop fits.\n• The fabric is water-resistant, not waterproof. Protect electronics separately in sustained or heavy rain.\n• The external pocket keeps a bottle within easy reach.\n\nQuestions about your order or fit? Reply to this email and we’ll help.\n\n—TrailFold"
+          },
+          {
+            "name": "Honest review request",
+            "subject": "How is your Daypack working out?",
+            "timing": "Send 7 days after a verified Delivered event. Never send from an estimated delivery date.",
+            "body": "Hi {{ first_name|default:'there' }},\n\nYou’ve had a little time with your Daypack 18L. Would you share an honest rating or review?\n\nYour feedback—positive or critical—helps other shoppers understand how the bag works for everyday commuting and short trips.\n\n[REVIEW THE DAYPACK]\n\nThis request is not tied to a discount or reward. If you need help instead, reply here and our team will take care of you.\n\n—TrailFold"
+          },
+          {
+            "name": "Optional accessory cross-sell",
+            "subject": "Two practical additions to your Daypack",
+            "timing": "Send 7 days after the review-request email, approximately 14 days after confirmed delivery.",
+            "body": "Hi {{ first_name|default:'there' }},\n\nIf you want to add a little more organization to your Daypack, TrailFold has two straightforward options:\n\nCable pouch — $20\nSteel bottle — $32\n\nNo bundle and no limited-time offer—just useful additions if they suit how you carry your bag.\n\n[SHOP ACCESSORIES]\n\nAlready set? Nothing else needed.\n\n—TrailFold"
+          }
+        ],
+        "suppression_rules": [
+          "Before every send, exclude cancelled orders and customers whose DAY18 line was fully refunded",
+          "Suppress Emails 2–3 after any verified return request, return, chargeback or fraud cancellation tied to the triggering order",
+          "Suppress the review request while an unresolved support issue is present",
+          "Suppress Emails 2–3 if the profile is no longer marketable",
+          "Exclude employees, test orders and agency test profiles",
+          "Do not send Emails 2–3 without a confirmed Delivered event"
+        ],
+        "configuration_checks": [
+          "Map DAY18 line-item SKU and first-order count",
+          "Verify shipment, Delivered, refund, cancellation and return events",
+          "Verify the unresolved-support indicator and review-platform URL",
+          "Replace tracking and product-link placeholders before QA",
+          "Keep the same randomized holdout assignment for the full measurement window"
+        ]
+      },
+      "questions": [
+        "Does first-time mean first-ever TrailFold purchaser, as assumed here, or first-time DAY18 purchaser?",
+        "Which integration supplies the authoritative Delivered event and tracking URL?",
+        "Which review platform and support system should provide the review link and unresolved-ticket suppression?"
+      ],
+      "applied_card_ids": [
+        "55898f20e16116a726da3dca",
+        "cf03cf0f0e81168879f6a1dd",
+        "6d6e184eb84866186d1e8f11",
+        "c076b110d253f505c1dbae09",
+        "7ccc6c565f867390e76167f0"
+      ],
+      "rejected_guidance": [
+        "No loyalty message was included because no TrailFold loyalty program was provided.",
+        "Discounted and deadline-based cross-sells require owner approval and conflict with the current no-discount policy.",
+        "A replenishment reminder is inappropriate for a durable bag.",
+        "A fixed-day review request was rejected because confirmed delivery is required."
+      ]
+    },
+    "raw_content": "{\n  \"answer_markdown\": \"## TrailFold first-time Daypack post-purchase flow\\n\\nBuild as a draft until the agency verifies shipment, delivery, refund, return and support-status fields. The flow is educational first, requests an honest review only after confirmed delivery, then offers accessories without a discount.\\n\\n**Entry trigger:** Placed Order containing SKU `DAY18`.\\n\\n**Audience:** Customers whose triggering order is their first TrailFold order. Re-check eligibility before every send. Email 1 may be sent only to profiles permitted to receive it under TrailFold’s approved transactional/marketing setup; Emails 2–3 require marketing eligibility.\\n\\n**Delivery protection:** Email 1 waits for shipment confirmation. Emails 2–3 require a confirmed Delivered event. If delivery is not confirmed within 30 days of shipment, end the flow and flag the order for operational review—do not substitute an estimated delivery date for the review request.\\n\\n**Measurement:** Randomly hold out 10% of eligible entrants from all three messages. Compare 60-day net post-purchase product revenue per entrant, excluding the triggering order and deducting refunds. Treat review submissions and accessory revenue as diagnostics, not proof of incremental repeat-purchase lift.\",\n  \"actions\": {\n    \"launch_status\": \"draft\",\n    \"flow_name\": \"DAY18 | First Purchase | Post-Purchase\",\n    \"entry_event\": \"Placed Order\",\n    \"eligibility\": [\n      \"Triggering order contains SKU DAY18 with quantity greater than 0\",\n      \"Placed Order count equals 1 over all time at entry\",\n      \"Order has not been cancelled and the DAY18 line has not been fully refunded\",\n      \"Profile has the required email permission for the message type\"\n    ],\n    \"holdout_percent\": 10,\n    \"measurement_window_days\": 60,\n    \"primary_metric\": \"60-day net post-purchase product revenue per eligible entrant, excluding the triggering order and net of refunds\",\n    \"secondary_metrics\": [\n      \"Review submissions per confirmed-delivered recipient\",\n      \"Accessory net revenue per confirmed-delivered recipient\",\n      \"Unsubscribe and spam-complaint rates\"\n    ],\n    \"emails\": [\n      {\n        \"name\": \"Daypack onboarding\",\n        \"subject\": \"Your Daypack: a few useful details\",\n        \"timing\": \"Send 1 hour after the verified shipment/fulfillment event. If no shipment event arrives within 14 days of order placement, do not send and flag for review.\",\n        \"body\": \"Hi {{ first_name|default:'there' }},\\n\\nYour Daypack 18L is on the way. You can follow the latest carrier updates here:\\n\\n[TRACK YOUR ORDER]\\n\\nOur US delivery estimate is 4–7 business days. Carrier timing can change, so the tracking page is the best source for the latest update.\\n\\nA few details before it arrives:\\n• The padded sleeve is designed for a 13-inch laptop. We have not confirmed that a 15-inch laptop fits.\\n• The fabric is water-resistant, not waterproof. Protect electronics separately in sustained or heavy rain.\\n• The external pocket keeps a bottle within easy reach.\\n\\nQuestions about your order or fit? Reply to this email and we’ll help.\\n\\n—TrailFold\"\n      },\n      {\n        \"name\": \"Honest review request\",\n        \"subject\": \"How is your Daypack working out?\",\n        \"timing\": \"Send 7 days after a verified Delivered event. Never send from an estimated delivery date.\",\n        \"body\": \"Hi {{ first_name|default:'there' }},\\n\\nYou’ve had a little time with your Daypack 18L. Would you share an honest rating or review?\\n\\nYour feedback—positive or critical—helps other shoppers understand how the bag works for everyday commuting and short trips.\\n\\n[REVIEW THE DAYPACK]\\n\\nThis request is not tied to a discount or reward. If you need help instead, reply here and our team will take care of you.\\n\\n—TrailFold\"\n      },\n      {\n        \"name\": \"Optional accessory cross-sell\",\n        \"subject\": \"Two practical additions to your Daypack\",\n        \"timing\": \"Send 7 days after the review-request email, approximately 14 days after confirmed delivery.\",\n        \"body\": \"Hi {{ first_name|default:'there' }},\\n\\nIf you want to add a little more organization to your Daypack, TrailFold has two straightforward options:\\n\\nCable pouch — $20\\nSteel bottle — $32\\n\\nNo bundle and no limited-time offer—just useful additions if they suit how you carry your bag.\\n\\n[SHOP ACCESSORIES]\\n\\nAlready set? Nothing else needed.\\n\\n—TrailFold\"\n      }\n    ],\n    \"suppression_rules\": [\n      \"Before every send, exclude cancelled orders and customers whose DAY18 line was fully refunded\",\n      \"Suppress Emails 2–3 after any verified return request, return, chargeback or fraud cancellation tied to the triggering order\",\n      \"Suppress the review request while an unresolved support issue is present\",\n      \"Suppress Emails 2–3 if the profile is no longer marketable\",\n      \"Exclude employees, test orders and agency test profiles\",\n      \"Do not send Emails 2–3 without a confirmed Delivered event\"\n    ],\n    \"configuration_checks\": [\n      \"Map DAY18 line-item SKU and first-order count\",\n      \"Verify shipment, Delivered, refund, cancellation and return events\",\n      \"Verify the unresolved-support indicator and review-platform URL\",\n      \"Replace tracking and product-link placeholders before QA\",\n      \"Keep the same randomized holdout assignment for the full measurement window\"\n    ]\n  },\n  \"questions\": [\n    \"Does first-time mean first-ever TrailFold purchaser, as assumed here, or first-time DAY18 purchaser?\",\n    \"Which integration supplies the authoritative Delivered event and tracking URL?\",\n    \"Which review platform and support system should provide the review link and unresolved-ticket suppression?\"\n  ],\n  \"applied_card_ids\": [\n    \"55898f20e16116a726da3dca\",\n    \"cf03cf0f0e81168879f6a1dd\",\n    \"6d6e184eb84866186d1e8f11\",\n    \"c076b110d253f505c1dbae09\",\n    \"7ccc6c565f867390e76167f0\"\n  ],\n  \"rejected_guidance\": [\n    \"No loyalty message was included because no TrailFold loyalty program was provided.\",\n    \"Discounted and deadline-based cross-sells require owner approval and conflict with the current no-discount policy.\",\n    \"A replenishment reminder is inappropriate for a durable bag.\",\n    \"A fixed-day review request was rejected because confirmed delivery is required.\"\n  ]\n}",
+    "input": {
+      "experiment": "owner-v3",
+      "brand": {
+        "fictional": true,
+        "name": "TrailFold",
+        "market": "US",
+        "currency": "USD",
+        "platforms": [
+          "Shopify",
+          "Meta Ads",
+          "Klaviyo"
+        ],
+        "positioning": "Practical lightweight bags for commuters who take short weekend trips; restrained, useful, plain-spoken voice.",
+        "products": [
+          {
+            "sku": "DAY18",
+            "name": "Daypack 18L",
+            "price": 80,
+            "landed_cogs": 28,
+            "pick_pack": 2,
+            "merchant_shipping_cost": 8,
+            "payment_fee_percent": 3,
+            "features": [
+              "18L capacity",
+              "padded 13-inch laptop sleeve",
+              "water-resistant fabric, not waterproof",
+              "external bottle pocket"
+            ],
+            "stock": 210,
+            "daily_units_sold": 8,
+            "confirmed_replenishment_units": 500,
+            "replenishment_arrival_days": 35
+          },
+          {
+            "sku": "POUCH",
+            "name": "Cable pouch",
+            "price": 20,
+            "landed_cogs": 5,
+            "stock": 800
+          },
+          {
+            "sku": "BOTTLE",
+            "name": "Steel bottle",
+            "price": 32,
+            "landed_cogs": 9,
+            "stock": 600
+          }
+        ],
+        "policies": {
+          "shipping": "Free US shipping; delivery estimate 4-7 business days",
+          "returns": "30-day returns for unused products; return shipping paid by customer",
+          "discounts": "No current discount. Any new discount needs owner approval."
+        },
+        "claim_constraints": [
+          "No evidence for waterproof, medical, sustainability or lifetime-durability claims.",
+          "No verified competitor performance data.",
+          "No clinical or controlled product test results."
+        ],
+        "customer_themes": {
+          "simulated_review_count": 120,
+          "themes": [
+            "fits daily commute",
+            "customers ask whether a 15-inch laptop fits",
+            "customers ask whether rain protection means waterproof"
+          ],
+          "support_tickets_last_30_days": {
+            "delivery_date_questions": 42,
+            "15_inch_laptop_fit": 28,
+            "waterproof_questions": 18
+          },
+          "note": "Themes, not verbatim licensed testimonials; no fabricated quotes or endorsements."
+        },
+        "website_snapshot": {
+          "pdp_headline": "Adventure starts here",
+          "first_image": "product on plain background",
+          "pdp_details": "Laptop sizing and delivery window are below reviews; CTA says Buy now. No field speed or session-recording data."
+        },
+        "shopify": {
+          "previous_30_days": {
+            "sessions": 20000,
+            "orders": 600,
+            "net_product_revenue": 54000,
+            "mobile_sessions": 15000,
+            "mobile_orders": 400,
+            "desktop_sessions": 5000,
+            "desktop_orders": 200,
+            "add_to_cart_sessions": 2000,
+            "checkout_started_sessions": 1200
+          },
+          "current_30_days": {
+            "sessions": 25000,
+            "orders": 500,
+            "net_product_revenue": 45000,
+            "mobile_sessions": 20000,
+            "mobile_orders": 300,
+            "desktop_sessions": 5000,
+            "desktop_orders": 200,
+            "add_to_cart_sessions": 2000,
+            "checkout_started_sessions": 1000
+          },
+          "definitions": "Revenue excludes tax/shipping; periods equal length. Funnel counts are session-based and internally consistent, but no controlled attribution experiment.",
+          "new_customer_share_current": 0.72,
+          "cohort_90_day_repeat_rate": 0.14
+        },
+        "meta": {
+          "previous_30_days": {
+            "spend": 18000,
+            "reported_purchase_value": 54000,
+            "cpm": 12,
+            "link_ctr_percent": 1.5
+          },
+          "current_30_days": {
+            "spend": 22000,
+            "reported_purchase_value": 70400,
+            "cpm": 15,
+            "link_ctr_percent": 1.2
+          },
+          "settings": "7-day click plus 1-day view; no incremental lift study. Meta reported value not reconciled to Shopify orders.",
+          "creative_history": [
+            {
+              "name": "Desk-to-trail demonstration",
+              "spend_share": 0.55,
+              "observed_result": "Largest spend recipient; mature creative. No asset-level contribution data."
+            },
+            {
+              "name": "Laptop-fit comparison",
+              "spend_share": 0.25,
+              "observed_result": "Higher CTR in small test; conversion sample not supplied."
+            },
+            {
+              "name": "Minimal product still",
+              "spend_share": 0.2,
+              "observed_result": "No reliable lift estimate."
+            }
+          ]
+        },
+        "klaviyo": {
+          "marketable_profiles": 12000,
+          "reported_attributed_revenue_current": 14000,
+          "attribution_window": "5-day click plus 5-day open",
+          "flows": [
+            {
+              "name": "welcome",
+              "messages": 1,
+              "offer": "none"
+            },
+            {
+              "name": "checkout abandonment",
+              "trigger": "Started Checkout",
+              "messages": 1,
+              "delay_hours": 24,
+              "observed_gap": "No Added to Cart flow; filters not audited."
+            }
+          ],
+          "campaigns_per_week": 3,
+          "reported_open_rate_percent": 52,
+          "click_rate_percent": 1.1,
+          "order_rate_percent": 0.18,
+          "note": "Revenue attribution overlaps other systems; no holdout or recent deliverability audit."
+        },
+        "resources": {
+          "weekly_designer_hours": 8,
+          "weekly_developer_hours": 4,
+          "owner_hours": 4,
+          "next_14_day_test_budget": 3000,
+          "cash_constraint": "Protect replenishment payments; no additional inventory purchase approved."
+        },
+        "unavailable": [
+          "GA4 breakdowns",
+          "Clarity/Hotjar recordings",
+          "field Core Web Vitals",
+          "SKU-level ad acquisition cost",
+          "cohort contribution LTV",
+          "creative-level conversion sample sizes",
+          "channel incrementality",
+          "email holdout data"
+        ]
+      },
+      "task": {
+        "id": "E8",
+        "title": "Post-purchase retention flow",
+        "request": "Create a practical post-purchase email flow for first-time Daypack buyers with three actual emails: useful onboarding, review request and optional accessory cross-sell. Include event/timing, eligibility, suppression, returns/refunds, delivery uncertainty and a small holdout measurement. Bags are durable goods, not replenishable subscriptions. Do not request a review before confirmed delivery or imply known repeat-purchase lift. Return actions.emails with subject/body/timing and actions.primary_metric. Make it ready for an agency CRM specialist to configure after verifying event fields."
+      },
+      "reference_guidance": "[0a935c9bd0919223a8ba4c36] Sequence the Post-Purchase Flow Around Shipping, Usage, Loyalty, Reviews and Cross-Sell\nApplies when: Mapping the full email sequence and delays of a post-purchase flow for a physical product.\n- Email 1 (~30 min): thank-you and buyer's remorse reduction (see related card).\n- Email 2 (~2 days): build excitement for delivery by giving product usage instructions. This future-paces the customer using the product, reduces buyer's remorse, and pre-empts support questions. If you sell multiple product types, use product-based splits to tailor this email to the item bought.\n- Email 3 (~10 days): introduce your loyalty program. The source argues this is the moment the customer is happy having received and tried the product, making it a natural point to enroll them and move a first-time buyer toward repeating. Note: the delay depends on your shipping times — the source sets it after expected delivery.\n- Email 4 (~+3 days): ask for a review, since by now the customer has enough usage to have formed an opinion. Offer a discount code as a thank-you for reviewing — the source notes it's optional but useful because even non-reviewers get a code and may rebuy.\n- Email 5 & 6 (~7 days later, then +1 day): cross-sell with a discount and a 48-hour deadline, followed by a plain-text 24-hour deadline email from the founder. The source says founder plain-text emails 'work so well.'\n- The delay to delivery and the review ask depend on your product type and shipping times; adjust accordingly. If you sell consumables, the source notes you can add a 'replacement reminder' (e.g., a 30-day product prompting at day ~25).\nCondition: Delays are the presenter's defaults and depend on shipping and product type — validate against your own data.\nCondition: The source flags review flows may be better as a separate flow when using a dedicated review platform (e.g., Judge.me) with its own triggers; otherwise you can host the ask inside the post-purchase flow.\n\n[55898f20e16116a726da3dca] Design Post-Purchase Flows Around First-Time vs. Returning Customers\nApplies when: Planning the post-purchase flow that fires after an order, especially to improve first-purchase experience and repeat purchase.\n- Trigger on placed order; add brand-specific filters (e.g., exclude subscription or B2B customers from the standard post-purchase content, or route them to a different flow).\n- Do not schedule sends at a fixed time of day (e.g., 9 a.m.) — instead keep relative timing like '1 day after' so emails land when that buyer is typically active.\n- For first-time buyers: thank them, then deliver education/resources and use cases so they get full value — a poor first experience makes a return purchase unlikely.\n- Include a proactive plain-text customer-service check-in email ('how's it going, let us know if you need help'), which most brands skip and which requires no staff time once automated.\n- Then move them toward a next purchase via subscription, loyalty, or other programs.\n- Set a conditional split on 'placed order equals 1 over all time' to separate first-timers from returning customers, who instead get loyalty appreciation and personalized cross-sells.\nCondition: The source notes post-purchase flows are highly brand-specific, so filters and content must be set per brand rather than copied.\nCondition: The anti-9 a.m. opinion assumes buyer activity patterns match purchase time; it is a stated rationale, not a tested benchmark.\n\n[cf03cf0f0e81168879f6a1dd] Capture reviews with a specific, low-friction post-purchase ask\nApplies when: Building product-page social proof, improving marketplace review volume, or creating a referral and review flow after delivery or successful first use.\n- Choose the moment when the customer has likely experienced value: after delivery confirmation for a giftable product, after first successful use for a tool, or after a replenishment purchase for a consumable.\n- Ask for one action only, such as rating the product or leaving a review, and explain how that helps future shoppers choose with confidence.\n- Make the request channel-specific. Link directly to the relevant review location and provide concise device instructions only after verifying the current interface.\n- Use automation to trigger the ask by delivery date, estimated usage time, or a positive customer-service interaction rather than sending it immediately after checkout.\n- Segment requests where practical: do not ask customers with unresolved support issues for a review; first resolve the issue.\n- Encourage organic sharing by making the useful asset easy to pass along, such as a product-use guide or gift recommendation, without implying that a review requires compensation.\nCondition: Review-platform interfaces and policies change; verify both the current UI and incentive rules before publishing instructions.\nCondition: Do not pressure customers for only positive reviews or suppress legitimate negative feedback.\n\n[6d6e184eb84866186d1e8f11] Convert shipping and delivery emails into education touchpoints\nApplies when: Designing the order-confirmation, shipping, and delivery-notification sequence for any product that requires setup or a routine.\n- Assume the period between purchase and delivery creates anticipation plus subconscious anxiety (post-purchase dissonance) — silence breeds it.\n- For each post-purchase email, add product-specific education instead of only a tracking link: how to prepare before the product arrives, what physical sensations to expect on first use, and a realistic timeline to visible results.\n- Use the messages to reinforce the correctness of the buying decision, which is the stated purpose of combating dissonance.\n- Sequence them so the last message before delivery sets up the unboxing moment as the peak.\n- Keep expectations accurate here — an inflated timeline claim becomes negative disconfirmation later.\nCondition: The source presents this as a design principle for considered or routine-based products (its example is a personalized skincare regimen); for commodity reorders, the education payload may be thin.\nCondition: Don't overload transactional emails with content that delays the tracking information customers actually open the message for.\nCondition: Keep transactional messages focused on the order and necessary usage information; place promotional cross-sells in appropriately permitted marketing messages.\n\n[c076b110d253f505c1dbae09] Use feature holdouts to measure net revenue, not proxy engagement\nApplies when: Evaluating an email popup, product-recommendation module, onsite quiz, personalization engine, or similar feature that affects both engagement and the buying journey.\n- Randomly reserve a control group that never sees the feature while the remaining eligible traffic receives it. The source illustrates 90% exposed and 10% held out for a popup, and a 5% feature holdout for recommendations.\n- Track both groups through purchase and, where relevant, subsequent repeat purchase; do not stop reporting at an email or SMS signup.\n- Measure revenue per visitor as the decision metric, supported by conversion rate, AOV, margin if available, and opt-in rate.\n- Look for trade-offs. A popup can raise email capture while interrupting product discovery and lowering purchase conversion; a recommendation module can increase clicks without increasing total basket value.\n- Segment only when sample size supports it, such as new versus returning visitors or mobile versus desktop, and ensure the primary decision is based on the predeclared overall metric.\n- Keep the holdout in place long enough to capture delayed purchases and repeat behavior when the feature is intended to affect them.\nCondition: The source provides example split ratios but no required sample size or duration.\nCondition: A feature can affect future marketing eligibility, so short-term purchase measurement may miss some longer-term value or harm.\n\n[7ccc6c565f867390e76167f0] Build buyer, non-buyer and repeat-buyer segments for tailored messaging\nApplies when: Planning campaigns and flows that treat new, repeat and never-purchased customers differently.\n- All buyers: person can receive email marketing AND placed order at least once over all time.\n- First-time buyers: clone the buyers segment and set placed order equals 1 over all time.\n- 2x buyers: placed order equals 2 over all time; 3x+ (VIP candidates): placed order at least 3 over all time.\n- Non-buyers: placed order 0 times over all time — this list-only, never-purchased group should get different campaigns and flows than repeat buyers because their mindset differs.\n- Use these groups to size your customer base (how many buyers, first-timers, repeat buyers, never-bought) and to target appropriate offers.\nCondition: Cloning and editing one base segment is faster than building each from scratch.\nCondition: Thresholds (e.g. 3+ = VIP candidate) are starting points, not fixed definitions."
+    },
+    "system_prompt_sha256": "19fa52d4890cab2fc112e25875ff944d7a1753802461639c43bf7fdafc87d7e8"
+  },
+  "final": {
+    "request_id": "0e4481e303f43dc1de6e02a9ae6de48c0ac833a7784f30b34db6c01a230a4e62",
+    "provider": "openai",
+    "model": "gpt-5.6-sol",
+    "effort": "medium",
+    "completion_limit": 12288,
+    "usage": {
+      "prompt_tokens": 3446,
+      "completion_tokens": 3238,
+      "total_tokens": 6684,
+      "prompt_tokens_details": {
+        "cached_tokens": 0,
+        "cache_write_tokens": 3443,
+        "audio_tokens": 0
+      },
+      "completion_tokens_details": {
+        "reasoning_tokens": 1786,
+        "audio_tokens": 0,
+        "accepted_prediction_tokens": 0,
+        "rejected_prediction_tokens": 0
+      }
+    },
+    "booked_cost_usd": 0.08199,
+    "seconds": 58.2,
+    "finish_reason": "stop",
+    "output": {
+      "answer_markdown": "## TrailFold first-time Daypack post-purchase flow\n\nBuild as a draft until the agency verifies shipment, delivery, refund, return and support-status fields. The flow is educational first, requests an honest review only after confirmed delivery, then offers accessories without a discount.\n\n**Entry trigger:** Placed Order containing SKU `DAY18`.\n\n**Audience:** Customers whose triggering order is their first TrailFold order. Re-check eligibility before every send. Email 1 may be sent only to profiles permitted to receive it under TrailFold’s approved transactional/marketing setup; Emails 2–3 require marketing eligibility.\n\n**Delivery protection:** Email 1 waits for shipment confirmation. Emails 2–3 require a confirmed Delivered event. If delivery is not confirmed within 30 days of shipment, end the flow and flag the order for operational review—do not substitute an estimated delivery date for the review request.\n\n**Measurement:** Randomly hold out 10% of eligible entrants from all three messages. Compare 60-day net post-purchase product revenue per entrant, excluding the triggering order and deducting refunds. Treat review submissions and accessory revenue as diagnostics, not proof of incremental repeat-purchase lift.",
+      "actions": {
+        "launch_status": "draft",
+        "flow_name": "DAY18 | First Purchase | Post-Purchase",
+        "entry_event": "Placed Order",
+        "eligibility": [
+          "Triggering order contains SKU DAY18 with quantity greater than 0",
+          "Placed Order count equals 1 over all time at entry",
+          "Order has not been cancelled and the DAY18 line has not been fully refunded",
+          "Profile has the required email permission for the message type"
+        ],
+        "holdout_percent": 10,
+        "measurement_window_days": 60,
+        "primary_metric": "60-day net post-purchase product revenue per eligible entrant, excluding the triggering order and net of refunds",
+        "secondary_metrics": [
+          "Review submissions per confirmed-delivered recipient",
+          "Accessory net revenue per confirmed-delivered recipient",
+          "Unsubscribe and spam-complaint rates"
+        ],
+        "emails": [
+          {
+            "name": "Daypack onboarding",
+            "subject": "Your Daypack: a few useful details",
+            "timing": "Send 1 hour after the verified shipment/fulfillment event. If no shipment event arrives within 14 days of order placement, do not send and flag for review.",
+            "body": "Hi {{ first_name|default:'there' }},\n\nYour Daypack 18L is on the way. You can follow the latest carrier updates here:\n\n[TRACK YOUR ORDER]\n\nOur US delivery estimate is 4–7 business days. Carrier timing can change, so the tracking page is the best source for the latest update.\n\nA few details before it arrives:\n• The padded sleeve is designed for a 13-inch laptop. We have not confirmed that a 15-inch laptop fits.\n• The fabric is water-resistant, not waterproof. Protect electronics separately in sustained or heavy rain.\n• The external pocket keeps a bottle within easy reach.\n\nQuestions about your order or fit? Reply to this email and we’ll help.\n\n—TrailFold"
+          },
+          {
+            "name": "Honest review request",
+            "subject": "How is your Daypack working out?",
+            "timing": "Send 7 days after a verified Delivered event. Never send from an estimated delivery date.",
+            "body": "Hi {{ first_name|default:'there' }},\n\nYou’ve had a little time with your Daypack 18L. Would you share an honest rating or review?\n\nYour feedback—positive or critical—helps other shoppers understand how the bag works for everyday commuting and short trips.\n\n[REVIEW THE DAYPACK]\n\nThis request is not tied to a discount or reward. If you need help instead, reply here and our team will take care of you.\n\n—TrailFold"
+          },
+          {
+            "name": "Optional accessory cross-sell",
+            "subject": "Two practical additions to your Daypack",
+            "timing": "Send 7 days after the review-request email, approximately 14 days after confirmed delivery.",
+            "body": "Hi {{ first_name|default:'there' }},\n\nIf you want to add a little more organization to your Daypack, TrailFold has two straightforward options:\n\nCable pouch — $20\nSteel bottle — $32\n\nNo bundle and no limited-time offer—just useful additions if they suit how you carry your bag.\n\n[SHOP ACCESSORIES]\n\nAlready set? Nothing else needed.\n\n—TrailFold"
+          }
+        ],
+        "suppression_rules": [
+          "Before every send, exclude cancelled orders and customers whose DAY18 line was fully refunded",
+          "Suppress Emails 2–3 after any verified return request, return, chargeback or fraud cancellation tied to the triggering order",
+          "Suppress the review request while an unresolved support issue is present",
+          "Suppress Emails 2–3 if the profile is no longer marketable",
+          "Exclude employees, test orders and agency test profiles",
+          "Do not send Emails 2–3 without a confirmed Delivered event"
+        ],
+        "configuration_checks": [
+          "Map DAY18 line-item SKU and first-order count",
+          "Verify shipment, Delivered, refund, cancellation and return events",
+          "Verify the unresolved-support indicator and review-platform URL",
+          "Replace tracking and product-link placeholders before QA",
+          "Keep the same randomized holdout assignment for the full measurement window"
+        ]
+      },
+      "questions": [
+        "Does first-time mean first-ever TrailFold purchaser, as assumed here, or first-time DAY18 purchaser?",
+        "Which integration supplies the authoritative Delivered event and tracking URL?",
+        "Which review platform and support system should provide the review link and unresolved-ticket suppression?"
+      ],
+      "applied_card_ids": [
+        "55898f20e16116a726da3dca",
+        "cf03cf0f0e81168879f6a1dd",
+        "6d6e184eb84866186d1e8f11",
+        "c076b110d253f505c1dbae09",
+        "7ccc6c565f867390e76167f0"
+      ],
+      "rejected_guidance": [
+        "No loyalty message was included because no TrailFold loyalty program was provided.",
+        "Discounted and deadline-based cross-sells require owner approval and conflict with the current no-discount policy.",
+        "A replenishment reminder is inappropriate for a durable bag.",
+        "A fixed-day review request was rejected because confirmed delivery is required."
+      ]
+    },
+    "raw_content": "{\n  \"answer_markdown\": \"## TrailFold first-time Daypack post-purchase flow\\n\\nBuild as a draft until the agency verifies shipment, delivery, refund, return and support-status fields. The flow is educational first, requests an honest review only after confirmed delivery, then offers accessories without a discount.\\n\\n**Entry trigger:** Placed Order containing SKU `DAY18`.\\n\\n**Audience:** Customers whose triggering order is their first TrailFold order. Re-check eligibility before every send. Email 1 may be sent only to profiles permitted to receive it under TrailFold’s approved transactional/marketing setup; Emails 2–3 require marketing eligibility.\\n\\n**Delivery protection:** Email 1 waits for shipment confirmation. Emails 2–3 require a confirmed Delivered event. If delivery is not confirmed within 30 days of shipment, end the flow and flag the order for operational review—do not substitute an estimated delivery date for the review request.\\n\\n**Measurement:** Randomly hold out 10% of eligible entrants from all three messages. Compare 60-day net post-purchase product revenue per entrant, excluding the triggering order and deducting refunds. Treat review submissions and accessory revenue as diagnostics, not proof of incremental repeat-purchase lift.\",\n  \"actions\": {\n    \"launch_status\": \"draft\",\n    \"flow_name\": \"DAY18 | First Purchase | Post-Purchase\",\n    \"entry_event\": \"Placed Order\",\n    \"eligibility\": [\n      \"Triggering order contains SKU DAY18 with quantity greater than 0\",\n      \"Placed Order count equals 1 over all time at entry\",\n      \"Order has not been cancelled and the DAY18 line has not been fully refunded\",\n      \"Profile has the required email permission for the message type\"\n    ],\n    \"holdout_percent\": 10,\n    \"measurement_window_days\": 60,\n    \"primary_metric\": \"60-day net post-purchase product revenue per eligible entrant, excluding the triggering order and net of refunds\",\n    \"secondary_metrics\": [\n      \"Review submissions per confirmed-delivered recipient\",\n      \"Accessory net revenue per confirmed-delivered recipient\",\n      \"Unsubscribe and spam-complaint rates\"\n    ],\n    \"emails\": [\n      {\n        \"name\": \"Daypack onboarding\",\n        \"subject\": \"Your Daypack: a few useful details\",\n        \"timing\": \"Send 1 hour after the verified shipment/fulfillment event. If no shipment event arrives within 14 days of order placement, do not send and flag for review.\",\n        \"body\": \"Hi {{ first_name|default:'there' }},\\n\\nYour Daypack 18L is on the way. You can follow the latest carrier updates here:\\n\\n[TRACK YOUR ORDER]\\n\\nOur US delivery estimate is 4–7 business days. Carrier timing can change, so the tracking page is the best source for the latest update.\\n\\nA few details before it arrives:\\n• The padded sleeve is designed for a 13-inch laptop. We have not confirmed that a 15-inch laptop fits.\\n• The fabric is water-resistant, not waterproof. Protect electronics separately in sustained or heavy rain.\\n• The external pocket keeps a bottle within easy reach.\\n\\nQuestions about your order or fit? Reply to this email and we’ll help.\\n\\n—TrailFold\"\n      },\n      {\n        \"name\": \"Honest review request\",\n        \"subject\": \"How is your Daypack working out?\",\n        \"timing\": \"Send 7 days after a verified Delivered event. Never send from an estimated delivery date.\",\n        \"body\": \"Hi {{ first_name|default:'there' }},\\n\\nYou’ve had a little time with your Daypack 18L. Would you share an honest rating or review?\\n\\nYour feedback—positive or critical—helps other shoppers understand how the bag works for everyday commuting and short trips.\\n\\n[REVIEW THE DAYPACK]\\n\\nThis request is not tied to a discount or reward. If you need help instead, reply here and our team will take care of you.\\n\\n—TrailFold\"\n      },\n      {\n        \"name\": \"Optional accessory cross-sell\",\n        \"subject\": \"Two practical additions to your Daypack\",\n        \"timing\": \"Send 7 days after the review-request email, approximately 14 days after confirmed delivery.\",\n        \"body\": \"Hi {{ first_name|default:'there' }},\\n\\nIf you want to add a little more organization to your Daypack, TrailFold has two straightforward options:\\n\\nCable pouch — $20\\nSteel bottle — $32\\n\\nNo bundle and no limited-time offer—just useful additions if they suit how you carry your bag.\\n\\n[SHOP ACCESSORIES]\\n\\nAlready set? Nothing else needed.\\n\\n—TrailFold\"\n      }\n    ],\n    \"suppression_rules\": [\n      \"Before every send, exclude cancelled orders and customers whose DAY18 line was fully refunded\",\n      \"Suppress Emails 2–3 after any verified return request, return, chargeback or fraud cancellation tied to the triggering order\",\n      \"Suppress the review request while an unresolved support issue is present\",\n      \"Suppress Emails 2–3 if the profile is no longer marketable\",\n      \"Exclude employees, test orders and agency test profiles\",\n      \"Do not send Emails 2–3 without a confirmed Delivered event\"\n    ],\n    \"configuration_checks\": [\n      \"Map DAY18 line-item SKU and first-order count\",\n      \"Verify shipment, Delivered, refund, cancellation and return events\",\n      \"Verify the unresolved-support indicator and review-platform URL\",\n      \"Replace tracking and product-link placeholders before QA\",\n      \"Keep the same randomized holdout assignment for the full measurement window\"\n    ]\n  },\n  \"questions\": [\n    \"Does first-time mean first-ever TrailFold purchaser, as assumed here, or first-time DAY18 purchaser?\",\n    \"Which integration supplies the authoritative Delivered event and tracking URL?\",\n    \"Which review platform and support system should provide the review link and unresolved-ticket suppression?\"\n  ],\n  \"applied_card_ids\": [\n    \"55898f20e16116a726da3dca\",\n    \"cf03cf0f0e81168879f6a1dd\",\n    \"6d6e184eb84866186d1e8f11\",\n    \"c076b110d253f505c1dbae09\",\n    \"7ccc6c565f867390e76167f0\"\n  ],\n  \"rejected_guidance\": [\n    \"No loyalty message was included because no TrailFold loyalty program was provided.\",\n    \"Discounted and deadline-based cross-sells require owner approval and conflict with the current no-discount policy.\",\n    \"A replenishment reminder is inappropriate for a durable bag.\",\n    \"A fixed-day review request was rejected because confirmed delivery is required.\"\n  ]\n}",
+    "input": {
+      "experiment": "owner-v3",
+      "brand": {
+        "fictional": true,
+        "name": "TrailFold",
+        "market": "US",
+        "currency": "USD",
+        "platforms": [
+          "Shopify",
+          "Meta Ads",
+          "Klaviyo"
+        ],
+        "positioning": "Practical lightweight bags for commuters who take short weekend trips; restrained, useful, plain-spoken voice.",
+        "products": [
+          {
+            "sku": "DAY18",
+            "name": "Daypack 18L",
+            "price": 80,
+            "landed_cogs": 28,
+            "pick_pack": 2,
+            "merchant_shipping_cost": 8,
+            "payment_fee_percent": 3,
+            "features": [
+              "18L capacity",
+              "padded 13-inch laptop sleeve",
+              "water-resistant fabric, not waterproof",
+              "external bottle pocket"
+            ],
+            "stock": 210,
+            "daily_units_sold": 8,
+            "confirmed_replenishment_units": 500,
+            "replenishment_arrival_days": 35
+          },
+          {
+            "sku": "POUCH",
+            "name": "Cable pouch",
+            "price": 20,
+            "landed_cogs": 5,
+            "stock": 800
+          },
+          {
+            "sku": "BOTTLE",
+            "name": "Steel bottle",
+            "price": 32,
+            "landed_cogs": 9,
+            "stock": 600
+          }
+        ],
+        "policies": {
+          "shipping": "Free US shipping; delivery estimate 4-7 business days",
+          "returns": "30-day returns for unused products; return shipping paid by customer",
+          "discounts": "No current discount. Any new discount needs owner approval."
+        },
+        "claim_constraints": [
+          "No evidence for waterproof, medical, sustainability or lifetime-durability claims.",
+          "No verified competitor performance data.",
+          "No clinical or controlled product test results."
+        ],
+        "customer_themes": {
+          "simulated_review_count": 120,
+          "themes": [
+            "fits daily commute",
+            "customers ask whether a 15-inch laptop fits",
+            "customers ask whether rain protection means waterproof"
+          ],
+          "support_tickets_last_30_days": {
+            "delivery_date_questions": 42,
+            "15_inch_laptop_fit": 28,
+            "waterproof_questions": 18
+          },
+          "note": "Themes, not verbatim licensed testimonials; no fabricated quotes or endorsements."
+        },
+        "website_snapshot": {
+          "pdp_headline": "Adventure starts here",
+          "first_image": "product on plain background",
+          "pdp_details": "Laptop sizing and delivery window are below reviews; CTA says Buy now. No field speed or session-recording data."
+        },
+        "shopify": {
+          "previous_30_days": {
+            "sessions": 20000,
+            "orders": 600,
+            "net_product_revenue": 54000,
+            "mobile_sessions": 15000,
+            "mobile_orders": 400,
+            "desktop_sessions": 5000,
+            "desktop_orders": 200,
+            "add_to_cart_sessions": 2000,
+            "checkout_started_sessions": 1200
+          },
+          "current_30_days": {
+            "sessions": 25000,
+            "orders": 500,
+            "net_product_revenue": 45000,
+            "mobile_sessions": 20000,
+            "mobile_orders": 300,
+            "desktop_sessions": 5000,
+            "desktop_orders": 200,
+            "add_to_cart_sessions": 2000,
+            "checkout_started_sessions": 1000
+          },
+          "definitions": "Revenue excludes tax/shipping; periods equal length. Funnel counts are session-based and internally consistent, but no controlled attribution experiment.",
+          "new_customer_share_current": 0.72,
+          "cohort_90_day_repeat_rate": 0.14
+        },
+        "meta": {
+          "previous_30_days": {
+            "spend": 18000,
+            "reported_purchase_value": 54000,
+            "cpm": 12,
+            "link_ctr_percent": 1.5
+          },
+          "current_30_days": {
+            "spend": 22000,
+            "reported_purchase_value": 70400,
+            "cpm": 15,
+            "link_ctr_percent": 1.2
+          },
+          "settings": "7-day click plus 1-day view; no incremental lift study. Meta reported value not reconciled to Shopify orders.",
+          "creative_history": [
+            {
+              "name": "Desk-to-trail demonstration",
+              "spend_share": 0.55,
+              "observed_result": "Largest spend recipient; mature creative. No asset-level contribution data."
+            },
+            {
+              "name": "Laptop-fit comparison",
+              "spend_share": 0.25,
+              "observed_result": "Higher CTR in small test; conversion sample not supplied."
+            },
+            {
+              "name": "Minimal product still",
+              "spend_share": 0.2,
+              "observed_result": "No reliable lift estimate."
+            }
+          ]
+        },
+        "klaviyo": {
+          "marketable_profiles": 12000,
+          "reported_attributed_revenue_current": 14000,
+          "attribution_window": "5-day click plus 5-day open",
+          "flows": [
+            {
+              "name": "welcome",
+              "messages": 1,
+              "offer": "none"
+            },
+            {
+              "name": "checkout abandonment",
+              "trigger": "Started Checkout",
+              "messages": 1,
+              "delay_hours": 24,
+              "observed_gap": "No Added to Cart flow; filters not audited."
+            }
+          ],
+          "campaigns_per_week": 3,
+          "reported_open_rate_percent": 52,
+          "click_rate_percent": 1.1,
+          "order_rate_percent": 0.18,
+          "note": "Revenue attribution overlaps other systems; no holdout or recent deliverability audit."
+        },
+        "resources": {
+          "weekly_designer_hours": 8,
+          "weekly_developer_hours": 4,
+          "owner_hours": 4,
+          "next_14_day_test_budget": 3000,
+          "cash_constraint": "Protect replenishment payments; no additional inventory purchase approved."
+        },
+        "unavailable": [
+          "GA4 breakdowns",
+          "Clarity/Hotjar recordings",
+          "field Core Web Vitals",
+          "SKU-level ad acquisition cost",
+          "cohort contribution LTV",
+          "creative-level conversion sample sizes",
+          "channel incrementality",
+          "email holdout data"
+        ]
+      },
+      "task": {
+        "id": "E8",
+        "title": "Post-purchase retention flow",
+        "request": "Create a practical post-purchase email flow for first-time Daypack buyers with three actual emails: useful onboarding, review request and optional accessory cross-sell. Include event/timing, eligibility, suppression, returns/refunds, delivery uncertainty and a small holdout measurement. Bags are durable goods, not replenishable subscriptions. Do not request a review before confirmed delivery or imply known repeat-purchase lift. Return actions.emails with subject/body/timing and actions.primary_metric. Make it ready for an agency CRM specialist to configure after verifying event fields."
+      },
+      "reference_guidance": "[0a935c9bd0919223a8ba4c36] Sequence the Post-Purchase Flow Around Shipping, Usage, Loyalty, Reviews and Cross-Sell\nApplies when: Mapping the full email sequence and delays of a post-purchase flow for a physical product.\n- Email 1 (~30 min): thank-you and buyer's remorse reduction (see related card).\n- Email 2 (~2 days): build excitement for delivery by giving product usage instructions. This future-paces the customer using the product, reduces buyer's remorse, and pre-empts support questions. If you sell multiple product types, use product-based splits to tailor this email to the item bought.\n- Email 3 (~10 days): introduce your loyalty program. The source argues this is the moment the customer is happy having received and tried the product, making it a natural point to enroll them and move a first-time buyer toward repeating. Note: the delay depends on your shipping times — the source sets it after expected delivery.\n- Email 4 (~+3 days): ask for a review, since by now the customer has enough usage to have formed an opinion. Offer a discount code as a thank-you for reviewing — the source notes it's optional but useful because even non-reviewers get a code and may rebuy.\n- Email 5 & 6 (~7 days later, then +1 day): cross-sell with a discount and a 48-hour deadline, followed by a plain-text 24-hour deadline email from the founder. The source says founder plain-text emails 'work so well.'\n- The delay to delivery and the review ask depend on your product type and shipping times; adjust accordingly. If you sell consumables, the source notes you can add a 'replacement reminder' (e.g., a 30-day product prompting at day ~25).\nCondition: Delays are the presenter's defaults and depend on shipping and product type — validate against your own data.\nCondition: The source flags review flows may be better as a separate flow when using a dedicated review platform (e.g., Judge.me) with its own triggers; otherwise you can host the ask inside the post-purchase flow.\n\n[55898f20e16116a726da3dca] Design Post-Purchase Flows Around First-Time vs. Returning Customers\nApplies when: Planning the post-purchase flow that fires after an order, especially to improve first-purchase experience and repeat purchase.\n- Trigger on placed order; add brand-specific filters (e.g., exclude subscription or B2B customers from the standard post-purchase content, or route them to a different flow).\n- Do not schedule sends at a fixed time of day (e.g., 9 a.m.) — instead keep relative timing like '1 day after' so emails land when that buyer is typically active.\n- For first-time buyers: thank them, then deliver education/resources and use cases so they get full value — a poor first experience makes a return purchase unlikely.\n- Include a proactive plain-text customer-service check-in email ('how's it going, let us know if you need help'), which most brands skip and which requires no staff time once automated.\n- Then move them toward a next purchase via subscription, loyalty, or other programs.\n- Set a conditional split on 'placed order equals 1 over all time' to separate first-timers from returning customers, who instead get loyalty appreciation and personalized cross-sells.\nCondition: The source notes post-purchase flows are highly brand-specific, so filters and content must be set per brand rather than copied.\nCondition: The anti-9 a.m. opinion assumes buyer activity patterns match purchase time; it is a stated rationale, not a tested benchmark.\n\n[cf03cf0f0e81168879f6a1dd] Capture reviews with a specific, low-friction post-purchase ask\nApplies when: Building product-page social proof, improving marketplace review volume, or creating a referral and review flow after delivery or successful first use.\n- Choose the moment when the customer has likely experienced value: after delivery confirmation for a giftable product, after first successful use for a tool, or after a replenishment purchase for a consumable.\n- Ask for one action only, such as rating the product or leaving a review, and explain how that helps future shoppers choose with confidence.\n- Make the request channel-specific. Link directly to the relevant review location and provide concise device instructions only after verifying the current interface.\n- Use automation to trigger the ask by delivery date, estimated usage time, or a positive customer-service interaction rather than sending it immediately after checkout.\n- Segment requests where practical: do not ask customers with unresolved support issues for a review; first resolve the issue.\n- Encourage organic sharing by making the useful asset easy to pass along, such as a product-use guide or gift recommendation, without implying that a review requires compensation.\nCondition: Review-platform interfaces and policies change; verify both the current UI and incentive rules before publishing instructions.\nCondition: Do not pressure customers for only positive reviews or suppress legitimate negative feedback.\n\n[6d6e184eb84866186d1e8f11] Convert shipping and delivery emails into education touchpoints\nApplies when: Designing the order-confirmation, shipping, and delivery-notification sequence for any product that requires setup or a routine.\n- Assume the period between purchase and delivery creates anticipation plus subconscious anxiety (post-purchase dissonance) — silence breeds it.\n- For each post-purchase email, add product-specific education instead of only a tracking link: how to prepare before the product arrives, what physical sensations to expect on first use, and a realistic timeline to visible results.\n- Use the messages to reinforce the correctness of the buying decision, which is the stated purpose of combating dissonance.\n- Sequence them so the last message before delivery sets up the unboxing moment as the peak.\n- Keep expectations accurate here — an inflated timeline claim becomes negative disconfirmation later.\nCondition: The source presents this as a design principle for considered or routine-based products (its example is a personalized skincare regimen); for commodity reorders, the education payload may be thin.\nCondition: Don't overload transactional emails with content that delays the tracking information customers actually open the message for.\nCondition: Keep transactional messages focused on the order and necessary usage information; place promotional cross-sells in appropriately permitted marketing messages.\n\n[c076b110d253f505c1dbae09] Use feature holdouts to measure net revenue, not proxy engagement\nApplies when: Evaluating an email popup, product-recommendation module, onsite quiz, personalization engine, or similar feature that affects both engagement and the buying journey.\n- Randomly reserve a control group that never sees the feature while the remaining eligible traffic receives it. The source illustrates 90% exposed and 10% held out for a popup, and a 5% feature holdout for recommendations.\n- Track both groups through purchase and, where relevant, subsequent repeat purchase; do not stop reporting at an email or SMS signup.\n- Measure revenue per visitor as the decision metric, supported by conversion rate, AOV, margin if available, and opt-in rate.\n- Look for trade-offs. A popup can raise email capture while interrupting product discovery and lowering purchase conversion; a recommendation module can increase clicks without increasing total basket value.\n- Segment only when sample size supports it, such as new versus returning visitors or mobile versus desktop, and ensure the primary decision is based on the predeclared overall metric.\n- Keep the holdout in place long enough to capture delayed purchases and repeat behavior when the feature is intended to affect them.\nCondition: The source provides example split ratios but no required sample size or duration.\nCondition: A feature can affect future marketing eligibility, so short-term purchase measurement may miss some longer-term value or harm.\n\n[7ccc6c565f867390e76167f0] Build buyer, non-buyer and repeat-buyer segments for tailored messaging\nApplies when: Planning campaigns and flows that treat new, repeat and never-purchased customers differently.\n- All buyers: person can receive email marketing AND placed order at least once over all time.\n- First-time buyers: clone the buyers segment and set placed order equals 1 over all time.\n- 2x buyers: placed order equals 2 over all time; 3x+ (VIP candidates): placed order at least 3 over all time.\n- Non-buyers: placed order 0 times over all time — this list-only, never-purchased group should get different campaigns and flows than repeat buyers because their mindset differs.\n- Use these groups to size your customer base (how many buyers, first-timers, repeat buyers, never-bought) and to target appropriate offers.\nCondition: Cloning and editing one base segment is faster than building each from scratch.\nCondition: Thresholds (e.g. 3+ = VIP candidate) are starting points, not fixed definitions."
+    },
+    "system_prompt_sha256": "19fa52d4890cab2fc112e25875ff944d7a1753802461639c43bf7fdafc87d7e8"
+  },
+  "first_validation": null,
+  "final_validation": null,
+  "knowledge_tokens": 1818,
+  "card_ids": [
+    "0a935c9bd0919223a8ba4c36",
+    "55898f20e16116a726da3dca",
+    "cf03cf0f0e81168879f6a1dd",
+    "6d6e184eb84866186d1e8f11",
+    "c076b110d253f505c1dbae09",
+    "7ccc6c565f867390e76167f0"
+  ],
+  "retrieval_ms": 1138.2648999988305,
+  "selector_seconds": 11.06,
+  "selector_cost": 0.0037033999999999995
+}

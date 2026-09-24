@@ -1,0 +1,273 @@
+{
+  "request_id": "803bafb77306e80dd115bb4eaa368df9b68c076b59189e6313f80f9cf2f28d97",
+  "provider": "deepseek",
+  "model": "deepseek-flash",
+  "effort": "none",
+  "completion_limit": 16384,
+  "usage": {
+    "prompt_tokens": 1625,
+    "completion_tokens": 2888,
+    "total_tokens": 4513,
+    "prompt_tokens_details": {
+      "cached_tokens": 512
+    },
+    "prompt_cache_hit_tokens": 512,
+    "prompt_cache_miss_tokens": 1113
+  },
+  "booked_cost_usd": 0.0039531,
+  "seconds": 16.28,
+  "finish_reason": "stop",
+  "output": {
+    "cards": [
+      {
+        "title": "WooCommerce Setup Order: From Blank to Sellable Store",
+        "summary": "A sequenced checklist for standing up a WooCommerce store: domain, WordPress, theme and builder, payments, shipping, taxes, then products.",
+        "use_when": "You are launching a new WooCommerce store from nothing and need the correct build order so later steps (payments, shipping, taxes) have products and addresses to bind to.",
+        "steps": [
+          "Start with domain and hosting, then install WordPress — this is the foundation everything else attaches to.",
+          "Install the Blocksy theme (Appearance > Themes > Add Theme), then activate the Blocksy Companion plugin.",
+          "Import a Starter Site template (Starter Sites > filter builder = Elementor > import, e.g. the 'Garter Robe' template) to get a working page structure fast.",
+          "In Elementor settings, disable the Atomic Editor while you are learning — the source recommends this for beginners to avoid an extra editing paradigm.",
+          "Configure store address and currency (this address drives tax origin rules, so do it before taxes).",
+          "Create at least one Simple Product so you have something to test checkout with.",
+          "Connect payments last-but-one: install Stripe and PayPal plugins, link accounts via API, run the connection test, and leave them in Test mode.",
+          "Set up Shipping Zones and Tax, then run a full test order (test card, test address) before switching payments to Live."
+        ],
+        "caveats": [
+          "Tool menus and plugin names change between versions — verify the current click paths in your own WordPress admin.",
+          "Starter Site templates bring demo content and styling you will need to strip out.",
+          "Do not go Live on payments until a test order completes end-to-end."
+        ],
+        "tags": [
+          "store-setup",
+          "woocommerce",
+          "wordpress",
+          "theme-setup",
+          "launch-checklist",
+          "payments"
+        ]
+      },
+      {
+        "title": "Installing and Importing a Blocksy + Elementor Starter Site",
+        "summary": "Click path to get Blocksy theme, Blocksy Companion, and an Elementor-built starter template onto a fresh WordPress install.",
+        "use_when": "You are on a fresh WordPress install and want a styled, editable storefront skeleton without designing every page from scratch.",
+        "steps": [
+          "Install the Blocksy theme via Appearance > Themes > Add Theme, then activate it.",
+          "Install and activate the Blocksy Companion plugin — it unlocks the Starter Sites importer and Blocksy's extra options.",
+          "Open Starter Sites, filter by builder = Elementor so the imported pages are editable in Elementor rather than another builder.",
+          "Import a template that matches your niche (the source uses 'Garter Robe' as the worked example).",
+          "Go into Elementor settings and turn off the Atomic Editor if you are a beginner — the source says it is recommended for beginners to reduce confusion.",
+          "After import, replace demo copy, imagery and links with your own before going live."
+        ],
+        "caveats": [
+          "Imported templates ship with placeholder products and imagery that must be replaced.",
+          "The Atomic Editor recommendation is the source's opinion aimed at beginners, not a universal rule.",
+          "Verify current plugin and menu names — WordPress admin labels change between versions."
+        ],
+        "tags": [
+          "store-setup",
+          "blocksy",
+          "elementor",
+          "theme-setup",
+          "wordpress"
+        ]
+      },
+      {
+        "title": "Creating a Simple Product in WooCommerce",
+        "summary": "The field-by-field path for adding a single-option product: pricing, inventory, shipping dimensions, category and image.",
+        "use_when": "You are listing a product with no size/color variants and need it purchasable, stocked correctly, and shipping-ready.",
+        "steps": [
+          "Go to Products > Add New.",
+          "Enter a clear product title and write the description (and short description for listing/above-the-fold placement).",
+          "Set Product Type = Simple Product.",
+          "Enter regular price and, if discounting, the sale price — WooCommerce applies the sale price automatically during the sale window.",
+          "Manage inventory: enable stock management and set the stock quantity and low-stock threshold so you get warned before you sell out.",
+          "Enter shipping weight and dimensions — these feed weight-based and class-based shipping rates, so missing them can break calculated shipping.",
+          "Assign product categories and upload the featured image before publishing."
+        ],
+        "caveats": [
+          "Without weight/dimensions filled in, weight-based shipping rules will not calculate correctly.",
+          "Skipping the low-stock threshold means you only find out you are out of stock from customers."
+        ],
+        "tags": [
+          "store-setup",
+          "woocommerce",
+          "product-setup",
+          "inventory",
+          "shipping",
+          "product-page"
+        ]
+      },
+      {
+        "title": "Creating a Variable Product with Attributes and Generated Variations",
+        "summary": "How to build size/color variants in WooCommerce using an attribute list, then generate each combination and price it individually.",
+        "use_when": "You sell a product in multiple sizes, colors or materials and need each combination to have its own SKU, stock and price.",
+        "steps": [
+          "Create the product (Products > Add New) and change Product Type to Variable product.",
+          "Open the Attributes tab. Create or select an attribute (e.g. Size, Color) and enter its values separated by the pipe symbol, e.g. 8 | 9 | 10 | 11.",
+          "Tick 'Use for variations' — without this tick the values will not become selectable buying options.",
+          "Save the attributes.",
+          "Open the Variations tab and click 'Generate variations' (or 'Generate all variations') — WooCommerce creates one row per combination, e.g. Size 10 / Red.",
+          "For each variation, set an SKU, its own price, and its own stock level. A variation with no price set is not purchasable.",
+          "Add variation images if buyers need to see each colorway, then publish and test every combination in the shop."
+        ],
+        "caveats": [
+          "A variation with no price will not be buyable — check every generated combination, not just the first.",
+          "Generated variations can leave orphan rows when you later remove an attribute value; prune them.",
+          "Verify current tab names in your WooCommerce version."
+        ],
+        "tags": [
+          "store-setup",
+          "woocommerce",
+          "product-setup",
+          "variants",
+          "inventory",
+          "product-page"
+        ]
+      },
+      {
+        "title": "Connecting Stripe and PayPal via Payment Plugins",
+        "summary": "Install the Stripe/PayPal WooCommerce plugins, link accounts by API, run the connection test, and stay in test mode until verified.",
+        "use_when": "You are turning on card and wallet payments for a WooCommerce store and want to confirm the connection before taking real money.",
+        "steps": [
+          "Install 'Payment Plugins for Stripe WooCommerce' and 'Payment Plugins for PayPal WooCommerce' (or your chosen WooCommerce payment extensions).",
+          "Open the plugin settings and connect each account by entering the API keys/credentials from your Stripe and PayPal dashboards.",
+          "Run the plugin's built-in connection test to confirm the credentials work.",
+          "Set both plugins to Test mode first, then place a real test order using test card numbers.",
+          "Confirm the order status changes correctly, the customer receives the confirmation email, and a refund path exists in the dashboard.",
+          "Only switch to Live mode after the test order completes cleanly."
+        ],
+        "caveats": [
+          "API key fields and test-mode toggles differ between plugin versions — verify against the current plugin docs.",
+          "Test-mode and live-mode credentials are different keys; swapping them is a common launch error.",
+          "Payment plugin availability and interface may change over time."
+        ],
+        "tags": [
+          "store-setup",
+          "payments",
+          "stripe",
+          "paypal",
+          "checkout",
+          "launch-checklist"
+        ]
+      },
+      {
+        "title": "Shipping Zones, Flat Rate vs Free-Over-Threshold, and Shipping Classes",
+        "summary": "Structure shipping by zone, decide between flat-rate and a free-shipping minimum, and use Shipping Classes to charge more for heavy or bulky items.",
+        "use_when": "You are setting shipping charges for a WooCommerce store and need to handle multi-region rates plus oversized/heavy products without losing margin.",
+        "steps": [
+          "Create Shipping Zones for each region you sell into (e.g. United States, EU).",
+          "Inside each zone, add Shipping Methods — a flat rate for standard orders and/or a free shipping method.",
+          "Configure free shipping with a minimum-order threshold (the source uses $100 as an example) so free shipping rewards larger baskets instead of eroding every order's margin.",
+          "Create Shipping Classes (e.g. 'Heavy') for oversized or weighty products.",
+          "Assign the Heavy class to the relevant products, then add a Shipping Class cost to the zone's flat-rate method so those items carry a higher per-item charge.",
+          "Place test orders with light-only, heavy-only, and mixed carts to confirm the rates combine the way you intend."
+        ],
+        "caveats": [
+          "The $100 free-shipping figure is the source's illustrative example, not a recommended benchmark — set yours from your own margins and AOV.",
+          "Shipping Class costs are typically applied per item, so a cart of multiple heavy items can stack charges unexpectedly.",
+          "Verify current WooCommerce shipping UI labels in your version."
+        ],
+        "tags": [
+          "store-setup",
+          "woocommerce",
+          "shipping",
+          "pricing",
+          "margin",
+          "cart"
+        ]
+      },
+      {
+        "title": "Automated Sales Tax with WooCommerce Tax",
+        "summary": "Enable WooCommerce Tax (powered by TaxJar), set the store address, pick origin- vs destination-based calculation, and add reduced/zero rates per category.",
+        "use_when": "You need correct sales tax across US states or other jurisdictions without hand-maintaining every rate table, or you sell goods with special tax treatment.",
+        "steps": [
+          "Install and connect the 'WooCommerce Tax' plugin (by WooCommerce/Automattic, powered by TaxJar).",
+          "Set your store address accurately — it determines whether origin-based or destination-based tax rules apply.",
+          "Choose the calculation method that matches how your jurisdiction's law works (origin-based vs destination-based) rather than guessing.",
+          "Enable automated calculation so rates update when jurisdictions change.",
+          "For special categories — e.g. digital goods, or goods that are tax-exempt locally — configure reduced or zero tax rates tied to those product categories instead of a blanket rate.",
+          "Run a test order to a few different addresses to confirm the tax lines look right before launch."
+        ],
+        "caveats": [
+          "Tax law varies by state and jurisdiction; automated tools assist but do not replace confirming your obligations with a tax professional.",
+          "Correct store address is a prerequisite — a wrong address produces wrong tax.",
+          "Plugin name, pricing and connection flow may change; verify the current interface."
+        ],
+        "tags": [
+          "store-setup",
+          "taxes",
+          "woocommerce",
+          "compliance",
+          "product-categories"
+        ]
+      },
+      {
+        "title": "Elementor Responsive Controls for Product and Landing Pages",
+        "summary": "Use Elementor flexbox container settings and device toggles to hide, realign, or swap background images per viewport instead of shipping one desktop layout to mobile shoppers.",
+        "use_when": "Your store pages look fine on desktop but cramped, overlapped or unreadable on mobile/tablet, and you need a mobile merchandising fix inside the builder.",
+        "steps": [
+          "Open the section/container in Elementor and switch to Mobile or Tablet preview using the responsive device icons at the bottom of the panel.",
+          "Use the device-specific toggle next to any setting (the little screen icon) so a change applies only to that viewport — this is how you adjust alignment, spacing and sizing per device.",
+          "Use Advanced > Responsive to hide elements that do not belong on a given device (decorative graphics, wide comparison tables, dense desktop nav).",
+          "Replace or reposition background images per device so hero imagery stays legible on narrow screens rather than cropping awkwardly.",
+          "Preview on the actual device or a narrow browser window, not just the builder's preview, before publishing."
+        ],
+        "caveats": [
+          "Hiding content on mobile means that content is gone for mobile buyers — do not hide something they need to make a purchase decision.",
+          "Per-device overrides multiply settings; document what you changed so later edits do not silently revert.",
+          "Elementor's panel layout and icon placement change between versions — verify in your current build."
+        ],
+        "tags": [
+          "store-setup",
+          "elementor",
+          "mobile",
+          "responsive-design",
+          "product-page",
+          "landing-page"
+        ]
+      },
+      {
+        "title": "Pre-Launch Store Configuration Checklist (Topic Map)",
+        "summary": "A four-part coverage map for a WooCommerce build — domain/email, store configuration, payments/tax, and shipping profiles — to verify nothing was skipped before launch.",
+        "use_when": "You are auditing a WooCommerce store before going live and want to confirm each configuration area is actually done rather than assumed.",
+        "steps": [
+          "Domain and email: confirm the store's domain resolves and transactional email (order confirmations, password resets) actually sends and lands in inboxes — not just spam.",
+          "Store configuration: WordPress installed, theme (e.g. Blocksy) active, page builder (e.g. Elementor) working, store address and currency set correctly.",
+          "Products: at least one Simple Product and one Variable Product published, with prices, stock thresholds, weights/dimensions, and categories assigned.",
+          "Payments and tax: Stripe and PayPal connected and connection-tested, tax plugin configured against the correct store address and calculation basis, test order completed.",
+          "Shipping profiles: zones created for each region, flat vs free-shipping thresholds set deliberately, Shipping Classes assigned to heavy/oversized items and costed.",
+          "Mobile: check key pages on a phone viewport and fix with Elementor responsive toggles.",
+          "Finish with a full test purchase in Test mode before flipping payments to Live."
+        ],
+        "caveats": [
+          "This is a coverage map for baseline configuration — page copy, analytic accuracy, and ongoing speed work belong to separate disciplines and are not covered here.",
+          "Do not treat 'plugin installed' as 'plugin configured'; the test order is the real verification."
+        ],
+        "tags": [
+          "store-setup",
+          "launch-checklist",
+          "woocommerce",
+          "payments",
+          "shipping",
+          "taxes",
+          "mobile"
+        ]
+      }
+    ]
+  },
+  "raw_content": "{\"cards\":[{\"title\":\"WooCommerce Setup Order: From Blank to Sellable Store\",\"summary\":\"A sequenced checklist for standing up a WooCommerce store: domain, WordPress, theme and builder, payments, shipping, taxes, then products.\",\"use_when\":\"You are launching a new WooCommerce store from nothing and need the correct build order so later steps (payments, shipping, taxes) have products and addresses to bind to.\",\"steps\":[\"Start with domain and hosting, then install WordPress — this is the foundation everything else attaches to.\",\"Install the Blocksy theme (Appearance > Themes > Add Theme), then activate the Blocksy Companion plugin.\",\"Import a Starter Site template (Starter Sites > filter builder = Elementor > import, e.g. the 'Garter Robe' template) to get a working page structure fast.\",\"In Elementor settings, disable the Atomic Editor while you are learning — the source recommends this for beginners to avoid an extra editing paradigm.\",\"Configure store address and currency (this address drives tax origin rules, so do it before taxes).\",\"Create at least one Simple Product so you have something to test checkout with.\",\"Connect payments last-but-one: install Stripe and PayPal plugins, link accounts via API, run the connection test, and leave them in Test mode.\",\"Set up Shipping Zones and Tax, then run a full test order (test card, test address) before switching payments to Live.\"],\"caveats\":[\"Tool menus and plugin names change between versions — verify the current click paths in your own WordPress admin.\",\"Starter Site templates bring demo content and styling you will need to strip out.\",\"Do not go Live on payments until a test order completes end-to-end.\"],\"tags\":[\"store-setup\",\"woocommerce\",\"wordpress\",\"theme-setup\",\"launch-checklist\",\"payments\"]},{\"title\":\"Installing and Importing a Blocksy + Elementor Starter Site\",\"summary\":\"Click path to get Blocksy theme, Blocksy Companion, and an Elementor-built starter template onto a fresh WordPress install.\",\"use_when\":\"You are on a fresh WordPress install and want a styled, editable storefront skeleton without designing every page from scratch.\",\"steps\":[\"Install the Blocksy theme via Appearance > Themes > Add Theme, then activate it.\",\"Install and activate the Blocksy Companion plugin — it unlocks the Starter Sites importer and Blocksy's extra options.\",\"Open Starter Sites, filter by builder = Elementor so the imported pages are editable in Elementor rather than another builder.\",\"Import a template that matches your niche (the source uses 'Garter Robe' as the worked example).\",\"Go into Elementor settings and turn off the Atomic Editor if you are a beginner — the source says it is recommended for beginners to reduce confusion.\",\"After import, replace demo copy, imagery and links with your own before going live.\"],\"caveats\":[\"Imported templates ship with placeholder products and imagery that must be replaced.\",\"The Atomic Editor recommendation is the source's opinion aimed at beginners, not a universal rule.\",\"Verify current plugin and menu names — WordPress admin labels change between versions.\"],\"tags\":[\"store-setup\",\"blocksy\",\"elementor\",\"theme-setup\",\"wordpress\"]},{\"title\":\"Creating a Simple Product in WooCommerce\",\"summary\":\"The field-by-field path for adding a single-option product: pricing, inventory, shipping dimensions, category and image.\",\"use_when\":\"You are listing a product with no size/color variants and need it purchasable, stocked correctly, and shipping-ready.\",\"steps\":[\"Go to Products > Add New.\",\"Enter a clear product title and write the description (and short description for listing/above-the-fold placement).\",\"Set Product Type = Simple Product.\",\"Enter regular price and, if discounting, the sale price — WooCommerce applies the sale price automatically during the sale window.\",\"Manage inventory: enable stock management and set the stock quantity and low-stock threshold so you get warned before you sell out.\",\"Enter shipping weight and dimensions — these feed weight-based and class-based shipping rates, so missing them can break calculated shipping.\",\"Assign product categories and upload the featured image before publishing.\"],\"caveats\":[\"Without weight/dimensions filled in, weight-based shipping rules will not calculate correctly.\",\"Skipping the low-stock threshold means you only find out you are out of stock from customers.\"],\"tags\":[\"store-setup\",\"woocommerce\",\"product-setup\",\"inventory\",\"shipping\",\"product-page\"]},{\"title\":\"Creating a Variable Product with Attributes and Generated Variations\",\"summary\":\"How to build size/color variants in WooCommerce using an attribute list, then generate each combination and price it individually.\",\"use_when\":\"You sell a product in multiple sizes, colors or materials and need each combination to have its own SKU, stock and price.\",\"steps\":[\"Create the product (Products > Add New) and change Product Type to Variable product.\",\"Open the Attributes tab. Create or select an attribute (e.g. Size, Color) and enter its values separated by the pipe symbol, e.g. 8 | 9 | 10 | 11.\",\"Tick 'Use for variations' — without this tick the values will not become selectable buying options.\",\"Save the attributes.\",\"Open the Variations tab and click 'Generate variations' (or 'Generate all variations') — WooCommerce creates one row per combination, e.g. Size 10 / Red.\",\"For each variation, set an SKU, its own price, and its own stock level. A variation with no price set is not purchasable.\",\"Add variation images if buyers need to see each colorway, then publish and test every combination in the shop.\"],\"caveats\":[\"A variation with no price will not be buyable — check every generated combination, not just the first.\",\"Generated variations can leave orphan rows when you later remove an attribute value; prune them.\",\"Verify current tab names in your WooCommerce version.\"],\"tags\":[\"store-setup\",\"woocommerce\",\"product-setup\",\"variants\",\"inventory\",\"product-page\"]},{\"title\":\"Connecting Stripe and PayPal via Payment Plugins\",\"summary\":\"Install the Stripe/PayPal WooCommerce plugins, link accounts by API, run the connection test, and stay in test mode until verified.\",\"use_when\":\"You are turning on card and wallet payments for a WooCommerce store and want to confirm the connection before taking real money.\",\"steps\":[\"Install 'Payment Plugins for Stripe WooCommerce' and 'Payment Plugins for PayPal WooCommerce' (or your chosen WooCommerce payment extensions).\",\"Open the plugin settings and connect each account by entering the API keys/credentials from your Stripe and PayPal dashboards.\",\"Run the plugin's built-in connection test to confirm the credentials work.\",\"Set both plugins to Test mode first, then place a real test order using test card numbers.\",\"Confirm the order status changes correctly, the customer receives the confirmation email, and a refund path exists in the dashboard.\",\"Only switch to Live mode after the test order completes cleanly.\"],\"caveats\":[\"API key fields and test-mode toggles differ between plugin versions — verify against the current plugin docs.\",\"Test-mode and live-mode credentials are different keys; swapping them is a common launch error.\",\"Payment plugin availability and interface may change over time.\"],\"tags\":[\"store-setup\",\"payments\",\"stripe\",\"paypal\",\"checkout\",\"launch-checklist\"]},{\"title\":\"Shipping Zones, Flat Rate vs Free-Over-Threshold, and Shipping Classes\",\"summary\":\"Structure shipping by zone, decide between flat-rate and a free-shipping minimum, and use Shipping Classes to charge more for heavy or bulky items.\",\"use_when\":\"You are setting shipping charges for a WooCommerce store and need to handle multi-region rates plus oversized/heavy products without losing margin.\",\"steps\":[\"Create Shipping Zones for each region you sell into (e.g. United States, EU).\",\"Inside each zone, add Shipping Methods — a flat rate for standard orders and/or a free shipping method.\",\"Configure free shipping with a minimum-order threshold (the source uses $100 as an example) so free shipping rewards larger baskets instead of eroding every order's margin.\",\"Create Shipping Classes (e.g. 'Heavy') for oversized or weighty products.\",\"Assign the Heavy class to the relevant products, then add a Shipping Class cost to the zone's flat-rate method so those items carry a higher per-item charge.\",\"Place test orders with light-only, heavy-only, and mixed carts to confirm the rates combine the way you intend.\"],\"caveats\":[\"The $100 free-shipping figure is the source's illustrative example, not a recommended benchmark — set yours from your own margins and AOV.\",\"Shipping Class costs are typically applied per item, so a cart of multiple heavy items can stack charges unexpectedly.\",\"Verify current WooCommerce shipping UI labels in your version.\"],\"tags\":[\"store-setup\",\"woocommerce\",\"shipping\",\"pricing\",\"margin\",\"cart\"]},{\"title\":\"Automated Sales Tax with WooCommerce Tax\",\"summary\":\"Enable WooCommerce Tax (powered by TaxJar), set the store address, pick origin- vs destination-based calculation, and add reduced/zero rates per category.\",\"use_when\":\"You need correct sales tax across US states or other jurisdictions without hand-maintaining every rate table, or you sell goods with special tax treatment.\",\"steps\":[\"Install and connect the 'WooCommerce Tax' plugin (by WooCommerce/Automattic, powered by TaxJar).\",\"Set your store address accurately — it determines whether origin-based or destination-based tax rules apply.\",\"Choose the calculation method that matches how your jurisdiction's law works (origin-based vs destination-based) rather than guessing.\",\"Enable automated calculation so rates update when jurisdictions change.\",\"For special categories — e.g. digital goods, or goods that are tax-exempt locally — configure reduced or zero tax rates tied to those product categories instead of a blanket rate.\",\"Run a test order to a few different addresses to confirm the tax lines look right before launch.\"],\"caveats\":[\"Tax law varies by state and jurisdiction; automated tools assist but do not replace confirming your obligations with a tax professional.\",\"Correct store address is a prerequisite — a wrong address produces wrong tax.\",\"Plugin name, pricing and connection flow may change; verify the current interface.\"],\"tags\":[\"store-setup\",\"taxes\",\"woocommerce\",\"compliance\",\"product-categories\"]},{\"title\":\"Elementor Responsive Controls for Product and Landing Pages\",\"summary\":\"Use Elementor flexbox container settings and device toggles to hide, realign, or swap background images per viewport instead of shipping one desktop layout to mobile shoppers.\",\"use_when\":\"Your store pages look fine on desktop but cramped, overlapped or unreadable on mobile/tablet, and you need a mobile merchandising fix inside the builder.\",\"steps\":[\"Open the section/container in Elementor and switch to Mobile or Tablet preview using the responsive device icons at the bottom of the panel.\",\"Use the device-specific toggle next to any setting (the little screen icon) so a change applies only to that viewport — this is how you adjust alignment, spacing and sizing per device.\",\"Use Advanced > Responsive to hide elements that do not belong on a given device (decorative graphics, wide comparison tables, dense desktop nav).\",\"Replace or reposition background images per device so hero imagery stays legible on narrow screens rather than cropping awkwardly.\",\"Preview on the actual device or a narrow browser window, not just the builder's preview, before publishing.\"],\"caveats\":[\"Hiding content on mobile means that content is gone for mobile buyers — do not hide something they need to make a purchase decision.\",\"Per-device overrides multiply settings; document what you changed so later edits do not silently revert.\",\"Elementor's panel layout and icon placement change between versions — verify in your current build.\"],\"tags\":[\"store-setup\",\"elementor\",\"mobile\",\"responsive-design\",\"product-page\",\"landing-page\"]},{\"title\":\"Pre-Launch Store Configuration Checklist (Topic Map)\",\"summary\":\"A four-part coverage map for a WooCommerce build — domain/email, store configuration, payments/tax, and shipping profiles — to verify nothing was skipped before launch.\",\"use_when\":\"You are auditing a WooCommerce store before going live and want to confirm each configuration area is actually done rather than assumed.\",\"steps\":[\"Domain and email: confirm the store's domain resolves and transactional email (order confirmations, password resets) actually sends and lands in inboxes — not just spam.\",\"Store configuration: WordPress installed, theme (e.g. Blocksy) active, page builder (e.g. Elementor) working, store address and currency set correctly.\",\"Products: at least one Simple Product and one Variable Product published, with prices, stock thresholds, weights/dimensions, and categories assigned.\",\"Payments and tax: Stripe and PayPal connected and connection-tested, tax plugin configured against the correct store address and calculation basis, test order completed.\",\"Shipping profiles: zones created for each region, flat vs free-shipping thresholds set deliberately, Shipping Classes assigned to heavy/oversized items and costed.\",\"Mobile: check key pages on a phone viewport and fix with Elementor responsive toggles.\",\"Finish with a full test purchase in Test mode before flipping payments to Live.\"],\"caveats\":[\"This is a coverage map for baseline configuration — page copy, analytic accuracy, and ongoing speed work belong to separate disciplines and are not covered here.\",\"Do not treat 'plugin installed' as 'plugin configured'; the test order is the real verification.\"],\"tags\":[\"store-setup\",\"launch-checklist\",\"woocommerce\",\"payments\",\"shipping\",\"taxes\",\"mobile\"]}]}",
+  "input": {
+    "source_id": "1N7_C41dloQEP_i1ovlcx9YLjlibrEIwZ",
+    "source_sha256": "2c40c37ef7180ab77b5f811028b7999b787b548b7c8ada6ca9daf98ce78a3a25",
+    "source_name": "WooCommerce Tutorial for Beginners 2026.docx",
+    "folder": "/05-SET-store-setup",
+    "domain": "store-setup",
+    "section": 0,
+    "section_count": 3,
+    "text": "05-SET / store and domain setup\n\nGoes here. Going from nothing to a live store. Domain setup, WordPress configuration, theme and page builder installation (Blocksy and Elementor), payments (Stripe/PayPal), shipping profiles, simple and variable product creation, coupon setup, automated taxes, and mobile responsiveness toggles.\n\nNot here.\n\nPage copy principles and section structure -> 07-LPG\n\nWhether the numbers a tool reports are correct -> 06-MEA\n\nOngoing page performance and speed optimization -> 08-SPD\n\nHeader. url: rights: public_reference why: Provides exact click paths for configuring a WooCommerce store using Elementor and the Blocksy theme, including variable product setup, tax automation via WooCommerce Tax, shipping profiles based on product weight/size (Shipping Classes), and Stripe/PayPal integration. modules: [SET] topics: [domain and email, store configuration, payments and tax, shipping profiles] tier: 1 scope_hint: baseline\n\nTopics. domain and email, store configuration, payments and tax, shipping profiles.\n\nLook for.\n\nTheme & Builder Setup: The exact click path for installing the Blocksy theme (Appearance > Themes > Add Theme), activating the Blocksy Companion plugin, navigating to Starter Sites, filtering for Elementor as the builder, and importing the \"Garter Robe\" template. Disabling the Elementor Atomic Editor in settings is recommended for beginners.\n\nElementor Responsive Mechanics: Using the flexbox container's responsive settings (e.g., hiding elements on specific devices via Advanced > Responsive) and adjusting background images or alignment specifically for Mobile or Tablet viewports using device-specific toggles.\n\nWooCommerce Simple Products: The exact path: Products > Add New. Entering title, descriptions, selecting \"Simple Product\", inputting regular/sale price, managing inventory/stock thresholds, defining shipping weight/dimensions, and assigning product categories/images.\n\nWooCommerce Variable Products: The step-by-step mechanics for variations: Change product type to \"Variable product,\" go to \"Attributes\" (e.g., Size, Color), enter values separated by the | symbol, check \"Use for variations,\" save, then go to \"Variations\" and click \"Generate variations\" to individually configure SKUs, stock levels, and prices for each combination (e.g., Size 10 Red). A price must be set for the variation to be purchasable.\n\nPayments: Installing \"Payment Plugins for Stripe WooCommerce\" and \"Payment Plugins for PayPal WooCommerce,\" connecting the accounts using the API, running the connection test, and setting them to Test mode initially for verification.\n\nShipping: Creating Shipping Zones (e.g., United States), establishing flat rate vs. free shipping minimum thresholds (e.g., $100), and configuring Shipping Classes (e.g., \"Heavy\") to charge different rates for specific oversized/heavy products on a per-item basis.\n\nTaxes: Using the \"WooCommerce Tax\" plugin (by WooCommerce/Automattic, powered by TaxJar) for automated tax calculation, setting the store address, and selecting the correct calculation method based on origin-based or destination-based state laws. Configuring reduced/zero tax rates for specific product categories (e.g., digital goods).\n\nSkip. Generic affiliate pitches for hosting providers (e.g., Hostinger plans, discount codes), basic definitions of domains or servers, and subjective opinions on Gutenberg vs Elementor.\n\nScope mix. Nearly all baseline.\n\nVolume. 10 to 15.",
+    "prior_notes": [],
+    "id": "283d2c1f33d6daeeaa794f94"
+  },
+  "system_prompt_sha256": "f2341d28186a0dbaee868d37ce33c173f631088eb1754997556740d4905c0f2b"
+}

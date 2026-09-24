@@ -1,0 +1,338 @@
+{
+  "request_id": "3afbaf71bc5bbaa98fb9f69ded761a2b31d48b9853910d19f9780e95b8a9917b",
+  "provider": "deepseek",
+  "model": "deepseek-flash",
+  "effort": "none",
+  "completion_limit": 16384,
+  "usage": {
+    "prompt_tokens": 1645,
+    "completion_tokens": 4104,
+    "total_tokens": 5749,
+    "prompt_tokens_details": {
+      "cached_tokens": 512
+    },
+    "prompt_cache_hit_tokens": 512,
+    "prompt_cache_miss_tokens": 1133
+  },
+  "booked_cost_usd": 0.0054183,
+  "seconds": 21.66,
+  "finish_reason": "stop",
+  "output": {
+    "cards": [
+      {
+        "title": "Architecting the Core Klaviyo Automated Flow Set",
+        "summary": "Build the five core Klaviyo automated flows in priority order, starting with the ones closest to purchase.",
+        "use_when": "Setting up or auditing your store's automated email system and deciding which flows to build first.",
+        "steps": [
+          "Build and prioritize five core automated flows: Welcome Series, Browse Abandonment, Abandoned Cart, Abandoned Checkout, and Post-Purchase. These are the sequences the source treats as the backbone of an ecommerce email program.",
+          "Sequence your build order by revenue proximity: cart and checkout abandonment typically capture the highest-intent visitors, so ensure those are live before investing in browse-level nurturing.",
+          "Treat each flow as its own distinct job — welcome converts a newly captured lead, browse handles mid-funnel trust and objection handling, cart/checkout recovers a near-purchase, post-purchase manages the buyer relationship — rather than running the same three generic emails everywhere.",
+          "Wire each flow to its triggering Klaviyo event (subscribed, viewed product, added to cart, started checkout, placed order) and confirm triggers fire by running a test order through your own store.",
+          "Audit flow coverage quarterly to catch gaps created by new sales channels, product launches, or checkout tools that may not send the same events.",
+          "Verify current Klaviyo flow trigger names and template options in the app, since the interface changes over time."
+        ],
+        "caveats": [
+          "This is the source's recommended architecture for a Klaviyo-based ecommerce program; stores on other platforms or with unusual purchase cycles may need different flow sets."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "klaviyo",
+          "automated-flows",
+          "abandoned-cart",
+          "welcome-series",
+          "post-purchase",
+          "retention"
+        ]
+      },
+      {
+        "title": "Front-Load the Welcome Series into the First 72 Hours",
+        "summary": "Deploy two welcome emails on day zero to exploit the first 72 hours after signup, the highest-converting window.",
+        "use_when": "Designing or optimizing a welcome flow after a new subscriber joins your list.",
+        "steps": [
+          "Concentrate the welcome sequence in the first 72 hours after signup instead of spreading it over two weeks, because the source identifies this as the critical purchase window.",
+          "Deploy two emails on day zero itself — the source notes day zero drives the highest conversion volume — for example an immediate brand/offer email followed a few hours later by a best-sellers or social-proof email.",
+          "Use the remaining emails in the 72-hour window to answer the top objections a first-time buyer would have (shipping, returns, sizing, ingredient or material questions).",
+          "Keep discounting optional at the very first touch: the source's welcome architecture is about capturing intent fast, so test offer depth rather than assuming the first email must carry the biggest discount.",
+          "Track click and purchase rates by send position (day-zero email 1, day-zero email 2, day one, day two) to see where the revenue actually lands, then reallocate content toward the strongest slots."
+        ],
+        "caveats": [
+          "The 72-hour window and day-zero conversion claim are the source's observed pattern for ecommerce welcome flows; validate against your own first-30-days subscriber data before assuming it holds for your category."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "klaviyo",
+          "welcome-series",
+          "automated-flows",
+          "conversion-optimization",
+          "list-growth",
+          "experiment-design"
+        ]
+      },
+      {
+        "title": "Design Browse Abandonment for Trust, Not Discounts",
+        "summary": "Use browse abandonment emails to build mid-funnel trust and handle objections rather than immediately dropping a discount.",
+        "use_when": "Building or revising a browse abandonment flow for visitors who viewed a product but did not add to cart.",
+        "steps": [
+          "Position browse abandonment as a mid-funnel trust sequence: the person has shown interest but has not committed, so education and reassurance do the work.",
+          "Lead with objection handling rather than a coupon — address the likely hesitations about the viewed product (fit, quality, shipping, durability, reviews).",
+          "Include product-specific content that re-engages the item they viewed, since the trigger is a product view rather than a generic site visit.",
+          "Reserve discount incentives for later in the sequence or for cart/checkout abandonment where intent is higher, so you do not train browsers to wait for a code.",
+          "Keep the flow relatively short; a small number of well-targeted emails beats a long drip that loses relevance to the originally viewed product.",
+          "Confirm the browse event is firing from your product pages before judging performance, as missing events are a common silent failure."
+        ],
+        "caveats": [
+          "The source explicitly advocates a no-immediate-discount approach for browse abandonment; this is a strategic recommendation, not a universal rule, and may differ for price-sensitive categories."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "klaviyo",
+          "browse-abandonment",
+          "automated-flows",
+          "objection-handling",
+          "retention",
+          "conversion-optimization"
+        ]
+      },
+      {
+        "title": "Split Abandoned Cart and Checkout Flows by Buyer Status",
+        "summary": "Run separate abandoned cart and abandoned checkout flows, and split messaging between non-buyers and returning customers.",
+        "use_when": "Setting up abandoned cart and abandoned checkout recovery emails and deciding how to segment them.",
+        "steps": [
+          "Treat abandoned cart and abandoned checkout as two distinct flows rather than a single recovery sequence, since the intent level differs between an add-to-cart and a started checkout.",
+          "Inside each flow, split recipients by whether they are a non-buyer or a returning customer; returning customers have prior brand experience and may respond to different messaging than a first-time visitor.",
+          "For non-buyers, emphasize reassurance, reviews and friction removal; for returning customers, lean on loyalty, new arrivals relevant to their history, or account benefits rather than a heavy first-purchase discount.",
+          "Trigger checkout abandonment from the started-checkout event and cart abandonment from the added-to-cart event to keep the sequences distinct in Klaviyo.",
+          "Use dynamic product blocks so the email reflects the actual cart or checkout contents, and test whether the reminder timing differs between the two flows."
+        ],
+        "caveats": [
+          "The source recommends non-buyer vs. returning-customer splits as a core design pattern; the exact content per segment should be tested on your own list."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "klaviyo",
+          "abandoned-cart",
+          "abandoned-checkout",
+          "automated-flows",
+          "segmentation",
+          "retention"
+        ]
+      },
+      {
+        "title": "Use Post-Purchase Flows to Prevent Buyer's Remorse and Drive 30-Day Repeat",
+        "summary": "Design the post-purchase sequence to reduce regret and pull the next order into the first 30 days.",
+        "use_when": "Building or improving the post-purchase email flow after an order is placed.",
+        "steps": [
+          "Set the primary goals of the post-purchase flow as reducing buyer's remorse and driving a repeat purchase within 30 days.",
+          "Send an early confirmation email that reassures the buyer about the decision — reinforce value, set delivery expectations, and make support easy to reach.",
+          "Follow with usage or onboarding content that helps the customer get the most from the product, which reduces regret and creates a reason for the next purchase.",
+          "Introduce a cross-sell or replenishment prompt later in the sequence, timed so it lands inside the 30-day repeat window the source targets.",
+          "Where the product naturally runs out (consumables, skincare, supplements), align the repeat prompt with the usage cycle rather than a fixed calendar day.",
+          "Measure repeat purchase rate within 30 days per cohort to see whether the flow is actually shifting behavior, not just sending mail."
+        ],
+        "caveats": [
+          "The 30-day repeat-purchase target is the source's recommended window and is especially applicable to consumables; long-cycle categories may need a different horizon."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "klaviyo",
+          "post-purchase",
+          "automated-flows",
+          "retention",
+          "replenishment",
+          "cross-sell"
+        ]
+      },
+      {
+        "title": "Plan Campaigns at 3–4 Per Week Across Seven Content Buckets",
+        "summary": "Maintain top-of-mind awareness with a 3–4 campaigns-per-week cadence balanced across seven content types.",
+        "use_when": "Planning your monthly email campaign calendar and deciding how often to send and what to send.",
+        "steps": [
+          "Adopt the source's recommended cadence of 3 to 4 campaigns per week as a working baseline for staying top-of-mind without inducing list fatigue.",
+          "Rotate content across seven buckets: promotions, holidays, product launches, product highlights, social proof, value/education, and company updates.",
+          "Balance the calendar so it is not promotion-only — sprinkle value/education, social proof and company updates between sales-driven sends to reduce unsubscribes.",
+          "Anchor launches and holidays in advance, then fill remaining slots with highlights, social proof and education so the calendar is never empty.",
+          "If engagement or deliverability metrics degrade, reduce frequency or narrow to the best-performing buckets rather than abandoning cadence entirely.",
+          "Treat the 3–4/week number as a starting heuristic: smaller or newer lists, or niche B2B-adjacent stores, often need a lower cadence."
+        ],
+        "caveats": [
+          "The 3–4 campaigns per week figure is the source's recommendation, not a universal benchmark; the right cadence depends on list size, engagement and category."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "campaign-calendar",
+          "email-cadence",
+          "content-strategy",
+          "retention",
+          "list-fatigue"
+        ]
+      },
+      {
+        "title": "Lift Signup Form Conversion from 1–3% Toward 8–12%",
+        "summary": "Use full-screen pop-ups, micro-commitments, gamification and zero-party quizzes to push signup form conversion well above the industry standard.",
+        "use_when": "Optimizing your website's email signup forms (pop-up, full-page, embedded) to grow the list faster.",
+        "steps": [
+          "Benchmark your current signup form conversion against the source's stated industry standard of 1–3%, and set your target in the 8–12% range the source cites for high-performing forms.",
+          "Test a full-screen pop-up as the primary capture format, since the source identifies full-screen as a key tactic for lifting conversion.",
+          "Use a micro-commitment first step — a 'yes/no' question — instead of asking for the email immediately, so the visitor engages before being asked for data.",
+          "Layer in interactive gamification such as spin-to-win or scratch-off mechanics to increase completion rates.",
+          "Add zero-party data collection quizzes that capture preferences (product interests, skin type, size, goals) alongside the email, giving you segmentation data at signup.",
+          "Split-test desktop and mobile experiences separately rather than assuming one form design wins on both.",
+          "Verify the current capabilities of your pop-up tool for full-screen, gamification and quiz formats, as these features change."
+        ],
+        "caveats": [
+          "The 1–3% standard and 8–12% target are the source's stated figures; your achievable rate depends on traffic quality, offer strength and site context."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "list-growth",
+          "signup-forms",
+          "pop-ups",
+          "zero-party-data",
+          "experiment-design",
+          "conversion-optimization"
+        ]
+      },
+      {
+        "title": "Protect Deliverability with Authentication, Cleaning and 180-Day Suppression",
+        "summary": "Authenticate your sending domain and suppress unengaged subscribers inactive past 180 days to protect inbox placement.",
+        "use_when": "Maintaining sender reputation and fixing deliverability problems in an AI-curated inbox environment like Gmail.",
+        "steps": [
+          "Implement the three technical authentication records — SPF, DKIM and DMARC — on your sending domain so mailbox providers can verify your mail.",
+          "Regularly clean your list: suppress profiles that have been inactive for more than 180 days, per the source's benchmark, rather than mailing them indefinitely.",
+          "Segment by engagement recency using tiered active windows — 14-day, 30-day, 60-day and 90-day actives — and prioritize the most recently engaged tiers for primary inbox placement.",
+          "Use engagement-tiered segments to send differently: your most active tiers can receive full campaign cadence, while colder tiers should be mailed less or targeted with a re-engagement campaign before suppression.",
+          "Recognize that AI-curated inboxes (such as Gmail's AI inbox) increasingly decide placement, so strong recent engagement signals matter more than list size.",
+          "Re-check current authentication requirements and Gmail/Klaviyo guidance periodically, since provider rules and interfaces change."
+        ],
+        "caveats": [
+          "The 180-day suppression and 14/30/60/90-day engagement windows are the source's heuristics, not absolute rules; some stores may need shorter windows in highly competitive categories."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "deliverability",
+          "sender-reputation",
+          "list-cleaning",
+          "spf",
+          "dkim",
+          "dmarc",
+          "segmentation"
+        ]
+      },
+      {
+        "title": "Set Up Engagement-Tiered Segmentation for Sending Control",
+        "summary": "Segment subscribers by 14/30/60/90-day activity windows to control cadence and protect inbox placement.",
+        "use_when": "Building Klaviyo segments to manage who receives which campaigns and at what frequency.",
+        "steps": [
+          "Create engagement segments based on recency of activity: 14-day, 30-day, 60-day and 90-day active windows, as the source recommends.",
+          "Route your full campaign cadence (the 3–4 per week baseline) to the 14-day and 30-day active segments, where engagement and inbox placement are strongest.",
+          "Send lower frequency or re-engagement-specific content to the 60-day and 90-day tiers to either revive them or confirm they should be suppressed.",
+          "Build a separate suppression segment for anyone inactive beyond 180 days and exclude them from regular sends to protect sender reputation.",
+          "Connect these segments to your flows and campaigns in Klaviyo so cadence rules are enforced automatically rather than manually filtered each send.",
+          "Review tier sizes monthly to detect an unhealthy drift — if the 90-day tier is growing faster than the 14-day tier, acquisition quality or content relevance may need attention.",
+          "Confirm current Klaviyo segment definitions and profile-property options before building, as these evolve."
+        ],
+        "caveats": [
+          "These windows are the source's recommended engagement tiers; adjust based on your send volume and how quickly your category's buyers typically engage."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "segmentation",
+          "deliverability",
+          "klaviyo",
+          "engagement-tiering",
+          "list-cleaning",
+          "retention"
+        ]
+      },
+      {
+        "title": "Collect Zero-Party Data at Signup to Personalize Later Sends",
+        "summary": "Use signup quizzes to capture preferences that feed segmentation and personalization across flows and campaigns.",
+        "use_when": "Designing signup forms or a post-signup survey to gather preference data for personalization.",
+        "steps": [
+          "Build a zero-party data quiz into or immediately after your signup form, asking visitors about their preferences relevant to your catalog (product interests, goals, size, skin type, occasion, etc.).",
+          "Frame it as a micro-commitment: the source recommends a light initial 'yes/no' step before requesting the email, so the quiz feels interactive rather than intrusive.",
+          "Store the answers as profile properties in Klaviyo so they can drive segmentation and dynamic content later.",
+          "Use the captured data to personalize recommendation emails, product highlights and campaign content, rather than treating every subscriber identically.",
+          "Combine quiz data with engagement recency tiers so personalization is applied to subscribers who are still active and likely to see the mail.",
+          "Test whether the quiz increases or decreases signup completion before rolling it out sitewide, since added friction can offset opt-ins."
+        ],
+        "caveats": [
+          "The source positions zero-party quizzes as both a conversion-lifting and data-collection tactic; if completion rates fall, simplify the quiz rather than assuming the approach is wrong."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "zero-party-data",
+          "list-growth",
+          "signup-forms",
+          "personalization",
+          "segmentation",
+          "customer-research"
+        ]
+      },
+      {
+        "title": "A/B Test Flows and Campaigns Separately",
+        "summary": "Test flows and campaigns with distinct protocols, isolating one variable at a time, since flow tests have different constraints.",
+        "use_when": "Running A/B tests on Klaviyo flows or campaigns and deciding what to change and how to measure it.",
+        "steps": [
+          "Treat flow tests and campaign tests as separate programs: campaign tests can split a single send, while flow tests compare behavior across time or against a holdout.",
+          "For campaigns, test one variable at a time (subject line, send time, offer, creative) so the result is attributable.",
+          "For flows, be careful about sample size and time-to-significance — flow emails fire on triggers, so a change may take days or weeks to accumulate enough recipients.",
+          "Define the metric before the test: for flows near purchase (cart, checkout), optimize toward purchase conversion; for browse or welcome, click-through and downstream purchase rate are more appropriate.",
+          "Use a holdout group where feasible to measure a flow's incremental value, since some buyers would have purchased without the email.",
+          "Keep a record of past tests and outcomes so you do not re-test the same variable or contradict a previous winning result."
+        ],
+        "caveats": [
+          "The source outlines A/B testing as a framework; exact significance thresholds and holdout setup should follow your email platform's current testing capabilities."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "experiment-design",
+          "a-b-testing",
+          "measurement",
+          "automated-flows",
+          "campaign-calendar",
+          "klaviyo"
+        ]
+      },
+      {
+        "title": "Use AI for Email Data Analysis, Not for Replacing Strategy",
+        "summary": "Apply AI tools to analyze email performance data while keeping human judgment on strategy and offers.",
+        "use_when": "Analyzing email performance data or deciding how to use AI in your Klaviyo program.",
+        "steps": [
+          "Point AI analysis at your email performance data — open, click, conversion and revenue by flow, campaign and segment — to surface patterns faster than manual review.",
+          "Use AI to generate hypotheses (which subject lines, send times or segments deserve testing) and then validate those hypotheses through proper A/B tests.",
+          "Keep offer, positioning and brand-voice decisions human-led: AI output is a starting point for analysis, not a substitute for your knowledge of the customer.",
+          "Feed the analysis back into segmentation and cadence decisions, such as identifying which engagement tiers need re-engagement or which campaign buckets underperform.",
+          "Verify AI-generated conclusions against raw Klaviyo reports before making changes, since automated summaries can miss context like seasonality or a one-off promotion.",
+          "Check current AI feature availability in your email platform and analytics tools, as these capabilities change frequently."
+        ],
+        "caveats": [
+          "The source presents AI as a data-analysis aid; do not treat AI-generated recommendations as validated results without testing them."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "ai",
+          "measurement",
+          "data-analysis",
+          "klaviyo",
+          "experiment-design",
+          "retention"
+        ]
+      }
+    ]
+  },
+  "raw_content": "{\"cards\": [{\"title\": \"Architecting the Core Klaviyo Automated Flow Set\", \"summary\": \"Build the five core Klaviyo automated flows in priority order, starting with the ones closest to purchase.\", \"use_when\": \"Setting up or auditing your store's automated email system and deciding which flows to build first.\", \"steps\": [\"Build and prioritize five core automated flows: Welcome Series, Browse Abandonment, Abandoned Cart, Abandoned Checkout, and Post-Purchase. These are the sequences the source treats as the backbone of an ecommerce email program.\", \"Sequence your build order by revenue proximity: cart and checkout abandonment typically capture the highest-intent visitors, so ensure those are live before investing in browse-level nurturing.\", \"Treat each flow as its own distinct job — welcome converts a newly captured lead, browse handles mid-funnel trust and objection handling, cart/checkout recovers a near-purchase, post-purchase manages the buyer relationship — rather than running the same three generic emails everywhere.\", \"Wire each flow to its triggering Klaviyo event (subscribed, viewed product, added to cart, started checkout, placed order) and confirm triggers fire by running a test order through your own store.\", \"Audit flow coverage quarterly to catch gaps created by new sales channels, product launches, or checkout tools that may not send the same events.\", \"Verify current Klaviyo flow trigger names and template options in the app, since the interface changes over time.\"], \"caveats\": [\"This is the source's recommended architecture for a Klaviyo-based ecommerce program; stores on other platforms or with unusual purchase cycles may need different flow sets.\"], \"tags\": [\"email-lifecycle\", \"klaviyo\", \"automated-flows\", \"abandoned-cart\", \"welcome-series\", \"post-purchase\", \"retention\"]}, {\"title\": \"Front-Load the Welcome Series into the First 72 Hours\", \"summary\": \"Deploy two welcome emails on day zero to exploit the first 72 hours after signup, the highest-converting window.\", \"use_when\": \"Designing or optimizing a welcome flow after a new subscriber joins your list.\", \"steps\": [\"Concentrate the welcome sequence in the first 72 hours after signup instead of spreading it over two weeks, because the source identifies this as the critical purchase window.\", \"Deploy two emails on day zero itself — the source notes day zero drives the highest conversion volume — for example an immediate brand/offer email followed a few hours later by a best-sellers or social-proof email.\", \"Use the remaining emails in the 72-hour window to answer the top objections a first-time buyer would have (shipping, returns, sizing, ingredient or material questions).\", \"Keep discounting optional at the very first touch: the source's welcome architecture is about capturing intent fast, so test offer depth rather than assuming the first email must carry the biggest discount.\", \"Track click and purchase rates by send position (day-zero email 1, day-zero email 2, day one, day two) to see where the revenue actually lands, then reallocate content toward the strongest slots.\"], \"caveats\": [\"The 72-hour window and day-zero conversion claim are the source's observed pattern for ecommerce welcome flows; validate against your own first-30-days subscriber data before assuming it holds for your category.\"], \"tags\": [\"email-lifecycle\", \"klaviyo\", \"welcome-series\", \"automated-flows\", \"conversion-optimization\", \"list-growth\", \"experiment-design\"]}, {\"title\": \"Design Browse Abandonment for Trust, Not Discounts\", \"summary\": \"Use browse abandonment emails to build mid-funnel trust and handle objections rather than immediately dropping a discount.\", \"use_when\": \"Building or revising a browse abandonment flow for visitors who viewed a product but did not add to cart.\", \"steps\": [\"Position browse abandonment as a mid-funnel trust sequence: the person has shown interest but has not committed, so education and reassurance do the work.\", \"Lead with objection handling rather than a coupon — address the likely hesitations about the viewed product (fit, quality, shipping, durability, reviews).\", \"Include product-specific content that re-engages the item they viewed, since the trigger is a product view rather than a generic site visit.\", \"Reserve discount incentives for later in the sequence or for cart/checkout abandonment where intent is higher, so you do not train browsers to wait for a code.\", \"Keep the flow relatively short; a small number of well-targeted emails beats a long drip that loses relevance to the originally viewed product.\", \"Confirm the browse event is firing from your product pages before judging performance, as missing events are a common silent failure.\"], \"caveats\": [\"The source explicitly advocates a no-immediate-discount approach for browse abandonment; this is a strategic recommendation, not a universal rule, and may differ for price-sensitive categories.\"], \"tags\": [\"email-lifecycle\", \"klaviyo\", \"browse-abandonment\", \"automated-flows\", \"objection-handling\", \"retention\", \"conversion-optimization\"]}, {\"title\": \"Split Abandoned Cart and Checkout Flows by Buyer Status\", \"summary\": \"Run separate abandoned cart and abandoned checkout flows, and split messaging between non-buyers and returning customers.\", \"use_when\": \"Setting up abandoned cart and abandoned checkout recovery emails and deciding how to segment them.\", \"steps\": [\"Treat abandoned cart and abandoned checkout as two distinct flows rather than a single recovery sequence, since the intent level differs between an add-to-cart and a started checkout.\", \"Inside each flow, split recipients by whether they are a non-buyer or a returning customer; returning customers have prior brand experience and may respond to different messaging than a first-time visitor.\", \"For non-buyers, emphasize reassurance, reviews and friction removal; for returning customers, lean on loyalty, new arrivals relevant to their history, or account benefits rather than a heavy first-purchase discount.\", \"Trigger checkout abandonment from the started-checkout event and cart abandonment from the added-to-cart event to keep the sequences distinct in Klaviyo.\", \"Use dynamic product blocks so the email reflects the actual cart or checkout contents, and test whether the reminder timing differs between the two flows.\"], \"caveats\": [\"The source recommends non-buyer vs. returning-customer splits as a core design pattern; the exact content per segment should be tested on your own list.\"], \"tags\": [\"email-lifecycle\", \"klaviyo\", \"abandoned-cart\", \"abandoned-checkout\", \"automated-flows\", \"segmentation\", \"retention\"]}, {\"title\": \"Use Post-Purchase Flows to Prevent Buyer's Remorse and Drive 30-Day Repeat\", \"summary\": \"Design the post-purchase sequence to reduce regret and pull the next order into the first 30 days.\", \"use_when\": \"Building or improving the post-purchase email flow after an order is placed.\", \"steps\": [\"Set the primary goals of the post-purchase flow as reducing buyer's remorse and driving a repeat purchase within 30 days.\", \"Send an early confirmation email that reassures the buyer about the decision — reinforce value, set delivery expectations, and make support easy to reach.\", \"Follow with usage or onboarding content that helps the customer get the most from the product, which reduces regret and creates a reason for the next purchase.\", \"Introduce a cross-sell or replenishment prompt later in the sequence, timed so it lands inside the 30-day repeat window the source targets.\", \"Where the product naturally runs out (consumables, skincare, supplements), align the repeat prompt with the usage cycle rather than a fixed calendar day.\", \"Measure repeat purchase rate within 30 days per cohort to see whether the flow is actually shifting behavior, not just sending mail.\"], \"caveats\": [\"The 30-day repeat-purchase target is the source's recommended window and is especially applicable to consumables; long-cycle categories may need a different horizon.\"], \"tags\": [\"email-lifecycle\", \"klaviyo\", \"post-purchase\", \"automated-flows\", \"retention\", \"replenishment\", \"cross-sell\"]}, {\"title\": \"Plan Campaigns at 3–4 Per Week Across Seven Content Buckets\", \"summary\": \"Maintain top-of-mind awareness with a 3–4 campaigns-per-week cadence balanced across seven content types.\", \"use_when\": \"Planning your monthly email campaign calendar and deciding how often to send and what to send.\", \"steps\": [\"Adopt the source's recommended cadence of 3 to 4 campaigns per week as a working baseline for staying top-of-mind without inducing list fatigue.\", \"Rotate content across seven buckets: promotions, holidays, product launches, product highlights, social proof, value/education, and company updates.\", \"Balance the calendar so it is not promotion-only — sprinkle value/education, social proof and company updates between sales-driven sends to reduce unsubscribes.\", \"Anchor launches and holidays in advance, then fill remaining slots with highlights, social proof and education so the calendar is never empty.\", \"If engagement or deliverability metrics degrade, reduce frequency or narrow to the best-performing buckets rather than abandoning cadence entirely.\", \"Treat the 3–4/week number as a starting heuristic: smaller or newer lists, or niche B2B-adjacent stores, often need a lower cadence.\"], \"caveats\": [\"The 3–4 campaigns per week figure is the source's recommendation, not a universal benchmark; the right cadence depends on list size, engagement and category.\"], \"tags\": [\"email-lifecycle\", \"campaign-calendar\", \"email-cadence\", \"content-strategy\", \"retention\", \"list-fatigue\"]}, {\"title\": \"Lift Signup Form Conversion from 1–3% Toward 8–12%\", \"summary\": \"Use full-screen pop-ups, micro-commitments, gamification and zero-party quizzes to push signup form conversion well above the industry standard.\", \"use_when\": \"Optimizing your website's email signup forms (pop-up, full-page, embedded) to grow the list faster.\", \"steps\": [\"Benchmark your current signup form conversion against the source's stated industry standard of 1–3%, and set your target in the 8–12% range the source cites for high-performing forms.\", \"Test a full-screen pop-up as the primary capture format, since the source identifies full-screen as a key tactic for lifting conversion.\", \"Use a micro-commitment first step — a 'yes/no' question — instead of asking for the email immediately, so the visitor engages before being asked for data.\", \"Layer in interactive gamification such as spin-to-win or scratch-off mechanics to increase completion rates.\", \"Add zero-party data collection quizzes that capture preferences (product interests, skin type, size, goals) alongside the email, giving you segmentation data at signup.\", \"Split-test desktop and mobile experiences separately rather than assuming one form design wins on both.\", \"Verify the current capabilities of your pop-up tool for full-screen, gamification and quiz formats, as these features change.\"], \"caveats\": [\"The 1–3% standard and 8–12% target are the source's stated figures; your achievable rate depends on traffic quality, offer strength and site context.\"], \"tags\": [\"email-lifecycle\", \"list-growth\", \"signup-forms\", \"pop-ups\", \"zero-party-data\", \"experiment-design\", \"conversion-optimization\"]}, {\"title\": \"Protect Deliverability with Authentication, Cleaning and 180-Day Suppression\", \"summary\": \"Authenticate your sending domain and suppress unengaged subscribers inactive past 180 days to protect inbox placement.\", \"use_when\": \"Maintaining sender reputation and fixing deliverability problems in an AI-curated inbox environment like Gmail.\", \"steps\": [\"Implement the three technical authentication records — SPF, DKIM and DMARC — on your sending domain so mailbox providers can verify your mail.\", \"Regularly clean your list: suppress profiles that have been inactive for more than 180 days, per the source's benchmark, rather than mailing them indefinitely.\", \"Segment by engagement recency using tiered active windows — 14-day, 30-day, 60-day and 90-day actives — and prioritize the most recently engaged tiers for primary inbox placement.\", \"Use engagement-tiered segments to send differently: your most active tiers can receive full campaign cadence, while colder tiers should be mailed less or targeted with a re-engagement campaign before suppression.\", \"Recognize that AI-curated inboxes (such as Gmail's AI inbox) increasingly decide placement, so strong recent engagement signals matter more than list size.\", \"Re-check current authentication requirements and Gmail/Klaviyo guidance periodically, since provider rules and interfaces change.\"], \"caveats\": [\"The 180-day suppression and 14/30/60/90-day engagement windows are the source's heuristics, not absolute rules; some stores may need shorter windows in highly competitive categories.\"], \"tags\": [\"email-lifecycle\", \"deliverability\", \"sender-reputation\", \"list-cleaning\", \"spf\", \"dkim\", \"dmarc\", \"segmentation\"]}, {\"title\": \"Set Up Engagement-Tiered Segmentation for Sending Control\", \"summary\": \"Segment subscribers by 14/30/60/90-day activity windows to control cadence and protect inbox placement.\", \"use_when\": \"Building Klaviyo segments to manage who receives which campaigns and at what frequency.\", \"steps\": [\"Create engagement segments based on recency of activity: 14-day, 30-day, 60-day and 90-day active windows, as the source recommends.\", \"Route your full campaign cadence (the 3–4 per week baseline) to the 14-day and 30-day active segments, where engagement and inbox placement are strongest.\", \"Send lower frequency or re-engagement-specific content to the 60-day and 90-day tiers to either revive them or confirm they should be suppressed.\", \"Build a separate suppression segment for anyone inactive beyond 180 days and exclude them from regular sends to protect sender reputation.\", \"Connect these segments to your flows and campaigns in Klaviyo so cadence rules are enforced automatically rather than manually filtered each send.\", \"Review tier sizes monthly to detect an unhealthy drift — if the 90-day tier is growing faster than the 14-day tier, acquisition quality or content relevance may need attention.\", \"Confirm current Klaviyo segment definitions and profile-property options before building, as these evolve.\"], \"caveats\": [\"These windows are the source's recommended engagement tiers; adjust based on your send volume and how quickly your category's buyers typically engage.\"], \"tags\": [\"email-lifecycle\", \"segmentation\", \"deliverability\", \"klaviyo\", \"engagement-tiering\", \"list-cleaning\", \"retention\"]}, {\"title\": \"Collect Zero-Party Data at Signup to Personalize Later Sends\", \"summary\": \"Use signup quizzes to capture preferences that feed segmentation and personalization across flows and campaigns.\", \"use_when\": \"Designing signup forms or a post-signup survey to gather preference data for personalization.\", \"steps\": [\"Build a zero-party data quiz into or immediately after your signup form, asking visitors about their preferences relevant to your catalog (product interests, goals, size, skin type, occasion, etc.).\", \"Frame it as a micro-commitment: the source recommends a light initial 'yes/no' step before requesting the email, so the quiz feels interactive rather than intrusive.\", \"Store the answers as profile properties in Klaviyo so they can drive segmentation and dynamic content later.\", \"Use the captured data to personalize recommendation emails, product highlights and campaign content, rather than treating every subscriber identically.\", \"Combine quiz data with engagement recency tiers so personalization is applied to subscribers who are still active and likely to see the mail.\", \"Test whether the quiz increases or decreases signup completion before rolling it out sitewide, since added friction can offset opt-ins.\"], \"caveats\": [\"The source positions zero-party quizzes as both a conversion-lifting and data-collection tactic; if completion rates fall, simplify the quiz rather than assuming the approach is wrong.\"], \"tags\": [\"email-lifecycle\", \"zero-party-data\", \"list-growth\", \"signup-forms\", \"personalization\", \"segmentation\", \"customer-research\"]}, {\"title\": \"A/B Test Flows and Campaigns Separately\", \"summary\": \"Test flows and campaigns with distinct protocols, isolating one variable at a time, since flow tests have different constraints.\", \"use_when\": \"Running A/B tests on Klaviyo flows or campaigns and deciding what to change and how to measure it.\", \"steps\": [\"Treat flow tests and campaign tests as separate programs: campaign tests can split a single send, while flow tests compare behavior across time or against a holdout.\", \"For campaigns, test one variable at a time (subject line, send time, offer, creative) so the result is attributable.\", \"For flows, be careful about sample size and time-to-significance — flow emails fire on triggers, so a change may take days or weeks to accumulate enough recipients.\", \"Define the metric before the test: for flows near purchase (cart, checkout), optimize toward purchase conversion; for browse or welcome, click-through and downstream purchase rate are more appropriate.\", \"Use a holdout group where feasible to measure a flow's incremental value, since some buyers would have purchased without the email.\", \"Keep a record of past tests and outcomes so you do not re-test the same variable or contradict a previous winning result.\"], \"caveats\": [\"The source outlines A/B testing as a framework; exact significance thresholds and holdout setup should follow your email platform's current testing capabilities.\"], \"tags\": [\"email-lifecycle\", \"experiment-design\", \"a-b-testing\", \"measurement\", \"automated-flows\", \"campaign-calendar\", \"klaviyo\"]}, {\"title\": \"Use AI for Email Data Analysis, Not for Replacing Strategy\", \"summary\": \"Apply AI tools to analyze email performance data while keeping human judgment on strategy and offers.\", \"use_when\": \"Analyzing email performance data or deciding how to use AI in your Klaviyo program.\", \"steps\": [\"Point AI analysis at your email performance data — open, click, conversion and revenue by flow, campaign and segment — to surface patterns faster than manual review.\", \"Use AI to generate hypotheses (which subject lines, send times or segments deserve testing) and then validate those hypotheses through proper A/B tests.\", \"Keep offer, positioning and brand-voice decisions human-led: AI output is a starting point for analysis, not a substitute for your knowledge of the customer.\", \"Feed the analysis back into segmentation and cadence decisions, such as identifying which engagement tiers need re-engagement or which campaign buckets underperform.\", \"Verify AI-generated conclusions against raw Klaviyo reports before making changes, since automated summaries can miss context like seasonality or a one-off promotion.\", \"Check current AI feature availability in your email platform and analytics tools, as these capabilities change frequently.\"], \"caveats\": [\"The source presents AI as a data-analysis aid; do not treat AI-generated recommendations as validated results without testing them.\"], \"tags\": [\"email-lifecycle\", \"ai\", \"measurement\", \"data-analysis\", \"klaviyo\", \"experiment-design\", \"retention\"]}]}",
+  "input": {
+    "source_id": "1grdlATLu0lJAmHQTZ_0MyExN3jVkt8xi",
+    "source_sha256": "6305409b97bb58ef4e8967d3ff99f3cde0bf6725a849a0291792799883f8c0dd",
+    "source_name": "2026 Klaviyo Email Marketing Full Course (3+ Hours).docx",
+    "folder": "/14-EML-email-lifecycle",
+    "domain": "email-lifecycle",
+    "section": 0,
+    "section_count": 6,
+    "text": "14-EML / email and lifecycle\n\nGoes here. Klaviyo email system architecture, list growth strategies, high-converting signup forms (pop-ups, full-page, micro-commitments, zero-party data quizzes), automated core email flows (Welcome Series, Browse Abandonment, Abandoned Cart, Abandoned Checkout, Post-Purchase), email campaign calendar planning and cadence, A/B testing frameworks for flows and campaigns, email list segmentation, deliverability optimization (DMARC, DKIM, SPF, list cleaning, engagement filters), and leveraging AI for email marketing data analysis.\n\nNot here.\n\nPaid ad campaign setup, tracking pixels, or Meta Conversions API -> 11-ADC\n\nWebsite speed optimization and Core Web Vitals -> 08-SPD\n\nHeader. url: rights: public_reference why: Details a comprehensive end-to-end Klaviyo email marketing framework for e-commerce brands, covering list growth (signup forms, micro-commitments), core automated flows (Welcome, Browse/Cart Abandonment, Post-Purchase), campaign strategy (91 campaign ideas, cadence), A/B testing protocols, list segmentation, and deliverability protection. modules: [EML] topics: [email marketing, Klaviyo flows, list growth, deliverability] tier: 2 scope_hint: core\n\nTopics. email marketing / Constructing a high-performing e-commerce email marketing system. Balancing email campaign frequency (recommending 3 to 4 campaigns weekly to maintain top-of-mind awareness without inducing list fatigue) and categorizing campaign content into seven key buckets (promotions, holidays, product launches, highlights, social proof, value/education, and company updates). Klaviyo flows / Architecting core automated email sequences. Building front-loaded Welcome Series flows (deploying two emails on day zero within the critical 72-hour purchase window), Browse Abandonment sequences (focusing on mid-funnel trust and objection handling rather than immediate discounts), Abandoned Cart/Checkout flows (using strategic non-buyer vs. returning customer splits), and Post-Purchase sequences (minimizing buyer's remorse and driving repeat purchases within 30 days). list growth / Optimizing website signup forms to lift conversion rates from the 1-3% industry standard to an 8-12% target. Utilizing full-screen pop-ups, micro-commitment \"yes/no\" initial steps, interactive gamification (spin-to-win, scratch-offs), zero-party data collection quizzes, and split-testing distinct desktop and mobile experiences. deliverability / Maintaining inbox placement and protecting sender reputation in AI-curated email environments (like Gmail's AI inbox). Implementing technical authentication (SPF, DKIM, DMARC), regularly cleaning unengaged subscribers (suppressing profiles inactive past 180 days), and utilizing engagement-tiered segmentation (14-day, 30-day, 60-day, and 90-day active windows) to maximize primary inbox placement.\n\nLook for. The recommended campaign sending frequency: 3 to 4 campaigns per week. The critical purchase window for welcome flows: the first 72 hours (with day zero driving the highest conversion volume). The core Klaviyo automated flows: Welcome, Browse Abandonment, Abandoned Cart, Abandoned Checkout, and Post-Purchase. The list cleaning benchmark: suppressing unengaged subscribers who have been inactive for 180 days.\n\nSkip. Promotional pitches for the speaker's agency booking links, the free email marketing course download, or external tool affiliate links (e.g., Aaliyah, Clock Apps).\n\nScope mix. Almost all core.\n\nVolume. 25 to 30.",
+    "prior_notes": [],
+    "id": "d7f2ec9c86221031392becd3"
+  },
+  "system_prompt_sha256": "f2341d28186a0dbaee868d37ce33c173f631088eb1754997556740d4905c0f2b"
+}

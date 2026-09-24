@@ -1,0 +1,861 @@
+{
+  "batch": 2,
+  "round": 0,
+  "kind": "separate_cross_provider_fallback",
+  "original_unknown_request_id": "dc528182a4d11d56b4762ef5cfb45e9cac1936a32ab5dae6528dc828cfdec896",
+  "request_id": "2184923ee099d1206cb3099f3c7a1c06503c9d065c5310890676926d7d1aef22",
+  "finish_reason": "stop",
+  "errors": [],
+  "candidates": [
+    {
+      "id": "50c9a8059a969eed59eb0f1c50be2809b6c27ecd59cd08bd2b5613750c16a65f",
+      "unit": {
+        "id": "u1",
+        "kind": "principle",
+        "title": "Prioritize incrementality over attributed channel value",
+        "claim": {
+          "text": "The source asserts that incrementality is the KPI that matters and that ROAS and last-click attribution overstate channels that capture existing demand.",
+          "quote": "Incrementality is the question that matters.** 71% of advertisers now recognize it as their most important KPI. ROAS and last-click attribution systematically overstate the value of channels that intercept existing demand."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not specify how incrementality should be operationalized as a KPI for a particular business."
+        ],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "13xcmKLUtePPNdWOs5tNDQCnQJxcH3vGJ",
+          "source_sha256": "9cdaed43cd0bc6ed00726991891fa1bd4ffe07c547fa616e4ee05e29a9e790e4",
+          "locator": "body:262/paragraph",
+          "start": 5,
+          "end": 227,
+          "quote": "Incrementality is the question that matters.** 71% of advertisers now recognize it as their most important KPI. ROAS and last-click attribution systematically overstate the value of channels that intercept existing demand."
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "91f1586e08031b71ef7b1b78e44cb847e10eb5ef0babf4718c6bd158f62f748b",
+      "unit": {
+        "id": "u2",
+        "kind": "principle",
+        "title": "Treat holdouts as the causal-measurement standard",
+        "claim": {
+          "text": "The source characterizes holdouts as the gold standard for causal measurement because they eliminate selection bias, control for external factors, and measure net incremental effect.",
+          "quote": "Holdouts are the gold standard for causal measurement.** They eliminate selection bias, control for external factors, and measure net incremental effect. They are the most honest proof of program value."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not state sample-size, duration, assignment, or analysis requirements for holdouts."
+        ],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "13xcmKLUtePPNdWOs5tNDQCnQJxcH3vGJ",
+          "source_sha256": "9cdaed43cd0bc6ed00726991891fa1bd4ffe07c547fa616e4ee05e29a9e790e4",
+          "locator": "body:264/paragraph",
+          "start": 5,
+          "end": 207,
+          "quote": "Holdouts are the gold standard for causal measurement.** They eliminate selection bias, control for external factors, and measure net incremental effect. They are the most honest proof of program value."
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "3703e32b2a10b5d104cdaf62abe42c4f67fea492c9e4d2baa4fd4ec8dc6bc617",
+      "unit": {
+        "id": "u3",
+        "kind": "action",
+        "title": "Match the causal method to the intervention type",
+        "claim": {
+          "text": "The source states that different causal questions require different methods.",
+          "quote": "Different causal questions require different methods."
+        },
+        "action": {
+          "text": "Use user-level holdouts for email and personalization, geo holdouts for ad channels, DiD for site-wide changes, switchback for marketplaces, BSTS for seasonal settings, and RDD for threshold-based interventions.",
+          "quote": "User-level holdouts for email and personalization. Geo holdouts for ad channels. DiD for site-wide changes. Switchback for marketplaces. BSTS for seasonal settings. RDD for threshold-based interventions."
+        },
+        "trigger": {
+          "op": "any",
+          "args": [
+            {
+              "text": "The source states that different causal questions require different methods.",
+              "quote": "Different causal questions require different methods."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not define the acronyms DiD, BSTS, or RDD, or provide decision rules for interventions that could fit multiple methods."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u2"
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "13xcmKLUtePPNdWOs5tNDQCnQJxcH3vGJ",
+          "source_sha256": "9cdaed43cd0bc6ed00726991891fa1bd4ffe07c547fa616e4ee05e29a9e790e4",
+          "locator": "body:266/paragraph",
+          "start": 5,
+          "end": 58,
+          "quote": "Different causal questions require different methods."
+        },
+        {
+          "field": "action",
+          "source_id": "13xcmKLUtePPNdWOs5tNDQCnQJxcH3vGJ",
+          "source_sha256": "9cdaed43cd0bc6ed00726991891fa1bd4ffe07c547fa616e4ee05e29a9e790e4",
+          "locator": "body:266/paragraph",
+          "start": 61,
+          "end": 264,
+          "quote": "User-level holdouts for email and personalization. Geo holdouts for ad channels. DiD for site-wide changes. Switchback for marketplaces. BSTS for seasonal settings. RDD for threshold-based interventions."
+        },
+        {
+          "field": "trigger.0",
+          "source_id": "13xcmKLUtePPNdWOs5tNDQCnQJxcH3vGJ",
+          "source_sha256": "9cdaed43cd0bc6ed00726991891fa1bd4ffe07c547fa616e4ee05e29a9e790e4",
+          "locator": "body:266/paragraph",
+          "start": 5,
+          "end": 58,
+          "quote": "Different causal questions require different methods."
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "76e936548d9d78badbca33104c780dd9b6dcbd3fe8bbfd14cfb004a7b34295e9",
+      "unit": {
+        "id": "u4",
+        "kind": "principle",
+        "title": "Use causal measurement to answer the counterfactual",
+        "claim": {
+          "text": "The source says the purpose of these methods is to determine whether an outcome would have occurred anyway, rather than simply to run more tests.",
+          "quote": "The goal is not to run more tests—it is to make better decisions.** Every method in this document exists to answer one question: *Would this have happened anyway?* If you cannot answer that, you are optimizing in the dark."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not specify a required confidence threshold or decision rule for answering the counterfactual."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u3"
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "13xcmKLUtePPNdWOs5tNDQCnQJxcH3vGJ",
+          "source_sha256": "9cdaed43cd0bc6ed00726991891fa1bd4ffe07c547fa616e4ee05e29a9e790e4",
+          "locator": "body:268/paragraph",
+          "start": 5,
+          "end": 227,
+          "quote": "The goal is not to run more tests—it is to make better decisions.** Every method in this document exists to answer one question: *Would this have happened anyway?* If you cannot answer that, you are optimizing in the dark."
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "5ffb7b881cb7f617c3150dc5d0856ab3ffab0acb0a46b3f828252df57d58938b",
+      "unit": {
+        "id": "u5",
+        "kind": "example",
+        "title": "Homepage personalization experiment increased PDP click-through",
+        "claim": {
+          "text": "The source reports that a retail experiment found personalized homepage product recommendations increased click-through to PDPs by 136% versus static recommendations.",
+          "quote": "A retail experiment testing personalized product recommendations on the homepage versus static recommendations found a **136% increase in CTR to PDPs**. Personalized recommendations significantly outperformed static ones."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not identify the retailer, experiment population, duration, statistical method, or CTR denominator."
+        ],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "13xcmKLUtePPNdWOs5tNDQCnQJxcH3vGJ",
+          "source_sha256": "9cdaed43cd0bc6ed00726991891fa1bd4ffe07c547fa616e4ee05e29a9e790e4",
+          "locator": "body:353/paragraph",
+          "start": 42,
+          "end": 263,
+          "quote": "A retail experiment testing personalized product recommendations on the homepage versus static recommendations found a **136% increase in CTR to PDPs**. Personalized recommendations significantly outperformed static ones."
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "038486fc0a2c6c9950c3327edaf6338f0a10e03c6eeb93c2cc7d8c2193e72b6f",
+      "unit": {
+        "id": "u6",
+        "kind": "example",
+        "title": "Bestseller recommendations for visitors without prior history",
+        "claim": {
+          "text": "The source reports that showing bestselling products to visitors with no prior history increased click-through to PDPs by 23.01% compared with static featured products.",
+          "quote": "For visitors with no prior history, showing bestselling products produced a **23.01% increase in CTR to PDPs** compared to static featured products."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "The visitors have no prior history.",
+              "quote": "For visitors with no prior history"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not identify the retailer, audience size, test duration, or definition of bestselling products."
+        ],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "13xcmKLUtePPNdWOs5tNDQCnQJxcH3vGJ",
+          "source_sha256": "9cdaed43cd0bc6ed00726991891fa1bd4ffe07c547fa616e4ee05e29a9e790e4",
+          "locator": "body:355/paragraph",
+          "start": 49,
+          "end": 197,
+          "quote": "For visitors with no prior history, showing bestselling products produced a **23.01% increase in CTR to PDPs** compared to static featured products."
+        },
+        {
+          "field": "trigger.0",
+          "source_id": "13xcmKLUtePPNdWOs5tNDQCnQJxcH3vGJ",
+          "source_sha256": "9cdaed43cd0bc6ed00726991891fa1bd4ffe07c547fa616e4ee05e29a9e790e4",
+          "locator": "body:355/paragraph",
+          "start": 49,
+          "end": 83,
+          "quote": "For visitors with no prior history"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "3c054d6d194c586ed5f3cbff9ee6e5e2521df6b59401ac5164b549b7a82af56b",
+      "unit": {
+        "id": "u7",
+        "kind": "warning",
+        "title": "Avoid broad multi-category homepage assortments",
+        "claim": {
+          "text": "The source reports that promoting a wide variety of items across many categories on the homepage decreased Add to Cart by 6.07% and CTR by 10.4%, attributing the effect to visitors being overwhelmed by too many options.",
+          "quote": "promoting a wide variety of items across many categories on the homepage (e.g., full head-to-toe outfits) produced a **6.07% decrease in Add to Cart** and a **10.4% decrease in CTR**. Visitors were overwhelmed by too many options. Serving a focused, curated selection outperforms broad assortment."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "The homepage promotes a wide variety of items across many categories.",
+              "quote": "promoting a wide variety of items across many categories on the homepage"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not state the retailer, traffic segment, or whether the measured effects generalize beyond the cited finding."
+        ],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "13xcmKLUtePPNdWOs5tNDQCnQJxcH3vGJ",
+          "source_sha256": "9cdaed43cd0bc6ed00726991891fa1bd4ffe07c547fa616e4ee05e29a9e790e4",
+          "locator": "body:357/paragraph",
+          "start": 66,
+          "end": 363,
+          "quote": "promoting a wide variety of items across many categories on the homepage (e.g., full head-to-toe outfits) produced a **6.07% decrease in Add to Cart** and a **10.4% decrease in CTR**. Visitors were overwhelmed by too many options. Serving a focused, curated selection outperforms broad assortment."
+        },
+        {
+          "field": "trigger.0",
+          "source_id": "13xcmKLUtePPNdWOs5tNDQCnQJxcH3vGJ",
+          "source_sha256": "9cdaed43cd0bc6ed00726991891fa1bd4ffe07c547fa616e4ee05e29a9e790e4",
+          "locator": "body:357/paragraph",
+          "start": 66,
+          "end": 138,
+          "quote": "promoting a wide variety of items across many categories on the homepage"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "9d58b228c1f9c87da8e509d2488357f94e76dba76e4f6548b46c11a98dabc5a1",
+      "unit": {
+        "id": "u8",
+        "kind": "principle",
+        "title": "Use the homepage for orientation and product routing",
+        "claim": {
+          "text": "The source says the homepage's role is to orient visitors, route them to appropriate products quickly, and establish credibility rather than typically close the conversion.",
+          "quote": "The homepage is not typically where conversion happens—it is where orientation happens. Its job is to route visitors to the right products quickly and establish credibility."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not provide a method for determining which products are right for a particular visitor."
+        ],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "13xcmKLUtePPNdWOs5tNDQCnQJxcH3vGJ",
+          "source_sha256": "9cdaed43cd0bc6ed00726991891fa1bd4ffe07c547fa616e4ee05e29a9e790e4",
+          "locator": "body:349/paragraph",
+          "start": 0,
+          "end": 173,
+          "quote": "The homepage is not typically where conversion happens—it is where orientation happens. Its job is to route visitors to the right products quickly and establish credibility."
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "3b87fa9495d2eb1b53204fa96ed40f3f327712982d8209e49e0047075e9df87b",
+      "unit": {
+        "id": "u9",
+        "kind": "action",
+        "title": "Make the homepage hero pass the three-second test",
+        "claim": {
+          "text": "The source lists a hero that conveys the value proposition instantly as a homepage structure principle.",
+          "quote": "Hero must pass the \"three-second test\"—convey value proposition instantly"
+        },
+        "action": {
+          "text": "Make the homepage hero convey the value proposition instantly.",
+          "quote": "Hero must pass the \"three-second test\"—convey value proposition instantly"
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not define how to test or measure whether the value proposition is conveyed within three seconds."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u8"
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "13xcmKLUtePPNdWOs5tNDQCnQJxcH3vGJ",
+          "source_sha256": "9cdaed43cd0bc6ed00726991891fa1bd4ffe07c547fa616e4ee05e29a9e790e4",
+          "locator": "body:360/paragraph",
+          "start": 2,
+          "end": 75,
+          "quote": "Hero must pass the \"three-second test\"—convey value proposition instantly"
+        },
+        {
+          "field": "action",
+          "source_id": "13xcmKLUtePPNdWOs5tNDQCnQJxcH3vGJ",
+          "source_sha256": "9cdaed43cd0bc6ed00726991891fa1bd4ffe07c547fa616e4ee05e29a9e790e4",
+          "locator": "body:360/paragraph",
+          "start": 2,
+          "end": 75,
+          "quote": "Hero must pass the \"three-second test\"—convey value proposition instantly"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "816c8a9be427ab2fb05f0898b9044e04e25286f80d9e4d82464c23ca0c8951a6",
+      "unit": {
+        "id": "u10",
+        "kind": "action",
+        "title": "Offer one clear homepage conversion offer",
+        "claim": {
+          "text": "The source lists one clear conversion offer, such as a newsletter signup with a concrete incentive, as a homepage structure principle.",
+          "quote": "One clear conversion offer (newsletter signup with concrete incentive, e.g., early access or first-order discount)"
+        },
+        "action": {
+          "text": "Provide one clear conversion offer, such as a newsletter signup with a concrete incentive.",
+          "quote": "One clear conversion offer (newsletter signup with concrete incentive, e.g., early access or first-order discount)"
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not state which incentive, if any, is appropriate for a particular brand or visitor segment."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u8"
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "13xcmKLUtePPNdWOs5tNDQCnQJxcH3vGJ",
+          "source_sha256": "9cdaed43cd0bc6ed00726991891fa1bd4ffe07c547fa616e4ee05e29a9e790e4",
+          "locator": "body:361/paragraph",
+          "start": 2,
+          "end": 116,
+          "quote": "One clear conversion offer (newsletter signup with concrete incentive, e.g., early access or first-order discount)"
+        },
+        {
+          "field": "action",
+          "source_id": "13xcmKLUtePPNdWOs5tNDQCnQJxcH3vGJ",
+          "source_sha256": "9cdaed43cd0bc6ed00726991891fa1bd4ffe07c547fa616e4ee05e29a9e790e4",
+          "locator": "body:361/paragraph",
+          "start": 2,
+          "end": 116,
+          "quote": "One clear conversion offer (newsletter signup with concrete incentive, e.g., early access or first-order discount)"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "d53300b47f98a29581b25ff8c5e10a3169c3a05135c0a1ab1a360b9be8b7a77e",
+      "unit": {
+        "id": "u11",
+        "kind": "action",
+        "title": "Provide clear category entry points in navigation",
+        "claim": {
+          "text": "The source lists simplified navigation with clear category entry points as a homepage structure principle.",
+          "quote": "Simplified navigation with clear category entry points"
+        },
+        "action": {
+          "text": "Simplify homepage navigation and provide clear category entry points.",
+          "quote": "Simplified navigation with clear category entry points"
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not specify the number, naming, or hierarchy of category entry points."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u8"
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "13xcmKLUtePPNdWOs5tNDQCnQJxcH3vGJ",
+          "source_sha256": "9cdaed43cd0bc6ed00726991891fa1bd4ffe07c547fa616e4ee05e29a9e790e4",
+          "locator": "body:362/paragraph",
+          "start": 2,
+          "end": 56,
+          "quote": "Simplified navigation with clear category entry points"
+        },
+        {
+          "field": "action",
+          "source_id": "13xcmKLUtePPNdWOs5tNDQCnQJxcH3vGJ",
+          "source_sha256": "9cdaed43cd0bc6ed00726991891fa1bd4ffe07c547fa616e4ee05e29a9e790e4",
+          "locator": "body:362/paragraph",
+          "start": 2,
+          "end": 56,
+          "quote": "Simplified navigation with clear category entry points"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "8fd74d898513a6cb1873d09ff824d409a201f5be27da31fde6397bd91a3ed026",
+      "unit": {
+        "id": "u12",
+        "kind": "action",
+        "title": "Design category pages according to their purpose",
+        "claim": {
+          "text": "The source states that category pages can serve browsing, deciding, or buying roles and that each role requires different design.",
+          "quote": "Category pages serve one of three roles: browsing, deciding, or buying. Each demands different design."
+        },
+        "action": {
+          "text": "Define whether a category page is for browsing, deciding, or buying; for browsing-focused pages, do not introduce Add to Cart buttons because they create decision conflict and friction.",
+          "quote": "On browsing-focused pages, introducing \"Add to Cart\" buttons creates decision conflict—the visitor is still answering \"What options exist here?\" not \"Am I ready to buy this specific thing?\" That interruption causes friction, not conversion."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": [
+            {
+              "text": "Do not introduce Add to Cart buttons on browsing-focused pages.",
+              "quote": "On browsing-focused pages, introducing \"Add to Cart\" buttons creates decision conflict"
+            }
+          ]
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not provide criteria for classifying a specific category page as browsing, deciding, or buying focused."
+        ],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "13xcmKLUtePPNdWOs5tNDQCnQJxcH3vGJ",
+          "source_sha256": "9cdaed43cd0bc6ed00726991891fa1bd4ffe07c547fa616e4ee05e29a9e790e4",
+          "locator": "body:371/paragraph",
+          "start": 37,
+          "end": 139,
+          "quote": "Category pages serve one of three roles: browsing, deciding, or buying. Each demands different design."
+        },
+        {
+          "field": "action",
+          "source_id": "13xcmKLUtePPNdWOs5tNDQCnQJxcH3vGJ",
+          "source_sha256": "9cdaed43cd0bc6ed00726991891fa1bd4ffe07c547fa616e4ee05e29a9e790e4",
+          "locator": "body:371/paragraph",
+          "start": 140,
+          "end": 380,
+          "quote": "On browsing-focused pages, introducing \"Add to Cart\" buttons creates decision conflict—the visitor is still answering \"What options exist here?\" not \"Am I ready to buy this specific thing?\" That interruption causes friction, not conversion."
+        },
+        {
+          "field": "exclusions.0",
+          "source_id": "13xcmKLUtePPNdWOs5tNDQCnQJxcH3vGJ",
+          "source_sha256": "9cdaed43cd0bc6ed00726991891fa1bd4ffe07c547fa616e4ee05e29a9e790e4",
+          "locator": "body:371/paragraph",
+          "start": 140,
+          "end": 226,
+          "quote": "On browsing-focused pages, introducing \"Add to Cart\" buttons creates decision conflict"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "094866c728b15059fd2fbf3ba689a5bb9734c59f0dd4a049179a57fadfb6f704",
+      "unit": {
+        "id": "u14",
+        "kind": "action",
+        "title": "Use rich, accurate PDP visuals",
+        "claim": {
+          "text": "The source says high-quality multi-angle images, short videos, and lifestyle photography help users visualize ownership, and that 360-degree views or short demos boost engagement and time on page.",
+          "quote": "Crisp, high-quality images from multiple angles, short videos, and lifestyle photography help users visualize ownership. Adding 360° views or short demo clips boosts engagement and time on page."
+        },
+        "action": {
+          "text": "Provide crisp, high-quality PDP images from multiple angles, with short videos and lifestyle photography; add 360-degree views or short demo clips.",
+          "quote": "Crisp, high-quality images from multiple angles, short videos, and lifestyle photography help users visualize ownership. Adding 360° views or short demo clips boosts engagement and time on page."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not specify the minimum number of images, video length, or product types for which 360-degree views are appropriate."
+        ],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "13xcmKLUtePPNdWOs5tNDQCnQJxcH3vGJ",
+          "source_sha256": "9cdaed43cd0bc6ed00726991891fa1bd4ffe07c547fa616e4ee05e29a9e790e4",
+          "locator": "body:408/paragraph",
+          "start": 13,
+          "end": 207,
+          "quote": "Crisp, high-quality images from multiple angles, short videos, and lifestyle photography help users visualize ownership. Adding 360° views or short demo clips boosts engagement and time on page."
+        },
+        {
+          "field": "action",
+          "source_id": "13xcmKLUtePPNdWOs5tNDQCnQJxcH3vGJ",
+          "source_sha256": "9cdaed43cd0bc6ed00726991891fa1bd4ffe07c547fa616e4ee05e29a9e790e4",
+          "locator": "body:408/paragraph",
+          "start": 13,
+          "end": 207,
+          "quote": "Crisp, high-quality images from multiple angles, short videos, and lifestyle photography help users visualize ownership. Adding 360° views or short demo clips boosts engagement and time on page."
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "6cb39cc4846fea0e751f07c85e46bd48aa0444935120fb2839289a14b7ae1514",
+      "unit": {
+        "id": "u15",
+        "kind": "action",
+        "title": "Describe PDP value through benefits and use cases",
+        "claim": {
+          "text": "The source says product descriptions should highlight the core value proposition and explicitly describe perceived value, benefits, and use cases rather than only features.",
+          "quote": "Thorough descriptions must highlight the core value proposition and explicitly detail the item's perceived value—not just features, but benefits and use cases."
+        },
+        "action": {
+          "text": "Write thorough product descriptions that highlight the core value proposition and explicitly detail perceived value, benefits, and use cases rather than only features.",
+          "quote": "Thorough descriptions must highlight the core value proposition and explicitly detail the item's perceived value—not just features, but benefits and use cases."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not specify required description length, content hierarchy, or validation method."
+        ],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "13xcmKLUtePPNdWOs5tNDQCnQJxcH3vGJ",
+          "source_sha256": "9cdaed43cd0bc6ed00726991891fa1bd4ffe07c547fa616e4ee05e29a9e790e4",
+          "locator": "body:410/paragraph",
+          "start": 26,
+          "end": 185,
+          "quote": "Thorough descriptions must highlight the core value proposition and explicitly detail the item's perceived value—not just features, but benefits and use cases."
+        },
+        {
+          "field": "action",
+          "source_id": "13xcmKLUtePPNdWOs5tNDQCnQJxcH3vGJ",
+          "source_sha256": "9cdaed43cd0bc6ed00726991891fa1bd4ffe07c547fa616e4ee05e29a9e790e4",
+          "locator": "body:410/paragraph",
+          "start": 26,
+          "end": 185,
+          "quote": "Thorough descriptions must highlight the core value proposition and explicitly detail the item's perceived value—not just features, but benefits and use cases."
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "7ad0617a8b5ae9d0d500d5d4cbcdd23e180ab8a07e15b7729650eeb71d715d84",
+      "unit": {
+        "id": "u16",
+        "kind": "action",
+        "title": "Make purchase-critical PDP information easy to find",
+        "claim": {
+          "text": "The source says pricing, shipping costs, return policies, and realistic delivery estimates must be easy to find.",
+          "quote": "Pricing, shipping costs, return policies, and realistic delivery estimates must be easy to find."
+        },
+        "action": {
+          "text": "Make pricing, shipping costs, return policies, and realistic delivery estimates easy to find on the product detail page.",
+          "quote": "Pricing, shipping costs, return policies, and realistic delivery estimates must be easy to find."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not specify page placement, interaction design, or a standard for what qualifies as easy to find."
+        ],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "13xcmKLUtePPNdWOs5tNDQCnQJxcH3vGJ",
+          "source_sha256": "9cdaed43cd0bc6ed00726991891fa1bd4ffe07c547fa616e4ee05e29a9e790e4",
+          "locator": "body:412/paragraph",
+          "start": 35,
+          "end": 131,
+          "quote": "Pricing, shipping costs, return policies, and realistic delivery estimates must be easy to find."
+        },
+        {
+          "field": "action",
+          "source_id": "13xcmKLUtePPNdWOs5tNDQCnQJxcH3vGJ",
+          "source_sha256": "9cdaed43cd0bc6ed00726991891fa1bd4ffe07c547fa616e4ee05e29a9e790e4",
+          "locator": "body:412/paragraph",
+          "start": 35,
+          "end": 131,
+          "quote": "Pricing, shipping costs, return policies, and realistic delivery estimates must be easy to find."
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    }
+  ],
+  "held": [
+    {
+      "index": 12,
+      "reason": "action: quote_not_exact"
+    }
+  ],
+  "more_units": true,
+  "unresolved": [
+    "Additional distinct source material was omitted because the 16-unit cap was reached: overall, category-specific, and funnel-stage benchmark tables; mobile category-page guidance; promotional-message consistency; PDP Add to Cart visibility; PDP trust signals and social proof; and the GoodwillFinds experiment.",
+    "The passage ends after the statement that the GoodwillFinds variation emerged as the clear winner; any subsequent case-study detail is unavailable in this excerpt.",
+    "Several numerical findings lack stated study provenance, sample sizes, denominators, test durations, and statistical significance details in the supplied excerpt."
+  ],
+  "publication_allowed": false
+}

@@ -1,0 +1,216 @@
+{
+  "status": "complete",
+  "mapping": {
+    "A": "frontier_with",
+    "B": "frontier_without",
+    "C": "cheap_without",
+    "D": "cheap_with"
+  },
+  "judge_model": "deepseek-flash",
+  "output": {
+    "reviews": [
+      {
+        "label": "A",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 4,
+          "prioritization": 4
+        },
+        "strengths": [
+          "Correctly computes Meta ROAS 3.00→3.20 and Shopify revenue ÷ Meta spend 3.00→2.05.",
+          "Separates Shopify transactions, Meta attributed value and Klaviyo attributed value; explicitly warns against adding them or treating either as incremental.",
+          "Adds DAY18 contribution/breakeven and inventory-replenishment stockout analysis, which are relevant to scaling.",
+          "Strong uncertainty handling: hypotheses vs findings, caveats on new-customer share, and a warning that 14 days may not resolve lift.",
+          "Prioritized phased plan with owner/developer constraints and a spending gate."
+        ],
+        "issues": [
+          "Some ancillary external commentary is unnecessary; 'click-only vs click-plus-view' is less precise than the current engaged-view recommendation.",
+          "Length is high, though not merely repetitive."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Meta ROAS 3 to 3.2 while Shopify revenue/spend falls 3 to about 2.045.",
+            "met": true,
+            "reason": "States 3.00→3.20 Meta ROAS and 3.00→2.05 Shopify revenue ÷ Meta spend."
+          },
+          {
+            "criterion": "Do not add Meta and email attributed revenue or call either incremental.",
+            "met": true,
+            "reason": "Explicitly says not to add $70,400 + $14,000 and calls both overlapping/non-incremental."
+          },
+          {
+            "criterion": "Require order/window reconciliation and contribution before scaling.",
+            "met": true,
+            "reason": "Requires reconciliation, DAY18 contribution/breakeven, and an inventory gate before scaling."
+          }
+        ],
+        "ranking": [
+          "A",
+          "B",
+          "D",
+          "C"
+        ],
+        "summary": "A is the strongest overall: accurate, cautious, complete, and practical. B is concise and accurate with inventory economics but less specific on attribution diagnostics. D has strong attribution-testing actions but omits the inventory stockout constraint and has a minor MER-label issue. C has good arithmetic and brand-specific fixes but overstates the feasibility of a 14-day geo holdout for this small account."
+      },
+      {
+        "label": "B",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 4,
+          "prioritization": 4
+        },
+        "strengths": [
+          "Accurate core arithmetic: Meta ROAS 3.00→3.20; Shopify revenue ÷ Meta spend 3.00→2.05; mobile conversion drop isolated.",
+          "Clearly distinguishes store-wide efficiency from Meta ROAS and refuses to add Meta + Klaviyo attributed revenue as additive.",
+          "Includes DAY18 contribution/breakeven and the 210-unit vs 35-day replenishment stockout gap.",
+          "Cautious conclusions: cannot infer incremental sales, contribution, or return on next dollar from headline ROAS.",
+          "Useful reconciliation questions and clear next decision steps."
+        ],
+        "issues": [
+          "Omits the supplied 72% new-customer share and a new-customer revenue/order readout, which could help evaluate acquisition value.",
+          "Less specific than D on Meta attribution-setting and audience-breakdown actions."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Meta ROAS 3 to 3.2 while Shopify revenue/spend falls 3 to about 2.045.",
+            "met": true,
+            "reason": "States 3.00→3.20 and 3.00→2.05."
+          },
+          {
+            "criterion": "Do not add Meta and email attributed revenue or call either incremental.",
+            "met": true,
+            "reason": "Says adding $70,400 + $14,000 would overstate commerce and that neither is proven incremental."
+          },
+          {
+            "criterion": "Require order/window reconciliation and contribution before scaling.",
+            "met": true,
+            "reason": "Requires order/event reconciliation, contribution economics, and inventory feasibility before scaling."
+          }
+        ],
+        "ranking": [
+          "A",
+          "B",
+          "D",
+          "C"
+        ],
+        "summary": "B is a tight, accurate answer with the key economics and inventory constraint. It is less diagnostic than D on attribution mechanics and less detailed than A on new-customer and phased testing, but it is very reliable."
+      },
+      {
+        "label": "C",
+        "scores": {
+          "factual_accuracy": 3,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 3,
+          "uncertainty_and_questions": 3,
+          "prioritization": 3
+        },
+        "strengths": [
+          "Core reconciliation arithmetic is correct: Meta ROAS 3.00→3.20 and Shopify revenue ÷ Meta spend 3.00→2.05.",
+          "Explains overlap between Meta and Klaviyo and correctly refuses to treat the $84,400 combined figure as additive.",
+          "Includes inventory stockout risk and brand-specific PDP/support-ticket fixes.",
+          "Good what-can-and-cannot-conclude section, including limits on creative and Klaviyo incrementality."
+        ],
+        "issues": [
+          "Recommends a 14-day $3,000 geo holdout as the way to resolve incrementality without noting likely power limitations for this account size.",
+          "Some phrasing is overconfident or imprecise, e.g. 'actual Shopify revenue per Meta dollar' and 'at best at breakeven'; the Daypack-only breakeven analogy mixes SKU economics with store AOV.",
+          "Action priority is somewhat mixed: the holdout recommendation and PDP-fix recommendation compete as first steps."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Meta ROAS 3 to 3.2 while Shopify revenue/spend falls 3 to about 2.045.",
+            "met": true,
+            "reason": "States 3.00→3.20 and Shopify revenue per Meta dollar 3.00→2.05."
+          },
+          {
+            "criterion": "Do not add Meta and email attributed revenue or call either incremental.",
+            "met": true,
+            "reason": "Shows the $84,400 sum but explicitly calls it overlapping/non-additive and not proven incremental."
+          },
+          {
+            "criterion": "Require order/window reconciliation and contribution before scaling.",
+            "met": true,
+            "reason": "Requires reconciliation and contribution/breakeven checks before spending more."
+          }
+        ],
+        "ranking": [
+          "A",
+          "B",
+          "D",
+          "C"
+        ],
+        "summary": "C has strong arithmetic and useful brand-specific fixes, but it is less careful than A/B/D on test feasibility and uncertainty. It should be revised to caveat geo-holdout power and clean up some breakeven phrasing."
+      },
+      {
+        "label": "D",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 4,
+          "prioritization": 4
+        },
+        "strengths": [
+          "Correctly identifies Meta ROAS 3.00→3.20 versus Shopify revenue ÷ Meta spend 3.00→2.05.",
+          "Clearly separates observation, hypothesis, and cannot-conclude statements.",
+          "Strong attribution-specific actions: re-report Meta on tighter settings, inspect audience breakdowns, read SKU-level new-customer sales, audit Klaviyo flows, and triangulate with surveys/tests.",
+          "Includes DAY18 contribution/breakeven and creative-history context.",
+          "Explicitly refuses to add Meta + Klaviyo revenue or treat either as incremental."
+        ],
+        "issues": [
+          "Omits the supplied inventory/replenishment stockout constraint, which is relevant to whether spending should be raised.",
+          "Labels Shopify revenue ÷ Meta spend as 'blended Meta-attributed MER' in the short answer; the ratio is not Meta-attributed, though the formula is defined.",
+          "Derived impression/click estimates are calculated correctly but are not necessary to the decision."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Meta ROAS 3 to 3.2 while Shopify revenue/spend falls 3 to about 2.045.",
+            "met": true,
+            "reason": "States 3.00→3.20 and 3.00→2.05."
+          },
+          {
+            "criterion": "Do not add Meta and email attributed revenue or call either incremental.",
+            "met": true,
+            "reason": "Shows the $84,400 overlap sum but explicitly says it is not valid/additive."
+          },
+          {
+            "criterion": "Require order/window reconciliation and contribution before scaling.",
+            "met": true,
+            "reason": "Requires reconciliation, contribution/breakeven, and attribution testing before scaling."
+          }
+        ],
+        "ranking": [
+          "A",
+          "B",
+          "D",
+          "C"
+        ],
+        "summary": "D is highly actionable on attribution diagnostics and uncertainty, but it misses the inventory constraint and has a minor MER-label issue. It is still stronger than C because it avoids overconfident test prescriptions and uses source-aligned attribution checks carefully."
+      }
+    ],
+    "ranking": [
+      "A",
+      "B",
+      "D",
+      "C"
+    ],
+    "summary": "A and B are the most accurate and decision-ready; A is more comprehensive on new-customer and inventory implications, while B is concise and reliable. D has excellent attribution-testing actions but omits inventory stockout analysis. C has good core math and brand fixes but overstates what a 14-day $3,000 geo holdout can resolve and is less cautious in places."
+  },
+  "request_id": "e01c28e32f0cf912b04277d0cc0c062366a2ad3a8005ead0cd1ce80d3cdb1914",
+  "cost_upper_estimate_usd": 0.026337899999999997
+}

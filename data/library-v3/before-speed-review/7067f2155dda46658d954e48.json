@@ -1,0 +1,571 @@
+{
+  "cards": [
+    {
+      "title": "Shopify image pipeline audit: what Shopify does and doesn't optimize",
+      "summary": "Shopify auto-converts uploads to WebP and serves them via CDN with theme-controlled widths, but leaves resize compression, wrong-format images and unoptimized theme sections to you.",
+      "use_when": "Auditing product images or theme assets for page speed on a Shopify store",
+      "steps": [
+        "Recognize the free wins already in place: Shopify serves images from a CDN (copies propagate to regional servers, so distant customers download locally) and lazily generates width variants from one upload via URL filters such as appending ?width=493, so the theme can request a smaller rendition instead of the master file.",
+        "Verified behavior on a test store: a 9.8 MB upload was auto-reduced to roughly 6.1 MB on delivery, but the presenter recommends 500 KB as the practical ceiling — meaning out-of-the-box compression is real but conservative. Do not assume upload equals optimized.",
+        "Shopify also serves WebP automatically to browsers that support it (a JPEG upload downloads as .webp). Do not pre-convert your catalog to WebP: if you serve only WebP and a browser doesn't support it, shoppers see no image. Upload JPEG/PNG and let Shopify handle format negotiation.",
+        "Find the gaps: (1) large dimensions are not reduced enough, (2) the wrong source format (PNG/GIF where JPEG would do) cannot be repaired by Shopify, (3) whether a theme requests multiple widths is determined by the theme code, not Shopify.",
+        "Prioritize images because they are among the heaviest assets and the part you can actually control, unlike apps and platform code."
+      ],
+      "caveats": [
+        "Shopify's internal dashboards and CDN behavior change over time — verify current upload sizes and filter parameters in the live admin before building a process around specifics.",
+        "The 500-600 KB ceiling and the 6.1 MB observation are this presenter's test values, not Shopify-published benchmarks."
+      ],
+      "tags": [
+        "speed",
+        "image-optimization",
+        "shopify",
+        "cdn",
+        "webp",
+        "page-speed",
+        "technical-seo"
+      ],
+      "id": "21698bb77d523b134960edfb",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 1
+    },
+    {
+      "title": "Check whether your theme serves responsive image widths",
+      "summary": "Inspect theme Liquid to see whether image tags emit multiple width sources or push the full master image to every device.",
+      "use_when": "Diagnosing slow mobile PDP or homepage load on a custom, agency-built or older Shopify theme",
+      "steps": [
+        "Open Online Store → Themes → Edit code and open a section or snippet that renders an image (hero, image-with-text, product grid).",
+        "A bad pattern looks like a single img src pointing at image.url or image | img_url: 'master'. That means every device — phone and 4K desktop alike — downloads the identical original file, so a 5,000px upload is delivered to a 400px screen.",
+        "The desired pattern is a srcset (or equivalent srcset-style Liquid filter) offering several widths, e.g. a 1,600px default plus entries for 800px and 1,200px, so the browser fetches the smallest adequate file.",
+        "If your theme is old, custom or agency-modified, audit all image-bearing sections rather than one: sections added later by developers often skip the responsive pattern even when the base theme uses it.",
+        "Fix or have fixed the offending sections; the presenter calls this the first thing to check on a store, because the payoff is immediate and applies to all traffic, especially mobile."
+      ],
+      "caveats": [
+        "Newer Shopify themes generally follow this practice; old or heavily customized themes are the usual offenders.",
+        "Verifying responsive behavior requires reading theme code or inspecting network requests per viewport, which many merchants cannot do alone."
+      ],
+      "tags": [
+        "speed",
+        "image-optimization",
+        "shopify-liquid",
+        "srcset",
+        "responsive-images",
+        "theme-development",
+        "mobile"
+      ],
+      "id": "c5fb935a9b7d7fb8a46e6d41",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 1
+    },
+    {
+      "title": "Choose JPEG, PNG, WebP or MP4 by image role",
+      "summary": "Match source format to whether the image needs transparency, photographic detail or animation.",
+      "use_when": "Preparing product photos, banners, logos or animated promos before upload",
+      "steps": [
+        "Default for photography and any rectangular image without transparency: JPEG. It supports lossy compression, which the human eye largely cannot detect at sensible settings, and Shopify converts it to WebP.",
+        "Use PNG only when you need transparency or crisp flat graphics: cut-out product shots that must sit on a colored section, logos, and illustrations layered over other content. In the example store, a transparent cut-out product and a transparent logo justified PNG; the same product on a white background could have been a better-compressing JPEG.",
+        "Avoid PNG for ordinary opaque photos. Demonstrated cost: the identical image re-exported as PNG with no edits went from 2.7 MB to 8 MB purely from the format.",
+        "Avoid GIF for animation. Use MP4 video in an HTML video tag instead — it loads far better than an animated GIF.",
+        "Lossless (PNG) preserves quality for further editing; lossy (JPEG) discards detail you mostly cannot see and is the format for delivery. You can still compress PNGs, so an oversized PNG is never necessary."
+      ],
+      "caveats": [
+        "Do not convert and upload WebP yourself; Shopify's automatic conversion is what keeps non-supporting browsers served.",
+        "Format advice assumes normal ecommerce viewing; print or archival use has different requirements."
+      ],
+      "tags": [
+        "speed",
+        "image-optimization",
+        "file-formats",
+        "jpeg",
+        "png",
+        "webp",
+        "video",
+        "product-photography"
+      ],
+      "id": "02dbd594ff18dc675d62a6b1",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 1
+    },
+    {
+      "title": "Size and compress product images before upload",
+      "summary": "Cap dimensions around 2,000px on the long edge and file size around 100-500 KB, with compression judged visually rather than by number alone.",
+      "use_when": "Preparing a photo shoot or supplier image drop for a product launch or catalog refresh",
+      "steps": [
+        "Resize the long edge. The presenter's rule: never upload larger than 3,000px, and 3,000 is already overkill — 2,000px is enough for hero banners, zoom and retina on typical Full HD and 4K screens. Because screens downscale, an 8,000px image and a 2,000px image look effectively the same on a 3,000px-wide display.",
+        "Size to the box, not the screen. A 600x600 grid tile should receive roughly a 600px-class image; feeding it 5,000px wastes bandwidth (a ~3 MB asset where ~60 KB would do). Only full-bleed elements like a hero justify near screen width.",
+        "Compress with a visual preview. A tool with a live preview (the presenter uses Squoosh) lets you drag the quality slider and stop when artifacts appear: at quality 40 a 2.7 MB image landed at 172 KB with no difference the presenter could see, and quality 20-30 remained acceptable in his view.",
+        "Ceiling guidance: stay under 500-600 KB, and preferably 100-200 KB. A real reference point from an example store: a 1,920x1,920 zoomable product image at 46 KB looked fine.",
+        "Do image resizing and format conversion before upload. Shopify's built-in editor can resize and change aspect ratio, but offers no compression settings — so an oversized upload stays oversized in weight."
+      ],
+      "caveats": [
+        "Numbers are the presenter's working thresholds, not a universal standard; heavily textured images may need higher quality settings to avoid visible artifacts.",
+        "Fine line art, small text in images and print use tolerate compression far less well."
+      ],
+      "tags": [
+        "speed",
+        "image-optimization",
+        "compression",
+        "product-photography",
+        "squoosh",
+        "page-speed",
+        "catalog-management"
+      ],
+      "id": "cfa3fe76f953b77b738b8aef",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 1
+    },
+    {
+      "title": "Batch resize in Preview, crop individually, then convert format",
+      "summary": "Resizing can be automated across a folder; cropping and format export must be checked per image.",
+      "use_when": "Processing a folder of photographer or supplier images before loading them into Shopify",
+      "steps": [
+        "Keep a folder of same-orientation images, select them all, open in macOS Preview, then Edit → Select All and Tools → Adjust Size. Set the larger dimension (e.g. 4,000) down to 2,000 and apply — this resizes the whole batch in one pass.",
+        "Do not batch crop. Product framing differs image to image, so a shared crop rectangle decapitates some products. Crop manually instead: in Preview use the selection tool, hold Shift to constrain to a square, position it, then click the crop icon.",
+        "Export to JPEG or PNG: File → Export lets you change the format (e.g. iPhone HEIC to JPEG) and apply compression in one step, with a file-size readout.",
+        "Understand the limitation of that export dialog: it shows resulting file size but not image quality, so you are accepting the setting blind. For control, do the compression step in a preview-based tool where you can see the result.",
+        "This sequence (resize → crop → convert → compress → rename → alt text → upload) is the recommended order; doing it in another order creates rework."
+      ],
+      "caveats": [
+        "Bulk resizing assumes uniform orientation; mixing portrait and landscape in one batch will resize the wrong axis.",
+        "Windows equivalents exist but the presenter only demonstrates the macOS Preview workflow."
+      ],
+      "tags": [
+        "speed",
+        "image-optimization",
+        "workflow",
+        "compression",
+        "product-photography",
+        "batch-editing"
+      ],
+      "id": "08bb3d69ec5b1159c3bf6feb",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 1
+    },
+    {
+      "title": "Automate image compression for large catalogs",
+      "summary": "Use a bulk optimization app when manual per-image compression is impractical, and let it compress on upload.",
+      "use_when": "Running a store with a large or already-loaded image catalog that needs compressing at scale",
+      "steps": [
+        "Estimate the workload first: manual per-image compression with a preview tool works for a handful of hero or launch images, but for a large catalog — especially images already uploaded to Shopify — it is a lot of repetitive manual work.",
+        "Install an image optimization app (the presenter uses Tiny SEO Speed and Image Optimizer) and enable automatic compression of images as they upload, so compression stops being a step you remember to do.",
+        "Check the app's optimization report for per-image savings from actual runs. In the presenter's example, individual images lost more than 80% of their file size after optimization.",
+        "Treat size reduction as a bandwidth and experience win for the shopper, not only a Lighthouse number.",
+        "Keep the manual pipeline for launch hero images and for anything the app compresses too aggressively, since you control quality only in a preview tool."
+      ],
+      "caveats": [
+        "Installing an app adds its own scripts and can offset speed gains from compression — measure before and after.",
+        "App results and features vary; verify current app capabilities in the Shopify App Store, as interfaces change.",
+        "Some apps also alter SEO fields; review their settings rather than accepting defaults."
+      ],
+      "tags": [
+        "speed",
+        "image-optimization",
+        "apps",
+        "shopify",
+        "compression",
+        "automation",
+        "catalog-management"
+      ],
+      "id": "3bbbee3c209956cbedd881a3",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 1
+    },
+    {
+      "title": "Fix messy product grids with Shopify's crop and resize tools",
+      "summary": "Crop uploaded images to your theme's aspect ratio inside Shopify so the collection grid stays visually consistent.",
+      "use_when": "Product grid or collection page looks uneven because uploaded images have mixed aspect ratios",
+      "steps": [
+        "Establish the grid's aspect ratio first. Commonly used online: square for general product grids, and 4:5 portrait for fashion, which fits a full-body model shot better.",
+        "Fix already-uploaded images without re-uploading: open the image in the Shopify media editor, use crop and transform to pick the target ratio (square is offered as a preset), drag the crop frame to keep the whole product in view, then Apply.",
+        "Resize dimensions in the same editor if the file is oversized; the presenter changed 3,000 to 1,920 for a square product image as a sufficient size for zoom.",
+        "Save, then refresh the collection page to confirm the grid is aligned.",
+        "Prevent the problem upstream: crop to the target ratio before upload, since a tall image added to a square grid renders visibly out of step with its neighbors."
+      ],
+      "caveats": [
+        "Shopify's in-admin editor resizes and crops but offers no compression settings, so its output can remain heavier than a properly compressed pre-upload file.",
+        "Changing the main image's crop changes how the product appears in collection grids; check the storefront, not just the admin preview."
+      ],
+      "tags": [
+        "speed",
+        "image-optimization",
+        "merchandising",
+        "product-grid",
+        "aspect-ratio",
+        "shopify-admin",
+        "product-page"
+      ],
+      "id": "c371cc94a060e6234fb75600",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 1
+    },
+    {
+      "title": "Plan a product image set: 3-5 images that each answer a question",
+      "summary": "Shoot main, alternate angle, detail and lifestyle shots, adding more only for higher-priced or complex products.",
+      "use_when": "Planning a product photo shoot or deciding which images to add to a PDP",
+      "steps": [
+        "Start with the minimum that answers buying questions: three to five images. One is workable, two is better, three to five covers most stores.",
+        "Cover the four functional slots: a main hero shot, an alternate angle (side, back or top depending on the product), a detail shot showing a feature, and a lifestyle shot of the product in use or held.",
+        "Add more depth for higher-priced or more complex products, where extra angles, kit contents and multiple usage scenarios help the shopper imagine owning the item and justify the price. Reference examples show footwear/apparel and sporting goods running the four-slot pattern, plus video.",
+        "Test a reordered gallery when the product is aspirational: the presenter suggests main image, alternate angle, lifestyle, then details, so the shopper imagines ownership first and resolves objections second.",
+        "Stop adding when no image is answering a new question — filler images add page weight and make mobile scrolling excessive."
+      ],
+      "caveats": [
+        "The 3-5 figure is a practical heuristic, not a measured conversion threshold.",
+        "Extra images are only affordable if they are correctly sized and lazy-loaded, otherwise they degrade mobile performance."
+      ],
+      "tags": [
+        "speed",
+        "merchandising",
+        "product-page",
+        "product-photography",
+        "conversion-optimization",
+        "mobile"
+      ],
+      "id": "17019c2bec17aee368b5c820",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 1
+    },
+    {
+      "title": "Name image files with keyword-first descriptive filenames",
+      "summary": "Use a repeating filename formula — main keyword, product descriptor, unique detail, angle — instead of camera or supplier filenames.",
+      "use_when": "Renaming a folder of product images before uploading them to Shopify",
+      "steps": [
+        "Reject camera/supplier filenames (random strings, IMG_1234) — they give search engines nothing to categorize the image with, so you lose an SEO opportunity at upload time. For images already uploaded with bad names, replacing the file is the practical remedy.",
+        "Use the formula: main keyword + product descriptor + unique detail + shot angle. Examples from the source: leather-wallet-men-brown-back, leather-wallet-men-stitched-detail.",
+        "Generate these at scale by prompting ChatGPT with a template: supply the main keyword (sports backpack), the descriptor (men), and a comma-separated list of per-image details (black front, top detail, on the shoulder, back, front detail), and take the resulting filenames.",
+        "Review the output — in the demonstration the model produced more filenames than images existed, so match names to files deliberately rather than pasting blindly.",
+        "Do this before upload, alongside resizing and compression, so each file goes up once, correctly named."
+      ],
+      "caveats": [
+        "Filename is a categorization signal only; it is never shown to shoppers. Alt text carries the user-facing and semantic description.",
+        "AI-generated names still need human review for accuracy of color, angle and product detail."
+      ],
+      "tags": [
+        "technical-seo",
+        "image-optimization",
+        "product-page",
+        "file-naming",
+        "keyword-research",
+        "shopify"
+      ],
+      "id": "88d406704603e5fa1c4fc438",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 1
+    },
+    {
+      "title": "Write alt text that describes the image, not a sales pitch",
+      "summary": "Alt text serves accessibility, broken-image fallback and Google's understanding of the image — write natural descriptions and keep ads out.",
+      "use_when": "Adding or auditing alt text across product images, collection banners and blog images",
+      "steps": [
+        "Write a plain description of what is in the frame, as a sighted shopper would describe it: 'men wearing a black sports backpack outdoors' or 'closeup of padded shoulder straps on a black sports backpack'.",
+        "Use the filename for initial categorization and alt text for meaning — Google uses both, and alt text is also the text that displays when an image fails to load, so the page still communicates.",
+        "Accessibility is a real functional reason, not a checkbox: visually impaired shoppers navigate the store through this text, and missing alt text shuts them out.",
+        "Avoid promotional copy in alt text ('leather wallet man black buy cheap'). The presenter's position is that this is poor practice — though still better than no alt text at all, since the image at least stays indexed.",
+        "Do it for every shot in the gallery, matching each alt text to that specific angle or detail rather than repeating the product name."
+      ],
+      "caveats": [
+        "The source treats ad-laden alt text as a mistake but explicitly ranks it above blank alt text; the trade-off is indexation versus quality.",
+        "Alt text must not be used to stuff keywords — the examples are natural sentences."
+      ],
+      "tags": [
+        "technical-seo",
+        "accessibility",
+        "image-optimization",
+        "product-page",
+        "alt-text",
+        "content-quality"
+      ],
+      "id": "fe083ee96b087ee103adf0cd",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 1
+    },
+    {
+      "title": "Upload product images and assign variant images so color swatches switch the gallery",
+      "summary": "Understand that all uploads land in the shared media library, and attach the right image to each variant.",
+      "use_when": "Building a new product page or adding a new color variant with its own photography",
+      "steps": [
+        "Know the entry points: images can be uploaded from Content → Files (the media library), directly on the product creation page (upload new or select existing), on collection pages for cover images, on blog posts, and through the theme customizer for section images. Everything lands in the same media library.",
+        "On the product page, drag to set the order: main image first, then alternate angle, then lifestyle and details (or details before lifestyle if you prefer question-answering order). Save.",
+        "For variants, assign per-option images. In the product editor, each variant row has a plus icon; click it to attach the matching image (e.g. the red backpack for the red variant). After saving, the variant icon shows the assigned thumbnail.",
+        "Add new variant photography by uploading through the same plus flow, then click Done and Save so the swatch updates.",
+        "Confirm on the storefront: clicking color swatches should swap the gallery image, and variant images should also appear further down the product page."
+      ],
+      "caveats": [
+        "Assign every variant a real image — an unassigned variant shows the generic placeholder and can confuse shoppers choosing a color.",
+        "Gallery order and variant behavior are theme-dependent; verify in the live theme, not just the admin."
+      ],
+      "tags": [
+        "product-page",
+        "merchandising",
+        "variants",
+        "shopify-admin",
+        "image-optimization",
+        "product-media"
+      ],
+      "id": "c4e17c272dd99e3b5244639f",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 1
+    },
+    {
+      "title": "Reuse one media-library file per image and use Replace to update everywhere",
+      "summary": "Duplicated uploads create gibberish URLs, break bulk updates and require you to find every copy when an image changes.",
+      "use_when": "Maintaining a media library where product, collection, blog and theme images overlap",
+      "steps": [
+        "Upload a given image once and select it from the media library wherever it is needed — product page, collection cover, blog, theme section — rather than uploading the file again.",
+        "Understand the consequence of duplicates: uploading the same filename twice produces a second file with a modified, gibberish-suffixed URL. SEO suffers, and future edits multiply.",
+        "Use Replace image in the media library when the asset changes. The URL is preserved and only the file is swapped, so every place the image appears — product pages, sections, collections — updates at once. This is the payoff for not having duplicates.",
+        "With duplicates, this efficiency disappears: you must locate every copy and replace each individually.",
+        "If your media library already has duplicates, consolidate to a single canonical file before a major image refresh."
+      ],
+      "caveats": [
+        "Replacing a file changes every usage, including hero images where the new crop may not fit — check each placement after replacing.",
+        "Reusing one file across product and banner contexts may force one crop to serve two different aspect ratios."
+      ],
+      "tags": [
+        "image-optimization",
+        "shopify-admin",
+        "media-library",
+        "technical-seo",
+        "workflow",
+        "merchandising"
+      ],
+      "id": "23917da7d97a88f239cc2321",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 1
+    },
+    {
+      "title": "Diagnose whether images are a plausible cause of your speed problem",
+      "summary": "Use store characteristics — theme age, customization, catalog size, mobile traffic share, app load — to decide if image work is your highest-leverage fix.",
+      "use_when": "Deciding where to start on a Shopify speed project or whether to invest in image cleanup",
+      "steps": [
+        "If you run an older theme that doesn't receive updates, check images: old themes often don't follow current responsive-width practice, so a single large asset may be served to every device.",
+        "If your theme was built or heavily modified by an agency or developer, audit the image tags in its sections — quality varies by builder. Large catalogs with many images per product compound the problem.",
+        "If a large share of traffic is mobile, treat images as high priority: mobile devices neither need nor handle large assets well, and unstable connections make heavy downloads worse.",
+        "If your store is simple with few apps and still slow, images are a likely culprit and an easy win — compress and re-upload and you may be done.",
+        "The presenter's broader point: apps and some platform issues are outside your control, but image weight is controllable, so it is worth doing even when other causes exist."
+      ],
+      "caveats": [
+        "The presenter works from experience, not a measurement methodology. Confirm with your own performance data before attributing slowness to images.",
+        "Image work is easy but not a substitute for addressing other bottlenecks if images are already optimized."
+      ],
+      "tags": [
+        "speed",
+        "image-optimization",
+        "diagnostics",
+        "mobile",
+        "shopify",
+        "page-speed",
+        "prioritization"
+      ],
+      "id": "d84575512652d0ac2933fd5c",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 1
+    },
+    {
+      "title": "Lazy-load images so catalog size doesn't dictate load weight",
+      "summary": "Many images are fine if below-the-fold images load only on scroll or interaction — the count matters less than delivery timing.",
+      "use_when": "Deciding whether a media-heavy page or long PDP can carry more images without slowing the load",
+      "steps": [
+        "Reject the assumption that more images means a slower site. The presenter's position: image count is not the problem, as long as the correct sizes are served and images below the fold are lazy-loaded.",
+        "Implement lazy loading so an image is fetched only when a trigger fires — a scroll into view, or a defined interaction such as a click. Demonstrated: scrolling populated images that were not downloaded on initial page load, and a click loaded a specific image on demand.",
+        "Apply it across long pages: content-heavy pages, long PDP galleries and landing pages with many sections can hold many images without the shopper downloading everything upfront.",
+        "Pair lazy loading with correct dimensions. Lazy loading defers weight; it does not shrink oversized files, so both steps are needed."
+      ],
+      "caveats": [
+        "Lazy loading above-the-fold hero and LCP images can hurt perceived load — keep those eager.",
+        "Theme implementation varies; verify in the live theme, not only in the customizer, and check current best practice before changing loading attributes."
+      ],
+      "tags": [
+        "speed",
+        "image-optimization",
+        "lazy-loading",
+        "page-speed",
+        "product-page",
+        "mobile"
+      ],
+      "id": "8e4f0dac7e971462f539b0ee",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 1
+    },
+    {
+      "title": "Don't defer tracking scripts when deferring non-essential JavaScript",
+      "summary": "Add defer or async to non-essential scripts so they don't block HTML parsing, but keep tracking pixels loading immediately.",
+      "use_when": "Reducing JavaScript render blocking in a Shopify theme's liquid files",
+      "steps": [
+        "Locate script tags in the theme's liquid files — theme.liquid, head.liquid and footer.liquid are the paths to inspect for residual app code as well as your own scripts.",
+        "Add the defer attribute to non-essential scripts, which delays execution until the DOM is parsed. Use async where order independence suits; both stop the script blocking HTML parsing.",
+        "Do not defer or async tracking pixels. The presenter is explicit that tracking must fire immediately, because deferring analytics or ad pixels distorts or loses conversion data — a category-specific exception to the general speed rule.",
+        "Also check the same files for leftover code from uninstalled apps; residual app scripts are a common hidden cost.",
+        "Re-test after changes and verify tracking still records events, since a faster page with broken measurement is a net loss."
+      ],
+      "caveats": [
+        "Interfaces and file structures change across Shopify theme versions — verify current theme file paths before editing.",
+        "Deferring the wrong script can break theme interactivity; test the storefront after each change."
+      ],
+      "tags": [
+        "speed",
+        "javascript",
+        "shopify-liquid",
+        "page-speed",
+        "analytics",
+        "theme-development"
+      ],
+      "id": "ec383fac43591cea5befaf11",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 1
+    },
+    {
+      "title": "Load non-critical CSS asynchronously",
+      "summary": "Use the media=print onload swap trick to fetch non-critical stylesheets without blocking render, while keeping critical CSS blocking.",
+      "use_when": "Reducing render-blocking CSS on a Shopify theme",
+      "steps": [
+        "Identify non-critical stylesheets — anything not needed for the initially visible above-the-fold content.",
+        "Load them with the pattern link rel=stylesheet href=... media=print onload=\"this.media='all'\". It downloads the stylesheet in the print media context, which doesn't block rendering, then swaps it to all media once loaded.",
+        "Keep the CSS that styles above-the-fold content in a normal blocking stylesheet so the first paint is correct.",
+        "Verify the swap actually happens by checking the rendered page and the network panel; a failed onload leaves the stylesheet applied only to print.",
+        "Apply the same critical/non-critical split when auditing app-injected CSS, which frequently loads render-blocking assets in the head."
+      ],
+      "caveats": [
+        "This is a known hack, not a standard API; behavior depends on browser support for the onload attribute on link elements.",
+        "If the swap fails, above-the-fold styling can break, so test across browsers after implementing."
+      ],
+      "tags": [
+        "speed",
+        "css",
+        "render-blocking",
+        "shopify-liquid",
+        "page-speed",
+        "theme-development"
+      ],
+      "id": "e9b7f4c3107e84e2e8b0bb56",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 1
+    },
+    {
+      "title": "Prevent invisible-text flash with font-display: swap",
+      "summary": "Add font-display: swap inside the @font-face rule so text renders in a fallback immediately while the custom font downloads.",
+      "use_when": "Custom web fonts on a Shopify theme cause text to be invisible during load",
+      "steps": [
+        "Open the theme stylesheet where custom fonts are declared and locate the @font-face rule.",
+        "Add font-display: swap inside that rule. This tells the browser to render text with a system fallback first and swap in the custom font when it arrives, eliminating the flash of invisible text.",
+        "Note the trade-off inherent in swap: users may briefly see the fallback font and then a reflow when the custom font loads. The presenter treats this as preferable to invisible text, which delays content for every visitor.",
+        "Check other font rules too — a theme may declare several faces, and one missing swap reintroduces the problem for that weight or style.",
+        "Test on a slow connection to confirm text is visible during font load."
+      ],
+      "caveats": [
+        "Swap produces a visible font change on load; preloading the font is an alternative if you want to shorten the fallback window.",
+        "Theme font implementation differs — verify where the @font-face rules live in your specific theme."
+      ],
+      "tags": [
+        "speed",
+        "fonts",
+        "css",
+        "shopify-liquid",
+        "page-speed",
+        "theme-development"
+      ],
+      "id": "3263b4728b85fc3a2767f1bd",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 1
+    },
+    {
+      "title": "Replace animated GIFs with MP4 video in a video tag",
+      "summary": "Animated GIFs are extremely heavy; an MP4 inside an HTML video tag delivers the same motion at far lower weight.",
+      "use_when": "A product page, homepage section or ad creative uses an animated GIF for motion",
+      "steps": [
+        "Identify the animated GIFs on your store — hero banners, how-it-works sections and product demos are common places.",
+        "Convert the animation to MP4 and embed it in an HTML video tag. The presenter states this 'will load much better than a GIF file would', which is why GIF was left out of his recommended format list.",
+        "When auditing theme files (theme.liquid, head.liquid, footer.liquid are the paths the presenter checks), look for GIF references that should become video tags.",
+        "Keep the same presentation intent — convert first, then verify the section still looks right, since video tags need appropriate sizing and autoplay/mute settings to replace a GIF's visual behavior."
+      ],
+      "caveats": [
+        "The source states the speed advantage of MP4 but gives no measured comparison values; treat it as directional.",
+        "Video embedding needs correct player attributes (mute, loop, playsinline) to mimic GIF behavior, which the source does not detail."
+      ],
+      "tags": [
+        "speed",
+        "video",
+        "image-optimization",
+        "page-speed",
+        "shopify-liquid",
+        "homepage"
+      ],
+      "id": "5148a60eef223bda839fbbf1",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 1
+    }
+  ],
+  "request_id": "3725769cc1b6cd7c6c19b87559091d0563a545b82dcf9bca27634d8d6680db6f",
+  "ecommerce_scope_version": 1
+}

@@ -1,0 +1,636 @@
+{
+  "request_id": "8a78c7752b18598b2de2262968fa2a4e5fc1b9d21235bb985669186c30cab5f7",
+  "provider": "openai",
+  "model": "gpt-5.6-terra",
+  "effort": "high",
+  "completion_limit": 16384,
+  "usage": {
+    "prompt_tokens": 3636,
+    "completion_tokens": 7672,
+    "total_tokens": 11308,
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 3633,
+      "audio_tokens": 0
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 4096,
+      "audio_tokens": 0,
+      "accepted_prediction_tokens": 0,
+      "rejected_prediction_tokens": 0
+    }
+  },
+  "booked_cost_usd": 0.101154,
+  "seconds": 103.83,
+  "finish_reason": "stop",
+  "output": {
+    "units": [
+      {
+        "id": "u1",
+        "kind": "action",
+        "title": "Repair objectively defective experiences instead of testing them",
+        "claim": {
+          "text": "The source states that broken elements should be repaired rather than evaluated through an experiment.",
+          "quote": "A broken thing gets repaired, not tested."
+        },
+        "action": {
+          "text": "Repair an objectively defective current state rather than run an experiment to decide whether to fix it.",
+          "quote": "if the current state is objectively defective (loses money with no upside, violates a known standard, or is literally broken), repair it and move on."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "The current state is objectively defective, including when it loses money with no upside, violates a known standard, or is literally broken.",
+              "quote": "if the current state is objectively defective (loses money with no upside, violates a known standard, or is literally broken)"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": [
+            {
+              "text": "Do not treat a choice between two plausibly viable versions with an unknown better outcome as a repair decision.",
+              "quote": "You test when both versions are plausibly viable and you do not know which is better."
+            }
+          ]
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": [
+          {
+            "kind": "alternative_to",
+            "target": "u2"
+          }
+        ]
+      },
+      {
+        "id": "u2",
+        "kind": "action",
+        "title": "Test hypotheses only when both versions are viable and the outcome is uncertain",
+        "claim": {
+          "text": "The source frames experiments as a way to evaluate hypotheses with genuinely uncertain outcomes.",
+          "quote": "experiments are for evaluating hypotheses where the outcome is genuinely uncertain."
+        },
+        "action": {
+          "text": "Run an experiment when both versions are plausibly viable and it is unknown which is better.",
+          "quote": "You test when both versions are plausibly viable and you do not know which is better."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Both versions are plausibly viable and the better version is not known.",
+              "quote": "You test when both versions are plausibly viable and you do not know which is better."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": [
+            {
+              "text": "Do not test a current state that is objectively defective.",
+              "quote": "if the current state is objectively defective (loses money with no upside, violates a known standard, or is literally broken), repair it and move on."
+            }
+          ]
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": [
+          {
+            "kind": "alternative_to",
+            "target": "u1"
+          }
+        ]
+      },
+      {
+        "id": "u3",
+        "kind": "action",
+        "title": "Calculate per-variant sample size from variance and absolute target effect",
+        "claim": {
+          "text": "The source presents a per-variant sample-size formula based on variance and the absolute minimum effect to detect.",
+          "quote": "n = 16 x (sigma^2 / delta^2) per variant, where delta is the absolute minimum effect you want to detect and sigma^2 is the variance."
+        },
+        "action": {
+          "text": "Calculate the required sample per variant as 16 times variance divided by the square of the absolute minimum effect to detect.",
+          "quote": "n = 16 x (sigma^2 / delta^2) per variant, where delta is the absolute minimum effect you want to detect and sigma^2 is the variance."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": [
+            {
+              "text": "The absolute minimum effect to detect is defined as delta and variance is available as sigma squared.",
+              "quote": "where delta is the absolute minimum effect you want to detect and sigma^2 is the variance."
+            }
+          ]
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not state a measurement window or a traffic-allocation rule for applying this formula."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u4"
+          }
+        ]
+      },
+      {
+        "id": "u4",
+        "kind": "action",
+        "title": "Set the MDE to the smallest lift worth shipping",
+        "claim": {
+          "text": "The source defines MDE as the smallest lift a test is designed to catch.",
+          "quote": "MDE (minimum detectable effect): the smallest lift the test is designed to catch."
+        },
+        "action": {
+          "text": "Set the MDE to the smallest lift worth shipping rather than the smallest lift that is theoretically possible.",
+          "quote": "Set it to the smallest lift worth shipping, not the smallest possible."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not define what lift is commercially worth shipping for a particular business."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u5",
+        "kind": "principle",
+        "title": "Expect sample requirements to rise sharply for smaller effects",
+        "claim": {
+          "text": "The source states that halving the target effect quadruples the required sample.",
+          "quote": "Halving the effect you want to detect quadruples the sample."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u3"
+          }
+        ]
+      },
+      {
+        "id": "u6",
+        "kind": "warning",
+        "title": "Do not confuse relative lift with percentage-point lift",
+        "claim": {
+          "text": "The source identifies confusion between relative and absolute lift as a common error and notes that sample calculators usually use relative MDE.",
+          "quote": "Sample calculators usually take relative MDE. Confusing the two is a common error."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "A conversion-rate lift is being expressed or entered into a sample calculator.",
+              "quote": "Relative vs absolute lift: a 2% baseline going to 2.4% is +0.4 points absolute, +20% relative."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u3"
+          }
+        ]
+      },
+      {
+        "id": "u7",
+        "kind": "action",
+        "title": "Use two-tailed testing by default",
+        "claim": {
+          "text": "The source calls two-tailed testing the safer default and limits one-tailed testing to a specified decision condition.",
+          "quote": "Two-tailed is the safer default; use one-tailed only when a negative result would trigger the same action as a null."
+        },
+        "action": {
+          "text": "Use a two-tailed test by default; use a one-tailed test only when a negative result would trigger the same action as a null result.",
+          "quote": "Two-tailed is the safer default; use one-tailed only when a negative result would trigger the same action as a null."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not specify the statistical implementation for either test type."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u8",
+        "kind": "example",
+        "title": "Plan for approximately 80,000 visitors per variant for a 10% lift at a 2% baseline",
+        "claim": {
+          "text": "The source's worked example states that a 2% baseline requires about 80,000 visitors per variant to detect a 10% relative lift.",
+          "quote": "at a 2% baseline (typical DTC), detecting a 10% relative lift needs about 80,000 visitors per variant, 160,000 total."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "The illustrative baseline is 2% and the target is a 10% relative lift.",
+              "quote": "at a 2% baseline (typical DTC), detecting a 10% relative lift"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "This example should not be generalized to other baselines, target effects, confidence levels, or power settings without recalculation."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u3"
+          }
+        ]
+      },
+      {
+        "id": "u9",
+        "kind": "principle",
+        "title": "Size experiments by target relative MDE rather than a universal conversion threshold",
+        "claim": {
+          "text": "The source says required conversions per variant depend mainly on relative MDE at fixed power and provides approximate requirements by target lift.",
+          "quote": "Rough conversions-per-variant needed at 80% power, 95% confidence: about 3,830 for a 5% lift, about 1,000 for a 10% lift, about 260 for a 20% lift, about 120 for a 30% lift."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "A conversion-based view of sample requirements is needed.",
+              "quote": "Conversions per variant is the cleaner way to think about it."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source describes these values as rough and does not provide a separate calculation for each business context."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u4"
+          }
+        ]
+      },
+      {
+        "id": "u10",
+        "kind": "warning",
+        "title": "Do not treat 400 conversions per variant as a general testing threshold",
+        "claim": {
+          "text": "The source says that 400 conversions per variant only powers large lifts rather than serving as a general threshold.",
+          "quote": "400 per variant only powers large lifts (25%+)."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "A proposed rule uses 400 conversions per variant as sufficient for testing generally.",
+              "quote": "There is no magic conversion number"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not specify an exact powered lift within every possible baseline and test configuration for a 400-conversion sample."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u9"
+          }
+        ]
+      },
+      {
+        "id": "u11",
+        "kind": "action",
+        "title": "Treat sequential before-after results as weak signals under controlled external conditions",
+        "claim": {
+          "text": "The source warns that before-after testing is confounded with time and that its main risk is bias rather than merely wider error bars.",
+          "quote": "The wider-error-bars framing understates the risk; the real problem is bias, not just variance."
+        },
+        "action": {
+          "text": "For a sequential before-after comparison, hold external conditions as constant as possible, compare equal and comparable periods, and treat a clear, explainable, stable shift as a weak signal rather than proof.",
+          "quote": "it is defensible only if you hold external conditions as constant as possible, compare equal and comparable periods, and treat a clear, explainable, stable shift as a weak signal, not proof (customerimpact.be)."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "A sequential before-after approach is being considered at low volume.",
+              "quote": "Before/after (pre-post) uses all traffic on one variant at a time, which helps at low volume"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not define how to verify that external conditions or time periods are sufficiently comparable."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u12",
+        "kind": "principle",
+        "title": "Reserve pre-post testing for large structural changes and confirm with randomization later",
+        "claim": {
+          "text": "The source recommends pre-post testing for large structural changes whose expected effect dwarfs noise, followed by confirmation through a randomized test when traffic permits.",
+          "quote": "Better: use it for big structural changes where the expected effect dwarfs the noise, and confirm later with a real randomised test when traffic allows."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Traffic is too low for a randomized test and the contemplated change is structural with an expected effect that dwarfs noise.",
+              "quote": "use it for big structural changes where the expected effect dwarfs the noise"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not define a numerical threshold for an effect that dwarfs noise."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u11"
+          },
+          {
+            "kind": "alternative_to",
+            "target": "u2"
+          }
+        ]
+      },
+      {
+        "id": "u13",
+        "kind": "principle",
+        "title": "Scale total traffic with the number of A/B/n arms",
+        "claim": {
+          "text": "The source states that every A/B/n arm needs the same per-variant sample as a two-arm test, so total traffic grows with the number of arms.",
+          "quote": "Multi-variant (A/B/n) splits traffic across more arms, so each arm needs the same per-variant sample as a two-arm test; total traffic scales with the number of arms."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "A test will split traffic across more than two variants.",
+              "quote": "Multi-variant (A/B/n) splits traffic across more arms"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not specify the number of arms or the target MDE for a particular A/B/n test."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u3"
+          }
+        ]
+      },
+      {
+        "id": "u14",
+        "kind": "principle",
+        "title": "Treat 3,000–20,000 monthly orders as a non-hard floor for A/B/n and bandit work",
+        "claim": {
+          "text": "The source characterizes 3,000–20,000 orders per month as a fair floor for A/B/n and bandit work, while explicitly saying this is not a hard cutoff.",
+          "quote": "The 3,000-20,000 orders/month band is a fair floor for A/B/n and bandit work. Caveat: bandits can be used lower down for short campaigns where the goal is to minimise regret rather than get a clean read, so it is not a hard cutoff."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "A multi-variant or multi-armed-bandit approach is being considered.",
+              "quote": "Multi-variant and multi-armed testing needs S4 scale (3,000 to 20,000 orders/month)."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not provide a formula that converts monthly orders into sufficient per-arm traffic for a specific experiment."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u13"
+          }
+        ]
+      },
+      {
+        "id": "u15",
+        "kind": "principle",
+        "title": "Use lower-volume bandits only for short campaigns focused on minimizing regret",
+        "claim": {
+          "text": "The source presents short campaigns that prioritize minimizing regret over obtaining a clean read as a lower-volume use case for bandits.",
+          "quote": "bandits can be used lower down for short campaigns where the goal is to minimise regret rather than get a clean read"
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "The campaign is short and its goal is to minimize regret rather than obtain a clean experimental read.",
+              "quote": "for short campaigns where the goal is to minimise regret rather than get a clean read"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not define regret, the bandit algorithm, or the minimum volume for this exception."
+        ],
+        "relations": [
+          {
+            "kind": "alternative_to",
+            "target": "u14"
+          }
+        ]
+      },
+      {
+        "id": "u16",
+        "kind": "action",
+        "title": "Follow a fixed-horizon stopping rule",
+        "claim": {
+          "text": "The source defines fixed-horizon frequentist testing as setting the sample size in advance and reviewing results once at the end.",
+          "quote": "Fixed-horizon testing is the classic frequentist model: fix the sample size in advance, look once at the end."
+        },
+        "action": {
+          "text": "Fix the sample size in advance and look at results once at the end.",
+          "quote": "fix the sample size in advance, look once at the end."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": [
+            {
+              "text": "The testing approach is the classic frequentist fixed-horizon model.",
+              "quote": "Fixed-horizon testing is the classic frequentist model"
+            }
+          ]
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The excerpt does not supply the continuation of the stopping-rules section, including any stated alternative sequential-testing procedures."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u3"
+          }
+        ]
+      }
+    ],
+    "more_units": true,
+    "unresolved": [
+      "The excerpt ends during section 3, after the fixed-horizon definition; the continuation on stopping rules and the peeking problem is not supplied.",
+      "Metadata describes mSPRT, GAVI, and a peeking-related false-positive claim, but the supplied substantive excerpt does not provide the corresponding supporting procedure or explanation."
+    ]
+  },
+  "raw_content": "{\"units\":[{\"id\":\"u1\",\"kind\":\"action\",\"title\":\"Repair objectively defective experiences instead of testing them\",\"claim\":{\"text\":\"The source states that broken elements should be repaired rather than evaluated through an experiment.\",\"quote\":\"A broken thing gets repaired, not tested.\"},\"action\":{\"text\":\"Repair an objectively defective current state rather than run an experiment to decide whether to fix it.\",\"quote\":\"if the current state is objectively defective (loses money with no upside, violates a known standard, or is literally broken), repair it and move on.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"The current state is objectively defective, including when it loses money with no upside, violates a known standard, or is literally broken.\",\"quote\":\"if the current state is objectively defective (loses money with no upside, violates a known standard, or is literally broken)\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[{\"text\":\"Do not treat a choice between two plausibly viable versions with an unknown better outcome as a repair decision.\",\"quote\":\"You test when both versions are plausibly viable and you do not know which is better.\"}]},\"completion\":[],\"unknowns\":[],\"relations\":[{\"kind\":\"alternative_to\",\"target\":\"u2\"}]},{\"id\":\"u2\",\"kind\":\"action\",\"title\":\"Test hypotheses only when both versions are viable and the outcome is uncertain\",\"claim\":{\"text\":\"The source frames experiments as a way to evaluate hypotheses with genuinely uncertain outcomes.\",\"quote\":\"experiments are for evaluating hypotheses where the outcome is genuinely uncertain.\"},\"action\":{\"text\":\"Run an experiment when both versions are plausibly viable and it is unknown which is better.\",\"quote\":\"You test when both versions are plausibly viable and you do not know which is better.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Both versions are plausibly viable and the better version is not known.\",\"quote\":\"You test when both versions are plausibly viable and you do not know which is better.\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[{\"text\":\"Do not test a current state that is objectively defective.\",\"quote\":\"if the current state is objectively defective (loses money with no upside, violates a known standard, or is literally broken), repair it and move on.\"}]},\"completion\":[],\"unknowns\":[],\"relations\":[{\"kind\":\"alternative_to\",\"target\":\"u1\"}]},{\"id\":\"u3\",\"kind\":\"action\",\"title\":\"Calculate per-variant sample size from variance and absolute target effect\",\"claim\":{\"text\":\"The source presents a per-variant sample-size formula based on variance and the absolute minimum effect to detect.\",\"quote\":\"n = 16 x (sigma^2 / delta^2) per variant, where delta is the absolute minimum effect you want to detect and sigma^2 is the variance.\"},\"action\":{\"text\":\"Calculate the required sample per variant as 16 times variance divided by the square of the absolute minimum effect to detect.\",\"quote\":\"n = 16 x (sigma^2 / delta^2) per variant, where delta is the absolute minimum effect you want to detect and sigma^2 is the variance.\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[{\"text\":\"The absolute minimum effect to detect is defined as delta and variance is available as sigma squared.\",\"quote\":\"where delta is the absolute minimum effect you want to detect and sigma^2 is the variance.\"}]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source does not state a measurement window or a traffic-allocation rule for applying this formula.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u4\"}]},{\"id\":\"u4\",\"kind\":\"action\",\"title\":\"Set the MDE to the smallest lift worth shipping\",\"claim\":{\"text\":\"The source defines MDE as the smallest lift a test is designed to catch.\",\"quote\":\"MDE (minimum detectable effect): the smallest lift the test is designed to catch.\"},\"action\":{\"text\":\"Set the MDE to the smallest lift worth shipping rather than the smallest lift that is theoretically possible.\",\"quote\":\"Set it to the smallest lift worth shipping, not the smallest possible.\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source does not define what lift is commercially worth shipping for a particular business.\"],\"relations\":[]},{\"id\":\"u5\",\"kind\":\"principle\",\"title\":\"Expect sample requirements to rise sharply for smaller effects\",\"claim\":{\"text\":\"The source states that halving the target effect quadruples the required sample.\",\"quote\":\"Halving the effect you want to detect quadruples the sample.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u3\"}]},{\"id\":\"u6\",\"kind\":\"warning\",\"title\":\"Do not confuse relative lift with percentage-point lift\",\"claim\":{\"text\":\"The source identifies confusion between relative and absolute lift as a common error and notes that sample calculators usually use relative MDE.\",\"quote\":\"Sample calculators usually take relative MDE. Confusing the two is a common error.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"A conversion-rate lift is being expressed or entered into a sample calculator.\",\"quote\":\"Relative vs absolute lift: a 2% baseline going to 2.4% is +0.4 points absolute, +20% relative.\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u3\"}]},{\"id\":\"u7\",\"kind\":\"action\",\"title\":\"Use two-tailed testing by default\",\"claim\":{\"text\":\"The source calls two-tailed testing the safer default and limits one-tailed testing to a specified decision condition.\",\"quote\":\"Two-tailed is the safer default; use one-tailed only when a negative result would trigger the same action as a null.\"},\"action\":{\"text\":\"Use a two-tailed test by default; use a one-tailed test only when a negative result would trigger the same action as a null result.\",\"quote\":\"Two-tailed is the safer default; use one-tailed only when a negative result would trigger the same action as a null.\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source does not specify the statistical implementation for either test type.\"],\"relations\":[]},{\"id\":\"u8\",\"kind\":\"example\",\"title\":\"Plan for approximately 80,000 visitors per variant for a 10% lift at a 2% baseline\",\"claim\":{\"text\":\"The source's worked example states that a 2% baseline requires about 80,000 visitors per variant to detect a 10% relative lift.\",\"quote\":\"at a 2% baseline (typical DTC), detecting a 10% relative lift needs about 80,000 visitors per variant, 160,000 total.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"The illustrative baseline is 2% and the target is a 10% relative lift.\",\"quote\":\"at a 2% baseline (typical DTC), detecting a 10% relative lift\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"This example should not be generalized to other baselines, target effects, confidence levels, or power settings without recalculation.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u3\"}]},{\"id\":\"u9\",\"kind\":\"principle\",\"title\":\"Size experiments by target relative MDE rather than a universal conversion threshold\",\"claim\":{\"text\":\"The source says required conversions per variant depend mainly on relative MDE at fixed power and provides approximate requirements by target lift.\",\"quote\":\"Rough conversions-per-variant needed at 80% power, 95% confidence: about 3,830 for a 5% lift, about 1,000 for a 10% lift, about 260 for a 20% lift, about 120 for a 30% lift.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"A conversion-based view of sample requirements is needed.\",\"quote\":\"Conversions per variant is the cleaner way to think about it.\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source describes these values as rough and does not provide a separate calculation for each business context.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u4\"}]},{\"id\":\"u10\",\"kind\":\"warning\",\"title\":\"Do not treat 400 conversions per variant as a general testing threshold\",\"claim\":{\"text\":\"The source says that 400 conversions per variant only powers large lifts rather than serving as a general threshold.\",\"quote\":\"400 per variant only powers large lifts (25%+).\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"A proposed rule uses 400 conversions per variant as sufficient for testing generally.\",\"quote\":\"There is no magic conversion number\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source does not specify an exact powered lift within every possible baseline and test configuration for a 400-conversion sample.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u9\"}]},{\"id\":\"u11\",\"kind\":\"action\",\"title\":\"Treat sequential before-after results as weak signals under controlled external conditions\",\"claim\":{\"text\":\"The source warns that before-after testing is confounded with time and that its main risk is bias rather than merely wider error bars.\",\"quote\":\"The wider-error-bars framing understates the risk; the real problem is bias, not just variance.\"},\"action\":{\"text\":\"For a sequential before-after comparison, hold external conditions as constant as possible, compare equal and comparable periods, and treat a clear, explainable, stable shift as a weak signal rather than proof.\",\"quote\":\"it is defensible only if you hold external conditions as constant as possible, compare equal and comparable periods, and treat a clear, explainable, stable shift as a weak signal, not proof (customerimpact.be).\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"A sequential before-after approach is being considered at low volume.\",\"quote\":\"Before/after (pre-post) uses all traffic on one variant at a time, which helps at low volume\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source does not define how to verify that external conditions or time periods are sufficiently comparable.\"],\"relations\":[]},{\"id\":\"u12\",\"kind\":\"principle\",\"title\":\"Reserve pre-post testing for large structural changes and confirm with randomization later\",\"claim\":{\"text\":\"The source recommends pre-post testing for large structural changes whose expected effect dwarfs noise, followed by confirmation through a randomized test when traffic permits.\",\"quote\":\"Better: use it for big structural changes where the expected effect dwarfs the noise, and confirm later with a real randomised test when traffic allows.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Traffic is too low for a randomized test and the contemplated change is structural with an expected effect that dwarfs noise.\",\"quote\":\"use it for big structural changes where the expected effect dwarfs the noise\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source does not define a numerical threshold for an effect that dwarfs noise.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u11\"},{\"kind\":\"alternative_to\",\"target\":\"u2\"}]},{\"id\":\"u13\",\"kind\":\"principle\",\"title\":\"Scale total traffic with the number of A/B/n arms\",\"claim\":{\"text\":\"The source states that every A/B/n arm needs the same per-variant sample as a two-arm test, so total traffic grows with the number of arms.\",\"quote\":\"Multi-variant (A/B/n) splits traffic across more arms, so each arm needs the same per-variant sample as a two-arm test; total traffic scales with the number of arms.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"A test will split traffic across more than two variants.\",\"quote\":\"Multi-variant (A/B/n) splits traffic across more arms\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source does not specify the number of arms or the target MDE for a particular A/B/n test.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u3\"}]},{\"id\":\"u14\",\"kind\":\"principle\",\"title\":\"Treat 3,000–20,000 monthly orders as a non-hard floor for A/B/n and bandit work\",\"claim\":{\"text\":\"The source characterizes 3,000–20,000 orders per month as a fair floor for A/B/n and bandit work, while explicitly saying this is not a hard cutoff.\",\"quote\":\"The 3,000-20,000 orders/month band is a fair floor for A/B/n and bandit work. Caveat: bandits can be used lower down for short campaigns where the goal is to minimise regret rather than get a clean read, so it is not a hard cutoff.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"A multi-variant or multi-armed-bandit approach is being considered.\",\"quote\":\"Multi-variant and multi-armed testing needs S4 scale (3,000 to 20,000 orders/month).\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source does not provide a formula that converts monthly orders into sufficient per-arm traffic for a specific experiment.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u13\"}]},{\"id\":\"u15\",\"kind\":\"principle\",\"title\":\"Use lower-volume bandits only for short campaigns focused on minimizing regret\",\"claim\":{\"text\":\"The source presents short campaigns that prioritize minimizing regret over obtaining a clean read as a lower-volume use case for bandits.\",\"quote\":\"bandits can be used lower down for short campaigns where the goal is to minimise regret rather than get a clean read\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"The campaign is short and its goal is to minimize regret rather than obtain a clean experimental read.\",\"quote\":\"for short campaigns where the goal is to minimise regret rather than get a clean read\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source does not define regret, the bandit algorithm, or the minimum volume for this exception.\"],\"relations\":[{\"kind\":\"alternative_to\",\"target\":\"u14\"}]},{\"id\":\"u16\",\"kind\":\"action\",\"title\":\"Follow a fixed-horizon stopping rule\",\"claim\":{\"text\":\"The source defines fixed-horizon frequentist testing as setting the sample size in advance and reviewing results once at the end.\",\"quote\":\"Fixed-horizon testing is the classic frequentist model: fix the sample size in advance, look once at the end.\"},\"action\":{\"text\":\"Fix the sample size in advance and look at results once at the end.\",\"quote\":\"fix the sample size in advance, look once at the end.\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[{\"text\":\"The testing approach is the classic frequentist fixed-horizon model.\",\"quote\":\"Fixed-horizon testing is the classic frequentist model\"}]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The excerpt does not supply the continuation of the stopping-rules section, including any stated alternative sequential-testing procedures.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u3\"}]}],\"more_units\":true,\"unresolved\":[\"The excerpt ends during section 3, after the fixed-horizon definition; the continuation on stopping rules and the peeking problem is not supplied.\",\"Metadata describes mSPRT, GAVI, and a peeking-related false-positive claim, but the supplied substantive excerpt does not provide the corresponding supporting procedure or explanation.\"]}",
+  "input": {
+    "source": {
+      "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+      "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+      "locator": "batch",
+      "start": 0,
+      "text": "06-MEA / measurement and analytics\n\nGoes here. Website and business analytics, measuring organic and paid traffic, Google Analytics, Shopify reporting, root cause analysis frameworks, multi-touch attribution (MTA), post-purchase surveys, marketing mix modeling (MMM), conversion rate optimization (CRO) methodologies, quiz funnel psychology, heatmaps, causal inference methods, incrementality testing, and general marketing/business performance dashboards.\n\nNot here.\n\nPaid advertising performance metrics, ROAS, scaling rules, bidding, or ad-platform specific attribution -> 11-ADC\n\nFinancial modeling or accounting -> 20-FIN\n\nHeader. url: rights: public_reference why: Details the rigorous statistical and methodological foundations of A/B testing for e-commerce, outlining sample size math, the dangers of \"peeking,\" Bayesian versus Frequentist models, and a volume-based playbook for scaling experimentation. modules: [MEA] topics: [conversion rate optimization, attribution and modeling, business and marketing analytics] tier: 2 scope_hint: core\n\nTopics. conversion rate optimization / Deconstructing the mathematical realities of A/B testing, emphasizing that true CRO requires evaluating hypotheses under genuine uncertainty rather than running tests to \"repair\" objectively broken elements. Establishing a stage-gated testing playbook based on monthly order volume, directing low-volume stores (<300 orders/month) to rely on qualitative research and bold, big-swing changes, while reserving complex A/B/n testing, multi-armed bandits, and CUPED variance reduction for high-volume stores (3,000+ orders/month). attribution and modeling / Evaluating the statistical rigor of experimentation by comparing Frequentist models (fixed-horizon) against Bayesian approaches and sequential testing frameworks (mSPRT, GAVI) designed to mitigate the massive false positive risks of \"peeking.\" Outlining critical experiment invalidations—including Sample Ratio Mismatch (SRM), flicker (FOOC), and Twyman’s Law—to ensure reported lifts are statistically valid rather than instrumentation artifacts. business and marketing analytics / Navigating platform-specific testing constraints, such as Shopify's deprecation of client-side checkout A/B testing (via checkout extensibility) and the ethical/legal landmines of personalized price testing. Moving away from highly subjective prioritization frameworks (like ICE) toward evidence-gated, profit-weighted models (like PXL) that calculate the true expected value of an experiment before development begins.\n\nLook for. The core mathematical reality of sample size (Evan Miller's formula): detecting a 10% relative lift on a typical 2% baseline requires approximately 80,000 visitors per variant, making micro-tweaks mathematically invalid for most DTC brands. The definition of the \"peeking problem\": checking A/B test results continuously and stopping as soon as p < 0.05 inflates the false positive rate to over 26%. The definition of Twyman's Law: any figure that looks incredibly interesting or surprising (e.g., a 364% lift) is usually wrong and likely caused by a tracking bug or Sample Ratio Mismatch (SRM). The impact of Shopify's checkout extensibility update: it prevents third-party client-side tools from A/B testing the checkout UI, forcing reliance on server-side theme testing (Shopify Rollouts) or Plus-exclusive Checkout Blocks.\n\nSkip. Generic claims about \"magic conversion numbers\" (e.g., requiring exactly 400 conversions per month to test) that fail to account for Minimum Detectable Effect (MDE) math.\n\nScope mix. Almost all core.\n\nVolume. 15 to 20.\n\nPart A: synthesised research document\n\n0. scope and the repair-versus-test rule\n\nCRO in this module means \"is the difference real\": statistics, experiment design, experimentation discipline. It is not page design (that is LPG) and not tracking accuracy (that is MEA), except where tracking breakage invalidates an experiment.\n\nRepair versus test. A broken thing gets repaired, not tested. If a page throws errors, a form field rejects valid input, the add-to-cart fails on Safari, or tracking fires twice, you fix it. You do not run an experiment to decide whether to fix a bug. The test for whether something is a repair: if the current state is objectively defective (loses money with no upside, violates a known standard, or is literally broken), repair it and move on. You test when both versions are plausibly viable and you do not know which is better. Kohavi's framing: experiments are for evaluating hypotheses where the outcome is genuinely uncertain.\n\n1. sample size and statistical power\n\nThe core formula (Evan Miller, \"How Not To Run an A/B Test\", April 18 2010): n = 16 x (sigma^2 / delta^2) per variant, where delta is the absolute minimum effect you want to detect and sigma^2 is the variance. For a conversion rate (binomial), sigma^2 = p(1-p). The \"16\" bakes in 95% significance (alpha 0.05, two-sided) and 80% power. Halving the effect you want to detect quadruples the sample.\n\nKey terms:\n\nAlpha (significance): false positive rate. Standard 0.05.\n\nPower (1-beta): chance of detecting a real effect of the target size. Standard 0.80.\n\nMDE (minimum detectable effect): the smallest lift the test is designed to catch. Set it to the smallest lift worth shipping, not the smallest possible.\n\nRelative vs absolute lift: a 2% baseline going to 2.4% is +0.4 points absolute, +20% relative. Sample calculators usually take relative MDE. Confusing the two is a common error.\n\nOne vs two tailed: one-tailed reaches significance faster but only tests one direction. Two-tailed is the safer default; use one-tailed only when a negative result would trigger the same action as a null.\n\nWorked sample sizes, visitors per variant, 95% confidence, 80% power, two-sided (from statsunlock.com reference table, consistent with Evan Miller's calculator):\n\nBaseline | 5% rel lift | 10% rel lift | 20% rel lift | 30% rel lift | 50% rel lift\n1% | 637,010 | 163,095 | 42,693 | 19,827 | 7,750\n2% | 315,206 | 80,682 | 21,109 | 9,798 | 3,826\n3% | 207,938 | 53,211 | 13,914 | 6,455 | 2,518\n5% | 122,124 | 31,234 | 8,158 | 3,780 | 1,471\n\nRead this as the central fact of the whole module: at a 2% baseline (typical DTC), detecting a 10% relative lift needs about 80,000 visitors per variant, 160,000 total. Detecting a 20% lift needs about 21,000 per variant. Detecting a 5% lift needs 315,000 per variant, which most brands will never reach in a reasonable window.\n\nConversions per variant is the cleaner way to think about it. At fixed power, the required number of conversions per variant depends mainly on the relative MDE, not the baseline. Rough conversions-per-variant needed at 80% power, 95% confidence: about 3,830 for a 5% lift, about 1,000 for a 10% lift, about 260 for a 20% lift, about 120 for a 30% lift. (Derived from the visitor tables times baseline.)\n\n2. verifying the four internal-doc claims\n\nClaim 1: \"Classic A/B test on a page needs 400+ conversions per month.\" Partly true as a floor, but incomplete and slightly misleading. There is no magic conversion number (CXL, \"Stopping A/B Tests: How Many Conversions Do I Need?\"). The real driver is the MDE. 400 conversions per variant per month lets you detect roughly a 30-40% relative lift in a month, which is a large swing. To detect a 10% lift you need roughly 1,000 conversions per variant, not 400. So 400/month is a bare minimum to detect big effects, not a general threshold. Correct statement: you need enough conversions per variant to detect your target MDE; 400 per variant only powers large lifts (25%+).\n\nClaim 2: \"Detecting a 20% lift at 95% confidence needs roughly 200 conversions per variant.\" True and well-supported, with one clarification: this is roughly 260 conversions per variant at 80% power (the standard). The improvado.io guide states \"at least 200 conversions in the control group to achieve 80% statistical power for detecting a 10-20% lift.\" HubSpot's \"20,000 rule\" gives the same picture: 20,000 recipients per group at 2% baseline yields about 400 control conversions, enough to detect a 20% lift comfortably. So 200 per variant is a reasonable rule of thumb for a 20% lift at slightly lower power; 250-260 is the safer number at 80% power.\n\nClaim 3: \"Sequential before-after testing works at low volume if you accept wider error bars.\" Directionally true but dangerous as stated. Before/after (pre-post) uses all traffic on one variant at a time, which helps at low volume, but it confounds the change with time: seasonality, promotions, weekday/weekend, traffic-source shifts, news. The wider-error-bars framing understates the risk; the real problem is bias, not just variance. It is defensible only if you hold external conditions as constant as possible, compare equal and comparable periods, and treat a clear, explainable, stable shift as a weak signal, not proof (customerimpact.be). Better: use it for big structural changes where the expected effect dwarfs the noise, and confirm later with a real randomised test when traffic allows.\n\nClaim 4: \"Multi-variant and multi-armed testing needs S4 scale (3,000 to 20,000 orders/month).\" Broadly correct in spirit. Multi-variant (A/B/n) splits traffic across more arms, so each arm needs the same per-variant sample as a two-arm test; total traffic scales with the number of arms. A brand doing under a few thousand orders/month cannot power 3-4 variants at a useful MDE. Bandits also need volume to learn before they exploit. The 3,000-20,000 orders/month band is a fair floor for A/B/n and bandit work. Caveat: bandits can be used lower down for short campaigns where the goal is to minimise regret rather than get a clean read, so it is not a hard cutoff.\n\n3. stopping rules and the peeking problem\n\nFixed-horizon testing is the classic frequentist model: fix the sample size in advance, look once at the end. The p-value and confidence level are only valid under this assumption (Evan Miller)."
+    },
+    "instruction": "Extract task-sized units from this excerpt."
+  },
+  "system_prompt_sha256": "f23d9572f5bf1b93a5822a96b30f4ea85c0469c454d5ce80d227418df3d2e25e"
+}

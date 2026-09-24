@@ -1,0 +1,265 @@
+{
+  "cards": [
+    {
+      "title": "Use Safe Browsing hash-prefix lookups to block malware/phishing destinations",
+      "summary": "How browser-style local hash-prefix matching lets you flag malicious URLs without sending full URLs to a third party, and its limits.",
+      "use_when": "Deciding how to screen outbound links, user-submitted content or redirect URLs (e.g. affiliate links, UGC product listings) against known malicious destinations without leaking every URL to a reputation service.",
+      "steps": [
+        "Understand the mechanism: a reputation service hashes reported malicious URLs (e.g. SHA-256), keeps the full hashes, and distributes only truncated hash prefixes to clients so the download stays small.",
+        "On the client, hash a candidate URL the same way and compare its prefix to the downloaded list. If the prefix is absent, the URL is guaranteed not to be in the known-malicious set (a clean pass).",
+        "If the prefix matches, treat it as 'maybe malicious' only, because chopping the hash introduces collisions. Send the prefix (not the full URL) to the service to fetch the full hashes sharing that prefix, then confirm an exact match.",
+        "Account for evasion: attackers can randomize query strings, so the lookup should test multiple URL variants — e.g. the full path, progressively trimmed paths, and the site home page — rather than one exact URL. A hit on the home page blocks the whole site.",
+        "As an ecommerce operator, apply this to any place you accept or forward third-party URLs (user reviews, affiliate feeds, image/link uploads) and to protecting your own checkout redirect chain.",
+        "Treat the list as one layer of defense-in-depth; it will always miss fresh or never-reported URLs.",
+        "Note the privacy trade-off: even prefix-only queries leak that a user visited some URL sharing that prefix, and repeated queries from one IP can be correlated over time."
+      ],
+      "caveats": [
+        "Hash-prefix checking is a blacklist approach and is guaranteed to miss unseen or newly created malicious URLs.",
+        "Truncated-prefix collisions mean a prefix hit is not proof of malice — always confirm with the full hash.",
+        "A whitelist-only approach is impractical for dynamic URLs (query strings, unique document keys) since it blocks anything the service has not seen.",
+        "If you implement this yourself, verify the current Safe Browsing API behavior and rate/format requirements before relying on it."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "url-reputation",
+        "malicious-links",
+        "blacklisting",
+        "defense-in-depth",
+        "safe-browsing",
+        "integrations"
+      ],
+      "id": "a6e67bdd604d5ff621fc2de5",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 12
+    },
+    {
+      "title": "Why hashing is used for integrity and lookup, and what its properties guarantee",
+      "summary": "The five properties of cryptographic hash functions that make them useful for URL reputation, integrity checks and lookups.",
+      "use_when": "Choosing or reviewing a hashing scheme for things like URL/entity reputation lists, file-integrity checks on uploaded assets, or tokenizing customer data for lookups.",
+      "steps": [
+        "Pick a hash function that is one-way: given the output you cannot feasibly recover the input, so a leaked hash list does not directly expose the original URLs or IDs.",
+        "Confirm determinism: hashing the same value twice yields the same output, which is what makes prefix/equality lookups possible across many clients.",
+        "Confirm speed: the function must be fast enough to run on every candidate URL or request, since lookups happen frequently.",
+        "Confirm collision resistance: it should be infeasible to craft an input that produces a chosen hash value — important if a passing hash is treated as authorization for a safe/valid object.",
+        "Confirm avalanche behavior: a tiny change to the input (e.g. one query parameter) should drastically change the output, which is what stops trivial near-duplicate evasion of a hash-based blocklist.",
+        "Distinguish this from encryption and signing: hashing is for compact comparison and integrity, not for confidentiality of recoverable data or for proving authenticity by itself."
+      ],
+      "caveats": [
+        "Truncating a hash (as with hash prefixes) deliberately weakens it — collisions become expected, so a truncated match is a candidate, not a verdict.",
+        "Hashing does not make an input safe or authenticated; it only lets you compare values without storing the raw values."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "hashing",
+        "integrity",
+        "lookups",
+        "encryption-vs-hashing",
+        "data-protection"
+      ],
+      "id": "2d511f0e7f9e3e83d0ec3a5e",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 12
+    },
+    {
+      "title": "Model side channels on your storefront: a correct system can still leak data",
+      "summary": "Side-channel attacks reveal information through timing, size or sensor differences even when no code bug exists, which matters for how much you expose cross-site.",
+      "use_when": "Threat-modeling your storefront or admin pages for what a third-party script or an embedded attacker page could infer about logged-in customers, cart state or history.",
+      "steps": [
+        "Recognize the definition: a side channel is leakage from a correctly implemented system, via timing, layout, power, size or sensor readings, not from a logic bug.",
+        "Inventory the observable differences your pages create for logged-in vs logged-out users: response sizes, layout width shifts, redirect targets, timing of protected vs public responses.",
+        "Assume any state that changes rendered output (button labels, banner widths, item counts) can be measured by a third-party page that embeds a request to your origin.",
+        "Reduce precision and observability: make protected and public code paths take similar time, keep response sizes consistent, and avoid conditionally rendering elements whose dimensions reveal account state.",
+        "Treat repeated embedding of your URLs in untrusted pages as a fingerprinting channel; limit what cross-origin embeds can trigger on your domain.",
+        "Operate under the source's framing: side channels are everywhere and very hard to fully prevent, so prioritize the ones that reveal account status, payment state or order contents."
+      ],
+      "caveats": [
+        "Most demonstrated attacks (reading QR codes via ambient-light sensor, recovering speech via gyroscope) are proof-of-concept and may be impractical in real conditions.",
+        "Fully eliminating side channels is not achievable; mitigations reduce precision or rate rather than guaranteeing elimination."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "side-channel",
+        "timing-attack",
+        "fingerprinting",
+        "threat-modeling",
+        "privacy"
+      ],
+      "id": "c16f92a5d2c1b8d41ff4353f",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 12
+    },
+    {
+      "title": "Fix visited-link and history leaks: browser whitelists, timing and lying APIs",
+      "summary": "How browsers mitigated CSS-based browsing-history leaks and why the fix is intentionally incomplete, with lessons for styling untrusted links.",
+      "use_when": "Handling links to third-party or user-submitted destinations on product pages and deciding which link styling is safe to let influence layout or resource loading.",
+      "steps": [
+        "Understand the leak: browsers render :visited links differently, and a page can read style or trigger resource loads to learn whether a visitor has been to a URL, exposing browsing history at scale.",
+        "Whitelist CSS properties for visited links so styling cannot cause layout, size or resource-loading side effects — restrict visited styling to color, underline, weight and similar non-layout properties.",
+        "Make the browser's internal handling of visited vs unvisited links take equal time, so timing the href change or redraw does not reveal state.",
+        "Have the browser report unvisited styles when script queries computed styles of visited links, so direct inspection lies rather than leaks.",
+        "Accept that the fix is incomplete: rendering-time differences (e.g. expensive text-shadow on visited links) can still be measured with requestAnimationFrame timing, especially with many links and large shadow radii.",
+        "For your own store, avoid relying on :visited for anything functional and be cautious about heavyweight visual effects on link-heavy pages if you handle untrusted links."
+      ],
+      "caveats": [
+        "The source presents the 2010 browser mitigation as partial — later timing-based demonstrations still recovered visited history.",
+        "Some listed attacks require specific browser implementation details that may have changed; verify current behavior rather than assuming it still holds."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "visited-links",
+        "history-leak",
+        "css",
+        "timing-attack",
+        "privacy"
+      ],
+      "id": "e336bbc883c66a3007e4a2b7",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 12
+    },
+    {
+      "title": "Prevent cross-origin state leaks via embedded images and layouts",
+      "summary": "Images embedded from another origin attach that origin's cookies and can reveal logged-in state through size or layout differences.",
+      "use_when": "Designing or reviewing any partner widgets, tracking pixels or third-party scripts that embed requests to your logged-in domains on a storefront or admin panel.",
+      "steps": [
+        "Recognize the mechanism: when a page requests an image from another origin, the browser automatically attaches that origin's cookies, so the returned asset can be conditioned on the victim's login state.",
+        "Understand the leak channel: if a logged-in response (e.g. a 'Log out' button) differs in width from the logged-out response, an attacker page can detect the layout shift and infer account state.",
+        "Apply the fix: use SameSite cookies so that cross-site requests do not carry session cookies, causing the embedded resource to always render as logged-out.",
+        "Audit any images, pixels or embeds that hit your authenticated origins and can be included from arbitrary third-party pages.",
+        "Treat distinguishing logged-in vs logged-out as valuable to phishers, since it lets them pick which brand to impersonate.",
+        "Combine with consistent asset sizing so conditional states do not also leak via width or height differences."
+      ],
+      "caveats": [
+        "This is described as an inherent leak from how same-origin policy interacts with image embedding rather than a single implementation bug.",
+        "SameSite is the principal mitigation; without it, correctly implemented pages still leak login state."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "same-site-cookies",
+        "image-embedding",
+        "login-state",
+        "phishing",
+        "cross-origin"
+      ],
+      "id": "5f45b5443f6d7039425115fe",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 12
+    },
+    {
+      "title": "Decide how to handle ambient-light and sensor APIs on your storefront",
+      "summary": "Sensor APIs (ambient light, gyroscope) can leak information through measurable screen or device changes, which shaped whether browsers expose them.",
+      "use_when": "Deciding whether to use device-sensor APIs (light, motion, orientation) in responsive storefront features and how to bound the risk of the data they expose.",
+      "steps": [
+        "Recognize the risk pattern: if a page can show or hide white/black or colored content and then read an ambient-light sensor, it can confirm which of two visual states it caused, leaking visited-link status, browser state or image contents.",
+        "Note that the same pattern was shown to extract a QR code: zoom into one square, read the light value to determine black vs white, and iterate to reconstruct sensitive content.",
+        "Treat motion/gyroscope access as a similar channel — high-precision readings can capture acoustic vibration, effectively bypassing microphone permission if exposed without restriction.",
+        "Mitigations browsers considered or shipped include putting the sensor behind a permission, limiting the frequency of sensor readings, and quantizing (reducing) the precision of sensor output.",
+        "For your own store, prefer explicit user-granted permissions rather than silent sensor access, and do not build features that depend on reading sensor data while showing attacker-controllable content.",
+        "Verify current browser vendor and OS behavior before relying on any sensor API — availability and permission requirements have changed over time."
+      ],
+      "caveats": [
+        "The source notes these attacks are often impractical (full-screen, slow, visible) but were serious enough to make browsers reconsider shipping sensor APIs.",
+        "Sensor permission and precision behavior is browser- and OS-version-specific and changes; do not assume a current configuration."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "sensor-apis",
+        "ambient-light",
+        "gyroscope",
+        "privacy",
+        "permissions"
+      ],
+      "id": "353184970d3fd31f0283b30b",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 12
+    },
+    {
+      "title": "Prevent command injection in server-side features like file or report generators",
+      "summary": "Never concatenate untrusted request data into shell commands; use argument-array process APIs that escape inputs.",
+      "use_when": "Building or reviewing any server-side feature that shells out — file viewers, image converters, PDF/CSV exporters, backup scripts — triggered by storefront or admin input.",
+      "steps": [
+        "Identify the vulnerability: concatenating untrusted input (URL params, form fields, cookies, headers) into a string passed to a shell interpreter lets attackers append commands using shell syntax like semicolons.",
+        "Verify the impact: injected input can execute arbitrary OS commands on the server — listing directories, reading files, creating or deleting files, or worse.",
+        "Fix the root cause: do not build a command string from program name plus user data. Use an API that takes the program and an argument array (in Node, spawnSync with ['cat', ...args] instead of execSync with a concatenated string) and escapes arguments for you.",
+        "Run the child process with least privilege and validate/allowlist expected arguments (e.g. permitted filenames or extensions) rather than trusting the raw value.",
+        "Keep the server bound to a restricted interface during development/testing so you do not expose a vulnerable demo to the network.",
+        "Understand that error handling and output should not echo raw command output back to the client if it can reveal filesystem contents."
+      ],
+      "caveats": [
+        "The escaping function differs by language and framework; verify the safe API for your stack rather than assuming one exists.",
+        "Escaping arguments protects against shell metacharacter injection but does not make an arbitrary file viewer safe by itself — still restrict which files or operations are allowed."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "command-injection",
+        "input-validation",
+        "server-security",
+        "child-process",
+        "least-privilege"
+      ],
+      "id": "d5c07946bb53959d1d013f60",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 12
+    },
+    {
+      "title": "Recognize code injection as the parent category behind XSS and similar bugs",
+      "summary": "Code injection mixes untrusted user data with interpreter code so the interpreter misreads data as commands.",
+      "use_when": "Reviewing how any user-supplied value reaches an interpreter (HTML, SQL, shell, template) on your storefront, checkout or admin tooling.",
+      "steps": [
+        "Define the pattern: code injection occurs when the interpreter processes a mixture of programmer-written code and untrusted user-supplied data.",
+        "Understand the failure mode: the interpreter cannot distinguish user data from programmer commands, so attacker input is executed as instructions.",
+        "Note the escape technique: attackers break out of the data context using a special character (a quote, semicolon, or similar syntax) and start writing code.",
+        "Treat XSS as one concrete instance of this broader category, alongside command injection, SQL injection and template injection.",
+        "Apply the general fix principle: keep code and untrusted data strictly separate, and escape or parameterize user data before it reaches any interpreter.",
+        "Recognize that the client controls everything it sends — URL, body, cookies, headers — so all client-provided input must be treated as untrusted."
+      ],
+      "caveats": [
+        "The correct escaping/parameterization mechanism is interpreter-specific; a fix for one context (e.g. HTML) does not protect another (e.g. SQL or shell)."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "code-injection",
+        "input-validation",
+        "xss",
+        "sql-injection",
+        "server-security"
+      ],
+      "id": "79e6ed7e0b849cdf655473ba",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 12
+    }
+  ],
+  "request_id": "e4ac7d051918edd1564251094f455528260a516614b814f392ed35ce71ec5002",
+  "ecommerce_scope_version": 1
+}

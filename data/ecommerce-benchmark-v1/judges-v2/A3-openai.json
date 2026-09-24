@@ -1,0 +1,197 @@
+{
+  "status": "complete",
+  "mapping": {
+    "A": "frontier_with",
+    "B": "frontier_without",
+    "C": "cheap_without",
+    "D": "cheap_with"
+  },
+  "judge_model": "gpt-5.6-terra",
+  "output": {
+    "reviews": [
+      {
+        "label": "A",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 4,
+          "prioritization": 4
+        },
+        "strengths": [
+          "Provides three complete, sendable emails with subjects, preview text, bodies, CTAs, and a shared compliance footer.",
+          "Accurately uses TrailFold policies: free US shipping, 4–7 business-day estimate, 30-day unused returns, and customer-paid return shipping.",
+          "Handles DAY18 claims carefully and conditionally: 13-inch sleeve only, no confirmed 15-inch fit, and water-resistant rather than waterproof.",
+          "Clearly separates Started Checkout from Added to Cart, requires verification of the real Klaviyo metric/payload, and does not claim deployment.",
+          "Gives robust purchase suppression, re-entry, consent, recovery-link, collision, migration, and QA logic.",
+          "Correctly treats checkout recovery as a hypothesis rather than claiming it explains the broader conversion decline or will create incremental revenue."
+        ],
+        "issues": [
+          "The inventory calculation is accurate and useful for availability QA, but is secondary to the requested flow draft.",
+          "The proposed consent rule, cooldown, and frequency cap are appropriately labeled as proposed settings; they still require owner/platform confirmation."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Three actual messages, no unauthorized discount or fake scarcity.",
+            "met": true,
+            "reason": "Three complete emails are supplied; no discount, countdown, reserved-stock, or unsupported urgency is used."
+          },
+          {
+            "criterion": "Started Checkout separate from Added to Cart; purchase suppression and reentry/overlap checks.",
+            "met": true,
+            "reason": "Uses verified Started Checkout, explicitly excludes Added to Cart from this flow, and covers purchase exits, one active enrollment, cooldown, campaign/welcome conflicts, and old-flow migration."
+          },
+          {
+            "criterion": "Confirm current integration event names and settings before publication; no claim of deployment.",
+            "met": true,
+            "reason": "Explicitly says draft/not deployed and requires confirmation of event names, payloads, recovery fields, Smart Sending behavior, and sync latency."
+          }
+        ]
+      },
+      {
+        "label": "B",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 4,
+          "prioritization": 4
+        },
+        "strengths": [
+          "Delivers a complete three-email flow with useful timing, triggers, suppression, eligibility, re-entry, collision management, and QA steps.",
+          "Copy is restrained and practical, aligns with TrailFold’s voice, and contains no unauthorized offer or fabricated proof.",
+          "Correctly limits laptop-fit and rain-protection copy to DAY18 checkouts and accurately states the product constraints.",
+          "Explicitly distinguishes checkout recovery from any future Added to Cart flow and requires validation of the actual Shopify/Klaviyo event and recovery URL.",
+          "The holdout recommendation appropriately recognizes that Klaviyo attribution is not incremental proof."
+        ],
+        "issues": [
+          "Restricting entry to a US checkout destination is a reasonable proposed implementation choice, but it is not expressly stated as an existing eligibility rule and should be confirmed rather than treated as a settled requirement.",
+          "The footer still requires a real mailing address and reply-to address before publication, which the answer correctly flags but cannot complete from the supplied facts."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Three actual messages, no unauthorized discount or fake scarcity.",
+            "met": true,
+            "reason": "Contains three full messages with actual subjects and body copy; it avoids discounts, stock pressure, and artificial deadlines."
+          },
+          {
+            "criterion": "Started Checkout separate from Added to Cart; purchase suppression and reentry/overlap checks.",
+            "met": true,
+            "reason": "Defines Started Checkout as the trigger, keeps Added to Cart separate, applies order suppression and no-simultaneous-entry rules, and addresses campaign/welcome/old-flow conflicts."
+          },
+          {
+            "criterion": "Confirm current integration event names and settings before publication; no claim of deployment.",
+            "met": true,
+            "reason": "Labels the work a draft, requires validated event data and recovery URL, and calls for migration and suppression testing before activation."
+          }
+        ]
+      },
+      {
+        "label": "C",
+        "scores": {
+          "factual_accuracy": 2,
+          "brand_fit": 3,
+          "task_completion": 3,
+          "actionability": 3,
+          "uncertainty_and_questions": 3,
+          "prioritization": 3
+        },
+        "strengths": [
+          "Provides three emails, a usable timing sequence, consent treatment, purchase suppression, collision handling, and a substantial QA checklist.",
+          "Uses accurate shipping, return, 13-inch laptop, 15-inch uncertainty, and water-resistance facts in much of the copy.",
+          "Correctly avoids discounts, fabricated testimonials, waterproof claims, and unsupported 15-inch-fit claims.",
+          "The funnel and AOV calculations are accurate, and it appropriately notes that the actual flow audience will be below the count of checkout non-completion sessions."
+        ],
+        "issues": [
+          "Email 3 is not conditionally tailored: it refers to whether the Daypack 18L fits and repeats DAY18-specific laptop and water-resistance details for every recipient. Accessory-only checkout recipients could receive irrelevant product copy.",
+          "Email 1 claims that the cart is saved and that checkout is still open. Neither recovery-state assertion is supplied; recovery availability should be validated or phrased conditionally.",
+          "It uses unverified merge-tag syntax and assumes the relevant Shopify/Klaviyo event configuration is available. The QA list tests the trigger but does not clearly require confirmation of the current metric name and flow settings before publication.",
+          "The statement that this flow can address “roughly 500 mid-funnel sessions” is directionally reasonable from the session funnel, but should not be equated with identifiable recipients or a direct causal fix."
+        ],
+        "critical_errors": [
+          "DAY18-specific product claims are sent unconditionally in Email 3, creating a material relevance problem for POUCH- or BOTTLE-only checkout abandoners."
+        ],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Three actual messages, no unauthorized discount or fake scarcity.",
+            "met": true,
+            "reason": "Three actual messages are present and contain no unauthorized discount or false scarcity."
+          },
+          {
+            "criterion": "Started Checkout separate from Added to Cart; purchase suppression and reentry/overlap checks.",
+            "met": true,
+            "reason": "The answer uses Started Checkout, notes Added to Cart is separate, includes purchase suppression, a cooldown, and campaign/welcome collision controls."
+          },
+          {
+            "criterion": "Confirm current integration event names and settings before publication; no claim of deployment.",
+            "met": false,
+            "reason": "It is labeled draft-only, but it assumes event availability and does not explicitly require confirming the actual current Klaviyo trigger name/settings before publication."
+          }
+        ]
+      },
+      {
+        "label": "D",
+        "scores": {
+          "factual_accuracy": 2,
+          "brand_fit": 2,
+          "task_completion": 3,
+          "actionability": 3,
+          "uncertainty_and_questions": 2,
+          "prioritization": 3
+        },
+        "strengths": [
+          "Includes three messages, timing, Started Checkout trigger guidance, order suppression, re-entry logic, collision handling, and practical QA steps.",
+          "Accurately calculates core funnel rates and appropriately frames the conversion diagnosis as a hypothesis rather than proof.",
+          "Correctly states the approved shipping, returns, laptop-sleeve, and water-resistance facts in isolation, and avoids discounts and explicit false scarcity.",
+          "Explicitly says the draft is not deployed and asks to verify the actual Klaviyo metric."
+        ],
+        "issues": [
+          "All three emails include DAY18-specific laptop-fit and/or rain-protection copy without conditional display logic. This is inaccurate and irrelevant for POUCH- or BOTTLE-only checkouts.",
+          "Email 1 asserts the checkout is still open and that it was saved without supplied evidence. Recovery links and checkout validity need verification.",
+          "Email 2 invents a founder sender and claims that person saw the recipient’s unfinished checkout. Although placeholders are disclosed later, this is not completed brand-approved copy and is more personal than the evidence supports.",
+          "The statement that tracking will show the exact delivery date after shipment is not supported by TrailFold’s shipping policy.",
+          "The answer includes an unnecessary SMS branch and asks whether to add SMS, despite an email-only task; this distracts from completing the requested artifact.",
+          "Its questions about building an Added to Cart flow in parallel and SMS are not necessary to deliver this checkout-flow draft."
+        ],
+        "critical_errors": [
+          "Unconditional DAY18 fit and water-resistance content would be sent to accessory-only checkout abandoners.",
+          "Unsupported delivery promise: “Tracking will show the exact date after it ships.”"
+        ],
+        "questions_useful": false,
+        "criterion_results": [
+          {
+            "criterion": "Three actual messages, no unauthorized discount or fake scarcity.",
+            "met": true,
+            "reason": "Three actual email drafts are supplied and no discount or fabricated stock urgency is used."
+          },
+          {
+            "criterion": "Started Checkout separate from Added to Cart; purchase suppression and reentry/overlap checks.",
+            "met": true,
+            "reason": "Uses Checkout Started, discusses Added to Cart as a separate lower-intent flow, and provides purchase, re-entry, and campaign/welcome handling."
+          },
+          {
+            "criterion": "Confirm current integration event names and settings before publication; no claim of deployment.",
+            "met": true,
+            "reason": "It says no deployment is possible and asks to confirm the exact metric/trigger, though some assumed recovery behavior still needs stronger validation."
+          }
+        ]
+      }
+    ],
+    "ranking": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "summary": "A is the strongest: complete, brand-specific, carefully conditional, and operationally cautious. B is nearly as strong, with a slightly less detailed implementation treatment and one proposed geographic eligibility constraint to confirm. C is broadly useful but needs conditional product rendering and stronger pre-publication integration verification. D has workable flow mechanics, but its unsegmented DAY18 copy, unsupported recovery/delivery assertions, and invented founder framing require significant revision."
+  },
+  "request_id": "3f58e926dd7bcb39e8e3bcbd5d69dd042539976425b4ab80df7ced4b195feb54",
+  "cost_upper_estimate_usd": 0.0882345
+}

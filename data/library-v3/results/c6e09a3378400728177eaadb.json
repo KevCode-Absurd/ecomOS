@@ -1,0 +1,443 @@
+{
+  "cards": [
+    {
+      "title": "GA4 data retention: switch from 2 months to 14 months",
+      "summary": "Choose a suitable retention window for ecommerce explorations; standard aggregated reports are unaffected.",
+      "use_when": "Setting up a fresh GA4 property or auditing an existing one before relying on it for year-over-year ecommerce reporting.",
+      "steps": [
+        "Open the correct GA4 property and review its Data Retention settings.",
+        "Where available and appropriate for the store, select 14 months for seasonal explorations. Verify property eligibility and required retention policy.",
+        "An increase preserves previously collected data that still exists; it cannot restore already deleted data."
+      ],
+      "caveats": [
+        "Retention affects explorations and funnel reports, not standard aggregated reports. Large-property limits and some data categories have separate rules."
+      ],
+      "tags": [
+        "measurement",
+        "ga4",
+        "data-retention",
+        "analytics-setup",
+        "reporting"
+      ],
+      "id": "017251ba79b0ead8bdb9e0a0",
+      "source_id": "1b4ZdpEvhYQ-L_FcGvMA86kE5bfoC8zQH",
+      "source_sha256": "fc082c22ff850b0f89e8d87f7940d5b7c374f87dde7c19d65add29dd20fbc1ee",
+      "source_name": "Google Analytics 4 tutorial for beginners (2026) __ GA4 tutorial for beginners __ GA4 course.docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 0,
+      "editorial_reference": "https://support.google.com/analytics/answer/7667196?hl=en"
+    },
+    {
+      "title": "Prevent fragmented sessions by extending GA4 session timeout",
+      "summary": "GA4's default 30-minute session timeout can split a single shopping journey into multiple sessions, distorting engagement and conversion metrics.",
+      "use_when": "Configuring a new GA4 property or investigating why session counts and conversion rates look inflated or fragmented for a store with long browse-to-purchase lag.",
+      "steps": [
+        "Open GA4 Admin > Data Streams > select the stream > Configure Tag Settings (or the data stream's session settings depending on current UI).",
+        "Locate the session timeout setting, which defaults to 30 minutes.",
+        "Increase it toward the allowed maximum (the source cites up to 7 hours and 55 minutes) when customers commonly leave and return within a browsing session on the same device.",
+        "Weigh the tradeoff: a longer timeout keeps a single journey intact but can merge genuinely separate visits into one session, lowering apparent per-session conversion rate.",
+        "Re-check the resulting session and conversion-rate reports after the change to confirm the shift matches the store's real buying behavior."
+      ],
+      "caveats": [
+        "Choosing the maximum is not automatically correct; the source presents extending the timeout as a fix for fragmented sessions, not a universal requirement. Test against the store's actual purchase lag."
+      ],
+      "tags": [
+        "measurement",
+        "ga4",
+        "session-tracking",
+        "analytics-setup",
+        "attribution"
+      ],
+      "id": "c91c77718ecd716817eb6e32",
+      "source_id": "1b4ZdpEvhYQ-L_FcGvMA86kE5bfoC8zQH",
+      "source_sha256": "fc082c22ff850b0f89e8d87f7940d5b7c374f87dde7c19d65add29dd20fbc1ee",
+      "source_name": "Google Analytics 4 tutorial for beginners (2026) __ GA4 tutorial for beginners __ GA4 course.docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 0
+    },
+    {
+      "title": "Configure cross-domain tracking for checkout on a separate domain",
+      "summary": "If any step of a purchase journey crosses domains (e.g., a third-party checkout), analytics without cross-domain tracking will attribute the sale to a new session and lose the true source.",
+      "use_when": "Setting up analytics for a store whose checkout, cart, or landing flow uses a different domain than the main site — common with hosted checkouts and upsell tools.",
+      "steps": [
+        "Map the full customer journey and list every domain a single visitor touches between landing and purchase.",
+        "Decide whether to use one GA4 property spanning all of them; the source recommends a single property with cross-domain tracking when visitors jump between domains in one journey.",
+        "In GA4 Admin, open the data stream's Configure Tag Settings and add the additional domains under 'Configure your domains'.",
+        "Verify by running through a full purchase journey and confirming it appears as one session with the original acquisition source intact, not as a referral from your own checkout domain.",
+        "Also exclude internal/office IP traffic so staff testing the checkout don't pollute conversion data."
+      ],
+      "caveats": [
+        "Cross-domain tracking around third-party checkout systems can be limited by how that vendor handles redirects and iframes; confirm compatibility with the checkout provider. Verify current GA4 cross-domain setup steps in the interface."
+      ],
+      "tags": [
+        "measurement",
+        "ga4",
+        "cross-domain-tracking",
+        "checkout",
+        "attribution"
+      ],
+      "id": "014312f9dcefd4100f69cafa",
+      "source_id": "1b4ZdpEvhYQ-L_FcGvMA86kE5bfoC8zQH",
+      "source_sha256": "fc082c22ff850b0f89e8d87f7940d5b7c374f87dde7c19d65add29dd20fbc1ee",
+      "source_name": "Google Analytics 4 tutorial for beginners (2026) __ GA4 tutorial for beginners __ GA4 course.docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 0
+    },
+    {
+      "title": "Filter internal office IP traffic out of GA4",
+      "summary": "Office and testing traffic inflates sessions and distorts conversion metrics, so define and exclude it during setup.",
+      "use_when": "New GA4 setup or ongoing data-quality audit for a store where staff frequently visit the site to test products, pricing, or checkout.",
+      "steps": [
+        "Find the public IP address(es) of the office or any location where staff browse and test the store.",
+        "In GA4 Admin > Data Streams > Configure Tag Settings > Define Internal Traffic, add a rule matching those IP addresses.",
+        "Create or activate an 'Internal Traffic' exclusion filter (data filter) at the property level, using the internal-traffic rule and setting it to exclude.",
+        "Confirm the filter is active rather than in testing mode before relying on the data.",
+        "Re-test with a request from the office network and confirm it does not appear in real-time reports."
+      ],
+      "caveats": [
+        "Home-office and VPN traffic uses changing IPs and is not fully filtered by this method. GA4 filters can take effect going forward only and may not restate past data."
+      ],
+      "tags": [
+        "measurement",
+        "ga4",
+        "internal-traffic",
+        "data-quality",
+        "analytics-setup"
+      ],
+      "id": "822ba43fffb7ed6008329c41",
+      "source_id": "1b4ZdpEvhYQ-L_FcGvMA86kE5bfoC8zQH",
+      "source_sha256": "fc082c22ff850b0f89e8d87f7940d5b7c374f87dde7c19d65add29dd20fbc1ee",
+      "source_name": "Google Analytics 4 tutorial for beginners (2026) __ GA4 tutorial for beginners __ GA4 course.docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 0
+    },
+    {
+      "title": "Create custom GA4 events via GTM with triggers and parameters",
+      "summary": "Track meaningful on-page interactions (like menu link clicks) as custom GA4 events by configuring them in Google Tag Manager with precise triggers and parameters.",
+      "use_when": "Building out analytics for a store where default GA4 events don't capture the interactions that matter for merchandising or navigation decisions.",
+      "steps": [
+        "In GTM, create a new Tag using the 'GA4 Event' tag type and give the event a name using only lowercase letters and underscores (GA4 naming convention) — e.g., menu_link_click.",
+        "Create a Trigger for the interaction, using conditions such as 'Click Classes' contains a specific class or 'Click Element' matching a selector, so the trigger fires only on the intended clicks.",
+        "Map custom parameters in the tag — for example menu_item_name and menu_item_url — using GTM variables to pull the clicked item's text or href.",
+        "Use GTM Preview mode to connect to the site, trigger the interaction, and confirm the tag fired.",
+        "Use GA4 DebugView to confirm the event and its parameters were actually received by GA4 before publishing the container."
+      ],
+      "caveats": [
+        "Custom parameters will not appear in GA4 standard reports until you register them as Custom Dimensions in the GA4 admin panel and data finishes processing."
+      ],
+      "tags": [
+        "measurement",
+        "ga4",
+        "google-tag-manager",
+        "event-contracts",
+        "analytics-setup"
+      ],
+      "id": "6a6a1f68f1b4e74b74ccfce6",
+      "source_id": "1b4ZdpEvhYQ-L_FcGvMA86kE5bfoC8zQH",
+      "source_sha256": "fc082c22ff850b0f89e8d87f7940d5b7c374f87dde7c19d65add29dd20fbc1ee",
+      "source_name": "Google Analytics 4 tutorial for beginners (2026) __ GA4 tutorial for beginners __ GA4 course.docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 0
+    },
+    {
+      "title": "Register GTM custom parameters as GA4 Custom Dimensions",
+      "summary": "Custom event parameters you send through GTM are invisible in GA4 reports until you register them as Custom Dimensions.",
+      "use_when": "After setting up a custom event (e.g., menu link clicks) and finding its parameters are not available for reporting or explorations.",
+      "steps": [
+        "Confirm the parameter is already being sent, verified via DebugView.",
+        "In GA4 Admin > Custom Definitions > Custom Dimensions, create a new dimension.",
+        "Set the Dimension Name (a friendly label for reports) and the Event Parameter (the exact parameter key sent in the tag, e.g., menu_item_name), matching case exactly.",
+        "Choose the correct scope (Event scope for event parameters).",
+        "Allow 24 to 48 hours for GA4 to process the data before the dimension appears populated in standard reports."
+      ],
+      "caveats": [
+        "GA4 processing lag means newly registered dimensions won't show data immediately; don't assume the setup failed. Also, GTM preview and DebugView are more reliable for verifying parameters than standard reports right after configuration."
+      ],
+      "tags": [
+        "measurement",
+        "ga4",
+        "google-tag-manager",
+        "custom-dimensions",
+        "event-contracts"
+      ],
+      "id": "a043dadb24a2544ce9d745c7",
+      "source_id": "1b4ZdpEvhYQ-L_FcGvMA86kE5bfoC8zQH",
+      "source_sha256": "fc082c22ff850b0f89e8d87f7940d5b7c374f87dde7c19d65add29dd20fbc1ee",
+      "source_name": "Google Analytics 4 tutorial for beginners (2026) __ GA4 tutorial for beginners __ GA4 course.docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 0
+    },
+    {
+      "title": "Test GA4/GTM event setup before publishing the container",
+      "summary": "Verify every new tracking tag in GTM Preview and GA4 DebugView before publishing, so broken tracking doesn't silently corrupt data.",
+      "use_when": "Any time you add or change a tracking tag for a store, before pushing the change live to all users.",
+      "steps": [
+        "Open GTM Preview mode and connect to the site.",
+        "Perform the real interaction you want to track (click, add-to-cart, etc.).",
+        "In GTM Preview, confirm the correct trigger fired and the tag executed.",
+        "Open GA4 DebugView (via Admin > DebugView, or with the Stream URL) and confirm the event name and all parameters arrived with the correct values.",
+        "Only after both GTM and DebugView confirm success, publish the GTM container version.",
+        "Allow 24 to 48 hours for GA4 to process event data before expecting it in standard reports."
+      ],
+      "caveats": [
+        "The source warns GA4 takes 24 to 48 hours to fully process events, so new tags won't appear in reports instantly. DebugView is temporary and only shows a recent window of debug events."
+      ],
+      "tags": [
+        "measurement",
+        "ga4",
+        "google-tag-manager",
+        "debugging",
+        "analytics-setup"
+      ],
+      "id": "80fdd796ee78a17589251dfb",
+      "source_id": "1b4ZdpEvhYQ-L_FcGvMA86kE5bfoC8zQH",
+      "source_sha256": "fc082c22ff850b0f89e8d87f7940d5b7c374f87dde7c19d65add29dd20fbc1ee",
+      "source_name": "Google Analytics 4 tutorial for beginners (2026) __ GA4 tutorial for beginners __ GA4 course.docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 0
+    },
+    {
+      "title": "Use a single GA4 property across domains in one journey",
+      "summary": "When a single customer journey crosses multiple domains, the source recommends one GA4 property with cross-domain tracking rather than separate properties.",
+      "use_when": "Deciding property architecture for a store that uses a main site plus a separate checkout, landing, or app domain.",
+      "steps": [
+        "Trace the visitor journey and identify all domains involved.",
+        "If visitors jump between domains within a single purchase journey, configure one single GA4 property rather than splitting them.",
+        "Enable cross-domain tracking in the data stream by listing all involved domains under 'Configure your domains'.",
+        "Test a full journey to confirm it resolves to a single session with the original source, not self-referrals.",
+        "Keep the acquisition and monetization data unified so attribution and conversion counts stay accurate."
+      ],
+      "caveats": [
+        "This is the source's recommendation for multi-domain journeys; a single-property setup can complicate administration if the domains serve genuinely separate businesses with different owners or reporting needs."
+      ],
+      "tags": [
+        "measurement",
+        "ga4",
+        "cross-domain-tracking",
+        "attribution",
+        "property-structure"
+      ],
+      "id": "60bd489184a81b6bd7aee6ca",
+      "source_id": "1b4ZdpEvhYQ-L_FcGvMA86kE5bfoC8zQH",
+      "source_sha256": "fc082c22ff850b0f89e8d87f7940d5b7c374f87dde7c19d65add29dd20fbc1ee",
+      "source_name": "Google Analytics 4 tutorial for beginners (2026) __ GA4 tutorial for beginners __ GA4 course.docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 0
+    },
+    {
+      "title": "Reverse-engineer the purchase path with Path Exploration",
+      "summary": "GA4 Path Exploration lets you start from a purchase event and work backward to see the sequence of pages and events preceding conversions.",
+      "use_when": "Diagnosing where buyers drop off or what pages precede a purchase, to inform merchandising and PDP/checkout improvements.",
+      "steps": [
+        "Open GA4 Explore and create a Path Exploration.",
+        "Set the end-point (or starting-point) node to the Purchase event and work backward to see the common preceding steps.",
+        "Alternatively, start from a high-traffic landing page and forward-track where users go next.",
+        "Identify the most common paths to purchase and the points where users exit or stall — these are friction candidates.",
+        "Translate the top friction points into testable changes (e.g., PDP layout, add-to-cart placement, cart-step clarity) rather than guessing."
+      ],
+      "caveats": [
+        "Explorations are subject to sampling and data thresholds, and require enough traffic volume to be reliable. Path exploration reflects correlation of sequences, not proof of causation."
+      ],
+      "tags": [
+        "measurement",
+        "ga4",
+        "explorations",
+        "conversion-optimization",
+        "customer-research"
+      ],
+      "id": "663dee00fd8e036ade087193",
+      "source_id": "1b4ZdpEvhYQ-L_FcGvMA86kE5bfoC8zQH",
+      "source_sha256": "fc082c22ff850b0f89e8d87f7940d5b7c374f87dde7c19d65add29dd20fbc1ee",
+      "source_name": "Google Analytics 4 tutorial for beginners (2026) __ GA4 tutorial for beginners __ GA4 course.docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 0
+    },
+    {
+      "title": "Build Free Form tables in GA4 Explorations",
+      "summary": "Free Form analysis in GA4 lets you build custom cross-tabulated tables of dimensions and metrics to answer specific store questions beyond standard reports.",
+      "use_when": "When a store question (e.g., which products convert best by traffic source, or how a specific landing page performs) is not answerable from GA4's standard reports.",
+      "steps": [
+        "Open GA4 Explore and create a Blank or Free Form exploration.",
+        "Drag in Dimensions (e.g., landing page, session source/medium, device category) as rows or columns.",
+        "Add Metrics (e.g., sessions, conversions, revenue, engagement rate) as values.",
+        "Apply filters or segments to isolate the question, such as a single campaign or product category.",
+        "Interpret with caution due to data thresholds and sampling on smaller segments, and export or screenshot before the exploration expires."
+      ],
+      "caveats": [
+        "Explorations are not saved indefinitely the way standard reports are; heavier filtering increases sampling and thresholding, which can hide data on low-traffic segments."
+      ],
+      "tags": [
+        "measurement",
+        "ga4",
+        "explorations",
+        "reporting",
+        "segmentation"
+      ],
+      "id": "70c537e426a1640abcb438c7",
+      "source_id": "1b4ZdpEvhYQ-L_FcGvMA86kE5bfoC8zQH",
+      "source_sha256": "fc082c22ff850b0f89e8d87f7940d5b7c374f87dde7c19d65add29dd20fbc1ee",
+      "source_name": "Google Analytics 4 tutorial for beginners (2026) __ GA4 tutorial for beginners __ GA4 course.docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 0
+    },
+    {
+      "title": "Extend the engaged-session threshold above the 10-second default",
+      "summary": "GA4's default engaged-session threshold of 10 seconds understates meaningful engagement, so the source recommends raising it to at least 30 seconds.",
+      "use_when": "Configuring GA4 settings for a store where you want engagement metrics to reflect genuine browsing rather than momentary visits.",
+      "steps": [
+        "Locate the engaged-session definitions in GA4 configuration (Admin > Data Streams > Configure Tag Settings or session settings depending on current UI).",
+        "Note that GA4's default treats a session as engaged at 10 seconds.",
+        "Adjust the threshold to at least 30 seconds per the source's recommendation.",
+        "Revisit engagement-rate reporting to confirm it now better reflects real browsing behavior rather than brief visits.",
+        "Use the adjusted metric when comparing landing pages or traffic sources for engagement quality."
+      ],
+      "caveats": [
+        "The 30-second figure is the source's recommendation, not an industry standard; choose a threshold matching your product's consideration time. Changing definitions affects comparability with historical data."
+      ],
+      "tags": [
+        "measurement",
+        "ga4",
+        "engagement",
+        "analytics-setup",
+        "landing-page"
+      ],
+      "id": "ce843bc0754553384daf38fc",
+      "source_id": "1b4ZdpEvhYQ-L_FcGvMA86kE5bfoC8zQH",
+      "source_sha256": "fc082c22ff850b0f89e8d87f7940d5b7c374f87dde7c19d65add29dd20fbc1ee",
+      "source_name": "Google Analytics 4 tutorial for beginners (2026) __ GA4 tutorial for beginners __ GA4 course.docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 0
+    },
+    {
+      "title": "Enable Google Signals for demographic audience data",
+      "summary": "Google Signals provides demographic reporting (age, gender, interests) and enables cross-device information in GA4.",
+      "use_when": "When you want demographic or interest data to guide ad targeting, creative strategy, or audience definitions for a store.",
+      "steps": [
+        "In GA4 Admin > Data Settings > Data Collection, enable Google Signals under Data Collection and Modification.",
+        "Review what has changed in current GA4 versions — the data collection toggle and privacy controls have shifted over time, so verify the current interface.",
+        "Once enabled and after data accumulates, review demographic reports to understand the age/gender/interest composition of converting vs. non-converting segments.",
+        "Apply insights to ad audience selection and creative strategy rather than to individual-level targeting decisions.",
+        "Confirm consent/privacy compliance for your regions before enabling, since Signals uses Google's signed-in user data."
+      ],
+      "caveats": [
+        "Enabling Google Signals requires a privacy/compliance review; it involves Google-signed-in user data and can be restricted in some jurisdictions. The source lists it as one of five mandatory settings but also the availability and behavior can vary by region."
+      ],
+      "tags": [
+        "measurement",
+        "ga4",
+        "google-signals",
+        "demographics",
+        "audience"
+      ],
+      "id": "bc1344c5d961b00b6b8262d5",
+      "source_id": "1b4ZdpEvhYQ-L_FcGvMA86kE5bfoC8zQH",
+      "source_sha256": "fc082c22ff850b0f89e8d87f7940d5b7c374f87dde7c19d65add29dd20fbc1ee",
+      "source_name": "Google Analytics 4 tutorial for beginners (2026) __ GA4 tutorial for beginners __ GA4 course.docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 0
+    },
+    {
+      "title": "Apply GA4 naming conventions to custom events",
+      "summary": "Use lowercase letters and underscores for GA4 event names to keep tracking consistent and avoid downstream reporting breaks.",
+      "use_when": "Creating any custom event in GA4/GTM for a store, or standardizing event names across teams and tools.",
+      "steps": [
+        "When naming a custom event, restrict it to lowercase letters and underscores — e.g., cart_add_item, menu_link_click.",
+        "Avoid spaces, camelCase, or mixed case in event names, which the source warns against for GA4.",
+        "Keep naming consistent across tags so reports aggregate properly rather than splitting the same action across variants.",
+        "Document event names so future team members use the same conventions.",
+        "Note that GA4 has reserved/automatic event names; avoid colliding with them."
+      ],
+      "caveats": [
+        "The source specifically states the lowercase-and-underscore requirement for GA4 event names; verify against current GA4 documentation since accepted conventions can evolve."
+      ],
+      "tags": [
+        "measurement",
+        "ga4",
+        "google-tag-manager",
+        "event-contracts",
+        "naming-conventions"
+      ],
+      "id": "23f8bf44b13af8e8c4ab47ef",
+      "source_id": "1b4ZdpEvhYQ-L_FcGvMA86kE5bfoC8zQH",
+      "source_sha256": "fc082c22ff850b0f89e8d87f7940d5b7c374f87dde7c19d65add29dd20fbc1ee",
+      "source_name": "Google Analytics 4 tutorial for beginners (2026) __ GA4 tutorial for beginners __ GA4 course.docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 0
+    },
+    {
+      "title": "Treat GA4 setup as a five-setting baseline for ecommerce accuracy",
+      "summary": "The source identifies five mandatory GA4 admin configurations to make ecommerce data trustworthy before you rely on it.",
+      "use_when": "Onboarding a new GA4 property or auditing an established store analytics setup before making merchandising or marketing decisions from it.",
+      "steps": [
+        "1) Extend data retention from the 2-month default to 14 months.",
+        "2) Configure cross-domain tracking if the journey spans domains.",
+        "3) Define and filter internal office/office IP traffic.",
+        "4) Extend the default 30-minute session timeout toward the allowed maximum to avoid fragmented sessions.",
+        "5) Enable Google Signals for demographic data (subject to privacy review).",
+        "Verify each setting is active and not just staged, then re-test a purchase journey end-to-end before trusting the numbers."
+      ],
+      "caveats": [
+        "These are the source's prescribed baseline settings, some of which (maximum session timeout, Signals) carry tradeoffs or compliance considerations. Treat them as a starting checklist, not universal rules; verify current GA4 interface behavior."
+      ],
+      "tags": [
+        "measurement",
+        "ga4",
+        "analytics-setup",
+        "data-quality",
+        "conversion-optimization"
+      ],
+      "id": "d2833e8633f3aeaae79e15dc",
+      "source_id": "1b4ZdpEvhYQ-L_FcGvMA86kE5bfoC8zQH",
+      "source_sha256": "fc082c22ff850b0f89e8d87f7940d5b7c374f87dde7c19d65add29dd20fbc1ee",
+      "source_name": "Google Analytics 4 tutorial for beginners (2026) __ GA4 tutorial for beginners __ GA4 course.docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 0
+    },
+    {
+      "title": "Do not rely on AI chat assistants for GA4 technical configuration",
+      "summary": "The source warns that an AI analytics chat assistant hallucinated incorrect technical advice about GA4, so verify AI-generated setup guidance against GA4's actual interface.",
+      "use_when": "When seeking quick answers on GA4 setup or landing-page attribution issues, before applying AI-generated configuration advice to a live store property.",
+      "steps": [
+        "Treat AI-suggested GA4 configuration steps as hypotheses, not instructions.",
+        "Verify any claim (e.g., how 'not set' landing pages work) against GA4's official documentation or the interface itself.",
+        "Where AI advice conflicts with observed DebugView/Preview behavior, trust the observed data.",
+        "Keep a record of what actually works in your property for future reference.",
+        "Avoid applying AI-suggested changes to a production container without the GTM Preview/DebugView verification step."
+      ],
+      "caveats": [
+        "This reflects the source's experience with a specific AI assistant; it's a caution about verification, not a claim that all AI tools are useless."
+      ],
+      "tags": [
+        "measurement",
+        "ga4",
+        "analytics-setup",
+        "verification",
+        "ai-tools"
+      ],
+      "id": "1ed5edfed51c4aea5a54aaf3",
+      "source_id": "1b4ZdpEvhYQ-L_FcGvMA86kE5bfoC8zQH",
+      "source_sha256": "fc082c22ff850b0f89e8d87f7940d5b7c374f87dde7c19d65add29dd20fbc1ee",
+      "source_name": "Google Analytics 4 tutorial for beginners (2026) __ GA4 tutorial for beginners __ GA4 course.docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 0
+    }
+  ],
+  "request_id": "2f99264ec3f4f3051671186a37c87d138e606842cf7c480479252fed360ab41d",
+  "ecommerce_scope_version": 1,
+  "editorial_cleanup": "Clarified retention, sales vs payments and attribution uncertainty."
+}

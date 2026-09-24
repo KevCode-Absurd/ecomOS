@@ -1,0 +1,54 @@
+{
+  "case": "cro-traffic/low-volume",
+  "mode": "curated",
+  "request_id": "718ae4fef2b383c7b31d15a2f073a40e5d779e04ffe81b368ce9c377abc2de56",
+  "complete": true,
+  "cost": 0.0117885,
+  "prompt_tokens": 1533,
+  "completion_tokens": 663,
+  "checks": [],
+  "output": {
+    "decision": "No—do not launch a multivariate hero × offer × checkout test this month. With 3,000 monthly sessions and a 2% baseline purchase conversion rate (about 60 purchases/month), splitting traffic across multiple combinations is unlikely to yield a timely, decision-ready result. Instead, select one highest-priority, low-risk change and run a sequential A/B test only after defining its hypothesis, guardrails, and measurement plan. This is an operational recommendation based on the supplied brand facts plus general experimentation practice; the library’s volume guidance is unverified and does not define a threshold.",
+    "next_steps": [
+      "Choose one lever to test first—hero, offer, or checkout—using expected business impact, implementation risk, and reversibility.",
+      "Write a predefined hypothesis with a primary metric of revenue per session and guardrails such as conversion rate, average order value, refund rate, and checkout errors.",
+      "Estimate required sample size and expected runtime for a two-variant test before committing; defer if the runtime is not operationally acceptable.",
+      "Keep the other two experiences unchanged so the result is interpretable; do not stack overlapping tests on the same customer journey.",
+      "QA the selected variant repeatedly across devices, traffic sources, cart states, discount logic, payment methods, and analytics events before launch."
+    ],
+    "missing_inputs": [
+      "Number of variants proposed for each of hero, offer, and checkout, plus the exact experiences.",
+      "Expected effect size or minimum detectable lift, desired confidence/power, and maximum acceptable test duration.",
+      "Revenue per session, average order value, margin impact, and discount/offer cost.",
+      "Whether checkout changes require platform, payment, legal, or promotional approvals and what tracking events are available."
+    ],
+    "evidence_used": [
+      {
+        "id": "case8-u7",
+        "supports": "The supplied source advises using multivariate testing only at high volume, while leaving the threshold undefined."
+      },
+      {
+        "id": "case8-u9",
+        "supports": "The supplied source describes a practitioner’s sample-sizing practice of 50,000–100,000 sessions per test, dependent on placement; it is not presented as a universal rule."
+      },
+      {
+        "id": "case8-u12",
+        "supports": "The supplied source recommends a clear, predefined, measurable hypothesis."
+      },
+      {
+        "id": "case8-u14",
+        "supports": "The supplied source recommends repeated QA before a test goes live."
+      },
+      {
+        "id": "case8-u15",
+        "supports": "The supplied source recommends revenue per session or visitor rather than conversion rate alone."
+      }
+    ],
+    "assumptions": [
+      "Monthly sessions and baseline conversion are representative of the planned test period.",
+      "A multivariate test would divide traffic among more than two combinations and seek purchase/revenue outcomes.",
+      "No major seasonal campaign or traffic increase will materially change available volume this month.",
+      "Tracking being validated means assignment, purchase, and revenue events can be measured reliably."
+    ]
+  }
+}

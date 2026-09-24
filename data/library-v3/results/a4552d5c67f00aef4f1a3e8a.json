@@ -1,0 +1,372 @@
+{
+  "cards": [
+    {
+      "title": "Klaviyo (or similar ESP) account setup essentials for a new store",
+      "summary": "Order of operations for launching an email platform: connect store, choose opt-in mode, set up a branded sending domain and DMARC before sending anything.",
+      "use_when": "Launching or migrating the store's email lifecycle platform (Klaviyo or similar) and deciding which technical settings must exist before the first campaign or flow sends.",
+      "steps": [
+        "Create the account and connect the store so purchase and browse events flow in automatically (the source connects a Shopify store URL during onboarding).",
+        "Choose the sending software against these criteria: easy setup and support, strong signup-form builder, strong flow builder, strong campaign builder, good email editor, data/segmentation capability, and built-in A/B testing. The source names Klaviyo (industry leader on technical setup, forms, flows, campaigns, segmentation, testing) and SendLane (newer, praised support) as the two it would pick; verify current pricing and feature sets before deciding.",
+        "Decide single vs double opt-in. Double opt-in requires a confirmation click before subscribing: higher list quality, fewer subscribers because many never open the confirmation email. The source's preference is single opt-in, relying on engagement segmentation to suppress non-openers later.",
+        "Set up a branded/dedicated sending domain by adding the provided NS records and TXT record at your DNS provider (e.g. GoDaddy, Google Domains/Squarespace) so mail appears to come from your brand.",
+        "Add a DMARC TXT record at the root host; start with policy p=none (reporting only) with an aggregate-report address you control, then move to quarantine/reject once reports look clean. Use a DMARC record generator if needed, and use a separate inbox for reports.",
+        "Turn on smart sending (the source uses a ~16-hour window) so a contact does not receive another email within that window; adjust to your cadence.",
+        "Set attribution: last-interacted email within 5 days, and tick the option excluding Apple privacy opens so inflated opens don't earn revenue credit. SMS attribution defaults to 1 day.",
+        "Enable anonymous visitor tracking so pre-identification browsing is backfilled onto the profile once identified.",
+        "Set up brand assets (logo, colors, fonts from Google/Adobe with a web-safe fallback), design the preference/subscribe/unsubscribe pages in brand style, and turn on automatic UTM parameters for links.",
+        "Verify the domain shows as active before sending; propagation takes time."
+      ],
+      "caveats": [
+        "Sending without a branded sending domain and DMARC risks filtering under Gmail/Yahoo 2024 inbox standards.",
+        "UI paths and setting names change; verify inside the current interface.",
+        "Attribution windows and smart-sending windows are conventions, not universal rules."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "deliverability",
+        "dmarc",
+        "klaviyo",
+        "account-setup",
+        "measurement",
+        "attribution"
+      ],
+      "id": "fc0425a31c0f01afc848fffc",
+      "source_id": "1gAs1Y6DDO4ld3V07pv7EQ4Hq585FJEwm",
+      "source_sha256": "5d0fcefa9fd4199b4c5c5dcc8c43a38a40850839509c4fc3dd1d1082a6c262d3",
+      "source_name": "_Klaviyo Email Marketing FULL COURSE 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 1
+    },
+    {
+      "title": "Rate signup forms against a 2–4% baseline and target 8–12%",
+      "summary": "Typical ecommerce brands convert 2–4% of visitors into subscribers while optimized popups reach around 8–12%, so judge forms against the high-converting band.",
+      "use_when": "Benchmarking the store's email capture rate and deciding whether the popup needs a rebuild to hit list-growth targets.",
+      "steps": [
+        "Pull your current subscriber conversion rate (new subscribers divided by site sessions) for the same period.",
+        "If you are near 2–4% of visitors, treat the form as underperforming; the source's high-converting target is roughly 8–12% of traffic entering the list.",
+        "Do not rely on a footer signup form alone — the source's testing repeatedly shows popups outperform other form types despite bounce-rate objections.",
+        "Rebuild toward the high-converting pattern: strong offer in the headline, single email field, prominent CTA button, secondary 'no thanks' option, and separate mobile and desktop forms.",
+        "Track list growth and form submit rate weekly so improvements are visible and not assumed."
+      ],
+      "caveats": [
+        "2–4% and 8–12% are the source's observed ranges, not guarantees; your traffic mix, price point and brand strength shift the achievable rate.",
+        "Very broad or very narrow display rules can hit a high submit rate while total signups stay low — always pair submit rate with total subscribers."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "list-growth",
+        "signup-form",
+        "conversion-optimization",
+        "measurement",
+        "popup"
+      ],
+      "id": "40691f40d94ca4e7bb9516ed",
+      "source_id": "1gAs1Y6DDO4ld3V07pv7EQ4Hq585FJEwm",
+      "source_sha256": "5d0fcefa9fd4199b4c5c5dcc8c43a38a40850839509c4fc3dd1d1082a6c262d3",
+      "source_name": "_Klaviyo Email Marketing FULL COURSE 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 1
+    },
+    {
+      "title": "Build a high-converting popup: offer, headline, single field, big CTA",
+      "summary": "Popup anatomy that converts: an attractive offer stated in the headline, one email field, a large contrasting CTA, and a de-emphasized alternate option.",
+      "use_when": "Designing or redesigning the email capture popup for the storefront.",
+      "steps": [
+        "Pick the incentive first — form success hinges on the offer more than on design. Research from the source's client work: for AOV around $200, $20 off often beats 10% off because '$20' reads larger than '10%'; anything below roughly 10% off is usually too weak unless your AOV is very high. Alternatives: BOGO, BOGO at 50%, free gift with purchase, free digital product, free shipping, cash back, early access (strong at Black Friday), mystery discount.",
+        "Write the headline around the offer, e.g. 'Unlock 10% off your first order' — avoid 'sign up'/'subscribe' language and never bury the offer in body copy.",
+        "Use one field: email. Ask for phone, name or preferences only in a second step after the email is captured.",
+        "Set placeholder to something explicit like 'Enter your email here' and give the input field a contrasting fill (e.g. light grey) so it is obviously an input.",
+        "Make the CTA large (the source uses ~70px height vs the ~54px default) and contrasting; note bigger buttons correlate with higher conversion, but not absurdly large.",
+        "Give a de-emphasized second choice, e.g. 'No thanks, I'd rather pay full price' — two options (one attractive, one unattractive) lift signups versus one button.",
+        "Keep the legal microcopy only where required (GDPR/EU); the source removes it for US stores.",
+        "Compress all images (e.g. tinyPNG) since faster loading correlates with more conversions; add alt text to every image.",
+        "Consider hiding the X: the source resizes it to minimum and matches its color to the background, since a visible second exit reduces signups — this is ethically debatable, and a 'no thanks' button already exists."
+      ],
+      "caveats": [
+        "The source's claims about hiding the X and about button size are practitioner observations, not universal benchmarks.",
+        "Offer preference (e.g. % vs $ at the same AOV) should still be tested in your store."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "signup-form",
+        "conversion-optimization",
+        "offer-design",
+        "creative-strategy",
+        "popup"
+      ],
+      "id": "72945bee8a3a9bde361b0ae6",
+      "source_id": "1gAs1Y6DDO4ld3V07pv7EQ4Hq585FJEwm",
+      "source_sha256": "5d0fcefa9fd4199b4c5c5dcc8c43a38a40850839509c4fc3dd1d1082a6c262d3",
+      "source_name": "_Klaviyo Email Marketing FULL COURSE 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 1
+    },
+    {
+      "title": "Timing and display rules for capture popups",
+      "summary": "Display the popup after 4–10 seconds or 40–80% scroll (the source uses ~6s / ~60%) and treat the OR-vs-AND rule toggle as the main audience-size lever.",
+      "use_when": "Configuring when the store's popup appears so it captures engaged visitors without annoying first-timers.",
+      "steps": [
+        "Never display immediately on page load; the source calls it a conversion killer because the visitor doesn't know the brand yet.",
+        "Choose rule-based display: time delay, scroll depth, exit intent, or a combination.",
+        "For desktop, use exit intent plus a time delay plus a scroll threshold; the source uses ~6 seconds and ~60% scroll, saying 4–10 seconds and 40–80% scroll are viable and should be split tested.",
+        "Leave the OR toggle on (only all conditions met = AND). With OR, the form shows on exit OR after the delay OR after the scroll — a wider audience; the source never uses AND because it targets far too few people.",
+        "Set reappearance frequency: default 5 days, the source often uses 3, and tick 'don't show again if submitted or if the go-to-URL button was clicked'.",
+        "Target only non-subscribers ('don't show to existing profiles') so current subscribers aren't re-prompted.",
+        "Exclude URLs such as cart/checkout, /wholesale and landing pages you're running paid traffic to, so you don't discount a visitor who is already about to buy.",
+        "Optionally include/exclude visitor locations based on shipping coverage.",
+        "Use a separate display setup for a list you already own: e.g. show an SMS-only signup form to existing email subscribers."
+      ],
+      "caveats": [
+        "Earlier display = more total signups but lower submit rate; later display = higher submit rate but a smaller exposed audience. Both metrics must be read together.",
+        "Frequency, delay and scroll settings are brand-dependent; the source insists they be tested."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "signup-form",
+        "conversion-optimization",
+        "popup",
+        "segmentation",
+        "experiment-design"
+      ],
+      "id": "d124c18b882e488a87f30a5f",
+      "source_id": "1gAs1Y6DDO4ld3V07pv7EQ4Hq585FJEwm",
+      "source_sha256": "5d0fcefa9fd4199b4c5c5dcc8c43a38a40850839509c4fc3dd1d1082a6c262d3",
+      "source_name": "_Klaviyo Email Marketing FULL COURSE 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 1
+    },
+    {
+      "title": "Always build separate mobile and desktop popups",
+      "summary": "One form for both devices fails: clone the desktop form into a mobile-only version and resize fields, buttons and teasers for touch.",
+      "use_when": "Finishing the capture popup build and preparing it for mobile traffic, which is most of an ecommerce store's visitors.",
+      "steps": [
+        "Clone the desktop form and rename it explicitly (e.g. 'mobile' / 'desktop').",
+        "Set device targeting to mobile only on the clone, then adjust timing rules — drop exit intent on mobile because it is unreliable and annoying there.",
+        "Increase input field and CTA size for thumbs: the source sets input text ~20px, input height ~70px, CTA height ~80px and CTA/microcopy text ~20–24px, versus smaller desktop values.",
+        "Add extra padding above the CTA and between elements so users don't mistap.",
+        "Skip the side image on mobile (no room); keep the layout vertical.",
+        "Rework the teaser shape for small screens (e.g. rectangle to circle or corner tab) and shrink the text to fit.",
+        "Enlarge success-page text (the source uses ~22–24px) so the confirmation is readable on a phone.",
+        "Check the teaser placement against other on-site widgets (chatbot, loyalty promo, load-time banners) so nothing overlaps."
+      ],
+      "caveats": [
+        "Sizes in the source are examples from one build, not fixed specs; adjust to your brand and test.",
+        "The two-form approach doubles maintenance — apply the same edits to both when you change an offer."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "signup-form",
+        "mobile-optimization",
+        "conversion-optimization",
+        "popup",
+        "creative-strategy"
+      ],
+      "id": "f932973235fbb6c2521d8d47",
+      "source_id": "1gAs1Y6DDO4ld3V07pv7EQ4Hq585FJEwm",
+      "source_sha256": "5d0fcefa9fd4199b4c5c5dcc8c43a38a40850839509c4fc3dd1d1082a6c262d3",
+      "source_name": "_Klaviyo Email Marketing FULL COURSE 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 1
+    },
+    {
+      "title": "Withhold the discount code from the success page",
+      "summary": "Show 'check your inbox' on the post-signup success page so the first welcome email earns the open and the code, protecting deliverability and inbox training.",
+      "use_when": "Designing the popup success page and the first welcome email after email capture.",
+      "steps": [
+        "Do not print the discount code on the success page — the source argues it removes any reason to open the first welcome email, which tanks the open rate, which in turn harms sending reputation and the whole email system.",
+        "Replace it with a headline like 'Your discount is on its way — check your inbox for your confirmation and code'.",
+        "Add a fallback line: didn't receive it within 5 minutes, check spam — new subscribers on Gmail are especially likely to land in spam, and this line reduces support tickets.",
+        "Style that spam note in bold so it stands out.",
+        "Match the success page visually to the opt-in (same logo, image, colors).",
+        "Deliver the actual code inside the first welcome-series email, training recipients to open your mail over time."
+      ],
+      "caveats": [
+        "This delays the shopper's purchase by one email-open step; some brands may decide the immediate-purchase tradeoff is worth testing.",
+        "The source states this as a strong preference for the email system's health, not a tested universal result."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "signup-form",
+        "welcome-flow",
+        "deliverability",
+        "conversion-optimization",
+        "retention"
+      ],
+      "id": "d319ea40cf4e940b1e412d85",
+      "source_id": "1gAs1Y6DDO4ld3V07pv7EQ4Hq585FJEwm",
+      "source_sha256": "5d0fcefa9fd4199b4c5c5dcc8c43a38a40850839509c4fc3dd1d1082a6c262d3",
+      "source_name": "_Klaviyo Email Marketing FULL COURSE 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 1
+    },
+    {
+      "title": "Teaser tab: keep the capture offer permanently reachable",
+      "summary": "A small persistent tab ('Save 10% now') lets visitors reopen the popup after closing it and adds a second capture surface.",
+      "use_when": "Adding a persistent capture element to the storefront after a visitor dismisses the popup.",
+      "steps": [
+        "Pick a shape (rectangle, circle, corner tab) and position it so it does not collide with your chatbot, loyalty widget or promo bar — check the live site on both devices.",
+        "Write short benefit text such as 'Save 10% now' and make it bold.",
+        "Choose when it shows: before the form, after the form is closed, or before and after (the source uses before and after).",
+        "Give it a high-contrast background relative to the site (e.g. black tab with white text) and raise transparency to zero.",
+        "On mobile, switch to a smaller circle or corner shape so it doesn't cover content.",
+        "Test the placement against your actual pages, since overlapping on-site elements are a common failure."
+      ],
+      "caveats": [
+        "A permanently visible tab can feel pushy on content-heavy pages; still A/B test whether it lifts total signups.",
+        "Positioning must be rechecked whenever you change your theme or add third-party widgets."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "signup-form",
+        "conversion-optimization",
+        "creative-strategy",
+        "popup",
+        "merchandising"
+      ],
+      "id": "f7f5d18ebe3286d700737b30",
+      "source_id": "1gAs1Y6DDO4ld3V07pv7EQ4Hq585FJEwm",
+      "source_sha256": "5d0fcefa9fd4199b4c5c5dcc8c43a38a40850839509c4fc3dd1d1082a6c262d3",
+      "source_name": "_Klaviyo Email Marketing FULL COURSE 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 1
+    },
+    {
+      "title": "Ten signup-form mistakes to audit before scaling list growth",
+      "summary": "Diagnostic checklist of the ten most common popup failures, from weak offers and too many fields to slow images and codes given away too early.",
+      "use_when": "Auditing an existing store popup that gets traffic but converts poorly.",
+      "steps": [
+        "1. Weak offer: the offer, not the design, drives signup; anything under ~10% off is generally ineffective unless AOV is very high.",
+        "2. Asking too much in step one: email only in the first step; move phone/name to a later step.",
+        "3. Wrong time delay: too short disrupts the visit and converts poorly; too long means few visitors ever see it — the source's range is roughly 4–10 seconds (up to 12).",
+        "4. Form too small: bigger forms get noticed; the source even suggests trying a full-page form as a test.",
+        "5. Too much copy: one headline, one field, one CTA button, microcopy — no paragraphs about exclusive offers.",
+        "6. Offer hidden in body copy: put the offer in the headline, largest and clearest.",
+        "7. Using 'sign up'/'subscribe' wording — people avoid those words.",
+        "8. One form for mobile and desktop.",
+        "9. Slow-loading images — compress with tinyPNG or similar.",
+        "10. Discount code given on the success page instead of in the welcome email."
+      ],
+      "caveats": [
+        "These are the source's practitioner observations from client work, not controlled benchmarks.",
+        "Fixes 1, 3, 5 and 6 interact — changing only one may not move the submit rate."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "signup-form",
+        "conversion-optimization",
+        "audit",
+        "popup",
+        "offer-design"
+      ],
+      "id": "9adb06995af6922c27dd9cc1",
+      "source_id": "1gAs1Y6DDO4ld3V07pv7EQ4Hq585FJEwm",
+      "source_sha256": "5d0fcefa9fd4199b4c5c5dcc8c43a38a40850839509c4fc3dd1d1082a6c262d3",
+      "source_name": "_Klaviyo Email Marketing FULL COURSE 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 1
+    },
+    {
+      "title": "A/B test the offer holistically, not by signup rate alone",
+      "summary": "When split testing signup incentives, judge by welcome-flow placed-order rate, AOV and attributed revenue together, not the form's submit rate.",
+      "use_when": "Deciding which popup incentive (percentage off, dollar off, BOGO, gift, free shipping, mystery discount) the store should run.",
+      "steps": [
+        "List candidate offers to test: percentage off, dollar amount off, dollar amount off above a threshold, free shipping, BOGO, BOGO at 50%, free gift with purchase, free digital product, subscription incentive, cash back, early access (strong at Black Friday), mystery discount (the discount is revealed only in the first welcome email; the source reports strong submit rates with this).",
+        "Run each offer against a control form and let enough traffic accumulate to compare.",
+        "Do not judge on form submit rate alone: the source reports a client case where a new offer had a lower welcome-flow placed-order rate but a much higher AOV and higher attributed welcome-flow revenue, so total revenue was higher.",
+        "Track per-variant: form submit rate, welcome-flow placed-order rate, welcome-flow AOV, and attributed welcome-flow revenue.",
+        "Choose the offer that wins on revenue, and if an offer is a good fit for a specific segment (e.g. early access for VIPs), route it accordingly."
+      ],
+      "caveats": [
+        "Offer outcomes are store- and price-point-specific; the client result is an example, not a promise.",
+        "Testing many offers simultaneously fragments traffic and delays significance."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "offer-design",
+        "experiment-design",
+        "welcome-flow",
+        "measurement",
+        "signup-form"
+      ],
+      "id": "c09dafafbc67d16f7b915ad3",
+      "source_id": "1gAs1Y6DDO4ld3V07pv7EQ4Hq585FJEwm",
+      "source_sha256": "5d0fcefa9fd4199b4c5c5dcc8c43a38a40850839509c4fc3dd1d1082a6c262d3",
+      "source_name": "_Klaviyo Email Marketing FULL COURSE 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 1
+    },
+    {
+      "title": "Add a micro-yes step before the email field",
+      "summary": "A prior 'Do you want 10% off?' commitment step can lift submit rates by getting an initial yes, but the source reports it works better for some brands without it.",
+      "use_when": "Optimizing the capture popup's form structure with an extra qualifying step.",
+      "steps": [
+        "Clone your email opt-in step and place the clone in front of it in the form flow.",
+        "Rewrite it as a question rather than a command, e.g. 'Do you want 10% off your first order?' instead of a statement.",
+        "Keep the flow: micro-yes question, then a teed-up yes action, then the email field.",
+        "The rationale the source gives: a first micro-commitment makes people more likely to say yes to the next step.",
+        "A/B test micro-yes versus no micro-yes — the source says most brands see a submit-rate spike with it, but for some brands the version without it wins."
+      ],
+      "caveats": [
+        "Adds a click of friction; only keep it if your test shows a net gain in subscribers or revenue, not just submit rate.",
+        "Effect varies by audience and offer strength."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "signup-form",
+        "experiment-design",
+        "conversion-optimization",
+        "popup"
+      ],
+      "id": "52d1b13d3d6ebfa1cc9c25d1",
+      "source_id": "1gAs1Y6DDO4ld3V07pv7EQ4Hq585FJEwm",
+      "source_sha256": "5d0fcefa9fd4199b4c5c5dcc8c43a38a40850839509c4fc3dd1d1082a6c262d3",
+      "source_name": "_Klaviyo Email Marketing FULL COURSE 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 1
+    },
+    {
+      "title": "Reap the main email lifecycle payoff: LTV and AOV, not only last-click revenue",
+      "summary": "Email's core value is raising customer lifetime value and average order value and reducing reliance on paid ads, not just collecting one-off email revenue.",
+      "use_when": "Planning the email channel's role in the store's overall acquisition and retention mix, and justifying budget and effort.",
+      "steps": [
+        "Define objectives clearly: grow the list rapidly, and convert first-time buyers into returning customers.",
+        "Position email next to, not instead of, paid ads: the source argues a store should not rely solely on paid traffic and treats email as an essential complementary channel.",
+        "Use email to build a relationship that makes a customer more valuable than a one-time ad-driven buyer.",
+        "Measure email's effect on LTV and AOV in addition to attributed revenue, since those are the outcomes the source attributes to the channel.",
+        "Run standalone campaigns roughly a couple of times per week to nurture traffic into first purchase and first buyers into repeats.",
+        "Use the offered campaign-calendar template as a planning artifact for the quarter."
+      ],
+      "caveats": [
+        "The dollar results cited in the source (e.g. 34–52% of revenue, revenue uplifts versus prior periods) come from that agency's clients — treat as illustrative examples, not benchmarks.",
+        "Attribution of total revenue growth to email is questionable when paid spend, seasonality or product launches also changed."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "retention",
+        "campaign-calendar",
+        "measurement",
+        "customer-lifetime-value",
+        "strategy"
+      ],
+      "id": "0944381047ee9b09f5592ddd",
+      "source_id": "1gAs1Y6DDO4ld3V07pv7EQ4Hq585FJEwm",
+      "source_sha256": "5d0fcefa9fd4199b4c5c5dcc8c43a38a40850839509c4fc3dd1d1082a6c262d3",
+      "source_name": "_Klaviyo Email Marketing FULL COURSE 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 1
+    }
+  ],
+  "request_id": "cb229c537e9d438840f773cbb874168789b2d5ebcec20193bf392bceeeb63955",
+  "ecommerce_scope_version": 1
+}

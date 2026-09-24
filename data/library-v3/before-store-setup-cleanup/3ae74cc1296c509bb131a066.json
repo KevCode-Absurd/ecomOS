@@ -1,0 +1,138 @@
+{
+  "cards": [
+    {
+      "title": "Inject custom Liquid sections into a Shopify theme via Edit Code",
+      "summary": "Click path for creating a reusable custom section file in a Shopify theme by pasting external HTML/Liquid through the Edit Code interface.",
+      "use_when": "You need a custom PDP, landing page, or storefront section (founder block, ingredient panel, size chart) that Shopify's default page builder sections cannot produce, and want it reusable across templates.",
+      "steps": [
+        "From the Shopify admin go to Online Store, then open the Themes page.",
+        "Find the active theme, click the actions menu, and choose Edit Code to open the code editor.",
+        "In the left file tree, open the Sections folder.",
+        "Use Add a new section, give the file a descriptive name that ends in .liquid (for example wle_hair_nectar_gg.liquid), and create it.",
+        "Paste your prepared HTML/Liquid code into the new file and Save.",
+        "The section now appears in the theme customizer's Add Section picker, where you can place it and edit its schema settings.",
+        "To update the section later, reopen Edit Code, paste the new code over the old, Save, and hard-refresh the live page to confirm the change rendered."
+      ],
+      "caveats": [
+        "Sections live inside the theme, so changes are lost or overwritten if the theme is replaced or updated without carrying the file forward — keep a copy of the Liquid code outside Shopify.",
+        "Shopify's Edit Code interface labels and menu positions change; verify the current click path in your admin before following these steps literally."
+      ],
+      "tags": [
+        "store-setup",
+        "shopify",
+        "liquid",
+        "theme-editing",
+        "product-page",
+        "landing-page",
+        "merchandising"
+      ],
+      "id": "1c0937778f05e852db1200a9",
+      "source_id": "1Ig6z4IGo0uaqFz7wHZSEla-LB2LUOsUi",
+      "source_sha256": "c726b9dc7eef6422893637df7ea264954f64df5de865f803ede40683f69c377a",
+      "source_name": "Claude & Shopify Built $750k_m Ai Powered Ecom Brand.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 0
+    },
+    {
+      "title": "Assign a product to a custom page template",
+      "summary": "Click path for building a custom Shopify product template that hides default sections and populates your custom Liquid section with a specific product.",
+      "use_when": "Merchandising a hero or specialty product on a bespoke PDP layout, or building a landing page where you want your custom section to render that product's data.",
+      "steps": [
+        "Create the product first: Products, Add product, upload the images you want the custom section to display, and set the price.",
+        "Open Online Store, then Customize Theme to enter the theme editor.",
+        "In the template selector at the top, create a new template for the product (for example name it hair_nectar_gg) rather than editing the default product template.",
+        "Hide or remove the default sections so only your intended layout shows.",
+        "Use Add Section and select the custom Liquid file you created (for example wle_hair_nectar_gg) to place it on the template.",
+        "Assign the specific product to the template so the custom section's product object references it and populates correctly.",
+        "Preview the template with that product assigned to confirm images, price and section content all render."
+      ],
+      "caveats": [
+        "A custom product template only applies to products you assign to it; leaving a product on the default template means the custom layout will not appear.",
+        "If the custom section references product objects, it will render empty or broken on products that have no such data assigned."
+      ],
+      "tags": [
+        "store-setup",
+        "shopify",
+        "liquid",
+        "product-page",
+        "merchandising",
+        "templates",
+        "theme-editing"
+      ],
+      "id": "3d2c297be2112e371f3c962e",
+      "source_id": "1Ig6z4IGo0uaqFz7wHZSEla-LB2LUOsUi",
+      "source_sha256": "c726b9dc7eef6422893637df7ea264954f64df5de865f803ede40683f69c377a",
+      "source_name": "Claude & Shopify Built $750k_m Ai Powered Ecom Brand.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 0
+    },
+    {
+      "title": "Make a product buyable with inventory set before launch",
+      "summary": "Ensuring a freshly added Shopify product can actually be added to cart by editing the product and setting available inventory.",
+      "use_when": "After adding a product through Products, Add product, before driving any traffic — you need to confirm the product is not showing as sold out or unavailable at checkout.",
+      "steps": [
+        "Go to Products in the Shopify admin and open the product you just added.",
+        "Set the price and make sure the product is set to Active so it is published to the storefront.",
+        "Set available inventory for the variant (the source example uses 10,000 units) and Save.",
+        "Open the live storefront product page in a fresh session and confirm the add-to-cart button is enabled rather than showing Sold out.",
+        "Add the product to cart and reach the checkout start to verify it is genuinely purchasable end to end."
+      ],
+      "caveats": [
+        "The 10,000 figure is just an example from the source, not a recommended stock level — set inventory to match your real replenishment plan.",
+        "Inventory can be tracked or untracked per variant; a product with inventory tracking on and zero available will display as sold out even if the page looks correct."
+      ],
+      "tags": [
+        "store-setup",
+        "shopify",
+        "inventory",
+        "product-page",
+        "checkout",
+        "pre-launch",
+        "verification"
+      ],
+      "id": "9ffaac57744e0b85bdd0799b",
+      "source_id": "1Ig6z4IGo0uaqFz7wHZSEla-LB2LUOsUi",
+      "source_sha256": "c726b9dc7eef6422893637df7ea264954f64df5de865f803ede40683f69c377a",
+      "source_name": "Claude & Shopify Built $750k_m Ai Powered Ecom Brand.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 0
+    },
+    {
+      "title": "Verify each store-setup step on the live storefront",
+      "summary": "Adding a verification step after every mechanical store configuration task so a click path that 'looked done' is proven to actually work.",
+      "use_when": "Any time you complete a store setup task — theme code, product, payment, shipping profile or tax — before moving to the next setup item.",
+      "steps": [
+        "After each setup task, define the observable behaviour that proves it worked (product adds to cart, page shows the new section, order can complete).",
+        "Open the live storefront in a private/incognito window or offline-test mode so admin-session caching does not mask problems.",
+        "Exercise the exact customer action tied to that task — add to cart, reach checkout, submit a test order where your payment settings allow it.",
+        "If you edited Liquid, hard-refresh the live page rather than trusting the theme editor preview, which can show unsaved or cached states.",
+        "Record the setup item as verified only after the live behaviour matches, then move on."
+      ],
+      "caveats": [
+        "Preferences and interfaces vary; the specific test steps depend on your payment, shipping and tax configuration, so adapt the verification to each item.",
+        "Test orders and payment gateways may need test mode or refunding, which is outside the scope of the pure click path."
+      ],
+      "tags": [
+        "store-setup",
+        "shopify",
+        "verification",
+        "pre-launch",
+        "checkout",
+        "theme-editing",
+        "launch-qa"
+      ],
+      "id": "220bda0dd2e76d5a77002b6d",
+      "source_id": "1Ig6z4IGo0uaqFz7wHZSEla-LB2LUOsUi",
+      "source_sha256": "c726b9dc7eef6422893637df7ea264954f64df5de865f803ede40683f69c377a",
+      "source_name": "Claude & Shopify Built $750k_m Ai Powered Ecom Brand.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 0
+    }
+  ],
+  "request_id": "290e7a2238839997754c85253a6d916b7153649c83f5ed8468352e78da1eb397",
+  "ecommerce_scope_version": 1
+}

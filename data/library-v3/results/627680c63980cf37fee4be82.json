@@ -1,0 +1,547 @@
+{
+  "cards": [
+    {
+      "title": "Distinguish agentic swarms from traditional bots to set detection scope",
+      "summary": "Traditional bots follow fixed rule paths while agentic swarms pursue broader goals, reason about context, and rewrite tactics mid-attack, which changes what defenses must detect.",
+      "use_when": "Deciding whether your storefront's current bot rules (rate limits, user-agent blocks, CAPTCHA) still fit actual traffic, or scoping a bot-management evaluation.",
+      "steps": [
+        "Map your current bot defenses against the two categories: traditional bots are repetitive and predictable (price scraping, inventory hoarding, credential stuffing); agentic swarms interpret context and change behavior based on outcomes.",
+        "Assume agentic traffic can pivot: when one approach is blocked, agents reportedly shift user agents, proxies, and tactics mid-run rather than repeating a failing pattern.",
+        "Do not treat 'bot' as a single threat class — separate legitimate shopping assistants (research, catalog browsing) from malicious automation in your policy design, since they can look similar.",
+        "Re-baseline detection rules to flag behavior changes over a session (new user agent, sudden scope change) rather than relying on static identifiers alone.",
+        "Prioritize protection of high-value actions — checkout, account changes, loyalty balances — rather than uniform blocking across all traffic."
+      ],
+      "caveats": [
+        "The autonomy distinction is a conceptual framing; no rule set cleanly separates the two categories in production, and both can share the same infrastructure.",
+        "Mid-attack self-rewriting capability is described in the source as a threat characteristic; verify against your own observed traffic before assuming your adversaries operate this way."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "bot-management",
+        "detection",
+        "traffic-analysis",
+        "fraud-prevention"
+      ],
+      "id": "0bb17d46cb5bbbde25247f63",
+      "source_id": "1ZlgsvvrHGD1gYsODiLJa1A8eUsyAfTBS",
+      "source_sha256": "3dca92df342c7d3c6702316391f65f49cf82b51712fd0e2c3a2733146968c5a3",
+      "source_name": "Protecting E-Commerce from Agentic Swarms and AI Bot Attacks_ A Comprehensive Security Report.docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 0
+    },
+    {
+      "title": "Signal masking: don't misread legitimate headless agents as fraud",
+      "summary": "Headless AI shopping agents bypass client-side checks and can trigger false declines under legacy WAF/CAPTCHA rules, while malicious swarms evade behavioral biometrics.",
+      "use_when": "Investigating high false-decline rates on API or headless traffic, or tuning WAF/CAPTCHA rules that block legitimate AI shopping assistants.",
+      "steps": [
+        "Audit which current defenses depend on client-side signals — invisible CAPTCHAs, honeypot form fields, device fingerprinting, UI interaction cues — since headless API agents never render those elements and fail them by default.",
+        "Trace decline reasons on blocked traffic to separate 'no client-side telemetry' (a signal about the channel, not intent) from actual malicious patterns.",
+        "Add intent and behavior signals that work for API traffic — declared purpose, endpoint sequence, account recognition, session consistency — instead of relying on human-interaction cues.",
+        "Be aware the same masking cuts both ways: malicious swarms reportedly mimic human micro-behaviors to evade behavioral biometrics, so no single signal should be the sole basis for blocking or permitting.",
+        "Move stringent verification to transactional points (checkout, account modification) and let research-stage browsing pass more freely."
+      ],
+      "caveats": [
+        "The source reports that a majority of monitored AI bot activity is allowed to pass unrestricted for lack of granular differentiation — a claim from the report's cited sources, not a universal benchmark.",
+        "Reducing client-side checks to avoid false declines also removes signals used against human-impersonating automation; compensate with other layers."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "false-declines",
+        "bot-management",
+        "waf",
+        "conversion-optimization",
+        "headless-agents"
+      ],
+      "id": "4bd8e2130f191e40a65dcdc8",
+      "source_id": "1ZlgsvvrHGD1gYsODiLJa1A8eUsyAfTBS",
+      "source_sha256": "3dca92df342c7d3c6702316391f65f49cf82b51712fd0e2c3a2733146968c5a3",
+      "source_name": "Protecting E-Commerce from Agentic Swarms and AI Bot Attacks_ A Comprehensive Security Report.docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 0
+    },
+    {
+      "title": "Passport/immigration model: layer cryptographic identity with behavioral checks",
+      "summary": "Trust depends on two layers: a cryptographic credential proves who the agent is and who it represents, while edge behavioral monitoring checks whether in-session behavior matches declared intent.",
+      "use_when": "Designing how verified shopping agents get access to your storefront, or evaluating vendor agent-authentication offerings.",
+      "steps": [
+        "Adopt the two-role framing: the identity protocol (e.g., Visa TAP, Skyfire KYA, WBA) acts as the passport; edge behavioral intelligence acts as the immigration officer.",
+        "Never rely on the credential alone — a verified agent from a compromised server, or one that enters declaring browsing intent then starts scraping or testing cards, should still be stopped by behavior analysis.",
+        "Capture the agent's stated intent at entry (browsing vs. paying, consumer recognition, payment information where applicable) and compare it against observed actions for the rest of the session.",
+        "Continuously re-evaluate in-session: if behavior changes after entry, re-challenge or remove the visitor rather than trusting the initial verification.",
+        "Assign differentiated permissions by trust tier instead of a single verified/unverified binary."
+      ],
+      "caveats": [
+        "Cryptographic identity does not guarantee benign behavior — the source explicitly pairs it with behavioral monitoring for this reason.",
+        "Protocol names, supporting vendors, and integration details change; confirm current capabilities and supported standards with the vendor before committing architecture."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "agent-authentication",
+        "intent-detection",
+        "edge-security",
+        "visa-tap",
+        "trust-tiers"
+      ],
+      "id": "fd742c23a1a4652cd8b76efb",
+      "source_id": "1ZlgsvvrHGD1gYsODiLJa1A8eUsyAfTBS",
+      "source_sha256": "3dca92df342c7d3c6702316391f65f49cf82b51712fd0e2c3a2733146968c5a3",
+      "source_name": "Protecting E-Commerce from Agentic Swarms and AI Bot Attacks_ A Comprehensive Security Report.docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 0
+    },
+    {
+      "title": "Adaptive response: permit, verify, challenge, prevent by risk tier",
+      "summary": "Scale friction to assessed risk instead of blocking or allowing everything: permit low-risk discovery, verify on behavioral shifts, challenge on financial/account risk, prevent confirmed malicious automation.",
+      "use_when": "Defining checkout, account, and browsing traffic policies, or configuring a bot-management platform's response actions.",
+      "steps": [
+        "Permit low-risk agent interactions such as browsing and product discovery — legitimate agents need broad research access before transacting.",
+        "Verify sessions when behavioral signals shift (e.g., declared browsing but scanning many accounts or endpoints).",
+        "Challenge with step-up authentication when financial or account risk emerges — loyalty point changes, shipping address changes, high-risk transactions.",
+        "Prevent malicious automation executing high-risk actions outright.",
+        "Enforce these decisions at the CDN/edge before traffic reaches downstream systems, so controls apply before fraud propagates and without adding latency.",
+        "Reassess continuously within a session rather than deciding once at entry."
+      ],
+      "caveats": [
+        "The four-action permit/verify/challenge/prevent model is attributed to Darwinium in the source; treat it as one vendor framework among several, not a standard.",
+        "Thresholds for 'low risk' vs. 'financial risk' are not specified and must be set from your own baseline data."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "adaptive-response",
+        "edge-security",
+        "checkout",
+        "step-up-authentication",
+        "policy-enforcement"
+      ],
+      "id": "020fc68d22aa1bd444032724",
+      "source_id": "1ZlgsvvrHGD1gYsODiLJa1A8eUsyAfTBS",
+      "source_sha256": "3dca92df342c7d3c6702316391f65f49cf82b51712fd0e2c3a2733146968c5a3",
+      "source_name": "Protecting E-Commerce from Agentic Swarms and AI Bot Attacks_ A Comprehensive Security Report.docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 0
+    },
+    {
+      "title": "Prevent agent hijacking and account takeover of stored credentials",
+      "summary": "Attackers compromise legitimate AI shopping assistants and stored payment credentials to change delivery addresses, extract payment data, and execute fraud.",
+      "use_when": "Hardening customer accounts, saved payment methods, and third-party agent access, or investigating suspicious account modifications.",
+      "steps": [
+        "Treat any agent acting on behalf of a customer account as a potential hijack vector — compromise of a legitimate agent's credentials lets attackers act as the agent.",
+        "Require risk-based step-up authentication (MFA) specifically for sensitive actions: changing delivery address, extracting payment data, draining loyalty points or gift-card balances.",
+        "Apply micro-authorization: grant each agent action only the minimal permission it needs, so a hijacked agent has a small blast radius.",
+        "Microsegment back-end systems so a compromised agent cannot move laterally across the platform.",
+        "Monitor for rapid gift-card balance brute-forcing and credential-stuffing against loyalty accounts, which the source says swarms can drain quickly."
+      ],
+      "caveats": [
+        "Risk-based MFA thresholds are not specified; set them from your own risk model.",
+        "If legitimate agents are used by real customers, blocking all credential use harms conversion; the control should be scoped to high-risk actions."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "account-takeover",
+        "agent-hijacking",
+        "risk-based-mfa",
+        "loyalty-fraud",
+        "gift-cards",
+        "micro-authorization"
+      ],
+      "id": "080cf07bec9989a97bdc9319",
+      "source_id": "1ZlgsvvrHGD1gYsODiLJa1A8eUsyAfTBS",
+      "source_sha256": "3dca92df342c7d3c6702316391f65f49cf82b51712fd0e2c3a2733146968c5a3",
+      "source_name": "Protecting E-Commerce from Agentic Swarms and AI Bot Attacks_ A Comprehensive Security Report.docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 0
+    },
+    {
+      "title": "Multi-agent attack patterns: trust asymmetry, context loss, delegation loops",
+      "summary": "Documented multi-agent exploits (Header Heist, Telephone Loop) abuse inter-agent trust, partial context, and circular delegation — principles that map to how storefront systems should not trust relayed instructions.",
+      "use_when": "Threat-modeling an agent-integrated storefront or evaluating what an automated shopping/assistant integration is permitted to do.",
+      "steps": [
+        "Do not let downstream systems act on instructions relayed by another agent without verifying the original source — a specialist agent performing an action 'because a teammate relayed it' is the trust-asymmetry failure to avoid.",
+        "Preserve context through delegated steps: the agent executing the final action must know it involves sensitive data, or it will authorize something it shouldn't.",
+        "Watch for delegation loops — circular task delegation that exhausts resources and never completes, which attackers can induce through planted links or forms that require another agent's involvement.",
+        "Split-anomaly awareness: malicious behavior distributed across multiple sites/agents may leave no single step looking anomalous, so judge the end-to-end session, not just individual requests.",
+        "For ecommerce automation: require each agent action to be independently authorized against the merchant's policy rather than inherited from a peer's approval."
+      ],
+      "caveats": [
+        "These named attack patterns come from academic research (arXiv/Princeton) as reported in the source; treat them as illustrative threat models to test against, not confirmed incidents at any specific retailer.",
+        "The source's examples are agent-framework scenarios; mapping to a live storefront requires your own validation."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "multi-agent-attacks",
+        "threat-modeling",
+        "prompt-injection",
+        "agent-delegation",
+        "authorization"
+      ],
+      "id": "fbb1b568c8de3d0c5406252c",
+      "source_id": "1ZlgsvvrHGD1gYsODiLJa1A8eUsyAfTBS",
+      "source_sha256": "3dca92df342c7d3c6702316391f65f49cf82b51712fd0e2c3a2733146968c5a3",
+      "source_name": "Protecting E-Commerce from Agentic Swarms and AI Bot Attacks_ A Comprehensive Security Report.docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 0
+    },
+    {
+      "title": "Treat prompt injection and untrusted content as an authorization problem for storefront agents",
+      "summary": "Malicious instructions embedded in content a storefront agent processes can redirect it from the customer's task to an adversary's goal, and poisoned data sources can cascade failures across agents.",
+      "use_when": "Anyone deploying a customer-facing chatbot or AI agent that reads external content (reviews, forums, supplier data) or holds operational authority.",
+      "steps": [
+        "Assume any content an agent reads — product descriptions, reviews, third-party feeds, support messages — is untrusted data, not instructions the agent may act on.",
+        "Treat input filtering as one signal; enforce action permissions and business rules outside the model even when the prompt or retrieved content is malicious.",
+        "Limit the operational authority of any back-end conversational agent so a successful injection cannot reach sensitive actions or data.",
+        "Guard against data poisoning: validate and monitor the data sources agents use for decisions, since corrupted sources cause cascading failures across connected agents.",
+        "Block AI token freeloading: detect and reject traffic routing unrelated model queries or training workloads through your public AI endpoints, which degrades performance and raises your infrastructure costs.",
+        "Grant tools and API access by scope — an agent reading catalog data should not also hold payment or admin credentials."
+      ],
+      "caveats": [
+        "No prompt filtering alone guarantees safety; pair input sanitization with scoped permissions and monitoring.",
+        "The source describes these as documented threat vectors and OWASP-category risks; exact exploit mechanics and current OWASP numbering should be verified against the latest OWASP Agentic AI guidance."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "prompt-injection",
+        "chatbot-security",
+        "data-poisoning",
+        "input-sanitization",
+        "least-privilege",
+        "api-hardening"
+      ],
+      "id": "b60907b4beaf11ea9c75712f",
+      "source_id": "1ZlgsvvrHGD1gYsODiLJa1A8eUsyAfTBS",
+      "source_sha256": "3dca92df342c7d3c6702316391f65f49cf82b51712fd0e2c3a2733146968c5a3",
+      "source_name": "Protecting E-Commerce from Agentic Swarms and AI Bot Attacks_ A Comprehensive Security Report.docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 0
+    },
+    {
+      "title": "Defend storefront APIs: continuous endpoint discovery and Layer 7 DDoS awareness",
+      "summary": "Most API-related incidents hit commerce, yet few organizations know which of their APIs expose sensitive data — continuous mapping is the necessary control.",
+      "use_when": "Auditing API exposure, preparing for card-testing or scraping attacks, or planning edge capacity ahead of a product drop.",
+      "steps": [
+        "Continuously discover and map APIs — including undocumented and internal endpoints — because swarms reportedly target unprotected endpoints for scraping and token freeloading.",
+        "Identify which APIs expose sensitive data; the source reports most commerce respondents could not say which of theirs did, so this gap is a common starting point.",
+        "Apply intent-based detection at the edge on API traffic, not just on browser traffic, since headless agents bypass client-side controls.",
+        "Prepare for Layer 7 volumetric floods at the CDN/edge so downstream systems are not impacted before controls apply.",
+        "Detect automated card-testing patterns (high volumes of small authorization attempts, distributed across identities) and respond with adaptive actions rather than blanket blocks.",
+        "Micosegment API back ends so an exploited endpoint has a contained blast radius."
+      ],
+      "caveats": [
+        "The incident and DDoS statistics in the source are organization-specific findings from its cited reports; use them to justify diligence, not as your expected baseline.",
+        "Attribution of a traffic spike to malicious bots requires validation — legitimate agents and promotions can produce similar patterns."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "api-hardening",
+        "api-discovery",
+        "ddos",
+        "card-testing",
+        "edge-security",
+        "microsegmentation"
+      ],
+      "id": "451e14c2682c3fa9964f538d",
+      "source_id": "1ZlgsvvrHGD1gYsODiLJa1A8eUsyAfTBS",
+      "source_sha256": "3dca92df342c7d3c6702316391f65f49cf82b51712fd0e2c3a2733146968c5a3",
+      "source_name": "Protecting E-Commerce from Agentic Swarms and AI Bot Attacks_ A Comprehensive Security Report.docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 0
+    },
+    {
+      "title": "Counter inventory hoarding and price scraping without blocking legitimate agents",
+      "summary": "Grinch-bot style swarms buy out drop inventory in seconds and scrape pricing at scale, but the same channels carry legitimate shopping agents you need to keep.",
+      "use_when": "Protecting high-demand product drops, protecting price data, or tuning policies for scraping traffic on catalog and PDP endpoints.",
+      "steps": [
+        "Segment traffic by action: allow broad catalog research but apply stricter verification at add-to-cart and checkout, where hoarding actually occurs.",
+        "Watch cart-abandonment patterns at scale — inventory claimed by bots that never converts creates artificial scarcity; track conversion of cart-reservations against account authenticity.",
+        "For price scraping, verify intent against declared purpose: an agent that declared browsing but systematically extracts catalog and pricing data at volume is showing intent drift.",
+        "Use AI-resistant challenge mechanisms (e.g., dynamic QR-code flows) for high-risk actions on drop pages, which the source frames as making automated fraud economically unviable.",
+        "Consider a virtual waiting room or priority lanes for drops to give trusted agents and humans differentiated access instead of a single queue or hard block.",
+        "Dynamically modify page elements that automated agents read or click, and add verification steps for higher-risk actions."
+      ],
+      "caveats": [
+        "Blanket-scraping defenses can block legitimate comparison-shopping agents and cost you sales; the source's own posture is to welcome legitimate agents while stopping malicious automation.",
+        "AI-resistant challenge efficacy is presented as an emerging vendor approach; validate against your own attacker patterns and accessibility requirements."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "inventory-hoarding",
+        "price-scraping",
+        "product-drops",
+        "scarcity",
+        "challenge-design",
+        "merchandising"
+      ],
+      "id": "8f42796a535cc67df5e46d77",
+      "source_id": "1ZlgsvvrHGD1gYsODiLJa1A8eUsyAfTBS",
+      "source_sha256": "3dca92df342c7d3c6702316391f65f49cf82b51712fd0e2c3a2733146968c5a3",
+      "source_name": "Protecting E-Commerce from Agentic Swarms and AI Bot Attacks_ A Comprehensive Security Report.docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 0
+    },
+    {
+      "title": "Build dedicated agent rails and micro-authorization for verified agents",
+      "summary": "Rather than heavy-handed WAF rules that block everything, establish isolated pathways and minimal permissions for legitimate AI agents.",
+      "use_when": "Architecting how third-party shopping agents and assistant integrations access your catalog and checkout.",
+      "steps": [
+        "Establish dedicated 'agent rails' — isolated, purpose-built pathways for verified agents — instead of opening the same interface to everything or blocking all automation.",
+        "Grant minimal necessary permissions per agent action (micro-authorization), so a hijacked or poisoned agent cannot reach beyond its task.",
+        "Enforce policy-based access controls that distinguish verified agents, humans, and unverified automation, with different rights per class.",
+        "Ensure agent access to user-specific flows is reviewed for data protection implications before enabling it.",
+        "Keep decisions at the edge in real time so policy is applied before traffic touches downstream systems.",
+        "Define and document what each trust tier may do: allow, monitor, rate-limit, authenticate, or block."
+      ],
+      "caveats": [
+        "Dedicated rails require knowledge of which agents are legitimate; without cryptographic verification or a directory, 'rail' access becomes an open door.",
+        "The source acknowledges retailers risk disintermediation and reduced customer insight as agents become intermediaries — an architectural trade-off, not only a security one."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "agent-rails",
+        "least-privilege",
+        "access-control",
+        "api-hardening",
+        "trust-tiers",
+        "checkout"
+      ],
+      "id": "92bf9bab9d443ee24e1ad825",
+      "source_id": "1ZlgsvvrHGD1gYsODiLJa1A8eUsyAfTBS",
+      "source_sha256": "3dca92df342c7d3c6702316391f65f49cf82b51712fd0e2c3a2733146968c5a3",
+      "source_name": "Protecting E-Commerce from Agentic Swarms and AI Bot Attacks_ A Comprehensive Security Report.docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 0
+    },
+    {
+      "title": "Run a visibility-and-baseline phase before changing bot policy",
+      "summary": "Phase 1 of the roadmap is mapping APIs and baselining which agents hit which pages with what intent, because policy without baseline data is guesswork.",
+      "use_when": "Kicking off a bot-management program or being asked to block 'all bots' on a storefront.",
+      "steps": [
+        "Audit current bot detection and WAF configurations to document what is actually being blocked, challenged, and allowed today.",
+        "Identify all APIs and endpoints exposed to agent traffic, including undocumented ones.",
+        "Baseline current AI agent activity: which agents, which pages/endpoints, and what stated or inferred intent (indexing, comparing, extracting).",
+        "Document existing policies around automated access — many organizations have informal rules never written down.",
+        "Only after baselining, move to defining allow/monitor/rate-limit/authenticate/block policies and trust tiers.",
+        "Pair this with the readiness questions: can you identify which agents access the site, where they go, and why."
+      ],
+      "caveats": [
+        "The source's suggested timeline (Weeks 1–4 visibility, 3–6 policy, 5–12 implementation) is a planning heuristic, not a validated schedule; adjust to your scale and risk.",
+        "Baselines go stale as agent traffic grows; re-run the baselining periodically."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "assessment",
+        "baseline-mapping",
+        "api-discovery",
+        "policy-design",
+        "implementation-roadmap"
+      ],
+      "id": "3d6f02145cdb5aad87b319d1",
+      "source_id": "1ZlgsvvrHGD1gYsODiLJa1A8eUsyAfTBS",
+      "source_sha256": "3dca92df342c7d3c6702316391f65f49cf82b51712fd0e2c3a2733146968c5a3",
+      "source_name": "Protecting E-Commerce from Agentic Swarms and AI Bot Attacks_ A Comprehensive Security Report.docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 0
+    },
+    {
+      "title": "Define a documented AI agent access policy with trust tiers",
+      "summary": "Phase 2 turns baseline data into written policy: what to allow, monitor, rate-limit, authenticate, or block, with escalation thresholds.",
+      "use_when": "Writing or revising an acceptable-use/automated-access policy, or aligning privacy policy and terms of service with agent traffic.",
+      "steps": [
+        "Classify agent interactions by category (indexing, price comparison, shopping assistance, payment) and assign each a trust tier with permitted actions.",
+        "Decide per tier whether to allow, monitor, rate-limit, authenticate, or block — and record the decision so enforcement is consistent.",
+        "Define escalation and human-in-the-loop thresholds for ambiguous or high-risk sessions.",
+        "Align privacy policy and terms of service with agent interactions, and assess data-protection implications of agent access to user-specific flows.",
+        "Make sure each policy can be technically enforced (block, rate-limit, authenticate) — a policy you cannot enforce is documentation, not control.",
+        "Review whether your privacy policy addresses AI agent interactions at all, which the readiness checklist calls out as a common gap."
+      ],
+      "caveats": [
+        "Trust-tier boundaries are business decisions, not standard values; the source provides the categories and checklist, not thresholds.",
+        "Regulatory expectations (NIST AI RMF, OWASP Agentic AI Top 10) emphasize documentation, monitoring, human oversight, and context-sensitive controls — treat these as direction, and verify current versions."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "policy-design",
+        "governance",
+        "trust-tiers",
+        "compliance",
+        "privacy",
+        "terms-of-service"
+      ],
+      "id": "6f8cd064c89ca560171f473d",
+      "source_id": "1ZlgsvvrHGD1gYsODiLJa1A8eUsyAfTBS",
+      "source_sha256": "3dca92df342c7d3c6702316391f65f49cf82b51712fd0e2c3a2733146968c5a3",
+      "source_name": "Protecting E-Commerce from Agentic Swarms and AI Bot Attacks_ A Comprehensive Security Report.docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 0
+    },
+    {
+      "title": "Reconcile 'block the bots' thinking with agentic commerce reality",
+      "summary": "Blocking all non-human traffic is no longer viable: merchants face a split-brain scenario where they can neither block everything nor open the floodgates.",
+      "use_when": "When leadership or an agency pushes a blanket bot-blocking rule, or when false declines or lost agent-driven sales surface.",
+      "steps": [
+        "Reframe the objective from 'human vs. bot' to managing traffic by intent and trust level — the source calls this 'agentic readiness'.",
+        "Measure both failure directions: revenue lost from false declines of legitimate agents, and losses from malicious automation that passes.",
+        "Assign different access levels based on agent identity, behavior, and business relationship rather than a single allow/block decision.",
+        "Set policy per endpoint and action (browsing vs. checkout vs. account modification) because the right friction differs by stage.",
+        "Plan for the customer-relationship trade-off: as agents intermediate, retailers risk reduced customer insight, loyalty, and cross-selling, so decide which flows you keep on-site and instrumented."
+      ],
+      "caveats": [
+        "The 'split-brain' framing and the trust-based posture are attributed to Akamai's Reuben Koh and the report; competing vendors may argue for stricter blocking.",
+        "The source notes consumers currently trust retailers' on-site agents more than off-site third-party agents — a reported finding that can change; verify current sentiment before betting architecture on it."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "agentic-commerce",
+        "strategy",
+        "intent-detection",
+        "false-declines",
+        "customer-data"
+      ],
+      "id": "85ca7b8e6112bcbd7b436968",
+      "source_id": "1ZlgsvvrHGD1gYsODiLJa1A8eUsyAfTBS",
+      "source_sha256": "3dca92df342c7d3c6702316391f65f49cf82b51712fd0e2c3a2733146968c5a3",
+      "source_name": "Protecting E-Commerce from Agentic Swarms and AI Bot Attacks_ A Comprehensive Security Report.docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 0
+    },
+    {
+      "title": "Map identity and authentication protocols before committing to vendors",
+      "summary": "Compare what an agent credential actually proves and where authorization is enforced before adopting an emerging protocol.",
+      "use_when": "Choosing or evaluating agent-authentication or bot-management vendors for an ecommerce stack.",
+      "steps": [
+        "Separate agent identity, represented user or merchant, and permission to perform the requested action.",
+        "Ask vendors to demonstrate current supported issuers, validation, revocation, audience binding and replay protection.",
+        "Test whether a valid identity can be denied an out-of-scope action, including an action against another store's data.",
+        "Confirm interoperability using the actual implementation rather than announcement-level support lists.",
+        "Document fallback and credential-expiry behavior before enabling payment or account-changing operations."
+      ],
+      "caveats": [
+        "Protocol names and partnerships in the source are unverified snapshots; no vendor support or universal interoperability is assumed."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "agent-authentication",
+        "vendor-evaluation",
+        "visa-tap",
+        "kya",
+        "web-bot-auth",
+        "standards"
+      ],
+      "id": "8c4deee0d165c8ee07a0e7cd",
+      "source_id": "1ZlgsvvrHGD1gYsODiLJa1A8eUsyAfTBS",
+      "source_sha256": "3dca92df342c7d3c6702316391f65f49cf82b51712fd0e2c3a2733146968c5a3",
+      "source_name": "Protecting E-Commerce from Agentic Swarms and AI Bot Attacks_ A Comprehensive Security Report.docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 0
+    },
+    {
+      "title": "Use a readiness checklist to expose gaps in agent-visibility and enforcement",
+      "summary": "A short checklist across visibility, governance, privacy, and fraud surfaces concrete gaps before they become incidents.",
+      "use_when": "Running a periodic security review or preparing for an agent-traffic surge such as a product launch.",
+      "steps": [
+        "Visibility: confirm you can identify which AI agents access the site, which pages/endpoints they visit, and why they visit (indexing, comparing, extracting).",
+        "Governance: confirm you have a documented AI agent access policy, know which actions to allow vs. block, and can technically enforce the policy (block, rate-limit, authenticate).",
+        "Privacy/compliance: confirm the privacy policy addresses agent interactions and that data-protection implications of agent access to user-specific flows are understood.",
+        "Security/fraud: confirm you can detect malicious agent behavior, protect against agent takeover, impersonation, and abuse, and automatically block unwanted or untrusted agents.",
+        "For each unchecked item, assign an owner and a concrete control (endpoint instrumentation, rate-limit rule, authentication requirement).",
+        "Re-run the checklist after any major change in agent traffic or integration."
+      ],
+      "caveats": [
+        "The checklist is DataDome's readiness framing as reported in the source; treat unchecked items as prompts to investigate, not as a certified standard.",
+        "Passing every item does not guarantee protection — the checklist covers visibility and policy, not attack efficacy."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "readiness-assessment",
+        "audit",
+        "policy-design",
+        "monitoring",
+        "fraud-prevention"
+      ],
+      "id": "c9c22f8256c751dda7cbfad3",
+      "source_id": "1ZlgsvvrHGD1gYsODiLJa1A8eUsyAfTBS",
+      "source_sha256": "3dca92df342c7d3c6702316391f65f49cf82b51712fd0e2c3a2733146968c5a3",
+      "source_name": "Protecting E-Commerce from Agentic Swarms and AI Bot Attacks_ A Comprehensive Security Report.docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 0
+    },
+    {
+      "title": "Stand up continuous monitoring and red-teaming after deployment",
+      "summary": "Phase 4 keeps defenses current: monitor dashboards and verification results, tune policies to observed behavior, and red-team agentic swarm scenarios.",
+      "use_when": "Operating a live bot-management program after initial deployment, or setting a review cadence for agent traffic policy.",
+      "steps": [
+        "Monitor agent activity dashboards and verification results regularly, watching for new agent categories and shifts in verification pass/fail rates.",
+        "Tune policies against observed behavior and emerging threats rather than set-and-forget configurations.",
+        "Conduct regular red-team exercises simulating agentic swarm attacks — multi-agent delegation, prompt injection through processed content, scraping and card-testing patterns — on systems you own and are authorized to test.",
+        "Update defenses as new protocols and standards emerge, since the identity and authentication landscape is still forming.",
+        "Validate that edge enforcement applies before downstream impact and does not add latency to legitimate traffic.",
+        "Keep the visibility baseline from Phase 1 fresh so deviations remain detectable."
+      ],
+      "caveats": [
+        "Red-teaming must be authorized and scoped to owned systems; do not test attack patterns against third parties.",
+        "The source gives no benchmark for how often to red-team or tune; choose a cadence based on traffic volume and change rate."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "monitoring",
+        "red-teaming",
+        "continuous-improvement",
+        "policy-tuning",
+        "edge-security"
+      ],
+      "id": "d60649c68a1612d95fcd7478",
+      "source_id": "1ZlgsvvrHGD1gYsODiLJa1A8eUsyAfTBS",
+      "source_sha256": "3dca92df342c7d3c6702316391f65f49cf82b51712fd0e2c3a2733146968c5a3",
+      "source_name": "Protecting E-Commerce from Agentic Swarms and AI Bot Attacks_ A Comprehensive Security Report.docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 0
+    },
+    {
+      "title": "Model the fraud cost multiplier when justifying bot-defense spend",
+      "summary": "Every dollar lost directly to fraud reportedly costs retailers around $5.13 once chargebacks, operations, and product losses are counted — useful for sizing the business case.",
+      "use_when": "Building a budget justification for bot management, or estimating exposure from card-testing and hoarding.",
+      "steps": [
+        "Use the total-cost framing rather than direct-loss framing: chargebacks, operational handling, and lost product all attach to a single fraudulent transaction.",
+        "Estimate your own multiplier from internal data where possible — chargeback fees, support handling time, replacement/restocking costs — instead of assuming the source's figure.",
+        "Add indirect losses that multipliers often miss: inventory hoarded but never converted, price data scraped and undercut, loyalty/gift-card balances drained.",
+        "Present both directions of loss: fraud losses and false-decline revenue loss from blocking legitimate agents, since the second is easy to overlook.",
+        "Pair the cost case with the readiness gaps (unknown sensitive APIs, no documented policy) to prioritize the highest-exposure work first."
+      ],
+      "caveats": [
+        "The $5.13 multiplier and the cited traffic/fraud statistics come from the source's cited reports and reflect specific measurement periods; treat them as directional, not as your store's actual economics.",
+        "Attributing revenue loss to false declines requires instrumentation most stores lack; estimate conservatively or label it an assumption."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "fraud-prevention",
+        "cost-analysis",
+        "business-case",
+        "chargebacks",
+        "measurement"
+      ],
+      "id": "b18886d897bc289b888f4ee6",
+      "source_id": "1ZlgsvvrHGD1gYsODiLJa1A8eUsyAfTBS",
+      "source_sha256": "3dca92df342c7d3c6702316391f65f49cf82b51712fd0e2c3a2733146968c5a3",
+      "source_name": "Protecting E-Commerce from Agentic Swarms and AI Bot Attacks_ A Comprehensive Security Report.docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 0
+    }
+  ],
+  "request_id": "cd6b12b7733e77a4d72a7dfae4f89b07cff2fa29c48ea4954aced43dda2a9975",
+  "ecommerce_scope_version": 1
+}

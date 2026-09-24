@@ -1,0 +1,467 @@
+{
+  "request_id": "69c47c2c82c7dd5aa270fb42697dc2ff671d5d9a32073c62a418faf517e5ab0e",
+  "provider": "deepseek",
+  "model": "deepseek-flash",
+  "effort": "none",
+  "completion_limit": 16384,
+  "usage": {
+    "prompt_tokens": 8906,
+    "completion_tokens": 4993,
+    "total_tokens": 13899,
+    "prompt_tokens_details": {
+      "cached_tokens": 512
+    },
+    "prompt_cache_hit_tokens": 512,
+    "prompt_cache_miss_tokens": 8394
+  },
+  "booked_cost_usd": 0.0086634,
+  "seconds": 24.2,
+  "finish_reason": "stop",
+  "output": {
+    "cards": [
+      {
+        "title": "Measure Perceived Performance With Slow-4G Throttling",
+        "summary": "Test real-user loading experience in Chrome DevTools by throttling to slow 4G or 3G with cache disabled, rather than chasing a perfect PageSpeed score.",
+        "use_when": "Evaluating whether your product or landing page actually loads acceptably for real shoppers before or after a speed optimization pass.",
+        "steps": [
+          "Open Chrome DevTools and go to the Network tab.",
+          "Set the throttling dropdown from 'No throttling' to 'Slow 4G' or '3G' — pick the one closest to your typical visitor's connection (the presenter uses Slow 4G).",
+          "Check 'Disable Cache' so you don't fetch assets from memory and mask the real experience.",
+          "Reload the page and watch: note time-to-first-content, layout jumps, and slow image reveal in chunks.",
+          "Compare against a non-optimized copy of the same page to isolate the impact of your changes.",
+          "Remember the presenter's point: third-party scores (PageSpeed Insights, GTmetrix, Gift of Speed) are not the best measure — perceived experience on slow connections is the primary metric."
+        ],
+        "caveats": [
+          "Disabled cache is a worst case; most real users benefit from cached assets, so also test with cache enabled to see the typical case.",
+          "Presenter's opinion that scores are not the best way is source-specific; scores still correlate with real gains from fundamental fixes."
+        ],
+        "tags": [
+          "core-web-vitals",
+          "performance-testing",
+          "perceived-performance",
+          "chromedevtools",
+          "resource-optimization",
+          "landing-page"
+        ]
+      },
+      {
+        "title": "Set loading=eager Above the Fold and lazy Below",
+        "summary": "Control image loading priority with the loading attribute so above-fold hero/logo images load immediately while below-fold images defer.",
+        "use_when": "Optimizing image loading order on a homepage, PDP hero, or landing page where above-fold images must appear fast and off-screen images shouldn't block.",
+        "steps": [
+          "Identify which images are visible on first paint: hero image, logo, above-fold banners.",
+          "Set loading=\"eager\" on those — even though it is the browser default, set it explicitly so a later optimization plugin doesn't accidentally lazy-load them.",
+          "Set loading=\"lazy\" on all images below the fold, including any repeated logo in the footer.",
+          "Note you cannot lazy-load CSS background images with the loading attribute; optimize those files instead.",
+          "In Oxygen, add the attribute under the element's Settings/Properties panel (attribute name 'loading', value 'eager' or 'lazy'), and use right-click 'Copy settings' / 'Paste settings' to apply across many images quickly.",
+          "After pasting settings, re-add alt text you may have overwritten — decorative images get an empty alt attribute."
+        ],
+        "caveats": [
+          "Verify your builder's exact attribute panel, interface labels may differ by tool or version.",
+          "Background images are not covered by the loading attribute."
+        ],
+        "tags": [
+          "core-web-vitals",
+          "lazy-loading",
+          "resource-optimization",
+          "performance-testing",
+          "wordpress",
+          "landing-page"
+        ]
+      },
+      {
+        "title": "Fix CLS With Explicit Width and Height Attributes",
+        "summary": "Eliminate cumulative layout shift by hardcoding width and height attributes matching the exact rendered size so the browser reserves layout space.",
+        "use_when": "Fixing a red CLS score or content jumping on load on your homepage, PDP, or landing page.",
+        "steps": [
+          "On the live front end, right-click the image and choose Inspect.",
+          "Find the image tag and hover over the src (source URL) to read the rendered size — e.g. 398x597 px.",
+          "In your builder, add a width attribute equal to the rendered width (no 'px' unit) and a height attribute equal to the rendered height.",
+          "Repeat for every image; for non-absolutely-positioned images this matters most, but add to absolutely-positioned images as good practice too.",
+          "Reuse settings via copy/paste for image sets that share identical rendered dimensions.",
+          "Retest in PageSpeed Insights to confirm CLS moves into the green."
+        ],
+        "caveats": [
+          "Explicit dimensions reserve space but do not by themselves fix other shift sources (ads, injected content, web fonts).",
+          "Presenter's example dropped CLS into the green after two simple changes — a case result, not a guarantee."
+        ],
+        "tags": [
+          "core-web-vitals",
+          "cls",
+          "resource-optimization",
+          "performance-testing",
+          "chromedevtools",
+          "landing-page",
+          "product-page"
+        ]
+      },
+      {
+        "title": "Convert and Resize Images With AVIF at 2x Rendered Size",
+        "summary": "Shrink image files by converting to AVIF and resizing intrinsic dimensions down to 2x the rendered size, keeping retina sharpness at a fraction of the file weight.",
+        "use_when": "Reducing image payload on image-heavy pages such as homepage heroes, product galleries, or landing pages.",
+        "steps": [
+          "Inspect an image and hover the source URL to read both rendered size and intrinsic size plus current file size (e.g. rendered 398x597, intrinsic 1770x2560, 161KB).",
+          "If intrinsic is far larger than rendered, there is waste to remove.",
+          "Open the image in Photopea (free, browser-based, no login needed) or an equivalent editor.",
+          "Export as AVIF (better compression than WebP/JPG/PNG while retaining quality and supporting transparency); WebP is an acceptable alternative with broad support.",
+          "Resize to 2x the rendered size — e.g. 796x1194 for a 398x597 render — so high-density retina screens stay sharp without loading oversized originals.",
+          "Keep the export quality slider around 50% (presenter finds the difference imperceptible) and confirm the file size drop.",
+          "For background images that must cover a section, keep dimensions but still convert to AVIF.",
+          "Swap optimized files into the page and add alt text to each while you work."
+        ],
+        "caveats": [
+          "Manual conversion is time-consuming; paid plugins like ShortPixel or Imagify can automate it.",
+          "You can also resize via the WordPress media library, but that alone won't give the AVIF/WebP file-size savings.",
+          "Presenter's 161KB→~10KB drop is a case example, not a benchmark."
+        ],
+        "tags": [
+          "resource-optimization",
+          "images",
+          "avif",
+          "webp",
+          "retina",
+          "landing-page",
+          "product-page"
+        ]
+      },
+      {
+        "title": "Audit Loaded Assets With a Waterfall Chart",
+        "summary": "Find unnecessary JavaScript and CSS by reading a request waterfall to spot scripts (jQuery, unused WooCommerce files) loaded on pages that don't need them.",
+        "use_when": "Reducing render-blocking resources on a landing page or homepage before deeper optimization.",
+        "steps": [
+          "In PageSpeed Insights, check the 'Render-blocking requests' section for its flagged items.",
+          "For full detail, use the GTmetrix waterfall chart to see every request in load order.",
+          "Scan for things you don't use on this page: jQuery (not needed by logged-out users), WooCommerce CSS/JS on a page with no cart or add-to-cart, unused block styles.",
+          "Note which assets are global (needed everywhere) versus page-specific (can be unloaded here).",
+          "Build a list of assets to remove, then unload them via theme/builder performance settings or a page-level plugin."
+        ],
+        "caveats": [
+          "PageSpeed Insights flags may not show every loaded asset; the waterfall gives the complete picture.",
+          "Be conservative: unload only what this page truly doesn't use."
+        ],
+        "tags": [
+          "resource-optimization",
+          "performance-testing",
+          "waterfall",
+          "gtmetrix",
+          "javascript",
+          "landing-page"
+        ]
+      },
+      {
+        "title": "Dequeue jQuery for Logged-Out Front-End Users",
+        "summary": "Remove jQuery bloat from public pages by dequeuing and deregistering it only for logged-out users on the front end, keeping it for admin.",
+        "use_when": "Trimming render-blocking scripts on public pages where jQuery is confirmed unused but WordPress loads it by default.",
+        "steps": [
+          "Confirm via the waterfall that jQuery (and jQuery Migrate) is loading on your public page.",
+          "Create a code snippet (e.g. with WP Codebox) that hooks wp_enqueue_scripts and dequeues plus deregisters jQuery for the relevant scope.",
+          "Add conditions so the snippet runs only when needed: front end (location) AND user not logged in — the WordPress admin bar needs jQuery for logged-in users.",
+          "Enable the snippet and re-run the waterfall to confirm jQuery no longer loads for logged-out visitors.",
+          "Only do this if your theme/plugins truly don't depend on jQuery on the front end, or you'll break scripts."
+        ],
+        "caveats": [
+          "Verify current hook and function names against WordPress docs, APIs change.",
+          "Tool set (WP Codebox) and snippet UI may differ; confirm the current interface."
+        ],
+        "tags": [
+          "resource-optimization",
+          "javascript",
+          "jquery",
+          "wordpress",
+          "performance-testing",
+          "front-end"
+        ]
+      },
+      {
+        "title": "Unload Unused WooCommerce Assets Per Page With Asset CleanUp",
+        "summary": "Surgically remove unused WooCommerce CSS/JS (and other plugin assets) from pages that don't use them, while leaving them active where they are needed.",
+        "use_when": "A landing page or content page loads WooCommerce or other plugin assets it never uses, slowing first paint.",
+        "steps": [
+          "Install the free Asset CleanUp plugin from the WordPress repository.",
+          "Open the specific page in the editor; Asset CleanUp adds a metabox listing loaded files by source (e.g. WooCommerce category with 13 files).",
+          "Expand the group and unload files not needed on this page: brand styles, source buster, add-to-cart, block styles CSS, jQuery block UI, etc.",
+          "Review each before unloading — the presenter keeps a small 'coming soon' CSS file because its size is negligible.",
+          "Save; the unloading applies only to that page, keeping assets elsewhere.",
+          "Record what you unloaded — if you later add a WooCommerce feature like a mini cart to this page, you must re-enable those assets."
+        ],
+        "caveats": [
+          "Per-page unloading is page-specific; a new page with the same template needs its own setup.",
+          "Verify plugin name and interface from current WordPress repo listing."
+        ],
+        "tags": [
+          "resource-optimization",
+          "woocommerce",
+          "css",
+          "javascript",
+          "wordpress",
+          "landing-page",
+          "page-speed"
+        ]
+      },
+      {
+        "title": "Unload Default WordPress Bloat for Logged-Out Users",
+        "summary": "Disable unused WordPress defaults such as emojis, Gutenberg block CSS, dashicons for guests, and pingbacks through builder/theme performance settings.",
+        "use_when": "Establishing a fast baseline on any WordPress storefront before page-specific fixes.",
+        "steps": [
+          "Open your theme or builder's performance settings (e.g. Oxygen → Performance).",
+          "Enable options that fit your site: disable Gutenberg block CSS (if not using Gutenberg), disable emojis, disable dashicons for logged-out users, remove/disable pingbacks.",
+          "Skip any option tied to a feature you actually use — if you use Gutenberg blocks, keep block CSS.",
+          "Save and re-check the waterfall to confirm the bloat is gone.",
+          "Apply site-wide, since these defaults load everywhere."
+        ],
+        "caveats": [
+          "Settings locations differ by builder/theme; confirm current UI.",
+          "Disabling a feature you rely on can break rendering — audit before enabling each toggle."
+        ],
+        "tags": [
+          "resource-optimization",
+          "wordpress",
+          "css",
+          "javascript",
+          "page-speed",
+          "baseline"
+        ]
+      },
+      {
+        "title": "Self-Host Google Fonts as WOFF2 to Cut External Requests",
+        "summary": "Download Google Fonts, convert to WOFF2, and serve them locally to remove the external font-request dependency.",
+        "use_when": "Reducing third-party font requests and render-blocking on your storefront, especially where fonts are used site-wide.",
+        "steps": [
+          "Find your fonts on fonts.google.com and add them to your list (e.g. Inter, Libre Baskerville).",
+          "Download the font files — you get TTF, which you must convert to WOFF2 web-font format.",
+          "Convert using Google Web Fonts Helper (recommended; Font Squirrel's Webfont Generator also works but the presenter found it failed on some fonts, possibly variable ones).",
+          "In your builder/theme, upload the WOFF2 files as custom fonts, specifying the font weight (e.g. 900) and style (italic/normal) for each.",
+          "Name the local versions distinctly (e.g. 'Inter Local') so you can tell them apart in the font picker.",
+          "Switch your font variables (body/heading) to the local versions; with variables, one change updates all usages.",
+          "If your theme/builder has no custom-font upload, use a custom-font plugin from the WordPress repository.",
+          "Re-run the waterfall to confirm Google font requests are gone."
+        ],
+        "caveats": [
+          "Conversion tool behavior varies by font; test variable fonts specifically.",
+          "Exact custom-font UI differs by theme/builder — verify."
+        ],
+        "tags": [
+          "resource-optimization",
+          "fonts",
+          "woff2",
+          "wordpress",
+          "page-speed",
+          "third-party"
+        ]
+      },
+      {
+        "title": "Verify Caching and Compression via Response Headers",
+        "summary": "Confirm gzip compression and server caching are actually active by inspecting response headers in the Chrome Network tab.",
+        "use_when": "Checking whether your host's caching and compression are enabled, or verifying after you turn them on.",
+        "steps": [
+          "Open DevTools, go to the Network tab, and enable 'Preserve log'.",
+          "Reload the page (no throttling needed) and select the first/primary document request.",
+          "Inspect the response headers.",
+          "For caching enabled, look for a cache-related header such as x-cache: hit (not cache-control, which may say no-cache, must-revalidate).",
+          "For compression enabled, look for content-encoding: gzip (or whatever encoding method your host uses).",
+          "To re-verify caching/compression after enabling them, test in an incognito window with 'Disable cache' unchecked so you don't read from browser memory."
+        ],
+        "caveats": [
+          "Header names depend on the host/cache stack; x-cache is an example, not universal.",
+          "Presenter calls caching/compression a band-aid if fundamentals aren't fixed first — do the content and asset work before relying on them."
+        ],
+        "tags": [
+          "caching",
+          "compression",
+          "performance-testing",
+          "chromedevtools",
+          "gzip",
+          "page-speed"
+        ]
+      },
+      {
+        "title": "Sequence WordPress Speed Work: Fundamentals Before Caching",
+        "summary": "Fix images, asset loading, and fonts before enabling compression, caching, or a CDN, since infrastructure alone won't fix heavy resources.",
+        "use_when": "Planning a speed project for a storefront or landing page and deciding what to prioritize.",
+        "steps": [
+          "Start with image loading attributes: eager above the fold, lazy below.",
+          "Add explicit width/height to above-fold images to kill CLS.",
+          "Optimize and resize image files with AVIF or WebP.",
+          "Unload unnecessary scripts/styles on the page, including jQuery if unused.",
+          "Remove unneeded WordPress bloat (emojis, Gutenberg block CSS, etc.).",
+          "Self-host Google Fonts as WOFF2.",
+          "Only then enable caching and compression, and optionally add a CDN as a bonus.",
+          "Re-test perceived performance on slow 4G after each stage so you can attribute improvements."
+        ],
+        "caveats": [
+          "Presenter states these fixes delivered strong gains with no compression, caching, or CDN enabled — a demonstrated case, not a promise for every site.",
+          "'Your mileage may vary depending on your site builder and hosting' — the source explicitly says this."
+        ],
+        "tags": [
+          "page-speed",
+          "resource-optimization",
+          "caching",
+          "compression",
+          "cdn",
+          "wordpress",
+          "prioritization"
+        ]
+      },
+      {
+        "title": "Interpret Waffling Speed Test Scores and Average Runs",
+        "summary": "Trust scores only after repeated runs, since tools like PageSpeed Insights fluctuate, and cross-check against perceived performance.",
+        "use_when": "Compiling speed data for a decision or report and deciding whether your score is trustworthy.",
+        "steps": [
+          "Run the same test multiple times; scores can move up or down between runs even without changes.",
+          "Average the results when gathering data for a report or comparison.",
+          "Cross-reference across tools (PageSpeed Insights, GTmetrix, Gift of Speed) rather than relying on one.",
+          "Weight real-user perceived experience (slow-4G DevTools test) above any single score.",
+          "Expect lab tools to re-test in different conditions, so a single lower score after a change isn't necessarily a regression."
+        ],
+        "caveats": [
+          "Presenter notes scores are not the best performance measure; this is a source opinion.",
+          "Tool interfaces and scoring change over time — verify current behavior."
+        ],
+        "tags": [
+          "performance-testing",
+          "measurement",
+          "core-web-vitals",
+          "pagespeed-insights",
+          "gtmetrix"
+        ]
+      },
+      {
+        "title": "Apply the WordPress Speed Optimization Checklist",
+        "summary": "A portable checklist covering image loading, dimensions, file format, asset unloading, local fonts, and caching/compression.",
+        "use_when": "Running a structured speed pass on any WordPress storefront or landing page.",
+        "steps": [
+          "Set below-fold images to lazy loading and ensure above-fold images are not lazy loaded.",
+          "Add fixed width and height to above-fold images to eliminate CLS.",
+          "Optimize and resize images, converting to AVIF or another modern format like WebP.",
+          "Unload unnecessary scripts and styles on the page, including jQuery if not needed.",
+          "Remove as much unneeded WordPress bloat (emojis, Gutenberg block CSS) as possible.",
+          "Load Google Fonts locally.",
+          "Ensure caching and compression are enabled.",
+          "Optionally add a CDN for further speed.",
+          "Re-test with slow-4G throttling and cache disabled to confirm the perceived-experience gain."
+        ],
+        "caveats": [
+          "Results depend on builder and hosting; the source says to expect YMMV.",
+          "Verify plugin names and interfaces against current versions."
+        ],
+        "tags": [
+          "page-speed",
+          "resource-optimization",
+          "checklist",
+          "core-web-vitals",
+          "wordpress",
+          "caching"
+        ]
+      },
+      {
+        "title": "Compare Optimized vs Unoptimized Page Under Throttling",
+        "summary": "Reproduce the genuine before/after by loading an optimized page and a non-optimized copy in an incognito window on slow 4G with cache disabled.",
+        "use_when": "Validating that a speed optimization effort actually changed the real loading experience, not just a lab score.",
+        "steps": [
+          "Open an incognito window (so memory cache doesn't hide the effect) and set throttling to slow 4G.",
+          "Load the unoptimized version first and note layout shifts and slow image reveal.",
+          "Load the optimized version and compare how quickly content becomes usable and whether layout is stable.",
+          "Note that global changes (local fonts, removing bloat) carry over to the non-optimized copy, so the comparison isolates page-specific work.",
+          "Then uncheck 'Disable cache' and reload to see the more typical cached experience, which the presenter finds near-instant."
+        ],
+        "caveats": [
+          "Global optimizations persist across pages and can blur the before/after comparison.",
+          "Cache-disabled testing is a worst case, not typical visitor experience."
+        ],
+        "tags": [
+          "performance-testing",
+          "perceived-performance",
+          "chromedevtools",
+          "core-web-vitals",
+          "measurement"
+        ]
+      },
+      {
+        "title": "Do Not Lazy-Load Background Images; Optimize Them Instead",
+        "summary": "CSS background images can't use the loading attribute, so shrink their files with modern formats instead of deferring them.",
+        "use_when": "Tuning a hero or section background image that must cover an area but is slowing the page.",
+        "steps": [
+          "Recognize that the loading=\"lazy\"/\"eager\" attribute only applies to <img> elements, not CSS background images.",
+          "For background images that must cover a section, keep their large dimensions (do not shrink the intrinsic size).",
+          "Still convert them to AVIF (or WebP) to gain file-size savings while retaining coverage.",
+          "If measuring CLS, absolutely-positioned background images generally do not contribute, but the presenter still adds width/height as good practice.",
+          "Re-test to confirm the background image no longer dominates load time."
+        ],
+        "caveats": [
+          "Background coverage constraints limit how much you can resize; format conversion is the main lever.",
+          "Verify your builder exposes the format/lazy controls you need."
+        ],
+        "tags": [
+          "images",
+          "avif",
+          "background-images",
+          "resource-optimization",
+          "landing-page",
+          "hero"
+        ]
+      },
+      {
+        "title": "Resize Images to 2x Rendered Size for Retina",
+        "summary": "Match intrinsic image dimensions to 2x the rendered size so retina screens stay sharp without loading oversized originals.",
+        "use_when": "Selecting export dimensions when optimizing product photos, hero images, or gallery images for a storefront.",
+        "steps": [
+          "Read the image's rendered size in DevTools (hover the source URL), e.g. 398x597 px.",
+          "Multiply both dimensions by 2 to get the export target, e.g. 796x1194 px.",
+          "Export at that size in AVIF, keeping the aspect ratio (editors auto-adjust height when you set width).",
+          "Do not export at the raw rendered size — retina/high-density screens would look soft.",
+          "Do not keep the original oversized intrinsic dimensions — that wastes bytes for no visible gain."
+        ],
+        "caveats": [
+          "Presenter's 2x rule is a practical heuristic, not a formal standard; higher-density displays may still benefit from more.",
+          "Does not apply to background images that must cover a section."
+        ],
+        "tags": [
+          "images",
+          "retina",
+          "avif",
+          "resource-optimization",
+          "product-page",
+          "hero"
+        ]
+      },
+      {
+        "title": "Add Alt Text and Preserve It When Copying Image Settings",
+        "summary": "Use the image optimization pass to add alt text to every image, and remember copy/paste of element settings can overwrite existing alt text.",
+        "use_when": "Standardizing image accessibility and SEO metadata while optimizing page images.",
+        "steps": [
+          "While swapping in optimized images, add descriptive alt text for every meaningful image.",
+          "Use an empty alt attribute for decorative images (e.g. a glow behind a hero).",
+          "When using a builder's 'Copy settings'/'Paste settings' to apply loading and dimension attributes across many images, note that alt text can be overwritten.",
+          "After pasting, re-add any alt text that was lost.",
+          "Recognize that alt text supports accessibility and the presenter observes it also nudges PageSpeed scores, so it's a low-cost addition during the same pass."
+        ],
+        "caveats": [
+          "Keep decorative and meaningful images distinct — meaningful images need descriptive alt, decorative ones get empty alt.",
+          "Copy/paste behavior is tool-specific; verify in your builder."
+        ],
+        "tags": [
+          "accessibility",
+          "alt-text",
+          "images",
+          "wordpress",
+          "resource-optimization",
+          "seo"
+        ]
+      }
+    ]
+  },
+  "raw_content": "{\"cards\": [{\"title\": \"Measure Perceived Performance With Slow-4G Throttling\", \"summary\": \"Test real-user loading experience in Chrome DevTools by throttling to slow 4G or 3G with cache disabled, rather than chasing a perfect PageSpeed score.\", \"use_when\": \"Evaluating whether your product or landing page actually loads acceptably for real shoppers before or after a speed optimization pass.\", \"steps\": [\"Open Chrome DevTools and go to the Network tab.\", \"Set the throttling dropdown from 'No throttling' to 'Slow 4G' or '3G' — pick the one closest to your typical visitor's connection (the presenter uses Slow 4G).\", \"Check 'Disable Cache' so you don't fetch assets from memory and mask the real experience.\", \"Reload the page and watch: note time-to-first-content, layout jumps, and slow image reveal in chunks.\", \"Compare against a non-optimized copy of the same page to isolate the impact of your changes.\", \"Remember the presenter's point: third-party scores (PageSpeed Insights, GTmetrix, Gift of Speed) are not the best measure — perceived experience on slow connections is the primary metric.\"], \"caveats\": [\"Disabled cache is a worst case; most real users benefit from cached assets, so also test with cache enabled to see the typical case.\", \"Presenter's opinion that scores are not the best way is source-specific; scores still correlate with real gains from fundamental fixes.\"], \"tags\": [\"core-web-vitals\", \"performance-testing\", \"perceived-performance\", \"chromedevtools\", \"resource-optimization\", \"landing-page\"]}, {\"title\": \"Set loading=eager Above the Fold and lazy Below\", \"summary\": \"Control image loading priority with the loading attribute so above-fold hero/logo images load immediately while below-fold images defer.\", \"use_when\": \"Optimizing image loading order on a homepage, PDP hero, or landing page where above-fold images must appear fast and off-screen images shouldn't block.\", \"steps\": [\"Identify which images are visible on first paint: hero image, logo, above-fold banners.\", \"Set loading=\\\"eager\\\" on those — even though it is the browser default, set it explicitly so a later optimization plugin doesn't accidentally lazy-load them.\", \"Set loading=\\\"lazy\\\" on all images below the fold, including any repeated logo in the footer.\", \"Note you cannot lazy-load CSS background images with the loading attribute; optimize those files instead.\", \"In Oxygen, add the attribute under the element's Settings/Properties panel (attribute name 'loading', value 'eager' or 'lazy'), and use right-click 'Copy settings' / 'Paste settings' to apply across many images quickly.\", \"After pasting settings, re-add alt text you may have overwritten — decorative images get an empty alt attribute.\"], \"caveats\": [\"Verify your builder's exact attribute panel, interface labels may differ by tool or version.\", \"Background images are not covered by the loading attribute.\"], \"tags\": [\"core-web-vitals\", \"lazy-loading\", \"resource-optimization\", \"performance-testing\", \"wordpress\", \"landing-page\"]}, {\"title\": \"Fix CLS With Explicit Width and Height Attributes\", \"summary\": \"Eliminate cumulative layout shift by hardcoding width and height attributes matching the exact rendered size so the browser reserves layout space.\", \"use_when\": \"Fixing a red CLS score or content jumping on load on your homepage, PDP, or landing page.\", \"steps\": [\"On the live front end, right-click the image and choose Inspect.\", \"Find the image tag and hover over the src (source URL) to read the rendered size — e.g. 398x597 px.\", \"In your builder, add a width attribute equal to the rendered width (no 'px' unit) and a height attribute equal to the rendered height.\", \"Repeat for every image; for non-absolutely-positioned images this matters most, but add to absolutely-positioned images as good practice too.\", \"Reuse settings via copy/paste for image sets that share identical rendered dimensions.\", \"Retest in PageSpeed Insights to confirm CLS moves into the green.\"], \"caveats\": [\"Explicit dimensions reserve space but do not by themselves fix other shift sources (ads, injected content, web fonts).\", \"Presenter's example dropped CLS into the green after two simple changes — a case result, not a guarantee.\"], \"tags\": [\"core-web-vitals\", \"cls\", \"resource-optimization\", \"performance-testing\", \"chromedevtools\", \"landing-page\", \"product-page\"]}, {\"title\": \"Convert and Resize Images With AVIF at 2x Rendered Size\", \"summary\": \"Shrink image files by converting to AVIF and resizing intrinsic dimensions down to 2x the rendered size, keeping retina sharpness at a fraction of the file weight.\", \"use_when\": \"Reducing image payload on image-heavy pages such as homepage heroes, product galleries, or landing pages.\", \"steps\": [\"Inspect an image and hover the source URL to read both rendered size and intrinsic size plus current file size (e.g. rendered 398x597, intrinsic 1770x2560, 161KB).\", \"If intrinsic is far larger than rendered, there is waste to remove.\", \"Open the image in Photopea (free, browser-based, no login needed) or an equivalent editor.\", \"Export as AVIF (better compression than WebP/JPG/PNG while retaining quality and supporting transparency); WebP is an acceptable alternative with broad support.\", \"Resize to 2x the rendered size — e.g. 796x1194 for a 398x597 render — so high-density retina screens stay sharp without loading oversized originals.\", \"Keep the export quality slider around 50% (presenter finds the difference imperceptible) and confirm the file size drop.\", \"For background images that must cover a section, keep dimensions but still convert to AVIF.\", \"Swap optimized files into the page and add alt text to each while you work.\"], \"caveats\": [\"Manual conversion is time-consuming; paid plugins like ShortPixel or Imagify can automate it.\", \"You can also resize via the WordPress media library, but that alone won't give the AVIF/WebP file-size savings.\", \"Presenter's 161KB→~10KB drop is a case example, not a benchmark.\"], \"tags\": [\"resource-optimization\", \"images\", \"avif\", \"webp\", \"retina\", \"landing-page\", \"product-page\"]}, {\"title\": \"Audit Loaded Assets With a Waterfall Chart\", \"summary\": \"Find unnecessary JavaScript and CSS by reading a request waterfall to spot scripts (jQuery, unused WooCommerce files) loaded on pages that don't need them.\", \"use_when\": \"Reducing render-blocking resources on a landing page or homepage before deeper optimization.\", \"steps\": [\"In PageSpeed Insights, check the 'Render-blocking requests' section for its flagged items.\", \"For full detail, use the GTmetrix waterfall chart to see every request in load order.\", \"Scan for things you don't use on this page: jQuery (not needed by logged-out users), WooCommerce CSS/JS on a page with no cart or add-to-cart, unused block styles.\", \"Note which assets are global (needed everywhere) versus page-specific (can be unloaded here).\", \"Build a list of assets to remove, then unload them via theme/builder performance settings or a page-level plugin.\"], \"caveats\": [\"PageSpeed Insights flags may not show every loaded asset; the waterfall gives the complete picture.\", \"Be conservative: unload only what this page truly doesn't use.\"], \"tags\": [\"resource-optimization\", \"performance-testing\", \"waterfall\", \"gtmetrix\", \"javascript\", \"landing-page\"]}, {\"title\": \"Dequeue jQuery for Logged-Out Front-End Users\", \"summary\": \"Remove jQuery bloat from public pages by dequeuing and deregistering it only for logged-out users on the front end, keeping it for admin.\", \"use_when\": \"Trimming render-blocking scripts on public pages where jQuery is confirmed unused but WordPress loads it by default.\", \"steps\": [\"Confirm via the waterfall that jQuery (and jQuery Migrate) is loading on your public page.\", \"Create a code snippet (e.g. with WP Codebox) that hooks wp_enqueue_scripts and dequeues plus deregisters jQuery for the relevant scope.\", \"Add conditions so the snippet runs only when needed: front end (location) AND user not logged in — the WordPress admin bar needs jQuery for logged-in users.\", \"Enable the snippet and re-run the waterfall to confirm jQuery no longer loads for logged-out visitors.\", \"Only do this if your theme/plugins truly don't depend on jQuery on the front end, or you'll break scripts.\"], \"caveats\": [\"Verify current hook and function names against WordPress docs, APIs change.\", \"Tool set (WP Codebox) and snippet UI may differ; confirm the current interface.\"], \"tags\": [\"resource-optimization\", \"javascript\", \"jquery\", \"wordpress\", \"performance-testing\", \"front-end\"]}, {\"title\": \"Unload Unused WooCommerce Assets Per Page With Asset CleanUp\", \"summary\": \"Surgically remove unused WooCommerce CSS/JS (and other plugin assets) from pages that don't use them, while leaving them active where they are needed.\", \"use_when\": \"A landing page or content page loads WooCommerce or other plugin assets it never uses, slowing first paint.\", \"steps\": [\"Install the free Asset CleanUp plugin from the WordPress repository.\", \"Open the specific page in the editor; Asset CleanUp adds a metabox listing loaded files by source (e.g. WooCommerce category with 13 files).\", \"Expand the group and unload files not needed on this page: brand styles, source buster, add-to-cart, block styles CSS, jQuery block UI, etc.\", \"Review each before unloading — the presenter keeps a small 'coming soon' CSS file because its size is negligible.\", \"Save; the unloading applies only to that page, keeping assets elsewhere.\", \"Record what you unloaded — if you later add a WooCommerce feature like a mini cart to this page, you must re-enable those assets.\"], \"caveats\": [\"Per-page unloading is page-specific; a new page with the same template needs its own setup.\", \"Verify plugin name and interface from current WordPress repo listing.\"], \"tags\": [\"resource-optimization\", \"woocommerce\", \"css\", \"javascript\", \"wordpress\", \"landing-page\", \"page-speed\"]}, {\"title\": \"Unload Default WordPress Bloat for Logged-Out Users\", \"summary\": \"Disable unused WordPress defaults such as emojis, Gutenberg block CSS, dashicons for guests, and pingbacks through builder/theme performance settings.\", \"use_when\": \"Establishing a fast baseline on any WordPress storefront before page-specific fixes.\", \"steps\": [\"Open your theme or builder's performance settings (e.g. Oxygen → Performance).\", \"Enable options that fit your site: disable Gutenberg block CSS (if not using Gutenberg), disable emojis, disable dashicons for logged-out users, remove/disable pingbacks.\", \"Skip any option tied to a feature you actually use — if you use Gutenberg blocks, keep block CSS.\", \"Save and re-check the waterfall to confirm the bloat is gone.\", \"Apply site-wide, since these defaults load everywhere.\"], \"caveats\": [\"Settings locations differ by builder/theme; confirm current UI.\", \"Disabling a feature you rely on can break rendering — audit before enabling each toggle.\"], \"tags\": [\"resource-optimization\", \"wordpress\", \"css\", \"javascript\", \"page-speed\", \"baseline\"]}, {\"title\": \"Self-Host Google Fonts as WOFF2 to Cut External Requests\", \"summary\": \"Download Google Fonts, convert to WOFF2, and serve them locally to remove the external font-request dependency.\", \"use_when\": \"Reducing third-party font requests and render-blocking on your storefront, especially where fonts are used site-wide.\", \"steps\": [\"Find your fonts on fonts.google.com and add them to your list (e.g. Inter, Libre Baskerville).\", \"Download the font files — you get TTF, which you must convert to WOFF2 web-font format.\", \"Convert using Google Web Fonts Helper (recommended; Font Squirrel's Webfont Generator also works but the presenter found it failed on some fonts, possibly variable ones).\", \"In your builder/theme, upload the WOFF2 files as custom fonts, specifying the font weight (e.g. 900) and style (italic/normal) for each.\", \"Name the local versions distinctly (e.g. 'Inter Local') so you can tell them apart in the font picker.\", \"Switch your font variables (body/heading) to the local versions; with variables, one change updates all usages.\", \"If your theme/builder has no custom-font upload, use a custom-font plugin from the WordPress repository.\", \"Re-run the waterfall to confirm Google font requests are gone.\"], \"caveats\": [\"Conversion tool behavior varies by font; test variable fonts specifically.\", \"Exact custom-font UI differs by theme/builder — verify.\"], \"tags\": [\"resource-optimization\", \"fonts\", \"woff2\", \"wordpress\", \"page-speed\", \"third-party\"]}, {\"title\": \"Verify Caching and Compression via Response Headers\", \"summary\": \"Confirm gzip compression and server caching are actually active by inspecting response headers in the Chrome Network tab.\", \"use_when\": \"Checking whether your host's caching and compression are enabled, or verifying after you turn them on.\", \"steps\": [\"Open DevTools, go to the Network tab, and enable 'Preserve log'.\", \"Reload the page (no throttling needed) and select the first/primary document request.\", \"Inspect the response headers.\", \"For caching enabled, look for a cache-related header such as x-cache: hit (not cache-control, which may say no-cache, must-revalidate).\", \"For compression enabled, look for content-encoding: gzip (or whatever encoding method your host uses).\", \"To re-verify caching/compression after enabling them, test in an incognito window with 'Disable cache' unchecked so you don't read from browser memory.\"], \"caveats\": [\"Header names depend on the host/cache stack; x-cache is an example, not universal.\", \"Presenter calls caching/compression a band-aid if fundamentals aren't fixed first — do the content and asset work before relying on them.\"], \"tags\": [\"caching\", \"compression\", \"performance-testing\", \"chromedevtools\", \"gzip\", \"page-speed\"]}, {\"title\": \"Sequence WordPress Speed Work: Fundamentals Before Caching\", \"summary\": \"Fix images, asset loading, and fonts before enabling compression, caching, or a CDN, since infrastructure alone won't fix heavy resources.\", \"use_when\": \"Planning a speed project for a storefront or landing page and deciding what to prioritize.\", \"steps\": [\"Start with image loading attributes: eager above the fold, lazy below.\", \"Add explicit width/height to above-fold images to kill CLS.\", \"Optimize and resize image files with AVIF or WebP.\", \"Unload unnecessary scripts/styles on the page, including jQuery if unused.\", \"Remove unneeded WordPress bloat (emojis, Gutenberg block CSS, etc.).\", \"Self-host Google Fonts as WOFF2.\", \"Only then enable caching and compression, and optionally add a CDN as a bonus.\", \"Re-test perceived performance on slow 4G after each stage so you can attribute improvements.\"], \"caveats\": [\"Presenter states these fixes delivered strong gains with no compression, caching, or CDN enabled — a demonstrated case, not a promise for every site.\", \"'Your mileage may vary depending on your site builder and hosting' — the source explicitly says this.\"], \"tags\": [\"page-speed\", \"resource-optimization\", \"caching\", \"compression\", \"cdn\", \"wordpress\", \"prioritization\"]}, {\"title\": \"Interpret Waffling Speed Test Scores and Average Runs\", \"summary\": \"Trust scores only after repeated runs, since tools like PageSpeed Insights fluctuate, and cross-check against perceived performance.\", \"use_when\": \"Compiling speed data for a decision or report and deciding whether your score is trustworthy.\", \"steps\": [\"Run the same test multiple times; scores can move up or down between runs even without changes.\", \"Average the results when gathering data for a report or comparison.\", \"Cross-reference across tools (PageSpeed Insights, GTmetrix, Gift of Speed) rather than relying on one.\", \"Weight real-user perceived experience (slow-4G DevTools test) above any single score.\", \"Expect lab tools to re-test in different conditions, so a single lower score after a change isn't necessarily a regression.\"], \"caveats\": [\"Presenter notes scores are not the best performance measure; this is a source opinion.\", \"Tool interfaces and scoring change over time — verify current behavior.\"], \"tags\": [\"performance-testing\", \"measurement\", \"core-web-vitals\", \"pagespeed-insights\", \"gtmetrix\"]}, {\"title\": \"Apply the WordPress Speed Optimization Checklist\", \"summary\": \"A portable checklist covering image loading, dimensions, file format, asset unloading, local fonts, and caching/compression.\", \"use_when\": \"Running a structured speed pass on any WordPress storefront or landing page.\", \"steps\": [\"Set below-fold images to lazy loading and ensure above-fold images are not lazy loaded.\", \"Add fixed width and height to above-fold images to eliminate CLS.\", \"Optimize and resize images, converting to AVIF or another modern format like WebP.\", \"Unload unnecessary scripts and styles on the page, including jQuery if not needed.\", \"Remove as much unneeded WordPress bloat (emojis, Gutenberg block CSS) as possible.\", \"Load Google Fonts locally.\", \"Ensure caching and compression are enabled.\", \"Optionally add a CDN for further speed.\", \"Re-test with slow-4G throttling and cache disabled to confirm the perceived-experience gain.\"], \"caveats\": [\"Results depend on builder and hosting; the source says to expect YMMV.\", \"Verify plugin names and interfaces against current versions.\"], \"tags\": [\"page-speed\", \"resource-optimization\", \"checklist\", \"core-web-vitals\", \"wordpress\", \"caching\"]}, {\"title\": \"Compare Optimized vs Unoptimized Page Under Throttling\", \"summary\": \"Reproduce the genuine before/after by loading an optimized page and a non-optimized copy in an incognito window on slow 4G with cache disabled.\", \"use_when\": \"Validating that a speed optimization effort actually changed the real loading experience, not just a lab score.\", \"steps\": [\"Open an incognito window (so memory cache doesn't hide the effect) and set throttling to slow 4G.\", \"Load the unoptimized version first and note layout shifts and slow image reveal.\", \"Load the optimized version and compare how quickly content becomes usable and whether layout is stable.\", \"Note that global changes (local fonts, removing bloat) carry over to the non-optimized copy, so the comparison isolates page-specific work.\", \"Then uncheck 'Disable cache' and reload to see the more typical cached experience, which the presenter finds near-instant.\"], \"caveats\": [\"Global optimizations persist across pages and can blur the before/after comparison.\", \"Cache-disabled testing is a worst case, not typical visitor experience.\"], \"tags\": [\"performance-testing\", \"perceived-performance\", \"chromedevtools\", \"core-web-vitals\", \"measurement\"]}, {\"title\": \"Do Not Lazy-Load Background Images; Optimize Them Instead\", \"summary\": \"CSS background images can't use the loading attribute, so shrink their files with modern formats instead of deferring them.\", \"use_when\": \"Tuning a hero or section background image that must cover an area but is slowing the page.\", \"steps\": [\"Recognize that the loading=\\\"lazy\\\"/\\\"eager\\\" attribute only applies to <img> elements, not CSS background images.\", \"For background images that must cover a section, keep their large dimensions (do not shrink the intrinsic size).\", \"Still convert them to AVIF (or WebP) to gain file-size savings while retaining coverage.\", \"If measuring CLS, absolutely-positioned background images generally do not contribute, but the presenter still adds width/height as good practice.\", \"Re-test to confirm the background image no longer dominates load time.\"], \"caveats\": [\"Background coverage constraints limit how much you can resize; format conversion is the main lever.\", \"Verify your builder exposes the format/lazy controls you need.\"], \"tags\": [\"images\", \"avif\", \"background-images\", \"resource-optimization\", \"landing-page\", \"hero\"]}, {\"title\": \"Resize Images to 2x Rendered Size for Retina\", \"summary\": \"Match intrinsic image dimensions to 2x the rendered size so retina screens stay sharp without loading oversized originals.\", \"use_when\": \"Selecting export dimensions when optimizing product photos, hero images, or gallery images for a storefront.\", \"steps\": [\"Read the image's rendered size in DevTools (hover the source URL), e.g. 398x597 px.\", \"Multiply both dimensions by 2 to get the export target, e.g. 796x1194 px.\", \"Export at that size in AVIF, keeping the aspect ratio (editors auto-adjust height when you set width).\", \"Do not export at the raw rendered size — retina/high-density screens would look soft.\", \"Do not keep the original oversized intrinsic dimensions — that wastes bytes for no visible gain.\"], \"caveats\": [\"Presenter's 2x rule is a practical heuristic, not a formal standard; higher-density displays may still benefit from more.\", \"Does not apply to background images that must cover a section.\"], \"tags\": [\"images\", \"retina\", \"avif\", \"resource-optimization\", \"product-page\", \"hero\"]}, {\"title\": \"Add Alt Text and Preserve It When Copying Image Settings\", \"summary\": \"Use the image optimization pass to add alt text to every image, and remember copy/paste of element settings can overwrite existing alt text.\", \"use_when\": \"Standardizing image accessibility and SEO metadata while optimizing page images.\", \"steps\": [\"While swapping in optimized images, add descriptive alt text for every meaningful image.\", \"Use an empty alt attribute for decorative images (e.g. a glow behind a hero).\", \"When using a builder's 'Copy settings'/'Paste settings' to apply loading and dimension attributes across many images, note that alt text can be overwritten.\", \"After pasting, re-add any alt text that was lost.\", \"Recognize that alt text supports accessibility and the presenter observes it also nudges PageSpeed scores, so it's a low-cost addition during the same pass.\"], \"caveats\": [\"Keep decorative and meaningful images distinct — meaningful images need descriptive alt, decorative ones get empty alt.\", \"Copy/paste behavior is tool-specific; verify in your builder.\"], \"tags\": [\"accessibility\", \"alt-text\", \"images\", \"wordpress\", \"resource-optimization\", \"seo\"]}]}",
+  "input": {
+    "source_id": "1xw38NANCmS8DmKTMRPULxChkXGSPApKH",
+    "source_sha256": "29e019fd09450f700bea26ac7460276314f022222877081399b01193dd2a6826",
+    "source_name": "WordPress Speed Optimization_ Improve Your Website Performance & Make It Faster (Step-By-Step).docx",
+    "folder": "/08-SPD-speed",
+    "domain": "speed",
+    "section": 0,
+    "section_count": 1,
+    "text": "08-SPD / speed and performance\n\nGoes here. Loading performance, browser rendering, perceived performance, resource optimization, Core Web Vitals (CWV), caching strategies, and the technical mechanics of shrinking file sizes and reducing execution time.\n\nNot here.\n\nWebsite security, SSL certificates, or DDoS protection -> 23-SEC\n\nGoogle Analytics 4 installation and event tracking -> 06-MEA\n\nHeader. url: rights: public_reference why: Provides practical, platform-agnostic optimization steps for WordPress focusing heavily on perceived performance over raw scoring metrics, detailing lazy loading, explicit dimensions for CLS, AVIF conversion, local fonts, and unneeded asset removal. modules: [SPD] topics: [core web vitals, resource optimization] tier: 3 scope_hint: baseline\n\nTopics. core web vitals / Understanding that \"perceived performance\" for actual users on slow connections (tested via Chrome DevTools Network throttling to \"Slow 4G\") is more important than chasing a perfect 100 on PageSpeed Insights. Mitigating Cumulative Layout Shift (CLS) by hardcoding explicit width and height attributes directly on image elements (matching the exact rendered size) so the browser reserves layout space before the image loads. resource optimization / Configuring the image loading attribute: enforcing loading=\"eager\" for all images above the fold (like the hero and logo) and loading=\"lazy\" for everything below the fold. Manually converting images to AVIF or WebP via Photopea to drastically reduce file size (e.g., from 161KB to 10KB), resizing the intrinsic dimensions to 2x the rendered size to support high-density retina displays without loading original heavy files. Unloading default WordPress bloat using tools like WP Codebox (to dequeue/deregister jQuery for logged-out users on the front-end) or Asset CleanUp (to surgically unload unused WooCommerce CSS/JS on non-cart landing pages). Improving performance by serving Google Fonts locally (downloading WOFF2 files via Google Web Fonts Helper) rather than relying on external API requests. Checking compression and caching headers: looking in the Chrome Network tab for content-encoding: gzip and x-cache: hit.\n\nLook for. The specific rule for retina image sizing: the intrinsic size should be 2x the rendered size on the page. The specific test environment for perceived performance: Chrome DevTools -> Network Tab -> Throttle to \"Slow 4G\" with \"Disable Cache\" checked. The specific CSS rule to reduce CLS: adding explicit width and height attributes to image tags that match the exact rendered size. The specific plugin to dequeue unused scripts (like WooCommerce styles) on specific pages: Asset CleanUp. The specific file format required for optimal local font loading in WordPress: WOFF2.\n\nSkip. Promotional references to the Oxygen builder or Cloudways hosting, focusing instead on the underlying optimization principles. Broad statements about how fast WordPress can be.\n\nScope mix. Almost all baseline.\n\nVolume. 10 to 15.\n\nIn this video, I'm going to show you seven simple WordPress speed optimization tips to drastically improve your site's performance. As you follow along, you'll learn how to optimize WordPress sites, going from subpar to nearperfect, and I'll tell you how to actually measure performance. Spoiler, the scores from performance testing tools are not the best way. The steps I'll show you today don't require a specific plugin. I'll be using Oxygen as my site builder, but the changes we're making aren't Oxygen specific, and they're simple enough that anyone can do them. With all that said, we can now jump in and begin optimizing our site. Let's get this out of the way right at the beginning. Today's video isn't another tutorial focused on telling you to upgrade your hosting, enable compression, turn on caching, or use a content delivery network, also known as a CDN. This also is not a tutorial on one specific performance plugin to game page speed insights and GTMetric scores. Instead, I'll be focusing on fundamentals that make your site load faster for real users, especially those on slower internet connections. Here's the setup. I've got a fairly imageheavy landing page built with Oxygen, which is a performanceconscious site builder that already eliminates a lot of the bloat associated with traditional themes and old school page builders. It's hosted on an inexpensive Cloudways package with no gzip compression, caching, or CDN enabled. And here are our scores on page speed insights, GTMetrics, and Gift of Speed. It's clear the site needs some work, but these scores are not actually the best way to determine if the performance is good enough. The main thing we're concerned about is perceived performance or the actual experience of real users on slower internet connections. Checking perceived performance is super easy. Just open Chrome DevTools and go to the network tab. Here you'll see this throttling dropown. Normally, it's on no throttling, which means it's going to load the page just like your normal internet would. But if we want to see how the page loads for people on slower internet connections, we can choose one of these other options. For me, I usually test on slow 4G, but you can also use 3G or fast 4G. For the purposes of performance testing, we need to test with one of the slower options. I'd recommend choosing slow 4G or 3G depending on which one is most likely to be the most common for visitors to your site. For today's tests, I'll be using slow 4G. So, once we choose our throttling option, we simply reload the page and watch what it does. And if we watch, we can see it's taking a minute to even start the reload. And then once it comes in, it just looks like a mess. And then things shift a bunch as soon as it loads in. and then you start having these slow image loads which is just not a great experience for users. So our focus today really is on improving the way this site loads on slow internet connections. We will be improving our performance testing scores but using fundamentals which unlike tricks meant to game performance scores will also improve the experience of loading the site for real visitors. Images are some of the heaviest resources on any site, but if you're careful, they don't have to drag your performance down. Let's take a look at improving performance by optimizing how our images load and the image files themselves. All right, so let's hop into Oxygen and start making some improvements to our images. The first thing we want to do is make sure that all of our images have the correct loading property or loading attribute value. The loading property tells the browser how to load the images and you can use either eager to make them load as soon as the image element is processed. This is the default behavior for images or lazy to tell the browser to load them when they're needed. Essentially, this will help us reduce the amount of weight added by images that are below the fold or that you don't see when the website first loads. and to make sure the images above the fold that are visible when the website first loads are loaded early enough that you don't have that jarring loading issue that we saw in our test earlier. If we take a look here, we have this main image here. Uh there is an image behind it, this kind of glow that I have behind that image. And then if we scroll down, we have these images here. uh a background image here which we can't actually lazy load background images using the loading property but we can still optimize them which we'll do here in a few minutes and then we have this image here. So those are our main concerns at the moment and we're dealing with the loading property. So the way we add an attribute to an element in oxygen is over here under the settings icon in the properties panel and here we can add any attribute we want. So, we know that we want loading equals eager for this image. Even though it's the default behavior, this ensures it doesn't accidentally end up lazy loaded by an optimization plugin or similar later. So, we'll do loading for the attribute name and then eager for the value. And we need to do this a couple of more times. So, a quick way we can do this in Oxygen is rightclick our little settings gear and click copy settings. Now we can select another image, rightclick and [music] paste settings. Now we do have alt text on this, so we don't want to overwrite that. So we need to make sure to add that back after we paste these settings. Go ahead and add our empty alt attribute since this is a decorative element. So now we have loading eager on both of these images above the fold. We can actually do the same thing for the logo image. Let's check what the loading setting is set to. See, this is set to lazy loading, which you don't want for any images above the fold. So, we'll change this to eager as well. Now, let's go ahead and scroll down and take a look at these other images here. So, we'll pick this one. And this time, we want to actually lazy load these since they're just below the fold. So, we will paste our settings. And then we'll change the value to lazy. And then we can copy these settings and paste them across to all the other images. We'll do this one with the plants. Rightclick, paste. And then the foggy ferns. paste the settings there. And finally, we have these shoes here. So, we'll do the same setting for those. We want lazy loading. So, now everything below the fold image wise is lazy loaded, but everything above the fold image wise, aside from background images, is set to eager loading. So, that will certainly improve the way these images load for visitors. Now that we've handled the loading property for our images, which is kind of a table stakes lowhanging fruit item, I want to actually look at one of the metrics in our tests. So here on page speed insights, we have this cumulative layout shift or CLS score, which is in the red. This is basically a measurement of how much stuff is moving around without users expecting that stuff to move around. This typically happens when the page is loading, but can be anything that moves unexpectedly without user interaction. For images and videos, the easiest way to combat this is by adding explicit width and height attributes. So, that's what we're going to do next. We need to start on the front end of the site because we have to use the inspector to determine the rendered width and height of our images. We're going to start with the logo here. So, we'll rightclick and inspect. And once we find our image tag, we just need to hover over the source attribute value, which is the URL of the image, and look at how big it's being rendered. In this case, the rendered size is 256x 106 pixels. Now, we need to just pop into our site builder and add a width and height attribute to this image that matches the rendered size. So, we'll add a width attribute with the value 256. We don't have to put in a unit. So no px. Now we'll add a height attribute of 106. So now that will essentially eliminate any layout shift from this image loading because the rendered size will actually be reserved for the image. Instead of it starting small and getting bigger and shoving things around, the browser will reserve that space for the image. Now let's do the same thing for all of our images. So we'll grab this background image here. It's absolutely positioned, so I don't think it'll actually impact CLS at all. But as a matter of good practice, let's go ahead and add the width and height for it. So, we'll jump up to the front end and just repeat this for that image. We'll inspect and we're going to find the source attribute for that image. The rendered size is 1440 [music] by 810. So, let's go add that in. width is 1440 and height is 810. Now, the one it really matters for is this image here since it's not absolutely positioned. So, let's figure out what its rendered size is, which is right here in our dev tools. 398x 597. So, let's go in and add those. width 398, height 597. Now, I'm just going to repeat this for the rest of the images on the page, and then we'll go retest our scores to see if our CLS has improved. So, for these images, they all have the same rendered size. So, this should be much faster. We'll just scroll down, right click, and inspect one of these, hover over the source attribute value. It's 198 pixels x 64 pixels. [music] So we'll do that for the first one. Then we can copy and paste those settings across. So width is 198, height is 64. Now since we want the same exact attributes on all of those images, we can just copy the settings here, select each image, and paste those settings in. Paste here. And one more. Now, we have one more image to address, which is this picture of these floating shoes. So, let's scroll down and check what the rendered size of that one is. Inspect, hover over the source. 800 by a,000. Nice and easy. So, let's go over here and add our width and height attributes to this one. Width 800. Add attribute height [music] 1,000. And there's actually one more logo image down here. So, I'm just going to copy and paste the settings from this one. Copy. And then put them on here as well. But we want to change the loading attribute to lazy since it's way down on the page. Now, we'll save that and we'll hop over to page speed insights because we're going to go ahead and retest to make sure that this actually improved our CLS score. So, you can see that we've already got some major improvement to the actual score itself. On desktop, we're even getting into the '9s, which is great because we've only made two pretty simple and easy changes so far. But, if we go down, we can see that our cumulative layout shift has actually improved quite a bit. It's now in the green. Now, some of our other changes will improve these scores even more. So, let's move on to the next step. Now, we're actually going to go through and optimize the actual image files themselves that are included on our page. This is a really important WordPress speed optimization step. So, while it's somewhat timeconuming if you're doing it manually like I'll show you today, it's definitely worth it. I do want to note that you can do a lot of this automatically with something like Short Pixel or a Magify, but typically that's going to cost some money. Today, I'll show you how to do it for free using a more manual process. We're going to start in the inspector. We already know how to find the rendered size of an image, which is how big [music] the image is on the page in terms of pixels. But what we want to do is we want to look at the rendered size versus the intrinsic size, which is the actual size of the image that's being loaded behind the scenes. To do that, we just inspect and go down to the image source. We can hover over the URL to the image and we can see not only the rendered size but we can also see the intrinsic size which in this case is 1,77 pixels by 2560 pixels. The file size is 161 kilob. Clearly if we're rendering it at 398x 597 we don't need an image this big. So there's an opportunity to bring the intrinsic size closer to the rendered size, which will save us on file size. So here's the manual process for this. We're going to actually open up this link, which we can do by clicking the current source URL right there, and we're going to copy this image. Now, we're going over to a web app called Photop, which is kind of like Photoshop in your browser. You don't even have to log in to start using it. So you don't need an account. All you have to do is just paste the image and you're going to have it right here in the workspace. Now, the reason we're using photo is because it not only lets us resize the images, but it also lets us convert them to a more modern format. For instance, WEBP was pretty popular a while ago and is more performant than say PNG or JPG. It also has really good browser compatibility now. But there's another format that often is recommended for performance reasons, which is AVI or AVIF. This also has really good browser support. Now, so this is the format we're going to use. The reason is that AVIF has better compression, resulting in smaller sizes while retaining quality, and it also can support transparency like PNG. So, let's hop back over to Photop and optimize this image. So here in photo P we'll go to file and we'll go to export as and we'll choose more AVIF. Now what we're looking to do here is reduce the width and height. But we don't want to go down to the actual rendered size. The reason is because some screens have higher pixel density for example retina screens. So, my recommendation here is to go down to 2x the rendered size, which in this case would be 796 pixels wide by 1,194 pixels high. So, back in Photo P, we can set those dimensions. 796 pixels wide. If we click away, it should automatically adjust the height to keep the aspect ratio the same. Note that we also have our quality slider to 50%. Which in my tests is pretty much imperceptible. So, we're going to leave it there. And you can see where our file was actually, let's look here, 161 kilob before, photo is saying the new file is going to be about 10 kilob. So, let's go ahead and save this image. Now, let's go over to our page and swap it out for the optimized one. So, we'll select our image, go over here, hit choose, and here's the one we exported from photo pe. And you can see it actually did come in at about 11 kilobytes versus the original which is 157. Just a crazy amount of savings and you won't notice the image quality difference. And as we go through the process of swapping out these images, it's also a good opportunity to make sure that you put alt text in for every image that you're using on the page. This helps with accessibility and also makes your scores look a little bit nicer on page speed insights. Now, for background images, since we still need them to be pretty big to cover the section, we're not going to resize them, but we are going to convert them to AVIF to give us some more file size savings. So, I'm going to go through and do all of that, and we'll come back and take a look at our image sizes and our score after making these changes. So, I went through and converted all my images to AVIF, resized the ones that weren't background images, and where the original image size was way bigger than it needed to be. And you can see there's basically no notable difference in the way things look, but we have hundreds of kilobytes in savings. Now, one thing I note before we run this final test is that you can totally resize images through the media library in WordPress. For instance, if you don't want to convert it to AVIF, you can just hit edit image and go in here to the scale option and adjust [music] the dimensions there. But if you're watching this video, you probably need to convert them to either [music] WEBP or AVIF for the file size savings alone. Now that we've made our image file optimizations, let's go ahead and rerun our perceived performance test here. We'll go to network. We'll throttle down to slow 4G. And remember, before you could really see these images loading in very slowly. I'm going to go ahead and hit refresh now. And we'll see if we have some improvement there. And as you can see, this main image pops in immediately. The background one takes a little bit longer, but when it does load, it instantly pops in. You don't see that kind of scanning effect as you load chunks of the images down the screen. This is an important reminder that the primary metric is how people actually perceive the website as it loads. And that did improve quite a bit. If you're wondering how to optimize your WordPress site, images are a great place to start. And you'll see pretty big gains just from taking these measures, especially if you have lots of highresolution images. Your quest for WordPress speed optimization can also be helped along by finding and eliminating unneeded assets. By default, WordPress can load a lot of stuff that you don't actually need. Add in a few additional plugins that are loading things on pages where they're not used and the unnecessary assets loading on your landing page can add up to serious slowdowns. So, let's go ahead and take a look at some of the other assets that are loading on our page like JavaScript and styles and things like that. We'll see if we can identify the ones we don't need and remove them. Here in page speed insights, we can go down to render blocking requests and this will show us all the stuff that PSI thinks may be problematic. But if we want to really see all the details and identify things we probably don't need, we can use the GTMetrics waterfall chart. This is going to show us everything that's loaded and hopefully help us identify some things that we can remove or optimize in some way. So immediately I see some jQuery stuff which we're not using jQuery. So, it shouldn't be loading. We'll take care of that. I see some Woo Commerce stuff, which we have Woo Commerce installed, but we're not actually using it on the landing page. [music] So, things like WooCommerce CSS do not need to load. Let's keep looking through here. Add to cart. We would only need that if we had the Woo Commerce cart on the landing page, which currently we don't. So, there's a lot of WooCommerce stuff here, which we'll address. Let's see. We have entrance animations from Oxygen. We have our fonts which are loading from Google right now. And I know you can get some performance gains by loading your Google fonts locally. So we'll take a look at that as well. Since we're using Oxygen, the first step is going to be to unload default WordPress bloat. So this is going to be stuff that WordPress loads by default, but that most sites don't actually need. To do that, we'll go into the dashboard and go to Oxygen settings. And then we'll go to performance. And here we have stuff like Gutenberg block CSS which if we're not using Gutenberg is completely unnecessary. We have remove and disable pingbacks, disable emojis, disable dash icons for logged out users, etc. So I'm just going to tick all of these because we don't need any of these particular assets and this should help with performance a little bit. Let's go ahead and save those changes. Now as I noted in the waterfall chart, jQuery is actually loading for logged out users. It's necessary for loggedin users because the WordPress admin bar uses jQuery, but there's absolutely no reason that a logged out user should be loading jQuery when they visit our site. So, one way we can get rid of that is with a code snippet. And I'm going to use WP code box because it's a really convenient way to create and manage code snippets on your site. Luckily, this is a really simple one. All we have to do is add a filter for WP and Q scripts. and we need to dq and dregister jQuery which will get rid of jQuery and jQuery migrate and all those dependencies. Now, WP Codebox is really awesome because not only does it make [music] it easy for you to create a snippet like this, but you also can control where it loads. Like I said earlier, we still need this for logged in users. So, we need to be kind of picky about when this snippet runs. If we open up the condition builder, you can see I've got a couple of conditions. I've created a condition for the location and I'm telling the snippet only to run if it's on the front end. I also created a condition for user loggedin status to make sure it only runs if the user is not logged in. So with those conditions, this is going to run exactly when we need it and not run in cases where it might cause some problems. So I'll go ahead and enable this snippet which will get rid of the jQuery bloat on the front end for logged out users. Now, we also had a bunch of Woo Commerce stuff loading which we don't need on the landing page in its current state. And the easiest way to unload stuff like that on specific pages is a plugin called asset cleanup. This is free. It's available in the repository. And the [music] way it works is you activate it and then go to pages, go to your landing page, and we'll have a new metab box here that allows us to unload specific things from this page. So, you can see our Woo Commerce category here has 13 files. So, we'll expand that out. And we don't need our brand styles. We don't need source buster. We don't need add to cart right now. We might in the future. So, remember that you've unloaded this if you ever decide to add Woo Commerce features [music] to the landing page, like a mini cart, for instance. We don't need the block styles CSS. We don't need the jQuery block UI. We basically don't need any of this Woo Commerce stuff. Now, there is one thing here that I think I'm going to keep, and it's the WooCommerce coming soon CSS file. I'm not positive that we actually need it, but it's pretty small, so we'll keep it for now. So, we're just going to disable the rest of this Woo Commerce stuff. And then go ahead and save. And that's going to unload it just on this page, which is what we need for now. Asset cleanup lets you kind of surgically remove things on specific pages while keeping stuff active where it needs to be. Now, the next improvement I want to make is to load our Google fonts locally. So, the way we can do that is we can go out to fonts.google.com and we can find our fonts here. In this case, I'm using enter and I'll hit get font to add it to my list. And I'm also using Libre Baskerville. Now, instead of embedding these or anything else that's going to make a call out to Google Fonts, I want to actually download these. Once I have the font files downloaded, I'm going to have TTF files for the fonts, but I need them to be.Waft 2 files in order to be able to load them as web fonts in WordPress. One website I've used to do this before is called Font Squirrel and we can go over to web font generator. We can upload our fonts and it will give us some WAFT 2 files that we can then use in WordPress. Now, in my testing, this didn't work for all of the fonts that I wanted to use, and it might be because one of the fonts is a variable font, but I found another tool that works really well, and it's called the Google Web Fonts Helper. I'll include a link to this in the video description because the URL is kind of wacky. But basically, here we can select our font from Google, and then we can pick which styles and sizes we want, and then we can download the font files. Again, this is going to give you somewhat 2 files that you can use in WordPress. Now, depending on your site builder or your theme, uploading these custom fonts may work a little differently. If your builder or theme don't offer a way to upload custom fonts, you might need to use a custom font plugin, and there are a few available in the WordPress repository. For me, I'm using Oxygen, which has a custom fonts option. So, I'll show you how that works. Let's go ahead and edit this page in Oxygen. And if we go over to the Oxygen logo at the top left and click preferences, we'll see a custom fonts area. To add a font, you simply add one and give it a name. Test, then add your font files. Once you add a font file, for instance, let's add Enter Latin 900. Open that. Then you just have to specify the font weight which in this case is 900 and whether it's itallic or normal. So you can add all those custom WAFT 2 files for that individual font that you downloaded so that Oxygen knows how to work with it. Here's what it looks like once you've actually created them. So I named them the font name and then local so that I know the difference when picking from the font drop down. And here's how they are all set up. And I did the same thing for Libre Baskerville. Once that's done, what I did is I went into my variables where I've set up my fonts for my body and headings. And I just need to switch these to the local versions. So I need to go to interlocal and libre Baskerville local. And since I'm using variables, all my body text and headings will switch to the local versions of these fonts because I changed it on the variable level. Now, let's save that change. And let's go ahead and rerun our GTMetric support and take another look at this waterfall. And the mind-blowing part is we're not even done yet. And our performance score is already up in the high 90s on GTMetrics just from some of those optimizations that we've done. Let's take a look at the waterfall. And now we can see there are far fewer assets being loaded just at a glance. The Woo Commerce stuff is gone. jQuery is no longer loading, etc. So, we've really paired down what is actually loading on this page to what is actually necessary when someone visits the page. We got another big performance score improvement out of these steps. So, we're moving in the right direction. As our final tweak, we can turn on caching and compression, the common answers to the question, how to speed up a WordPress site. We didn't wholly rely on these because while they can help a lot, it's essentially just a band-aid if you don't take care of some of the core issues we've addressed first. Now that we've taken care of a bunch of our fundamentals, and we've actually improved things quite a bit without gzip compression, caching, or a CDN enabled, let's go ahead and rerun our tests and see where we're at. Our latest test on GTMetrics shows 98% performance, 97% structure, LCP of 1 second, and zero cls. So, this is looking really good on GTMetrics. Let's rerun page speed insights and see where we're at. We're starting at 71 overall. We're at 95 performance on mobile and on desktop 99 and then hundreds across the board on all the other metrics on both. Let's go take a look at Gift of Speed and see what it tells us. We're going to go ahead and rerun the test here and we're at a 99 out of 100. Again, this is all without having compression, without having caching enabled, and without a CDN. But we do want to enable those things. Let me show you first how to check whether they're enabled in the first place. So, we'll go into our dev tools and go to the network tab. We're going to refresh. Make sure preserve log is enabled. And we don't need a throttle right now. Let's just refresh. And this first request is the one we want to look at. We're looking at the response headers. If you have caching enabled, you'll see something related to caching. Not cache control cuz this is saying no cache must revalidate, but you should see something like Xcache or something that says hit related to caching. You should also see content encoding and it should mention gzip or whatever your encoding method is here in the response headers. I'm going to go enable both gzip compression and caching on my server and then I'll show you what the response headers look like when those are enabled. All right, I've got compression turned on now and caching. I did load up the breeze plugin which is the cache management plugin for Cloudways's caching system to make sure everything was turned on, but otherwise it was just a matter of turning it on on my server. And now that those are on, let me show you what those response headers look like in an incognito window. Go ahead and load up the site, open dev tools, go to the network tab, make sure disabled cache is unchecked, and then we're going to refresh. And if we go over here to this first request, you can see now we have content encoding gzip, which tells us we have compression enabled. And then we have this x-cache response header that says hit. That means it's hitting the cache. [music] So, now that we have those turned on and ready to go, let's go ahead and rerun our final tests. We'll run one on Page Speed Insights. We'll retest on GTMetrics. [music] And then we'll retest over here on Gift of Speed. Let's pop over to Page Speed Insights and look at what we've got. And you can see that our score here is a little bit different. I think it might have actually gone down a little bit. That's not uncommon for Page Speed Insights and some of these other tools to kind of waffle depending on when you run the test. So, a lot of times, especially if you're gathering data for a report or something, you'll want to run these multiple times [music] and average the results out. But we can reference this against the other testing tools like GTMetrics, which now shows us 100% performance score. And over on Gift of Speed, we're now at a 99 out of 100, just like before. But the true test is, did we improve perceived performance overall on this page? So, the way we're going to test that is in an incognito window with cache disabled to avoid fetching stuff from memory in the browser. And I'm going to compare the page that we optimized to a nonoptimized copy. Now, some of the optimizations will carry over. Anything that was global, like loading Google fonts and unloading bloat, will still impact this [music] page. But I want to see the difference with all the optimizations at once versus this nonoptimized version of the page. First, let's reload this one with slow 4G throttling to see what it looks like. We'll hit reload. And you can see the layout shifts a ton. the images load very slowly and overall it's just not a very smooth experience for the visitor. Now let's go back over to our optimized page and we're still on slow 4G. Disable cache and we'll refresh and you can see just visually it's a much better experience. It's still a little bit slow because we're on a slow 4G connection, but our images load pretty quickly and our content and layout don't shift a bunch. So, the website's pretty much usable right away. But this isn't how most users will actually be visiting your site. In fact, this disable cache option prevents the browser from fetching cached assets that are stored in memory, for instance, which is really, really fast. So, if we turn off disabled cache and reload [music] again, let me clear the log here so you can see what's happening. You're going to see that it looks pretty much instant like it's fully loaded in 782 milliseconds and it's only transferring 547 [music] bytes. So, this is going to be more typical for users who aren't tinkering with their browser settings. Let's go down to 3G even and let's refresh after clearing our log. And again, because a lot of these assets are fetched from the disk cache, we're not even seeing the minimal loading issues that we still have on slow 4G with cache disabled. But overall, I would say that we have vastly improved the perceived performance of this page for visitors even on very slow internet connections. If you came here hoping for a master class in WordPress speed optimization, you can walk away confident that you know exactly how to optimize a WordPress site. Let's break it down into the key steps you can use as a convenient checklist when you're trying to speed up any WordPress site. Use the lazy loading property for images below the fold and make sure the images above the fold are not lazy loaded. [music] Add fixed widths and heights to images above the fold to help eliminate CLS. Optimize and resize images. Use AVIF or another modern format like WEBP for smaller sizes. Unload unnecessary scripts and styles on your homepage, including jQuery if you don't need it. Remove as much unneeded WordPress bloat like emojis and Gutenberg block CSS as you can. Load Google Fonts locally. And finally, make sure caching and compression are enabled. As a bonus, you can also use a CDN or content delivery network to speed things up even more. Now, your mileage may vary depending on your site builder and hosting, but if you follow these steps, your performance metrics will absolutely be improved. My name's Elijah and that's how to speed up a WordPress site in a few simple steps.",
+    "prior_notes": [],
+    "id": "dcb7a51a8e18067ea04d96d2"
+  },
+  "system_prompt_sha256": "f2341d28186a0dbaee868d37ce33c173f631088eb1754997556740d4905c0f2b"
+}

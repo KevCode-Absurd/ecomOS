@@ -1,0 +1,294 @@
+{
+  "request_id": "2161d52d4a567c5583027b3569ccf5be0f2e2c1b41e68597e505ce3ed3f33597",
+  "provider": "deepseek",
+  "model": "deepseek-flash",
+  "effort": "high",
+  "completion_limit": 65536,
+  "usage": {
+    "prompt_tokens": 1599,
+    "completion_tokens": 13849,
+    "total_tokens": 15448,
+    "prompt_tokens_details": {
+      "cached_tokens": 1152
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 12134
+    },
+    "prompt_cache_hit_tokens": 1152,
+    "prompt_cache_miss_tokens": 447
+  },
+  "booked_cost_usd": 0.0170985,
+  "seconds": 51.23,
+  "finish_reason": "stop",
+  "output": {
+    "units": [
+      {
+        "id": "u1",
+        "kind": "principle",
+        "title": "Win-rate figures vary by definition",
+        "claim": {
+          "text": "Win-rate figures vary widely by source (8% to 36%) because they measure different things: significant-winner-per-test, decisive-rate, and research-prequalified.",
+          "quote": "Win-rate figures vary widely by source (8% to 36%) because they measure different things: significant-winner-per-test vs decisive-rate vs research-prequalified."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not define significant-winner-per-test, decisive-rate, or research-prequalified beyond their names."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u2",
+        "kind": "action",
+        "title": "Carry win-rate definition and sample with the number",
+        "claim": {
+          "text": "The source instructs that the definition and sample must always accompany a win-rate number.",
+          "quote": "Always carry the definition and the sample with the number."
+        },
+        "action": {
+          "text": "Always carry the definition and the sample with the number.",
+          "quote": "Always carry the definition and the sample with the number."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Win-rate figures vary widely by source because they measure different things.",
+              "quote": "Win-rate figures vary widely by source (8% to 36%) because they measure different things: significant-winner-per-test vs decisive-rate vs research-prequalified."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No format, metadata fields, or sample-size requirements are specified."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u1"
+          }
+        ]
+      },
+      {
+        "id": "u3",
+        "kind": "principle",
+        "title": "Conservative win-rate anchor",
+        "claim": {
+          "text": "The most conservative and best-sourced anchor is that about 10-20% of well-run tests produce a significant winner, attributed to Kohavi, Thomke/Ghosh, and Optimizely.",
+          "quote": "The most conservative and best-sourced anchor is \"about 10-20% of well-run tests produce a significant winner\" (Kohavi, Thomke/Ghosh, Optimizely)."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No sample size, test context, or definition of well-run tests is stated."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u4",
+        "kind": "principle",
+        "title": "Reconcile DRIP and platform win-rate figures",
+        "claim": {
+          "text": "The DRIP 36.3% and platform 12-20% win-rate figures are not in conflict once DRIP's research pre-qualification and looser win definition are noted.",
+          "quote": "The DRIP 36.3% and platform 12-20% figures are not in conflict once you note DRIP pre-qualifies hypotheses with research and reports a looser win definition."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not define the platform 12-20% figure's source or the DRIP win definition in detail."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u5",
+        "kind": "principle",
+        "title": "Use 2026 SEO/agency posts only for uncontroversial facts",
+        "claim": {
+          "text": "Sources dated 2026 SEO/agency posts are used only for uncontroversial, cross-checked facts such as tooling landscape and Shopify plan limits.",
+          "quote": "Several sources are dated 2026 SEO/agency posts. They are used only for uncontroversial, cross-checked facts (tooling landscape, Shopify plan limits)."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": [
+            {
+              "text": "Statistical claims are excluded from 2026 SEO/agency posts and anchored to Tier 1-2 primary sources.",
+              "quote": "Anything statistical is anchored to Tier 1-2 primary sources."
+            }
+          ]
+        },
+        "completion": [],
+        "unknowns": [
+          "Which specific posts qualify as 2026 SEO/agency posts is not listed."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u6",
+        "kind": "principle",
+        "title": "Anchor statistical claims to Tier 1-2 primary sources",
+        "claim": {
+          "text": "Anything statistical is anchored to Tier 1-2 primary sources.",
+          "quote": "Anything statistical is anchored to Tier 1-2 primary sources."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not define Tier 1-2 or list which sources qualify."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u7",
+        "kind": "warning",
+        "title": "Shopify checkout-extensibility position is evolving",
+        "claim": {
+          "text": "The Shopify checkout-extensibility position is evolving; as of late 2025 native checkout A/B testing is limited to Plus theme/Rollouts and a few Checkout Blocks apps.",
+          "quote": "Flag for the knowledge base: the Shopify checkout-extensibility position is evolving. As of late 2025 native checkout A/B testing is limited to Plus theme/Rollouts and a few Checkout Blocks apps; re-verify this yearly because Shopify is actively adding extensibility features."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The exact definitions of Plus theme/Rollouts and Checkout Blocks apps are not given; the position is expected to change."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u8",
+        "kind": "action",
+        "title": "Flag and re-verify Shopify checkout-extensibility position",
+        "claim": {
+          "text": "The source instructs flagging the evolving Shopify checkout-extensibility position for the knowledge base and re-verifying it yearly because Shopify is actively adding extensibility features.",
+          "quote": "Flag for the knowledge base: the Shopify checkout-extensibility position is evolving. As of late 2025 native checkout A/B testing is limited to Plus theme/Rollouts and a few Checkout Blocks apps; re-verify this yearly because Shopify is actively adding extensibility features."
+        },
+        "action": {
+          "text": "Flag for the knowledge base that the Shopify checkout-extensibility position is evolving and re-verify this yearly because Shopify is actively adding extensibility features.",
+          "quote": "Flag for the knowledge base: the Shopify checkout-extensibility position is evolving. As of late 2025 native checkout A/B testing is limited to Plus theme/Rollouts and a few Checkout Blocks apps; re-verify this yearly because Shopify is actively adding extensibility features."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "The Shopify checkout-extensibility position is evolving.",
+              "quote": "the Shopify checkout-extensibility position is evolving"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No responsible owner, knowledge-base location, or specific verification source is stated."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u7"
+          }
+        ]
+      }
+    ],
+    "more_units": false,
+    "unresolved": [
+      "The source does not define significant-winner-per-test, decisive-rate, or research-prequalified.",
+      "The source does not define Tier 1-2 primary sources.",
+      "The source does not list which 2026 SEO/agency posts are used.",
+      "The source does not specify an owner, location, or exact schedule for the yearly Shopify checkout re-verification."
+    ]
+  },
+  "raw_content": "{\"units\":[{\"id\":\"u1\",\"kind\":\"principle\",\"title\":\"Win-rate figures vary by definition\",\"claim\":{\"text\":\"Win-rate figures vary widely by source (8% to 36%) because they measure different things: significant-winner-per-test, decisive-rate, and research-prequalified.\",\"quote\":\"Win-rate figures vary widely by source (8% to 36%) because they measure different things: significant-winner-per-test vs decisive-rate vs research-prequalified.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source does not define significant-winner-per-test, decisive-rate, or research-prequalified beyond their names.\"],\"relations\":[]},{\"id\":\"u2\",\"kind\":\"action\",\"title\":\"Carry win-rate definition and sample with the number\",\"claim\":{\"text\":\"The source instructs that the definition and sample must always accompany a win-rate number.\",\"quote\":\"Always carry the definition and the sample with the number.\"},\"action\":{\"text\":\"Always carry the definition and the sample with the number.\",\"quote\":\"Always carry the definition and the sample with the number.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Win-rate figures vary widely by source because they measure different things.\",\"quote\":\"Win-rate figures vary widely by source (8% to 36%) because they measure different things: significant-winner-per-test vs decisive-rate vs research-prequalified.\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"No format, metadata fields, or sample-size requirements are specified.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u1\"}]},{\"id\":\"u3\",\"kind\":\"principle\",\"title\":\"Conservative win-rate anchor\",\"claim\":{\"text\":\"The most conservative and best-sourced anchor is that about 10-20% of well-run tests produce a significant winner, attributed to Kohavi, Thomke/Ghosh, and Optimizely.\",\"quote\":\"The most conservative and best-sourced anchor is \\\"about 10-20% of well-run tests produce a significant winner\\\" (Kohavi, Thomke/Ghosh, Optimizely).\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"No sample size, test context, or definition of well-run tests is stated.\"],\"relations\":[]},{\"id\":\"u4\",\"kind\":\"principle\",\"title\":\"Reconcile DRIP and platform win-rate figures\",\"claim\":{\"text\":\"The DRIP 36.3% and platform 12-20% win-rate figures are not in conflict once DRIP's research pre-qualification and looser win definition are noted.\",\"quote\":\"The DRIP 36.3% and platform 12-20% figures are not in conflict once you note DRIP pre-qualifies hypotheses with research and reports a looser win definition.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source does not define the platform 12-20% figure's source or the DRIP win definition in detail.\"],\"relations\":[]},{\"id\":\"u5\",\"kind\":\"principle\",\"title\":\"Use 2026 SEO/agency posts only for uncontroversial facts\",\"claim\":{\"text\":\"Sources dated 2026 SEO/agency posts are used only for uncontroversial, cross-checked facts such as tooling landscape and Shopify plan limits.\",\"quote\":\"Several sources are dated 2026 SEO/agency posts. They are used only for uncontroversial, cross-checked facts (tooling landscape, Shopify plan limits).\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[{\"text\":\"Statistical claims are excluded from 2026 SEO/agency posts and anchored to Tier 1-2 primary sources.\",\"quote\":\"Anything statistical is anchored to Tier 1-2 primary sources.\"}]},\"completion\":[],\"unknowns\":[\"Which specific posts qualify as 2026 SEO/agency posts is not listed.\"],\"relations\":[]},{\"id\":\"u6\",\"kind\":\"principle\",\"title\":\"Anchor statistical claims to Tier 1-2 primary sources\",\"claim\":{\"text\":\"Anything statistical is anchored to Tier 1-2 primary sources.\",\"quote\":\"Anything statistical is anchored to Tier 1-2 primary sources.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source does not define Tier 1-2 or list which sources qualify.\"],\"relations\":[]},{\"id\":\"u7\",\"kind\":\"warning\",\"title\":\"Shopify checkout-extensibility position is evolving\",\"claim\":{\"text\":\"The Shopify checkout-extensibility position is evolving; as of late 2025 native checkout A/B testing is limited to Plus theme/Rollouts and a few Checkout Blocks apps.\",\"quote\":\"Flag for the knowledge base: the Shopify checkout-extensibility position is evolving. As of late 2025 native checkout A/B testing is limited to Plus theme/Rollouts and a few Checkout Blocks apps; re-verify this yearly because Shopify is actively adding extensibility features.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The exact definitions of Plus theme/Rollouts and Checkout Blocks apps are not given; the position is expected to change.\"],\"relations\":[]},{\"id\":\"u8\",\"kind\":\"action\",\"title\":\"Flag and re-verify Shopify checkout-extensibility position\",\"claim\":{\"text\":\"The source instructs flagging the evolving Shopify checkout-extensibility position for the knowledge base and re-verifying it yearly because Shopify is actively adding extensibility features.\",\"quote\":\"Flag for the knowledge base: the Shopify checkout-extensibility position is evolving. As of late 2025 native checkout A/B testing is limited to Plus theme/Rollouts and a few Checkout Blocks apps; re-verify this yearly because Shopify is actively adding extensibility features.\"},\"action\":{\"text\":\"Flag for the knowledge base that the Shopify checkout-extensibility position is evolving and re-verify this yearly because Shopify is actively adding extensibility features.\",\"quote\":\"Flag for the knowledge base: the Shopify checkout-extensibility position is evolving. As of late 2025 native checkout A/B testing is limited to Plus theme/Rollouts and a few Checkout Blocks apps; re-verify this yearly because Shopify is actively adding extensibility features.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"The Shopify checkout-extensibility position is evolving.\",\"quote\":\"the Shopify checkout-extensibility position is evolving\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"No responsible owner, knowledge-base location, or specific verification source is stated.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u7\"}]}],\"more_units\":false,\"unresolved\":[\"The source does not define significant-winner-per-test, decisive-rate, or research-prequalified.\",\"The source does not define Tier 1-2 primary sources.\",\"The source does not list which 2026 SEO/agency posts are used.\",\"The source does not specify an owner, location, or exact schedule for the yearly Shopify checkout re-verification.\"]}",
+  "input": {
+    "source": {
+      "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+      "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+      "locator": "batch",
+      "start": 0,
+      "text": "Win-rate figures vary widely by source (8% to 36%) because they measure different things: significant-winner-per-test vs decisive-rate vs research-prequalified. Always carry the definition and the sample with the number. The most conservative and best-sourced anchor is \"about 10-20% of well-run tests produce a significant winner\" (Kohavi, Thomke/Ghosh, Optimizely).\n\nThe DRIP 36.3% and platform 12-20% figures are not in conflict once you note DRIP pre-qualifies hypotheses with research and reports a looser win definition.\n\nSeveral sources are dated 2026 SEO/agency posts. They are used only for uncontroversial, cross-checked facts (tooling landscape, Shopify plan limits). Anything statistical is anchored to Tier 1-2 primary sources.\n\nFlag for the knowledge base: the Shopify checkout-extensibility position is evolving. As of late 2025 native checkout A/B testing is limited to Plus theme/Rollouts and a few Checkout Blocks apps; re-verify this yearly because Shopify is actively adding extensibility features."
+    },
+    "already_extracted_claims": [],
+    "instruction": "Extract remaining distinct task-sized units. Do not repeat already extracted claims."
+  },
+  "system_prompt_sha256": "f23d9572f5bf1b93a5822a96b30f4ea85c0469c454d5ce80d227418df3d2e25e"
+}

@@ -1,0 +1,198 @@
+{
+  "status": "complete",
+  "mapping": {
+    "A": "cheap_with",
+    "B": "frontier_without",
+    "C": "cheap_without",
+    "D": "frontier_with"
+  },
+  "judge_model": "gpt-5.6-terra",
+  "output": {
+    "reviews": [
+      {
+        "label": "A",
+        "scores": {
+          "factual_accuracy": 3,
+          "brand_fit": 3,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 4,
+          "prioritization": 4
+        },
+        "strengths": [
+          "Correctly concludes that a 52% open rate and $14k in platform-attributed revenue are not evidence of incremental email performance.",
+          "Calculations for Shopify conversion, AOV, revenue change, attribution share, and the combined platform-reported-value discrepancy are correct.",
+          "Appropriately treats clicks and placed orders as more decision-relevant than opens, while noting that the supplied rate denominators are unknown.",
+          "The conditional send-volume arithmetic is useful: it identifies exactly why recipient counts and rate definitions must be checked before interpreting the reported order rate.",
+          "Provides a well-sequenced audit plan: reconcile order-level reporting, confirm definitions, audit flows, inspect deliverability, then evaluate content and offers."
+        ],
+        "issues": [
+          "It says the platform reports are “almost certainly counting overlapping orders.” Overlap is plausible and explicitly warned about, but the difference between Meta-reported value and Shopify net product revenue can also reflect unreconciled definitions and attribution methods; the available facts do not quantify overlap.",
+          "The answer could use TrailFold-specific customer questions more directly when suggesting what campaign/flow content to review, such as the 13-inch sleeve, water-resistant-not-waterproof clarification, and 4–7 business-day delivery estimate.",
+          "The hypotheses about list fatigue and low-ticket/accessory mix are reasonable hypotheses, but should remain clearly secondary until campaign/flow and SKU data are pulled."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Do not use opens or attributed revenue as conclusive incremental performance.",
+            "met": true,
+            "reason": "Explicitly calls $14k platform-attributed rather than proof of impact and treats opens as insufficient."
+          },
+          {
+            "criterion": "Use click/order rates, deliverability, overlap and holdout/cohort evidence.",
+            "met": true,
+            "reason": "Uses click and order rates diagnostically, calls for deliverability checks and reconciliation, and states a holdout is needed for incrementality."
+          },
+          {
+            "criterion": "Ask for missing facts without pretending the audit has been performed.",
+            "met": true,
+            "reason": "Clearly labels proposed checks and asks for prior-period, denominator, and order-level reconciliation data."
+          }
+        ]
+      },
+      {
+        "label": "B",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 4,
+          "prioritization": 4
+        },
+        "strengths": [
+          "Gives a precise, appropriately cautious verdict: the figures show reported engagement and attribution, not incremental profitability or causal performance.",
+          "Correctly calculates email-attributed revenue as 31.1% of Shopify net product revenue and explains why this is not a contribution estimate.",
+          "Handles the Meta/Klaviyo versus Shopify discrepancy carefully: it says the reports cannot be added, without claiming a specific amount of overlap.",
+          "Explicitly avoids invented performance benchmarks for the 1.1% click rate and 0.18% order rate because definitions and coverage are absent.",
+          "The next-step plan is practical and ordered: export campaign/flow data, reconcile order IDs, inspect attribution sensitivity, audit deliverability and lifecycle rules, then run a randomized holdout.",
+          "Uses accurate TrailFold constraints in execution recommendations: 13-inch sleeve only, water-resistant rather than waterproof, delivery estimate, and no unapproved discount.",
+          "Correctly flags the Daypack inventory risk: 210 units at 8/day covers 26.25 days against a 35-day replenishment lead time, implying roughly a 70-unit gap if the run rate continues."
+        ],
+        "issues": [
+          "The inventory caution is accurate but somewhat peripheral to the narrow email-measurement question; it is best framed as a scaling guardrail, as the answer mostly does.",
+          "The proposed holdout should also specify random assignment and a pre-defined primary outcome/window in the eventual test brief; it does state both generally but not the exact allocation or duration."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Do not use opens or attributed revenue as conclusive incremental performance.",
+            "met": true,
+            "reason": "States directly that neither metric proves email performance or incremental profit."
+          },
+          {
+            "criterion": "Use click/order rates, deliverability, overlap and holdout/cohort evidence.",
+            "met": true,
+            "reason": "Prioritizes click/order reporting, deliverability and list-health auditing, order reconciliation, and a randomized holdout."
+          },
+          {
+            "criterion": "Ask for missing facts without pretending the audit has been performed.",
+            "met": true,
+            "reason": "Requests specific exports, order IDs, and flow-rule details while labeling all analysis and changes as proposed."
+          }
+        ]
+      },
+      {
+        "label": "C",
+        "scores": {
+          "factual_accuracy": 2,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 3,
+          "uncertainty_and_questions": 3,
+          "prioritization": 3
+        },
+        "strengths": [
+          "Correctly rejects opens and attributed revenue as conclusive evidence and accurately calculates storewide conversion, AOV, mobile/desktop conversion, and funnel rates.",
+          "Usefully identifies that the supplied email rates need denominator and recipient-volume clarification.",
+          "Makes good use of TrailFold facts: it avoids unsupported 15-inch fit claims, accurately says water-resistant rather than waterproof, surfaces delivery questions, and notes the Daypack stock constraint.",
+          "Correctly notes that email-specific AOV may differ from the $90 Shopify-wide AOV and labels this as an assumption.",
+          "The recommendation to reconcile order-level records and assess campaigns separately from flows is useful."
+        ],
+        "issues": [
+          "It makes an unsupported quantitative claim: “At least $39,400 is overlapping or over-attributed.” The fact that Meta plus Klaviyo reported values exceed Shopify net product revenue shows the figures cannot be added and require reconciliation; it does not establish a minimum overlap amount. Reporting definitions, time/attribution mechanics, refunds, and other unreconciled factors remain unknown.",
+          "It labels a 1.1% click rate “modest” despite correctly noting elsewhere that supplied evidence lacks a valid account-specific benchmark. The reference packet also cautions against treating example thresholds as universal.",
+          "It recommends adding a browse-abandonment flow even though the supplied account facts only identify no Added to Cart flow; no browse event capture, consented reachable volume, or browse-flow gap is provided.",
+          "The recommended 10% holdout for 14–28 days is presented too concretely without a sample-size or minimum-detectable-effect calculation. At the reported order rate, it may be materially underpowered; the answer should frame allocation and duration as to-be-sized.",
+          "“Use the $3,000 test budget for measurement or deliverability work” is vague because no specific spend requirement or deliverability defect has been established."
+        ],
+        "critical_errors": [
+          "Infers that at least $39,400 of reported revenue is overlapping or over-attributed solely from aggregate platform reports exceeding Shopify net product revenue. That amount cannot be quantified from the supplied data."
+        ],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Do not use opens or attributed revenue as conclusive incremental performance.",
+            "met": true,
+            "reason": "Clearly says the metrics are not clean evidence and calls for holdout-adjusted evaluation."
+          },
+          {
+            "criterion": "Use click/order rates, deliverability, overlap and holdout/cohort evidence.",
+            "met": true,
+            "reason": "Addresses clicks, orders, deliverability, attribution reconciliation, and a proposed holdout, though one overlap inference is overstated."
+          },
+          {
+            "criterion": "Ask for missing facts without pretending the audit has been performed.",
+            "met": true,
+            "reason": "Asks for definitions, order-level records, and holdout feasibility, and states audits have not occurred."
+          }
+        ]
+      },
+      {
+        "label": "D",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 4,
+          "prioritization": 4
+        },
+        "strengths": [
+          "Provides the clearest distinction between recorded attribution and causal, incremental revenue, without dismissing email’s potential value.",
+          "Calculations are correct: $14k is 31.1% of Shopify revenue; combined Meta and Klaviyo reported values are $84.4k versus $45k; store revenue declined 16.7%; AOV remained $90; and Daypack stock cover is 26.25 days.",
+          "Avoids C’s unsupported overlap quantification. It says the data are not additive and unreconciled rather than claiming how much revenue overlaps.",
+          "Appropriately treats click and order rates as more useful than opens while refusing to classify the supplied rates as inherently good or bad without definitions and coverage.",
+          "Offers a strong priority order: reconcile campaign/flow reporting and order IDs, audit delivery and flow logic, then investigate the post-click/mobile experience and design an incrementality test.",
+          "Uses brand-specific, compliant execution: plain-spoken product clarification, 13-inch sleeve, water-resistant-not-waterproof, free US shipping with a 4–7 business-day estimate, and no unsupported 15-inch or testimonial claims.",
+          "The Added to Cart advice is carefully constrained: it recognizes that the 1,000-session funnel gap is not automatically 1,000 identifiable, consented email recipients.",
+          "The holdout recommendation appropriately keeps flows unchanged, uses Shopify outcomes, and warns that the observed order rate may make a short test inconclusive."
+        ],
+        "issues": [
+          "The question about monthly platform and production costs is useful for profitability assessment but less immediate than the requested measurement, deliverability, and flow data.",
+          "The phrase “12,000 comparable deliveries” is explicitly hypothetical and caveated elsewhere, but actual delivered counts must be confirmed before using the 21.6-order illustration."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Do not use opens or attributed revenue as conclusive incremental performance.",
+            "met": true,
+            "reason": "Explicitly describes both metrics as recorded associations rather than proof of incremental, profitable sales."
+          },
+          {
+            "criterion": "Use click/order rates, deliverability, overlap and holdout/cohort evidence.",
+            "met": true,
+            "reason": "Addresses click/order definitions, deliverability and list health, reconciliation/overlap, and a randomized campaign holdout."
+          },
+          {
+            "criterion": "Ask for missing facts without pretending the audit has been performed.",
+            "met": true,
+            "reason": "Requests the missing reports and documents that all audits and tests are proposed rather than completed."
+          }
+        ]
+      }
+    ],
+    "ranking": [
+      "D",
+      "B",
+      "A",
+      "C"
+    ],
+    "summary": "D is the strongest overall: it is accurate, brand-specific, prioritized, and notably disciplined about what the attribution discrepancy can and cannot prove. B is nearly as strong, with an excellent cautious audit-and-holdout plan. A has sound calculations and diagnostic logic but slightly overstates certainty that the discrepancy reflects overlapping orders. C contains many useful calculations and brand-safe recommendations, but its claim that at least $39.4k is overlap/over-attribution is not supported by the aggregate reports, and several execution recommendations are too definite for the missing evidence."
+  },
+  "request_id": "89a5911fde83b1054c6dbceb6ba04a2ee0845bf1be648ed7fa39b78122c3f5d0",
+  "cost_upper_estimate_usd": 0.0693365
+}

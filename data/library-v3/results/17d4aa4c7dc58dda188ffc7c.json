@@ -1,0 +1,412 @@
+{
+  "cards": [
+    {
+      "title": "Churn rate only applies to subscriptions — use retention for one-off stores",
+      "summary": "Churn rate measures the share of subscription customers who cancel in a period; non-subscription ecommerce must use cohort retention instead.",
+      "use_when": "Choosing which metric to track for a subscription box, replenishment program or membership versus a one-off direct-to-consumer catalog.",
+      "steps": [
+        "Confirm the customer is continuously rebilled (monthly box, annual membership, replenishment program). Only then does churn apply.",
+        "If customers buy one order at a time with no rebill, do not report churn — build a cohortized retention table instead, organized by the month of first purchase.",
+        "Specify the time window whenever you quote churn: monthly churn and annual churn are not comparable numbers. Source example: a monthly churn rate of 11% means 11% of subscribers cancel each month, while an annual churn rate of 11% means 11% cancel each year.",
+        "For B2B or long-cycle subscriptions (billing every 90 days or every two to four years), match the churn window to the billing cycle or the metric will mislead.",
+        "For a subscription store, track churn as a leading indicator of customer lifetime and therefore of ad-spend tolerance."
+      ],
+      "caveats": [
+        "Source is explicit that churn simply does not apply to non-subscription businesses; using it there produces meaningless numbers.",
+        "Do not quote a churn figure without its time unit."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "subscriptions",
+        "retention",
+        "churn",
+        "cohort-analysis",
+        "kpi-tracking"
+      ],
+      "id": "d4b9ff187dc2f2bf8d7b9c24",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 5
+    },
+    {
+      "title": "Calculate churn against the prior period's base, not the current month",
+      "summary": "Churn = cancellations in a period divided by subscriptions at the start of that period, because cancellations happen at renewal from the prior cohort.",
+      "use_when": "Reporting or setting targets for monthly churn on a subscription store, and auditing any churn number a team or agency has provided.",
+      "steps": [
+        "Gather three figures per period: starting subscribers, new subscribers added in the period, and cancellations in the period.",
+        "Divide cancellations by the subscriber base from the prior period — not by the ending or current total. Source example: 100 customers in month one, 50 new in month two, 9 cancellations in month two → churn is 9/100 = 9%, not 9/141 = 6%.",
+        "Roll the formula forward across periods to see the trend: the source example moves 9%, 13%, 17%, 11%, 16% across months.",
+        "Apply the identical logic annually: source example with 53 customers in year one, 31 new, and 18 cancellations gives 18/53 = 34% annual churn.",
+        "Note that a growing subscriber count can coexist with high churn — the total hides the leak, which is why you need the split inputs."
+      ],
+      "caveats": [
+        "Without new-customer and cancellation counts you cannot calculate churn; a simple beginning-versus-ending subscriber count is insufficient.",
+        "The source's own example shows monthly churn in the ~9–17% range and annual churn ~20–40%, which look wildly different but are two different periods, not a contradiction."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "subscriptions",
+        "churn",
+        "kpi-tracking",
+        "measurement",
+        "cohort-analysis"
+      ],
+      "id": "e587bb652cdcde512a097eb3",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 5
+    },
+    {
+      "title": "Convert churn into average customer lifetime with 1/churn",
+      "summary": "Average customer lifetime equals 1 divided by the churn rate over the same period, which lets you compare monthly and annual subscriptions on one scale.",
+      "use_when": "Comparing payback and LTV scenarios across subscription plans, renewal frequencies or box programs when you need a common lifetime figure in months.",
+      "steps": [
+        "Under constant churn per billing period, expected active billed periods are approximately 1/churn, including the first active period.",
+        "At 25% monthly churn this is four monthly periods; multiply by orders per active period to estimate orders.",
+        "An annual renewal model with 40% annual churn gives 2.5 annual billed periods; it is not identical to a monthly cancellation model.",
+        "Compare plans using their actual billing and cancellation schedules and observed cohort revenue.",
+        "Treat lower churn as a scenario to validate, not guaranteed permission to increase CAC."
+      ],
+      "caveats": [
+        "This is a simplified constant-churn model; it assumes a steady churn rate and does not capture cohort-to-cohort quality differences.",
+        "The source's churn bands (25% down to 5% monthly) are illustrative scenarios, not benchmarks for a given store or category."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "subscriptions",
+        "churn",
+        "ltv",
+        "unit-economics",
+        "kpi-tracking"
+      ],
+      "id": "fe4a0757982c6d60ed896472",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 5
+    },
+    {
+      "title": "Build a cohort retention table as the only valid retention view",
+      "summary": "Organize customers by first-purchase month and track the same group forward; do not try to read retention from aggregate monthly totals.",
+      "use_when": "Setting up retention reporting for a subscription or repeat-purchase store, or evaluating a data/analytics tool purchase for the store.",
+      "steps": [
+        "Define cohorts by the month of a customer's first purchase. Each cohort row begins at month zero with that group's original count.",
+        "In each later column, show how many of that original group purchased or remained subscribed — always referencing the original group, not the prior month's survivors.",
+        "Compute retention by dividing a month's count by the locked original cohort count (lock the cohort column in the spreadsheet so it doesn't shift).",
+        "Read a single month of business diagonally across the table, because a given calendar month contains different relationship ages from different cohorts. Source example: 85 total purchasers in April come from four different cohorts.",
+        "Watch for cohort quality drift — source example shows a July cohort retaining 91% at the same point where the January cohort retained 74%, possibly due to a different acquisition event or customer profile.",
+        "Anticipate the diagonal shape: recent cohorts have empty future cells and older cohorts have no future cells."
+      ],
+      "caveats": [
+        "Source recommends pulling this from your database with SQL or an analyst, but notes spreadsheet, analytics plugins and GA cohort features can also produce it; verify what your current analytics tool actually supports.",
+        "Aggregate retention across all customers hides the drift that makes cohort tables valuable."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "cohort-analysis",
+        "retention",
+        "measurement",
+        "analytics",
+        "subscriptions"
+      ],
+      "id": "540b5bdda6374826e804da4a",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 5
+    },
+    {
+      "title": "Track net revenue retention separately from customer retention",
+      "summary": "Build a revenue-by-cohort table so you can see whether surviving customers spend more or less over time, not just how many remain.",
+      "use_when": "Assessing a subscription store where add-ons, upsells, box upgrades or price changes are meant to lift revenue per customer over time.",
+      "steps": [
+        "Build the same cohort grid but populate cells with revenue from each cohort in each period, then apply the same locked denominator formula you use for the customer table.",
+        "Interpret above 100%: in the source example 22 customers in months one and two produced the same headcount but more revenue — expansion revenue from an additional purchase or offer.",
+        "Use this to evaluate whether merchandising actions (bundles, add-ons, tier upgrades, promotional deals) are actually expanding the relationship after acquisition.",
+        "Note the source's observation that some of the best software businesses see net dollar retention exceeding 150%; it is a directional statement about expansion-led models, not a target for a physical-goods box.",
+        "Where revenue per customer falls while headcount holds, discounting or product mix is eroding value even if churn looks fine."
+      ],
+      "caveats": [
+        "Above-100% net dollar retention is a positive outcome, not a data error — do not treat it as a bug when reviewing reports.",
+        "The 150% figure comes from SaaS observation in the source and is not an established benchmark for subscription box or physical-goods stores."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "cohort-analysis",
+        "retention",
+        "unit-economics",
+        "subscriptions",
+        "revenue-expansion"
+      ],
+      "id": "20b50a304d0f539875f2ac98",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 5
+    },
+    {
+      "title": "Derive customer lifetime value per cohort in three columns",
+      "summary": "Cumulative lifetime revenue divided by the original cohort size, multiplied by gross margin, gives the LTV you should actually set CAC against.",
+      "use_when": "Setting the maximum allowable customer acquisition cost for a subscription or replenishment offer, or stress-testing a media plan's breakeven.",
+      "steps": [
+        "Build cumulative lifetime revenue per cohort by adding each month's revenue to the running total. Source example: a cohort buying $1,750 in month zero reached $14,000 cumulative by month 11.",
+        "Divide cumulative revenue by the locked original cohort headcount to get average cumulative revenue per acquired customer — source example: $406 per customer across 35 customers.",
+        "Multiply by gross margin to get LTV. Source assumption used 65% gross margin, turning $406 of revenue into roughly $264 of lifetime gross profit.",
+        "Sanity-check the first-purchase view: in the source example a customer initially spent $50 with only $33 of gross profit against a $115 CAC, so month-one economics alone look impossible.",
+        "Trace the crossover month by month — source example reached $65 cumulative gross profit by purchase two, $95 by purchase three and $123 by purchase four, surpassing the $115 CAC there.",
+        "Use the resulting LTV to set the CAC ceiling and to justify spend that looks unprofitable on the first order."
+      ],
+      "caveats": [
+        "The source's $50/month, 65% margin, $115 CAC figures are illustrative modeling assumptions, not benchmarks.",
+        "Gross margin here excludes marketing and overhead — do not substitute net margin or the payback math breaks."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "ltv",
+        "cohort-analysis",
+        "unit-economics",
+        "subscriptions",
+        "cac"
+      ],
+      "id": "e564ae6200ef310cb52d7d6d",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 5
+    },
+    {
+      "title": "Calculate CAC payback from cohorts, not from flat monthly gross profit",
+      "summary": "Dividing CAC by a single month's gross profit ignores churn; real payback must sum declining cohort gross profit until cumulative profit covers CAC.",
+      "use_when": "Deciding how fast a subscription or replenishment offer repays acquisition spend before scaling the media budget.",
+      "steps": [
+        "Estimate payback the naive way first to see the size of the error: source example takes $28 monthly gross profit against $90 CAC and reports 3.2 months.",
+        "Layer in retention by order: source high-churn cohort of 3,500 buyers retained 100% at order one, 75% at order two and 50% at order three, with most customers gone by order 18.",
+        "Multiply CAC by the full original cohort count to get total marketing outlay — 3,500 × $90 = $315,000 in the source example.",
+        "Sum gross profit across periods using each period's surviving customer count, then find when cumulative gross profit crosses total CAC. Source high-churn example breaks even around month 8, not 3.2.",
+        "Repeat for a lower-churn cohort: source software-style example retained 45% at 12 months and 15% at 24 months, breaking even around month 9 against a 7.1-month naive estimate — roughly a 27% error versus roughly 150% in the high-churn case.",
+        "Scenario-test CAC itself: the source notes a move from $125 to $225 CAC shifted breakeven from about month 5 to about month 11."
+      ],
+      "caveats": [
+        "The source warns payback is 'almost always' calculated incorrectly and that errors typically make real payback 20–100% (sometimes 200%) longer than reported.",
+        "Source numbers are worked examples, not universal benchmarks; rates vary by category and retention curve.",
+        "If your subscription allows skipping or irregular order frequency, count payback in number of orders rather than months."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "cac",
+        "payback-period",
+        "cohort-analysis",
+        "unit-economics",
+        "subscriptions"
+      ],
+      "id": "9a3cda2fe90f556b61d7e293",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 5
+    },
+    {
+      "title": "Inspect what survives after payback, not just whether you break even",
+      "summary": "Two cohorts can both repay CAC while only one generates meaningful profit afterward, so read the tail of the cohort, not the breakeven date alone.",
+      "use_when": "Comparing subscription offers, pricing tiers or market segments before committing incremental media budget, or deciding whether to reprice a program.",
+      "steps": [
+        "After computing cumulative gross profit against CAC, look at how much profit accrues beyond breakeven. In the source's high-churn example the cohort repays CAC but barely generates profit afterward.",
+        "In the source's lower-churn example, a still-large active base keeps producing profit after payback, lifting the lifetime-to-CAC ratio toward roughly 2x and continuing higher.",
+        "Treat a business that only reaches breakeven as having unresolved unit economics — the source states it would need to rethink pricing and other fundamentals.",
+        "Check whether your low-churn users might simply be people who forget to cancel, which you could exploit by splitting the range into a low-churn and a high-churn part; if that is what is happening, your targeting already selects for the low-churn segment and you should keep doing so.",
+        "Use the breakeven-plus-tail picture to choose between offer designs rather than ranking them on acquisition cost alone."
+      ],
+      "caveats": [
+        "The 2x LTV-to-CAC figure appears in the source as an outcome of one illustrative scenario, not a required threshold.",
+        "Judging a store purely on payback speed can favour offers that never become profitable."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "unit-economics",
+        "ltv",
+        "cac",
+        "subscriptions",
+        "pricing"
+      ],
+      "id": "d78b5a1720745ed0395e71f9",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 5
+    },
+    {
+      "title": "Choose subscription-compatible products and structure the offer",
+      "summary": "Subscriptions work for consumables and continuous needs; the recurring cadence, skippability and bundling of the offer drive the metrics.",
+      "use_when": "Selecting which SKUs to put on subscription or replenishment, and configuring cadence, bundles or memberships before launch.",
+      "steps": [
+        "Filter the catalog for items customers buy repeatedly: food, beverages, supplements, skincare, coffee, pet supplies, office consumables. Source is explicit that durable one-time purchases like mattresses or computers do not fit.",
+        "Decide cadence deliberately. Source notes billing can be monthly, every 90 days, or multi-year in B2B — the cadence determines which churn window and payback unit (months or orders) is meaningful.",
+        "Consider bundling or curating the shipment (mixed discovery boxes, surprise formats) as a way to keep the recurring order interesting rather than a straight reorder.",
+        "Add mechanics that lift revenue per surviving customer — prepaid terms, memberships, bundles — and then verify the effect in the net-revenue-retention table rather than assuming it worked.",
+        "Expect that consumers evaluate the recurring commitment, not just the product, so the value of each delivery must justify the next charge."
+      ],
+      "caveats": [
+        "The source presents these as the standard shapes of the subscription box model, not as proof any given SKU will retain.",
+        "Skippable or low-frequency subscriptions make month-based payback unreliable — measure in orders."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "subscriptions",
+        "offer-design",
+        "product-selection",
+        "merchandising",
+        "bundles"
+      ],
+      "id": "5a5c62ca14b3b2ac4660c77e",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 5
+    },
+    {
+      "title": "Recognize the churn-driven hurdles subscription boxes face with investors",
+      "summary": "High churn plus heavy acquisition spend makes subscription physical-goods stores hard to fund; sharp unit economics and retention data are what overcome it.",
+      "use_when": "Preparing a subscription store for fundraising, a board update or an internal go/no-go decision on scaling spend.",
+      "steps": [
+        "Expect the comparison to software: the source notes VCs favour low-churn software economics over physical subscription boxes, so lead with cohort retention and LTV data, not revenue growth.",
+        "Present cohort retention, net revenue retention and cohort-based CAC payback together — the source says this cohort view is among the first things a venture investor asks for.",
+        "Use the Dollar Shave Club precedent carefully: the source cites its roughly $1B acquisition by Unilever in 2016 as what put the model on the map, driven by an extremely low price point (~$1 blades plus ~$3.99 shipping, ~$5 total) and mostly organic/guerrilla marketing because paid acquisition at ~$50 per conversion was unaffordable.",
+        "Derive the strategic lesson for your own store: when order value is very low, paid acquisition math may not close and you need organic or content-led demand instead.",
+        "Do not treat the acquisition outcome as evidence that any low-price subscription will be valued that way — the source cites it as a story, and the retention figures referenced came from third-party scraped transaction estimates."
+      ],
+      "caveats": [
+        "The $1B acquisition and $1/$3.99 pricing are historical facts about one company, not transferable targets.",
+        "The retention figures for that case came from a site scraping third-party transaction data and are estimates."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "subscriptions",
+        "unit-economics",
+        "fundraising",
+        "acquisition",
+        "ltv"
+      ],
+      "id": "c55db537e5fac03bf53d2e10",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 5
+    },
+    {
+      "title": "Convert monthly and annual churn on a consistent survival basis",
+      "summary": "Normalize subscription churn through retained-customer survival before comparing rates.",
+      "use_when": "Comparing retention between plans or channels with different billing frequencies, or reviewing a subscription store's dashboard with mixed units.",
+      "steps": [
+        "For constant monthly churn m, annual churn = 1 - (1-m)^12.",
+        "For annual churn a, equivalent constant monthly churn = 1 - (1-a)^(1/12).",
+        "A 40% annual churn rate corresponds to about 4.17% monthly churn under this assumption.",
+        "Use actual billing periods for lifetime revenue and payback: annual upfront subscriptions differ from monthly cancel-anytime plans.",
+        "Compare equivalent cohorts, observation windows and cancellation definitions."
+      ],
+      "caveats": [
+        "These conversions assume constant churn and no reactivation; real cohort survival may differ."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "churn",
+        "ltv",
+        "measurement",
+        "subscriptions",
+        "kpi-tracking"
+      ],
+      "id": "602ada5d7d4ab679eea8496e",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 5
+    },
+    {
+      "title": "Read one calendar month diagonally across the cohort table",
+      "summary": "A single month's total revenue comes from many cohorts at different relationship ages, so totals hide which cohort is deteriorating.",
+      "use_when": "Diagnosing a revenue or order decline on a subscription store when top-line reporting looks stable, or reviewing a monthly performance deck.",
+      "steps": [
+        "Recognize that a month's transaction total is the sum of different cohort ages — source example: April's 85 purchasers include the April cohort in month zero, the March cohort in month one, the February cohort in month two and the January cohort in month three.",
+        "When a metric moves, trace it back to which rows are changing: early-month weakness points to acquisition, later-month weakness points to retention or product experience.",
+        "Note that recent cohort rows are incomplete by construction — cells beyond the latest month available are empty, which is why the table looks diagonal.",
+        "Compare cohorts at matched relationship ages (month 3 versus month 3), never at matched calendar dates."
+      ],
+      "caveats": [
+        "Requires data organized by customer first-purchase month; if your platform cannot produce this, the analysis cannot be done from totals alone.",
+        "Small cohorts produce noisy retention percentages; do not overreact to single-month swings."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "cohort-analysis",
+        "measurement",
+        "retention",
+        "analytics",
+        "subscriptions"
+      ],
+      "id": "2650453af6e880f56b4714a4",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 5
+    },
+    {
+      "title": "Build the cohort model in a spreadsheet with locked denominators",
+      "summary": "The cohort, cumulative revenue and LTV tables come from a small set of formulas with an absolute column reference to the original cohort size.",
+      "use_when": "Standing up repeatable retention and LTV reporting for a subscription store without waiting on engineering resources.",
+      "steps": [
+        "Create one row per monthly cohort with the cohort's first-purchase count in the month-zero column, then populate purchases or subscribers per period.",
+        "Write the retention formula as current-period value divided by the original cohort value with the cohort column locked (F4 in Excel adds the $), then copy across the row.",
+        "Reuse the same divisor for the revenue table to produce net revenue retention, and for cumulative revenue divided by cohort size to produce revenue per customer.",
+        "Multiply revenue per customer by gross margin to get LTV, locking the gross-margin assumption cell so you can flex it in scenario analysis.",
+        "Delete future cells that have no data rather than leaving zeros, so the table stays readable.",
+        "Source notes startups typically have an analyst or data scientist write SQL against the database to produce the underlying table, and that the format is industry standard."
+      ],
+      "caveats": [
+        "The source provides its model as a downloadable Excel file; free-template links and current analytics features may change — verify before relying on them.",
+        "Spreadsheet models must be refreshed when cohorts age; stale tables give false comfort."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "cohort-analysis",
+        "measurement",
+        "spreadsheet",
+        "ltv",
+        "subscriptions"
+      ],
+      "id": "90b11f77327e3cedba8b585c",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 5
+    }
+  ],
+  "request_id": "d7e21941f903a6e2f06af4f5f1ad59b0843bb1ee58bfa065b403e05cf280cf45",
+  "ecommerce_scope_version": 1
+}

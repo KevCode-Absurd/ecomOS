@@ -1,0 +1,426 @@
+{
+  "cards": [
+    {
+      "title": "Build a Linked Acquisition-to-Retention Model for Transactional + Subscription Mix",
+      "summary": "Forecast ad-hoc and subscription customer streams separately so you can see how each drives revenue, profit and LTV in a blended subscription business.",
+      "use_when": "Financial planning for a store selling both one-time purchases and subscriptions (subscription box, supplements, consumables) where you need to model growth, breakeven and cash needs.",
+      "steps": [
+        "Split new customers into transactional vs subscription each month, and transition the split over time: source's scenario starts at 60% transactional / 40% subscription in months 1-3, moves to 50/50 in months 4-6, and settles at 30/70 after a default-to-subscription cart change.",
+        "Model transactional repeat purchasing with a rolling return rate: divide returning customers last month by total customers acquired in the trailing 6 months. Source's example uses ~3.3% of the 6-month customer base returning in any given month.",
+        "Apply that return rate to the trailing 6-month customer count month by month, growing the trailing window as the store accumulates history.",
+        "Model subscriptions with a monthly churn rate, applied to the prior month's active subscriber base (not to this month's new signups). Source uses 25% monthly churn as a conservative subscription-box assumption.",
+        "Compute subscription lifetime orders as 1 / churn rate (25% churn = 4 orders), and transactional lifetime orders via the geometric series 1 / (1 - annual retention rate). Source's 40% annual retention gives ~1.7 lifetime orders.",
+        "Feed each stream's orders through separate AOV, refund/discount and per-unit COGS assumptions to produce revenue, COGS, contribution margin and LTV, then consolidate into an income statement and compute the blended, conversion-weighted LTV.",
+        "Expose CAC, LTV, LTV/CAC and LTV-CAC per segment and blended; plan to revise CAC each month as real market data replaces assumptions."
+      ],
+      "caveats": [
+        "The 3.3% return rate, 25% churn and stated split percentages are source-scenario illustrations, not benchmarks — backtest them against your own trailing data before relying on them.",
+        "Weighting blended LTV by conversion split rather than revenue share changes the result; state which basis you use."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "subscriptions",
+        "retention",
+        "forecasting",
+        "unit-economics",
+        "ltv",
+        "churn",
+        "cohort-analysis"
+      ],
+      "id": "1903080a3a75a2bdd18e6871",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 4
+    },
+    {
+      "title": "Forecast Marketing Spend into New Customers via CAC Assumptions",
+      "summary": "Convert a monthly ad budget into expected new customers by dividing spend by an assumed and iteratively updated CAC.",
+      "use_when": "Setting or pressure-testing monthly ad spend and growth targets for a store, and checking whether the acquired customers can ever be profitable.",
+      "steps": [
+        "Set a CAC assumption per period — the source starts at $100 for the first few months, steps to $75 through month 12 and $60 thereafter in one scenario — and note that brands with strong organic can run far lower while niche paid-only brands run higher.",
+        "Divide monthly spend by CAC, rounded to a whole number, to get expected new customers (source example: $5,000 / $100 = 50 new customers).",
+        "Multiply forward across months to build the new-customer forecast, then push those customers into retention and subscription models to produce revenue.",
+        "As you scale, replace the assumption with observed CAC from your own market data and re-forecast, since CAC depends on copy, product, brand awareness and audience targeting and cannot be known before you go to market.",
+        "Check the resultant LTV against CAC — the source argues that if LTV is below CAC you lose money on every customer relationship and there is no viable business at that point."
+      ],
+      "caveats": [
+        "The $100/$75/$60 ladder is a source-specific modeling example, not a benchmark; your CAC is only knowable after real market testing.",
+        "Blended CAC can mask segment differences — a profitable subscription cohort may subsidize an unprofitable transactional cohort."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "cac",
+        "acquisition",
+        "forecasting",
+        "unit-economics",
+        "ad-spend",
+        "ltv"
+      ],
+      "id": "1b23d41ee499dc7091bf645f",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 4
+    },
+    {
+      "title": "Use Trigger Events to Shift New Customers from One-Time to Subscription",
+      "summary": "Sequence offer, discount and cart-default changes over months to lift the subscription share of new customers toward a 30/70 steady state.",
+      "use_when": "Designing subscription upsell offers, discount structures and cart/checkout defaults for a store trying to move from mostly one-time sales to recurring revenue.",
+      "steps": [
+        "Start with a strong subscribe-and-save offer at checkout to capture the easy subscribers — source scenario reaches ~40% subscription signups in months 1-3.",
+        "Strengthen the subscription offer further (months 4-6, target ~50%) and then shift discount strategy: remove or reduce discounts on one-time purchases and tilt discounts toward subscribers.",
+        "From roughly month 10 onward, default the cart to subscription so buyers must actively switch back to one-time purchase. The source reports about a 60-70% increase in new subscription signups when defaulting the cart to subscription (data from the source's own platform, OrderGroove).",
+        "Lock the resulting 30% transactional / 70% subscription new-customer split as the steady state and carry it through the rest of the model.",
+        "Verify the default-to-subscription and checkout options available in your current platform before planning this change, since interfaces differ and change."
+      ],
+      "caveats": [
+        "The 60-70% uplift figure is the source's own platform data from defaulting carts to subscription — treat as an example, not a guaranteed result.",
+        "Aggressive defaults and asymmetric discounts can annoy customers or invite cancellations; the source does not quantify downside."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "subscriptions",
+        "checkout",
+        "offer-design",
+        "conversion-optimization",
+        "cart",
+        "discount-strategy"
+      ],
+      "id": "013b592e17af4538da8b30ac",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 4
+    },
+    {
+      "title": "Forecast Transactional Repeat Customers with a 6-Month Rolling Return Rate",
+      "summary": "Estimate how many one-time buyers return each month by applying a measured return rate to the trailing six months of acquired customers.",
+      "use_when": "Modeling repeat revenue and LTV for non-subscription customers where you cannot simply use 1/churn.",
+      "steps": [
+        "Measure the historical return rate: total returning customers in a month divided by the total customers acquired over the trailing six months. The source typically sees figures like 3-5%.",
+        "Forecast forward by multiplying each month's trailing 6-month customer count by that rate, starting with only the data you actually have in early months and expanding the window to a full six months as history accrues.",
+        "Watch how the returning cohort accumulates: in the source's example, repeat transactional customers reach 576/month (vs 2,850 new) by month 36.",
+        "Convert the model into lifetime orders using the geometric series 1 / (1 - annual retention rate); the source's 3.3% monthly rate implies ~40% annual retention and ~1.7 lifetime orders.",
+        "Multiply lifetime orders by contribution margin per order (not revenue) to get transactional LTV — the source treats lifetime contribution margin as the meaningful LTV definition."
+      ],
+      "caveats": [
+        "The rate must be measured from your own 6 months of data; 3.3% is the source's illustration.",
+        "The method assumes returning behaviour is reasonably stable; launches, seasonality or product changes can distort it."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "retention",
+        "forecasting",
+        "ltv",
+        "contribution-margin",
+        "cohort-analysis",
+        "measurement"
+      ],
+      "id": "c1e5e9113ebe59b4f30d8549",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 4
+    },
+    {
+      "title": "Compute Subscription Lifetime Orders from Monthly Churn",
+      "summary": "Estimate lifetime subscription orders from billed periods, order frequency and contribution per shipment.",
+      "use_when": "Comparing subscriber versus one-time-buyer value to decide how hard to push subscription conversion and how much you can afford to spend acquiring subscribers.",
+      "steps": [
+        "Estimate churn for the store's actual billing period; the source's 25% monthly churn is an illustration.",
+        "Expected active periods are 1/churn in a constant-churn model. Orders equal active periods times orders per period; four periods mean four orders only with one shipment each period.",
+        "Multiply expected orders by contribution per shipment after discounts, fulfillment and returns.",
+        "Compare observed subscription and one-time-purchase cohorts, including acquisition cost and cash payback.",
+        "Blend cohort values only with matching acquisition cohorts and realistic subscription conversion rates."
+      ],
+      "caveats": [
+        "1/churn assumes a constant churn rate over the customer's life, which rarely holds exactly.",
+        "Subscribers often carry a lower contribution margin per order (bigger discount) even though lifetime value is higher — model both margin and lifetime, not just one."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "subscriptions",
+        "churn",
+        "ltv",
+        "unit-economics",
+        "retention",
+        "forecasting"
+      ],
+      "id": "69e7ae8e004850df49540958",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 4
+    },
+    {
+      "title": "Report Post-Marketing Contribution Margin as the Core Profitability Gauge",
+      "summary": "Track contribution margin minus marketing each month to know whether the store can fund payroll and overhead at all.",
+      "use_when": "Monthly P&L review or investor reporting for any ecommerce store, especially when early customers are heavily first-time buyers.",
+      "steps": [
+        "Compute contribution margin (revenue minus COGS) for the month, then subtract total marketing spend to get post-marketing contribution margin.",
+        "Interpret a negative figure as structurally unprofitable: the source's position is that if gross profit minus marketing is not positive, no amount of operating efficiency produces company profit.",
+        "Watch the trend rather than one month: in the source's scenario post-marketing contribution margin is negative early because there are few returning customers, and turns positive once the repeat/subscription base builds, because returning customers carry no CAC.",
+        "Use the metric to set the pace of hiring and overhead — payroll and other opex must fit under the post-marketing contribution margin for operating profit to exist.",
+        "Cross-check against LTV minus CAC as the unit-economics view of the same idea."
+      ],
+      "caveats": [
+        "The source's timeline for reaching positive post-marketing contribution margin is scenario-specific and depends on retention build-up.",
+        "This is the source's strongly held operating view; it is a useful discipline, not a universal accounting rule."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "contribution-margin",
+        "profitability",
+        "cac",
+        "retention",
+        "reporting",
+        "unit-economics"
+      ],
+      "id": "bf82ba8e8bc2fe7a5444aee6",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 4
+    },
+    {
+      "title": "Build a Simple Bucketed Payroll and Opex Forecast",
+      "summary": "Forecast people costs by functional bucket and headcount, then layer non-payroll opex to reach operating income.",
+      "use_when": "Building or updating a store's operating expense forecast and finding the month where operating income turns positive.",
+      "steps": [
+        "Define a few functional buckets that match how you actually staff — e.g. marketing, creative, operations, exec/admin — and put an average salary per bucket, since early-stage stores often keep marketing/creative in-house while outsourcing engineering and other functions.",
+        "Forecast headcount per bucket by month and multiply salary/12 by headcount, locking the salary column so the formula copies across months correctly.",
+        "Add ~25% on top of salary for benefits, taxes and similar costs to get true employee cost.",
+        "Forecast non-payroll opex accounts (other marketing/influencer work, consultants/1099s, software, miscellaneous) as manual line items and copy them across months.",
+        "Compute operating income (also called EBIT) as contribution margin minus all operating expenses; in the source's scenario operating income turns positive in month 17 and reaches a 19% EBIT margin by month 36.",
+        "Avoid bloated multi-tab, hundreds-of-rows payroll models unless genuinely necessary — the source recommends this quick bucketed approach instead."
+      ],
+      "caveats": [
+        "The 25% loading and the month-17/19% margin outcomes are source-scenario assumptions, not benchmarks.",
+        "Outsourced vs in-house staffing mixes change the shape of this forecast; adjust buckets to your reality."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "payroll",
+        "opex",
+        "forecasting",
+        "operating-income",
+        "ebit",
+        "financial-modeling"
+      ],
+      "id": "f39ad32b21d72821de1028c3",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 4
+    },
+    {
+      "title": "Model tax losses separately from book losses and cash tax payments",
+      "summary": "Keep tax-loss assumptions explicit when forecasting cash for a store approaching profitability.",
+      "use_when": "Cash planning and investor communications for an unprofitable-early store that is turning profitable, to avoid over-forecasting tax outflows.",
+      "steps": [
+        "Separate accounting losses from tax losses in the forecast.",
+        "Have the accountant confirm eligible carryforwards, restrictions, applicable rates and payment dates for the entity.",
+        "Apply only confirmed usable losses to forecast taxable income; do not assume every operating loss shields later profit.",
+        "Do not recognize a deferred tax asset automatically from accumulated losses; confirm the applicable recognition requirements.",
+        "Maintain a cash-tax calendar and downside case without uncertain relief."
+      ],
+      "caveats": [
+        "The source's tax rate and eleven-month shelter are historical scenario assumptions, not current rules."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "tax",
+        "forecasting",
+        "cashflow",
+        "financial-modeling",
+        "profitability"
+      ],
+      "id": "b8599dca5b33a5e80911eaee",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 4
+    },
+    {
+      "title": "Forecast Inventory with Lead Time and Cycle Time Before You Model Cash",
+      "summary": "Work out when to place purchase orders by pairing supplier lead time with expected sell-through cycle, then cost each PO.",
+      "use_when": "Replenishment planning for any physical-product store to avoid stockouts and to see the true cash hit of inventory buys.",
+      "steps": [
+        "Pull forecast order volumes from the demand model to know how many units each month must be fulfilled.",
+        "Set a lead time (source scenario: 3 months from order to receipt at the fulfillment center) and a cycle time (source scenario: 4 months of sell-through).",
+        "Order enough today so that inventory arriving after the lead time lasts through the cycle: order in month 1, receive in month 4, cover 4 months, then place the next PO.",
+        "Roll starting inventory minus orders each month, adding received POs when they land, to project inventory balances.",
+        "Cost each PO using a weighted-average product COGS across your order mix — the source weights transactional COGS ($7.70) and subscription COGS ($6.50) by order share to get ~$7.20 average.",
+        "Scale the PO cadence to reality (the source models quarterly-ish POs, but monthly POs may be needed) and stress-test demand because you are committing cash months before revenue."
+      ],
+      "caveats": [
+        "Lead and cycle times are supply-chain specific; the source's 3-month lead and 4-month cycle are illustrative.",
+        "A single-SKU simplification is used — more SKUs multiply complexity substantially."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "inventory",
+        "replenishment",
+        "forecasting",
+        "cashflow",
+        "cogs",
+        "supply-chain"
+      ],
+      "id": "308a0d76128cdb05b4971f4b",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 4
+    },
+    {
+      "title": "Build a Mini Cash Flow Statement to Find Working Capital Needs and Runway",
+      "summary": "Reconcile net income with inventory purchases to project real cash burn and how much capital the store must raise.",
+      "use_when": "Deciding how much funding or cash buffer the store needs and when, especially for inventory-heavy CPG or subscription-box businesses.",
+      "steps": [
+        "In a simplified bridge, start with net income, add back inventory COGS expensed, then subtract all actual inventory supplier cash payments, whether goods have sold or not.",
+        "Add other non-cash and working-capital adjustments separately. Do not also subtract inventory/payables movements already captured by the supplier-payment bridge.",
+        "Add any starting capital (source scenario begins with $500k raised) and roll the cash balance month by month.",
+        "Expect cash to be choppier than net income: the source's example shows cash going negative around month 8 and again needing a large inventory outlay shortly after.",
+        "Use the trough of the cash curve to size the raise: in the source's example, the business needed roughly $1-1.5M cumulative to reach profitability even though operating income turned positive earlier.",
+        "Separately note the store's revenue run rate (last month's revenue x 12) as a real-time pacing metric alongside trailing 12-month actuals, and be explicit which one you quote."
+      ],
+      "caveats": [
+        "This mini cash flow ignores other assets and liabilities by design — it is not a full three-statement model.",
+        "Capital need figures are the source's scenario and depend heavily on lead times, payment terms and growth rate."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "cashflow",
+        "working-capital",
+        "inventory",
+        "runway",
+        "fundraising",
+        "forecasting"
+      ],
+      "id": "9d2823e986940b6ded26e7f0",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 4
+    },
+    {
+      "title": "Gross Revenue to Net Revenue Bridge: Report Refunds and Discounts Separately",
+      "summary": "Show gross revenue, then refunds/returns, then discounts, then net revenue — and split net revenue between first-time and repeat customers.",
+      "use_when": "Designing the monthly reporting pack or income statement presentation so you can see how much revenue discounts and refunds consume.",
+      "steps": [
+        "Start with gross revenue from transactions times undiscounted AOV (source example: $2,700 AOV).",
+        "Subtract the refund/return rate (source assumes 4%) to quantify give-back.",
+        "Subtract discounts to arrive at net revenue, applying the appropriate net AOV per segment — the source notes subscription AOV is lower than one-time AOV.",
+        "Split net revenue into first-time vs returning/subscription-repeat revenue so you can see recurring revenue growing over time and shifting to the majority of the business (source scenario crosses to over 80% subscription revenue by month 36).",
+        "Use the split to verify your strategic direction: in a subscription business, repeat subscription revenue should eventually dwarf both first-time subscriptions and transactional revenue."
+      ],
+      "caveats": [
+        "The 4% refund rate and AOV figures are the source's scenario assumptions.",
+        "Net revenue per segment requires segment-specific AOVs; using a blended AOV will misstate segment economics."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "revenue-recognition",
+        "discounts",
+        "refunds",
+        "reporting",
+        "subscriptions",
+        "aov"
+      ],
+      "id": "895584eaf5b79062a835c85b",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 4
+    },
+    {
+      "title": "Reconcile Your Model: Gross Profit Percentage Must Match Unit Economics",
+      "summary": "Use the gross profit rate as an arithmetic check that every revenue and COGS line is forecast correctly.",
+      "use_when": "After building or editing a financial model, before presenting numbers to investors or using them for decisions.",
+      "steps": [
+        "Compute the blended gross profit percentage from the rolled-up income statement (revenue minus COGS, divided by revenue).",
+        "Compare it to the gross profit percentage implied by the bottom-up unit economics (AOV minus per-unit COGS and fees).",
+        "If they don't match by segment (the source checks transactional and subscription separately), you have a formula or referencing error somewhere in the model — find and fix it.",
+        "Repeat this check each time you change AOV, discount, refund or COGS assumptions.",
+        "Track blended gross margin alongside segment margins, since a mix shift toward subscriptions (lower gross margin percentage but higher lifetime value) can lower blended margin while improving the business."
+      ],
+      "caveats": [
+        "A match confirms internal consistency, not that your assumptions are correct — wrong-but-consistent inputs still produce a wrong model."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "financial-modeling",
+        "gross-margin",
+        "unit-economics",
+        "cogs",
+        "quality-control"
+      ],
+      "id": "f1bd2de486c018840515bd06",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 4
+    },
+    {
+      "title": "Consolidate Segments and Report the Ecommerce KPI Set",
+      "summary": "Roll transactional and subscription segments into one business view and report a fixed monthly KPI set to spot direction, not just level.",
+      "use_when": "Monthly management or investor reporting for a mixed one-time/subscription store; setting which numbers get tracked every month.",
+      "steps": [
+        "Sum orders, gross revenue, net revenue, COGS and contribution margin across both segments to get the company total (source example reaches ~$1.6M net revenue per month by month 36).",
+        "Report annualized run rate (monthly revenue x 12) at the top, alongside trailing-12-month actuals, and be explicit which is which — the source prefers quoting run rate as the real-time pacing metric.",
+        "Report the subscription vs transactional revenue split and track it flipping toward subscription (source target: 80%+ subscription revenue).",
+        "Report CAC, blended LTV, LTV/CAC and LTV minus CAC per segment and weighted average.",
+        "Report post-marketing contribution margin and operating income/EBIT margin as the profitability lines.",
+        "Watch the LTV/CAC ratio trend: the source's scenario starts at 1.09 (barely above breakeven given the assumed CAC) and reaches 2 by month 36 through falling CAC and a richer subscription mix."
+      ],
+      "caveats": [
+        "The source does not label 1.09 vs 2 as industry benchmarks; they are that scenario's trajectory.",
+        "Blended LTV requires a stated weighting basis (conversion mix vs revenue mix), or the ratio is ambiguous."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "kpis",
+        "reporting",
+        "ltv",
+        "cac",
+        "run-rate",
+        "subscriptions",
+        "measurement"
+      ],
+      "id": "e3d22c4449b18f6c1d95b008",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 4
+    }
+  ],
+  "request_id": "c754ee159be0c9eeef4cac7bbc50205d8608658c73ee9ae8da24aa47dbe43f63",
+  "ecommerce_scope_version": 1
+}

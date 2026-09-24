@@ -1,0 +1,506 @@
+{
+  "request_id": "c17f82c52eb04556c579d156de20dd1aeecedef20be44d45f6a9ba0eab641e9c",
+  "provider": "deepseek",
+  "model": "deepseek-flash",
+  "effort": "none",
+  "completion_limit": 16384,
+  "usage": {
+    "prompt_tokens": 6412,
+    "completion_tokens": 6569,
+    "total_tokens": 12981,
+    "prompt_tokens_details": {
+      "cached_tokens": 512
+    },
+    "prompt_cache_hit_tokens": 512,
+    "prompt_cache_miss_tokens": 5900
+  },
+  "booked_cost_usd": 0.0098064,
+  "seconds": 35.27,
+  "finish_reason": "stop",
+  "output": {
+    "cards": [
+      {
+        "title": "Shared responsibility model: what the platform secures vs. what you secure",
+        "summary": "On hosted ecommerce platforms the platform owns infrastructure, checkout and server-side PCI, while the merchant owns credentials, app permissions and data handling.",
+        "use_when": "Deciding where to invest security effort for a store on a hosted platform (e.g., Shopify) versus a self-hosted cart, and scoping what your team is actually accountable for.",
+        "steps": [
+          "Map responsibility: the platform secures servers, payment processing, checkout code and software; the merchant secures login credentials, third-party app permissions, sensitive-customer-data handling, and admin access for team members.",
+          "Accept that the platform cannot compensate for weak merchant-side practices — an admin password of 'password123' or a click on a phishing link hands over the store regardless of platform hardening.",
+          "On self-hosted setups, budget for the work the platform would otherwise do: sourcing and renewing SSL/TLS certificates, achieving PCI compliance, patching server software, and configuring firewalls. PCI compliance alone is cited as costing small businesses roughly $1,000–$10,000 per year depending on transaction volume.",
+          "Prioritize merchant-side gaps first: enable 2FA/passkeys on admin accounts, audit app permissions, and stop storing card data in order notes, emails or spreadsheets.",
+          "Recognize that hosted checkout code is not merchant-editable, which the source says significantly reduces Magecart-style skimming exposure versus self-hosted stores where checkout JavaScript can be injected by attackers."
+        ],
+        "caveats": [
+          "Cost figures and platform behaviors are vendor-published and can change; verify current terms with your platform and processor.",
+          "Hosted platforms reduce skimming exposure but do not eliminate all fraud, ATO or bot risk."
+        ],
+        "tags": [
+          "bot-and-agent-security",
+          "platform-security",
+          "compliance",
+          "account-security",
+          "self-hosted",
+          "shopify",
+          "access-control"
+        ]
+      },
+      {
+        "title": "CNP fraud and card testing: the mechanism to defend against",
+        "summary": "Card-not-present fraud uses stolen card data validated through small test transactions before larger fraudulent purchases.",
+        "use_when": "Designing checkout fraud controls, selecting a payment processor configuration, or investigating a spike in small declined/approved orders on your store.",
+        "steps": [
+          "Understand the attack chain: fraudsters obtain card data through breaches, phishing or skimming, then run small transactions to validate the numbers before using them for larger fraud or selling the validated data on dark web markets.",
+          "Treat unusual clusters of small orders — especially from new accounts, mismatched geographies or repeated attempts on the same card range — as a likely card-testing signal rather than organic demand.",
+          "Use CVV checks so an attacker without physical card access has more difficulty completing a transaction, and AVS to check that the billing address matches the issuer's records.",
+          "Note the source's cost framing: each dollar lost to fraud costs store owners an average of about $4.61 once processing fees, lost inventory and operational disruption are counted (source-specific figure, not a benchmark to plan against).",
+          "Configure processor fraud analysis and automated rules rather than reviewing every order manually, because card testing runs at machine speed."
+        ],
+        "caveats": [
+          "Financial figures are published estimates from the source and its cited research, not guarantees for any single store.",
+          "AVS/CVV alone do not stop all CNP fraud; enablers like tokenization and 3DS work with them."
+        ],
+        "tags": [
+          "bot-and-agent-security",
+          "fraud-prevention",
+          "card-testing",
+          "checkout",
+          "payment-security",
+          "cvv",
+          "avs"
+        ]
+      },
+      {
+        "title": "Chargeback thresholds: know your danger zone",
+        "summary": "Most processors flag stores above a 0.9% chargeback rate, and above 1% processors can stop accepting cards entirely.",
+        "use_when": "Monitoring order-risk and dispute metrics, setting an internal alert threshold, or deciding when to escalate fraud controls before processor action forces it.",
+        "steps": [
+          "Track your chargeback rate as a percentage of transactions, not just an absolute dispute count, and review it regularly.",
+          "Treat roughly 0.9% as the flagged danger zone and above 1% as the point where processors can stop accepting cards — these are the source's stated processor thresholds, not a universal industry calculation, so confirm current thresholds with your own processor.",
+          "When the rate approaches the danger zone, tighten controls: enable dynamic 3DS, review AVS/CVV settings, add Flow-style automated risk routing, and consider guaranteed chargeback-coverage programs for eligible orders.",
+          "Remember that each chargeback costs the store the product, the revenue and a dispute fee; the source cites an average of about $128 per chargeback in third-party and internal costs (source-specific figure).",
+          "Use a covered-orders program where eligible — the source describes a merchant whose fraud-related chargebacks reportedly fell from 0.25% to 0.025% of transactions after moving to a platform with integrated fraud management (case example, not a promised result)."
+        ],
+        "caveats": [
+          "Numeric thresholds are processor-specific and subject to change; verify with your acquirer/processor.",
+          "Case-study reductions are examples from one merchant, not typical or guaranteed outcomes."
+        ],
+        "tags": [
+          "bot-and-agent-security",
+          "fraud-prevention",
+          "chargebacks",
+          "measurement",
+          "risk-management",
+          "payment-security"
+        ]
+      },
+      {
+        "title": "Dynamic 3D Secure and the liability shift",
+        "summary": "Dynamic 3D Secure adds step-up authentication on higher-risk transactions and can shift fraudulent chargeback liability from the store to the card issuer.",
+        "use_when": "Configuring checkout authentication to reduce fraudulent chargeback exposure without adding friction to every legitimate order.",
+        "steps": [
+          "Apply 3DS dynamically rather than universally: it appears only on higher-risk transactions, so legitimate low-risk checkouts are not slowed down.",
+          "When a cardholder completes the 3DS verification step (one-time code or biometric), the source states the responsibility for a fraudulent chargeback moves from the store to the card issuer for authenticated Visa and Mastercard disputes — confirm the exact current liability-shift rules with your processor and card networks.",
+          "Check whether your payment gateway supports 3DS 2.0 authentication when selecting a processor; this is one of the stated security criteria alongside processor-level PCI DSS certification and tokenization.",
+          "Treat 3DS as a liability-shift and verification tool, not as proof that a transaction is legitimate; step-up authentication does not guarantee the buyer is the cardholder.",
+          "Monitor approval rates and false declines after enabling dynamic 3DS so authentication friction does not silently suppress legitimate conversions."
+        ],
+        "caveats": [
+          "The source cites that only 32.4% of store owners implement 3DS; this figure is a snapshot and may change.",
+          "Liability-shift rules, coverage and eligible transaction types vary by network, region and processor — verify before relying on them."
+        ],
+        "tags": [
+          "bot-and-agent-security",
+          "fraud-prevention",
+          "3d-secure",
+          "checkout",
+          "payment-security",
+          "chargebacks",
+          "conversion-optimization"
+        ]
+      },
+      {
+        "title": "Automated order risk handling with workflow tools",
+        "summary": "Wire fraud-analysis risk ratings into automated workflows that auto-capture low-risk orders and queue high-risk ones for manual review.",
+        "use_when": "Setting up order review and capture automation so fraud decisions scale without a human watching every order.",
+        "steps": [
+          "Confirm your platform's fraud analysis scores each order low, medium or high using signals such as AVS checks, CVV verification, IP data, proxy detection and unusual purchase patterns.",
+          "Build workflows triggered by order-risk events that: auto-capture low-risk orders, add high-risk orders to a manual review queue, send internal notifications for medium-risk orders, and cancel orders matching specific fraud patterns.",
+          "Use pre-built workflow templates from your platform's help center as starting points, then adapt thresholds to your store's order profile and risk tolerance.",
+          "Revisit automation as order volume and fraud patterns change; a rule set tuned for one season can create either false declines or un-reviewed high-risk captures later.",
+          "Keep a human escalation path for medium- and high-risk queues so automated cancellation rules do not silently reject legitimate high-value customers."
+        ],
+        "caveats": [
+          "Fraud scores are model outputs, not verdicts; both false positives and false negatives are possible.",
+          "Workflow trigger names and template availability change over time — verify against the current platform interface and help documentation."
+        ],
+        "tags": [
+          "bot-and-agent-security",
+          "fraud-prevention",
+          "automation",
+          "shopify-flow",
+          "order-management",
+          "risk-management"
+        ]
+      },
+      {
+        "title": "AVS, CVV and 3DS: keep the three verification tools distinct",
+        "summary": "AVS checks billing address, CVV checks for physical card presence, and 3DS adds step-up authentication on higher-risk transactions.",
+        "use_when": "Configuring fraud-prevention settings or explaining to your team which control addresses which fraud vector at checkout.",
+        "steps": [
+          "AVS (Address Verification System): checks whether the billing address provided matches the address on file with the card issuer — useful against stolen-card use where the attacker lacks the correct billing address.",
+          "CVV: the three- or four-digit code on the card; requiring it makes stolen card numbers harder to use without physical access, but it is not proof of cardholder identity.",
+          "3DS: adds a multifactor authentication step (one-time code or biometric) for higher-risk transactions and can shift fraudulent chargeback liability to the issuer when completed.",
+          "Configure AVS and CVV requirements and decide how checkout handles mismatched billing addresses under Shopify Payments fraud-prevention settings (path cited: Settings → Payments → Shopify Payments → Manage → Fraud prevention; verify current navigation).",
+          "Before enabling AVS, note the source's warning that AVS is deactivated by default in Shopify Payments because fraud analysis handles high-risk transactions separately, and that enabling it alongside fraud analysis can raise false declines on legitimate orders — review your order risk reports first.",
+          "Do not treat any single control as sufficient; combine them and monitor outcomes."
+        ],
+        "caveats": [
+          "No single control guarantees a transaction is legitimate; AVS, CVV and 3DS catch different failure modes and can all be defeated or produce false declines.",
+          "Admin navigation paths and defaults change — verify the current interface."
+        ],
+        "tags": [
+          "bot-and-agent-security",
+          "fraud-prevention",
+          "avs",
+          "cvv",
+          "3d-secure",
+          "checkout",
+          "payment-security"
+        ]
+      },
+      {
+        "title": "PCI DSS for small stores: Level 4 and your real obligations",
+        "summary": "PCI DSS applies to every business accepting card payments; most small stores fall under Level 4, requiring an annual Self-Assessment Questionnaire rather than a formal QSA audit.",
+        "use_when": "Understanding your compliance obligations as a small store, or checking that store operations do not introduce non-compliant card-data handling.",
+        "steps": [
+          "Determine your level: the source states stores processing fewer than 20,000 transactions per year typically qualify as Level 4, requiring an annual Self-Assessment Questionnaire (SAQ) rather than a formal third-party audit.",
+          "If you manage compliance independently, plan for the full workload the source describes: annual self-assessments, quarterly vulnerability scans, and possibly a formal audit by a Qualified Security Assessor (QSA).",
+          "If you are on a hosted platform like Shopify, PCI compliance is handled at the platform level and card data is processed and stored in a PCI DSS-compliant environment — but your responsibility is to avoid introducing non-compliant data handling.",
+          "In practice that means never asking customers for card details outside of checkout, and never storing card numbers in order notes, emails or spreadsheets.",
+          "Treat PCI DSS as 12 core requirements covering network security, encryption, access controls, monitoring and security policies."
+        ],
+        "caveats": [
+          "The 20,000-transaction Level 4 threshold and SAQ requirement are the source's stated standard; confirm current PCI SSC definitions with your processor or acquirer.",
+          "Platform-level compliance covers the platform's environment, not every merchant-side workflow or app integration."
+        ],
+        "tags": [
+          "bot-and-agent-security",
+          "compliance",
+          "pci-dss",
+          "payment-security",
+          "data-handling",
+          "shopify"
+        ]
+      },
+      {
+        "title": "Payment gateway selection: what to verify before committing",
+        "summary": "When choosing a gateway, check processor-level PCI DSS certification, tokenization and 3DS 2.0 support.",
+        "use_when": "Evaluating a new payment gateway or reviewing whether an existing gateway meets your store's security requirements.",
+        "steps": [
+          "Verify the gateway is PCI DSS-certified at the processor level — certification of your own storefront does not substitute for processor-side compliance.",
+          "Confirm tokenization is supported: card data is replaced with a non-sensitive token so raw card numbers are not retained in your environment.",
+          "Confirm 3DS 2.0 authentication support so you can apply dynamic step-up verification on higher-risk transactions.",
+          "Compare against a built-in option where available: Shopify Payments is described as PCI-compliant by default and includes fraud analysis, 3D Secure and Shopify Protect for eligible stores; third-party gateways can be used but bring their own compliance and security requirements.",
+          "Check certifications directly with the provider before you commit rather than relying on marketing pages, and re-verify periodically since provider terms and certifications change."
+        ],
+        "caveats": [
+          "Vendor feature claims and program eligibility change; verify with the provider and your own processor.",
+          "Adding a third-party gateway may complicate which party handles compliance and chargeback liability."
+        ],
+        "tags": [
+          "bot-and-agent-security",
+          "payment-security",
+          "checkout",
+          "pci-dss",
+          "tokenization",
+          "gateway-selection",
+          "3d-secure"
+        ]
+      },
+      {
+        "title": "Account takeover, credential stuffing and phishing defenses",
+        "summary": "Credential stuffing and phishing feed account takeover, which the source links to customer churn and reputational spread.",
+        "use_when": "Hardening customer accounts and admin access against takeover, or assessing the retention risk of an account-security incident.",
+        "steps": [
+          "Recognize the attack chain: large-scale breaches expose username/password pairs, which attackers test automatically across other sites (credential stuffing), or use for targeted phishing that impersonates a trusted source to harvest credentials.",
+          "Require 2FA on all admin accounts, not just payment-related ones — the source notes 2FA is required to use Shopify Payments but should be enabled everywhere; the setup path cited is profile → Manage account → Security → two-step authentication (verify current navigation).",
+          "Add passkeys as an additional authentication layer where supported.",
+          "Train the team on generative-AI-crafted phishing: check suspicious sender domains, verify any request for credential changes or payment redirects through a separate channel, and give staff a reporting route for suspicious emails, voice (vishing) and SMS (smishing).",
+          "Weigh retention impact: the source cites a survey finding that 75% of consumers say they would stop using a site after an account takeover there and 87% would share the experience with others (survey findings, not a guarantee for your store)."
+        ],
+        "caveats": [
+          "2FA, passkeys and training reduce but do not eliminate ATO risk; attackers also target APIs and support channels.",
+          "Survey percentages are third-party research snapshots, not benchmarks."
+        ],
+        "tags": [
+          "bot-and-agent-security",
+          "account-security",
+          "account-takeover",
+          "phishing",
+          "2fa",
+          "passkeys",
+          "retention"
+        ]
+      },
+      {
+        "title": "Auditing third-party apps and integrations",
+        "summary": "Every installed app can access order data, customer information or store settings depending on permissions — audit access regularly and remove unused apps.",
+        "use_when": "Reviewing app permissions before or after installing storefront, marketing, review or fulfillment apps, or cleaning up an accumulated app stack.",
+        "steps": [
+          "List installed apps and their permissions from the platform admin (the source cites Settings → Apps and sales channels; verify current navigation) and check what each is permitted to access.",
+          "Remove any app no longer in use — an unused integration with order or customer-data permissions is standing risk.",
+          "When selecting new apps, prioritize those with 'Built for Shopify' status and review scores above 3.75; the source states these have been reviewed against Shopify's technical requirements and are maintained to current platform standards.",
+          "Treat installed apps as part of your data-handling surface: an app with broad permissions can undermine your PCI and privacy posture even when your own checkout is clean.",
+          "Re-audit after adding apps with checkout, payment or customer-data access, since permission scope at install time determines what data the app can reach."
+        ],
+        "caveats": [
+          "Review-score and status thresholds are platform-specific heuristics from the source; verify current app-review criteria.",
+          "Neither a badge nor a score guarantees an app is secure."
+        ],
+        "tags": [
+          "bot-and-agent-security",
+          "app-security",
+          "access-control",
+          "data-handling",
+          "shopify",
+          "vendor-review"
+        ]
+      },
+      {
+        "title": "Digital skimming (Magecart): why hosted checkout reduces exposure",
+        "summary": "Skimming malware injects malicious JavaScript into checkout pages to capture card data as customers type, and hosted platforms reduce this exposure because merchants cannot modify checkout code.",
+        "use_when": "Deciding between hosted and self-hosted checkout, or assessing skimming risk from custom checkout scripts and third-party front-end code.",
+        "steps": [
+          "Understand the attack: attackers inject malicious code into the checkout page to capture debit/credit card details as customers enter them; the source describes these as brute-force attacks targeting JavaScript that are hard to spot without regular code audits.",
+          "If you run a hosted platform, note that the source says hosted stores are significantly less exposed because merchants cannot alter the underlying checkout code — a structural control, not a guarantee.",
+          "If you run self-hosted or heavily customized checkout, add regular code audits and review any third-party JavaScript added to payment pages as a standing practice.",
+          "Restrict who can modify checkout templates and injected scripts; every additional script on the payment page is a potential injection point.",
+          "Do not treat HTTPS or a padlock icon as protection against skimming — skimming captures data after it is typed, inside a page that may still be encrypted in transit."
+        ],
+        "caveats": [
+          "Hosted platforms reduce but do not eliminate skimming or supply-chain script risk from installed apps and tags.",
+          "The source does not prescribe a specific audit frequency; treat regular audits as a principle, not a fixed schedule."
+        ],
+        "tags": [
+          "bot-and-agent-security",
+          "magecart",
+          "skimming",
+          "checkout",
+          "code-audit",
+          "platform-security"
+        ]
+      },
+      {
+        "title": "Bot attacks, API targeting and DDoS: what to watch",
+        "summary": "Bots run card testing, price scraping, fake account creation and inventory hoarding, and 44% of advanced bot traffic now targets API endpoints handling checkout, inventory and accounts.",
+        "use_when": "Investigating suspicious traffic patterns, inventory hoarding, fake account signups or site slowdowns that could be bot-driven.",
+        "steps": [
+          "Treat the API surface as the priority: the source cites a 2025 Imperva report stating 44% of advanced bot traffic targets API endpoints that handle checkout, inventory and customer account data — so review what your APIs expose and who can call them.",
+          "Watch for bot-driven commerce behaviors: card-testing transaction patterns, pricing-data scraping, bulk fake-account creation, and stockpiling of high-demand products before real shoppers can buy.",
+          "For DDoS, recognize the signature as traffic flooding that locks out real customers; the source does not prescribe a specific mitigation stack, so rely on platform-level protections and your provider's DDoS handling.",
+          "Use early bot-detection signal where available: the source cites an example where a platform's Sidekick flagged a major bot attack on Maggy London's storefront before any other monitoring system (a single case example, not a guaranteed detection capability).",
+          "Prioritize protections by business impact — checkout and inventory APIs affect revenue directly; scraping affects pricing strategy."
+        ],
+        "caveats": [
+          "The 44% API-targeting figure is a third-party report snapshot, not a benchmark for your store.",
+          "The Maggy London detection case is an illustrative example; do not assume equivalent detection performance."
+        ],
+        "tags": [
+          "bot-and-agent-security",
+          "bot-mitigation",
+          "api-security",
+          "ddos",
+          "inventory",
+          "account-security",
+          "monitoring"
+        ]
+      },
+      {
+        "title": "Security failures as retention and conversion risk",
+        "summary": "Account takeover and missing HTTPS drive measurable customer abandonment, and the source ties security to conversion and retention decisions.",
+        "use_when": "Making the business case for checkout security signals, privacy transparency, or remediating a security incident's customer-facing impact.",
+        "steps": [
+          "Weigh the retention cost of incidents: the source cites a survey finding that 75% of consumers would stop using a site after an account takeover there and 87% would share the experience with others.",
+          "Recognize the conversion cost of missing encryption: modern browsers flag any site without HTTPS with a 'Not secure' warning in the address bar, visible at the moment customers decide whether to enter card details.",
+          "Use visible trust signals at the right point in the journey: the padlock icon and HTTPS prefix are the most widely recognized security signals for shoppers, Shop Pay stores returning users' shipping and payment details securely to reduce checkout friction, and third-party trust badges can supplement these on checkout pages — particularly for security-conscious categories like health products or high-value goods.",
+          "Address privacy transparency as a conversion factor: the source cites a finding that 36% of consumers have stopped using a website due to privacy concerns, and GDPR requires clear information on what data is collected, why and how it is stored for EU/UK customers.",
+          "Treat HTTPS and a padlock as baseline hygiene that removes a warning, not as proof of security — the source notes 98% of US web traffic on Google's platforms ran over HTTPS as of June 2026, making encryption an expectation, not a differentiator."
+        ],
+        "caveats": [
+          "Consumer survey percentages are third-party research snapshots; results in your store's audience may differ.",
+          "Trust badges and privacy copy should not substitute for actual controls; false or outdated signals can worsen trust."
+        ],
+        "tags": [
+          "bot-and-agent-security",
+          "trust-signals",
+          "checkout",
+          "conversion-optimization",
+          "retention",
+          "privacy",
+          "https"
+        ]
+      },
+      {
+        "title": "Privacy policy, GDPR exposure and third-party audit signals",
+        "summary": "GDPR applies to EU/UK customers regardless of store location, with fines up to 4% of global annual revenue, and SOC audits act as third-party trust signals.",
+        "use_when": "Publishing or updating a privacy policy, supporting an EU/UK customer base, or evaluating what independent security assurance your platform provides.",
+        "steps": [
+          "Confirm scope: if you sell to customers in the EU and UK, GDPR applies regardless of where your store is based.",
+          "Publish clear information on what customer data is collected, why it is collected, and how it is stored; for Shopify-hosted stores, automated privacy policy templates cover core requirements and the Customer Privacy API supports cookie-consent banners that meet GDPR standards (verify current feature names and coverage).",
+          "Understand the penalty scale: serious GDPR violations carry fines of up to 4% of a company's global annual revenue, with the source citing approximately €1.2 billion in EU supervisory authority fines in 2025 and average breach notifications around 443 per day (published figures, not predictions for your store).",
+          "Use independent audits as diligence signals: the source states Shopify undergoes SOC 1 and SOC 2 audits every six months, verifying controls over customer data encryption, access management, incident response and physical infrastructure — check the current status and scope before citing it to customers or partners.",
+          "Treat platform audit reports as covering the platform's environment only, not your store's apps, workflows or data handling."
+        ],
+        "caveats": [
+          "GDPR requirements and official templates change; verify current obligations with qualified counsel for your markets.",
+          "SOC report scope and frequency can change — confirm the latest reports rather than relying on this description."
+        ],
+        "tags": [
+          "bot-and-agent-security",
+          "compliance",
+          "gdpr",
+          "privacy",
+          "soc-audit",
+          "data-handling",
+          "trust-signals"
+        ]
+      },
+      {
+        "title": "Guaranteed chargeback coverage programs: eligibility and limits",
+        "summary": "Shopify Protect (formerly Fraud Protect) covers chargebacks and dispute fees on eligible protected orders for eligible Shopify Payments users in the US.",
+        "use_when": "Evaluating whether a guaranteed chargeback-coverage program applies to your store and how it changes your manual fraud-review workload.",
+        "steps": [
+          "Check eligibility first: the source states Shopify Protect is available to eligible Shopify Payments users in the US — eligibility and geography matter, so verify current terms in the platform's help documentation.",
+          "Understand what coverage does: orders are marked protected, payment is guaranteed, and if a dispute is filed on a protected order the platform covers the chargeback and the dispute fee.",
+          "Use the covered-order marking to reduce manual review for orders that qualify, while keeping review in place for orders outside coverage.",
+          "Reallocate the freed review time toward customer experience and high-value account management — the source quotes a merchant who said a staff member previously spent nearly her whole job on fraud and shifted to customer experience after switching to integrated fraud management.",
+          "Do not assume all orders are covered; confirm which orders are marked protected in your admin before treating the program as your only fraud control."
+        ],
+        "caveats": [
+          "Program availability, eligibility and coverage terms are vendor-specific and subject to change — verify current terms.",
+          "Coverage addresses chargeback liability on protected orders, not all fraud losses, false declines or operational costs."
+        ],
+        "tags": [
+          "bot-and-agent-security",
+          "fraud-prevention",
+          "chargebacks",
+          "shopify-protect",
+          "payment-security",
+          "operations"
+        ]
+      },
+      {
+        "title": "Preventing card data from leaking outside checkout",
+        "summary": "PCI compliance on a hosted platform is maintained by keeping card handling inside the compliant checkout and never storing card data in notes, emails or spreadsheets.",
+        "use_when": "Reviewing order-management, support and fulfillment workflows for card-data handling that could break compliance on an otherwise compliant platform.",
+        "steps": [
+          "Instruct all staff never to ask customers for card details outside of checkout — any such request moves card handling into a non-compliant channel.",
+          "Ban storing card numbers in order notes, emails, spreadsheets or shared documents used for fulfillment, support or record-keeping.",
+          "When a customer sends card details by email or chat, treat the message as exposure: do not process it manually from that channel; direct the customer back to the compliant checkout flow.",
+          "Apply the same rule to app and integration data flows: apps with order or customer permissions should not be used to store or relay raw card numbers.",
+          "Recognize this is the merchant's practical PCI obligation on a hosted platform — the platform handles processing and storage in a compliant environment, and your role is not to introduce non-compliant handling."
+        ],
+        "caveats": [
+          "This guidance addresses card-data handling specifically; other customer data still carries privacy obligations under rules like GDPR.",
+          "Individual staff workflows and third-party tools change — re-audit periodically."
+        ],
+        "tags": [
+          "bot-and-agent-security",
+          "pci-dss",
+          "compliance",
+          "data-handling",
+          "checkout",
+          "operations"
+        ]
+      },
+      {
+        "title": "Prioritizing fraud controls when resources are limited",
+        "summary": "When a store cannot implement every control, sequence by direct financial exposure: enable account protection, then automated risk handling, then verification and coverage options.",
+        "use_when": "Building a fraud and security roadmap for a small store, deciding what to configure first, or allocating limited operational time to security work.",
+        "steps": [
+          "Start with account protection since it gates everything else: enable 2FA on every admin account and add passkeys where supported — the platform can't protect an admin account with a weak or phishable credential.",
+          "Then enable the platform's built-in fraud analysis and wire its risk ratings into automated order handling (auto-capture low risk, queue high risk for review) so fraud decisions do not depend on someone watching every order.",
+          "Then reduce chargeback exposure financially: apply dynamic 3D Secure so higher-risk transactions carry step-up authentication and liability can shift to the issuer, and check eligibility for guaranteed chargeback-coverage programs.",
+          "Then tighten verification settings like AVS and CVV carefully, watching for false declines on legitimate customers before changing defaults.",
+          "Layer in organizational controls last but do not skip them: phishing training, app-permission audits, and prohibiting card data outside checkout — these address the human and integration paths that technical controls miss."
+        ],
+        "caveats": [
+          "No single control or sequence guarantees protection; each reduces specific risk and some increase false declines.",
+          "Platform defaults, thresholds and feature availability change — verify current behavior before relying on any specific setting."
+        ],
+        "tags": [
+          "bot-and-agent-security",
+          "fraud-prevention",
+          "prioritization",
+          "account-security",
+          "3d-secure",
+          "shopify",
+          "operations"
+        ]
+      },
+      {
+        "title": "Assessing platform-level security defaults before you rely on them",
+        "summary": "Hosted platforms supply PCI compliance, TLS/HTTPS and fraud scoring by default, but you should verify what each default actually covers for your store.",
+        "use_when": "Evaluating a hosting platform's security posture during store setup or migration, or documenting which security obligations remain with your team.",
+        "steps": [
+          "Inventory the platform-provided defaults you can rely on: PCI DSS compliance by default, a free TLS certificate with HTTPS switched on by default, and card readers that are PCI and EMV compliant (per the source's Shopify description).",
+          "Confirm fraud scoring exists and what signals it uses: one described implementation scores every order low/medium/high using AVS checks, CVV verification, IP address data, proxy detection and unusual purchase patterns.",
+          "Check which optional programs and features you must explicitly enable or qualify for, such as guaranteed chargeback coverage, dynamic 3D Secure, and workflow automation apps.",
+          "Document the residual merchant-side obligations — credentials, app permissions, staff access and customer-data handling — so platform defaults are not mistaken for complete coverage.",
+          "Re-verify platform features and certifications periodically; vendor security offerings change and published descriptions may lag the interface."
+        ],
+        "caveats": [
+          "Platform feature descriptions here reflect a vendor blog source and may be outdated or specific to certain plans and regions.",
+          "Default protections reduce risk but do not transfer all responsibility away from the merchant."
+        ],
+        "tags": [
+          "bot-and-agent-security",
+          "platform-security",
+          "due-diligence",
+          "pci-dss",
+          "tls",
+          "fraud-prevention",
+          "shopify"
+        ]
+      },
+      {
+        "title": "Bot and fraud monitoring for inventory and high-demand drops",
+        "summary": "Bots create fake accounts and stockpile high-demand products before real shoppers can buy, so inventory protection is a bot-mitigation concern, not just a security one.",
+        "use_when": "Planning a limited-release, high-demand drop, or investigating inventory that sells out unusually fast with suspicious buyer accounts.",
+        "steps": [
+          "Treat inventory APIs as a defended surface: the source notes bots target API endpoints that handle checkout, inventory and customer account data, not only the storefront front end.",
+          "Watch for the specific bot behaviors the source lists in ecommerce: card testing, pricing-data scraping, fake account creation, and stockpiling high-demand products before real shoppers can buy.",
+          "Add friction proportional to risk on high-demand releases — for example, requiring authenticated accounts, limiting per-account quantities, and reviewing orders from newly created accounts.",
+          "Monitor for early warning signs and act on them: the source describes a case where a platform's bot-detection tool flagged a major bot attack on Maggy London's storefront before any other monitoring system, illustrating the value of detection layered ahead of manual review (single case example).",
+          "Keep account-creation defenses in place, since fake accounts are the base layer for hoarding and card testing."
+        ],
+        "caveats": [
+          "The Maggy London case is illustrative and does not guarantee similar detection performance.",
+          "Inventory protection measures can create friction for legitimate customers; balance against conversion impact."
+        ],
+        "tags": [
+          "bot-and-agent-security",
+          "bot-mitigation",
+          "inventory",
+          "api-security",
+          "account-security",
+          "drop-management"
+        ]
+      }
+    ]
+  },
+  "raw_content": "{\"cards\":[{\"title\":\"Shared responsibility model: what the platform secures vs. what you secure\",\"summary\":\"On hosted ecommerce platforms the platform owns infrastructure, checkout and server-side PCI, while the merchant owns credentials, app permissions and data handling.\",\"use_when\":\"Deciding where to invest security effort for a store on a hosted platform (e.g., Shopify) versus a self-hosted cart, and scoping what your team is actually accountable for.\",\"steps\":[\"Map responsibility: the platform secures servers, payment processing, checkout code and software; the merchant secures login credentials, third-party app permissions, sensitive-customer-data handling, and admin access for team members.\",\"Accept that the platform cannot compensate for weak merchant-side practices — an admin password of 'password123' or a click on a phishing link hands over the store regardless of platform hardening.\",\"On self-hosted setups, budget for the work the platform would otherwise do: sourcing and renewing SSL/TLS certificates, achieving PCI compliance, patching server software, and configuring firewalls. PCI compliance alone is cited as costing small businesses roughly $1,000–$10,000 per year depending on transaction volume.\",\"Prioritize merchant-side gaps first: enable 2FA/passkeys on admin accounts, audit app permissions, and stop storing card data in order notes, emails or spreadsheets.\",\"Recognize that hosted checkout code is not merchant-editable, which the source says significantly reduces Magecart-style skimming exposure versus self-hosted stores where checkout JavaScript can be injected by attackers.\"],\"caveats\":[\"Cost figures and platform behaviors are vendor-published and can change; verify current terms with your platform and processor.\",\"Hosted platforms reduce skimming exposure but do not eliminate all fraud, ATO or bot risk.\"],\"tags\":[\"bot-and-agent-security\",\"platform-security\",\"compliance\",\"account-security\",\"self-hosted\",\"shopify\",\"access-control\"]},{\"title\":\"CNP fraud and card testing: the mechanism to defend against\",\"summary\":\"Card-not-present fraud uses stolen card data validated through small test transactions before larger fraudulent purchases.\",\"use_when\":\"Designing checkout fraud controls, selecting a payment processor configuration, or investigating a spike in small declined/approved orders on your store.\",\"steps\":[\"Understand the attack chain: fraudsters obtain card data through breaches, phishing or skimming, then run small transactions to validate the numbers before using them for larger fraud or selling the validated data on dark web markets.\",\"Treat unusual clusters of small orders — especially from new accounts, mismatched geographies or repeated attempts on the same card range — as a likely card-testing signal rather than organic demand.\",\"Use CVV checks so an attacker without physical card access has more difficulty completing a transaction, and AVS to check that the billing address matches the issuer's records.\",\"Note the source's cost framing: each dollar lost to fraud costs store owners an average of about $4.61 once processing fees, lost inventory and operational disruption are counted (source-specific figure, not a benchmark to plan against).\",\"Configure processor fraud analysis and automated rules rather than reviewing every order manually, because card testing runs at machine speed.\"],\"caveats\":[\"Financial figures are published estimates from the source and its cited research, not guarantees for any single store.\",\"AVS/CVV alone do not stop all CNP fraud; enablers like tokenization and 3DS work with them.\"],\"tags\":[\"bot-and-agent-security\",\"fraud-prevention\",\"card-testing\",\"checkout\",\"payment-security\",\"cvv\",\"avs\"]},{\"title\":\"Chargeback thresholds: know your danger zone\",\"summary\":\"Most processors flag stores above a 0.9% chargeback rate, and above 1% processors can stop accepting cards entirely.\",\"use_when\":\"Monitoring order-risk and dispute metrics, setting an internal alert threshold, or deciding when to escalate fraud controls before processor action forces it.\",\"steps\":[\"Track your chargeback rate as a percentage of transactions, not just an absolute dispute count, and review it regularly.\",\"Treat roughly 0.9% as the flagged danger zone and above 1% as the point where processors can stop accepting cards — these are the source's stated processor thresholds, not a universal industry calculation, so confirm current thresholds with your own processor.\",\"When the rate approaches the danger zone, tighten controls: enable dynamic 3DS, review AVS/CVV settings, add Flow-style automated risk routing, and consider guaranteed chargeback-coverage programs for eligible orders.\",\"Remember that each chargeback costs the store the product, the revenue and a dispute fee; the source cites an average of about $128 per chargeback in third-party and internal costs (source-specific figure).\",\"Use a covered-orders program where eligible — the source describes a merchant whose fraud-related chargebacks reportedly fell from 0.25% to 0.025% of transactions after moving to a platform with integrated fraud management (case example, not a promised result).\"],\"caveats\":[\"Numeric thresholds are processor-specific and subject to change; verify with your acquirer/processor.\",\"Case-study reductions are examples from one merchant, not typical or guaranteed outcomes.\"],\"tags\":[\"bot-and-agent-security\",\"fraud-prevention\",\"chargebacks\",\"measurement\",\"risk-management\",\"payment-security\"]},{\"title\":\"Dynamic 3D Secure and the liability shift\",\"summary\":\"Dynamic 3D Secure adds step-up authentication on higher-risk transactions and can shift fraudulent chargeback liability from the store to the card issuer.\",\"use_when\":\"Configuring checkout authentication to reduce fraudulent chargeback exposure without adding friction to every legitimate order.\",\"steps\":[\"Apply 3DS dynamically rather than universally: it appears only on higher-risk transactions, so legitimate low-risk checkouts are not slowed down.\",\"When a cardholder completes the 3DS verification step (one-time code or biometric), the source states the responsibility for a fraudulent chargeback moves from the store to the card issuer for authenticated Visa and Mastercard disputes — confirm the exact current liability-shift rules with your processor and card networks.\",\"Check whether your payment gateway supports 3DS 2.0 authentication when selecting a processor; this is one of the stated security criteria alongside processor-level PCI DSS certification and tokenization.\",\"Treat 3DS as a liability-shift and verification tool, not as proof that a transaction is legitimate; step-up authentication does not guarantee the buyer is the cardholder.\",\"Monitor approval rates and false declines after enabling dynamic 3DS so authentication friction does not silently suppress legitimate conversions.\"],\"caveats\":[\"The source cites that only 32.4% of store owners implement 3DS; this figure is a snapshot and may change.\",\"Liability-shift rules, coverage and eligible transaction types vary by network, region and processor — verify before relying on them.\"],\"tags\":[\"bot-and-agent-security\",\"fraud-prevention\",\"3d-secure\",\"checkout\",\"payment-security\",\"chargebacks\",\"conversion-optimization\"]},{\"title\":\"Automated order risk handling with workflow tools\",\"summary\":\"Wire fraud-analysis risk ratings into automated workflows that auto-capture low-risk orders and queue high-risk ones for manual review.\",\"use_when\":\"Setting up order review and capture automation so fraud decisions scale without a human watching every order.\",\"steps\":[\"Confirm your platform's fraud analysis scores each order low, medium or high using signals such as AVS checks, CVV verification, IP data, proxy detection and unusual purchase patterns.\",\"Build workflows triggered by order-risk events that: auto-capture low-risk orders, add high-risk orders to a manual review queue, send internal notifications for medium-risk orders, and cancel orders matching specific fraud patterns.\",\"Use pre-built workflow templates from your platform's help center as starting points, then adapt thresholds to your store's order profile and risk tolerance.\",\"Revisit automation as order volume and fraud patterns change; a rule set tuned for one season can create either false declines or un-reviewed high-risk captures later.\",\"Keep a human escalation path for medium- and high-risk queues so automated cancellation rules do not silently reject legitimate high-value customers.\"],\"caveats\":[\"Fraud scores are model outputs, not verdicts; both false positives and false negatives are possible.\",\"Workflow trigger names and template availability change over time — verify against the current platform interface and help documentation.\"],\"tags\":[\"bot-and-agent-security\",\"fraud-prevention\",\"automation\",\"shopify-flow\",\"order-management\",\"risk-management\"]},{\"title\":\"AVS, CVV and 3DS: keep the three verification tools distinct\",\"summary\":\"AVS checks billing address, CVV checks for physical card presence, and 3DS adds step-up authentication on higher-risk transactions.\",\"use_when\":\"Configuring fraud-prevention settings or explaining to your team which control addresses which fraud vector at checkout.\",\"steps\":[\"AVS (Address Verification System): checks whether the billing address provided matches the address on file with the card issuer — useful against stolen-card use where the attacker lacks the correct billing address.\",\"CVV: the three- or four-digit code on the card; requiring it makes stolen card numbers harder to use without physical access, but it is not proof of cardholder identity.\",\"3DS: adds a multifactor authentication step (one-time code or biometric) for higher-risk transactions and can shift fraudulent chargeback liability to the issuer when completed.\",\"Configure AVS and CVV requirements and decide how checkout handles mismatched billing addresses under Shopify Payments fraud-prevention settings (path cited: Settings → Payments → Shopify Payments → Manage → Fraud prevention; verify current navigation).\",\"Before enabling AVS, note the source's warning that AVS is deactivated by default in Shopify Payments because fraud analysis handles high-risk transactions separately, and that enabling it alongside fraud analysis can raise false declines on legitimate orders — review your order risk reports first.\",\"Do not treat any single control as sufficient; combine them and monitor outcomes.\"],\"caveats\":[\"No single control guarantees a transaction is legitimate; AVS, CVV and 3DS catch different failure modes and can all be defeated or produce false declines.\",\"Admin navigation paths and defaults change — verify the current interface.\"],\"tags\":[\"bot-and-agent-security\",\"fraud-prevention\",\"avs\",\"cvv\",\"3d-secure\",\"checkout\",\"payment-security\"]},{\"title\":\"PCI DSS for small stores: Level 4 and your real obligations\",\"summary\":\"PCI DSS applies to every business accepting card payments; most small stores fall under Level 4, requiring an annual Self-Assessment Questionnaire rather than a formal QSA audit.\",\"use_when\":\"Understanding your compliance obligations as a small store, or checking that store operations do not introduce non-compliant card-data handling.\",\"steps\":[\"Determine your level: the source states stores processing fewer than 20,000 transactions per year typically qualify as Level 4, requiring an annual Self-Assessment Questionnaire (SAQ) rather than a formal third-party audit.\",\"If you manage compliance independently, plan for the full workload the source describes: annual self-assessments, quarterly vulnerability scans, and possibly a formal audit by a Qualified Security Assessor (QSA).\",\"If you are on a hosted platform like Shopify, PCI compliance is handled at the platform level and card data is processed and stored in a PCI DSS-compliant environment — but your responsibility is to avoid introducing non-compliant data handling.\",\"In practice that means never asking customers for card details outside of checkout, and never storing card numbers in order notes, emails or spreadsheets.\",\"Treat PCI DSS as 12 core requirements covering network security, encryption, access controls, monitoring and security policies.\"],\"caveats\":[\"The 20,000-transaction Level 4 threshold and SAQ requirement are the source's stated standard; confirm current PCI SSC definitions with your processor or acquirer.\",\"Platform-level compliance covers the platform's environment, not every merchant-side workflow or app integration.\"],\"tags\":[\"bot-and-agent-security\",\"compliance\",\"pci-dss\",\"payment-security\",\"data-handling\",\"shopify\"]},{\"title\":\"Payment gateway selection: what to verify before committing\",\"summary\":\"When choosing a gateway, check processor-level PCI DSS certification, tokenization and 3DS 2.0 support.\",\"use_when\":\"Evaluating a new payment gateway or reviewing whether an existing gateway meets your store's security requirements.\",\"steps\":[\"Verify the gateway is PCI DSS-certified at the processor level — certification of your own storefront does not substitute for processor-side compliance.\",\"Confirm tokenization is supported: card data is replaced with a non-sensitive token so raw card numbers are not retained in your environment.\",\"Confirm 3DS 2.0 authentication support so you can apply dynamic step-up verification on higher-risk transactions.\",\"Compare against a built-in option where available: Shopify Payments is described as PCI-compliant by default and includes fraud analysis, 3D Secure and Shopify Protect for eligible stores; third-party gateways can be used but bring their own compliance and security requirements.\",\"Check certifications directly with the provider before you commit rather than relying on marketing pages, and re-verify periodically since provider terms and certifications change.\"],\"caveats\":[\"Vendor feature claims and program eligibility change; verify with the provider and your own processor.\",\"Adding a third-party gateway may complicate which party handles compliance and chargeback liability.\"],\"tags\":[\"bot-and-agent-security\",\"payment-security\",\"checkout\",\"pci-dss\",\"tokenization\",\"gateway-selection\",\"3d-secure\"]},{\"title\":\"Account takeover, credential stuffing and phishing defenses\",\"summary\":\"Credential stuffing and phishing feed account takeover, which the source links to customer churn and reputational spread.\",\"use_when\":\"Hardening customer accounts and admin access against takeover, or assessing the retention risk of an account-security incident.\",\"steps\":[\"Recognize the attack chain: large-scale breaches expose username/password pairs, which attackers test automatically across other sites (credential stuffing), or use for targeted phishing that impersonates a trusted source to harvest credentials.\",\"Require 2FA on all admin accounts, not just payment-related ones — the source notes 2FA is required to use Shopify Payments but should be enabled everywhere; the setup path cited is profile → Manage account → Security → two-step authentication (verify current navigation).\",\"Add passkeys as an additional authentication layer where supported.\",\"Train the team on generative-AI-crafted phishing: check suspicious sender domains, verify any request for credential changes or payment redirects through a separate channel, and give staff a reporting route for suspicious emails, voice (vishing) and SMS (smishing).\",\"Weigh retention impact: the source cites a survey finding that 75% of consumers say they would stop using a site after an account takeover there and 87% would share the experience with others (survey findings, not a guarantee for your store).\"],\"caveats\":[\"2FA, passkeys and training reduce but do not eliminate ATO risk; attackers also target APIs and support channels.\",\"Survey percentages are third-party research snapshots, not benchmarks.\"],\"tags\":[\"bot-and-agent-security\",\"account-security\",\"account-takeover\",\"phishing\",\"2fa\",\"passkeys\",\"retention\"]},{\"title\":\"Auditing third-party apps and integrations\",\"summary\":\"Every installed app can access order data, customer information or store settings depending on permissions — audit access regularly and remove unused apps.\",\"use_when\":\"Reviewing app permissions before or after installing storefront, marketing, review or fulfillment apps, or cleaning up an accumulated app stack.\",\"steps\":[\"List installed apps and their permissions from the platform admin (the source cites Settings → Apps and sales channels; verify current navigation) and check what each is permitted to access.\",\"Remove any app no longer in use — an unused integration with order or customer-data permissions is standing risk.\",\"When selecting new apps, prioritize those with 'Built for Shopify' status and review scores above 3.75; the source states these have been reviewed against Shopify's technical requirements and are maintained to current platform standards.\",\"Treat installed apps as part of your data-handling surface: an app with broad permissions can undermine your PCI and privacy posture even when your own checkout is clean.\",\"Re-audit after adding apps with checkout, payment or customer-data access, since permission scope at install time determines what data the app can reach.\"],\"caveats\":[\"Review-score and status thresholds are platform-specific heuristics from the source; verify current app-review criteria.\",\"Neither a badge nor a score guarantees an app is secure.\"],\"tags\":[\"bot-and-agent-security\",\"app-security\",\"access-control\",\"data-handling\",\"shopify\",\"vendor-review\"]},{\"title\":\"Digital skimming (Magecart): why hosted checkout reduces exposure\",\"summary\":\"Skimming malware injects malicious JavaScript into checkout pages to capture card data as customers type, and hosted platforms reduce this exposure because merchants cannot modify checkout code.\",\"use_when\":\"Deciding between hosted and self-hosted checkout, or assessing skimming risk from custom checkout scripts and third-party front-end code.\",\"steps\":[\"Understand the attack: attackers inject malicious code into the checkout page to capture debit/credit card details as customers enter them; the source describes these as brute-force attacks targeting JavaScript that are hard to spot without regular code audits.\",\"If you run a hosted platform, note that the source says hosted stores are significantly less exposed because merchants cannot alter the underlying checkout code — a structural control, not a guarantee.\",\"If you run self-hosted or heavily customized checkout, add regular code audits and review any third-party JavaScript added to payment pages as a standing practice.\",\"Restrict who can modify checkout templates and injected scripts; every additional script on the payment page is a potential injection point.\",\"Do not treat HTTPS or a padlock icon as protection against skimming — skimming captures data after it is typed, inside a page that may still be encrypted in transit.\"],\"caveats\":[\"Hosted platforms reduce but do not eliminate skimming or supply-chain script risk from installed apps and tags.\",\"The source does not prescribe a specific audit frequency; treat regular audits as a principle, not a fixed schedule.\"],\"tags\":[\"bot-and-agent-security\",\"magecart\",\"skimming\",\"checkout\",\"code-audit\",\"platform-security\"]},{\"title\":\"Bot attacks, API targeting and DDoS: what to watch\",\"summary\":\"Bots run card testing, price scraping, fake account creation and inventory hoarding, and 44% of advanced bot traffic now targets API endpoints handling checkout, inventory and accounts.\",\"use_when\":\"Investigating suspicious traffic patterns, inventory hoarding, fake account signups or site slowdowns that could be bot-driven.\",\"steps\":[\"Treat the API surface as the priority: the source cites a 2025 Imperva report stating 44% of advanced bot traffic targets API endpoints that handle checkout, inventory and customer account data — so review what your APIs expose and who can call them.\",\"Watch for bot-driven commerce behaviors: card-testing transaction patterns, pricing-data scraping, bulk fake-account creation, and stockpiling of high-demand products before real shoppers can buy.\",\"For DDoS, recognize the signature as traffic flooding that locks out real customers; the source does not prescribe a specific mitigation stack, so rely on platform-level protections and your provider's DDoS handling.\",\"Use early bot-detection signal where available: the source cites an example where a platform's Sidekick flagged a major bot attack on Maggy London's storefront before any other monitoring system (a single case example, not a guaranteed detection capability).\",\"Prioritize protections by business impact — checkout and inventory APIs affect revenue directly; scraping affects pricing strategy.\"],\"caveats\":[\"The 44% API-targeting figure is a third-party report snapshot, not a benchmark for your store.\",\"The Maggy London detection case is an illustrative example; do not assume equivalent detection performance.\"],\"tags\":[\"bot-and-agent-security\",\"bot-mitigation\",\"api-security\",\"ddos\",\"inventory\",\"account-security\",\"monitoring\"]},{\"title\":\"Security failures as retention and conversion risk\",\"summary\":\"Account takeover and missing HTTPS drive measurable customer abandonment, and the source ties security to conversion and retention decisions.\",\"use_when\":\"Making the business case for checkout security signals, privacy transparency, or remediating a security incident's customer-facing impact.\",\"steps\":[\"Weigh the retention cost of incidents: the source cites a survey finding that 75% of consumers would stop using a site after an account takeover there and 87% would share the experience with others.\",\"Recognize the conversion cost of missing encryption: modern browsers flag any site without HTTPS with a 'Not secure' warning in the address bar, visible at the moment customers decide whether to enter card details.\",\"Use visible trust signals at the right point in the journey: the padlock icon and HTTPS prefix are the most widely recognized security signals for shoppers, Shop Pay stores returning users' shipping and payment details securely to reduce checkout friction, and third-party trust badges can supplement these on checkout pages — particularly for security-conscious categories like health products or high-value goods.\",\"Address privacy transparency as a conversion factor: the source cites a finding that 36% of consumers have stopped using a website due to privacy concerns, and GDPR requires clear information on what data is collected, why and how it is stored for EU/UK customers.\",\"Treat HTTPS and a padlock as baseline hygiene that removes a warning, not as proof of security — the source notes 98% of US web traffic on Google's platforms ran over HTTPS as of June 2026, making encryption an expectation, not a differentiator.\"],\"caveats\":[\"Consumer survey percentages are third-party research snapshots; results in your store's audience may differ.\",\"Trust badges and privacy copy should not substitute for actual controls; false or outdated signals can worsen trust.\"],\"tags\":[\"bot-and-agent-security\",\"trust-signals\",\"checkout\",\"conversion-optimization\",\"retention\",\"privacy\",\"https\"]},{\"title\":\"Privacy policy, GDPR exposure and third-party audit signals\",\"summary\":\"GDPR applies to EU/UK customers regardless of store location, with fines up to 4% of global annual revenue, and SOC audits act as third-party trust signals.\",\"use_when\":\"Publishing or updating a privacy policy, supporting an EU/UK customer base, or evaluating what independent security assurance your platform provides.\",\"steps\":[\"Confirm scope: if you sell to customers in the EU and UK, GDPR applies regardless of where your store is based.\",\"Publish clear information on what customer data is collected, why it is collected, and how it is stored; for Shopify-hosted stores, automated privacy policy templates cover core requirements and the Customer Privacy API supports cookie-consent banners that meet GDPR standards (verify current feature names and coverage).\",\"Understand the penalty scale: serious GDPR violations carry fines of up to 4% of a company's global annual revenue, with the source citing approximately €1.2 billion in EU supervisory authority fines in 2025 and average breach notifications around 443 per day (published figures, not predictions for your store).\",\"Use independent audits as diligence signals: the source states Shopify undergoes SOC 1 and SOC 2 audits every six months, verifying controls over customer data encryption, access management, incident response and physical infrastructure — check the current status and scope before citing it to customers or partners.\",\"Treat platform audit reports as covering the platform's environment only, not your store's apps, workflows or data handling.\"],\"caveats\":[\"GDPR requirements and official templates change; verify current obligations with qualified counsel for your markets.\",\"SOC report scope and frequency can change — confirm the latest reports rather than relying on this description.\"],\"tags\":[\"bot-and-agent-security\",\"compliance\",\"gdpr\",\"privacy\",\"soc-audit\",\"data-handling\",\"trust-signals\"]},{\"title\":\"Guaranteed chargeback coverage programs: eligibility and limits\",\"summary\":\"Shopify Protect (formerly Fraud Protect) covers chargebacks and dispute fees on eligible protected orders for eligible Shopify Payments users in the US.\",\"use_when\":\"Evaluating whether a guaranteed chargeback-coverage program applies to your store and how it changes your manual fraud-review workload.\",\"steps\":[\"Check eligibility first: the source states Shopify Protect is available to eligible Shopify Payments users in the US — eligibility and geography matter, so verify current terms in the platform's help documentation.\",\"Understand what coverage does: orders are marked protected, payment is guaranteed, and if a dispute is filed on a protected order the platform covers the chargeback and the dispute fee.\",\"Use the covered-order marking to reduce manual review for orders that qualify, while keeping review in place for orders outside coverage.\",\"Reallocate the freed review time toward customer experience and high-value account management — the source quotes a merchant who said a staff member previously spent nearly her whole job on fraud and shifted to customer experience after switching to integrated fraud management.\",\"Do not assume all orders are covered; confirm which orders are marked protected in your admin before treating the program as your only fraud control.\"],\"caveats\":[\"Program availability, eligibility and coverage terms are vendor-specific and subject to change — verify current terms.\",\"Coverage addresses chargeback liability on protected orders, not all fraud losses, false declines or operational costs.\"],\"tags\":[\"bot-and-agent-security\",\"fraud-prevention\",\"chargebacks\",\"shopify-protect\",\"payment-security\",\"operations\"]},{\"title\":\"Preventing card data from leaking outside checkout\",\"summary\":\"PCI compliance on a hosted platform is maintained by keeping card handling inside the compliant checkout and never storing card data in notes, emails or spreadsheets.\",\"use_when\":\"Reviewing order-management, support and fulfillment workflows for card-data handling that could break compliance on an otherwise compliant platform.\",\"steps\":[\"Instruct all staff never to ask customers for card details outside of checkout — any such request moves card handling into a non-compliant channel.\",\"Ban storing card numbers in order notes, emails, spreadsheets or shared documents used for fulfillment, support or record-keeping.\",\"When a customer sends card details by email or chat, treat the message as exposure: do not process it manually from that channel; direct the customer back to the compliant checkout flow.\",\"Apply the same rule to app and integration data flows: apps with order or customer permissions should not be used to store or relay raw card numbers.\",\"Recognize this is the merchant's practical PCI obligation on a hosted platform — the platform handles processing and storage in a compliant environment, and your role is not to introduce non-compliant handling.\"],\"caveats\":[\"This guidance addresses card-data handling specifically; other customer data still carries privacy obligations under rules like GDPR.\",\"Individual staff workflows and third-party tools change — re-audit periodically.\"],\"tags\":[\"bot-and-agent-security\",\"pci-dss\",\"compliance\",\"data-handling\",\"checkout\",\"operations\"]},{\"title\":\"Prioritizing fraud controls when resources are limited\",\"summary\":\"When a store cannot implement every control, sequence by direct financial exposure: enable account protection, then automated risk handling, then verification and coverage options.\",\"use_when\":\"Building a fraud and security roadmap for a small store, deciding what to configure first, or allocating limited operational time to security work.\",\"steps\":[\"Start with account protection since it gates everything else: enable 2FA on every admin account and add passkeys where supported — the platform can't protect an admin account with a weak or phishable credential.\",\"Then enable the platform's built-in fraud analysis and wire its risk ratings into automated order handling (auto-capture low risk, queue high risk for review) so fraud decisions do not depend on someone watching every order.\",\"Then reduce chargeback exposure financially: apply dynamic 3D Secure so higher-risk transactions carry step-up authentication and liability can shift to the issuer, and check eligibility for guaranteed chargeback-coverage programs.\",\"Then tighten verification settings like AVS and CVV carefully, watching for false declines on legitimate customers before changing defaults.\",\"Layer in organizational controls last but do not skip them: phishing training, app-permission audits, and prohibiting card data outside checkout — these address the human and integration paths that technical controls miss.\"],\"caveats\":[\"No single control or sequence guarantees protection; each reduces specific risk and some increase false declines.\",\"Platform defaults, thresholds and feature availability change — verify current behavior before relying on any specific setting.\"],\"tags\":[\"bot-and-agent-security\",\"fraud-prevention\",\"prioritization\",\"account-security\",\"3d-secure\",\"shopify\",\"operations\"]},{\"title\":\"Assessing platform-level security defaults before you rely on them\",\"summary\":\"Hosted platforms supply PCI compliance, TLS/HTTPS and fraud scoring by default, but you should verify what each default actually covers for your store.\",\"use_when\":\"Evaluating a hosting platform's security posture during store setup or migration, or documenting which security obligations remain with your team.\",\"steps\":[\"Inventory the platform-provided defaults you can rely on: PCI DSS compliance by default, a free TLS certificate with HTTPS switched on by default, and card readers that are PCI and EMV compliant (per the source's Shopify description).\",\"Confirm fraud scoring exists and what signals it uses: one described implementation scores every order low/medium/high using AVS checks, CVV verification, IP address data, proxy detection and unusual purchase patterns.\",\"Check which optional programs and features you must explicitly enable or qualify for, such as guaranteed chargeback coverage, dynamic 3D Secure, and workflow automation apps.\",\"Document the residual merchant-side obligations — credentials, app permissions, staff access and customer-data handling — so platform defaults are not mistaken for complete coverage.\",\"Re-verify platform features and certifications periodically; vendor security offerings change and published descriptions may lag the interface.\"],\"caveats\":[\"Platform feature descriptions here reflect a vendor blog source and may be outdated or specific to certain plans and regions.\",\"Default protections reduce risk but do not transfer all responsibility away from the merchant.\"],\"tags\":[\"bot-and-agent-security\",\"platform-security\",\"due-diligence\",\"pci-dss\",\"tls\",\"fraud-prevention\",\"shopify\"]},{\"title\":\"Bot and fraud monitoring for inventory and high-demand drops\",\"summary\":\"Bots create fake accounts and stockpile high-demand products before real shoppers can buy, so inventory protection is a bot-mitigation concern, not just a security one.\",\"use_when\":\"Planning a limited-release, high-demand drop, or investigating inventory that sells out unusually fast with suspicious buyer accounts.\",\"steps\":[\"Treat inventory APIs as a defended surface: the source notes bots target API endpoints that handle checkout, inventory and customer account data, not only the storefront front end.\",\"Watch for the specific bot behaviors the source lists in ecommerce: card testing, pricing-data scraping, fake account creation, and stockpiling high-demand products before real shoppers can buy.\",\"Add friction proportional to risk on high-demand releases — for example, requiring authenticated accounts, limiting per-account quantities, and reviewing orders from newly created accounts.\",\"Monitor for early warning signs and act on them: the source describes a case where a platform's bot-detection tool flagged a major bot attack on Maggy London's storefront before any other monitoring system, illustrating the value of detection layered ahead of manual review (single case example).\",\"Keep account-creation defenses in place, since fake accounts are the base layer for hoarding and card testing.\"],\"caveats\":[\"The Maggy London case is illustrative and does not guarantee similar detection performance.\",\"Inventory protection measures can create friction for legitimate customers; balance against conversion impact.\"],\"tags\":[\"bot-and-agent-security\",\"bot-mitigation\",\"inventory\",\"api-security\",\"account-security\",\"drop-management\"]}]}",
+  "input": {
+    "source_id": "1t4ZeEnClZTVulo6dPKtVZGhfSDvJHdrb",
+    "source_sha256": "b64b648ce6a294daee37d7587b1e3a0bee148892d458c97862c46e0c41217502",
+    "source_name": "Ecommerce Security_ Threats and Best Practices.docx",
+    "folder": "/23-SEC-bot-and-agent-security",
+    "domain": "bot-and-agent-security",
+    "section": 0,
+    "section_count": 1,
+    "text": "23-SEC / bot and agent security\n\nGoes here. Defending the storefront and checkout from malicious actors. Payment fraud (CNP), card testing, account takeover (ATO), bot attacks, DDoS, and digital skimming (Magecart). Implementing 3D Secure (3DS), AVS, and CVV checks. Managing the shared responsibility model on hosted platforms (like Shopify) versus self-hosted, including PCI DSS compliance, SSL/TLS certificates, and automated high-risk order handling via Shopify Flow.\n\nNot here.\n\nConfiguring standard payment gateways and merchant accounts -> 05-SET\n\nWriting standard terms of service or privacy policy copy -> 07-LPG\n\nHeader.\n\nurl: https://www.shopify.com/blog/ecommerce-security\n\nrights: public_reference\n\nwhy: Details the shared responsibility model of ecommerce security on Shopify, outlining specific threats (Magecart, credential stuffing, card testing) and the exact configurations (Flow automation, dynamic 3DS, AVS/CVV) required to mitigate chargebacks and fraud.\n\nmodules: [SEC]\n\ntopics: [platform security, fraud prevention, bot mitigation, compliance]\n\ntier: 2\n\nscope_hint: baseline\n\nTopics.\n\nplatform security / The shared responsibility model: the platform secures the infrastructure, checkout, and server-side PCI compliance, while the merchant secures account credentials (via 2FA or passkeys), third-party app permissions, and data handling. Hosted platforms significantly reduce digital skimming (Magecart) exposure since merchants cannot alter the underlying checkout code to inject malicious JavaScript.\n\nfraud prevention / Mitigating Card-Not-Present (CNP) fraud and card testing. Understanding chargeback thresholds (processor bans usually occur above a 1% chargeback rate). Utilizing AVS (Address Verification System) to check billing matches and CVV codes to ensure physical card presence. Implementing Dynamic 3D Secure (3DS) to shift fraudulent chargeback liability from the merchant to the card issuer. Using Shopify Protect for guaranteed chargeback coverage and dispute fee removal on eligible US orders. Utilizing Shopify Flow to build automated workflows that automatically capture low-risk orders while routing high-risk orders to a manual review queue based on machine learning fraud analysis.\n\nbot mitigation / Defending against automated scripts targeting API endpoints (which handle checkout, inventory, and accounts). Preventing Account Takeover (ATO) via credential stuffing and defending against DDoS traffic that aims to flood the store and lock out real customers.\n\ncompliance / Achieving PCI DSS compliance (most small stores fall under Level 4, requiring an annual Self-Assessment Questionnaire for processing fewer than 20,000 transactions per year). Adhering to GDPR to avoid severe regulatory penalties (fines up to 4% of global annual revenue) and leveraging SOC 1 and SOC 2 audits as third-party trust signals.\n\nLook for. The specific chargeback danger zone: processors flag accounts exceeding a 0.9% chargeback rate, and above 1%, processors can stop accepting cards completely. The specific liability shift rule for dynamic 3D Secure (3DS): applying it forces an extra authentication step on high-risk transactions, moving the financial responsibility for fraudulent chargebacks from the store owner to the card issuer. The exact method to automate fraud handling: using Shopify Flow to auto-capture low-risk orders and queue high-risk orders for manual review. The specific PCI DSS Level 4 threshold: fewer than 20,000 transactions per year requires a Self-Assessment Questionnaire (SAQ) rather than a formal third-party audit. The visual verification of the new taxonomy addition: confirming the Ecom OS folder structure now includes 23-SEC-bot-and-... alongside the established modules.\n\nSkip.\n\nGeneric explanations of what phishing is or basic definitions of a password. Broad global fraud damage estimates (e.g., \"$362 billion between 2023 and 2028\") that do not change merchant configuration strategy.\n\nScope mix.\n\nAlmost all baseline (defensive operations).\n\nVolume.\n\n15 to 20.\n\nWhat is ecommerce security?\n\nEcommerce security is the set of measures that protect online stores and their customers from fraud, data theft, and unauthorized access. It covers payment processing, account authentication, customer data storage, and the technology layer the store runs on.\n\nEcommerce security is distinct from general website security. Stores handle financial data, such as card numbers, billing addresses, and transaction histories, that have direct monetary value to attackers. Store owners are also held to formal compliance standards by the payment industry, regardless of their company’s size.\n\nWhy it’s different on a hosted platform vs. self-hosted\n\nOn a self-hosted platform, security is the store owner’s responsibility. That means doing ongoing technical work like sourcing and renewing SSL/TLS certificates, achieving payment card industry (PCI) compliance, patching server software, and configuring firewalls.\n\nPCI compliance alone costs small businesses $1,000 to $10,000 a year depending on how many transactions they make.\n\nWith a host platform like Shopify, PCI compliance, certificates, network security, and any server maintenance is handled at the platform level, rather than the store level. You still have security responsibilities as a store owner, but you don’t have to build them from scratch.\n\nThe shared responsibility model\n\nSecurity on any hosted platform is a two-way arrangement:\n\nShopify. Secures the infrastructure, including the servers, the payment processing systems, the checkout, and the software that everything runs on.\n\nStore owners. Secure their accounts and operations, including login credentials, the third-party apps they install, how they handle sensitive customer data, and who on their team has access to the admin.\n\nBoth host platforms and store owners have to do their part to create security measures. Shopify can’t protect a store whose admin password is \"password123,\" or whose owner clicks a phishing link and hands over their credentials, just as a store owner can’t patch the servers their store runs on, because those belong to Shopify.\n\nCommon ecommerce security threats\n\nOnline stores face a specific set of threats, mostly targeting payment data and customer accounts. Here’s what store owners are most likely to encounter.\n\nPayment fraud and card testing attacks\n\nPayment fraud occurs when a transaction is made without the cardholder’s knowledge or consent. Ecommerce transactions in particular are vulnerable to card-not-present (CNP) fraud, where the physical card is never verified. According to Juniper Research, online payment fraud will exceed $362 billion between 2023 and 2028.\n\nIn CNP fraud, fraudsters gain access to credit card information through data breaches, phishing attacks, or skimming devices. To test cards, they then run small online transactions to validate stolen card numbers before using them for larger fraud. Once a card is validated, the sensitive data can either be used directly or sold on dark web markets.\n\nPhishing, account takeover, and credential stuffing\n\nLarge-scale data breaches provide fuel for account takeover fraud (offsite), or ATO, attacks. Attackers take exposed username/password combinations and systematically test them automatically across other sites. They might also use breached data to support more targeted phishing schemes.\n\nPhishing is the practice of sending fake emails, texts, or calls that impersonate a trusted source to trick recipients into handing over their login credentials or credit card details. In IBM’s 2025 Cost of a Data Breach Report, phishing was the single most common way attackers got in, responsible for 16% of all breaches studied.\n\nWhen attackers gain unauthorized access to a legitimate customer’s account, it’s considered account takeover fraud. Account takeover fraud affected six million consumers in 2025, an 18% increase from 2024, with losses reaching $17 billion in 2025.\n\nBot attacks and DDoS\n\nBots are automated scripts that interact with a store’s website or application programming interface (API) at machine speed. In ecommerce, they’re used to run card testing attacks, scrape pricing data, create fake accounts, and stockpile high-demand products before real shoppers can buy them.\n\nAccording to the 2025 Imperva Bad Bot Report, 44% of advanced bot traffic now targets API endpoints, which handle checkout, inventory, and customer account data.\n\nDDoS (distributed denial-of-service) attacks work by using malicious software to flood a store with traffic so that real customers can’t gain access.\n\nShopify Sidekick demonstrated the real-world impact of early bot detection when it flagged a major bot attack on Maggy London’s storefront before any other monitoring system.\n\nData breaches and skimming malware\n\nA data breach happens when unauthorized parties access stored customer data. The global average cost of a data breach in 2025 was $4.4 million. For US businesses, that figure reached a record $10.22 million, the highest in the world.\n\nDigital skimming (sometimes called Magecart attacks) results when attackers copy the debit or credit card information a customer enters during checkout. Skimming malware injects malicious code into a store’s checkout page to capture card details as customers type them. These brute force attacks target JavaScript and can be difficult to spot if you don’t run regular code audits.\n\nHosted platforms like Shopify are significantly less exposed to this kind of attack than self-hosted stores because store owners can’t modify the underlying checkout code.\n\nThe real cost of ecommerce security failures\n\nA single incident can trigger a chargeback bill, a regulatory fine, and a wave of customer cancellations, sometimes all at once.\n\nChargebacks\n\nA chargeback happens when a customer disputes a transaction with their bank, the bank reverses the charge, and the store loses both the product, the revenue, and a dispute fee from the payment processor.\n\nThe global value of chargebacks is predicted to reach $46.1 billion in 2029, with each chargeback costing store owners an average of $128 in third-party fees and internal costs,\n\nMost processors flag stores whose chargeback rate is higher than 0.9%. Above 1%, processors can stop accepting cards completely. Maine Lobster Now saw their chargeback rate hit 0.25% of total transactions before switching to Shopify Payments with integrated fraud management. Since switching, chargebacks due to fraud have fallen to 0.025%, a 93% reduction.\n\n“I used to have an agent, and almost her whole job was fraud,” says Julian Klenda, CEO of Maine Lobster Now. “Now she doesn’t have to deal with that anymore. She’s able to focus her time on enhancing customer experience, especially with our bigger customers, making sure everything is the way they want.”\n\nRegulatory fines and GDPR exposure\n\nIf you’re selling to customers in the EU and UK, the General Data Protection Regulation (GDPR) applies, regardless of where your store is based. European supervisory authorities issued approximately €1.2 billion in GDPR fines in 2025, with per-day breach notifications rising 22% year-over-year to an average of 443 per day.\n\nSerious GDPR violations carry fines of up to 4% of a company’s global annual revenue. There’s also the cost of the breach itself, a potential regulatory fine on top, and possible compensation claims from affected customers.\n\nCustomer trust and conversion impact\n\nSecurity failures have long-tail effects on customer behavior. According to Sift’sQ3 2025 Digital Trust Index, 75% of consumers say they would stop using a site after experiencing an account takeover there, and 87% would share the experience with others.\n\nModern browsers now flag any site without HTTPS with a “Not secure” warning in the address bar, which is visible to customers when they’re deciding whether to enter their card details.\n\nShopify’s built-in security protections\n\nStore owners that use Shopify get access to ecommerce security measures by default, rather than having to worry about sourcing and managing security tools on their own.\n\nPCI compliance, SSL/TLS, and HTTPS\n\nEvery Shopify store is PCI DSS-compliant by default. PCI DSS (Payment Card Industry Data Security Standard) is the global security baseline for any online business that accepts card payments.\n\nManaging PCI DSS compliance independently means completing annual self-assessments, running quarterly vulnerability scans, and potentially paying for a formal audit by a Qualified Security Assessor (QSA).\n\nEvery Shopify store also gets a free Transport Layer Security (TLS) certificate automatically, with HTTPS switched on by default, and all card readers are PCI and Europay, Mastercard, and Visa (EMV) compliant.\n\nFraud analysis: how Shopify scores every order\n\nShopify’s fraud analysis runs on every order placed through a Shopify store. The system uses machine learning to assess risk across multiple signals:\n\nAddress verification (AVS) checks\n\nCard Verification Value (CVV) verification\n\nInternet Protocol (IP) address data\n\nProxy detection\n\nUnusual purchase patterns\n\nEach order receives a low, medium, or high risk rating.\n\nAfter switching to Shopify, Winter Park Cycles recorded $600,000 in sales with zero chargebacks across around 1,000 orders in the first 90 days.\n\n“We haven’t had one chargeback out of 700 orders in the past two months,” says Ward Bates, owner of Winter Park Cycles. “I think Shopify’s fraud notification system does a much better job screening ahead of time.”\n\nShopify Flow connects directly to fraud analysis, so you can build automated workflows based on risk scores that auto-capture low-risk orders, hold high-risk ones for review, or cancel flagged orders automatically.\n\nShopify Protect: guaranteed chargeback coverage\n\nShopify Protect (formerly Fraud Protect) is available to eligible Shopify Payments users in the US. Shopify marks orders as protected, which guarantees payment and automatically handles chargebacks. If a dispute is filed on a protected order, Shopify covers the chargeback and the dispute fee.\n\n“Fraud Control allowed us to prevent fraudulent transactions and block them based on the risk to avoid Chargeback. With Shopify Payments, we saved transaction costs and simplified the checkout process for customers,” says Alessandro Labozzetta, ecommerce project manager at Profumerie Griffe.\n\nDynamic 3D Secure checkout\n\nShopify Payments uses dynamic 3D Secure (3DS), which is an extra verification step that appears for higher-risk transactions.\n\nWhen a cardholder completes that verification, the responsibility for any fraudulent chargeback moves from the store to the card issuer. That means Visa and Mastercard disputes on 3DS–authenticated transactions are no longer the store’s financial problem.\n\nOnly 32.4% of store owners currently implement 3DS. Shopify Payments applies it dynamically, so it appears on high-risk transactions without bogging down legitimate checkouts.\n\nEcommerce security best practices for store owners\n\nShopify handles platform-level security, but store owners have their own responsibilities. Here’s what you can do.\n\nEnable two-step authentication and use passkeys\n\nYou need two-step authentication (2FA) to use Shopify Payments, but you should enable it for all admin accounts, not just payment-related ones. Shopify supports passkeys as an additional authentication layer.\n\nTo enable 2FA in the Shopify admin: go to your profile, select Manage account, and follow the two-step authentication setup under Security.\n\nConfigure fraud prevention rules in Shopify Payments\n\nYou can configure fraud prevention settings with Shopify Payments by setting up AVS and CVV verification requirements, and choosing how the checkout handles mismatched billing addresses.\n\nTo access these settings go to Settings → Payments → Shopify Payments → Manage → Fraud prevention.\n\nNote that AVS is deactivated by default in Shopify Payments because fraud analysis handles high-risk transactions separately. Enabling AVS alongside fraud analysis can sometimes bump up false declines on legitimate orders so review your order risk reports before changing defaults.\n\nUse Shopify Flow to automate high-risk order handling\n\nShopify Flow lets you build automated workflows that automatically respond to fraud analysis risk scores. Common configurations include:\n\nAuto-capturing low-risk orders\n\nAdding high-risk orders to a manual review queue\n\nSending internal notifications for medium-risk orders\n\nCanceling orders that match specific fraud patterns\n\nTo set up fraud workflows go to Apps → Shopify Flow, and select the relevant order risk triggers. The Shopify Help Center includes a library of pre-built fraud workflow templates.\n\nSave hours on repetitive tasks\n\nShopify Flow’s free templates automate abandoned carts, inventory alerts, customer emails, and order routing. Install the app, pick your workflow, and reclaim hours every week—zero coding required.\n\nInstall Flow\n\nTrain your team to spot phishing and social engineering\n\nAttackers now use generative artificial intelligence (AI) to craft convincing, personalized messages that pass basic grammar and formatting checks.\n\nTeam training should cover how to identify suspicious sender domains, how to verify requests for credential changes or payment redirects, and how they can report suspicious emails. Shopify’s security guidance covers phishing, vishing (voice), and smishing (SMS) protection.\n\nKeep apps and third-party integrations audited\n\nEvery app installed in a Shopify store can access order data, customer information, or store settings depending on the permissions you give it when you install it.\n\nRegularly review which apps have access to your store, and remove any that are no longer in use. To audit apps go to Settings → Apps and sales channels and check the permissions listed for each installed app.\n\nWhen selecting new apps, prioritize apps with “Built for Shopify” status and review scores above 3.75. These apps have been reviewed against Shopify’s technical requirements and are maintained to current platform standards.\n\nPayment security: gateways, PCI, and what store owners need to know\n\nPayment security has its own set of standards and terminology. Here’s a breakdown of what to focus on.\n\nWhat PCI DSS actually means for your store\n\nPCI DSS has 12 core requirements covering network security, encryption, access controls, monitoring, and security policies. They apply to every business that accepts card payments, regardless of your size.\n\nMost small ecommerce stores fall into Level 4, which describes stores that process fewer than 20,000 transactions per year. If this is you, it means you need to complete an annual self-assessment questionnaire (SAQ) rather than undergoing a formal third-party audit.\n\nOn Shopify, PCI compliance is handled at the platform level. Shopify processes and stores card data in a PCI DSS–compliant environment, which means you don’t need to manage it yourself. Your responsibility is to operate your store in a way that doesn’t introduce non-compliant data handling. In practice, that means not asking customers for their card details outside of checkout, and never storing card numbers in order notes, emails, or spreadsheets.\n\nAVS, CVV, and 3D Secure\n\nThese are three verification tools that catch fraud before a transaction goes through:\n\nAVS (Address Verification System). Checks whether the billing address provided matches the one on file with the card issuer.\n\nCVV (Card Verification Value). The three- or four-digit security code on a card; asking for a CVV makes it harder for attackers using stolen card numbers to complete a transaction without physical access to the card.\n\n3DS (3D Secure). Adds a multifactor authentication step in the form of a one-time code or biometric for higher-risk transactions.\n\nChoosing a payment gateway with the right security standards\n\nThe security of a payment gateway determines how card data is handled at checkout. When choosing a gateway, check that it’s PCI DSS–certified at the processor level, has tokenization (replacing card data with a non-sensitive token), and supports 3DS 2.0 authentication.\n\nShopify Payments is built into Shopify, PCI-compliant by default, and includes fraud analysis, 3D Secure, and Shopify Protect for eligible stores. Third-party payment gateways can be used with Shopify stores, but bring their own compliance and security requirements. Check certifications directly with the provider before you commit.\n\nHow to build customer trust through visible security signals\n\nSecurity isn’t just about preventing attacks. The right signals at the right moment in the shopping journey give customers the confidence to complete a purchase.\n\nSSL padlock, Shop Pay recognition, and trust badges\n\nThe padlock icon and HTTPS prefix in a browser address bar are the most widely recognized security signals for online shoppers. As of June 2026, 98% of US web traffic on Google’s platforms runs over HTTPS, making encryption the baseline expectation for shoppers. Shopify provides TLS certificates automatically for all Shopify-hosted storefronts.\n\nShop Pay adds another recognizable layer of trust at checkout. For returning Shop Pay users, their shipping and payment details are already stored securely, which reduces checkout friction.\n\nThird-party trust badges (from security vendors or payment networks) can supplement these signals on checkout pages, particularly for stores in industries where customers are more security-conscious, like health products or high-value goods.\n\nPrivacy policies, data transparency, and customer confidence\n\nGDPR requires stores selling to EU and UK customers to provide clear information about what customer data is collected, why it’s collected, and how it’s stored. Shopify’s automated privacy policy templates cover the core requirements for Shopify-hosted stores, and the Customer Privacy API supports cookie consent banners that meet GDPR standards.\n\nA clear, readable privacy policy can also build trust. Privacy transparency has a direct effect on whether customers stay. Usercentrics’ State of Digital Trust in 2025 found that 36% of consumers have stopped using a website due to privacy concerns.\n\nShopify undergoes independent SOC 1 and SOC 2 security audits every six months. These Service Organization Control (SOC) audits verify that Shopify’s controls around customer data encryption, access management, incident response, and physical infrastructure meet the required standards, giving store owners documented, third-party confirmation that the platform they’re running on is secure.\n\nEcommerce Security FAQ\n\nWhat is ecommerce security?\n\nEcommerce security refers to the practices, technologies, and standards that protect online stores and their customers from fraud, data theft, and unauthorized access at checkout. It differs from general website security because stores handle financial data, such as card numbers and billing details, that carry direct monetary value to attackers. Store owners face formal compliance obligations, like PCI DSS, regardless of company size, and share responsibility with their hosting platform for protecting accounts, transactions, and stored customer data.\n\nWhat is the biggest risk in ecommerce security today?\n\nPayment fraud, especially card-not-present (CNP) fraud, poses the biggest financial risk to online stores because a transaction can be completed without ever verifying the physical card. Fraudsters test stolen card numbers with small purchases before using them for larger fraud or selling them on dark web markets. Beyond the fraud itself, every dollar lost costs store owners an average of $4.61 once processing fees, lost inventory, and operational disruption are factored in.\n\nWhat are Shopify's security measures for protecting online stores?\n\nShopify secures every store at the platform level with default PCI DSS compliance, a free TLS certificate, and machine-learning fraud analysis that scores each order for risk using signals like address verification, CVV checks, and IP data. Eligible US merchants using Shopify Payments also get Shopify Protect, which guarantees payment and covers the chargeback and dispute fee if a protected order is disputed. Dynamic 3D Secure adds extra verification on higher-risk transactions, shifting chargeback liability to the card issuer when it's used.\n\nWhat are the most common types of ecommerce security threats?\n\nThe most common ecommerce threats are payment fraud, account takeover, phishing, and bot attacks like card testing and DDoS. Payment fraud exploits stolen card data through card-not-present transactions, while account takeover uses breached credentials to hijack customer accounts, a problem that affected six million consumers in 2025. Phishing was responsible for 16% of all data breaches studied in IBM's 2025 Cost of a Data Breach Report, and bots increasingly target checkout and account APIs rather than storefronts directly.\n\nWhat is PCI DSS compliance and do I need it as a store owner?\n\nPCI DSS is the global security standard required of any business, regardless of size, that accepts card payments online. It has 12 core requirements covering encryption, access controls, and monitoring, and most small stores qualify for Level 4, meaning they only need to complete an annual self-assessment questionnaire rather than a formal audit. On Shopify, PCI compliance is handled at the platform level, so store owners don't need to manage it themselves as long as they use Shopify Payments and avoid storing card data outside checkout.\n\nHow secure is ecommerce shopping overall?\n\nSecurity varies by platform, but overall fraud losses are substantial and growing: global ecommerce payment fraud losses are predicted to exceed $131 billion by 2030, and chargeback volume is projected to grow toward $46.1 billion by 2029. Stores that use built-in fraud analysis, two-step authentication, and dynamic verification tools like 3D Secure see markedly lower fraud and chargeback rates than those relying on manual review alone.\n\nReference: https://www.shopify.com/blog/ecommerce-security",
+    "prior_notes": [],
+    "id": "927e3c057c140fa4066d0614"
+  },
+  "system_prompt_sha256": "73b9b3269ca7ebc0cc91e8d1b21d23ade03fee8e9184303165139ea9178b5013"
+}

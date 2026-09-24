@@ -1,0 +1,697 @@
+{
+  "summary": {
+    "case_index": 22,
+    "provider": "openai",
+    "effort": "high",
+    "request_id": "eda03fdd99dc07b5871a3d312899828b4e928a493d51bfd9da6a3645e4fa1e6a",
+    "complete": true,
+    "completion_limit": 16384,
+    "units": 9,
+    "held": 1,
+    "errors": [
+      "invalid_relation_target",
+      "invalid_relation_target"
+    ],
+    "more_units": true,
+    "cost": 0.062459
+  },
+  "errors": [
+    "invalid_relation_target",
+    "invalid_relation_target"
+  ],
+  "candidates": [
+    {
+      "id": "2d4a45ade7dd278c19baf3a12d3d7ae829add7ec7f5f85d7ba80913828e4ba84",
+      "unit": {
+        "id": "u1",
+        "kind": "principle",
+        "title": "Side channels can leak despite correct implementation",
+        "claim": {
+          "text": "The speaker describes side-channel attacks as cases where a system follows its implementation without bugs but still leaks sensitive information in practice.",
+          "quote": "there's no implementation bugs. But yet it still somehow leaks uh sensitive information."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "An attacker can learn information that they should not learn from the system's real-world behavior.",
+              "quote": "an attacker can learn information that they shouldn't learn."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": [
+            {
+              "text": "The system is functioning according to its implementation.",
+              "quote": "you have a system that's functioning correctly. Like it's following the implementation."
+            }
+          ]
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not give a general mitigation procedure for side channels."
+        ],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+          "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+          "locator": "body:17/paragraph",
+          "start": 702944,
+          "end": 703032,
+          "quote": "there's no implementation bugs. But yet it still somehow leaks uh sensitive information."
+        },
+        {
+          "field": "trigger.0",
+          "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+          "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+          "locator": "body:17/paragraph",
+          "start": 703235,
+          "end": 703295,
+          "quote": "an attacker can learn information that they shouldn't learn."
+        },
+        {
+          "field": "prerequisites.0",
+          "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+          "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+          "locator": "body:17/paragraph",
+          "start": 702851,
+          "end": 702938,
+          "quote": "you have a system that's functioning correctly. Like it's following the implementation."
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "45fbc2037cebf1d2cf1a9941679950e4fbcb6969a3a3cc2534b27fb4217426c3",
+      "unit": {
+        "id": "u2",
+        "kind": "example",
+        "title": "Timing differences reveal a hidden program case",
+        "claim": {
+          "text": "The speaker gives timing as a side channel: if hidden cases take different amounts of time and an attacker can measure that time, the attacker can infer the case.",
+          "quote": "if something takes a certain amount of time in one case and a different amount of time in another but the system is like sort of not revealing to you it's trying to sort of hide the difference between those two cases but it takes different time and you can measure the time as an attacker you can figure out what case the program is in."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Different hidden cases take different amounts of time.",
+              "quote": "if something takes a certain amount of time in one case and a different amount of time in another"
+            },
+            {
+              "text": "An attacker can measure the time.",
+              "quote": "you can measure the time as an attacker"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No timing threshold, measurement method, or mitigation is specified."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u1"
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+          "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+          "locator": "body:17/paragraph",
+          "start": 703436,
+          "end": 703772,
+          "quote": "if something takes a certain amount of time in one case and a different amount of time in another but the system is like sort of not revealing to you it's trying to sort of hide the difference between those two cases but it takes different time and you can measure the time as an attacker you can figure out what case the program is in."
+        },
+        {
+          "field": "trigger.0",
+          "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+          "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+          "locator": "body:17/paragraph",
+          "start": 703436,
+          "end": 703533,
+          "quote": "if something takes a certain amount of time in one case and a different amount of time in another"
+        },
+        {
+          "field": "trigger.1",
+          "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+          "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+          "locator": "body:17/paragraph",
+          "start": 703685,
+          "end": 703724,
+          "quote": "you can measure the time as an attacker"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "572c15f7e9b1a8ae5422c1b0fbb93874ad3880d45b213ca602c6bcd1000bf066",
+      "unit": {
+        "id": "u3",
+        "kind": "example",
+        "title": "Recover audio from visible object vibrations",
+        "claim": {
+          "text": "The cited work claims that video and suitable processing can extract minute vibrations from an object and partially recover the sound that produced them.",
+          "quote": "using only a video of the object and a suitable processing algorithm we can extract these minute vibrations and partially recover the sounds that produced them."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Sound causes an object to vibrate, creating a subtle visual signal.",
+              "quote": "When sound hits an object it causes that object to vibrate. The motion of this vibration creates a subtle visual signal"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": [
+            {
+              "text": "A video of the object is available along with a suitable processing algorithm.",
+              "quote": "using only a video of the object and a suitable processing algorithm"
+            }
+          ]
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source says recovery is partial but does not specify accuracy, environmental limits, or the processing algorithm."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u1"
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+          "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+          "locator": "body:17/paragraph",
+          "start": 705606,
+          "end": 705766,
+          "quote": "using only a video of the object and a suitable processing algorithm we can extract these minute vibrations and partially recover the sounds that produced them."
+        },
+        {
+          "field": "trigger.0",
+          "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+          "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+          "locator": "body:17/paragraph",
+          "start": 705419,
+          "end": 705538,
+          "quote": "When sound hits an object it causes that object to vibrate. The motion of this vibration creates a subtle visual signal"
+        },
+        {
+          "field": "prerequisites.0",
+          "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+          "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+          "locator": "body:17/paragraph",
+          "start": 705606,
+          "end": 705674,
+          "quote": "using only a video of the object and a suitable processing algorithm"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "cd49452b5663e883118eaf8ba694168f19af555eb67647f18d827faecb557fc7",
+      "unit": {
+        "id": "u4",
+        "kind": "example",
+        "title": "Plant-leaf motion was used to recover played notes",
+        "claim": {
+          "text": "The video narration states that filtering tiny motion across an image recovered sound from a potted plant's leaves while nearby audio played.",
+          "quote": "by combining and filtering all of the tiny motion happening across the image that you see we are able to recover this sound."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "A nearby loudspeaker played notes while the plant was recorded.",
+              "quote": "The video was recorded while a nearby loudspeaker played the notes to Mary Had a Little Lamb."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": [
+            {
+              "text": "The vibrations were captured in silent high-speed video.",
+              "quote": "In the silent high speed video shown here on the left we see the leaves of a potted plant"
+            }
+          ]
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The narration does not state the camera specifications or whether the result generalizes beyond the demonstrated setup."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u3"
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+          "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+          "locator": "body:17/paragraph",
+          "start": 706257,
+          "end": 706381,
+          "quote": "by combining and filtering all of the tiny motion happening across the image that you see we are able to recover this sound."
+        },
+        {
+          "field": "trigger.0",
+          "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+          "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+          "locator": "body:17/paragraph",
+          "start": 705943,
+          "end": 706036,
+          "quote": "The video was recorded while a nearby loudspeaker played the notes to Mary Had a Little Lamb."
+        },
+        {
+          "field": "prerequisites.0",
+          "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+          "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+          "locator": "body:17/paragraph",
+          "start": 705833,
+          "end": 705922,
+          "quote": "In the silent high speed video shown here on the left we see the leaves of a potted plant"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "1a98cade88ad1e43eb0eb43c968f851b5dcc5af11fa8a648aabb207e93853a92",
+      "unit": {
+        "id": "u5",
+        "kind": "example",
+        "title": "Speech recovery from a bag of chips through soundproof glass",
+        "claim": {
+          "text": "The video narration reports recovering live human speech from high-speed video of a bag of chips, with the camera outside behind a soundproof window.",
+          "quote": "In our next experiment we recovered live human speech from high-speed video of a bag of chips lying on the ground. But to make things a little more challenging, this time we put the camera outside behind a soundproof window."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Human speech occurs near a bag of chips while the camera is outside behind a soundproof window.",
+              "quote": "this time we put the camera outside behind a soundproof window."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": [
+            {
+              "text": "High-speed video of the bag of chips is available.",
+              "quote": "recovered live human speech from high-speed video of a bag of chips lying on the ground"
+            }
+          ]
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not provide reproducibility details, speech-recovery accuracy, or the conditions under which soundproof glass prevents this technique."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u3"
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+          "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+          "locator": "body:17/paragraph",
+          "start": 706382,
+          "end": 706606,
+          "quote": "In our next experiment we recovered live human speech from high-speed video of a bag of chips lying on the ground. But to make things a little more challenging, this time we put the camera outside behind a soundproof window."
+        },
+        {
+          "field": "trigger.0",
+          "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+          "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+          "locator": "body:17/paragraph",
+          "start": 706543,
+          "end": 706606,
+          "quote": "this time we put the camera outside behind a soundproof window."
+        },
+        {
+          "field": "prerequisites.0",
+          "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+          "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+          "locator": "body:17/paragraph",
+          "start": 706408,
+          "end": 706495,
+          "quote": "recovered live human speech from high-speed video of a bag of chips lying on the ground"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "f939cb251017702d596c1ef1d1241988e37f2ce936ec94a68aac916db9d25549",
+      "unit": {
+        "id": "u6",
+        "kind": "example",
+        "title": "Identify music from video of earbuds",
+        "claim": {
+          "text": "The video narration says recovered sound from high-speed video of earbuds was supplied to audio-recognition software to identify the played song.",
+          "quote": "we recover music from high-speed video of some earbuds plugged into a laptop computer. Then we take our recovered sound and use audio recognition software to automatically identify the song that was being played."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Earbuds plugged into a laptop are visibly vibrating while music plays.",
+              "quote": "some earbuds plugged into a laptop computer"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": [
+            {
+              "text": "High-speed video of the earbuds is available.",
+              "quote": "high-speed video of some earbuds"
+            }
+          ]
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not state the recovery quality required for song identification or the recognition software's reliability."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u3"
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+          "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+          "locator": "body:17/paragraph",
+          "start": 707381,
+          "end": 707593,
+          "quote": "we recover music from high-speed video of some earbuds plugged into a laptop computer. Then we take our recovered sound and use audio recognition software to automatically identify the song that was being played."
+        },
+        {
+          "field": "trigger.0",
+          "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+          "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+          "locator": "body:17/paragraph",
+          "start": 707423,
+          "end": 707466,
+          "quote": "some earbuds plugged into a laptop computer"
+        },
+        {
+          "field": "prerequisites.0",
+          "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+          "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+          "locator": "body:17/paragraph",
+          "start": 707403,
+          "end": 707435,
+          "quote": "high-speed video of some earbuds"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "654e29ef1b043dfa255268d5e8ba6915201179228404d5b15d222f911a57a519",
+      "unit": {
+        "id": "u7",
+        "kind": "example",
+        "title": "Power consumption as a decryption side channel",
+        "claim": {
+          "text": "The speaker states that monitoring a computer's power usage can reveal what a decryption algorithm is doing and can expose a key through power levels.",
+          "quote": "you can figure out what uh a decryption algorithm is doing based on the power usage that uh your your computer is is uh like pulling from the wall basically."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Power-line levels can be monitored.",
+              "quote": "you can monitor the power line"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The speaker qualifies some side-channel work as potentially theoretical or impractical and provides no feasibility conditions for this power-analysis example.",
+          "No decryption algorithm, measurement setup, or success rate is given."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u1"
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+          "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+          "locator": "body:17/paragraph",
+          "start": 707947,
+          "end": 708104,
+          "quote": "you can figure out what uh a decryption algorithm is doing based on the power usage that uh your your computer is is uh like pulling from the wall basically."
+        },
+        {
+          "field": "trigger.0",
+          "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+          "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+          "locator": "body:17/paragraph",
+          "start": 708108,
+          "end": 708138,
+          "quote": "you can monitor the power line"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "be9a0d8ba7af8228784e03dce293df081a278edc40f4d7e1813df67c89e07f42",
+      "unit": {
+        "id": "u9",
+        "kind": "warning",
+        "title": "Restricting color reads alone would not stop visited-link leakage",
+        "claim": {
+          "text": "The speaker warns that visited-link CSS could create a background-image request to the attacker's server, revealing that a link was visited without relying only on readable link color.",
+          "quote": "when a link is visited, I want the background of it to be an image from my server. And so now every time I visited a link uh anytime a link has been visited, I can uh I will tell because my server got got a request for this background image, right?"
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "A visited-link CSS rule can cause a background image from the page's server to load.",
+              "quote": "we can write a CSS rule that says that uh for example, when a link is visited, I want the background of it to be an image from my server."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not establish whether this CSS behavior applies to any current browser or CSS configuration."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u8"
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+          "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+          "locator": "body:17/paragraph",
+          "start": 711575,
+          "end": 711823,
+          "quote": "when a link is visited, I want the background of it to be an image from my server. And so now every time I visited a link uh anytime a link has been visited, I can uh I will tell because my server got got a request for this background image, right?"
+        },
+        {
+          "field": "trigger.0",
+          "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+          "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+          "locator": "body:17/paragraph",
+          "start": 711520,
+          "end": 711657,
+          "quote": "we can write a CSS rule that says that uh for example, when a link is visited, I want the background of it to be an image from my server."
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "c5cb7dce64d3ad1234d6c9df24728561ef156d5bc89a7940808639ab5a7278f8",
+      "unit": {
+        "id": "u10",
+        "kind": "unresolved_claim",
+        "title": "Browser designers reportedly rejected an origin-click-based visited-link policy",
+        "claim": {
+          "text": "The speaker says browsers considered rendering a visited state only when a user had followed the link from the current site, but rejected that approach because of usability concerns.",
+          "quote": "that was an approach that browsers considered but they decided against it because of the usability uh like downside basically."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "The proposed policy would treat a visit from the current site differently from a visit made before arriving at that site.",
+              "quote": "if I visit uh site A and I click a link to site B from it, then it's pretty obvious to site A that I went to site B."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": [
+            {
+              "text": "The speaker says the approach was discarded because users could be confused when a known-visited link appeared differently on different sites.",
+              "quote": "They thought users would be confused about why like a link that they know they've been to is sometimes blue and sometimes purple on different sites."
+            }
+          ]
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not identify which browsers considered this approach, the standards discussion involved, or an independently verifiable historical record.",
+          "Any implementation decision based on historical or current browser behavior requires current primary-source verification."
+        ],
+        "relations": [
+          {
+            "kind": "alternative_to",
+            "target": "u8"
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+          "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+          "locator": "body:17/paragraph",
+          "start": 710757,
+          "end": 710883,
+          "quote": "that was an approach that browsers considered but they decided against it because of the usability uh like downside basically."
+        },
+        {
+          "field": "trigger.0",
+          "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+          "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+          "locator": "body:17/paragraph",
+          "start": 710088,
+          "end": 710204,
+          "quote": "if I visit uh site A and I click a link to site B from it, then it's pretty obvious to site A that I went to site B."
+        },
+        {
+          "field": "exclusions.0",
+          "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+          "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+          "locator": "body:17/paragraph",
+          "start": 710884,
+          "end": 711032,
+          "quote": "They thought users would be confused about why like a link that they know they've been to is sometimes blue and sometimes purple on different sites."
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    }
+  ],
+  "held": [
+    {
+      "index": 7,
+      "reason": "trigger.0: quote_not_exact"
+    }
+  ],
+  "more_units": true,
+  "unresolved": [
+    "The passage begins mid-thought, so preceding context for the definition of side-channel attacks is unavailable.",
+    "The passage ends during discussion of a proposed CSS-based solution: \"that still seems like a work-around to to your to your approach if I if I understand it \". The continuation is needed to determine the conclusion and any further distinct units.",
+    "The source includes demonstrations and historical browser claims but does not provide primary-source references, implementation details, or current-platform verification."
+  ]
+}

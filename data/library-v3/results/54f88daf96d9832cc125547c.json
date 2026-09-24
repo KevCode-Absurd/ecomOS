@@ -1,0 +1,527 @@
+{
+  "cards": [
+    {
+      "title": "Build a WooCommerce Homepage Banner in Elementor with Containers",
+      "summary": "Step-by-step Elementor container setup for a conversion-focused store homepage banner with heading, CTA button, and social proof counter.",
+      "use_when": "Building or rebuilding the hero/banner section of a WooCommerce storefront homepage in Elementor, or deciding how to structure the top-of-page offer area.",
+      "steps": [
+        "Start from an empty Elementor canvas: add a container, rename it 'banner section' (renaming is organisational only, it has no functional effect but keeps structure navigable).",
+        "Set the banner container to content width 'boxed' at 1240px, gaps 0, background color classic (e.g. a beige #FFF8F0), and padding of 20px left/right and ~132px bottom to create breathing room.",
+        "Nest a 'top area' container inside it, set direction row, width 100%, padding-top ~34px, padding-bottom ~104px.",
+        "Split the top area into three inner containers: left (~32.6% width, holds product imagery), middle (~31.5% width, holds headline copy and button), right (~31.2% width, justify-content end, holds visual accents).",
+        "For the headline use a Heading widget with a heavy weight (source used 96px size, 800 weight, tight line-height ~108px and negative letter spacing for a compact editorial look) so the store's value proposition reads as the dominant page element.",
+        "Add a CTA Button widget linking to the shop page (type 'shop' in the link field and select the suggested page). Add an SVG icon via Upload SVG with ~12px icon spacing, 50px border radius for a pill shape, and brand background colour.",
+        "Add a social-proof cluster: image + Counter widget (source showed '40k+' regular customers). Use number suffix for 'k+' and style the label separately. This is a trust element placed inside the hero, not a separate section.",
+        "If the section doesn't span the viewport, fix it with Page Settings > Page Layout > Elementor Full Width, and set a global page background colour under Page Settings > Style so individual sections don't each need their own fill.",
+        "Use position:absolute on decorative images (Advanced tab > Position) with horizontal/vertical offsets — e.g. right/-15, top/-15 — so they overlay without consuming layout space.",
+        "Set the outer bottom area container to direction row, justify-content space-between, align-items center for a balanced footer strip within the banner."
+      ],
+      "caveats": [
+        "The specific pixel values (1240px, 96px type, 132px padding) are the presenter's chosen design values for one project, not performance-proven numbers — adjust to your brand and test on real devices.",
+        "The source used Elementor v3.33.6 for stability; the newest version at time of recording (4.0.1) was considered unstable, so pin to a known stable version during build."
+      ],
+      "tags": [
+        "store-setup",
+        "elementor",
+        "homepage",
+        "landing-page",
+        "container-layout",
+        "cta",
+        "social-proof",
+        "woocommerce",
+        "responsive-design"
+      ],
+      "id": "bc76ce99156154b5ef7c0152",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 3
+    },
+    {
+      "title": "Roll Back Elementor to a Stable Version Before Building",
+      "summary": "Safely freeze a page builder at a known stable release via Elementor's version control to avoid mid-build incompatibilities.",
+      "use_when": "Before starting or resuming a storefront build when a page builder has just released a major version and layouts, widgets, or third-party add-ons may break.",
+      "steps": [
+        "Confirm your builder version: open the editor, click the Elementor logo and read the version indicator in the panel.",
+        "Exit to the WordPress dashboard via the logo menu, and hover over Elementor > Tools (this is where version control lives in the interface at time of recording — verify the current location as Elementor's menu can change).",
+        "Open Version Control, choose 'Rollback Version', select the specific version you want (source used 3.33.6), and click Reinstall, then Continue.",
+        "Close and reopen the editor tab, refresh, and confirm the older version is active before you build anything.",
+        "Complete the whole build on the stable version; you can update to the newest release afterward once it settles.",
+        "Publish frequently during the build so a refresh, browser crash, or closed tab doesn't cost you design work."
+      ],
+      "caveats": [
+        "Version numbers cited (3.33.6 stable, 4.0.1 unstable) are from the recording date; check the current release status yourself before pinning.",
+        "The exact menu path (Elementor > Tools > Version Control) is UI-dependent and should be verified in your current installation."
+      ],
+      "tags": [
+        "store-setup",
+        "elementor",
+        "wordpress",
+        "version-control",
+        "build-reliability"
+      ],
+      "id": "fe4eafe0a5775fd15d1f5506",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 3
+    },
+    {
+      "title": "Speed Up Store Builds with Elementor Global Colors and Global Fonts",
+      "summary": "Configure global brand colours, fonts, container width, and zero default padding/gaps once so every new section inherits the store's design system.",
+      "use_when": "When first configuring a WooCommerce theme/page builder so that every subsequent product section, category block, or landing page is faster to build and visually consistent.",
+      "steps": [
+        "Open the editor's site settings (Elementor > Site Settings > Global Colors) and reassign the defaults: put your most-used brand colour into Primary, your accent/CTA colour into Secondary, paragraph colour into Text, and the accent colour you reuse most into Accent.",
+        "Under Global Fonts, set all four typography slots (Primary, Secondary, Text, Accent) to your brand typeface so new headings and paragraphs pick it up automatically instead of you re-selecting fonts each time.",
+        "Under Site Settings > Layout, set Content Width to your design width (source used 1240px from a 1140px default), set default container padding to 0 and default gaps to 0 so each new container starts clean.",
+        "Save changes, close the panel, then Publish and refresh the page — global settings don't apply to the already-loaded editor until you reload.",
+        "After reload, add a new container and confirm the width and zero-gap defaults are inherited; this is the fastest ongoing check.",
+        "Create reusable global colours inside the individual typography/colour pickers (the plus icon) for any brand tone you use repeatedly, e.g. a named 'black' text colour and 'orange' CTA colour."
+      ],
+      "caveats": [
+        "Global settings only take effect after a page refresh; forgetting to publish first risks losing unsaved work.",
+        "Some widget typography fields (e.g. the countdown widget in the source) don't inherit the global font family by default and require selecting a custom/global font manually."
+      ],
+      "tags": [
+        "store-setup",
+        "elementor",
+        "design-system",
+        "global-settings",
+        "workflow",
+        "branding"
+      ],
+      "id": "72d6fb10ee6efe0a0d9f0528",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 3
+    },
+    {
+      "title": "Use Position Absolute + Offsets to Place Decorative Store Images Precisely",
+      "summary": "Take hero and section images out of normal flow with absolute positioning and numeric offsets for pixel-accurate layering.",
+      "use_when": "Layering product photos, badges, paw prints, or accent graphics over a hero, category block, or promo box where images must overlap copy or each other at exact coordinates.",
+      "steps": [
+        "Add the image widget where it belongs in the structure, then open Advanced > Positioning and set Position to Absolute.",
+        "Set Horizontal Orientation (left/right/center) plus an offset in px, and Vertical Orientation (top/bottom/center) plus an offset. Example from source: right/-15 horizontally and top/-15 vertically to overlap a corner.",
+        "Instead of offsets, you can also drag the image by hand once it is absolute — useful for eyeballing decorative placements, but switch to numeric offsets for values you want to reuse across breakpoints.",
+        "For images that sit over a solid or branded section, use Style > CSS Filters to recolour them without a new asset: setting Contrast to 0 makes the image grey, and lowering Opacity (source used 0.7) softens it against the background.",
+        "Give absolutely-positioned decorative images explicit Custom width/height in px (e.g. 96px, 49px, 52px) so they scale predictably.",
+        "To stack avatars/thumbnails in a row, apply a negative margin (source used -35px) to pull the overlapping image over its neighbour.",
+        "Set a text caption or label over an image by making the Heading widget absolute as well (source used right offset 28, top offset 56) rather than adding a background layer."
+      ],
+      "caveats": [
+        "Absolute positioning removes the element from layout flow, so sibling containers won't reserve space for it — verify each breakpoint separately or decoratives will overlap badly on mobile.",
+        "Drag-and-drop positioning is not remembered per breakpoint; only numeric offsets are reliable across desktop/tablet/mobile."
+      ],
+      "tags": [
+        "store-setup",
+        "elementor",
+        "positioning",
+        "merchandising",
+        "product-page",
+        "visual-design"
+      ],
+      "id": "0309c3888f8b87c387d26c10",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 3
+    },
+    {
+      "title": "Embed Best-Selling and Latest WooCommerce Products via Shortcode",
+      "summary": "Pull live WooCommerce product collections into builder sections using the official WooCommerce product shortcodes.",
+      "use_when": "Adding a best-sellers or new-arrivals rail to a homepage, landing page, or category page without hand-picking products that go stale.",
+      "steps": [
+        "Add a Shortcode widget inside a container on your page.",
+        "Get the shortcode code from the WooCommerce documentation (source showed 'product shortcode for best selling product' and 'for latest product' as distinct copy-paste lines — verify the current shortcode names and arguments in WooCommerce docs, as they can change).",
+        "Paste the full shortcode line into the widget's shortcode field and the products load automatically from your catalogue.",
+        "If product images render doubled/tall in the editor, ignore it — the source notes this is an editor display glitch that resolves on the published front end.",
+        "Leave default shortcode styling for now; the raw output looks unfinished and is meant to be styled via WooCommerce/theme customization once you move to dashboard styling.",
+        "For a 'latest products' rail, use the latest-products shortcode; for best sellers, use the best-selling one — don't manually reorder products to fake 'latest' since a real shortcode keeps the rail current as new items publish."
+      ],
+      "caveats": [
+        "Shortcode names, parameters, and styling behaviour are WooCommerce/plugin dependent and can change between versions — confirm in current docs.",
+        "Default shortcode output is unstyled and will look broken until product title, price, and card layout are customized."
+      ],
+      "tags": [
+        "store-setup",
+        "woocommerce",
+        "shortcodes",
+        "merchandising",
+        "homepage",
+        "product-listing"
+      ],
+      "id": "b3b806623b72c4d09b1c2f7c",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 3
+    },
+    {
+      "title": "Import a Prebuilt Elementor Template (e.g. Reviews Section) Instead of Building From Scratch",
+      "summary": "Upload a saved Elementor JSON template and insert it as a section, then customize its widgets rather than reconstructing the layout.",
+      "use_when": "Adding a common but tedious store section such as testimonials/reviews, contact, or FAQ where you already have a saved design file.",
+      "steps": [
+        "Click the folder/Add Template icon in the Elementor panel, then use the Upload Template option and drag in your saved template JSON files.",
+        "If a template fails to appear after a batch upload, re-upload the missing one individually (source had to re-upload the review section).",
+        "Click Insert to drop the template in as a new section.",
+        "Expect it to look messy in the editor — the source says evaluate it on the front end, where the layout resolves correctly.",
+        "Customize editorial copy by selecting the text elements directly, and customize the testimonial widget via its Style tab (column gap, background colour, active background colour) and Content tab (description text, typography, text colour).",
+        "Treat the imported template as fully yours — every element remains editable, so adapt spacing and colours to your globals rather than leaving template defaults."
+      ],
+      "caveats": [
+        "Templates carry their own typography and colour values, so you will need to re-map them to your global colours/fonts for brand consistency.",
+        "The upload interface and icon location are Elementor-version dependent — verify in your version."
+      ],
+      "tags": [
+        "store-setup",
+        "elementor",
+        "templates",
+        "testimonials",
+        "retention",
+        "workflow"
+      ],
+      "id": "720823a4c0fe1e63d74d9642",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 3
+    },
+    {
+      "title": "Build a Countdown-Timer Promo Box for Offers and Drops",
+      "summary": "Set up a styled countdown widget inside a promo box to create urgency for a sale, launch, or limited drop.",
+      "use_when": "Running a time-limited promotion, flash sale, or product drop on a homepage or campaign landing page where urgency is part of the offer.",
+      "steps": [
+        "Create a box container with a brand background colour (source used #F0D8B2) and a border radius (16px) so it reads as a distinct promo unit; give it balanced padding (source used 55/36/55/36).",
+        "Add a Heading (offer title), a subheading (terms/description), the Countdown widget, and a Button inside the box.",
+        "In the Countdown timer settings, set the exact expiration date and time. The widget counts down from now until that moment; on expiry the Expire Action shows a custom title and message you write.",
+        "Customize the unit labels (days/hours/minutes/seconds) if your audience needs different wording, though the defaults are usually clear.",
+        "For a flat look, remove the widget's background by setting the background type to classic and the colour to fully transparent (source did this so the timer matched the promo box).",
+        "Style the digit and label separately: source set digits ~36px/700 weight/48px line height, labels ~20px/500 weight/30px line height, and saved these as typography presets so each of the four units could be restyled in one click.",
+        "Set a top margin (~40px) to separate the timer from copy, and add a CTA button (source reused the hero button via copy/paste then centred it)."
+      ],
+      "caveats": [
+        "The countdown widget in the source came from a third-party plugin (Elements Kit), not Elementor core — availability and settings depend on which add-on you install.",
+        "Saved typography presets are what make the four-unit styling fast; without them, each unit must be styled manually.",
+        "Urgency timers should only flag genuine deadlines; resetting a timer arbitrarily undermines the trust the offer depends on."
+      ],
+      "tags": [
+        "store-setup",
+        "elementor",
+        "countdown",
+        "promotion",
+        "landing-page",
+        "offer-design",
+        "conversion-optimization"
+      ],
+      "id": "1bfcc5f7fc8cecb7822fd14a",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 3
+    },
+    {
+      "title": "Build a Category Showcase Section with Floating Badges",
+      "summary": "Lay out category tiles as clickable images with overlaid, rounded category-name badges that double as navigation.",
+      "use_when": "Building a homepage or landing page category block that routes shoppers into top-level product categories (e.g. dog food, cat food).",
+      "steps": [
+        "Create a section container with generous padding (source used 132/20/68/20) and add floating decorative images using absolute positioning (e.g. left -41/top 90; left 40/top 70; right -140/bottom 40) — they can sit outside the visible flow and settle into place once content is added.",
+        "Inside, make a row container with justify-content center to hold the category tiles.",
+        "For each tile: add a category image, then a Heading widget for the category name. Use a BR tag in the heading text to force a deliberate line break rather than letting it wrap arbitrarily.",
+        "Style the heading with centre alignment and a bold weight (source used 36px/700, tight line-height 45px, negative letter spacing -2.52px) then make it absolute with right/bottom offsets so it sits on the image as a badge.",
+        "Give the badge a coloured, rounded background: background type classic with your secondary/brand colour, then a border radius of 50% for a pill/circle shape. Give it padding (source used 41px top/bottom) and a set pixel width (~172px).",
+        "Duplicate the whole group to create additional tiles, then just swap the image and the heading text and change the badge colour — this is the fastest way to keep badge sizing consistent across categories."
+      ],
+      "caveats": [
+        "Badges depend on precise absolute offsets; changing tile image aspect ratios later will require re-tuning those offsets.",
+        "Keeping the badge text short matters — long category names will overflow the fixed-width pill."
+      ],
+      "tags": [
+        "store-setup",
+        "elementor",
+        "merchandising",
+        "category-page",
+        "navigation",
+        "homepage",
+        "visual-design"
+      ],
+      "id": "ad984b949f14f45ba0858130",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 3
+    },
+    {
+      "title": "Make Elementor Store Sections Responsive Without Breaking Desktop",
+      "summary": "Fix tablets and mobile using per-breakpoint container widths, reduced typography, per-breakpoint padding, and Order instead of physically moving elements.",
+      "use_when": "After building a desktop store homepage/section, when it breaks on tablet or mobile and you need to correct it without regressing the desktop layout.",
+      "steps": [
+        "Switch the editor to Tablet or Mobile mode at the bottom of the panel — edits you make in a breakpoint apply only to that breakpoint and below.",
+        "Adjust outer section padding per breakpoint: source changed the banner's bottom padding from 104px to 90px on tablet, then set all-round padding to roughly 20/70/20 on mobile.",
+        "Reduce hero typography on smaller screens: the source dropped the main heading from 96px to 72px (line-height 86px) on tablet, then to 64px (line-height 72px) on mobile.",
+        "Fix multi-column rankings by changing each container's width per breakpoint (source: three hero columns 30%/32%/24% on tablet, then 48%+48% on mobile so two items share a row).",
+        "When a block needs to move position on mobile only, DO NOT drag it — dragging changes the desktop order too. Instead, open Advanced > Order and set it to 'end' (or a number) so it reorders only for that breakpoint.",
+        "Add breakpoint-specific spacing with margin (source added 30px bottom margin on mobile to push the second hero block down).",
+        "Use per-breakpoint image controls (width slider) to reposition decorative images like paw graphics so they land sensibly at mobile widths."
+      ],
+      "caveats": [
+        "Edits made while in a smaller breakpoint cascade downward, so always check mobile after changing tablet.",
+        "Drag-and-drop reordering inside a breakpoint is a common mistake the source warns against — use the Order property instead."
+      ],
+      "tags": [
+        "store-setup",
+        "elementor",
+        "responsive-design",
+        "mobile",
+        "breakpoints",
+        "homepage",
+        "workflow"
+      ],
+      "id": "dd4deb9d6b86225b751b2c0f",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 3
+    },
+    {
+      "title": "Set a Global Page Background and Full-Width Layout Once Per Page",
+      "summary": "Use Page Settings to apply a single background colour and full-width canvas instead of styling every section individually.",
+      "use_when": "When a store homepage or landing page needs a consistent background and its sections must span the full browser width.",
+      "steps": [
+        "Open Page Settings (the gear/editor settings) and go to the Layout section.",
+        "Under Page Layout, change from 'Default' to 'Elementor Full Width' so sections stretch edge-to-edge; the source used this to remove leftover side gutters.",
+        "Go to the Style tab of Page Settings and set a global page background colour (the source used a soft cream) so you don't have to add a background to every section.",
+        "Because the global page background gives the base colour, sections then only need their own distinct background where the design calls for a different tone (e.g. a pink promo band or beige hero).",
+        "Apply these page-level settings once per page and build sections on top; this keeps the page background consistent even as you add, delete, and duplicate sections."
+      ],
+      "caveats": [
+        "Full-width layout changes how the 1240px content-width containers render, so verify hero spacing after switching.",
+        "A global page background overrides the visual expectation of an empty section — sections intended to look 'plain' will now be cream, not white."
+      ],
+      "tags": [
+        "store-setup",
+        "elementor",
+        "page-settings",
+        "layout",
+        "homepage",
+        "design-system"
+      ],
+      "id": "6be8fc577f9e8794cb9792db",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 3
+    },
+    {
+      "title": "Use Negatives Margins and Order to Control Store Section Spacing",
+      "summary": "Fine-tune spacing between hero copy, buttons, and grouped elements with margins, negative margins, and container order rather than adding empty blocks.",
+      "use_when": "Tightening or separating elements within a product hero, promo box, or footer strip where default gaps look wrong.",
+      "steps": [
+        "Use the Advanced > Margin control (unlink it) for element-level spacing: the source added 100px top / 50px bottom margin to a button to pull it away from surrounding content.",
+        "Use padding on the parent container to create interior breathing room around a group, and keep child margins for finer control within the group.",
+        "Use negative margins to overlap elements deliberately, e.g. -35px to pull one avatar/thumbnail onto the previous one for a stacked look.",
+        "To reorder items on one breakpoint only, use Advanced > Order; to reorder across all breakpoints, physically drag the widget in the Structure tree.",
+        "Check the Structure panel to confirm nesting is correct before styling — many spacing problems are caused by a widget being nested one level too deep (the source repeatedly moved widgets out of the wrong parent container).",
+        "Name containers ('banner section', 'top area', 'title', 'count') so you can find and adjust the right one quickly during spacing passes."
+      ],
+      "caveats": [
+        "Negative margins can cause overlap on breakpoints the designer didn't check; verify on mobile and tablet.",
+        "The editor's drag-and-drop can place a new container inside an existing one by accident — drag outside first, then position, or use 'Add to Container' to place it as a sibling."
+      ],
+      "tags": [
+        "store-setup",
+        "elementor",
+        "spacing",
+        "layout",
+        "structure-panel",
+        "workflow"
+      ],
+      "id": "a518d6e716754b889e804b43",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 3
+    },
+    {
+      "title": "Create Global Font and Colour Shortcuts Inside Widget Settings",
+      "summary": "Save frequently used fonts and colours as named global presets from within any typography/colour picker to avoid re-selecting them repeatedly.",
+      "use_when": "When building a store page and you find yourself re-applying the same font family, size/weight combination, or brand colour on every heading and button.",
+      "steps": [
+        "In any typography panel, click the plus icon next to the font family field to create a global font (source created one named after the brand font, e.g. 'Nito').",
+        "A small globe/earth icon then appears wherever typography is set — click it to select the saved global font rather than browsing the font list again.",
+        "Likewise, in any colour picker click the plus to create a named global colour (source created 'black' for the primary text tone and an 'orange' for the CTA colour).",
+        "For fonts used at different sizes across many widgets (the source found this necessary in the countdown widget), save typography presets for each role, e.g. a 'digit' preset for countdown numbers and a 'label' preset for their captions.",
+        "When you duplicate a widget (e.g. for the four countdown units or duplicated category tiles), apply the saved presets so every instance stays consistent and future brand changes propagate.",
+        "Use these presets alongside the Site Settings global colours/fonts to keep section-level styling fast without re-inventing the palette on each section."
+      ],
+      "caveats": [
+        "Saved typography presets are widget/site specific — verify they appear in the typography popup as expected, since some widgets (like countdown) don't inherit site-wide fonts and need a custom selection.",
+        "Naming presets by role ('digit', 'label', 'black', 'orange') rather than by value keeps them maintainable when the brand palette changes."
+      ],
+      "tags": [
+        "store-setup",
+        "elementor",
+        "design-system",
+        "typography",
+        "workflow",
+        "branding"
+      ],
+      "id": "d9f957bcecd94b6dece7fdae",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 3
+    },
+    {
+      "title": "Plan for a Blog Section by Deferring Styling Until Posts Exist",
+      "summary": "Add the blog/latest-posts block to the homepage structurally, but wait to style it until real blog content exists so the design preview isn't misleading.",
+      "use_when": "Building a store homepage in a builder where a blog/news section is planned but no real posts have been published yet.",
+      "steps": [
+        "Add a container for the blog section (source used 132/20/132/20 padding) and a centred section heading (source used 72px/600 weight, 80px line height, in the brand colour).",
+        "Add the Blog Posts / Posts widget; it will pull from your site's existing posts.",
+        "If only the default 'Hello World' post exists, the widget will show a single item — the source deliberately leaves it unstyled at this stage.",
+        "Proceed to build the rest of the homepage, then return to style this block once you've created and published real posts from the dashboard and can judge the layout with representative content.",
+        "When you come back, style the post archive on the front end with the same typography and spacing conventions as the rest of the page."
+      ],
+      "caveats": [
+        "Styling an archive section with only placeholder content often leads to incorrect decisions — the source explicitly recommends deferring this work.",
+        "Blog Posts widget availability and options depend on Elementor Pro or a third-party add-on; verify which widget you actually have."
+      ],
+      "tags": [
+        "store-setup",
+        "elementor",
+        "homepage",
+        "content-marketing",
+        "workflow",
+        "retention"
+      ],
+      "id": "5855ce9236b4cf3212ada1e8",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 3
+    },
+    {
+      "title": "Fix the SVG Icon Upload 'Only One Image Shows' Bug",
+      "summary": "Recover missing SVG icons in the media library by publishing and refreshing the editor, then re-opening the uploader.",
+      "use_when": "When uploading a batch of SVG icons (for store badges, payment icons, CTA arrows) and only one appears in the media library.",
+      "steps": [
+        "Batch-select all your SVG files and drag them into the media library upload area as normal.",
+        "If only one (or a few) show up after upload, don't re-upload repeatedly first — publish the page so you don't lose design work.",
+        "Refresh the editor page.",
+        "Select the widget using the SVG (e.g. the button), open Upload SVG again, and all uploaded icons should now be visible and selectable.",
+        "For SVG icons to appear at all, the site must have SVG uploads enabled — the source enabled this ('click Enable') when first attempting an SVG upload.",
+        "After inserting an icon, control its relationship to the text with the Icon Spacing control (source used 12px) and style the button icon separately from the label if needed."
+      ],
+      "caveats": [
+        "The source mentions the button icon can look small relative to the text and planned to fix that with custom CSS later.",
+        "SVG upload is a security-sensitive capability on some hosts; enabling it is a site configuration decision, not just a UI toggle."
+      ],
+      "tags": [
+        "store-setup",
+        "elementor",
+        "svg-icons",
+        "media-library",
+        "cta",
+        "troubleshooting"
+      ],
+      "id": "a2c806b07d1284fd3f07f531",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 3
+    },
+    {
+      "title": "Renaming and the Structure Panel Keep Complex Store Builds Sane",
+      "summary": "Double-click to rename containers and use the Structure tree to navigate, select, and reorder deeply nested store sections.",
+      "use_when": "Managing a multi-section store homepage where containers are nested several levels deep and selecting the right one in the canvas is slow or error-prone.",
+      "steps": [
+        "Double-click a container's label to rename it with a functional name (e.g. 'banner section', 'top area', 'title', 'product section', 'testimonials section'); renaming has no functional effect but makes the build navigable.",
+        "Use the Structure panel (the tree icon) to see the exact nesting: open a container there and you'll see its children listed, which is how the source diagnosed misplaced widgets.",
+        "Reorder or move a widget by dragging it within the Structure tree, or use right-click > Add to Container to insert a new container as a sibling (source used this to add a container 'beside' rather than 'inside' the selected one).",
+        "Delete example/placeholder content by right-clicking the container in Structure and choosing Delete, which removes the container and everything inside it cleanly.",
+        "Rename sections as you go (source renamed a generic 'product section' to 'product section two' and a section to 'testimonials section') so later customisation passes and handoff are unambiguous."
+      ],
+      "caveats": [
+        "Renaming is organisation only — it does not affect rendering, so don't expect it to change spacing or layout.",
+        "The exact Structure panel location and right-click options are version dependent; verify in your Elementor version."
+      ],
+      "tags": [
+        "store-setup",
+        "elementor",
+        "structure-panel",
+        "workflow",
+        "organization",
+        "debugging"
+      ],
+      "id": "7a6cc2f3beca84ba64f86ba4",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 3
+    },
+    {
+      "title": "Choose the Right Text Widget for Store Copy",
+      "summary": "Use Heading for large display text and Text Editor for paragraphs, because they offer different styling control.",
+      "use_when": "Deciding how to add hero headlines, product descriptions, or mixed-format body copy to a store page in a visual builder.",
+      "steps": [
+        "For large display text (hero headlines, section titles, price callouts) use the Heading widget, which is designed for a single line of prominent text and gives clean control over alignment, typography, size, weight, line height, letter spacing, and text colour.",
+        "For paragraphs and body copy use the Text Editor widget, which provides a rich inline editor (like a word processor) so you can style individual words within one block — e.g. colour just the words 'premium shop' in a different tone while the rest of the sentence stays black.",
+        "Use inline styling sparingly and deliberately: it is powerful for emphasising a phrase inside a paragraph, but it creates inconsistency if overused.",
+        "Apply global styling (alignment, font family, size, weight, colour) at the widget level using the Style tab so the whole block stays coherent, layering inline styles only on top.",
+        "Remember both widgets respect your saved global fonts and colours, so the fastest path is to set the font role globally first and then only adjust size, weight, line height, and letter spacing per instance."
+      ],
+      "caveats": [
+        "Inline rich-text styling lives inside the widget content, not the global style, so it will not update automatically if you change brand colours later.",
+        "Mixing many one-off inline colours across a page is hard to maintain; keep the palette to your global colours where possible."
+      ],
+      "tags": [
+        "store-setup",
+        "elementor",
+        "typography",
+        "copywriting",
+        "product-page",
+        "content"
+      ],
+      "id": "0276c07ed18a2bbb0dccbc55",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 3
+    }
+  ],
+  "request_id": "f8d2080a4b530ba842d6259155632f43ee72c06c06300c8b8775453f4aba689c",
+  "ecommerce_scope_version": 1
+}

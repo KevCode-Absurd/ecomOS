@@ -1,0 +1,626 @@
+[
+  {
+    "label": "answer-1",
+    "case": "cro-traffic/low-volume",
+    "output": {
+      "decision": "No—do not launch a multivariate hero × offer × checkout test this month. With 3,000 monthly sessions and a 2% baseline purchase conversion rate (about 60 purchases/month), splitting traffic across multiple combinations is unlikely to yield a timely, decision-ready result. Instead, select one highest-priority, low-risk change and run a sequential A/B test only after defining its hypothesis, guardrails, and measurement plan. This is an operational recommendation based on the supplied brand facts plus general experimentation practice; the library’s volume guidance is unverified and does not define a threshold.",
+      "next_steps": [
+        "Choose one lever to test first—hero, offer, or checkout—using expected business impact, implementation risk, and reversibility.",
+        "Write a predefined hypothesis with a primary metric of revenue per session and guardrails such as conversion rate, average order value, refund rate, and checkout errors.",
+        "Estimate required sample size and expected runtime for a two-variant test before committing; defer if the runtime is not operationally acceptable.",
+        "Keep the other two experiences unchanged so the result is interpretable; do not stack overlapping tests on the same customer journey.",
+        "QA the selected variant repeatedly across devices, traffic sources, cart states, discount logic, payment methods, and analytics events before launch."
+      ],
+      "missing_inputs": [
+        "Number of variants proposed for each of hero, offer, and checkout, plus the exact experiences.",
+        "Expected effect size or minimum detectable lift, desired confidence/power, and maximum acceptable test duration.",
+        "Revenue per session, average order value, margin impact, and discount/offer cost.",
+        "Whether checkout changes require platform, payment, legal, or promotional approvals and what tracking events are available."
+      ],
+      "evidence_used": [
+        {
+          "id": "case8-u7",
+          "supports": "The supplied source advises using multivariate testing only at high volume, while leaving the threshold undefined."
+        },
+        {
+          "id": "case8-u9",
+          "supports": "The supplied source describes a practitioner’s sample-sizing practice of 50,000–100,000 sessions per test, dependent on placement; it is not presented as a universal rule."
+        },
+        {
+          "id": "case8-u12",
+          "supports": "The supplied source recommends a clear, predefined, measurable hypothesis."
+        },
+        {
+          "id": "case8-u14",
+          "supports": "The supplied source recommends repeated QA before a test goes live."
+        },
+        {
+          "id": "case8-u15",
+          "supports": "The supplied source recommends revenue per session or visitor rather than conversion rate alone."
+        }
+      ],
+      "assumptions": [
+        "Monthly sessions and baseline conversion are representative of the planned test period.",
+        "A multivariate test would divide traffic among more than two combinations and seek purchase/revenue outcomes.",
+        "No major seasonal campaign or traffic increase will materially change available volume this month.",
+        "Tracking being validated means assignment, purchase, and revenue events can be measured reliably."
+      ]
+    }
+  },
+  {
+    "label": "answer-2",
+    "case": "roas-comparison/within-platform",
+    "output": {
+      "decision": "Yes—make a controlled, incremental budget shift from Meta prospecting campaign B to A, rather than a full reallocation. A’s reported ROAS (5) is materially higher than B’s (2) over the same 30-day period with matching attribution settings, so the comparison is directionally usable within Meta. Do not assume A will sustain ROAS 5 at higher spend or that reported ROAS equals incremental profit.",
+      "next_steps": [
+        "Shift a limited tranche of B’s budget to A while keeping total Meta prospecting spend stable.",
+        "Predefine a 7–14 day or sufficient-volume readout and guardrails for A’s ROAS, spend, conversion volume, and new-customer results.",
+        "Compare post-shift results against the prior 30-day baseline and against B’s retained spend; reverse the shift if A’s efficiency materially deteriorates.",
+        "Review marginal performance by spend level, audience saturation, frequency, creative, and placement before making a larger reallocation.",
+        "Validate the decision against contribution margin and new-customer revenue where available, not ROAS alone."
+      ],
+      "missing_inputs": [
+        "Current daily spend, conversion volume, and revenue for each campaign.",
+        "Gross margin, variable costs, and target profitability threshold.",
+        "New versus returning-customer revenue split by campaign.",
+        "Evidence of incrementality or holdout/lift results for either campaign."
+      ],
+      "evidence_used": [
+        {
+          "id": "case19-u1",
+          "supports": "Within a single platform, ROAS can be used directionally to compare campaigns; both campaigns are Meta campaigns with the same attribution settings."
+        },
+        {
+          "id": "case19-u4",
+          "supports": "Longer observation periods improve confidence for slower financial-grade KPI decisions; the supplied 30-day window is useful context but does not establish a sufficient test duration."
+        }
+      ],
+      "assumptions": [
+        "Reported ROAS is calculated consistently for both campaigns and the 30-day results are not driven by a one-off promotion, stock issue, or tracking change.",
+        "Campaign A has remaining scalable audience and inventory capacity.",
+        "The proposed budget movement is small enough to measure without materially changing total-market conditions.",
+        "The library is unverified evidence; the phased test and profitability checks are operational proposals, not source-established rules."
+      ]
+    }
+  },
+  {
+    "label": "answer-3",
+    "case": "roas-comparison/within-platform",
+    "output": {
+      "decision": "Do not make a large budget shift solely on reported ROAS. Because both are Meta prospecting campaigns with the same attribution settings, A’s 5 ROAS versus B’s 2 is a valid directional signal for an in-platform test. Shift a limited, pre-set portion of B’s budget to A, then retain or reverse the change based on marginal business results—not just in-platform ROAS.",
+      "next_steps": [
+        "Confirm both campaigns have comparable objectives, audiences, optimization events, placements, creative freshness, and overlap before testing.",
+        "Reallocate a limited budget tranche from B to A while keeping total Meta spend and the measurement window defined.",
+        "Track spend, attributed ROAS, new-customer revenue, new-customer CAC, gross-profit contribution, and total business revenue during the test.",
+        "Set decision rules in advance: retain the shift only if A sustains acceptable marginal efficiency and business outcomes; reverse if efficiency deteriorates or B appears to support incremental demand.",
+        "If the budget decision is material, use a properly designed incrementality or holdout test rather than relying on platform attribution alone."
+      ],
+      "missing_inputs": [
+        "Spend and conversion volume for A and B, including whether results are statistically stable.",
+        "Campaign setup details: audience overlap, optimization event, bid strategy, placements, creative, frequency, and learning status.",
+        "Unit economics and targets: gross margin, allowable CAC, new-versus-returning customer mix, and contribution-profit threshold.",
+        "Evidence of marginal performance at higher spend and any incrementality or geo-test results."
+      ],
+      "evidence_used": [
+        {
+          "id": "source-19",
+          "supports": "Reported ROAS can be used directionally to compare campaigns within the same platform, but is not sufficient for broader allocation decisions because attribution can misstate incremental impact."
+        },
+        {
+          "id": "source-19",
+          "supports": "The source describes incrementality testing and financial/new-customer metrics as more reliable, albeit slower, ways to assess budget impact."
+        }
+      ],
+      "assumptions": [
+        "A and B are both being evaluated within Meta under the stated identical attribution settings.",
+        "The reported 30-day ROAS figures are calculated consistently and are not affected by reporting errors.",
+        "No conclusion is made that A will retain a 5 ROAS after budget increases; marginal returns may decline."
+      ]
+    }
+  },
+  {
+    "label": "answer-4",
+    "case": "roas-comparison/cross-platform",
+    "output": {
+      "decision": "Do not reallocate budget from TikTok prospecting to Google brand search solely because reported ROAS is 5 versus 2. These campaigns serve different funnel roles, and brand search may capture demand created elsewhere. Treat the 30-day ROAS comparison as directional within each channel, not as proof of relative incremental return. Consider a controlled, capped test only after confirming profitability and measurement design.",
+      "next_steps": [
+        "Hold current allocation initially; avoid a wholesale shift based on reported ROAS alone.",
+        "Break out new-customer revenue, contribution margin, spend, and customer-acquisition cost by channel for the same period.",
+        "Check Google brand-search trends against TikTok spend, branded-search volume, and total new-customer outcomes to identify possible demand capture.",
+        "Design a measured, limited budget-change or geographic holdout test with a valid control group; use incremental new-customer revenue or profit as the primary outcome.",
+        "Set channel-specific guardrails, including an acceptable acquisition-cost or contribution-margin threshold, before scaling either channel."
+      ],
+      "missing_inputs": [
+        "Whether ROAS is platform-reported or based on a common attribution system, including attribution windows.",
+        "Spend, attributed revenue, new-customer share, gross margin, and contribution costs for each campaign.",
+        "Historical results before and during TikTok spend changes, including branded-search volume and total new-customer revenue.",
+        "Operational constraints and the minimum profitable CAC or incremental-return threshold."
+      ],
+      "evidence_used": [
+        {
+          "id": "source-19",
+          "supports": "Reported ROAS across platforms can be misleading because channels may operate at different funnel stages and use different attribution models."
+        },
+        {
+          "id": "source-19",
+          "supports": "The source describes a pattern in which upper-funnel TikTok activity can be underattributed while later Meta or Google activity receives credit."
+        },
+        {
+          "id": "source-19",
+          "supports": "The source recommends incrementality testing with treatment and control groups as a more reliable, though slower and more complex, way to assess budget impact."
+        }
+      ],
+      "assumptions": [
+        "General ecommerce measurement practice is used in addition to the supplied source.",
+        "Google brand search is likely lower funnel than TikTok prospecting, but its actual incremental value has not been established.",
+        "The reported ROAS values cover the same 30-day period but are not confirmed to use identical attribution rules.",
+        "No profitability, new-customer, or incrementality evidence was supplied."
+      ]
+    }
+  },
+  {
+    "label": "answer-5",
+    "case": "subscription-gift/complementary",
+    "output": {
+      "decision": "Add the shaker cup to the third shipment as a one-time, non-consumable retention gift. It aligns with creatine use without increasing the amount of supplement received, which is relevant to the observed “too much product” cancellation reason. Include a reminder that emphasizes flexibility and gives customers an easy way to skip or adjust before the order processes. Proposed reminder: “Your third creatine shipment is coming soon—and we’re including a complimentary shaker cup. Have more creatine than you need? You can skip, delay, or adjust your delivery before it processes.”",
+      "next_steps": [
+        "Confirm the shaker cup is useful, durable, and economical after packaging and shipping costs.",
+        "Set eligibility rules: third paid shipment only, one per subscriber, while inventory lasts.",
+        "Add a pre-billing reminder with a clear skip, delay, and frequency-adjustment link.",
+        "Test the message against a no-gift control or alternative non-consumable gift.",
+        "Track cancellation, skip, adjustment, and repeat-order rates for eligible customers."
+      ],
+      "missing_inputs": [
+        "Shaker cup unit cost, inventory, dimensions, and incremental shipping impact.",
+        "Current shipment cadence and the lead time available for reminders or changes.",
+        "Whether customers commonly already own shaker cups or have requested other accessories.",
+        "Baseline third-shipment cancellation and retention rates, segmented by cancellation reason."
+      ],
+      "evidence_used": [],
+      "assumptions": [
+        "General ecommerce judgment is used because no library evidence was supplied.",
+        "The shaker cup is compatible with the brand’s creatine product and can be included without material fulfillment issues.",
+        "The subscription platform supports skip, delay, or frequency changes before processing."
+      ]
+    }
+  },
+  {
+    "label": "answer-6",
+    "case": "cro-traffic/higher-volume",
+    "output": {
+      "decision": "Do not launch one broad multivariate test across hero, offer, and checkout this month. The site’s 600,000 monthly sessions are likely sufficient for meaningful testing, but testing three funnel areas at once will make attribution, interaction effects, checkout exposure, and required sample size difficult to manage. Instead, use this month to define evidence-backed hypotheses and launch one or more non-conflicting, adequately powered tests—starting with the highest-priority change.",
+      "next_steps": [
+        "Analyze funnel drop-off, device, traffic-source, customer-type, and post-purchase/support feedback to identify friction behind each proposed change.",
+        "Write separate hypotheses for hero, offer, and checkout, including the expected revenue-per-session effect and rationale.",
+        "Estimate sample size and test duration for each variant combination using checkout-entry volume, not total site sessions; predefine primary and guardrail metrics.",
+        "Prioritize ideas by expected impact, visibility, implementation effort, and evidence; launch the top isolated test first, or test separated funnel areas only if allocation and attribution remain clear.",
+        "QA randomization, pricing/offer logic, checkout behavior, analytics events, and revenue tracking before launch; run through at least two weekly cycles and avoid overlapping changes to the same page."
+      ],
+      "missing_inputs": [
+        "Proposed hero, offer, and checkout variants, including the number of combinations and traffic allocation plan.",
+        "Checkout-entry and purchase volumes by device and major traffic source.",
+        "Historical revenue per session, average order value, refund/cancellation rate, and acceptable downside thresholds.",
+        "Research evidence for each change, such as survey responses, session recordings, funnel diagnostics, or support themes."
+      ],
+      "evidence_used": [
+        {
+          "id": "source-8",
+          "supports": "The supplied source recommends multivariate testing only at high volume, clear data-backed hypotheses, 50k–100k sessions per test, two-to-four-week durations, QA, avoidance of conflicting tests, and prioritizing revenue over conversion rate."
+        }
+      ],
+      "assumptions": [
+        "Tracking validation means experiment assignment, purchases, and revenue can be measured reliably.",
+        "The stated 600,000 monthly sessions are sitewide; usable traffic for checkout tests may be materially lower.",
+        "This recommendation treats the supplied library as unverified guidance rather than independently validated fact.",
+        "No urgent promotional, platform, or checkout-release deadline requires bundling all three changes this month."
+      ]
+    }
+  },
+  {
+    "label": "answer-7",
+    "case": "subscription-gift/duplicate",
+    "output": {
+      "decision": "Do not add another full tub of creatine. Add a practical, non-consumable creatine-use accessory—preferably a branded shaker bottle—on the third shipment, subject to unit economics and inventory. This avoids worsening the observed “too much product” cancellation reason while still making shipment three feel rewarded. Send an order-three-specific billing reminder that prominently mentions the gift, clearly states the upcoming charge, and offers an easy delay/skip path.",
+      "next_steps": [
+        "Confirm a shaker bottle (or another durable, complementary accessory) meets margin, inventory, and shipping constraints.",
+        "Configure a third-shipment billing reminder with the gift message and dynamic charge date, price, and shipment details.",
+        "Add one-click delay/skip options; retain a clear subscription-management option without obscuring it.",
+        "Test reminder copy against the current reminder, measuring delays, cancellations, and gift-related support contacts."
+      ],
+      "missing_inputs": [
+        "Available gift options, landed cost, inventory, and shipping impact.",
+        "Billing date, charge amount, shipment cadence, and available subscription actions.",
+        "Brand voice and any approved product-benefit claims.",
+        "Whether all third-shipment subscribers qualify or exclusions apply."
+      ],
+      "evidence_used": [
+        {
+          "id": "source-2",
+          "supports": "Advises against gifting more of the subscribed product because excess supply can lead customers to delay or cancel; this directly matches the observed cancellation reason."
+        },
+        {
+          "id": "source-2",
+          "supports": "Recommends communicating an upcoming gift in order-number-specific billing reminders and offering delay options for customers with excess product."
+        }
+      ],
+      "assumptions": [
+        "A shaker bottle is useful with creatine and does not materially create more product inventory for the customer.",
+        "The subscription platform can support order-number segmentation and delay/skip links.",
+        "Suggested reminder copy: “Your third creatine delivery is coming soon—and we’ve added a complimentary shaker bottle as a thank-you for staying consistent. Your subscription will renew on [date] for [amount]. Need a little more time before your next tub? Delay or skip this shipment here: [link]. View or adjust your subscription: [link].”",
+        "The source is unverified guidance; any compliance requirements and platform capabilities should be validated independently."
+      ]
+    }
+  },
+  {
+    "label": "answer-8",
+    "case": "roas-comparison/within-platform",
+    "output": {
+      "decision": "Do not automatically allocate more budget to Campaign A solely because its reported ROAS is higher. With identical attribution settings and a 30-day comparison, A is the stronger candidate for a controlled budget increase, but scale only after checking spend, conversion volume, incrementality, profitability, and saturation risk. This recommendation is based on general ecommerce measurement practice; no external evidence was supplied.",
+      "next_steps": [
+        "Confirm each campaign’s spend, purchases, revenue, conversion volume, CPM, CPA, and frequency for the same 30-day period.",
+        "Compare contribution margin or profit after product costs, discounts, shipping, returns, and ad spend—not ROAS alone.",
+        "Run a controlled reallocation: move a limited portion of B’s budget to A, maintain a holdout where feasible, and monitor marginal rather than average ROAS.",
+        "Set guardrails for the test, including minimum purchase volume, acceptable CPA or profit threshold, frequency ceiling, and a defined review window.",
+        "Check audience overlap, campaign objectives, optimization events, creative mix, and learning status to ensure A and B are genuinely comparable."
+      ],
+      "missing_inputs": [
+        "Spend and purchase/conversion volume for each campaign",
+        "Revenue quality and contribution margin by campaign, including returns and discounts",
+        "Audience targeting, overlap, optimization event, bid strategy, and learning status",
+        "Marginal performance or prior budget-change results, plus frequency and reach"
+      ],
+      "evidence_used": [],
+      "assumptions": [
+        "The reported ROAS values use comparable revenue definitions and are not materially affected by tracking gaps.",
+        "Both campaigns pursue sufficiently similar commercial goals; if they serve different funnel roles, direct ROAS comparison may be inappropriate.",
+        "Thirty days may still be insufficient if purchase volume is low or demand is highly seasonal.",
+        "Higher average ROAS does not establish that additional spend in Campaign A will retain the same ROAS."
+      ]
+    }
+  },
+  {
+    "label": "answer-9",
+    "case": "cro-traffic/low-volume",
+    "output": {
+      "decision": "Do not launch a full multivariate test of hero, offer, and checkout this month. With 3,000 monthly sessions and a 2% purchase conversion rate, expected monthly orders are too limited for a practical, interpretable multivariate purchase-conversion test. Prioritize one high-impact, low-risk test or diagnostic work instead.",
+      "next_steps": [
+        "Choose one primary hypothesis, preferably hero messaging/creative or offer presentation; avoid changing checkout concurrently.",
+        "Run a sample-size and duration calculation using the minimum detectable lift, traffic allocation, and desired confidence before committing.",
+        "Review funnel drop-off, device mix, payment/shipping friction, and qualitative session or customer-feedback evidence to identify the strongest single test candidate.",
+        "Keep checkout changes to QA, usability fixes, or clearly necessary defect remediation unless there is sufficient traffic for a dedicated test.",
+        "Predefine the primary metric (purchase conversion), guardrails (revenue per session, refund rate, checkout errors), eligibility, and stopping rules."
+      ],
+      "missing_inputs": [
+        "Minimum detectable effect and required statistical confidence/power.",
+        "Current funnel conversion by step, device, and channel.",
+        "Whether offer changes affect margin, discounting policy, or returning-customer behavior.",
+        "Expected traffic changes or campaign launches this month."
+      ],
+      "evidence_used": [],
+      "assumptions": [
+        "General ecommerce experimentation guidance is used because no library was supplied.",
+        "The 3,000 monthly sessions are approximately eligible test traffic and the 2% baseline applies to the intended audience.",
+        "Purchase conversion is the decision metric; a different higher-frequency metric could make a narrower test more feasible.",
+        "Simultaneously changing hero, offer, and checkout would make causal interpretation difficult even if traffic were adequate."
+      ]
+    }
+  },
+  {
+    "label": "answer-10",
+    "case": "roas-comparison/cross-platform",
+    "output": {
+      "decision": "No—do not reallocate budget solely because reported ROAS is 5 for Google brand search versus 2 for TikTok prospecting. These are different platforms and funnel roles; Google brand search may capture demand that TikTok helped create. Keep budget stable while validating incremental new-customer and profit impact before making a material shift.",
+      "next_steps": [
+        "Separate reporting by new versus returning customers and evaluate contribution after product margin, discounts, and variable costs.",
+        "Run a controlled TikTok budget test (for example, matched-market or time-based holdout where feasible) and track downstream branded-search, new-customer, and total-sales effects.",
+        "Audit attribution settings, windows, conversion definitions, and overlap between TikTok exposure and Google brand-search conversions.",
+        "If testing requires reallocation, use small staged changes with predefined guardrails and review over a period long enough to observe financial outcomes.",
+        "Use within-platform ROAS for tactical optimization, rather than using these two reported ROAS figures as a cross-platform ranking."
+      ],
+      "missing_inputs": [
+        "Gross margin and variable fulfillment/discount costs by item or order.",
+        "New-customer revenue/orders and returning-customer treatment by channel.",
+        "Attribution windows, conversion definitions, and deduplication rules for Google and TikTok.",
+        "Spend levels, saturation indicators, and a feasible incrementality-test design."
+      ],
+      "evidence_used": [
+        {
+          "id": "case19-u2",
+          "supports": "The supplied source warns against comparing ROAS across platforms because attribution models, funnel positions, and incremental effects differ."
+        },
+        {
+          "id": "case19-u6",
+          "supports": "The supplied source gives a non-generalizable example in which TikTok can be underattributed when later channels, including Google, receive credit; this is relevant as a hypothesis, not proof for this brand."
+        },
+        {
+          "id": "case19-u4",
+          "supports": "The supplied source recommends using longer periods for slower-moving financial-grade KPI decisions, without defining a required duration."
+        }
+      ],
+      "assumptions": [
+        "The reported 5 and 2 are platform-attributed ROAS, not experimentally measured incremental ROAS.",
+        "Google brand search primarily targets high-intent branded demand, while TikTok prospecting targets earlier-funnel audiences; this should be verified in account setup.",
+        "The recommendation is a risk-control proposal based on general measurement practice and the supplied unverified source, not a claim that TikTok is necessarily more incremental."
+      ]
+    }
+  },
+  {
+    "label": "answer-11",
+    "case": "cro-traffic/higher-volume",
+    "output": {
+      "decision": "Launch this month only as a pre-registered, fully factorial experiment with limited variants and a checkout-specific sample-size check. The 600,000 monthly sessions and validated tracking indicate the business is plausibly high-volume, but neither supplied source defines the required threshold and checkout traffic may be materially lower than site traffic. Do not launch if the planned cells cannot reach the required sample at checkout within the test window or if checkout changes create material operational/payment risk.",
+      "next_steps": [
+        "Set one measurable hypothesis per factor (hero, offer, checkout), define the factorial cells, primary metric as revenue per session, and guardrails for conversion, AOV, refund/cancellation rate, and checkout errors.",
+        "Calculate required sample and duration for every cell using expected detectable effect, number of variants, allocation, and eligible checkout traffic; avoid relying on total site sessions alone.",
+        "Limit the number of versions per factor and document interaction questions; if sample is insufficient, sequence the tests or test the highest-impact factor first.",
+        "Implement persistent assignment across hero, offer, and checkout; verify analytics events, revenue attribution, offer eligibility, payment flow, and experiment exposure logging.",
+        "Conduct repeated cross-device/browser and end-to-end QA before release, then monitor guardrails during the test without making unplanned mid-test changes."
+      ],
+      "missing_inputs": [
+        "Number of variants planned for the hero, offer, and checkout, plus intended traffic allocation.",
+        "Monthly and weekly progression to checkout, purchase completion, and revenue/AOV by device and major market.",
+        "Minimum detectable revenue-per-session impact, confidence/power standard, planned duration, and decision rule.",
+        "Checkout, promotion, inventory, margin, legal, and payment-provider constraints for the proposed changes."
+      ],
+      "evidence_used": [
+        {
+          "id": "case8-u7",
+          "supports": "The supplied source recommends multivariate testing only at high volume; the brand's 600,000 monthly sessions are relevant, though the source provides no threshold."
+        },
+        {
+          "id": "case8-u9",
+          "supports": "The supplied source describes running 50,000–100,000 sessions through a test depending on placement; this supports checking exposure at the checkout level rather than using total sessions alone."
+        },
+        {
+          "id": "case8-u12",
+          "supports": "The supplied source recommends a clear, predefined, measurable hypothesis."
+        },
+        {
+          "id": "case8-u14",
+          "supports": "The supplied source recommends repeated QA before a test goes live."
+        },
+        {
+          "id": "case8-u15",
+          "supports": "The supplied source recommends prioritizing revenue per session or visitor rather than conversion rate alone."
+        }
+      ],
+      "assumptions": [
+        "Brand-provided tracking validation includes reliable experiment assignment, purchase, and revenue events; this should still be verified for the new implementation.",
+        "The supplied library is unverified guidance, not an independently validated testing standard.",
+        "At a 2% baseline purchase conversion rate, the stated traffic implies roughly 12,000 monthly purchases if the rate and session definition remain stable; this does not establish adequate sample per factorial cell or checkout exposure."
+      ]
+    }
+  },
+  {
+    "label": "answer-12",
+    "case": "cro-traffic/higher-volume",
+    "output": {
+      "decision": "Do not launch a single multivariate test across hero, offer, and checkout this month. The traffic volume is substantial, but simultaneous changes would make results difficult to attribute and may create interaction effects across funnel stages. Run a prioritized sequence of controlled experiments instead; reserve a multivariate design only if the goal is explicitly to estimate interactions and sufficient variants, runtime, and guardrails are approved.",
+      "next_steps": [
+        "Prioritize one hypothesis by expected impact, implementation risk, and reversibility; start with the hero or offer before checkout unless checkout has a known material friction issue.",
+        "Run a conventional A/B test with purchase conversion as the primary metric and revenue per session, checkout completion, refund/cancellation rate, and page performance as guardrails.",
+        "Pre-register the hypothesis, variants, eligibility, primary metric, minimum detectable effect, significance approach, and stopping rules before launch.",
+        "Validate experiment assignment, purchase-event deduplication, revenue capture, and segment reporting in a QA/staging pass.",
+        "Plan the next test only after the first reaches its predetermined decision threshold; consider a factorial test later if interaction measurement is required."
+      ],
+      "missing_inputs": [
+        "Proposed hero, offer, and checkout variants, including discount economics and operational constraints.",
+        "Target minimum detectable effect, statistical method, desired confidence/power, and maximum acceptable test duration.",
+        "Current funnel rates by step, device, channel, geography, and new versus returning customers.",
+        "Checkout-change scope and risk assessment, including payment, compliance, fulfillment, and customer-support implications."
+      ],
+      "evidence_used": [],
+      "assumptions": [
+        "General experimentation practice is used because no library evidence was supplied.",
+        "Validated tracking supports measurement but does not by itself confirm experiment-platform assignment quality or metric integrity.",
+        "Monthly sessions and a 2% baseline imply meaningful order volume, but sample adequacy depends on traffic allocation, number of variants, target effect size, and runtime.",
+        "The request seeks a decision about experimental design rather than a permanent site rollout."
+      ]
+    }
+  },
+  {
+    "label": "answer-13",
+    "case": "roas-comparison/cross-platform",
+    "output": {
+      "decision": "Do not reallocate budget solely because Google brand search reports 5 ROAS versus TikTok prospecting at 2 ROAS. These activities serve different demand stages: brand search commonly captures existing intent, while prospecting may create demand that is credited elsewhere. Consider a controlled, bounded reallocation only after checking incremental performance, marginal returns, and measurement comparability.",
+      "next_steps": [
+        "Verify both ROAS figures use the same attribution window, conversion definition, revenue basis, and treatment of returns/cancellations.",
+        "Review spend levels, impression share or budget limitation for brand search, and whether additional brand-search spend would buy incremental conversions rather than cannibalize organic/direct demand.",
+        "Compare marginal ROAS and contribution margin, not only 30-day average ROAS, for each channel.",
+        "Run a time-bounded budget test with predefined guardrails; evaluate total incremental revenue or profit, not platform-attributed ROAS alone.",
+        "Segment results by new versus returning customers and assess whether TikTok-assisted conversions later appear in branded search."
+      ],
+      "missing_inputs": [
+        "Spend, revenue, conversion volume, and trend by channel during the 30-day period.",
+        "Attribution models/windows, conversion definitions, and whether reported ROAS includes returns, discounts, taxes, or shipping.",
+        "Contribution margins, customer-acquisition goals, and allowable CAC/ROAS thresholds.",
+        "Brand-search impression share, query mix, organic cannibalization indicators, and TikTok new-customer/assisted-conversion data."
+      ],
+      "evidence_used": [],
+      "assumptions": [
+        "General ecommerce measurement guidance is used because no library evidence was supplied.",
+        "The reported ROAS values are platform or channel reported metrics and may not be directly comparable.",
+        "Google brand search and TikTok prospecting have materially different roles in the purchase journey."
+      ]
+    }
+  },
+  {
+    "label": "answer-14",
+    "case": "cro-traffic/low-volume",
+    "output": {
+      "decision": "Do not launch a multivariate hero/offer/checkout test this month. With 3,000 monthly sessions and a 2% baseline conversion rate (about 60 purchases/month), splitting traffic across multiple combinations is unlikely to produce a decision-quality result. Run one prioritized, isolated A/B test instead after forming an evidence-backed hypothesis.",
+      "next_steps": [
+        "Choose one high-impact area—preferably hero or offer—and define one primary metric: revenue per session, with conversion rate and average order value as guardrails.",
+        "Review qualitative and funnel evidence (session recordings, surveys, support tickets, analytics) to identify the largest customer objection or drop-off before selecting the change.",
+        "Write a hypothesis with the proposed change, expected outcome, rationale, audience, and stopping/sample-size rules.",
+        "QA tracking, checkout behavior, mobile rendering, offer logic, and experiment allocation before launch.",
+        "Run the single test across a representative period; defer multivariate testing until traffic and expected effect size support adequate sample sizes per variant."
+      ],
+      "missing_inputs": [
+        "Minimum detectable revenue-per-session or conversion-rate lift and required confidence/power threshold.",
+        "Number and exact content of proposed hero, offer, and checkout variants.",
+        "Current funnel metrics by device and step, including checkout-start and purchase completion rates.",
+        "Research evidence supporting each proposed change, such as survey responses, recordings, and customer-service themes."
+      ],
+      "evidence_used": [
+        {
+          "id": "source-8",
+          "supports": "The supplied source advises that multivariate testing is for high volume, emphasizes sufficient statistical power, recommends clear data-backed hypotheses, avoiding conflicting tests, QA, and prioritizing revenue per visitor/session over conversion rate."
+        }
+      ],
+      "assumptions": [
+        "General quantitative basis: 3,000 monthly sessions at 2% conversion implies roughly 60 monthly purchases before any traffic split.",
+        "A multivariate test of hero, offer, and checkout would create multiple combinations and materially reduce observations per combination.",
+        "The source is unverified guidance; its stated 50,000–100,000-session range should not be treated as a universal requirement without a formal sample-size calculation."
+      ]
+    }
+  },
+  {
+    "label": "answer-15",
+    "case": "subscription-gift/complementary",
+    "output": {
+      "decision": "Add the shaker cup to the third creatine subscription shipment. Do not add extra creatine: the observed cancellation reason is excess product, and the supplied evidence specifically cautions against gifting more of the subscribed item. Send a product- and third-order-specific billing reminder that clearly announces the included shaker cup without implying it will prevent cancellation.",
+      "next_steps": [
+        "Include one shaker cup with every eligible third creatine subscription order, subject to inventory and shipping-fit checks.",
+        "Send the reminder before the third-order billing date: “Your third creatine subscription shipment is coming up. This order includes a complimentary shaker cup—no extra steps needed. Review or manage your shipment before [date].”",
+        "Use the actual charge date, management link, eligibility terms, and any applicable value/tax disclosures in the final message.",
+        "Track third-order cancellations, skips, support contacts, and gift fulfillment issues versus a comparable cohort.",
+        "Test a concise gift-led subject line against a standard billing reminder while keeping required billing information visible."
+      ],
+      "missing_inputs": [
+        "Shaker cup unit cost, available inventory, dimensions, and fulfillment/shipping impact.",
+        "Reminder channel, send timing, required billing disclosures, and account-management URL.",
+        "Whether all third-order subscribers are eligible, including prior gift recipients and regional restrictions.",
+        "Baseline third-order cancel/skip rate and a measurement plan for the gift test."
+      ],
+      "evidence_used": [
+        {
+          "id": "case2-u1",
+          "supports": "Avoiding additional creatine as a gift because it may add to subscriber inventory and contribute to delaying or cancelling future orders."
+        },
+        {
+          "id": "case2-u2",
+          "supports": "Communicating the subscription gift in subscriber messaging."
+        },
+        {
+          "id": "case2-u9",
+          "supports": "Tailoring the reminder to the subscribed product and order/rebill stage."
+        },
+        {
+          "id": "case2-u10",
+          "supports": "Using an upcoming gift as the focus of a billing reminder when the gift is included on order three."
+        }
+      ],
+      "assumptions": [
+        "A shaker cup is complementary to creatine and does not create the same excess-inventory concern as extra creatine.",
+        "“Third subscription shipment” corresponds to the third order/rebill stage referenced in the supplied example.",
+        "The supplied library is unverified guidance; the proposed copy and test plan are operational recommendations, not demonstrated performance claims."
+      ]
+    }
+  },
+  {
+    "label": "answer-16",
+    "case": "subscription-gift/duplicate",
+    "output": {
+      "decision": "Do not add another full tub of creatine: it directly conflicts with the observed cancellation reason of having too much product. Use a low-burden, non-consumable gift instead, preferably a simple shaker bottle (or let customers choose it versus no gift). The reminder should lead with shipment control—skip or delay—rather than urgency.",
+      "next_steps": [
+        "Replace the proposed extra tub with a non-consumable accessory such as a shaker bottle; avoid adding more creatine inventory.",
+        "Send a pre-renewal reminder early enough for customers to change the order: “Your third creatine shipment is coming up. Have enough on hand? You can skip or delay your next delivery in a few clicks. If the timing works, we’ll include a complimentary shaker bottle as a thank-you.”",
+        "Make skip and delay actions prominent in the email/SMS and account flow; do not require support contact.",
+        "Test a gift-choice version against no gift to distinguish gift appeal from shipment-control impact.",
+        "Track skip, delay, cancellation, and repeat-order outcomes for third-shipment recipients."
+      ],
+      "missing_inputs": [
+        "Current shipment cadence and how many days before renewal customers can edit orders.",
+        "Available accessory inventory, unit cost, and shipping/packaging impact.",
+        "Whether customers already receive a scoop, shaker, or comparable accessory.",
+        "Existing email/SMS consent, reminder timing, and skip/delay capabilities."
+      ],
+      "evidence_used": [],
+      "assumptions": [
+        "General-knowledge recommendation; no library evidence was supplied.",
+        "The stated “too much product” cancellation reason is sufficiently material to avoid gifting additional creatine.",
+        "A shaker bottle is compatible with the brand and can be fulfilled without creating a meaningful packaging or cost issue."
+      ]
+    }
+  },
+  {
+    "label": "answer-17",
+    "case": "subscription-gift/duplicate",
+    "output": {
+      "decision": "Do not add another full tub of creatine. Use a low-cost, non-consumable complementary gift—preferably a branded shaker bottle if it is approved and feasible to ship—so the third shipment adds value without increasing creatine inventory. Send a gift-led, third-order-specific billing reminder that clearly states the upcoming shipment includes the shaker and does not imply extra creatine.",
+      "next_steps": [
+        "Confirm an approved non-consumable gift option, starting with a shaker bottle, and validate unit cost, inventory, and packing fit.",
+        "Set eligibility to the third paid creatine subscription shipment only and exclude customers who already received the gift.",
+        "Send the reminder before the normal billing date using product and third-shipment personalization.",
+        "Use this reminder copy: “Your third creatine subscription shipment is coming up. As a thank-you, it will include a free shaker bottle—no extra creatine added. Need to manage your delivery? Visit your subscription settings before [date].”",
+        "Monitor cancellation, skip, and support-contact rates for eligible customers versus prior third shipments before expanding the program."
+      ],
+      "missing_inputs": [
+        "Approved gift catalog, landed cost, inventory availability, and fulfillment constraints.",
+        "Billing date, reminder lead time, and available subscriber actions (skip, delay, cancel, address update).",
+        "Whether all third-shipment subscribers qualify or whether exclusions are needed (for example, prior gift recipients or specific plans).",
+        "Brand voice, legal/offer terms, and whether the shaker is already included in any other acquisition offer."
+      ],
+      "evidence_used": [
+        {
+          "id": "case2-u1",
+          "supports": "The supplied source warns that gifting more of the subscribed product can create excess inventory and prompt a future delay or cancellation; this directly applies given the observed “too much product” cancellation reason."
+        },
+        {
+          "id": "case2-u2",
+          "supports": "The supplied source recommends communicating subscription gifts in subscriber messaging."
+        },
+        {
+          "id": "case2-u9",
+          "supports": "The supplied source recommends customizing billing reminders by subscribed product and customer/order stage; this supports a creatine-specific third-shipment reminder."
+        },
+        {
+          "id": "case2-u10",
+          "supports": "The supplied source gives an order-three gift as an example for a gift-focused upcoming-bill reminder, while not establishing a universal performance outcome."
+        }
+      ],
+      "assumptions": [
+        "A shaker bottle is an example proposal, not a fact about the brand’s current assortment or customer preference.",
+        "The proposed gift is intended to be complementary and non-consumable, reducing the risk of adding to customers’ creatine supply.",
+        "The subscription platform can identify third shipments and send a pre-billing reminder."
+      ]
+    }
+  },
+  {
+    "label": "answer-18",
+    "case": "subscription-gift/complementary",
+    "output": {
+      "decision": "Add the shaker cup to shipment #3. It is complementary to creatine rather than additional creatine, which directly avoids worsening the observed “too much product” cancellation reason. Send a shipment-specific pre-billing reminder that foregrounds the gift, states the upcoming charge and shipment plainly, and offers a one-click delay before account-management options. Suggested copy: “Your third creatine delivery is coming soon—and we’re including a complimentary shaker cup. Your subscription will renew on [DATE] for [AMOUNT] and ship around [SHIP DATE]. Need more time to finish what you have? Delay this delivery here: [DELAY LINK]. You can also manage your subscription here: [MANAGE LINK].”",
+      "next_steps": [
+        "Confirm shaker-cup inventory, unit cost, pack-out method, and whether it fits all shipment destinations.",
+        "Configure eligibility for active creatine subscribers’ third paid subscription order only, excluding prior recipients if applicable.",
+        "Build a shipment-#3 billing reminder using dynamic renewal date, amount, shipment date, delay link, and manage link.",
+        "Place the delay option above the manage-subscription link; keep cancellation/account controls accessible rather than hidden.",
+        "QA the reminder and fulfillment rule with test subscriptions before launch."
+      ],
+      "missing_inputs": [
+        "Billing lead time and the exact renewal versus shipment date customers should see.",
+        "Whether the shaker cup has destination, inventory, or fulfillment constraints.",
+        "Available subscription-platform capabilities for one-click delay links and order-number segmentation.",
+        "Brand-approved product-benefit language, sender voice, and legal/compliance review requirements."
+      ],
+      "evidence_used": [
+        {
+          "id": "source-2",
+          "supports": "Advises against gifting more of the subscribed product when excess inventory is a cancellation driver, and recommends communicating an upcoming gift in a customized billing reminder."
+        },
+        {
+          "id": "source-2",
+          "supports": "Recommends presenting a delay option for customers with too much product and customizing reminders by subscription order number."
+        }
+      ],
+      "assumptions": [
+        "The shaker cup is useful with creatine and does not materially increase the customer’s excess consumable inventory.",
+        "Shipment #3 refers to the third recurring subscription order, not the customer’s third lifetime purchase of any kind.",
+        "The brand can accurately segment third-order creatine subscribers and include the cup in fulfillment.",
+        "The proposed message is a practical template; required disclosures and timing should be validated for the brand’s markets."
+      ]
+    }
+  }
+]

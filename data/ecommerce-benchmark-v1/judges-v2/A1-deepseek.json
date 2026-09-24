@@ -1,0 +1,190 @@
+{
+  "status": "complete",
+  "mapping": {
+    "A": "cheap_with",
+    "B": "frontier_with",
+    "C": "frontier_without",
+    "D": "cheap_without"
+  },
+  "judge_model": "deepseek-flash",
+  "output": {
+    "reviews": [
+      {
+        "label": "A",
+        "scores": {
+          "factual_accuracy": 3,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 3,
+          "prioritization": 4
+        },
+        "strengths": [
+          "Provides every required artifact: headline, subhead, five bullets, CTA, three FAQ answers, section order, developer checks and a primary measurement.",
+          "Arithmetic is largely accurate: CVR, ATC, checkout-start, Meta/Shopify mismatch, Daypack contribution margin and basic sample-size calculation.",
+          "Ties changes directly to the three support-ticket themes and correctly prioritizes mobile given the device split."
+        ],
+        "issues": [
+          "Uses the 120 simulated review count as on-page social proof, which conflicts with the warning that the reviews are themes and not licensed testimonials.",
+          "Claims a 15-inch laptop may fit loosely in the main compartment without any supplied dimensions or fit confirmation.",
+          "Recommends a lifestyle first image without confirming the asset is available.",
+          "Some uncertainty is well handled, but the brief is overconfident on unverified laptop fit and social proof."
+        ],
+        "critical_errors": [
+          "Treats simulated review data as usable review-count social proof.",
+          "Makes an unsupported 15-inch main-compartment fit statement."
+        ],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Give actual copy and acceptance checks, not just advice.",
+            "met": true,
+            "reason": "Includes concrete H1, subhead, bullets, CTA, FAQ copy, section order and developer acceptance checks."
+          },
+          {
+            "criterion": "13-inch sleeve, water-resistant not waterproof, delivery 4-7 business days; no invented claims/reviews.",
+            "met": false,
+            "reason": "Core specs are correct, but it uses simulated review count as proof and adds an unsupported 15-inch main-compartment fit claim."
+          },
+          {
+            "criterion": "Address mobile sizing/delivery visibility; avoid promising measured conversion uplift.",
+            "met": true,
+            "reason": "Prioritizes mobile layout, sticky CTA and shipping visibility; does not promise a guaranteed uplift."
+          }
+        ]
+      },
+      {
+        "label": "B",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 4,
+          "prioritization": 4
+        },
+        "strengths": [
+          "Complete and accurate brief with ready-to-use copy, FAQ answers, section order and developer acceptance checks.",
+          "Correctly uses the 13-inch sleeve, water-resistant-not-waterproof wording, 4-7 business-day delivery estimate and exact return policy.",
+          "Explicitly refuses to turn simulated review themes into ratings, quotes or testimonials.",
+          "Uses mobile DAY18 PDP purchase conversion as the primary measurement and notes that testing requires proper infrastructure and baseline data.",
+          "Includes feasible resource allocation and flags the inventory gap before promoting traffic."
+        ],
+        "issues": [
+          "Headline is serviceable though slightly generic; it is not a serious flaw.",
+          "No material factual or brand-fit problems found."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Give actual copy and acceptance checks, not just advice.",
+            "met": true,
+            "reason": "Provides full copy blocks, section order and detailed acceptance checks scoped to DAY18."
+          },
+          {
+            "criterion": "13-inch sleeve, water-resistant not waterproof, delivery 4-7 business days; no invented claims/reviews.",
+            "met": true,
+            "reason": "All three critical facts are handled correctly, and it explicitly rejects simulated reviews as proof."
+          },
+          {
+            "criterion": "Address mobile sizing/delivery visibility; avoid promising measured conversion uplift.",
+            "met": true,
+            "reason": "Places fit, waterproofing and delivery near the mobile purchase area without promising a specific uplift."
+          }
+        ]
+      },
+      {
+        "label": "C",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 4,
+          "prioritization": 4
+        },
+        "strengths": [
+          "Complete, plain-spoken brief with concrete copy, FAQs, section order, developer checks and measurement plan.",
+          "Handles 13-inch sleeve, water-resistant-not-waterproof, delivery estimate and returns accurately.",
+          "Keeps simulated review themes out of on-page proof and preserves existing reviews only if authentic.",
+          "Measurement plan is cautious: randomized test if possible, otherwise labeled before/after directional read.",
+          "Allocates practical design, development and owner hours within the stated resources."
+        ],
+        "issues": [
+          "The H1 is an outcome line rather than the product name; acceptable if the product name remains adjacent, but slightly less explicit.",
+          "Primary metric is mobile add-to-cart rate rather than purchase conversion, though it names purchase completion as a guardrail."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Give actual copy and acceptance checks, not just advice.",
+            "met": true,
+            "reason": "Supplies actual H1, subhead, bullets, CTA, FAQs, section order and implementation checks."
+          },
+          {
+            "criterion": "13-inch sleeve, water-resistant not waterproof, delivery 4-7 business days; no invented claims/reviews.",
+            "met": true,
+            "reason": "Specs and policies are accurate, and it avoids fabricated quotes or simulated review proof."
+          },
+          {
+            "criterion": "Address mobile sizing/delivery visibility; avoid promising measured conversion uplift.",
+            "met": true,
+            "reason": "Keeps sizing, waterproofing and delivery visible near the mobile purchase area and does not promise a conversion increase."
+          }
+        ]
+      },
+      {
+        "label": "D",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 3,
+          "prioritization": 4
+        },
+        "strengths": [
+          "Strong arithmetic: mobile conversion gap, contribution margin, discount impact and inventory coverage are calculated correctly.",
+          "Provides concrete headline, subhead, bullets, CTA, FAQ answers, section order and developer checks.",
+          "Uses a plain-spoken voice and correctly avoids waterproof, sustainability, durability and discount overclaims.",
+          "Recognizes that Meta and Klaviyo reported revenue overlap and cannot prove incrementality."
+        ],
+        "issues": [
+          "Primary measurement is a 14-day before/after comparison with a specific 1.5 percentage-point ATC target, but without a sample-size or MDE calculation; it is less rigorous than B/C.",
+          "Says support will confirm pre-purchase if dimensions are not listed, which may overpromise an operational workflow.",
+          "Does not allocate designer/developer hours even though the resource totals are available."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Give actual copy and acceptance checks, not just advice.",
+            "met": true,
+            "reason": "Includes ready-to-use copy, FAQ copy, section order and specific developer acceptance checks."
+          },
+          {
+            "criterion": "13-inch sleeve, water-resistant not waterproof, delivery 4-7 business days; no invented claims/reviews.",
+            "met": true,
+            "reason": "Core product facts and policies are correct, with no fabricated reviews or unsupported waterproof/laptop claims."
+          },
+          {
+            "criterion": "Address mobile sizing/delivery visibility; avoid promising measured conversion uplift.",
+            "met": true,
+            "reason": "Places fit and delivery information high on mobile; it proposes a target rather than a promised uplift."
+          }
+        ]
+      }
+    ],
+    "ranking": [
+      "B",
+      "C",
+      "D",
+      "A"
+    ],
+    "summary": "B and C are the strongest overall: both are complete, accurate, brand-appropriate, cautious about reviews and measurement, and operationally realistic. B edges C because its primary metric is closer to purchase conversion and its handling of laptop fit is especially restrained. D is also strong and quantitatively careful, but its before/after ATC target is less rigorous and it omits resource allocation. A has excellent structure and arithmetic, but it wrongly treats simulated review count as on-page proof and makes an unsupported 15-inch fit claim."
+  },
+  "request_id": "de7743b75f857a29b43b1e9f8c1d114ed820cdd4d741a7d11ef6310360336624",
+  "cost_upper_estimate_usd": 0.0231513
+}

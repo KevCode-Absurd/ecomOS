@@ -1,0 +1,291 @@
+{
+  "request_id": "c5c9b3a969134d98c8e710898178a46138db2399ab0fe0ae85a522c87fd03d97",
+  "provider": "deepseek",
+  "model": "deepseek-flash",
+  "effort": "none",
+  "completion_limit": 16384,
+  "usage": {
+    "prompt_tokens": 6081,
+    "completion_tokens": 3370,
+    "total_tokens": 9451,
+    "prompt_tokens_details": {
+      "cached_tokens": 512
+    },
+    "prompt_cache_hit_tokens": 512,
+    "prompt_cache_miss_tokens": 5569
+  },
+  "booked_cost_usd": 0.0058683,
+  "seconds": 18.84,
+  "finish_reason": "stop",
+  "output": {
+    "cards": [
+      {
+        "title": "Score a Product Page Against a High-Converting Template and Fill the Gaps",
+        "summary": "Use an AI page scorer to grade a PDP out of 100, then auto-inject the missing sections a proven high-converting page would have.",
+        "use_when": "Auditing an existing product page or deciding which sections a new PDP needs before launch.",
+        "steps": [
+          "Enter the product page into a scoring tool that compares it to a modeled library of high-performing pages and returns a 0-100 score with a list of missing sections.",
+          "Treat the score as a directional checklist, not a guaranteed conversion forecast: the source's model was trained on 'thousands of pages,' so the bands are a heuristic for layout completeness, not a formula.",
+          "Review the flagged gaps and prioritise the ones tied to buyer objections: risk reversal (guarantee), how it works, us-versus-them comparison, and founder/brand credibility.",
+          "Add or generate each missing block, keeping the tool's suggested ordering as a starting point since it places sections based on where high-performing pages typically put them.",
+          "Re-score after adding the sections to confirm the page is structurally complete before moving on to copy and imagery.",
+          "In the source example, a page moved from 55 to 92 after adding guarantee, how-it-works, us-versus-them, and founder-credibility sections — treat that jump as an illustration of the method, not a benchmark you should expect."
+        ],
+        "caveats": [
+          "A high structural score does not guarantee sales; copy, offer, traffic and price still drive results.",
+          "Do not chase a perfect score at the expense of clarity or brand fit."
+        ],
+        "tags": [
+          "store-setup",
+          "conversion-optimization",
+          "product-page",
+          "landing-page",
+          "page-audit",
+          "risk-reversal",
+          "social-proof"
+        ]
+      },
+      {
+        "title": "The Four Objection-Covering Sections Every PDP Should Consider",
+        "summary": "Guarantee, how-it-works, us-versus-them, and founder-credibility sections each answer a specific reason shoppers hesitate.",
+        "use_when": "Deciding what content blocks to add to a product page that feels thin or isn't converting.",
+        "steps": [
+          "Add a risk-reversal / guarantee block near the top or after the price: state the guarantee and the exact number of days (e.g. '90-day promise'), because 'nobody knows if it's 100% risk-free' and that uncertainty stops purchases.",
+          "Add a how-it-works block as 3 numbered steps showing the mechanism by which the product achieves the customer's goal, so the buyer understands the path from use to result.",
+          "Add an 'us versus them' comparison that states why the buyer should choose this product over alternatives, so differentiation is explicit rather than assumed.",
+          "Add a founder / brand credibility block that answers 'who is this coming from and why should I trust you', which is especially valuable for newer or unbranded stores.",
+          "Keep the wording tied to the actual product claim; in the source example the founder note and guarantee coexist with testimonials and an FAQ section."
+        ],
+        "caveats": [
+          "The exact mix should match the product's price point and buyer skepticism; not every section is mandatory for every SKU.",
+          "A guarantee must reflect a policy you will actually honour at scale."
+        ],
+        "tags": [
+          "store-setup",
+          "product-page",
+          "conversion-optimization",
+          "risk-reversal",
+          "trust-building",
+          "offer-design"
+        ]
+      },
+      {
+        "title": "Feed the Copywriter Raw Product Data for Better PDP Copy",
+        "summary": "AI PDP copy quality scales with the amount and specificity of product input you paste in, not with prompt cleverness.",
+        "use_when": "Generating product descriptions, benefit copy, FAQ text, or section headings for a new or refreshed product page.",
+        "steps": [
+          "Open your supplier page or spec sheet in a separate tab and collect ingredients, materials, mechanism details, sizing, and genuine customer review language.",
+          "Paste that raw material into the copy tool along with the product name and brand name so the model has concrete nouns and claims to work from.",
+          "Generate the copy and treat it as a first draft: the source calls it 'a really good standard to start with' rather than a finished asset.",
+          "Edit aggressively for accuracy and voice — in the source build the operator manually corrected text colours and wording after generation.",
+          "Keep review quotes intact where they read like real customer language, since testimonial phrasing (e.g. shedding, scalp comfort, hair looking younger) carries credibility that invented copy lacks.",
+          "After copy is in place, replace placeholder or oversized images so layout and load stay clean."
+        ],
+        "caveats": [
+          "Do not publish generated claims (health, efficacy, or timeframe) without verifying they match your product and comply with advertising rules.",
+          "More input improves output but never removes the need for human editing."
+        ],
+        "tags": [
+          "store-setup",
+          "product-page",
+          "copywriting",
+          "ai-tools",
+          "product-research",
+          "landing-page"
+        ]
+      },
+      {
+        "title": "Publish a Custom PDP into Shopify as a Reusable Section",
+        "summary": "Ship a designed product page into Shopify by pasting the generated code as a Liquid section file, then adding it to a product template.",
+        "use_when": "Moving a page built in an external page designer into a live Shopify store.",
+        "steps": [
+          "In Shopify admin go to Online Store, then edit the theme code, and create a new section file with a clear naming convention (source used a WLE/brand/product prefix plus the .liquid extension).",
+          "Paste the generated page code into that section file and save; the file is then stored permanently in the store and can be deleted later if needed.",
+          "Create the product in Products, upload images, set the selling price (source used the supplier's recommended price of 21.50), and confirm inventory is not zero — the source set available units to 10,000 so the page would not show 'sold out'.",
+          "Under the theme's product templates, create a new template for this product and hide the default theme sections you do not want.",
+          "Add a section and select your custom section from the list; the whole page loads in.",
+          "In the section settings, explicitly select the product — the source says this is 'the biggest thing' to do — which then populates images and price automatically.",
+          "Reorder, show or hide individual blocks within the section to match your preferred merchandising.",
+          "Verify the current Shopify theme editor steps in your admin, as menus and labels change."
+        ],
+        "caveats": [
+          "Custom Liquid sections need maintenance when the theme updates.",
+          "Bundles and subscription options are configured separately in the product area, not inside the page section."
+        ],
+        "tags": [
+          "store-setup",
+          "shopify",
+          "product-page",
+          "liquid",
+          "theme-editing",
+          "product-template"
+        ]
+      },
+      {
+        "title": "Update a Live Shopify Section Without Rebuilding the Page",
+        "summary": "Re-publish just the changed section code and paste it back into the existing Liquid file to push edits live.",
+        "use_when": "Fixing or improving one block (e.g. a broken accordion) on an already-published PDP.",
+        "steps": [
+          "Keep the page designer open alongside Shopify so you can edit a single section rather than the whole page.",
+          "Select the block you want to change; in the source tool you can click a section to change layout, design, or rebuild it directly.",
+          "When a block misbehaves because it was generated as placeholder code (source example: an accordion that did not open), request a rebuild specifying the behaviour — e.g. 'clicking the plus button should open the accordion'.",
+          "Re-publish to Shopify and download or copy the regenerated code.",
+          "Return to the theme code editor, open the existing section file, paste the new code over it, and save — do not create a second section file, or you will end up with duplicates.",
+          "Refresh the live site to confirm the change appears, then edit the text/descriptions inside the block as needed.",
+          "Verify current publish/export labels in the page tool, since these interfaces change."
+        ],
+        "caveats": [
+          "Placeholder-generated interactive elements (accordions, sliders) often need an explicit rebuild instruction to function.",
+          "Overwriting the wrong file or creating duplicates can break the page layout."
+        ],
+        "tags": [
+          "store-setup",
+          "shopify",
+          "liquid",
+          "product-page",
+          "theme-editing",
+          "troubleshooting",
+          "conversion-optimization"
+        ]
+      },
+      {
+        "title": "Generate On-Brand Product and Lifestyle Images with AI Assistants",
+        "summary": "Use specialised AI image workflows — brand-styled mimicry, prompt generation, and customer-experience scenes — to build a full PDP asset set.",
+        "use_when": "Producing hero images, ingredient/lifestyle shots, and customer-use imagery for a product page or ad creative.",
+        "steps": [
+          "Use a branding/design assistant to develop image prompts that stay inside your brand's visual system before generating anything.",
+          "Use an image-mirroring workflow that takes a competitor's visual and recreates it in your own brand style — useful for referencing a proven composition without copying assets.",
+          "Use a customer-experience workflow to generate images of people using your product, filling the testimonial and lifestyle blocks on the PDP.",
+          "Match asset dimensions to the section before upload: the source build looked broken because images were uploaded at very large sizes, which was fixed by using normally sized images.",
+          "Sort product-page images and choose the hero/first image deliberately, since it sets expectations and drives click-through from collection pages.",
+          "For video, use equivalent AI workflows to produce testimonial and product-use clips if video blocks are on the page."
+        ],
+        "caveats": [
+          "Generated images must be checked for accuracy against the real product — never show a product or result the customer won't receive.",
+          "Oversized uploads hurt layout and load time regardless of generator quality."
+        ],
+        "tags": [
+          "store-setup",
+          "creative-strategy",
+          "ai-tools",
+          "product-page",
+          "imagery",
+          "ad-creative"
+        ]
+      },
+      {
+        "title": "Product Page Template Standardisation as an Output, Not the Goal",
+        "summary": "The section-based approach trades some design uniqueness for speed and repeatability across many products.",
+        "use_when": "Deciding whether to build each PDP from scratch or reuse a section library for a multi-SKU store or a white-label brand launch.",
+        "steps": [
+          "Build the first PDP as modular sections (guarantee, how-it-works, comparison, founder, testimonials, FAQ) so subsequent products can reuse the same structure.",
+          "Store the page as a section file so it can be added to any product template in the store.",
+          "Swap the logo, copy, imagery and product selection to relabel the same structure for a different brand or product — the source describes this as the white-label launch path from zero to live quickly.",
+          "Customise per product only where the buyer's objections differ; keep the objection-covering blocks consistent.",
+          "Compare against a chosen reference brand's page to sanity-check that your page covers everything theirs does and, per the source's intent, adds sections theirs is missing."
+        ],
+        "caveats": [
+          "Reusing one structure across many products can make a store feel generic if copy and imagery aren't genuinely differentiated.",
+          "The source's claim that the rebuilt page often looks better than the original is the presenter's opinion from a single build, not a measured result."
+        ],
+        "tags": [
+          "store-setup",
+          "product-page",
+          "templating",
+          "shopify",
+          "white-label",
+          "merchandising"
+        ]
+      },
+      {
+        "title": "Use a Competitor PDP as the Reference Target for a New Build",
+        "summary": "Anchor your page spec to the sections, flow and proof a proven competitor page already uses, then fill the gaps they miss.",
+        "use_when": "Planning a PDP for a new product where you lack your own conversion data.",
+        "steps": [
+          "Pick a competitor or reference brand that is already selling a comparable product at volume and open its PDP for study.",
+          "Inventory every block on their page: hero, ingredients, how-it-works, testimonials with specifics, comparison, FAQ, guarantee, founder note.",
+          "Map your design so that everything they have is covered as a baseline.",
+          "Then add the sections the source's audit flags as commonly missing — risk reversal, mechanism explanation, us-versus-them, founder credibility — so you exceed the reference rather than match it.",
+          "Adapt their subscription/purchase structure decisions: the source's reference brand only offered one-time purchase and subscribe-and-save, so no extra bundle logic was built; replicate only what fits your economics.",
+          "Record their pricing and selling units, and set your own price against your costs rather than copying theirs."
+        ],
+        "caveats": [
+          "Studying structure is not the same as copying copy or assets — produce your own.",
+          "A competitor's page may be optimised for a different traffic source and buyer awareness level."
+        ],
+        "tags": [
+          "store-setup",
+          "product-page",
+          "competitive-research",
+          "conversion-optimization",
+          "landing-page",
+          "positioning"
+        ]
+      },
+      {
+        "title": "Configure Purchase Options and Inventory So the Page Can Actually Sell",
+        "summary": "Subscription, bundle and inventory settings on the product decide what the PDP offers and whether it renders as purchasable.",
+        "use_when": "Finalising a new product listing before launching traffic to the PDP.",
+        "steps": [
+          "Set the selling price from your cost structure and a reference point; the source used the supplier's recommended single-unit price rather than inventing one.",
+          "Decide the purchase structure explicitly: if you want buy-one-get-one or multi-unit bundles, add them as bundle options on the product; if you are matching a reference brand that only runs one-time and subscribe-and-save, you may not need bundle logic at all.",
+          "Check inventory quantity is non-zero, otherwise the theme shows 'sold out' and blocks purchase — the source set a high available count to guarantee purchasability.",
+          "Verify that the custom section displays the right product by selecting it in the section settings, which pulls images, price and variants automatically.",
+          "Re-check the live page in an incognito window with no admin branding so you see exactly what a shopper sees before spending on traffic."
+        ],
+        "caveats": [
+          "Inventory counts, currency and variant setup can override what the section displays; test an actual add-to-cart.",
+          "Bundles and subscriptions need separate app or platform configuration beyond the page section."
+        ],
+        "tags": [
+          "store-setup",
+          "pricing",
+          "bundles",
+          "subscriptions",
+          "shopify",
+          "inventory",
+          "product-page"
+        ]
+      },
+      {
+        "title": "Inspect the Guest-View Page Before Launching Traffic",
+        "summary": "Load the finished PDP in an incognito window to see the unbranded, logged-out experience your visitors will get.",
+        "use_when": "Final QA pass on a PDP, landing page or store before running ads or sending traffic.",
+        "steps": [
+          "Open the product URL in a private/incognito browser window so Shopify or admin toolbars don't appear.",
+          "Walk the page top to bottom and confirm every section renders: hero, ingredients, mechanism, testimonial grid, FAQ accordion, guarantee, founder note, footer.",
+          "Confirm interactive elements actually work — click every accordion, tab and slider; the source found accordions that did not open because the code was a placeholder.",
+          "Check images are correctly sized and not oversized, and that all links and menus connect to a real destination.",
+          "Confirm the product is purchasable: price shows, no 'sold out' state, variants selectable.",
+          "Compare against the reference competitor page one final time and fix anything missing before launch."
+        ],
+        "caveats": [
+          "Incognito hides logged-in state and admin tools but won't simulate every device or slow connection.",
+          "Do a separate mobile check — the source demo was desktop-focused."
+        ],
+        "tags": [
+          "store-setup",
+          "quality-assurance",
+          "product-page",
+          "conversion-optimization",
+          "shopify",
+          "launch-readiness"
+        ]
+      }
+    ]
+  },
+  "raw_content": "{\"cards\":[{\"title\": \"Score a Product Page Against a High-Converting Template and Fill the Gaps\", \"summary\": \"Use an AI page scorer to grade a PDP out of 100, then auto-inject the missing sections a proven high-converting page would have.\", \"use_when\": \"Auditing an existing product page or deciding which sections a new PDP needs before launch.\", \"steps\": [\"Enter the product page into a scoring tool that compares it to a modeled library of high-performing pages and returns a 0-100 score with a list of missing sections.\", \"Treat the score as a directional checklist, not a guaranteed conversion forecast: the source's model was trained on 'thousands of pages,' so the bands are a heuristic for layout completeness, not a formula.\", \"Review the flagged gaps and prioritise the ones tied to buyer objections: risk reversal (guarantee), how it works, us-versus-them comparison, and founder/brand credibility.\", \"Add or generate each missing block, keeping the tool's suggested ordering as a starting point since it places sections based on where high-performing pages typically put them.\", \"Re-score after adding the sections to confirm the page is structurally complete before moving on to copy and imagery.\", \"In the source example, a page moved from 55 to 92 after adding guarantee, how-it-works, us-versus-them, and founder-credibility sections — treat that jump as an illustration of the method, not a benchmark you should expect.\"], \"caveats\": [\"A high structural score does not guarantee sales; copy, offer, traffic and price still drive results.\", \"Do not chase a perfect score at the expense of clarity or brand fit.\"], \"tags\": [\"store-setup\", \"conversion-optimization\", \"product-page\", \"landing-page\", \"page-audit\", \"risk-reversal\", \"social-proof\"]},{\"title\": \"The Four Objection-Covering Sections Every PDP Should Consider\", \"summary\": \"Guarantee, how-it-works, us-versus-them, and founder-credibility sections each answer a specific reason shoppers hesitate.\", \"use_when\": \"Deciding what content blocks to add to a product page that feels thin or isn't converting.\", \"steps\": [\"Add a risk-reversal / guarantee block near the top or after the price: state the guarantee and the exact number of days (e.g. '90-day promise'), because 'nobody knows if it's 100% risk-free' and that uncertainty stops purchases.\", \"Add a how-it-works block as 3 numbered steps showing the mechanism by which the product achieves the customer's goal, so the buyer understands the path from use to result.\", \"Add an 'us versus them' comparison that states why the buyer should choose this product over alternatives, so differentiation is explicit rather than assumed.\", \"Add a founder / brand credibility block that answers 'who is this coming from and why should I trust you', which is especially valuable for newer or unbranded stores.\", \"Keep the wording tied to the actual product claim; in the source example the founder note and guarantee coexist with testimonials and an FAQ section.\"], \"caveats\": [\"The exact mix should match the product's price point and buyer skepticism; not every section is mandatory for every SKU.\", \"A guarantee must reflect a policy you will actually honour at scale.\"], \"tags\": [\"store-setup\", \"product-page\", \"conversion-optimization\", \"risk-reversal\", \"trust-building\", \"offer-design\"]},{\"title\": \"Feed the Copywriter Raw Product Data for Better PDP Copy\", \"summary\": \"AI PDP copy quality scales with the amount and specificity of product input you paste in, not with prompt cleverness.\", \"use_when\": \"Generating product descriptions, benefit copy, FAQ text, or section headings for a new or refreshed product page.\", \"steps\": [\"Open your supplier page or spec sheet in a separate tab and collect ingredients, materials, mechanism details, sizing, and genuine customer review language.\", \"Paste that raw material into the copy tool along with the product name and brand name so the model has concrete nouns and claims to work from.\", \"Generate the copy and treat it as a first draft: the source calls it 'a really good standard to start with' rather than a finished asset.\", \"Edit aggressively for accuracy and voice — in the source build the operator manually corrected text colours and wording after generation.\", \"Keep review quotes intact where they read like real customer language, since testimonial phrasing (e.g. shedding, scalp comfort, hair looking younger) carries credibility that invented copy lacks.\", \"After copy is in place, replace placeholder or oversized images so layout and load stay clean.\"], \"caveats\": [\"Do not publish generated claims (health, efficacy, or timeframe) without verifying they match your product and comply with advertising rules.\", \"More input improves output but never removes the need for human editing.\"], \"tags\": [\"store-setup\", \"product-page\", \"copywriting\", \"ai-tools\", \"product-research\", \"landing-page\"]},{\"title\": \"Publish a Custom PDP into Shopify as a Reusable Section\", \"summary\": \"Ship a designed product page into Shopify by pasting the generated code as a Liquid section file, then adding it to a product template.\", \"use_when\": \"Moving a page built in an external page designer into a live Shopify store.\", \"steps\": [\"In Shopify admin go to Online Store, then edit the theme code, and create a new section file with a clear naming convention (source used a WLE/brand/product prefix plus the .liquid extension).\", \"Paste the generated page code into that section file and save; the file is then stored permanently in the store and can be deleted later if needed.\", \"Create the product in Products, upload images, set the selling price (source used the supplier's recommended price of 21.50), and confirm inventory is not zero — the source set available units to 10,000 so the page would not show 'sold out'.\", \"Under the theme's product templates, create a new template for this product and hide the default theme sections you do not want.\", \"Add a section and select your custom section from the list; the whole page loads in.\", \"In the section settings, explicitly select the product — the source says this is 'the biggest thing' to do — which then populates images and price automatically.\", \"Reorder, show or hide individual blocks within the section to match your preferred merchandising.\", \"Verify the current Shopify theme editor steps in your admin, as menus and labels change.\"], \"caveats\": [\"Custom Liquid sections need maintenance when the theme updates.\", \"Bundles and subscription options are configured separately in the product area, not inside the page section.\"], \"tags\": [\"store-setup\", \"shopify\", \"product-page\", \"liquid\", \"theme-editing\", \"product-template\"]},{\"title\": \"Update a Live Shopify Section Without Rebuilding the Page\", \"summary\": \"Re-publish just the changed section code and paste it back into the existing Liquid file to push edits live.\", \"use_when\": \"Fixing or improving one block (e.g. a broken accordion) on an already-published PDP.\", \"steps\": [\"Keep the page designer open alongside Shopify so you can edit a single section rather than the whole page.\", \"Select the block you want to change; in the source tool you can click a section to change layout, design, or rebuild it directly.\", \"When a block misbehaves because it was generated as placeholder code (source example: an accordion that did not open), request a rebuild specifying the behaviour — e.g. 'clicking the plus button should open the accordion'.\", \"Re-publish to Shopify and download or copy the regenerated code.\", \"Return to the theme code editor, open the existing section file, paste the new code over it, and save — do not create a second section file, or you will end up with duplicates.\", \"Refresh the live site to confirm the change appears, then edit the text/descriptions inside the block as needed.\", \"Verify current publish/export labels in the page tool, since these interfaces change.\"], \"caveats\": [\"Placeholder-generated interactive elements (accordions, sliders) often need an explicit rebuild instruction to function.\", \"Overwriting the wrong file or creating duplicates can break the page layout.\"], \"tags\": [\"store-setup\", \"shopify\", \"liquid\", \"product-page\", \"theme-editing\", \"troubleshooting\", \"conversion-optimization\"]},{\"title\": \"Generate On-Brand Product and Lifestyle Images with AI Assistants\", \"summary\": \"Use specialised AI image workflows — brand-styled mimicry, prompt generation, and customer-experience scenes — to build a full PDP asset set.\", \"use_when\": \"Producing hero images, ingredient/lifestyle shots, and customer-use imagery for a product page or ad creative.\", \"steps\": [\"Use a branding/design assistant to develop image prompts that stay inside your brand's visual system before generating anything.\", \"Use an image-mirroring workflow that takes a competitor's visual and recreates it in your own brand style — useful for referencing a proven composition without copying assets.\", \"Use a customer-experience workflow to generate images of people using your product, filling the testimonial and lifestyle blocks on the PDP.\", \"Match asset dimensions to the section before upload: the source build looked broken because images were uploaded at very large sizes, which was fixed by using normally sized images.\", \"Sort product-page images and choose the hero/first image deliberately, since it sets expectations and drives click-through from collection pages.\", \"For video, use equivalent AI workflows to produce testimonial and product-use clips if video blocks are on the page.\"], \"caveats\": [\"Generated images must be checked for accuracy against the real product — never show a product or result the customer won't receive.\", \"Oversized uploads hurt layout and load time regardless of generator quality.\"], \"tags\": [\"store-setup\", \"creative-strategy\", \"ai-tools\", \"product-page\", \"imagery\", \"ad-creative\"]},{\"title\": \"Product Page Template Standardisation as an Output, Not the Goal\", \"summary\": \"The section-based approach trades some design uniqueness for speed and repeatability across many products.\", \"use_when\": \"Deciding whether to build each PDP from scratch or reuse a section library for a multi-SKU store or a white-label brand launch.\", \"steps\": [\"Build the first PDP as modular sections (guarantee, how-it-works, comparison, founder, testimonials, FAQ) so subsequent products can reuse the same structure.\", \"Store the page as a section file so it can be added to any product template in the store.\", \"Swap the logo, copy, imagery and product selection to relabel the same structure for a different brand or product — the source describes this as the white-label launch path from zero to live quickly.\", \"Customise per product only where the buyer's objections differ; keep the objection-covering blocks consistent.\", \"Compare against a chosen reference brand's page to sanity-check that your page covers everything theirs does and, per the source's intent, adds sections theirs is missing.\"], \"caveats\": [\"Reusing one structure across many products can make a store feel generic if copy and imagery aren't genuinely differentiated.\", \"The source's claim that the rebuilt page often looks better than the original is the presenter's opinion from a single build, not a measured result.\"], \"tags\": [\"store-setup\", \"product-page\", \"templating\", \"shopify\", \"white-label\", \"merchandising\"]},{\"title\": \"Use a Competitor PDP as the Reference Target for a New Build\", \"summary\": \"Anchor your page spec to the sections, flow and proof a proven competitor page already uses, then fill the gaps they miss.\", \"use_when\": \"Planning a PDP for a new product where you lack your own conversion data.\", \"steps\": [\"Pick a competitor or reference brand that is already selling a comparable product at volume and open its PDP for study.\", \"Inventory every block on their page: hero, ingredients, how-it-works, testimonials with specifics, comparison, FAQ, guarantee, founder note.\", \"Map your design so that everything they have is covered as a baseline.\", \"Then add the sections the source's audit flags as commonly missing — risk reversal, mechanism explanation, us-versus-them, founder credibility — so you exceed the reference rather than match it.\", \"Adapt their subscription/purchase structure decisions: the source's reference brand only offered one-time purchase and subscribe-and-save, so no extra bundle logic was built; replicate only what fits your economics.\", \"Record their pricing and selling units, and set your own price against your costs rather than copying theirs.\"], \"caveats\": [\"Studying structure is not the same as copying copy or assets — produce your own.\", \"A competitor's page may be optimised for a different traffic source and buyer awareness level.\"], \"tags\": [\"store-setup\", \"product-page\", \"competitive-research\", \"conversion-optimization\", \"landing-page\", \"positioning\"]},{\"title\": \"Configure Purchase Options and Inventory So the Page Can Actually Sell\", \"summary\": \"Subscription, bundle and inventory settings on the product decide what the PDP offers and whether it renders as purchasable.\", \"use_when\": \"Finalising a new product listing before launching traffic to the PDP.\", \"steps\": [\"Set the selling price from your cost structure and a reference point; the source used the supplier's recommended single-unit price rather than inventing one.\", \"Decide the purchase structure explicitly: if you want buy-one-get-one or multi-unit bundles, add them as bundle options on the product; if you are matching a reference brand that only runs one-time and subscribe-and-save, you may not need bundle logic at all.\", \"Check inventory quantity is non-zero, otherwise the theme shows 'sold out' and blocks purchase — the source set a high available count to guarantee purchasability.\", \"Verify that the custom section displays the right product by selecting it in the section settings, which pulls images, price and variants automatically.\", \"Re-check the live page in an incognito window with no admin branding so you see exactly what a shopper sees before spending on traffic.\"], \"caveats\": [\"Inventory counts, currency and variant setup can override what the section displays; test an actual add-to-cart.\", \"Bundles and subscriptions need separate app or platform configuration beyond the page section.\"], \"tags\": [\"store-setup\", \"pricing\", \"bundles\", \"subscriptions\", \"shopify\", \"inventory\", \"product-page\"]},{\"title\": \"Inspect the Guest-View Page Before Launching Traffic\", \"summary\": \"Load the finished PDP in an incognito window to see the unbranded, logged-out experience your visitors will get.\", \"use_when\": \"Final QA pass on a PDP, landing page or store before running ads or sending traffic.\", \"steps\": [\"Open the product URL in a private/incognito browser window so Shopify or admin toolbars don't appear.\", \"Walk the page top to bottom and confirm every section renders: hero, ingredients, mechanism, testimonial grid, FAQ accordion, guarantee, founder note, footer.\", \"Confirm interactive elements actually work — click every accordion, tab and slider; the source found accordions that did not open because the code was a placeholder.\", \"Check images are correctly sized and not oversized, and that all links and menus connect to a real destination.\", \"Confirm the product is purchasable: price shows, no 'sold out' state, variants selectable.\", \"Compare against the reference competitor page one final time and fix anything missing before launch.\"], \"caveats\": [\"Incognito hides logged-in state and admin tools but won't simulate every device or slow connection.\", \"Do a separate mobile check — the source demo was desktop-focused.\"], \"tags\": [\"store-setup\", \"quality-assurance\", \"product-page\", \"conversion-optimization\", \"shopify\", \"launch-readiness\"]}]}",
+  "input": {
+    "source_id": "1Ig6z4IGo0uaqFz7wHZSEla-LB2LUOsUi",
+    "source_sha256": "c726b9dc7eef6422893637df7ea264954f64df5de865f803ede40683f69c377a",
+    "source_name": "Claude & Shopify Built $750k_m Ai Powered Ecom Brand.docx",
+    "folder": "/05-SET-store-setup",
+    "domain": "store-setup",
+    "section": 2,
+    "section_count": 3,
+    "text": " on what sections need to be added to increase that page score. And the best part of it is it'll actually go ahead and add those sections in. So whatever Rosemary is doing, right, we have those sections in place so that our website looks and feels like a sevenigure score, but we go one step up and upgrade it. All right, so let's go ahead and hit calculate score. Right now, it's scoring our page and uh very soon we'll be able to see what's on the page, what's working, and what's definitely not working, and where we need to beef up. So, it has gone ahead and decided that it needs all of these sections for this page to be good, right? We're we're only at a 55 out of 100 in terms of paid scoring. And the way that we score pages, guys, is we've studied thousands and thousands of pages. And all of that information flows through our AI model that goes ahead and does this thinking for us. So, it's up to you which uh blocks you'd like to add, but I'd say add all of them. Okay? I'd literally say add all of them. They're going to be worth it. So, it's up to you. You can select the ones that you want or you can select all. Okay? And then you're going to want to just hit this generate sections.\n\n And now, it's going to literally because there's risk reversal missing, right? Nobody knows if the the what we're going to buy is it going to be 100% risk-free, right? And that sometimes will mean people don't buy. Right? There's a how it works section that's missing, right? Why how does this uh you know, how does this uh um product help you achieve the goal that you're looking for? Us versus them. Why you why should they buy your product versus anything else, right? And the founder and credibility block like who where is this coming from? Who are you? Right? Like um that's going to be very very important for us to to put in. So, all of those sections are being added um right now and um once they're added uh you'll see them automatically appear on the page. This is a very very cool thing. All right, so the first section just got added which is the guarantee headline. And this should say the number of days. Don't worry, this will get fixed when we add the copy. Um that's so freaking cool. And look at it. It's matched the colors of the brand and it knows where in the page it needs to be added as well. So that's been added. Now, the next thing that's being added is how it works. All right, the second section got added. It's the how it works section. Step one, step two, step three. It looks beautiful, man. It looks really beautiful. I love that it's the way that it's added it into um the existing color scheme. Freaking amazing. So, again, uh the reason we the software does this is cuz me and my agency, we used to do this for clients every single day. And with AI, we needed to find a way to do this faster, quicker, better, right? And so now you can see each section being added to um to the page. And you could almost run this as a service, right? Um if you if if you don't want to do this for your business, you can take any business's page out there, generate a score for them, tell them, \"This is what your page looks like before. This is what it can look like after. Pay me and I'll put it into your store.\" Right? It's such an insane service that you can offer to clients and it takes it does nothing. Okay, look at this. This is the us versus them. Look at how beautiful this section looks. Us versus them section being built. And then final section that's being built is the founder and brand credibility block. And so now if this page was making six figures a month for these guys, we have literally found every single thing that this page was missing and we have added it to our section. Boom. This is the founder note. And that's it. It's done. So now based on the new sections it's added, it's going to go through the page again and it's going to calculate a new page score for you. All right. So, after rescoring the page, we're at a 92, which is exceptional. And it is exceptional because look at what this page is now. From what it was to what it is, this page is absolutely amazing. It is a conversion machine. Okay. So, now that we've gotten the page optimized, the next thing that I want to do is actually start writing some copy for our particular brand. And for that, again, I'm just going to use one of their AI features, which is AI copywriting. All right. So, very simply to start writing copy, all you're going to want to do is go here to the third tab and write copy. Over here, you're going to want to name the product and the brand, right? So, hair nectar growter. Okay? And then the next thing that you're going to want to do is paste in just details about the product. So, I have like a supplier open on another on another tab and I'm just sort of pasting in like the ingredients, the reviews, all of that stuff that will help our copywriter write amazing copies. I've pasted a lot of it in. And again, um the the the more information you give the copywriter, the better it is. It's no at no point what you finish it with, but it is a really really good standard to start writing copywriting with. So, now we're going to hit generate copy. And now we're going to wait for the copy to come in. And after that, we're basically done designing one of our product pages. And in many respects, and again, I want to be super respectful, it actually will end up a lot of times looking better than the original. And you guys already know, we have incredible images for our uh product as well. So I am really really happy with um how this is coming about. our images, our copy, um all of it is going to look incredible. So, um let's go ahead uh finish this up, right? Start rewriting all of the copy. Um and then when the copy is done, let's start populating it with images. All right, guys. So, the copy is in and I genuinely want everyone's feedback on this copy, right? So, grower rosemary plus biotin hair growth oil, right? the purchase um description. Why growter works when nothing else did, right? Step one, wakes up dormant follicles, rebuilds every strand from the root, locks in moisture and shine. Right? What customers are saying? It actually worked. Stopped my shedding. 47. My hair looks 27. Cured my scalp pain. Exactly what I needed. Right? Look at this. Not all rosemary oils are built the same, right? Us versus them. Okay? thicker and fuller hair in less than 90 days. All right, look at that. Let's just make this text color um like this yellow or maybe a little bit less. Okay, fine. You know what? This black is nice. Okay. Um watch it grow, right? So, we can just basically make sure that you know it's it's if if there's anything that didn't uh come the way that you want it to, all you have to do is you can just change it right here. And that's what I'm going to do now. Just quickly change these text colors right here. Okay. So, look, thicker and fuller hair in um as little as 90 days, right? A message from the founder. Uh question and answers. Look at this 90-day promise. Grow it back in 90 days or we refund every scent. Right? More testimonials and the footer. Even the footer, I think we can go um another color with it. Uh I'm going to go ahead and um use maybe this um this um uh I want to I want to use this yellow. So, I'm just going to go here. I'm going to use background color. I think this is a very similar yellow. I'll just change that to this yellow. And we're done. We're done. Look at how great this page looks. I'm going to go ahead and quickly download the HTML. This is like my little save. I can preview it. This is what your page is going to look like when somebody lands on it. Completely branded all of the copy done. Very, very exciting stuff. And now all we have to do is hit publish to Shopify and download the Shopify template. Now I'm going to show you how to basically take any of the pages that you've built and put it into your Shopify store. So what you're going to want to do is use the link down below and sign up for Shopify. And once you're done with the intake, you're going to be taken to a screen like this. Now to get your store live, all you have to do is go to online store, right? You're going to want to hit this button and hit edit code. And over here, we're going to go ahead and create a section. So, the way that this thing works is it's built this entire page out as a section. And then you can add that wherever you wish, right? So, now we're going to go we're going to go here. It's going to load, right? And as you can see, these are all the sections that I have created. All right. Then, what you're going to want to do is go make sure that you are on section and hit this button and name it something. Normally I go WLE which is white label e-commerce and then I'm going to go um hair nectar and then I'll do gg for growter. Okay. And then I'm going to end oh sorry see that's not going to work because I didn't end it correctly. We'll do it again. Okay. Sections here wle hair nectar gg which is growter. And then you we're going to want to put liquid. When you put liquid, the Shopify icon appears because liquid is how Shopify saves its files. And then over here, you're going to go want to go back to white labeler uh this code that it's given. You copy it and make it downloads it automatically. So, you're fine anyways. And then you're going to want to hit paste. And then you're going to want to hit save. And now this file is permanently stored inside of your store. And you can use it however you want. If you don't if you want to delete it at any point, you can delete it as well. And now we can exit this. Next thing that we're going to want to do is we're going to want to go to products and we're going to want to basically create a product, right? So let's add the product and let's call it the hair nectar grow getter. Okay. Um we're going to want to upload some images. So let's upload the images that we created. So I've just uploaded images. We don't really need to write a description because um you write a description when you're using sort of Shopify's default page. Okay. I'm going to make this the the first image that people see. Um, and these are all the nice images. Okay. Amazing. Um, then what we're going to want to do is set a price. I'm actually going to go to my suppliers recommended price now. So, our selling unit for one is 2150, right? That's good. Now, if we're going to want to do like buy one, get one, buy two, get two, buy two, get three, you're going to want to make sure that you add those as bundles over here. All right. Um, so, you know what? Let's just do it for now for for for for example sake, right? So what is Rosemary doing? They have they only have one time in subscribe and save. Um so in that case we don't really need to. Right? In that case we don't really need to. We can just leave it at the 21 uh50 price point. Hit save. Now that our products added in, let's go back to the website. Um let's go to the um edit theme. All right. Now let's go here to home. Let's go to homepage. Let's go to products and let's create a template. We're going to call this hair nectar. GG. Okay. And uh this is hair nectar. Uh actually grow not growter. Sorry. Ours is Yeah, ours is um yeah, ours is growter. Sorry. It's uh the their theirs is gross. Okay. So now we're going to hit create a template. All right. And now this is like the if if you had let's say if you had um used nothing but the Shopify um page, right? If you you this is what your page would look like if you just had the Shopify theme, right? And this kind of doesn't look good at all, right? So what we're going to do is we're going to hide all of these. Okay, we don't need any of these sections. And like I said, our the way that we create pages is by sections. So now we've actually already created a full section. So you go add a section, you go all the way down and you will find um the um our section right here. So you you can see here WLD hair nectar growter and boom the entire page gets loaded up right here. Okay. So this is your entire page loaded up. And so the way that we build these is you can decide what to do with each section. You can move sections around if you want. You can move this above the review list. You can move this below the review list. You have complete control in terms of how the entire section looks, feels, and works. Okay. The biggest thing that you have to do when you add a section is go here and make sure you select a product and you add the product right here. Hair nectar growter. Okay. When you do that, you'll see um the um the the the images start populating right here. Okay. Now, what we're going to want to do is we're going to want to make sure that we u it says sold out right here, right? So, we don't want ours to be sold out, obviously. So, we're going to go back to the product. Okay, we're going to edit this. Um, and we're going to make sure that it is not sold out and that it has some units available. So, the way that we do that is over here, you can see available, you can make it 10,000 and hit save. And when you hit that, the product is ready to be bought now. Okay, the product's ready to be bought now. All right. And if you were thinking Ali, why were the images so huge? Um, we just fixed that very quickly because I had added really really big images. So I added all of the images that we created and some images were really big size. So if the image size is normal um this will look uh good as well. And so now look at how this thing looks freaking beautiful. Freaking beautiful. Okay. So now we have our product here. It's branded. It looks good. And as soon as we add the product, everything goes um in. Okay. And every single link can be connected. So this is your entire um um this is your um menu, right? You can literally connect every single menu to a link on the website. This is um your hero section, right? Um this is the ingredients. All of that is in here. Why grower works? Uh the the video grid, you can uh start attaching videos here. what customers are saying. So you can link I I wanted everybody to have ultimate ultimate ultimate customizability when it comes to preparing uh pages. So I mean at the end of the day look at how beautiful the product page looks and just even comparing it to the original that we used right this is their page. Okay. And this is going to be our page very soon. I mean, I'm just so so pumped to to see, you know, to to to get into fruition and come to what this page is going to end up looking like for us. So, really, really excited about that. Let's move on to the next section where we go ahead and we start preparing all of the assets that go into all of these different sections. All right. So, when I was testing it, I realized that this accord doesn't open up, right? So, there's a description, right? But there is it doesn't it doesn't open up because the way that it was built it was built as a just a placeholder. Right? So if if if this happens when you're doing your own build, it's very easy. All you have to do and this is just good advice for you just in case you want to make any changes is go back to the wireframe. Always have it open, right? And then you can click on any section and you can go I mean you can change the design layout, you can change the section. So all you need to do is go in here. All right. and just ask AI what to do. So you can go in here and when when you click on any section you can change the layout, the design or you can rebuild it directly. Okay, so over here we're going to hit rebuild and we're going to just ask for a change here. Right. So this is an accordion section. If someone clicks the plus button, it should open the accordion. Accordion is like when you click plus the the thing should open, right? And then we can just hit rebuild section. And what the AI does is it starts rebuilding this section right here. So that the uh the the the it opens when someone clicks it. And then when you have that section done, you can take it to Shopify and you will see all of it to start to open. And you can do that with anything, right? If you want the this to be in another way or if you want this to be in another way, if you want this to be in another way, like for example, see now the accordions open, right? Then again, we hit publish to Shopify. We hit download Shopify template. It regenerates it. We hit copy code. We go back to our page over here. We edit the code and we just paste in the new code. When we do that, that section will automatically change into the new section. So right here, we hit save. Okay, I pasted in the new code. I'm going to hit save. We'll see the original was 1 hour ago. The new version is here. When we go back, we're going to hit refresh one time. Right? We're going to reload the website. And now you will see that that new section will start to appear. And this is it. Right? Now there is all of these accordians. How come come in here, right? And so now you can change the descriptions and the text. And that's how easy it is to make those changes. And see over here if I all these sections can be open, all these sections can be closed as well. So, this is how easy it is for you to make any changes you want at all to the main website. All right, guys. So, we have just finished doing all of the images, videos, and all the other assets that we would need for this page. And our page is finally complete. And this has been one of the most detail oriented builds that we've done on the channel. So, if you've made it this far, I mean, you know, I hope you got to learn a lot. and one of the best looking builds we've done on this channel to be honest with you. It just looks incredible and you know all of this was done with the help of AI. Now I don't want to make this video ridiculously long. I think the runtime is already over an hour. So I'm going to show you very quickly how all of these AI images were generated. Um again I have just been using AI employees to be able to build these images. We're going to go back to the vault, right? And you do get the vault for free with a pro subscription to white labeler. And I've been using the uh branding design specialist to come up with different image prompts. I've been using the white labeler image mirror studio where it gives where you basically give it a competitor's image and it will create an image for you in your brand in the same style. Right? The customer experience studio helps you create images of customers using your different product. Right? And there are just tons and tons of different AI employees that are all here available for you to be able to create just incredible images. And for videos, we also have more AI employees for showcasing testimonials, for showcasing people using the different products. And what I'll do is I'll link some videos down below for those of you guys that are looking to create really, really good images for your products and really, really great videos for your products. All right. It's not that difficult when you have AI employees that you're using to do that because then you're able to create just incredible looking um images. So, let's do one last uh go at it. I just want I'm going to open it up in an incognito window just so that there's no Shopify branding on it. This is what somebody lands on. This is what somebody sees. And look at your brand just basically come to life. And you know what? This is a perfect perfect moment to compare this brand to the brand that we started off with. Let's do that. So, this is the brand that we started off with, right? This is what it looks like, and this is all that it has to offer. And now, genuinely compare it to this brand, your brand, and how it looks, how it feels, how it's been elevated, and how it has all of the sections and everything that it needs to be able to convert somebody into buyer into a buyer. And this is exactly what the white label e-commerce process is. Um, and for anybody that is serious about doing this, I, you know, we're at the end of the video, so I'm going to let you know that in the link down in the description below, you will find a link to our program, White Label E-Commerce. Um, and in that program, what we do is we build brands just like this, and we allow you to white label them. What does that mean? It means we've built the brand. We've done all of the work. You can come in, swap out the logo, and launch it as your own. Okay, that's the entire process of Y label e-commerce. It is linked down in the description below. If you want to use literally this website, all of the assets that we've developed, you are able to do so inside of that program. It is one of the fastest ways that I know how to help somebody go from zero to launch. Not only will we help build your websites, we'll also create your ads for you. We will also launch the business with you. And there's tons and tons of training if you want to learn how to create beautiful images, beautiful videos just like this. AI employees, weekly calls, you name it, it is all included. But with that being said, guys, I am so so happy that we have reached the end of this video. This has been uh a labor of love going through the exact build process. For anybody that made it this far, let me know what you truly feel about it and let me know what you think about all of the tools that we've used. Right? These are tools that we use on a daily basis to to do things. So, thank you guys so much. Again, appreciate each and every one of you. Um, and um, let me know in the comments down below what else you want to learn. If you got any value, leave a like. I do end up replying to every single comment. I know I've been a little bit late on that, but I'm catching up again. Making sure I reply to every single person that comments down below. Thank you guys so much and as always I will catch you guys in the next",
+    "prior_notes": [],
+    "id": "6abba75c42f169f8c1bcecf4"
+  },
+  "system_prompt_sha256": "f2341d28186a0dbaee868d37ce33c173f631088eb1754997556740d4905c0f2b"
+}

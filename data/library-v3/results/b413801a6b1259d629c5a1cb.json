@@ -1,0 +1,602 @@
+{
+  "cards": [
+    {
+      "title": "LCP diagnosis: the largest-in-viewport element and its delay source",
+      "summary": "Identify what the largest contentful paint element actually is, then remove whatever mechanism delays its display rather than optimizing unrelated assets.",
+      "use_when": "Product or landing page speed audit where Google PageSpeed shows a poor LCP score and you need to decide what to fix first.",
+      "steps": [
+        "Run the PageSpeed/Google test on the actual PDP or landing page you send paid traffic to, not the homepage. The source notes that even when the homepage scores fine, the page receiving ad traffic often has a huge LCP problem.",
+        "Open Chrome DevTools, go to the Network tab, disable cache and set throttling to fast or slow 3G, then reload. Watch what actually renders. In the reviewed store the layout and secondary images appeared, but the main product image did not — the image file was already downloaded but not shown.",
+        "Trace why it isn't shown. In the reviewed example the cause was a slideshow/carousel plugin: its JavaScript had to load before the first big image rendered, so the image sat hidden even after downloading.",
+        "Fix the delay at its source: keep the main product image out of the lazy-loaded carousel path, use a plain img that renders immediately, and remove any preloader/placeholder that hides the in-view image.",
+        "Add a preload link for that specific image in the head (see the preload card) and consider a more benefit-legible main image, since a confusing main image also hurts comprehension when the shopper lands from an ad.",
+        "Re-test three times and average the results to confirm the change is constant rather than a one-off test."
+      ],
+      "caveats": [
+        "The source's affected store measured around 5 seconds LCP before and expected roughly 50-60 after a preload fix; treat these as that store's numbers, not benchmarks.",
+        "Desktop often already scores acceptably; the source focuses mobile because that is where slow-connection shoppers experience the store.",
+        "Editing theme.liquid requires a theme backup or duplicate before publishing."
+      ],
+      "tags": [
+        "speed",
+        "core-web-vitals",
+        "lcp",
+        "product-page",
+        "image-optimization",
+        "shopify",
+        "diagnostics"
+      ],
+      "id": "1b9747314efd719475f41da2",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 6
+    },
+    {
+      "title": "Handling loading=\"eager\" vs \"loading=\"lazy\" in collection and card loops",
+      "summary": "Set the first rendered collection image to eager and everything below to lazy via theme logic, so above-the-fold winners aren't delayed by lazy loading.",
+      "use_when": "Collection pages, homepage collection lists, or recommendation grids where you render many product images in loops and want above-the-fold images to load immediately.",
+      "steps": [
+        "In the collection-list / grid section, add logic that tracks which card is first in render order. Assign that card's image loading=\"eager\"; assign loading=\"lazy\" to all subsequent cards.",
+        "Push the same logic into the product card snippet so individual cards inherit the correct loading attribute rather than relying on a hardcoded value.",
+        "Recognize the failure mode being fixed: when every image is lazy (including the first, in-view one), the browser delays the largest visible image; when everything is eager, non-visible images compete for bandwidth.",
+        "Verify in the rendered page source that only the first in-view image has loading=\"eager\" and the rest are lazy.",
+        "Apply the same rule to hero banners, logos and slideshows — anything in the viewport should never be lazy loaded (see the above-the-fold card).",
+        "Re-test the affected page three times and average before/after to confirm the change holds."
+      ],
+      "caveats": [
+        "The source reports this change contributed to a jump from 33 to 58 on mobile and desktop moving to 93, but it was one of several changes made together, so the improvement is not attributable to this step alone.",
+        "Only the images genuinely in the first viewport should be eager; marking everything eager recreates the original contention problem."
+      ],
+      "tags": [
+        "speed",
+        "lazy-loading",
+        "image-optimization",
+        "collection-page",
+        "product-page",
+        "shopify",
+        "theme-code"
+      ],
+      "id": "481d00497deb575f0658c78e",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 6
+    },
+    {
+      "title": "Splitting above-the-fold assets from lazy-loaded assets",
+      "summary": "Lazy loading belongs only below the fold; in-view images, logos, hero banners and slideshows should be preloaded with high fetch priority instead.",
+      "use_when": "Deciding which images and assets in a theme's header, hero or product gallery should be lazy loaded and which should be preloaded.",
+      "steps": [
+        "Inventory every image/video that renders in the initial viewport: logo, hero banner, main product image, first slider frame, first row of product cards.",
+        "For those, do not add loading=\"lazy\". Instead preload them: add link rel=\"preload\" tags in the head listing the URLs of visible images, fonts and critical assets, and set fetch priority as high so the browser treats them as important.",
+        "For everything below the fold, keep loading=\"lazy\" on images and add preload=\"none\" on videos so they don't interrupt more important downloads.",
+        "Do not display a preloader bar or placeholder in place of an in-view image — the source describes that as an LCP generator because the image is already known to be needed and any delay showing it hurts LCP.",
+        "Avoid transition/animation effects that delay in-view elements from appearing.",
+        "Confirm the lazy/eager split visually under 3G throttling with cache disabled."
+      ],
+      "caveats": [
+        "The source states Google will penalize lazy-loading above-the-fold images — cited as the presenter's guidance rather than a stated numeric rule.",
+        "Preload too many assets and you recreate contention; restrict preloads to genuinely in-view, business-critical assets.",
+        "LCP and CLS can reappear as the store matures and new sections or apps are added, so this needs periodic re-checking."
+      ],
+      "tags": [
+        "speed",
+        "lcp",
+        "lazy-loading",
+        "preload",
+        "core-web-vitals",
+        "shopify",
+        "theme-code"
+      ],
+      "id": "d56347d58c6605b5e7e6202e",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 6
+    },
+    {
+      "title": "CLS from images without dimensions: reserve space with width and height",
+      "summary": "Give image tags explicit width and height attributes so the browser reserves layout space and content below doesn't jump when the image loads.",
+      "use_when": "Any PDP, homepage or landing page where content shifts as images load — the typical symptom is text pushed down after a hero or inline image appears.",
+      "steps": [
+        "Understand the mechanism: the browser paints background, then text, and only later the images; when an inline image arrives its container expands to full image height and pushes everything below it down. This is one of the main CLS generators.",
+        "Add width and height parameters to every image tag so the browser can reserve the correct box before the file arrives.",
+        "Reproduce the shift to confirm the fix: open DevTools, Network tab, disable cache, set throttling to slow 3G or fast 3G — on fast Wi-Fi the shift may be too quick to see with the naked eye.",
+        "Also run a Lighthouse test and open 'see original trace' to inspect the loading timeline and spot above-the-fold layout shifts.",
+        "Treat non-user-initiated movement as the target; if the user clicks and the page then changes, that is not classified as CLS.",
+        "Re-verify under the same throttle after the change."
+      ],
+      "caveats": [
+        "Setting width/height works only if the CSS respects the aspect ratio; conflicting CSS rules can still override the reserved box.",
+        "CLS can also come from app widgets and font swaps, which need separate fixes."
+      ],
+      "tags": [
+        "speed",
+        "cls",
+        "core-web-vitals",
+        "image-optimization",
+        "diagnostics",
+        "shopify",
+        "layout-stability"
+      ],
+      "id": "d16d1fcdd349d0d7eb224ef1",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 6
+    },
+    {
+      "title": "Stopping app-widget CLS by reserving the widget container",
+      "summary": "Reserve fixed width and height for app-injected widgets so their late appearance doesn't push page content down.",
+      "use_when": "A PDP or homepage uses a review, loyalty or upsell app widget that pops in after load and shifts the content below it.",
+      "steps": [
+        "Identify the app-injecting element in the CLS report: the Google test outlines the shifting element. Copy its CSS classes, open your page, right-click > inspect, use Ctrl/Cmd+F to search the classes and locate the HTML tag.",
+        "Diagnose why it moves: app widgets load after the theme's own assets, so their container has no reserved space and the whole page below drops when they render.",
+        "Measure or approximate the widget's rendered width/height, then add a CSS rule fixing the width and height of that container so the space exists from first paint.",
+        "Alternative diagnose: look for two contradicting CSS rules where one stylesheet sets a height and a later one changes it; remove the redundant rule instead of reserving space.",
+        "Test the widget still functions correctly after the CSS change, on a duplicate theme first.",
+        "Re-run the speed test and check Search Console > Core Web Vitals to see whether search performance was being affected by the shift."
+      ],
+      "caveats": [
+        "Fixing the container size can clip widget content if the widget is responsive or its size varies; verify on the real breakpoints you care about.",
+        "The source states CLS issues shown by Google are real, not measurement errors, and that CLS affects search ranking — presenter's position, not a numeric guarantee."
+      ],
+      "tags": [
+        "speed",
+        "cls",
+        "core-web-vitals",
+        "apps",
+        "css",
+        "shopify",
+        "layout-stability"
+      ],
+      "id": "24893ea7867618e55d0e040f",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 6
+    },
+    {
+      "title": "Matching fallback font metrics to the custom font to prevent font-swap CLS",
+      "summary": "Pair font-display: swap with CSS that sizes the fallback font to match the custom font, so text doesn't resize when the swap happens.",
+      "use_when": "A store uses custom or multiple brand fonts and you see text-size shifts during load, or CLS is attributed to font changes.",
+      "steps": [
+        "Search the theme's CSS files for @font-face rules.",
+        "If the rule lacks font-display: swap, add it — this shows a default browser font while the custom font downloads, improving perceived speed.",
+        "Account for the side effect: default and custom fonts differ in size and line height, so at swap time the text changes size and shifts the layout.",
+        "Add CSS that styles the fallback font to match the custom font's size as closely as possible, effectively reserving the same space the custom font will occupy.",
+        "Verify under 3G throttling with cache disabled, since on fast connections the swap may be invisible.",
+        "Consider consolidating the number of custom fonts, since the source notes font files slow the site down, especially with multiple fonts used for design flourish."
+      ],
+      "caveats": [
+        "Exact matching is hard; the goal is minimizing the shift, not eliminating it.",
+        "Swap without metric matching trades a slight delay for a layout shift — decide per font whether the brand font is worth it."
+      ],
+      "tags": [
+        "speed",
+        "cls",
+        "fonts",
+        "core-web-vitals",
+        "css",
+        "shopify"
+      ],
+      "id": "14bc6ce5b8a653f7df9e6aad",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 6
+    },
+    {
+      "title": "Removing residual code from uninstalled apps and old tracking",
+      "summary": "Hunt leftover app dependencies and dead scripts in theme files, because uninstalling an app does not remove what it installed in your theme.",
+      "use_when": "Speed cleanup pass on any live theme, especially after removing apps, changing analytics, or when 'remove unused JavaScript' keeps appearing.",
+      "steps": [
+        "Open theme.liquid and look for mentions of apps you have uninstalled (the source's example: a YOTPO script left after removing YOTPO). Remove them.",
+        "Check whether a script belongs to an app: go to Apps in admin and confirm whether the app is installed. Some scripts belong to apps listed as sales channels, so check that list too.",
+        "If you can't identify a script or app, ask whoever managed the store — it may belong to an external service not listed in Shopify's app store.",
+        "Search all theme files, not just theme.liquid, for the script name. The source recommends the 'Shopify theme file search' Chrome extension for this, or a code editor.",
+        "Also remove dead tracking pixels, scripts, custom fonts and other assets that no longer serve sales or conversion.",
+        "Back up or duplicate the theme before editing so you can publish/revert safely."
+      ],
+      "caveats": [
+        "Some dependencies are JavaScript files, CSS files or rendered snippets, not just script tags.",
+        "Removing a script that is still needed can silently break app functionality — verify apps on a duplicate theme before publishing."
+      ],
+      "tags": [
+        "speed",
+        "unused-javascript",
+        "apps",
+        "shopify",
+        "theme-code",
+        "maintenance",
+        "diagnostics"
+      ],
+      "id": "68699dfd59de6d115ed62ad1",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 6
+    },
+    {
+      "title": "Deferring or lazy-loading app scripts so they don't block core content",
+      "summary": "Move app scripts out of the critical path with defer/async, or stop their automatic injection and re-inject them on first user interaction when defer/async breaks the app.",
+      "use_when": "PageSpeed reports unused JavaScript from app scripts and the store's core content should render before app widgets.",
+      "steps": [
+        "Decide whether the app's widget genuinely needs to appear immediately at first paint. The source argues most apps don't; their scripts should be lazily loaded so core content loads first.",
+        "If the script is visible in theme.liquid, add defer so it runs only after the document is downloaded. Then verify the app still functions — some apps break with defer.",
+        "If defer breaks or the app stops loading, try async, which downloads alongside the document without blocking it. Verify again.",
+        "If you can't find the script in theme.liquid, it is being injected automatically. Find the injection point: search for content_for_header in theme.liquid.",
+        "Inspect the page head to find the injected inline script and the app's URL inside its async function. Capture content_for_header with Liquid, redefine it with that script removed, and turn the app's admin/customizer toggle off.",
+        "Add your own small script that injects the app script on user interaction — click, scroll or other input — then verify app functionality and re-test."
+      ],
+      "caveats": [
+        "You must test app functionality after each change; a script that fails to inject may silently remove reviews, upsells or loyalty features from the storefront.",
+        "Tracking pixels should not be deferred, per the source, because deferring them can corrupt collected data.",
+        "Injecting scripts on interaction can delay widget display until the shopper engages — check whether the widget's value depends on being visible at load (e.g. review stars above the fold)."
+      ],
+      "tags": [
+        "speed",
+        "unused-javascript",
+        "apps",
+        "theme-code",
+        "shopify",
+        "defer-async",
+        "performance"
+      ],
+      "id": "9714159dd4aafb4fd4d2503a",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 6
+    },
+    {
+      "title": "Lazy-loading Shopify's dynamic payment button script",
+      "summary": "Treat the dynamic payment button script like an app script: disable it if unused, or remove it from content_for_header and re-inject on interaction.",
+      "use_when": "Cart or PDP speed work where the dynamic checkout / payment button script is heavy and you aren't sure customers use those buttons.",
+      "steps": [
+        "Check whether shoppers actually use the dynamic payment buttons (e.g. Shop Pay / wallet buttons) placed under the add-to-cart button.",
+        "If they don't create value, disable the dynamic buttons entirely — the source describes this script as demanding and as slowing the store noticeably.",
+        "If you keep them, locate the script to stop it loading: edit theme.liquid and add a line that removes it from content_for_header, using the same capture-and-modify Liquid approach used for app scripts.",
+        "Add a case to your human-interaction injection script so the payment script loads when the user clicks, scrolls or otherwise interacts.",
+        "Verify the payment buttons still appear and function after interaction on a duplicate theme, then re-test speed."
+      ],
+      "caveats": [
+        "Because the buttons appear only after interaction, evaluate whether hiding them until then could reduce wallet-button conversions — this is a trade-off the source does not quantify.",
+        "Test on a copy theme before publishing so customers don't see errors."
+      ],
+      "tags": [
+        "speed",
+        "checkout",
+        "apps",
+        "theme-code",
+        "shopify",
+        "unused-javascript",
+        "payment"
+      ],
+      "id": "98a7bf9f5fb40977615a416c",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 6
+    },
+    {
+      "title": "CSS that rewrites base styles from the body tag",
+      "summary": "Move stylesheets that re-declare base CSS out of the end of the body and into the head, and scope them with a media query when they should only affect desktop.",
+      "use_when": "A store shows horizontal layout problems or mobile content squished in a narrow column and you're auditing theme CSS load order.",
+      "steps": [
+        "Inspect the DOM and identify any style block or CSS file loading at the end of the body tag that overrides rules already set in the theme's base CSS file.",
+        "Understand the side effect: base CSS loads first with basic settings, then the late CSS rewrites them, producing layout problems (the source's case: horizontal issues on mobile).",
+        "Move that style into the head, after the base stylesheet, so the cascade is predictable.",
+        "If the rule should only apply on desktop, wrap it in a media query so it affects only screens above the relevant breakpoint. In the source's case a media query restricted it to screens over 767px, letting mobile content go full width instead of being squeezed into about 70% width.",
+        "Check other symptoms of late-loading CSS: large blank gaps on a PDP are real estate to reclaim, since the source argues the add-to-cart area should sit high on the page.",
+        "Re-verify mobile rendering at the widths your shoppers actually use (e.g. an iPhone-class viewport)."
+      ],
+      "caveats": [
+        "The 767px breakpoint is the source's example, not a universal threshold — pick based on your theme's breakpoints.",
+        "Moving CSS can change specificity outcomes elsewhere; check the affected pages, not just the one that prompted the change."
+      ],
+      "tags": [
+        "speed",
+        "css",
+        "theme-code",
+        "mobile",
+        "product-page",
+        "shopify",
+        "layout"
+      ],
+      "id": "3b3894441e6ccb2e76eb31c8",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 6
+    },
+    {
+      "title": "Fixing layout shift from the body tag with display:block",
+      "summary": "Add display:block to the body tag to stop the hero banner rendering low and being pushed up into place.",
+      "use_when": "A PDP or homepage hero visibly jumps upward as the page loads, or CLS is traced to the initial body/hero rendering.",
+      "steps": [
+        "Reproduce the shift under slow 3G with cache disabled and watch the hero banner area specifically — the source observed the hero loading lower on the page and then being pushed up.",
+        "Add display: block to the body tag in the theme's CSS. The source reports this resolved that particular shift.",
+        "Combine with width and height on the hero image and any above-the-fold preloads, since body display alone won't fix image-induced shifts.",
+        "Re-test with the Google speed test and confirm the CLS element no longer appears in the results.",
+        "Run the test multiple times and average to avoid reading a single noisy result."
+      ],
+      "caveats": [
+        "This is one specific fix from one store review; if the shift persists, check contradicting CSS heights and app widgets as other causes.",
+        "Some themes set body display via their own base CSS — verify your change isn't overridden."
+      ],
+      "tags": [
+        "speed",
+        "cls",
+        "css",
+        "theme-code",
+        "shopify",
+        "hero-banner",
+        "layout-stability"
+      ],
+      "id": "f21b8466aa36d4f9ba0c039b",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 6
+    },
+    {
+      "title": "Cookie banner modification via a theme property",
+      "summary": "Address cookie-banner blocking by reconfiguring the banner's property rather than leaving it as a blocking element in the critical path.",
+      "use_when": "A store's cookie consent banner is identified as a speed blocker during a PageSpeed/theme audit.",
+      "steps": [
+        "Confirm the cookie banner is contributing to blocking or delayed paint in the speed test or DevTools timeline.",
+        "In the source's review, the fix was adding a different property to the cookie banner code rather than the mechanism it previously used.",
+        "Make changes on a duplicate theme, then re-test three times and compare the average against the pre-change baseline, since the source performed this change alongside several others.",
+        "Verify the banner still satisfies whatever consent requirement your store operates under — speed gains do not justify an invalid or missing consent flow.",
+        "Re-check both mobile and desktop scores after the change; the source's desktop score, for instance, reached 93 while mobile just cleared 50 in its example."
+      ],
+      "caveats": [
+        "The source does not name the specific cookie banner or the exact property value, so treat this as a category of fix to investigate for your banner.",
+        "Consent banners are frequently legally required; do not remove or obscure consent to gain speed."
+      ],
+      "tags": [
+        "speed",
+        "apps",
+        "theme-code",
+        "shopify",
+        "third-party-scripts",
+        "privacy"
+      ],
+      "id": "867a3ac29edee50b2e45343f",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 6
+    },
+    {
+      "title": "The seven-step Shopify speed framework and its order of operations",
+      "summary": "Work through app reduction, residual code removal, image handling, fonts, script prioritization, CSS deferral and app lazy-loading in that sequence.",
+      "use_when": "Planning a full speed optimization pass on a Shopify store before or during paid traffic campaigns.",
+      "steps": [
+        "1. Reduce apps. Every app means fetching assets from another server, and some load their assets as early as possible. If an app doesn't directly boost sales or improve the user experience, remove it, then clean residual code from theme files.",
+        "2. Remove residual code: dead scripts, old tracking pixels, unused custom fonts and other assets that don't serve sales or conversion.",
+        "3. Fix images: size to the devices shoppers use rather than uploading full-resolution camera files; JPEG under 1MB is the source's stated target for a full-HD-ish image covering any screen; use PNG only when transparency is needed; replace animated GIFs with compressed MP4 video in an HTML video tag; compress images and video (the source names compressjpeg.com as a free option, claiming 50-60%+ size reduction).",
+        "4. Fonts: add font-display: swap to @font-face rules and match fallback metrics to avoid CLS.",
+        "5. Prioritize scripts: defer non-essential app scripts; async for scripts that should load alongside without blocking; never defer tracking pixels.",
+        "6. CSS: defer non-visible CSS with the media onload print technique, but not CSS responsible for in-view elements.",
+        "7. Lazy load apps and their assets: load the store's core first, then inject app scripts on click or scroll."
+      ],
+      "caveats": [
+        "The listed 50-60% compression figure and the under-1MB JPEG guidance are the source's recommendations, not measured results for your store.",
+        "The source ties speed to profitability but provides no conversion benchmark; do not treat speed score gains as guaranteed revenue gains."
+      ],
+      "tags": [
+        "speed",
+        "shopify",
+        "core-web-vitals",
+        "apps",
+        "image-optimization",
+        "fonts",
+        "performance"
+      ],
+      "id": "cce38d9369f25c07dacea257",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 6
+    },
+    {
+      "title": "Choosing app and functionality by value to protect speed",
+      "summary": "Every app you keep must earn its place in revenue or user experience, because the aggregate script weight compounds as the store matures.",
+      "use_when": "App audit or cleanup decision on a store that has accumulated apps over time.",
+      "steps": [
+        "List installed apps, sales-channel apps and any external scripts. For each, ask whether it creates real value that translates into more money for the store.",
+        "Remove apps whose widget doesn't contribute — the source's framing is that most app widgets do not need to display at first paint.",
+        "Check whether remaining apps' scripts can be deferred, made async or injected on interaction (see the app script cards).",
+        "Watch for app side effects beyond scripts: widgets that inject HTML and shift layout, and CSS that conflicts with your base styles.",
+        "Account for the fact that shops slow down over time: the source describes an initial 60-80% speed score dropping to 40, then to 20, 10 or lower as apps and customization are added — re-audit periodically rather than once.",
+        "Check under throttled 3G with cache disabled after each change."
+      ],
+      "caveats": [
+        "The source's numbers about score decline are illustrative of typical patterns, not measurements of any specific store.",
+        "Some apps genuinely need to render early (e.g. a reviews badge above the fold) — evaluate per app rather than blanket-deferring."
+      ],
+      "tags": [
+        "speed",
+        "apps",
+        "shopify",
+        "performance",
+        "maintenance",
+        "diagnostics",
+        "third-party-scripts"
+      ],
+      "id": "474204ae609c4dc2ae4ebb28",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 6
+    },
+    {
+      "title": "Testing protocol: three runs, averaged, on a duplicate theme",
+      "summary": "Run speed tests three times with gaps between them and average, and make changes on a copy theme before publishing.",
+      "use_when": "Any speed change you plan to make — establishing a before/after baseline so you don't chase noisy single-test results.",
+      "steps": [
+        "Duplicate the live theme and use its preview link for testing. Note that the source acknowledges the preview link runs slightly slower than the live link, but still shows the difference between states.",
+        "Pick a reference page: typically homepage, product page or collection page, depending on where traffic lands.",
+        "Run the test three times on that page, allowing some time between runs, and record each result. Without gaps you tend to get the same result.",
+        "Average the three results to establish your baseline.",
+        "Implement one batch of changes, wait about a minute, then run three more tests and average again.",
+        "Compare averages, not single readings, and verify app functionality on the duplicate theme before publishing."
+      ],
+      "caveats": [
+        "Preview-link results are inherently a bit slower than live, so compare like-for-like rather than against an absolute target.",
+        "The source's example store was described as 'rather basic'; results on heavily customized themes will differ.",
+        "Averaging three runs does not remove day-to-day variance in Google's test infrastructure — treat differences of a few points cautiously."
+      ],
+      "tags": [
+        "speed",
+        "measurement",
+        "experiment-design",
+        "shopify",
+        "testing",
+        "diagnostics",
+        "methodology"
+      ],
+      "id": "c33439a2c9b968e257a1bf87",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 6
+    },
+    {
+      "title": "Simulating the real shopper's device and connection instead of your desk",
+      "summary": "Most store owners judge speed on fast Wi-Fi and good hardware; your shoppers are frequently on older phones and slow or patchy mobile connections.",
+      "use_when": "Before deciding a store is 'fast enough', and when prioritizing which speed work actually matters to paid-traffic conversion.",
+      "steps": [
+        "Test the store the way customers experience it: open it on mobile data away from strong Wi-Fi, or emulate a slow 3G connection in DevTools with cache disabled.",
+        "Recognize that a store can look fine on your laptop while a customer on a 3G connection sees a blank or partially loaded layout — the source describes the customer's first impression being a blank page rather than the designed store.",
+        "Note the source's stated context: shoppers on older devices and slower networks, and a general claim that many people shopping online use older mobile devices and don't always have fast internet.",
+        "Prioritize mobile speed work over desktop; in the source's reviews desktop was often already acceptable while mobile was the problem.",
+        "Focus on the page your ads point to — the source observes that ad traffic typically lands on the product page, so that page's LCP and mobile layout matter more than the homepage.",
+        "Pay attention to a store scoring around 20% or lower on Google's speed score; the source treats that level as an indicator many customers will struggle or fail to load the store."
+      ],
+      "caveats": [
+        "The source references studies about average adult attention span around 8 seconds and claims customers leave after 3-4 seconds of an unloaded layout — these are presented as general claims, not store-specific measurements.",
+        "If you don't send traffic to the homepage, the source advises not over-investing there, but still keeping the product-page-to-homepage experience cohesive."
+      ],
+      "tags": [
+        "speed",
+        "mobile",
+        "core-web-vitals",
+        "diagnostics",
+        "conversion-optimization",
+        "shopify",
+        "product-page"
+      ],
+      "id": "74187c8d7e198151cce7a490",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 6
+    },
+    {
+      "title": "Product page mobile layout: get the add-to-cart within the visible band",
+      "summary": "Use scroll heatmaps to see where shoppers drop off, then compress header and messaging so variants, quantity and the buy button appear far higher on mobile.",
+      "use_when": "Mobile PDP layout work where the buy button sits below a large header, logo, promo text or gallery.",
+      "steps": [
+        "Pull a scroll heatmap (the source used Hotjar) for the product page. Read the percentages by depth: everyone in the source's example saw the header and first image, then dropped to 93, 91, 80 and so on, with only 20% of visitors reaching the add-to-cart button.",
+        "Treat that drop-off as a layout problem: the buy button is effectively invisible to most mobile visitors.",
+        "Shrink the mobile logo (the source tried values around 120, 110 and even 100px), reduce or single-line the header text, remove oversized gaps, and keep the mobile layout's horizontal real estate working hard.",
+        "Move variants and quantity directly under the reviews, and try placing the benefit row below the buy button rather than above it — the source suggests testing both orders rather than assuming.",
+        "Make the add-to-cart button slightly thinner and full page width, and test wording (the source suggests comparing 'add to bag' vs 'add to cart' depending on where your customers are).",
+        "Make sure the review badge is present on mobile if it's on desktop; in the reviewed store it was missing on mobile.",
+        "Re-project cost/conversion on a duplicate theme before publishing layout changes."
+      ],
+      "caveats": [
+        "The heatmap percentages are from one reviewed store and are an illustration of reading depth drop-off, not a benchmark.",
+        "Recommendations such as exact logo pixel size or button thinness are the source's opinions from that review, not universal rules.",
+        "Layout changes interact: verify the whole PDP after moving blocks.",
+        "Move variants and quantity directly under the reviews, and try placing the benefit row below the buy button rather than above it — the source suggests testing both orders rather than assuming."
+      ],
+      "tags": [
+        "speed",
+        "product-page",
+        "mobile",
+        "conversion-optimization",
+        "heatmaps",
+        "merchandising",
+        "shopify"
+      ],
+      "id": "bf8e6e41254e4a9f624d369a",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 6
+    },
+    {
+      "title": "Clarifying the promo message so shoppers can act on it",
+      "summary": "Replace multi-variant discount copy with one unambiguous offer so the shopper knows what they're getting.",
+      "use_when": "PDP or cart promotion messaging, especially sitewide bars or badges combining several incentive types.",
+      "steps": [
+        "Audit the promo copy on the product page. The source flags an example reading '20 to 50% off with free shipping today only'.",
+        "Replace it with a single clear offer, e.g. '50% off with free shipping' or '20% off with free shipping'.",
+        "Rationale given: people get confused easily, and an unclear offer weakens the page's message and its ability to convert paid traffic.",
+        "Check for similar ambiguity elsewhere — separate offer claims in different page sections that appear to contradict each other.",
+        "Keep promotion duration and terms consistent with what you can actually honor at checkout; a page promise that checkout can't fulfill creates friction."
+      ],
+      "caveats": [
+        "This is the presenter's guidance from a store review, not a tested A/B result.",
+        "Discount messaging and margin trade-offs are store-specific; verify the promoted offer is sustainable."
+      ],
+      "tags": [
+        "speed",
+        "product-page",
+        "offer-design",
+        "messaging",
+        "conversion-optimization",
+        "shopify",
+        "pricing"
+      ],
+      "id": "00a97db32711e3eee980e47d",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 6
+    }
+  ],
+  "request_id": "5a494cf475565b16bda482a835c809dcc79fd0240c886adce9ca46ccb37c463a",
+  "ecommerce_scope_version": 1
+}

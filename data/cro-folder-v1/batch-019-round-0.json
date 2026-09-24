@@ -1,0 +1,859 @@
+{
+  "batch": 19,
+  "round": 0,
+  "request_id": "5babf3c4fa4e3c750caf16746c4d77066785c0a997b46cfbeb45fe4de5753af5",
+  "finish_reason": "stop",
+  "errors": [],
+  "candidates": [
+    {
+      "id": "fb3d7187b677e2078dcf7c09553e9c64c9289df9b66a4111779df3235fd4c121",
+      "unit": {
+        "id": "u1",
+        "kind": "action",
+        "title": "Filter the Clarity dashboard to a roughly six-month sample period",
+        "claim": {
+          "text": "The source says the first thing it does on the main Clarity dashboard is filter for a good enough sample size or sample period.",
+          "quote": "filter for a good enough sample size or good enough sample period"
+        },
+        "action": {
+          "text": "Set the dashboard date range to roughly the last 6 months, or the last 90 days when less history exists.",
+          "quote": "typically that's going to be the last 6 months of data it could also be last 90 days of data"
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Opening the main Clarity dashboard to review metrics.",
+              "quote": "the first thing that I like to do when looking at the main dashboard"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Clarity must have been set up long enough ago to retain the desired window; the source says this varies by account.",
+              "quote": "depending on when you set up Clarity you may or may not have the ability to go that far back"
+            }
+          ]
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [
+          {
+            "text": "The window selected is roughly six months; the exact boundary does not have to match.",
+            "quote": "so roughly 6 months doesn't have to be exact"
+          }
+        ],
+        "unknowns": [
+          "The source calls 6 months generally good while also offering last 90 days, without a rule for choosing between them."
+        ],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1codPdK-qaL_2SoPf_nmftxOcUIzNczWB",
+          "source_sha256": "e90e771f91c35367be3e31ee5a6d6c7d4137d599fdc8b78c4865c1d6673569bb",
+          "locator": "body:14/paragraph",
+          "start": 629,
+          "end": 694,
+          "quote": "filter for a good enough sample size or good enough sample period"
+        },
+        {
+          "field": "action",
+          "source_id": "1codPdK-qaL_2SoPf_nmftxOcUIzNczWB",
+          "source_sha256": "e90e771f91c35367be3e31ee5a6d6c7d4137d599fdc8b78c4865c1d6673569bb",
+          "locator": "body:14/paragraph",
+          "start": 704,
+          "end": 796,
+          "quote": "typically that's going to be the last 6 months of data it could also be last 90 days of data"
+        },
+        {
+          "field": "trigger.0",
+          "source_id": "1codPdK-qaL_2SoPf_nmftxOcUIzNczWB",
+          "source_sha256": "e90e771f91c35367be3e31ee5a6d6c7d4137d599fdc8b78c4865c1d6673569bb",
+          "locator": "body:14/paragraph",
+          "start": 547,
+          "end": 615,
+          "quote": "the first thing that I like to do when looking at the main dashboard"
+        },
+        {
+          "field": "prerequisites.0",
+          "source_id": "1codPdK-qaL_2SoPf_nmftxOcUIzNczWB",
+          "source_sha256": "e90e771f91c35367be3e31ee5a6d6c7d4137d599fdc8b78c4865c1d6673569bb",
+          "locator": "body:14/paragraph",
+          "start": 806,
+          "end": 898,
+          "quote": "depending on when you set up Clarity you may or may not have the ability to go that far back"
+        },
+        {
+          "field": "completion.0",
+          "source_id": "1codPdK-qaL_2SoPf_nmftxOcUIzNczWB",
+          "source_sha256": "e90e771f91c35367be3e31ee5a6d6c7d4137d599fdc8b78c4865c1d6673569bb",
+          "locator": "body:14/paragraph",
+          "start": 1035,
+          "end": 1079,
+          "quote": "so roughly 6 months doesn't have to be exact"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "315b07c92157a8f70b232079efb02d6f38d6365c5e42b30d1c2444b64e2f073f",
+      "unit": {
+        "id": "u2",
+        "kind": "principle",
+        "title": "Prioritize the Insights block over baseline KPIs on the main dashboard",
+        "claim": {
+          "text": "The source identifies the Insights block as the part of the main dashboard that is important to focus on.",
+          "quote": "the part that I find is important to focus on on the main dashboard is really this insights block here"
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Most other dashboard metrics can be pulled from Google Analytics and are not unique to Clarity.",
+              "quote": "a lot of the metrics on the main Clarity dashboard you can actually pull directly from Google analytics"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The named baseline KPIs (scroll depth, active time, pages per session, total sessions) are described as obtainable elsewhere, not as unusable."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u1"
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1codPdK-qaL_2SoPf_nmftxOcUIzNczWB",
+          "source_sha256": "e90e771f91c35367be3e31ee5a6d6c7d4137d599fdc8b78c4865c1d6673569bb",
+          "locator": "body:14/paragraph",
+          "start": 1487,
+          "end": 1589,
+          "quote": "the part that I find is important to focus on on the main dashboard is really this insights block here"
+        },
+        {
+          "field": "trigger.0",
+          "source_id": "1codPdK-qaL_2SoPf_nmftxOcUIzNczWB",
+          "source_sha256": "e90e771f91c35367be3e31ee5a6d6c7d4137d599fdc8b78c4865c1d6673569bb",
+          "locator": "body:14/paragraph",
+          "start": 1129,
+          "end": 1232,
+          "quote": "a lot of the metrics on the main Clarity dashboard you can actually pull directly from Google analytics"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "4edcb26a916830baa97ea5247b39ff5c21bbe044d7b7502158ea6e3168320990",
+      "unit": {
+        "id": "u3",
+        "kind": "action",
+        "title": "Open recordings from an insight metric's camera icon and watch them",
+        "claim": {
+          "text": "The source says watching the matching recordings is worthwhile when a rage-click metric warrants a particular change, to see where people hit frustration or friction.",
+          "quote": "if the rage clicks actually warrant particular change then it's worth watching those recordings to see you know where people experiencing frustration or friction"
+        },
+        "action": {
+          "text": "Click the camera icon next to the insight metric to open the recordings page and watch the sessions of people who experienced that insight.",
+          "quote": "you can actually click on this little camera icon and it's going to open up the recordings page where you can watch the actual recordings of people that experienced the rage clicks"
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "A rage-click rate is displayed in the dashboard Insights block.",
+              "quote": "rage clicks is the first one here which sits at 0 2%"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source's fuller recordings walkthrough is promised later in the video and is not in this passage."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u2"
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1codPdK-qaL_2SoPf_nmftxOcUIzNczWB",
+          "source_sha256": "e90e771f91c35367be3e31ee5a6d6c7d4137d599fdc8b78c4865c1d6673569bb",
+          "locator": "body:14/paragraph",
+          "start": 3004,
+          "end": 3165,
+          "quote": "if the rage clicks actually warrant particular change then it's worth watching those recordings to see you know where people experiencing frustration or friction"
+        },
+        {
+          "field": "action",
+          "source_id": "1codPdK-qaL_2SoPf_nmftxOcUIzNczWB",
+          "source_sha256": "e90e771f91c35367be3e31ee5a6d6c7d4137d599fdc8b78c4865c1d6673569bb",
+          "locator": "body:14/paragraph",
+          "start": 2520,
+          "end": 2700,
+          "quote": "you can actually click on this little camera icon and it's going to open up the recordings page where you can watch the actual recordings of people that experienced the rage clicks"
+        },
+        {
+          "field": "trigger.0",
+          "source_id": "1codPdK-qaL_2SoPf_nmftxOcUIzNczWB",
+          "source_sha256": "e90e771f91c35367be3e31ee5a6d6c7d4137d599fdc8b78c4865c1d6673569bb",
+          "locator": "body:14/paragraph",
+          "start": 1678,
+          "end": 1730,
+          "quote": "rage clicks is the first one here which sits at 0 2%"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "bebb52276abcab638bcb405b6d14bb80f0f3f9eb3adafaebb1a37d25f4d7b3c6",
+      "unit": {
+        "id": "u5",
+        "kind": "principle",
+        "title": "Author's heuristic range for an acceptable rage-click rate",
+        "claim": {
+          "text": "The source offers a heuristic that anything under 1 to 2 percent is good.",
+          "quote": "I would say anything really under 1 to two% is good"
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "This is presented as the author's heuristic, not a verified platform benchmark.",
+          "The source also describes the observed 0.2% as typically a pretty good rate (0. 2% you know that's typically a pretty good rate), which is not reconciled with the 1 to 2 percent guidance.",
+          "The denominator for the rate is not defined in this passage."
+        ],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1codPdK-qaL_2SoPf_nmftxOcUIzNczWB",
+          "source_sha256": "e90e771f91c35367be3e31ee5a6d6c7d4137d599fdc8b78c4865c1d6673569bb",
+          "locator": "body:14/paragraph",
+          "start": 2891,
+          "end": 2942,
+          "quote": "I would say anything really under 1 to two% is good"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "8d54d3e8b413add36cb1e1fecebda8d6692a77570405611faf9ab18357f85911",
+      "unit": {
+        "id": "u6",
+        "kind": "action",
+        "title": "Watch recordings across all insight types regardless of the metric percentage",
+        "claim": {
+          "text": "The source says it does not really matter what the metrics are; fundamental usability issues existing on the site should be resolved regardless of the percentage.",
+          "quote": "it doesn't really matter what the metrics are if there's usability issues fundamental that exist on the site ultimately you want to resolve them regardless of what the percentage is"
+        },
+        "action": {
+          "text": "Watch the recordings behind all of the insight metrics, not only the ones with high rates.",
+          "quote": "again I would consider watching the recordings of all of these"
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "An insight metric looks low, for example excessive scrolling under 0.01 percent, and appears not to be a major concern.",
+              "quote": "in this particular scenario it's less than 0.01% so it's not really a major concern"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not define what counts as a fundamental usability issue or how resolution is verified."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u3"
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1codPdK-qaL_2SoPf_nmftxOcUIzNczWB",
+          "source_sha256": "e90e771f91c35367be3e31ee5a6d6c7d4137d599fdc8b78c4865c1d6673569bb",
+          "locator": "body:14/paragraph",
+          "start": 8266,
+          "end": 8447,
+          "quote": "it doesn't really matter what the metrics are if there's usability issues fundamental that exist on the site ultimately you want to resolve them regardless of what the percentage is"
+        },
+        {
+          "field": "action",
+          "source_id": "1codPdK-qaL_2SoPf_nmftxOcUIzNczWB",
+          "source_sha256": "e90e771f91c35367be3e31ee5a6d6c7d4137d599fdc8b78c4865c1d6673569bb",
+          "locator": "body:14/paragraph",
+          "start": 8148,
+          "end": 8210,
+          "quote": "again I would consider watching the recordings of all of these"
+        },
+        {
+          "field": "trigger.0",
+          "source_id": "1codPdK-qaL_2SoPf_nmftxOcUIzNczWB",
+          "source_sha256": "e90e771f91c35367be3e31ee5a6d6c7d4137d599fdc8b78c4865c1d6673569bb",
+          "locator": "body:14/paragraph",
+          "start": 7335,
+          "end": 7418,
+          "quote": "in this particular scenario it's less than 0.01% so it's not really a major concern"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "edcaf004f7da8b5b3f0e39b099f937560888889105819220e2d22d91d697b13e",
+      "unit": {
+        "id": "u7",
+        "kind": "principle",
+        "title": "Understand dead clicks as clicks on elements that are not clickable",
+        "claim": {
+          "text": "Dead clicks are when somebody tries to click an element and that element is actually not clickable, hence the word dead.",
+          "quote": "dead clicks is where somebody tries to click on an element then what happens is that element is actually not clickable hence the word dead"
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No dead-click rate threshold or benchmark is given in this passage."
+        ],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1codPdK-qaL_2SoPf_nmftxOcUIzNczWB",
+          "source_sha256": "e90e771f91c35367be3e31ee5a6d6c7d4137d599fdc8b78c4865c1d6673569bb",
+          "locator": "body:14/paragraph",
+          "start": 3199,
+          "end": 3337,
+          "quote": "dead clicks is where somebody tries to click on an element then what happens is that element is actually not clickable hence the word dead"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "91a10dd1efee32948ff2159c7ee15db467d1e6d7c91a507ed8384c261604459a",
+      "unit": {
+        "id": "u8",
+        "kind": "principle",
+        "title": "Some dead clicks are acceptable when linking out would cost conversions",
+        "claim": {
+          "text": "In some scenarios dead clicks are fine because the site may not want to send people outside.",
+          "quote": "in some scenarios dead clicks are fine because you might not want to send people outside"
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Clickable-looking elements such as as seen on or as featured logos risk sending users off-site.",
+              "quote": "you might not necessarily want to send people outbound and outside of the website because your main goal is ultimately conversions"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source frames this as an argument for keeping logos non-clickable, i.e. a judgement call rather than a rule."
+        ],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1codPdK-qaL_2SoPf_nmftxOcUIzNczWB",
+          "source_sha256": "e90e771f91c35367be3e31ee5a6d6c7d4137d599fdc8b78c4865c1d6673569bb",
+          "locator": "body:14/paragraph",
+          "start": 3672,
+          "end": 3760,
+          "quote": "in some scenarios dead clicks are fine because you might not want to send people outside"
+        },
+        {
+          "field": "trigger.0",
+          "source_id": "1codPdK-qaL_2SoPf_nmftxOcUIzNczWB",
+          "source_sha256": "e90e771f91c35367be3e31ee5a6d6c7d4137d599fdc8b78c4865c1d6673569bb",
+          "locator": "body:14/paragraph",
+          "start": 3868,
+          "end": 3998,
+          "quote": "you might not necessarily want to send people outbound and outside of the website because your main goal is ultimately conversions"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "1b11385c601590a4df4a5a192f8098d35383b46fcccd17485cb397fb21c5e0ed",
+      "unit": {
+        "id": "u9",
+        "kind": "principle",
+        "title": "Other dead clicks are harmful when clickable elements would help conversion",
+        "claim": {
+          "text": "The other scenario is elements that should be clickable and that help people in their journey to conversion actually being not clickable.",
+          "quote": "there's the other scenario in which elements that should be clickable and that actually help people in their journey to complete a conversion is is not clickable"
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not state how to decide which elements should be clickable beyond the examples given."
+        ],
+        "relations": [
+          {
+            "kind": "alternative_to",
+            "target": "u8"
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1codPdK-qaL_2SoPf_nmftxOcUIzNczWB",
+          "source_sha256": "e90e771f91c35367be3e31ee5a6d6c7d4137d599fdc8b78c4865c1d6673569bb",
+          "locator": "body:14/paragraph",
+          "start": 4166,
+          "end": 4327,
+          "quote": "there's the other scenario in which elements that should be clickable and that actually help people in their journey to complete a conversion is is not clickable"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "c3bfeba880d3e430f705a959850772b8f33dc202047f0695d02c952c2c6568a4",
+      "unit": {
+        "id": "u10",
+        "kind": "example",
+        "title": "SaaS client pricing section registered dead clicks",
+        "claim": {
+          "text": "In a SaaS client audit, people thought pricing elements were clickable, but the only clickable element was the button for getting a number of free credits.",
+          "quote": "people thought that these elements were clickable but the only element that was actually clickable was the button that said get X number of free credits"
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "Client identity, dates, traffic volume and conversion impact are not stated in this passage.",
+          "The source adds that it would benefit users if those elements were clickable because people want the price, but the fix applied is not described."
+        ],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1codPdK-qaL_2SoPf_nmftxOcUIzNczWB",
+          "source_sha256": "e90e771f91c35367be3e31ee5a6d6c7d4137d599fdc8b78c4865c1d6673569bb",
+          "locator": "body:14/paragraph",
+          "start": 4634,
+          "end": 4786,
+          "quote": "people thought that these elements were clickable but the only element that was actually clickable was the button that said get X number of free credits"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "b3d35ddd292094e9c23c86b3134f7997f136c61ab1a0a4be9157fdd3c687463e",
+      "unit": {
+        "id": "u11",
+        "kind": "example",
+        "title": "Non-clickable site logo produced dead clicks and rage clicks",
+        "claim": {
+          "text": "People were clicking the logo in the center of the site and the logo was not clickable.",
+          "quote": "people were actually clicking on this logo uh in the center of the site and the logo wasn't even clickable"
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "The pattern was noticed on the main dashboard and confirmed by watching recordings of people.",
+              "quote": "they were kind of Rage clicking and basically going through that dead click where it increased that percentage substantially and we noticed that on the main dashboard and we actually saw recordings of people as well"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source states the convention that clicking a logo returns you to the homepage, but does not say whether the logo was made clickable or what effect that had.",
+          "Users were trying to reach the homepage from the checkout and product pages; the pages involved are given only in general terms."
+        ],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1codPdK-qaL_2SoPf_nmftxOcUIzNczWB",
+          "source_sha256": "e90e771f91c35367be3e31ee5a6d6c7d4137d599fdc8b78c4865c1d6673569bb",
+          "locator": "body:14/paragraph",
+          "start": 5402,
+          "end": 5508,
+          "quote": "people were actually clicking on this logo uh in the center of the site and the logo wasn't even clickable"
+        },
+        {
+          "field": "trigger.0",
+          "source_id": "1codPdK-qaL_2SoPf_nmftxOcUIzNczWB",
+          "source_sha256": "e90e771f91c35367be3e31ee5a6d6c7d4137d599fdc8b78c4865c1d6673569bb",
+          "locator": "body:14/paragraph",
+          "start": 5866,
+          "end": 6081,
+          "quote": "they were kind of Rage clicking and basically going through that dead click where it increased that percentage substantially and we noticed that on the main dashboard and we actually saw recordings of people as well"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "be578584b7db4f2a234ab222295f83a7c8e23bbf0a4a98abbab9bf236f4a8095",
+      "unit": {
+        "id": "u12",
+        "kind": "principle",
+        "title": "Read excessive scrolling as the user failing to find information",
+        "claim": {
+          "text": "Excessive scrolling can mean the user is trying to find information on the site but cannot find it.",
+          "quote": "it could be the fact that they're the user is trying to find information on the site but they can't find it"
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Excessive scrolling is recorded when a visitor scrolls a page top to bottom very quickly.",
+              "quote": "excessive scrolling is when somebody is on a website and they're just scrolling very excessively on a particular page right so that just means they're going from top to bottom like very quickly"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "Candidate causes given by the source are users hunting for reviews, hunting for a missing call to action or price, or skimming a long block of text; no rule for distinguishing them is stated.",
+          "The source notes its own example account sat under 0.01 percent for excessive scrolling."
+        ],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1codPdK-qaL_2SoPf_nmftxOcUIzNczWB",
+          "source_sha256": "e90e771f91c35367be3e31ee5a6d6c7d4137d599fdc8b78c4865c1d6673569bb",
+          "locator": "body:14/paragraph",
+          "start": 6532,
+          "end": 6639,
+          "quote": "it could be the fact that they're the user is trying to find information on the site but they can't find it"
+        },
+        {
+          "field": "trigger.0",
+          "source_id": "1codPdK-qaL_2SoPf_nmftxOcUIzNczWB",
+          "source_sha256": "e90e771f91c35367be3e31ee5a6d6c7d4137d599fdc8b78c4865c1d6673569bb",
+          "locator": "body:14/paragraph",
+          "start": 6209,
+          "end": 6402,
+          "quote": "excessive scrolling is when somebody is on a website and they're just scrolling very excessively on a particular page right so that just means they're going from top to bottom like very quickly"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "3f225f2d533f0cb39c3fb10940aec5508f4a14dee936041a153bd7c9851ab7bf",
+      "unit": {
+        "id": "u14",
+        "kind": "warning",
+        "title": "Avoid spending time on dashboard metrics Google Analytics already covers",
+        "claim": {
+          "text": "The source says it would really spend too much time there, in the context of funnel, channel, campaign, browser, device and popular-page data that Google Analytics can do as well or better.",
+          "quote": "so I would really spend too much time there"
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Dashboard sections such as smart events, referrer and channel breakdown, campaign source, browser and device data and most popular pages are available in Google Analytics.",
+              "quote": "you can do all of this inside of Google analytics and a much better job at that as well"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The clause appears garbled, plausibly missing a negation such as wouldn't; its polarity is unresolved and must not be settled from memory.",
+          "The list of duplicative metrics is enumerated only loosely across the preceding sentences."
+        ],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1codPdK-qaL_2SoPf_nmftxOcUIzNczWB",
+          "source_sha256": "e90e771f91c35367be3e31ee5a6d6c7d4137d599fdc8b78c4865c1d6673569bb",
+          "locator": "body:14/paragraph",
+          "start": 8764,
+          "end": 8807,
+          "quote": "so I would really spend too much time there"
+        },
+        {
+          "field": "trigger.0",
+          "source_id": "1codPdK-qaL_2SoPf_nmftxOcUIzNczWB",
+          "source_sha256": "e90e771f91c35367be3e31ee5a6d6c7d4137d599fdc8b78c4865c1d6673569bb",
+          "locator": "body:14/paragraph",
+          "start": 8676,
+          "end": 8763,
+          "quote": "you can do all of this inside of Google analytics and a much better job at that as well"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "e4a59947698c1edc0e8f07495e9ab1633650bd67999cc269cf428201b86a0342",
+      "unit": {
+        "id": "u15",
+        "kind": "action",
+        "title": "Open the heat map tab and pick a popular page to review",
+        "claim": {
+          "text": "The source says clicking the heat map tab presents the most popular pages of the account.",
+          "quote": "I'll click on the heat map tab up there and then I'll be presented with the most popular Pages"
+        },
+        "action": {
+          "text": "Open the heat map tab and click into one of the listed popular pages to review its heat map.",
+          "quote": "let's just click on the homepage here"
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source says accounts typically list 5 to 10 most popular pages segmented by traffic volume, while the demo account showed only two pages.",
+          "How a page is selected for review beyond picking from the list is not stated."
+        ],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1codPdK-qaL_2SoPf_nmftxOcUIzNczWB",
+          "source_sha256": "e90e771f91c35367be3e31ee5a6d6c7d4137d599fdc8b78c4865c1d6673569bb",
+          "locator": "body:14/paragraph",
+          "start": 9454,
+          "end": 9548,
+          "quote": "I'll click on the heat map tab up there and then I'll be presented with the most popular Pages"
+        },
+        {
+          "field": "action",
+          "source_id": "1codPdK-qaL_2SoPf_nmftxOcUIzNczWB",
+          "source_sha256": "e90e771f91c35367be3e31ee5a6d6c7d4137d599fdc8b78c4865c1d6673569bb",
+          "locator": "body:14/paragraph",
+          "start": 9764,
+          "end": 9801,
+          "quote": "let's just click on the homepage here"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "517377762dee9e20e39136c73232f7c310f8fbd69c7c58c9542f800692ab3f57",
+      "unit": {
+        "id": "u16",
+        "kind": "unresolved_claim",
+        "title": "Heat map screenshot may not match expectations on sites with pop-ups",
+        "claim": {
+          "text": "The source begins to say the heat map screenshot might not look exactly like what was anticipated for clients whose sites have pop-ups, but the sentence is cut off.",
+          "quote": "you might have a screenshot here that might not look exactly like what you anticipated for some of our clients where they have pop-ups under website"
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The passage ends mid-phrase after pop-ups under website, so the rest of the pop-up effect and any remedy are missing.",
+          "Neighboring source text is required to complete this claim."
+        ],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1codPdK-qaL_2SoPf_nmftxOcUIzNczWB",
+          "source_sha256": "e90e771f91c35367be3e31ee5a6d6c7d4137d599fdc8b78c4865c1d6673569bb",
+          "locator": "body:14/paragraph",
+          "start": 9850,
+          "end": 9998,
+          "quote": "you might have a screenshot here that might not look exactly like what you anticipated for some of our clients where they have pop-ups under website"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    }
+  ],
+  "held": [
+    {
+      "index": 3,
+      "reason": "claim: quote_not_exact"
+    },
+    {
+      "index": 12,
+      "reason": "trigger.0: quote_not_exact"
+    }
+  ],
+  "more_units": true,
+  "unresolved": [
+    "The supplied source text is truncated mid-sentence in the heat map screenshot/pop-ups passage; the continuation is missing.",
+    "The sentence about spending time on dashboard metrics duplicating Google Analytics appears to be missing a negation, so its polarity is unresolved.",
+    "The video promises later real-life examples and agency case studies on using Clarity to increase conversion rates, plus a fuller recordings walkthrough, none of which appear in this passage.",
+    "Extraction reached the 16-unit cap; the passage continues beyond the cut-off and further units (heat map interpretation as demonstrated, recordings walkthrough, case studies) are expected in the remaining source."
+  ],
+  "publication_allowed": false
+}

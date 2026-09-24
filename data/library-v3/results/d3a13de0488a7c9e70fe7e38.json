@@ -1,0 +1,228 @@
+{
+  "cards": [
+    {
+      "title": "Remove residual Shopify app code from theme files",
+      "summary": "Uninstalling a Shopify app often leaves injected scripts behind that still fire external requests, so manually search and delete leftover tags in theme.liquid, head.liquid and footer.liquid.",
+      "use_when": "Auditing loading performance on a Shopify store after installing, trialing or uninstalling speed or marketing apps, before concluding the theme itself is slow.",
+      "steps": [
+        "Inventory apps you have installed or trialed, noting each app's brand name (for example 'loox') because leftover snippets usually contain the app name or its CDN domain.",
+        "Search theme files for those names: theme.liquid, head.liquid and footer.liquid are the paths to check. A Chrome extension such as Shopify Theme File Search lets you grep across the theme instead of opening files one by one.",
+        "Delete the lingering <script> tags you find. Uninstalling an app does not always remove its injected code, and any surviving tag keeps making requests to an external server on every page load.",
+        "Re-test the storefront after each removal so you can attribute any change in load behavior to a specific deletion rather than a batch edit.",
+        "Repeat this cleanup periodically, especially after trial installs, since each app adds independent risk of residual code."
+      ],
+      "caveats": [
+        "Only remove snippets tied to apps you have actually uninstalled; deleting code for an active app breaks its function.",
+        "Keep a backup or version record of theme files before editing Liquid directly."
+      ],
+      "tags": [
+        "speed",
+        "shopify",
+        "theme-optimization",
+        "resource-optimization",
+        "liquid",
+        "technical-seo",
+        "site-audit"
+      ],
+      "id": "3c6bd0cce95762167855a3c6",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 0
+    },
+    {
+      "title": "Format and size images and videos for faster load",
+      "summary": "Cap image files under 1MB, prefer JPEG over PNG unless transparency is needed, and replace heavy animated GIFs with compressed MP4 video in an HTML video tag.",
+      "use_when": "Merchandising product images, hero banners or category tiles on a Shopify store, or diagnosing pages that load slowly because of large media assets.",
+      "steps": [
+        "Keep image file sizes under 1MB as the working ceiling for storefront assets.",
+        "Choose JPEG instead of PNG unless the image genuinely requires transparency; PNG files are usually much heavier for photographic content.",
+        "Replace heavy animated GIFs with compressed MP4 video embedded via an HTML <video> tag, which delivers the same motion at far smaller file size.",
+        "Apply video loading behavior deliberately: set preload=\"none\" on videos so the browser does not eagerly fetch media the shopper has not reached yet.",
+        "Apply loading=\"lazy\" to off-screen images so they are only fetched as the shopper scrolls toward them.",
+        "Do not lazy load above-the-fold assets such as the hero image; those should load immediately to keep LCP low."
+      ],
+      "caveats": [
+        "Lazy loading the hero image works against LCP rather than helping it.",
+        "Transparency requirements and animation content determine whether the JPEG or GIF-replacement advice applies to a given asset."
+      ],
+      "tags": [
+        "speed",
+        "image-optimization",
+        "product-page",
+        "media-sizing",
+        "lazy-loading",
+        "core-web-vitals",
+        "shopify"
+      ],
+      "id": "ff5edde57340463749082ca8",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 0
+    },
+    {
+      "title": "Lazy load below-fold media, preload the hero",
+      "summary": "Use loading=lazy for off-screen images and preload=none for video, but preload above-the-fold assets with a link in the head instead of lazy loading them.",
+      "use_when": "Structuring a product page, landing page or homepage where the hero image and other above-the-fold media compete with below-fold content for bandwidth.",
+      "steps": [
+        "Identify the assets visible in the initial viewport, typically the hero image and any headline banner. These are the ones that determine LCP.",
+        "For above-the-fold assets, do not apply loading=\"lazy\". Instead add a preload link in the <head> so the browser fetches them at the earliest opportunity.",
+        "For every image below the fold, add loading=\"lazy\" so the request is deferred until the shopper scrolls near it.",
+        "For embedded videos, set preload=\"none\" to prevent the browser from downloading video data on page load.",
+        "Re-check after restructuring that the hero still renders promptly and that below-fold content does not appear late or jumpy."
+      ],
+      "caveats": [
+        "Applying lazy loading indiscriminately to all images including the hero is the common failure mode this addresses.",
+        "Which asset counts as above-the-fold changes by viewport size, so check mobile and desktop layouts separately."
+      ],
+      "tags": [
+        "speed",
+        "core-web-vitals",
+        "lazy-loading",
+        "landing-page",
+        "product-page",
+        "shopify",
+        "resource-optimization"
+      ],
+      "id": "0f413fcac223a3e344a4730c",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 0
+    },
+    {
+      "title": "Reduce storefront script blocking while preserving purchase tracking",
+      "summary": "Audit script loading without breaking product interactions or analytics events.",
+      "use_when": "Diagnosing render-blocking scripts on a Shopify storefront, or speeding up page rendering without breaking analytics and ad tracking during acquisition campaigns.",
+      "steps": [
+        "Inventory theme and app scripts; remove confirmed unused integrations on a duplicate theme first.",
+        "Choose defer or async only after checking execution order, DOM dependencies and the vendor integration requirements.",
+        "Do not impose a blanket synchronous-pixel rule. Use the supported platform integration; Shopify provides a Web Pixels API and standard event subscriptions.",
+        "Test consent behavior, page views, variant selection, add-to-cart and a test purchase after changes; check missing and duplicate events."
+      ],
+      "caveats": [
+        "Editorial correction: source advice that all pixels must remain synchronous is not a universal requirement. Verify the specific integration. https://shopify.dev/docs/api/pixels"
+      ],
+      "tags": [
+        "speed",
+        "script-optimization",
+        "shopify",
+        "liquid",
+        "resource-optimization",
+        "acquisition",
+        "measurement"
+      ],
+      "id": "ef51a42e0e16b736e13295d6",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 0
+    },
+    {
+      "title": "Load non-critical CSS asynchronously with the media=print trick",
+      "summary": "Use media=\"print\" onload=\"this.media='all'\" on non-critical stylesheets so they download without blocking the rendering path.",
+      "use_when": "Cutting render-blocking CSS on product, category or landing pages where multiple stylesheets delay first paint.",
+      "steps": [
+        "Identify stylesheets that are not required for the initial render, such as styles for modals, below-fold sections or secondary components.",
+        "Rewrite those link tags as <link rel=\"stylesheet\" href=\"...\" media=\"print\" onload=\"this.media='all'\">. The browser treats the print stylesheet as non-render-blocking and downloads it without stalling paint.",
+        "Leave critical above-the-fold CSS loaded normally, since it is needed for first render.",
+        "Apply the same async pattern to any additional non-critical stylesheets you introduce later.",
+        "Test the page visually after the change to confirm the deferral did not cause a flash of unstyled content in areas the shopper sees immediately."
+      ],
+      "caveats": [
+        "Moving critical CSS into this pattern can leave the visible page unstyled on first paint.",
+        "This is a specific HTML attribute technique; verify the markup still behaves as expected in the current browser and theme context."
+      ],
+      "tags": [
+        "speed",
+        "css-optimization",
+        "resource-optimization",
+        "shopify",
+        "theme-optimization",
+        "core-web-vitals"
+      ],
+      "id": "08d397da7d0d849dd4ccf140",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 0
+    },
+    {
+      "title": "Set font-display: swap to prevent invisible text",
+      "summary": "Add font-display: swap to every @font-face declaration so text renders in a system font immediately instead of staying blank while the custom font downloads.",
+      "use_when": "Fixing slow text rendering, low perceived speed or a flash of invisible text on product pages that use custom brand fonts.",
+      "steps": [
+        "Open the stylesheet containing the store's @font-face declarations.",
+        "Add font-display: swap to each @font-face rule. This tells the browser to render text in a fallback system font immediately and swap in the custom font once it loads.",
+        "Without swap, the browser can leave text blank until the custom font finishes downloading, which reads as a broken or slow page to the shopper.",
+        "Confirm the change covers all custom font declarations, including weights and italic variants loaded separately.",
+        "Review the page after the change to ensure the swap does not introduce disruptive layout shift when the brand font replaces the fallback."
+      ],
+      "caveats": [
+        "Swap improves perceived speed but can cause a visible font switch; check that fallback and brand fonts have similar metrics to limit reflow.",
+        "Custom font files should still be reasonably sized; font-display only changes how the wait is presented."
+      ],
+      "tags": [
+        "speed",
+        "fonts",
+        "perceived-performance",
+        "product-page",
+        "css-optimization",
+        "shopify"
+      ],
+      "id": "3ef856fab3ae96e2a0b06bfb",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 0
+    },
+    {
+      "title": "Approach speed work as rendering mechanics, not app shortcuts",
+      "summary": "Prioritize deferring scripts, cleaning residual theme code, formatting media and using CSS media attributes to unblock the main rendering thread instead of relying on superficial speed apps.",
+      "use_when": "Deciding how to allocate effort on a Shopify speed problem, choosing between installing a speed app and editing theme code, or setting a performance baseline for the storefront.",
+      "steps": [
+        "Treat loading performance, browser rendering, perceived performance, resource optimization, Core Web Vitals, caching and file-size reduction as the core problem set.",
+        "Work on the actual mechanisms: defer non-essential scripts, remove leftover app code from Liquid templates, size and format media correctly, and use CSS media attributes to load non-critical styles.",
+        "Be skeptical of approaches aimed mainly at spoofing Lighthouse scores rather than improving real rendering and load behavior, and of general complaints about pushy apps or speed specialists that do not identify a concrete fix.",
+        "Keep paid social creative formats and true incremental ROAS or pixel/CAPI setups in their own workstreams, since they are separate from loading performance.",
+        "Establish a baseline measurement before editing so speed changes can be judged against it."
+      ],
+      "caveats": [
+        "The source's framing of speed work as theme-level mechanics is a stance; some stores may still need managed hosting or app-level solutions.",
+        "Perceived-performance changes are not always captured by a single synthetic score."
+      ],
+      "tags": [
+        "speed",
+        "shopify",
+        "perceived-performance",
+        "resource-optimization",
+        "core-web-vitals",
+        "theme-optimization",
+        "site-audit"
+      ],
+      "id": "23a3f294b81c2c93b898e1e4",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 0
+    }
+  ],
+  "request_id": "6a16444c951a0ba3e15492fd0b8b3c5d72020894538219c3201b623e8f2f3f20",
+  "ecommerce_scope_version": 1,
+  "editorial_review": "Targeted metric and script-loading corrections, 2026-09-22"
+}

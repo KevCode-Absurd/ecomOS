@@ -1,0 +1,149 @@
+{
+  "batch": 1,
+  "request_id": "43fdbf85d4fb4d179ed8c2f592dfa6dbd2fdbe236b80e681c5949ba1859b0854",
+  "errors": [],
+  "review": {
+    "reviews": [
+      {
+        "candidate_id": "69307e09f10fa7a8fc23575ba8d536e57452aeb897e5033548b59d9987df4ebb",
+        "verdict": "supported",
+        "reasons": [
+          "The excerpt’s test table specifies a platform-native lift study in which Meta or Google randomly assigns users to exposed and holdout groups and measures the conversion difference.",
+          "Its stated measure is true incremental conversions from the ad platform, matching the candidate trigger."
+        ]
+      },
+      {
+        "candidate_id": "fb90c54a37fa5ba273a4ae830ebca4970bf29c93e4fb29c8b2775dc4fea6ae9b",
+        "verdict": "supported",
+        "reasons": [
+          "The excerpt explicitly defines a DIY geo-holdout as pausing ads in matched test regions and comparing them with control regions.",
+          "It identifies the measure as channel-level incrementality across all markets, consistent with the candidate trigger."
+        ]
+      },
+      {
+        "candidate_id": "cd51fbffd03010788573d1335e92005e38418baf2dfc4ab7b03a282daa0fa348",
+        "verdict": "supported",
+        "reasons": [
+          "The source table defines an on/off experiment as turning a channel or campaign on and off in alternating periods.",
+          "The table says this measures the overall revenue impact of the channel, matching the candidate."
+        ]
+      },
+      {
+        "candidate_id": "afdc73c0dab9dfeff44b1b67cbe663c3da09a6ac0765bcabcbdacd705903ff94",
+        "verdict": "supported",
+        "reasons": [
+          "The source defines difference-in-differences as comparing outcome changes over time between treatment and control groups.",
+          "It says to use it when user-level randomization is not possible but there is a comparable control group, and its method-selection table lists pre/post data for treatment and control as the data requirement."
+        ]
+      },
+      {
+        "candidate_id": "50c1cc9b89b1919c88cc8c10c30201b6ca04dbd1e84d026a0989c5906fac2744",
+        "verdict": "supported",
+        "reasons": [
+          "The excerpt describes CUPED as using pre-experiment data to reduce noise and variance in experiment results.",
+          "It recommends CUPED for A/B tests with pre-experiment user data, and the selection table specifies user-level pre-period data."
+        ]
+      },
+      {
+        "candidate_id": "517deb3217d85f9f80dd9d8c4177fb46d05ee522dbc7e1d5b0d09f79d339efd4",
+        "verdict": "supported",
+        "reasons": [
+          "The source defines switchback testing as randomizing entire environments, including regions or time periods, rather than individual users.",
+          "It identifies marketplace experiments with user-level interference, such as search-ranking changes or ad-spend allocation, as the use case and lists time-based randomization as the data requirement."
+        ]
+      },
+      {
+        "candidate_id": "2f4e091258851c30e96517bf7849dda25948cc2d55e8bc52e2abd4b1a81b2888",
+        "verdict": "supported",
+        "reasons": [
+          "The excerpt says synthetic control combines imperfect control candidates with weights to create a composite control group that matches the test group as closely as possible.",
+          "It recommends the method when no true control group is available and lists panel data across markets as the data requirement."
+        ]
+      },
+      {
+        "candidate_id": "d2448b49dc0f21062c89785f8810d6d454580977dc9efe6227aeb4232f974b52",
+        "verdict": "supported",
+        "reasons": [
+          "The source describes BSTS as combining Kalman filtering, spike-and-slab regression, and Bayesian model averaging.",
+          "It recommends BSTS for time-series data with strong seasonality when estimating intervention impact without a clean control group, and lists time-series data as required."
+        ]
+      },
+      {
+        "candidate_id": "e179f3b473c5be68b7635207510296db3c346a9467717146d6feb1a9d31f330f",
+        "verdict": "supported",
+        "reasons": [
+          "The source defines PSM as matching treated customers to control customers with similar treatment propensity based on observed covariates.",
+          "It recommends PSM when randomization is unavailable but rich customer data can create comparable groups, with rich customer covariates listed as the data requirement."
+        ]
+      },
+      {
+        "candidate_id": "be0042ac523b1a8827cab4ac41b327dd5f463e17c983ef24175084b99166d2e7",
+        "verdict": "supported",
+        "reasons": [
+          "The excerpt defines IV as using a variable correlated with treatment but not directly with the outcome except through treatment.",
+          "It identifies selection bias or nonrandom treatment assignment, together with a valid instrument, as the applicable condition and data requirement."
+        ]
+      },
+      {
+        "candidate_id": "2931add505ebba1562f14769dcb92e738de8a135768393a68f9b29020ac2c35e",
+        "verdict": "supported",
+        "reasons": [
+          "The source says RDD exploits a cutoff or threshold at which treatment changes discontinuously.",
+          "It recommends RDD for threshold-assigned treatments and lists an assignment variable with a cutoff as the data requirement."
+        ]
+      },
+      {
+        "candidate_id": "93c9e1e308b272ff897e101fe6a51f78eab16852b13570ab288b70f8f7ecedfd",
+        "verdict": "supported",
+        "reasons": [
+          "The causal-measurement framework explicitly makes deciding the question to answer its first step."
+        ]
+      },
+      {
+        "candidate_id": "3af4122b79a606c2fcd825bf3f2381dd881408b8ba7cda65eedb83b47bf1bbc6",
+        "verdict": "supported",
+        "reasons": [
+          "The framework explicitly makes matching the method to data infrastructure and traffic its second step.",
+          "The claim accurately preserves the excerpt’s qualified traffic guidance: stores above 100k monthly visitors can run specified designs, while lower-traffic stores may need BSTS, synthetic control, or longer holdouts.",
+          "The dependency on deciding the question first follows the source’s ordered Step 1 then Step 2 framework."
+        ]
+      },
+      {
+        "candidate_id": "36008405a6345c56167fabb5dc4506b5e0b4e4f35d4c06d989bf9715d6124c5f",
+        "verdict": "supported",
+        "reasons": [
+          "This principle is stated verbatim in the excerpt’s key takeaways.",
+          "The following sentence clarifies the distinction: an A/B test identifies which variant won, while a holdout addresses whether the change created otherwise-unavailable value."
+        ]
+      },
+      {
+        "candidate_id": "bb30167dcf234a4de7bd5c170d1584560d5b24e892894dd6b134cc5a668147ee",
+        "verdict": "supported",
+        "reasons": [
+          "The conclusion in the excerpt explicitly says Meta drove measurable incremental value and that the 10%+ conversion lift showed it was not merely taking credit for conversions that would have happened anyway.",
+          "The preceding study description supports calling the example a Meta geo-holdout: all Meta campaigns were paused in 10 holdout DMAs."
+        ]
+      }
+    ],
+    "omissions": [
+      {
+        "description": "The framework’s third step directs teams to document each causal analysis, including the question, method, result and confidence interval, and resulting business decision, to build a causal knowledge base.",
+        "quote": "Every holdout, incrementality test, and causal analysis should be documented with:\n\n- The question asked\n\n- The method used\n\n- The result and confidence interval\n\n- The business decision made"
+      },
+      {
+        "description": "A user-level holdout example is included as a distinct method-selection recommendation for email, loyalty, and personalization.",
+        "quote": "Hold back 10% of email list from campaign"
+      },
+      {
+        "description": "The question-to-method framework separately recommends a CRO-program holdout for assessing whether an entire CRO program generated value.",
+        "quote": "\"Has our entire CRO program generated value?\" → CRO program holdout"
+      }
+    ],
+    "source_limitations": [
+      "The excerpt begins mid-example and does not provide the study setup, selection process for the 10 holdout DMAs, or the calculation methods underlying the reported Meta results.",
+      "It supplies high-level descriptions and selection guidance for the causal methods, but generally does not give implementation procedures, diagnostic checks, or validity-testing steps.",
+      "The excerpt provides no cited underlying data or external evidence from which to independently assess its empirical results, numerical performance claims, or broad conclusions."
+    ]
+  },
+  "publication_allowed": false
+}

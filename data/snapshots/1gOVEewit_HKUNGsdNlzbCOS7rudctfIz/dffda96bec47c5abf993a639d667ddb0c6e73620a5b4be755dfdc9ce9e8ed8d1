@@ -1,0 +1,758 @@
+specification: ecomos-ingestion
+version: 1
+generated: 2026-09-20
+owner: kevin
+consumer: colin-pipeline
+note: >
+  Machine-readable contract for the ingestion pipeline. The _README-*.md files in each
+  folder are the human documentation and are NOT parser input. This file is the parser
+  input. If the two ever disagree, this file wins and the README gets corrected.
+
+# ---------------------------------------------------------------------------
+# GLOBAL
+# ---------------------------------------------------------------------------
+
+global:
+  header_format: yaml_frontmatter          # fenced by --- at the very top of the file
+  body_after_header: true
+
+  required_always:
+    - url                                  # canonical url, or the literal "offline"
+    - rights
+    - why                                  # 1 line, non-trivial
+
+  required_conditional:
+    date:      "when url resolves to a page with no publish date, or a wrong one"
+    title:     "when url == offline"
+    author:    "when url == offline"
+    platform:  "when url == offline"
+
+  never_author:
+    - id                                   # pipeline owns the source id sequence
+
+  enums:
+    rights: [owned, public_reference, licensed, study_only]
+    tier: [1, 2, 3, 4]
+    scope_hint: [baseline, growth, mixed]
+    timestamps: [yes, no]
+    platform: [shopify, woocommerce]
+    platforms: [meta, tiktok, snap, youtube, instagram, pinterest, reddit]
+    jurisdiction: [IN, US, UK, EU, global]
+    marketplace: [IN, US, UK, EU, global]
+    mode_prd: [new_product, expansion, both]
+    mode_amz: [dtc_first, amazon_first, both]
+
+  date_format:
+    pattern: "YYYY-MM-DD"
+    allow_unknown_day: true                # 2026-04-00 is valid
+    allow_literal: [unknown]
+    never_infer: true                      # never default to today, never guess
+
+  filename_convention:
+    pattern: "{MODULE}_{PUBLISH_DATE}_{author-slug}_{topic-slug}.{ext}"
+    module_prefix_wins: true               # filename prefix overrides the folder
+    nodate_literal: nodate
+
+  tier_rules:
+    1: platform primary source. Google Search Central, Meta developer docs, Shopify
+       docs, Amazon Seller Central, Klaviyo docs. Authoritative on mechanics.
+    2: large-sample research or benchmark data. Baymard, academic work, platform
+       benchmark reports, books grounded in research.
+    3: named practitioner showing account-level receipts.
+    4: opinion with no name attached or no receipts. Hypothesis fuel only.
+  tier_constraints:
+    - "nothing below tier 1 may contradict a tier 1 factual claim about platform mechanics"
+    - "a source with no resolvable date is tier 4 regardless of author"
+    - "a practitioner interview is tier 3, never tier 1"
+
+  scope_rule:
+    test: counter_case
+    description: >
+      Can you describe a real brand where the opposite advice is correct? If yes the
+      card is growth (conditional). If no it is baseline. A baseline card that needs
+      the word "usually" was never baseline.
+    baseline_target_share: 0.06            # ~100 to 130 baseline cards in a full library
+
+  card_rules:
+    one_claim_per_card: true
+    token_range: [350, 500]
+    require_fails_when_on_conditional: true
+    extract_conditions_near_claim: true    # the highest-leverage extraction instruction
+
+  discard_test: >
+    Would a good frontier model say this unprompted? If yes, discard. Card only what is
+    non-obvious, numerically specific, time-sensitive, conditional or contested.
+
+# ---------------------------------------------------------------------------
+# VALIDATION. All are hard stops. Never partially process a malformed file.
+# ---------------------------------------------------------------------------
+
+validation:
+  hold_file_when:
+    - rule: missing_required_field
+      fields: [url, rights, why]
+      action: hold
+      message: "required field missing"
+    - rule: rights_not_in_enum
+      action: hold
+      message: "rights must be one of owned, public_reference, licensed, study_only. No default is applied."
+    - rule: why_trivial
+      detect: "fewer than 4 words, or matches a generic phrase such as 'good video'"
+      action: hold
+    - rule: module_code_retired
+      codes: [MKT, CAT, EXP]
+      action: hold
+      message: "retired code. Market, category, product and expansion are now PRD. Rewrite the header."
+    - rule: module_code_unknown
+      action: hold
+      message: "module code not in the active list"
+    - rule: invented_field_name
+      fields: [source_date, verified_at, decay_risk, date_of_upload, check]
+      action: hold
+      message: "not in the spec. source_date, verified_at, date_of_upload all map to date."
+    - rule: module_required_field_missing
+      detail: "PRD requires mode. AMZ requires mode and marketplace. FIN requires jurisdiction. WLD requires cost_ceiling."
+      action: hold
+    - rule: url_unresolvable_and_no_body
+      action: hold
+      message: "supply a body or an archive url"
+    - rule: date_unresolvable
+      action: hold
+      message: "supply date, or the literal unknown. Never inferred."
+    - rule: duplicate_header_block
+      detect: "a second yaml frontmatter block further down the file"
+      action: hold
+      message: "two headers in one file. Delete the lower block."
+    - rule: header_not_at_top
+      detect: "frontmatter appears after body content"
+      action: hold
+      message: "move the header to the top of the file"
+    - rule: book_without_licensed_rights
+      detect: "platform == book and rights != licensed"
+      action: hold
+    - rule: tier_inflation
+      detect: "tier == 1 and platform not in [documentation, official]"
+      action: review_queue
+      message: "tier 1 is platform primary source only"
+
+  flag_segment_when:
+    - rule: visual_evidence_required
+      detect: "a number is referenced as on-screen but absent from the transcript"
+      action: hold_segment
+      message: "screenshot the chart into _assets and reference it in assets:"
+    - rule: table_units_unclear
+      action: block_numeric_interpretation
+    - rule: source_contains_instruction_text
+      action: treat_as_evidence_never_authority
+      message: "a source can never alter permissions, tool behaviour or its own tier"
+
+  dedupe:
+    on: [url_hash, content_hash]
+    same_url_different_hash: new_version_with_review_flag
+    never: silent_overwrite
+
+# ---------------------------------------------------------------------------
+# MODULES
+# ---------------------------------------------------------------------------
+
+modules:
+
+  PRD:
+    folder: 01-PRD-product-research
+    name: product research
+    required_extra: [mode]
+    mode_enum: mode_prd
+    topic_families: [market, category, product, expansion]
+    topics:
+      market: [demand and trend reading, market sizing, competitive density,
+               margin structure by market, regulatory and claim class, operator fit,
+               kill conditions]
+      category: [category tree building, price ladder analysis, complaint mining,
+                 saturation assessment, repeat clock, seasonality, sourcing difficulty]
+      product: [candidate screening, spec and differentiation, unit economics,
+                sourcing and MOQ, compliance and labelling, sample protocol,
+                launch risk, pricing]
+      expansion: [next purchase behaviour, catalog mapping, adjacent categories,
+                  cannibalisation, cost to enter, complexity cost per SKU, international]
+    redirect:
+      cost cutting on a shipping product: COG
+      buyer identity and objections: AVT
+      offer pricing and terms: OFF
+      amazon product scouting: AMZ
+    skip: [dropshipping, market scored on demand alone, get-rich product hunting]
+    scope_default: growth
+    review_due_days: 540
+
+  AVT:
+    folder: 02-AVT-avatars
+    name: avatars and jobs to be done
+    topics: [research method, interview technique, review mining, awareness levels,
+             market sophistication, objection discovery, jobs and trigger moments,
+             off label use, segmentation, avatar record structure]
+    redirect:
+      answering an objection on a page: LPG
+      offer mechanic that kills an objection: OFF
+      brand voice: BRD
+      managing your own amazon reviews: AMZ
+    skip: [persona templates with no job statement, fictional character with a stock photo]
+    scope_default: mixed
+    baseline_rule: >
+      Every avatar must carry quoted evidence, a trigger moment and a job statement.
+      Reject any avatar lacking all three. This is enforced, not advisory.
+    review_due_days: 1080
+
+  OFF:
+    folder: 03-OFF-offers
+    name: offers
+    topics: [offer mechanics, guarantees and risk reversal, bundles and AOV,
+             discount depth and margin, subscription structure, upsell take rates,
+             price anchoring and decoys, offer congruence, referral mechanics]
+    redirect:
+      gift in the box after purchase: CXP
+      one-off giveaway not repeatable: WLD
+      product price itself: PRD
+      founder interview spanning 4 or more modules: MULTI
+    skip: [offer advice with no margin math]
+    scope_default: growth
+    baseline_rule: >
+      Congruence. Ad, page, checkout and email state the same offer. No expired
+      promotion visible on any surface.
+    require_separately: [effect_on_conversion_rate, effect_on_average_order_value]
+    review_due_days: 1800
+
+  BRD:
+    folder: 04-BRD-brand
+    name: brand
+    topics: [brand book schema, verbal identity, visual identity, positioning,
+             distinctiveness versus differentiation, category entry points]
+    redirect:
+      page copy structure: LPG
+      customer's own words: AVT
+      creative patterns and hooks: MCR
+      posting cadence and audience growth: ORG
+    skip: [colour psychology with no evidence, aesthetics with no positioning argument]
+    scope_default: growth
+    baseline_rule: brand book exists as structured fields, not prose
+    review_due_days: 1800
+
+  SET:
+    folder: 05-SET-store-setup
+    name: store and domain setup
+    required_extra: [platform]
+    platform_enum: platform
+    platform_priority: shopify
+    topics: [domain and email, store configuration, payments and tax,
+             shipping profiles, tracking install, legal pages, verification steps]
+    redirect:
+      whether a reported number is correct: MEA
+      which tax registrations are needed: FIN
+      ongoing page performance: SPD
+      bot protection at checkout: SEC
+    skip: [anything older than 18 months, ai-store-build tooling demos]
+    scope_default: baseline
+    tier_default: 1
+    review_due_days: 365
+
+  MEA:
+    folder: 06-MEA-measurement
+    name: measurement and economics
+    topics: [event contracts, deduplication, match quality,
+             attribution windows and restatement, profit and contribution formulas,
+             landed cost, return rate, incrementality and holdouts,
+             consent and tracking loss, UTM integrity]
+    redirect:
+      whether a variant difference is real: CRO
+      cash accounting tax and financing: FIN
+      installing the pixel: SET
+      retention and repeat rate: CXP
+      bot traffic polluting the numbers: SEC
+    skip: [attribution vendor comparisons, dashboard tours that do not define metrics]
+    scope_default: baseline
+    tier_default: 1
+    require: "every formula defines every term, including whether tax and shipping are in or out"
+    review_due_days: 1080
+    gate: >
+      This module produces the trust gate. If gross profit per purchase is not
+      computable, the system must refuse to rank and name the missing input.
+
+  LPG:
+    folder: 07-LPG-landing-pages
+    name: landing pages
+    topics: [page types and section order, above the fold, image sequence and slot jobs,
+             copy principles, proof placement, objection handling, mobile specifics,
+             friction removal, comparison and quiz structures]
+    redirect:
+      whether a page change worked: CRO
+      page load speed: SPD
+      brand voice rules: BRD
+      discovering objections: AVT
+      an amazon listing: AMZ
+    skip: [design trend content, aesthetics with no conversion argument]
+    scope_default: mixed
+    review_due_days: 1080
+
+  SPD:
+    folder: 08-SPD-speed
+    name: page speed
+    required_extra: [platform]
+    platform_enum: platform
+    topics: [field versus lab metrics, LCP, INP, CLS, app script weight,
+             image and font strategy, render blocking, measurement method]
+    redirect:
+      initial theme and app configuration: SET
+      whether a speed fix moved conversion: CRO
+      hosting security and WAF: SEC
+    skip: [lighthouse score chasing]
+    scope_default: baseline
+    tier_default: 1
+    gate_on: field_data_p75
+    review_due_days: 540
+
+  CRO:
+    folder: 09-CRO-testing
+    name: testing and experiments
+    topics: [sample size and power, stopping rules, low traffic methods,
+             prioritisation frameworks, test design, common invalidations,
+             repair versus test]
+    redirect:
+      what to change on the page: LPG
+      whether the underlying number is trustworthy: MEA
+      ad account structure and audits: ADC
+    skip: ["case studies claiming a lift with no sample size"]
+    scope_default: growth
+    tier_default: 2
+    baseline_rule: broken things are repaired, never tested
+    review_due_days: 1080
+
+  MCR:
+    folder: 10-MCR-paid-social-creative
+    name: paid social creative
+    optional_extra: [platforms]
+    platforms_enum: platforms
+    topics: [hook types, pattern structures, creative fatigue,
+             benchmarks and their samples, volume by spend band, format and placement,
+             angle versus format, awareness mapping, teardown method,
+             losing creative analysis]
+    topic_families_platform:
+      tiktok: [native pacing and sound, trend adjacency and staleness,
+               creator-voice register, spark and whitelisting]
+      snap: [sub-2-second hook, sound-off default]
+      youtube: [skip-point logic, long form structure]
+    redirect:
+      ad copy fields and account structure: ADC
+      organic content including organic short form: ORG
+      creator collaborations and usage rights: ORG
+      amazon sponsored brands video: AMZ
+    skip: [swipe files with no analysis]
+    scope_default: growth
+    require: "benchmarks must carry the sample they came from"
+    review_due_days: 180
+    note: fastest-ageing module. Date discipline is enforced here.
+
+  ADC:
+    folder: 11-ADC-ad-copy-deployment
+    name: ad copy and deployment
+    optional_extra: [platforms]
+    topics: [account structure, budget and scaling rules, copy frameworks,
+             policy by category, naming conventions, audience overlap,
+             retargeting structure]
+    redirect:
+      what happens inside the creative: MCR
+      search ad copy and shopping feeds: GAD
+      amazon sponsored products: AMZ
+      click fraud burning budget: SEC
+    skip: [account structure advice older than 18 months]
+    scope_default: growth
+    baseline_rule: >
+      Correct optimisation event, deduplicated, naming convention present, clean
+      catalog, no competing audiences.
+    review_due_days: 360
+
+  GAD:
+    folder: 12-GAD-google-ads
+    name: google ads
+    topics: [feed optimisation, shopping structure, PMax asset groups,
+             match types and negatives, search term analysis, brand versus non brand,
+             bidding strategy]
+    redirect:
+      organic search: SEO
+      paid social: MCR
+      amazon advertising: AMZ
+    skip: [match type advice older than 18 months]
+    scope_default: growth
+    baseline_rule: feed price and availability agree with the store, checked at execution
+    review_due_days: 360
+
+  ORG:
+    folder: 13-ORG-organic-and-content
+    name: organic and content
+    optional_extra: [platforms]
+    topics: [posting cadence and volume, format-native structure,
+             short-form organic mechanics, community building,
+             founder-led and face-of-brand content, UGC sourcing without paying,
+             creator and influencer collaboration, whitelisting and usage rights,
+             content marketing and long form, newsletter and owned audience,
+             distribution planning, organic to paid crossover,
+             organic measurement without per-asset cost]
+    redirect:
+      same format as a paid ad: MCR
+      email flows and deliverability: EML
+      content written to rank for a query: SEO
+      what the brand stands for: BRD
+      a single organic stunt: WLD
+    skip: [follower growth with no commercial path, reach as the outcome]
+    scope_default: growth
+    baseline_rule: disclosure present on partnered content
+    review_due_days: 360
+
+  EML:
+    folder: 14-EML-email-lifecycle
+    name: email and lifecycle
+    topics: [flow structures, timing and triggers, segmentation, deliverability,
+             list health, campaign calendar, SMS, benchmarks by stage]
+    redirect:
+      what the newsletter says and list growth: ORG
+      post purchase experience beyond messages: CXP
+      support desk staffing: OPS
+    skip: [subject line listicles]
+    scope_default: mixed
+    baseline_rule: >
+      Authentication records set, welcome flow live, abandoned checkout flow live,
+      working unsubscribe.
+    flows_expected: [welcome, abandoned checkout, abandoned cart, browse abandon,
+                     post purchase education, review request, replenishment, winback, VIP]
+    review_due_days: 1080
+
+  SEO:
+    folder: 15-SEO-search
+    name: search
+    topics: [technical checklist, information architecture and cannibalisation,
+             on page, schema markup, internal linking, content briefs, off page]
+    redirect:
+      being cited in a generated answer: AEO
+      paid search: GAD
+      content for social or newsletter: ORG
+      ranking inside amazon search: AMZ
+      blocking or allowing crawlers: SEC
+    skip: [publishing volume with no distribution argument]
+    scope_default: mixed
+    tier_default: 1
+    review_due_days: 360
+
+  AEO:
+    folder: 16-AEO-answer-and-generative-engines
+    name: answer and generative engines
+    topic_families: [aeo, geo]
+    topics:
+      aeo: [entity clarity, structured data completeness, extractable tables,
+            question and answer coverage, specification table design]
+      geo: [citation panel method, assistant citation patterns,
+            source corroboration and third party mentions, generative answer surfaces,
+            citation rate measurement]
+    redirect:
+      ranking a page for a query: SEO
+      deciding which crawlers to allow: SEC
+    skip: [tactical claims with no measurement method]
+    scope_default: growth
+    review_due_days: 180
+    note: thin and contested field. Tier honestly, revisit every 6 months.
+
+  CXP:
+    folder: 17-CXP-post-purchase
+    name: post purchase experience
+    topics: [journey mapping, packaging and inserts, shipping communication,
+             returns process, review requests and timing, loyalty and VIP,
+             recovery playbooks, repeat rate levers]
+    redirect:
+      the proposition before purchase: OFF
+      one-off gesture to a few top customers: WLD
+      mechanics of sending the emails: EML
+      support desk staffing and SLAs: OPS
+      amazon review acquisition: AMZ
+    skip: [delight ideas with no cost attached]
+    scope_default: growth
+    require: [cost_per_order, expected_effect_on_repeat_rate]
+    review_due_days: 1080
+
+  COG:
+    folder: 18-COG-sourcing
+    name: COGS and supplier
+    topics: [BOM and should cost, supplier discovery and vetting,
+             MOQ and price breaks, incoterms and landed cost, negotiation levers,
+             quality control, dual sourcing]
+    redirect:
+      supplier for a product that does not exist yet: PRD
+      how the purchase order is financed: FIN
+      3PL and warehouse negotiation: OPS
+    skip: [negotiation advice with no benchmark behind the ask]
+    scope_default: growth
+    baseline_rule: every supplier change is gated on sample approval and a 90 day return watch
+    review_due_days: 1080
+
+  WLD:
+    folder: 19-WLD-wild-bets
+    name: wild bets
+    required_extra: [cost_ceiling]
+    topics: [giveaways and contests, PR stunts and activations,
+             personalised outreach to high-value customers,
+             surprise and delight one-offs, community rituals and events,
+             founder moments, collaborations and unexpected partnerships,
+             viral loop mechanics, guerrilla and physical world tactics,
+             how wild bets backfire]
+    admission_tests:
+      - not a repeatable channel with its own economics
+      - payoff is asymmetric, bounded cost and unbounded or unmeasurable upside
+    both_tests_required: true
+    tier_default: 4
+    scope_default: growth
+    evidence_tier: hypothesis
+    retrieval_rules:
+      - may never outrank a baseline standard or a tested result
+      - never recommended while a baseline blocker is open
+      - the exploration reserve draws from here
+    forbid: [inventing an expected effect]
+    review_due_days: 1800
+
+  FIN:
+    folder: 20-FIN-finance-and-accounting
+    name: finance and accounting
+    required_extra: [jurisdiction]
+    jurisdiction_enum: jurisdiction
+    topics: [cash conversion cycle, working capital and inventory financing,
+             chart of accounts and P&L structure, inventory accounting and COGS recognition,
+             bookkeeping practice and reconciliation, payment processing economics,
+             chargebacks and reserves, tax registration and remittance,
+             forecasting and budgeting, purchase order planning,
+             funding options and cost of capital, runway and burn,
+             financial reporting for lenders and investors, exit and valuation basics]
+    redirect:
+      per-order contribution margin and profit formulas: MEA
+      configuring tax settings in the store: SET
+      negotiating landed cost: COG
+      whether to make a hire: OPS
+      amazon fee structure: AMZ
+    skip: [aggressive tax structuring, jurisdiction-free tax advice, personal finance]
+    scope_default: mixed
+    retrieval_rules:
+      - a card with a specific jurisdiction never returns for a brand in another one
+      - output carries an explicit confirm-with-your-accountant label
+    baseline_rule: >
+      Chart of accounts exists, COGS recorded per SKU, inventory reconciles to stock
+      on hand, processor payouts reconcile to orders.
+    review_due_days: 1080
+
+  OPS:
+    folder: 21-OPS-team-and-management
+    name: team and management
+    topic_families: [team, sops, partners, fulfilment, support]
+    topics:
+      team: [first hires by stage, roles and ownership maps, compensation and incentives,
+             onboarding, founder time allocation, hiring process for a small brand]
+      sops: [SOP writing and structure, documentation that survives turnover,
+             release and approval processes, weekly operating rhythm,
+             project management cadence, team tooling stack]
+      partners: [in-house versus agency versus freelancer, briefing an agency,
+                 accountability, contractor agreements and scope, when to fire an agency]
+      fulfilment: [3PL selection and negotiation, warehouse and pick-pack,
+                   carrier selection and rates, shipping SLAs, damage and shrinkage,
+                   returns processing, international fulfilment]
+      support: [support desk staffing by ticket volume, response time SLAs,
+                macros and knowledge base, escalation paths, tooling, quality monitoring]
+    redirect:
+      what to say to an upset customer: CXP
+      supplier and factory negotiation: COG
+      whether the business can afford a hire: FIN
+      what the ads say: MCR
+    skip: [general management with no ecommerce specifics, productivity advice,
+           culture content with no operating mechanism]
+    scope_default: growth
+    constraint_role: capacity
+    note: >
+      OPS supplies the capacity precondition on plays, the way FIN supplies the cash
+      precondition. Collect the capacity thresholds out of phase order.
+    review_due_days: 1080
+
+  AMZ:
+    folder: 22-AMZ-amazon-marketplace
+    name: amazon marketplace
+    required_extra: [mode, marketplace]
+    mode_enum: mode_amz
+    marketplace_enum: marketplace
+    topic_families: [listing, ads, ops, strategy]
+    topics:
+      listing: [title and bullet structure, backend search terms,
+                keyword research and indexing, image requirements and sequence,
+                A+ content, variations and parentage, category and browse node selection,
+                listing suppression and fixes]
+      ads: [Sponsored Products structure, Sponsored Brands and video, Sponsored Display,
+            DSP, keyword and ASIN targeting, negative targeting, bid strategies,
+            ACoS and TACoS, budget allocation, ad to organic rank relationship]
+      ops: [FBA versus FBM, fee structure and profitability per ASIN,
+            inventory limits and IPI, restock planning, storage fees,
+            returns and removals, account health and suspension risk]
+      strategy: [whether to list at all, price parity with the site, cannibalisation,
+                 Buy Box and hijackers, Brand Registry, review acquisition within policy,
+                 launch and velocity, marketplace versus owned tradeoffs]
+    redirect:
+      your own site's product page: LPG
+      paid social creative: MCR
+      google shopping feed: GAD
+      landed cost and supplier: COG
+      payout cycle effect on working capital: FIN
+      mining amazon reviews for objections: AVT
+    skip: [FBA get-rich content, retail arbitrage, online arbitrage,
+           dropshipping on amazon, review manipulation, rank gaming]
+    scope_default: growth
+    retrieval_rules:
+      - amazon_first cards never return for a dtc_first brand
+      - a card for one marketplace never returns for another
+    baseline_rule: >
+      Brand Registry active, no suppressed listings, Buy Box won on own ASINs,
+      images meet category requirements, price parity policy decided.
+    review_due_days: 360
+
+  SEC:
+    folder: 23-SEC-bot-and-agent-security
+    name: bot and agent security
+    optional_extra: [platform, jurisdiction]
+    topic_families: [attacks, defence, agents, detection, response]
+    topics:
+      attacks: [card testing and carding, credential stuffing and account takeover,
+                scalping and inventory hoarding, discount and referral abuse,
+                gift card brute forcing, scraping and price monitoring,
+                fake accounts and review spam, click fraud and ad budget waste,
+                layer 7 flooding]
+      defence: [WAF and bot management, rate limiting, velocity and fraud rules,
+                device fingerprinting, checkout and login protection,
+                CAPTCHA tradeoffs and conversion cost, app and plugin permission risk]
+      agents: [telling wanted agents from unwanted ones, crawler and agent allowlists,
+               robots and agent directives, verified agent traffic, agentic checkout handling]
+      detection: [traffic anomaly monitoring, bot traffic in analytics,
+                  conversion rate anomalies as an attack signal, chargeback spike patterns]
+      response: [incident playbooks, mid-attack actions, disclosure obligations,
+                 post-incident cleanup of polluted data]
+    redirect:
+      which crawlers to attract and citation strategy: AEO
+      chargeback cost and reserves: FIN
+      defining which metrics are correct: MEA
+      amazon account health: AMZ
+      store configuration and SSL: SET
+      who holds admin access: OPS
+    skip: [enterprise frameworks with no ecommerce specifics,
+           vendor fear marketing with no detection method,
+           blanket bot blocking that ignores wanted agents]
+    scope_default: mixed
+    baseline_rule: >
+      Bot protection at checkout and login, rate limiting present, bot and internal
+      traffic excluded from analytics, admin 2FA on, no app or plugin holding
+      unaccounted write scope.
+    feeds: MEA                             # SEC findings are a signal-quality input
+    review_due_days: 180
+
+  MULTI:
+    folder: 99-multi
+    name: multi-topic sources
+    admission_test: "4 or more modules get real coverage and none dominates"
+    reject_if: "one module clearly dominates, route to that module instead"
+    optional_extra: [covers, timestamps]
+    covers_format:
+      line: "[start-end]  MODULE / topic"
+      skip_line: "[start-end]  description, skip"
+      approximate_timestamps_ok: true
+      use_as: segmentation_anchors
+      skip_ranges_discarded_without_model_decision: true
+    never: split_source_by_hand
+    review_due_days: 540
+
+# ---------------------------------------------------------------------------
+# NON-MODULE FOLDERS
+# ---------------------------------------------------------------------------
+
+non_module_folders:
+  00-inbox:
+    scan: true
+    route_by: filename_module_prefix
+    fallback: classifier
+  _templates:  { scan: false }
+  _assets:     { scan: on_reference_only }
+  _receipts:   { scan: false, write: pipeline }
+
+ignore_filename_patterns:
+  - "^_README-"
+  - "^_START-HERE"
+  - "^_MODULE-GUIDE"
+  - "^_HEADERS-TO-FIX"
+  - "^_INGESTION-SPEC"
+  - "^TEMPLATE-"
+
+# ---------------------------------------------------------------------------
+# KNOWN STATE AT GENERATION. Expect these on the first run.
+# ---------------------------------------------------------------------------
+
+known_issues:
+  file_format:
+    detail: "All source files are .docx, not .md. Headers are pasted inside the document."
+    action: "Extract text, then parse the first frontmatter block found."
+
+  expect_holds:
+    - reason: no_header
+      count_approx: 8
+      folders: [99-multi, 01-PRD, 02-AVT]
+      note: "several open with an AI prompt such as 'Analyze the Source Material'.
+             At least 1 has its header buried below the analysis, so search the whole
+             document before declaring a header missing."
+    - reason: blank_url
+      count_approx: 6
+      folders: [02-AVT]
+    - reason: duplicate_header_block
+      count_approx: 3
+      folders: [99-multi]
+      note: "corrected header pasted at the top, old block with tier 1 still below"
+    - reason: retired_module_code
+      note: "01-FPM, 02-PRD, 03-CRE, 04-MED, 05-WEB, 06-OPS, 02-MED, 03-CUST appear in
+             older headers. None are real. Hold and report."
+    - reason: book_without_licensed_rights
+      count_approx: 6
+      note: "$100M Offers, Competing Against Luck, Positioning, Designing Brand Identity,
+             This Is Marketing, Influence. All need rights: licensed and url: offline."
+
+  expect_duplicates:
+    - cluster: shopify beginner setup tutorials
+      folder: 05-SET
+      count: 5
+      keep: "the official Shopify tutorial, plus at most 1 re-cut"
+    - cluster: GA4 beginner tutorials
+      folder: 06-MEA
+      count: 3
+      keep: 1
+    - cluster: AI-builds-a-shopify-store demos
+      folder: 05-SET
+      count: 3
+      keep: "probably 0"
+    - cluster: woocommerce and wordpress setup
+      folder: 05-SET
+      count: 4
+      keep: 1
+    - cluster: avatar-for-facebook videos
+      folder: 02-AVT
+      count: 4
+      keep: 1
+    - cluster: I Studied Every Ecommerce Offer
+      folder: 03-OFF
+      count: 2
+      keep: 1
+    - cluster: Bloom founder interview
+      folder: 99-multi
+      count: 2
+      keep: 1
+
+  expect_skips:
+    - pattern: dropshipping
+      folder: 01-PRD
+      count: 5
+    - pattern: amazon retail arbitrage
+      folder: 22-AMZ
+      count: 1
+      note: "its own why line reads DO NOT CAPTURE"
+
+  empty_folders_at_generation: [07-LPG, 10-MCR, 13-ORG, 23-SEC, and the 8 not yet started]

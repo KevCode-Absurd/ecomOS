@@ -1,0 +1,453 @@
+{
+  "request_id": "eda03fdd99dc07b5871a3d312899828b4e928a493d51bfd9da6a3645e4fa1e6a",
+  "provider": "openai",
+  "model": "gpt-5.6-terra",
+  "effort": "high",
+  "completion_limit": 16384,
+  "usage": {
+    "prompt_tokens": 3350,
+    "completion_tokens": 4507,
+    "total_tokens": 7857,
+    "prompt_tokens_details": {
+      "cached_tokens": 1105,
+      "cache_write_tokens": 2242,
+      "audio_tokens": 0
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 1977,
+      "audio_tokens": 0,
+      "accepted_prediction_tokens": 0,
+      "rejected_prediction_tokens": 0
+    }
+  },
+  "booked_cost_usd": 0.062459,
+  "seconds": 58.5,
+  "finish_reason": "stop",
+  "output": {
+    "units": [
+      {
+        "id": "u1",
+        "kind": "principle",
+        "title": "Side channels can leak despite correct implementation",
+        "claim": {
+          "text": "The speaker describes side-channel attacks as cases where a system follows its implementation without bugs but still leaks sensitive information in practice.",
+          "quote": "there's no implementation bugs. But yet it still somehow leaks uh sensitive information."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "An attacker can learn information that they should not learn from the system's real-world behavior.",
+              "quote": "an attacker can learn information that they shouldn't learn."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": [
+            {
+              "text": "The system is functioning according to its implementation.",
+              "quote": "you have a system that's functioning correctly. Like it's following the implementation."
+            }
+          ]
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not give a general mitigation procedure for side channels."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u2",
+        "kind": "example",
+        "title": "Timing differences reveal a hidden program case",
+        "claim": {
+          "text": "The speaker gives timing as a side channel: if hidden cases take different amounts of time and an attacker can measure that time, the attacker can infer the case.",
+          "quote": "if something takes a certain amount of time in one case and a different amount of time in another but the system is like sort of not revealing to you it's trying to sort of hide the difference between those two cases but it takes different time and you can measure the time as an attacker you can figure out what case the program is in."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Different hidden cases take different amounts of time.",
+              "quote": "if something takes a certain amount of time in one case and a different amount of time in another"
+            },
+            {
+              "text": "An attacker can measure the time.",
+              "quote": "you can measure the time as an attacker"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No timing threshold, measurement method, or mitigation is specified."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u1"
+          }
+        ]
+      },
+      {
+        "id": "u3",
+        "kind": "example",
+        "title": "Recover audio from visible object vibrations",
+        "claim": {
+          "text": "The cited work claims that video and suitable processing can extract minute vibrations from an object and partially recover the sound that produced them.",
+          "quote": "using only a video of the object and a suitable processing algorithm we can extract these minute vibrations and partially recover the sounds that produced them."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Sound causes an object to vibrate, creating a subtle visual signal.",
+              "quote": "When sound hits an object it causes that object to vibrate. The motion of this vibration creates a subtle visual signal"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": [
+            {
+              "text": "A video of the object is available along with a suitable processing algorithm.",
+              "quote": "using only a video of the object and a suitable processing algorithm"
+            }
+          ]
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source says recovery is partial but does not specify accuracy, environmental limits, or the processing algorithm."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u1"
+          }
+        ]
+      },
+      {
+        "id": "u4",
+        "kind": "example",
+        "title": "Plant-leaf motion was used to recover played notes",
+        "claim": {
+          "text": "The video narration states that filtering tiny motion across an image recovered sound from a potted plant's leaves while nearby audio played.",
+          "quote": "by combining and filtering all of the tiny motion happening across the image that you see we are able to recover this sound."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "A nearby loudspeaker played notes while the plant was recorded.",
+              "quote": "The video was recorded while a nearby loudspeaker played the notes to Mary Had a Little Lamb."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": [
+            {
+              "text": "The vibrations were captured in silent high-speed video.",
+              "quote": "In the silent high speed video shown here on the left we see the leaves of a potted plant"
+            }
+          ]
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The narration does not state the camera specifications or whether the result generalizes beyond the demonstrated setup."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u3"
+          }
+        ]
+      },
+      {
+        "id": "u5",
+        "kind": "example",
+        "title": "Speech recovery from a bag of chips through soundproof glass",
+        "claim": {
+          "text": "The video narration reports recovering live human speech from high-speed video of a bag of chips, with the camera outside behind a soundproof window.",
+          "quote": "In our next experiment we recovered live human speech from high-speed video of a bag of chips lying on the ground. But to make things a little more challenging, this time we put the camera outside behind a soundproof window."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Human speech occurs near a bag of chips while the camera is outside behind a soundproof window.",
+              "quote": "this time we put the camera outside behind a soundproof window."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": [
+            {
+              "text": "High-speed video of the bag of chips is available.",
+              "quote": "recovered live human speech from high-speed video of a bag of chips lying on the ground"
+            }
+          ]
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not provide reproducibility details, speech-recovery accuracy, or the conditions under which soundproof glass prevents this technique."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u3"
+          }
+        ]
+      },
+      {
+        "id": "u6",
+        "kind": "example",
+        "title": "Identify music from video of earbuds",
+        "claim": {
+          "text": "The video narration says recovered sound from high-speed video of earbuds was supplied to audio-recognition software to identify the played song.",
+          "quote": "we recover music from high-speed video of some earbuds plugged into a laptop computer. Then we take our recovered sound and use audio recognition software to automatically identify the song that was being played."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Earbuds plugged into a laptop are visibly vibrating while music plays.",
+              "quote": "some earbuds plugged into a laptop computer"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": [
+            {
+              "text": "High-speed video of the earbuds is available.",
+              "quote": "high-speed video of some earbuds"
+            }
+          ]
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not state the recovery quality required for song identification or the recognition software's reliability."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u3"
+          }
+        ]
+      },
+      {
+        "id": "u7",
+        "kind": "example",
+        "title": "Power consumption as a decryption side channel",
+        "claim": {
+          "text": "The speaker states that monitoring a computer's power usage can reveal what a decryption algorithm is doing and can expose a key through power levels.",
+          "quote": "you can figure out what uh a decryption algorithm is doing based on the power usage that uh your your computer is is uh like pulling from the wall basically."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Power-line levels can be monitored.",
+              "quote": "you can monitor the power line"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The speaker qualifies some side-channel work as potentially theoretical or impractical and provides no feasibility conditions for this power-analysis example.",
+          "No decryption algorithm, measurement setup, or success rate is given."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u1"
+          }
+        ]
+      },
+      {
+        "id": "u8",
+        "kind": "warning",
+        "title": "Rendered link colors exposed browsing history",
+        "claim": {
+          "text": "The speaker describes a historical browser attack in which checking a rendered link's color revealed whether a user had visited a URL.",
+          "quote": "just by checking the color of the of the link, you can figure out whether the user's been to a URL."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "A page can create a link and inspect the color with which the browser renders it.",
+              "quote": "you could literally just create a link uh and stick the link into the into the page and then check the color that the browser rendered the link with."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Visited and unvisited links have distinguishable default colors in the described behavior.",
+              "quote": "browsers render visited links in purple and and unvisited links in blue by default."
+            }
+          ]
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The speaker says they think the issue was not fixed until 2010; the source does not identify browser versions or the precise fix.",
+          "This is a historical account and does not establish current browser behavior."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u1"
+          }
+        ]
+      },
+      {
+        "id": "u9",
+        "kind": "warning",
+        "title": "Restricting color reads alone would not stop visited-link leakage",
+        "claim": {
+          "text": "The speaker warns that visited-link CSS could create a background-image request to the attacker's server, revealing that a link was visited without relying only on readable link color.",
+          "quote": "when a link is visited, I want the background of it to be an image from my server. And so now every time I visited a link uh anytime a link has been visited, I can uh I will tell because my server got got a request for this background image, right?"
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "A visited-link CSS rule can cause a background image from the page's server to load.",
+              "quote": "we can write a CSS rule that says that uh for example, when a link is visited, I want the background of it to be an image from my server."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not establish whether this CSS behavior applies to any current browser or CSS configuration."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u8"
+          }
+        ]
+      },
+      {
+        "id": "u10",
+        "kind": "unresolved_claim",
+        "title": "Browser designers reportedly rejected an origin-click-based visited-link policy",
+        "claim": {
+          "text": "The speaker says browsers considered rendering a visited state only when a user had followed the link from the current site, but rejected that approach because of usability concerns.",
+          "quote": "that was an approach that browsers considered but they decided against it because of the usability uh like downside basically."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "The proposed policy would treat a visit from the current site differently from a visit made before arriving at that site.",
+              "quote": "if I visit uh site A and I click a link to site B from it, then it's pretty obvious to site A that I went to site B."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": [
+            {
+              "text": "The speaker says the approach was discarded because users could be confused when a known-visited link appeared differently on different sites.",
+              "quote": "They thought users would be confused about why like a link that they know they've been to is sometimes blue and sometimes purple on different sites."
+            }
+          ]
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not identify which browsers considered this approach, the standards discussion involved, or an independently verifiable historical record.",
+          "Any implementation decision based on historical or current browser behavior requires current primary-source verification."
+        ],
+        "relations": [
+          {
+            "kind": "alternative_to",
+            "target": "u8"
+          }
+        ]
+      }
+    ],
+    "more_units": true,
+    "unresolved": [
+      "The passage begins mid-thought, so preceding context for the definition of side-channel attacks is unavailable.",
+      "The passage ends during discussion of a proposed CSS-based solution: \"that still seems like a work-around to to your to your approach if I if I understand it \". The continuation is needed to determine the conclusion and any further distinct units.",
+      "The source includes demonstrations and historical browser claims but does not provide primary-source references, implementation details, or current-platform verification."
+    ]
+  },
+  "raw_content": "{\"units\":[{\"id\":\"u1\",\"kind\":\"principle\",\"title\":\"Side channels can leak despite correct implementation\",\"claim\":{\"text\":\"The speaker describes side-channel attacks as cases where a system follows its implementation without bugs but still leaks sensitive information in practice.\",\"quote\":\"there's no implementation bugs. But yet it still somehow leaks uh sensitive information.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"An attacker can learn information that they should not learn from the system's real-world behavior.\",\"quote\":\"an attacker can learn information that they shouldn't learn.\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[{\"text\":\"The system is functioning according to its implementation.\",\"quote\":\"you have a system that's functioning correctly. Like it's following the implementation.\"}]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source does not give a general mitigation procedure for side channels.\"],\"relations\":[]},{\"id\":\"u2\",\"kind\":\"example\",\"title\":\"Timing differences reveal a hidden program case\",\"claim\":{\"text\":\"The speaker gives timing as a side channel: if hidden cases take different amounts of time and an attacker can measure that time, the attacker can infer the case.\",\"quote\":\"if something takes a certain amount of time in one case and a different amount of time in another but the system is like sort of not revealing to you it's trying to sort of hide the difference between those two cases but it takes different time and you can measure the time as an attacker you can figure out what case the program is in.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Different hidden cases take different amounts of time.\",\"quote\":\"if something takes a certain amount of time in one case and a different amount of time in another\"},{\"text\":\"An attacker can measure the time.\",\"quote\":\"you can measure the time as an attacker\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"No timing threshold, measurement method, or mitigation is specified.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u1\"}]},{\"id\":\"u3\",\"kind\":\"example\",\"title\":\"Recover audio from visible object vibrations\",\"claim\":{\"text\":\"The cited work claims that video and suitable processing can extract minute vibrations from an object and partially recover the sound that produced them.\",\"quote\":\"using only a video of the object and a suitable processing algorithm we can extract these minute vibrations and partially recover the sounds that produced them.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Sound causes an object to vibrate, creating a subtle visual signal.\",\"quote\":\"When sound hits an object it causes that object to vibrate. The motion of this vibration creates a subtle visual signal\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[{\"text\":\"A video of the object is available along with a suitable processing algorithm.\",\"quote\":\"using only a video of the object and a suitable processing algorithm\"}]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source says recovery is partial but does not specify accuracy, environmental limits, or the processing algorithm.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u1\"}]},{\"id\":\"u4\",\"kind\":\"example\",\"title\":\"Plant-leaf motion was used to recover played notes\",\"claim\":{\"text\":\"The video narration states that filtering tiny motion across an image recovered sound from a potted plant's leaves while nearby audio played.\",\"quote\":\"by combining and filtering all of the tiny motion happening across the image that you see we are able to recover this sound.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"A nearby loudspeaker played notes while the plant was recorded.\",\"quote\":\"The video was recorded while a nearby loudspeaker played the notes to Mary Had a Little Lamb.\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[{\"text\":\"The vibrations were captured in silent high-speed video.\",\"quote\":\"In the silent high speed video shown here on the left we see the leaves of a potted plant\"}]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The narration does not state the camera specifications or whether the result generalizes beyond the demonstrated setup.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u3\"}]},{\"id\":\"u5\",\"kind\":\"example\",\"title\":\"Speech recovery from a bag of chips through soundproof glass\",\"claim\":{\"text\":\"The video narration reports recovering live human speech from high-speed video of a bag of chips, with the camera outside behind a soundproof window.\",\"quote\":\"In our next experiment we recovered live human speech from high-speed video of a bag of chips lying on the ground. But to make things a little more challenging, this time we put the camera outside behind a soundproof window.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Human speech occurs near a bag of chips while the camera is outside behind a soundproof window.\",\"quote\":\"this time we put the camera outside behind a soundproof window.\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[{\"text\":\"High-speed video of the bag of chips is available.\",\"quote\":\"recovered live human speech from high-speed video of a bag of chips lying on the ground\"}]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source does not provide reproducibility details, speech-recovery accuracy, or the conditions under which soundproof glass prevents this technique.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u3\"}]},{\"id\":\"u6\",\"kind\":\"example\",\"title\":\"Identify music from video of earbuds\",\"claim\":{\"text\":\"The video narration says recovered sound from high-speed video of earbuds was supplied to audio-recognition software to identify the played song.\",\"quote\":\"we recover music from high-speed video of some earbuds plugged into a laptop computer. Then we take our recovered sound and use audio recognition software to automatically identify the song that was being played.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Earbuds plugged into a laptop are visibly vibrating while music plays.\",\"quote\":\"some earbuds plugged into a laptop computer\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[{\"text\":\"High-speed video of the earbuds is available.\",\"quote\":\"high-speed video of some earbuds\"}]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source does not state the recovery quality required for song identification or the recognition software's reliability.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u3\"}]},{\"id\":\"u7\",\"kind\":\"example\",\"title\":\"Power consumption as a decryption side channel\",\"claim\":{\"text\":\"The speaker states that monitoring a computer's power usage can reveal what a decryption algorithm is doing and can expose a key through power levels.\",\"quote\":\"you can figure out what uh a decryption algorithm is doing based on the power usage that uh your your computer is is uh like pulling from the wall basically.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Power-line levels can be monitored.\",\"quote\":\"you can monitor the power line\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The speaker qualifies some side-channel work as potentially theoretical or impractical and provides no feasibility conditions for this power-analysis example.\",\"No decryption algorithm, measurement setup, or success rate is given.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u1\"}]},{\"id\":\"u8\",\"kind\":\"warning\",\"title\":\"Rendered link colors exposed browsing history\",\"claim\":{\"text\":\"The speaker describes a historical browser attack in which checking a rendered link's color revealed whether a user had visited a URL.\",\"quote\":\"just by checking the color of the of the link, you can figure out whether the user's been to a URL.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"A page can create a link and inspect the color with which the browser renders it.\",\"quote\":\"you could literally just create a link uh and stick the link into the into the page and then check the color that the browser rendered the link with.\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[{\"text\":\"Visited and unvisited links have distinguishable default colors in the described behavior.\",\"quote\":\"browsers render visited links in purple and and unvisited links in blue by default.\"}]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The speaker says they think the issue was not fixed until 2010; the source does not identify browser versions or the precise fix.\",\"This is a historical account and does not establish current browser behavior.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u1\"}]},{\"id\":\"u9\",\"kind\":\"warning\",\"title\":\"Restricting color reads alone would not stop visited-link leakage\",\"claim\":{\"text\":\"The speaker warns that visited-link CSS could create a background-image request to the attacker's server, revealing that a link was visited without relying only on readable link color.\",\"quote\":\"when a link is visited, I want the background of it to be an image from my server. And so now every time I visited a link uh anytime a link has been visited, I can uh I will tell because my server got got a request for this background image, right?\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"A visited-link CSS rule can cause a background image from the page's server to load.\",\"quote\":\"we can write a CSS rule that says that uh for example, when a link is visited, I want the background of it to be an image from my server.\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source does not establish whether this CSS behavior applies to any current browser or CSS configuration.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u8\"}]},{\"id\":\"u10\",\"kind\":\"unresolved_claim\",\"title\":\"Browser designers reportedly rejected an origin-click-based visited-link policy\",\"claim\":{\"text\":\"The speaker says browsers considered rendering a visited state only when a user had followed the link from the current site, but rejected that approach because of usability concerns.\",\"quote\":\"that was an approach that browsers considered but they decided against it because of the usability uh like downside basically.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"The proposed policy would treat a visit from the current site differently from a visit made before arriving at that site.\",\"quote\":\"if I visit uh site A and I click a link to site B from it, then it's pretty obvious to site A that I went to site B.\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[{\"text\":\"The speaker says the approach was discarded because users could be confused when a known-visited link appeared differently on different sites.\",\"quote\":\"They thought users would be confused about why like a link that they know they've been to is sometimes blue and sometimes purple on different sites.\"}]},\"completion\":[],\"unknowns\":[\"The source does not identify which browsers considered this approach, the standards discussion involved, or an independently verifiable historical record.\",\"Any implementation decision based on historical or current browser behavior requires current primary-source verification.\"],\"relations\":[{\"kind\":\"alternative_to\",\"target\":\"u8\"}]}],\"more_units\":true,\"unresolved\":[\"The passage begins mid-thought, so preceding context for the definition of side-channel attacks is unavailable.\",\"The passage ends during discussion of a proposed CSS-based solution: \\\"that still seems like a work-around to to your to your approach if I if I understand it \\\". The continuation is needed to determine the conclusion and any further distinct units.\",\"The source includes demonstrations and historical browser claims but does not provide primary-source references, implementation details, or current-platform verification.\"]}",
+  "input": {
+    "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+    "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+    "locator": "body:17/paragraph",
+    "start": 702814,
+    "text": "o these are attacks where you you um you have a system that's functioning correctly. Like it's following the implementation. Like there's no implementation bugs. But yet it still somehow leaks uh sensitive information. So it's almost like it's it's there's nothing wrong with the lines of code that the programmer wrote but yet in in practice in the real world there's something wrong with how the system behaves because an attacker can learn information that they shouldn't learn. Okay? So uh so so common examples of of things that can cause side channels uh side channel leakage is uh timing things. Right? So if if if if something takes a certain amount of time in one case and a different amount of time in another but the system is like sort of not revealing to you it's trying to sort of hide the difference between those two cases but it takes different time and you can measure the time as an attacker you can figure out what case the program is in. And let's just go into an actual example here to to to to see here. So this is okay. So I have an example that is that is uh very much not related to web security but it's really cool. So I thought I would show it. So this is a side channel attack uh that you can that that uh these MIT researchers showed that you could do in the real world. So let me set up the sort of threat model here. Uh so our our goal is we're trying to build a system which uh we're trying to build a room let's say. Like a room where when we're inside it we can talk and we can have a really secret conversation. And outside the room nobody can hear what we say. Okay? So our constraints are no sound should escape. Right? So say we decide we we we find this like really nice uh glass material. Okay? It's really thick and so we make a room out of this glass and we say you know, with our engineering hats on we say this room is impervious to sound escaping. So we go inside the room we shut the door. We talk inside and it's true no sound is escaping. We have succeeded as engineers in making this room you know, impervious to sound escaping. But we made it out of glass. So the attacker can see through the glass and the question is like is is that a problem? Well, we designed it so the sound wouldn't escape and and so now the question is can we somehow use the fact that we can see into the room to to learn what conversation is going on. And so in this research paper uh here I'll just play the video. It's it's an amazing video. I oh that's the problem is I don't have an audio cable. Um so I I will have to just turn up my speakers and hope for the best. Okay. When sound hits an object it causes that object to vibrate. The motion of this vibration creates a subtle visual signal that's usually invisible to the naked eye. In our work we show how using only a video of the object and a suitable processing algorithm we can extract these minute vibrations and partially recover the sounds that produced them. Letting us turn everyday visible objects into visual microphones. In the silent high speed video shown here on the left we see the leaves of a potted plant shown on the right. The video was recorded while a nearby loudspeaker played the notes to Mary Had a Little Lamb. Even when we play the video in slow motion here the vibrations caused by the music are so subtle that they move the plant's leaves by less than a hundredth of a pixel. Making the plant appear still to the naked eye. But by combining and filtering all of the tiny motion happening across the image that you see we are able to recover this sound. In our next experiment we recovered live human speech from high-speed video of a bag of chips lying on the ground. But to make things a little more challenging, this time we put the camera outside behind a soundproof window. This is what a cell phone was able to record from inside next to the bag of chips. Mary had a little lamb whose fleece was white as snow. And everywhere that Mary went, that lamb was sure to go. And this is what we were able to recover from high-speed video filmed from outside behind soundproof glass. Mary had a little lamb whose fleece was white as snow. And everywhere that Mary went, that lamb was sure to go. In this next So yeah, I I could keep going uh but I think yeah, it's pretty crazy. Um I think the next thing that we're going to show is a video of headphones and just from like looking at the headphones, they're able to pick up what was playing on it uh which is I think they're just showing off at this point. But yeah, uh where is it? It's right here. And we recover music from high-speed video of some earbuds plugged into a laptop computer. Then we take our recovered sound and use audio recognition software to automatically identify the song that was being played. So yeah, it's good enough for Shazam so Anyway, yeah, so this is this is the idea of side channel attacks uh but yeah, so uh we want to do this on the web um and uh but yeah, wasn't that really cool? That was super cool. And there's all kinds of there's all kinds of uh real-world side channels like this. There's uh there's even stuff where uh you can you can figure out what uh a decryption algorithm is doing based on the power usage that uh your your computer is is uh like pulling from the wall basically. So you can monitor the power line, you can sort of literally like in the power levels pull the key out. Um there's all kinds of every of some of this stuff's a little uh a little a little bit like theoretical and um maybe not maybe not practical but there's a really cool stuff um in this area. Yeah. Um but yeah, so so yeah, let's talk about um one uh classic attack um and this is almost this is almost barely a side channel because it's so basic but um but this is sort of the beginning of of of where where we'll start. So there was um this was a class this was a a really long-standing attack for many many many years. I think it wasn't fixed until 2010 um where you could literally just create a link uh and stick the link into the into the into the page and then check the color that the browser rendered the link with. And so browsers render visited links in purple and and unvisited links in blue by default. And so just by checking the color of the of the link, you can figure out whether the user's been to a URL. So this is like pretty bad. If you you can imagine like listing the top million sites in an array and then just sort of iterating through really quickly in the background, you can figure out what kind of sites this user likes to visit. So this is really bad. The problem is it seems kind of important to be able to like check style attributes of elements that are in the page. Like that's kind of a fundamental thing of uh you know about the way the DOM works. So what can we do here to fix this? Anyone have ideas? What should we do? What should the correct trade-off be? What what did what do you think the browsers did in 2010 when they when they fixed this? Yeah? I don't know if this is true but is it only turned purple if you click on the link from that site? That that uh that's not the way it works uh but that that that's one possible solution. Um I and that's a really interesting solution because what you're basically proposing is you're saying if I visit uh site A and I click a link to site B from it, then it's pretty obvious to site A that I went to site B. I mean they're they're already running JavaScript on site A. They can see exactly what my mouse clicks on. They have all kinds of ways to detect what I'm doing on that site. And so it's it's uh we should just assume that they know I went to site B, right? And so uh at that point it's not really a lot it's not really that bad to just render the link in purple because the site already knows, right? Um whereas if I had been to site B before I came to site A, uh then maybe we wouldn't render the link in blue. So there's no way for site A to know. Um that was an approach that browsers considered but they decided against it because of the usability uh like downside basically. They thought users would be confused about why like a link that they know they've been to is sometimes blue and sometimes purple on different sites. And so they threw that solution out. Any other ideas? Yeah. Oh, are you using your hand? Oh, okay. Sorry. Anyone have any other thoughts? Mhm? Maybe you couldn't read the CSS anymore. You say that again? Maybe like you couldn't read the that CSS anymore. Oh, just like make make the color of links unviewable. Okay. That's not a bad uh that's not a bad idea but with uh with with CSS, we can actually change the way that visited links look in many other ways besides color. Um so we can we can write a CSS rule that says that uh for example, when a link is visited, I want the background of it to be an image from my server. And so now every time I visited a link uh anytime a link has been visited, I can uh I will tell because my server got got a request for this background image, right? Um but yeah, that is a good if if we could eliminate um uh if we could eliminate these other ways, that that could work, yeah. Mhm? Uh instead of like making it so that after you visit a link, you change the color attribute, you could have a separate attribute that like changes the shade from like the previous color and then just make that that one like unreadable. Mhm. Can you explain more? How how would that work? Like you just have like like a separate style that is like a separate attribute that's only like visited or non-visited. Mhm. And that one can have like a different rule for how you apply that on the client side and you can just make it so that I guess like you can't read that on the on other sites. Yeah. So that could work but I I think given the given the thing I said about the CSS rules causing you know potentially causing like an image a background image to load, that still seems like a work-around to to your to your approach if I if I understand it ",
+    "provenance": "unverified"
+  },
+  "system_prompt_sha256": "169564fc11fb12a123446ec006b5bb473bb0bb9c6a71a491eafeedd914dc865e"
+}

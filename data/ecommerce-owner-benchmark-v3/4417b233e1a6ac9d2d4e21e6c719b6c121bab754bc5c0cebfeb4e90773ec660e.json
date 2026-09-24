@@ -1,0 +1,1485 @@
+{
+  "request_id": "4417b233e1a6ac9d2d4e21e6c719b6c121bab754bc5c0cebfeb4e90773ec660e",
+  "provider": "openai",
+  "model": "gpt-5.6-terra",
+  "effort": "medium",
+  "completion_limit": 10000,
+  "usage": {
+    "prompt_tokens": 18886,
+    "completion_tokens": 3769,
+    "total_tokens": 22655,
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 18883,
+      "audio_tokens": 0
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 1098,
+      "audio_tokens": 0,
+      "accepted_prediction_tokens": 0,
+      "rejected_prediction_tokens": 0
+    }
+  },
+  "booked_cost_usd": 0.092443,
+  "seconds": 40.3,
+  "finish_reason": "stop",
+  "output": {
+    "cards": [
+      {
+        "id": "393737091e3eff28f945fc98",
+        "relevance": "direct",
+        "reason": "Checkout-started trigger, purchase suppression, and checkout-specific objection handling fit the requested recovery flow. Its free-shipping-versus-discount advice is not actionable here because TrailFold already offers free US shipping and no discount is approved."
+      },
+      {
+        "id": "85117c7d09108698841362fb",
+        "relevance": "direct",
+        "reason": "Directly supports a Klaviyo Checkout Started flow, placed-order-since-flow-start suppression, and keeping checkout recovery distinct from added-to-cart recovery. Current Klaviyo labels and filter behavior still need account verification."
+      },
+      {
+        "id": "0a53b00daef33a60cc378037",
+        "relevance": "direct",
+        "reason": "Relevant operational setup guidance: use Checkout Started, suppress purchasers, apply re-entry control, and tailor checkout content rather than merely cloning cart content."
+      },
+      {
+        "id": "fbfeb91636ecfdd4100008ea",
+        "relevance": "conditional",
+        "reason": "Useful only if TrailFold operates SMS and has appropriate SMS consent/settings. The request is specifically for a three-email draft, and no SMS program or consent fixture is provided."
+      },
+      {
+        "id": "fac642b0957bb2c89c031107",
+        "relevance": "conditional",
+        "reason": "Primarily concerns added-to-cart abandonment, not checkout recovery. Its timing and objection-sequence ideas can inform testing, but its cart trigger and filters should not be copied into the checkout flow."
+      },
+      {
+        "id": "8d43aac071299466c10cca61",
+        "relevance": "direct",
+        "reason": "Supports the required distinction between an added-to-cart flow and a Checkout Started flow, including purchase-based exit logic and avoidance of double messaging."
+      },
+      {
+        "id": "5aad4467fa44b01bb19b1fc0",
+        "relevance": "irrelevant",
+        "reason": "This is browse-abandonment guidance for Viewed Product events, whereas the task is checkout recovery from Checkout Started events."
+      },
+      {
+        "id": "5ad3da1bdb3a5774dcbee3a8",
+        "relevance": "irrelevant",
+        "reason": "This card is specifically about browse-abandonment triggers, filters, and cooldowns rather than checkout abandonment."
+      },
+      {
+        "id": "d94eb68e5e18ee978a13d588",
+        "relevance": "direct",
+        "reason": "Provides relevant checkout-flow mechanics and a testable timing approach. Its discount branch is inapplicable because TrailFold has no approved discount."
+      },
+      {
+        "id": "dfc548f661d230535e9993aa",
+        "relevance": "direct",
+        "reason": "Directly supports flow-stage selection, purchaser suppression, welcome-flow exclusion, profile-state handling, and prevention of conflicting sequence sends."
+      },
+      {
+        "id": "b6389565ed83cc169d986be1",
+        "relevance": "direct",
+        "reason": "Directly addresses separating cart and checkout recovery and ensuring a customer progressing to checkout does not receive both flows."
+      },
+      {
+        "id": "5f42a553bc222f955d31880c",
+        "relevance": "conditional",
+        "reason": "Useful for a later controlled delay test, but it is not necessary to satisfy the requested initial draft and adds maintenance complexity. Its timings are source examples, not validated TrailFold optima."
+      },
+      {
+        "id": "bdbde349add0546ce9c3f6f8",
+        "relevance": "direct",
+        "reason": "A strong fit for the requested three-email structure: reminder, concise personal check-in, then real objection handling without leading with a discount. Claims, proof, and risk reversal must be adapted to TrailFold’s actual policies and evidence."
+      },
+      {
+        "id": "abb2fb64e79c352922b4d261",
+        "relevance": "direct",
+        "reason": "Fits TrailFold’s restrained, useful voice and supports concise item-first copy, direct checkout language, shipping facts, FAQs, and dynamic abandoned-item content."
+      },
+      {
+        "id": "e502966b22d7930ce4becfe8",
+        "relevance": "conditional",
+        "reason": "Its first three content beats and dynamic-product placement are useful, but later testimonial, urgency, and discount prescriptions cannot be used as written: TrailFold has themes rather than licensable testimonials, no approved discount, and no stated order-expiry condition."
+      },
+      {
+        "id": "f147a186a98db1c32de933fd",
+        "relevance": "conditional",
+        "reason": "Customer-status branching can be useful, but its suggested welcome offer, loyalty, and subscription incentives are unsupported for TrailFold. A three-email checkout draft does not require this branch."
+      },
+      {
+        "id": "073d27caa4b0e55dc04a3c61",
+        "relevance": "conditional",
+        "reason": "Concise FAQ treatment is relevant to laptop-fit, rain, delivery, and returns questions. Its urgency guidance is usable only when tied to a genuine TrailFold condition; no such stock or deadline condition is supplied for this sequence."
+      },
+      {
+        "id": "84ab96a56baad6b8deb5a003",
+        "relevance": "conditional",
+        "reason": "Relevant in principle for sequencing risk reversal and avoiding generic urgency, but its discount-expiry and last-chance framing is not applicable without an approved offer or genuine deadline."
+      },
+      {
+        "id": "e46b405d55df11eae11a8889",
+        "relevance": "direct",
+        "reason": "Directly supports resolving actual checkout frictions—delivery timing, return policy, fit, suitability—and evaluating recovery incrementally rather than treating source timing advice as proven performance."
+      },
+      {
+        "id": "79cdac8bb86eba4c7cf16b77",
+        "relevance": "direct",
+        "reason": "Directly supports linking each message back to the shopper’s specific in-progress checkout, reducing re-entry friction. The exact dynamic event variable must be verified in TrailFold’s current Klaviyo event preview."
+      },
+      {
+        "id": "0c6041550953ada78b5ad4a1",
+        "relevance": "conditional",
+        "reason": "Useful for mapping FAQs to documented customer questions, including 15-inch fit and waterproof confusion. It should not be used to fabricate testimonials or endorsements from TrailFold’s theme summaries."
+      },
+      {
+        "id": "059f73755fa8a54856dc04f6",
+        "relevance": "direct",
+        "reason": "Directly supports explaining the Shopify-to-Klaviyo event relationship: Shopify Checkout Started and Placed Order events drive entry and suppression, and event properties support personalization. Event delivery should be tested before execution."
+      },
+      {
+        "id": "909e75c1eb8da6d99b606aa0",
+        "relevance": "irrelevant",
+        "reason": "This is browse-abandonment guidance using Viewed Product and product-page links, not checkout recovery."
+      },
+      {
+        "id": "5a403376e7b5759cb3b73d7b",
+        "relevance": "conditional",
+        "reason": "The outline-first discipline is mildly useful for drafting three emails, but it does not materially answer the checkout eligibility, suppression, collision, or platform-interaction requirements."
+      },
+      {
+        "id": "03b1898ead397355565d2be7",
+        "relevance": "direct",
+        "reason": "Its checkout-stage recommendation not to lead with a discount aligns with TrailFold’s no-discount constraint. Its suggested risk reversal must be limited to TrailFold’s stated free shipping, 4–7-business-day estimate, and 30-day unused-item return policy."
+      },
+      {
+        "id": "59621c0a5c221fb3e816a8b6",
+        "relevance": "conditional",
+        "reason": "Generic advice about drafting emails before larger assets is not materially needed for this tightly scoped recovery-flow draft."
+      }
+    ],
+    "coverage": [
+      {
+        "need": "Apply the supplied consent, 2–48-hour checkout age, no-purchase, welcome-flow, and 24-hour email-recency rules to select the exact fixture IDs",
+        "raw_covered": false,
+        "selected_covered": false,
+        "keyword_covered": false,
+        "supporting_ids": []
+      },
+      {
+        "need": "Configure checkout-started entry and purchase suppression in Klaviyo",
+        "raw_covered": true,
+        "selected_covered": true,
+        "keyword_covered": true,
+        "supporting_ids": [
+          "85117c7d09108698841362fb",
+          "0a53b00daef33a60cc378037",
+          "d94eb68e5e18ee978a13d588",
+          "b6389565ed83cc169d986be1",
+          "059f73755fa8a54856dc04f6"
+        ]
+      },
+      {
+        "need": "Prevent welcome-flow and other lifecycle-flow collisions",
+        "raw_covered": true,
+        "selected_covered": true,
+        "keyword_covered": false,
+        "supporting_ids": [
+          "dfc548f661d230535e9993aa",
+          "b6389565ed83cc169d986be1"
+        ]
+      },
+      {
+        "need": "Draft a three-email, no-discount checkout-recovery sequence with product-specific objection handling",
+        "raw_covered": true,
+        "selected_covered": true,
+        "keyword_covered": true,
+        "supporting_ids": [
+          "bdbde349add0546ce9c3f6f8",
+          "abb2fb64e79c352922b4d261",
+          "e46b405d55df11eae11a8889",
+          "03b1898ead397355565d2be7"
+        ]
+      },
+      {
+        "need": "Use evidence-safe TrailFold objections and policies in copy",
+        "raw_covered": true,
+        "selected_covered": true,
+        "keyword_covered": true,
+        "supporting_ids": [
+          "abb2fb64e79c352922b4d261",
+          "bdbde349add0546ce9c3f6f8",
+          "0c6041550953ada78b5ad4a1",
+          "e46b405d55df11eae11a8889"
+        ]
+      },
+      {
+        "need": "Return recipients to their specific active checkout",
+        "raw_covered": true,
+        "selected_covered": true,
+        "keyword_covered": true,
+        "supporting_ids": [
+          "79cdac8bb86eba4c7cf16b77"
+        ]
+      },
+      {
+        "need": "Explain Shopify event generation and Klaviyo flow eligibility/event suppression interaction",
+        "raw_covered": true,
+        "selected_covered": false,
+        "keyword_covered": true,
+        "supporting_ids": [
+          "059f73755fa8a54856dc04f6",
+          "85117c7d09108698841362fb"
+        ]
+      },
+      {
+        "need": "Set up a controlled timing test for the new recovery sequence",
+        "raw_covered": true,
+        "selected_covered": false,
+        "keyword_covered": true,
+        "supporting_ids": [
+          "5f42a553bc222f955d31880c",
+          "fbfeb91636ecfdd4100008ea",
+          "d94eb68e5e18ee978a13d588"
+        ]
+      }
+    ],
+    "missing_capabilities": [
+      "No candidate provides verified-current, account-specific instructions for enforcing TrailFold’s consent status and 24-hour recent-email rule in Klaviyo; the rules can be applied to the supplied fixtures, but implementation should be checked in the account.",
+      "The selected set lacks the clearest card for validating Shopify-to-Klaviyo event delivery and for designing a randomized timing test. This is a selected-retrieval gap, not evidence that no such guidance exists outside the candidate union."
+    ],
+    "freshness_checks": [
+      {
+        "area": "Klaviyo flow configuration",
+        "check": "Verify the current names and semantics of Checkout Started, Placed Order, flow filters, re-entry controls, and whether filters are evaluated at message send time in TrailFold’s account."
+      },
+      {
+        "area": "Consent and frequency control",
+        "check": "Confirm that TrailFold’s consent field maps to sendable email consent and that the 24-hour recent-email exclusion includes campaigns and all relevant flows, not only this flow."
+      },
+      {
+        "area": "Collision handling",
+        "check": "Test welcome-flow state/exclusion behavior and define priority if checkout recovery and another high-priority lifecycle message become eligible simultaneously."
+      },
+      {
+        "area": "Shopify event delivery",
+        "check": "Use a test checkout and test order to verify Shopify Checkout Started and Placed Order arrive in Klaviyo with usable event timestamps and properties."
+      },
+      {
+        "area": "Dynamic links",
+        "check": "Preview a real Checkout Started event and confirm the current checkout-resume URL property before inserting dynamic links; the cited event.extra.checkout URL is unverified-current guidance."
+      },
+      {
+        "area": "Claims and content",
+        "check": "Use only the supplied facts: free US shipping, 4–7-business-day delivery estimate, 30-day unused-item returns with customer-paid return shipping, 13-inch padded laptop sleeve, and water-resistant—not-waterproof—fabric. Do not turn theme summaries into customer quotes or claim 15-inch compatibility."
+      }
+    ],
+    "summary": "All 26 supplied candidate cards were reviewed once. The five selected cards are strong for core checkout trigger/suppression, welcome collision handling, three-email copy structure, and checkout-resume links. They omit the most explicit Shopify-event validation and timing-test guidance available in the broader candidate union. Several cards contain source guidance rather than verified-current platform facts; their Klaviyo UI, filter, timing, and dynamic-variable details require account-level verification before execution. Exact fixture eligibility is determined by the task’s supplied rules and data, not by retrieval. This audit covers only the supplied candidate union and does not claim exhaustive recall across the larger card corpus."
+  },
+  "raw_content": "{\"cards\":[{\"id\":\"393737091e3eff28f945fc98\",\"relevance\":\"direct\",\"reason\":\"Checkout-started trigger, purchase suppression, and checkout-specific objection handling fit the requested recovery flow. Its free-shipping-versus-discount advice is not actionable here because TrailFold already offers free US shipping and no discount is approved.\"},{\"id\":\"85117c7d09108698841362fb\",\"relevance\":\"direct\",\"reason\":\"Directly supports a Klaviyo Checkout Started flow, placed-order-since-flow-start suppression, and keeping checkout recovery distinct from added-to-cart recovery. Current Klaviyo labels and filter behavior still need account verification.\"},{\"id\":\"0a53b00daef33a60cc378037\",\"relevance\":\"direct\",\"reason\":\"Relevant operational setup guidance: use Checkout Started, suppress purchasers, apply re-entry control, and tailor checkout content rather than merely cloning cart content.\"},{\"id\":\"fbfeb91636ecfdd4100008ea\",\"relevance\":\"conditional\",\"reason\":\"Useful only if TrailFold operates SMS and has appropriate SMS consent/settings. The request is specifically for a three-email draft, and no SMS program or consent fixture is provided.\"},{\"id\":\"fac642b0957bb2c89c031107\",\"relevance\":\"conditional\",\"reason\":\"Primarily concerns added-to-cart abandonment, not checkout recovery. Its timing and objection-sequence ideas can inform testing, but its cart trigger and filters should not be copied into the checkout flow.\"},{\"id\":\"8d43aac071299466c10cca61\",\"relevance\":\"direct\",\"reason\":\"Supports the required distinction between an added-to-cart flow and a Checkout Started flow, including purchase-based exit logic and avoidance of double messaging.\"},{\"id\":\"5aad4467fa44b01bb19b1fc0\",\"relevance\":\"irrelevant\",\"reason\":\"This is browse-abandonment guidance for Viewed Product events, whereas the task is checkout recovery from Checkout Started events.\"},{\"id\":\"5ad3da1bdb3a5774dcbee3a8\",\"relevance\":\"irrelevant\",\"reason\":\"This card is specifically about browse-abandonment triggers, filters, and cooldowns rather than checkout abandonment.\"},{\"id\":\"d94eb68e5e18ee978a13d588\",\"relevance\":\"direct\",\"reason\":\"Provides relevant checkout-flow mechanics and a testable timing approach. Its discount branch is inapplicable because TrailFold has no approved discount.\"},{\"id\":\"dfc548f661d230535e9993aa\",\"relevance\":\"direct\",\"reason\":\"Directly supports flow-stage selection, purchaser suppression, welcome-flow exclusion, profile-state handling, and prevention of conflicting sequence sends.\"},{\"id\":\"b6389565ed83cc169d986be1\",\"relevance\":\"direct\",\"reason\":\"Directly addresses separating cart and checkout recovery and ensuring a customer progressing to checkout does not receive both flows.\"},{\"id\":\"5f42a553bc222f955d31880c\",\"relevance\":\"conditional\",\"reason\":\"Useful for a later controlled delay test, but it is not necessary to satisfy the requested initial draft and adds maintenance complexity. Its timings are source examples, not validated TrailFold optima.\"},{\"id\":\"bdbde349add0546ce9c3f6f8\",\"relevance\":\"direct\",\"reason\":\"A strong fit for the requested three-email structure: reminder, concise personal check-in, then real objection handling without leading with a discount. Claims, proof, and risk reversal must be adapted to TrailFold’s actual policies and evidence.\"},{\"id\":\"abb2fb64e79c352922b4d261\",\"relevance\":\"direct\",\"reason\":\"Fits TrailFold’s restrained, useful voice and supports concise item-first copy, direct checkout language, shipping facts, FAQs, and dynamic abandoned-item content.\"},{\"id\":\"e502966b22d7930ce4becfe8\",\"relevance\":\"conditional\",\"reason\":\"Its first three content beats and dynamic-product placement are useful, but later testimonial, urgency, and discount prescriptions cannot be used as written: TrailFold has themes rather than licensable testimonials, no approved discount, and no stated order-expiry condition.\"},{\"id\":\"f147a186a98db1c32de933fd\",\"relevance\":\"conditional\",\"reason\":\"Customer-status branching can be useful, but its suggested welcome offer, loyalty, and subscription incentives are unsupported for TrailFold. A three-email checkout draft does not require this branch.\"},{\"id\":\"073d27caa4b0e55dc04a3c61\",\"relevance\":\"conditional\",\"reason\":\"Concise FAQ treatment is relevant to laptop-fit, rain, delivery, and returns questions. Its urgency guidance is usable only when tied to a genuine TrailFold condition; no such stock or deadline condition is supplied for this sequence.\"},{\"id\":\"84ab96a56baad6b8deb5a003\",\"relevance\":\"conditional\",\"reason\":\"Relevant in principle for sequencing risk reversal and avoiding generic urgency, but its discount-expiry and last-chance framing is not applicable without an approved offer or genuine deadline.\"},{\"id\":\"e46b405d55df11eae11a8889\",\"relevance\":\"direct\",\"reason\":\"Directly supports resolving actual checkout frictions—delivery timing, return policy, fit, suitability—and evaluating recovery incrementally rather than treating source timing advice as proven performance.\"},{\"id\":\"79cdac8bb86eba4c7cf16b77\",\"relevance\":\"direct\",\"reason\":\"Directly supports linking each message back to the shopper’s specific in-progress checkout, reducing re-entry friction. The exact dynamic event variable must be verified in TrailFold’s current Klaviyo event preview.\"},{\"id\":\"0c6041550953ada78b5ad4a1\",\"relevance\":\"conditional\",\"reason\":\"Useful for mapping FAQs to documented customer questions, including 15-inch fit and waterproof confusion. It should not be used to fabricate testimonials or endorsements from TrailFold’s theme summaries.\"},{\"id\":\"059f73755fa8a54856dc04f6\",\"relevance\":\"direct\",\"reason\":\"Directly supports explaining the Shopify-to-Klaviyo event relationship: Shopify Checkout Started and Placed Order events drive entry and suppression, and event properties support personalization. Event delivery should be tested before execution.\"},{\"id\":\"909e75c1eb8da6d99b606aa0\",\"relevance\":\"irrelevant\",\"reason\":\"This is browse-abandonment guidance using Viewed Product and product-page links, not checkout recovery.\"},{\"id\":\"5a403376e7b5759cb3b73d7b\",\"relevance\":\"conditional\",\"reason\":\"The outline-first discipline is mildly useful for drafting three emails, but it does not materially answer the checkout eligibility, suppression, collision, or platform-interaction requirements.\"},{\"id\":\"03b1898ead397355565d2be7\",\"relevance\":\"direct\",\"reason\":\"Its checkout-stage recommendation not to lead with a discount aligns with TrailFold’s no-discount constraint. Its suggested risk reversal must be limited to TrailFold’s stated free shipping, 4–7-business-day estimate, and 30-day unused-item return policy.\"},{\"id\":\"59621c0a5c221fb3e816a8b6\",\"relevance\":\"conditional\",\"reason\":\"Generic advice about drafting emails before larger assets is not materially needed for this tightly scoped recovery-flow draft.\"}],\"coverage\":[{\"need\":\"Apply the supplied consent, 2–48-hour checkout age, no-purchase, welcome-flow, and 24-hour email-recency rules to select the exact fixture IDs\",\"raw_covered\":false,\"selected_covered\":false,\"keyword_covered\":false,\"supporting_ids\":[]},{\"need\":\"Configure checkout-started entry and purchase suppression in Klaviyo\",\"raw_covered\":true,\"selected_covered\":true,\"keyword_covered\":true,\"supporting_ids\":[\"85117c7d09108698841362fb\",\"0a53b00daef33a60cc378037\",\"d94eb68e5e18ee978a13d588\",\"b6389565ed83cc169d986be1\",\"059f73755fa8a54856dc04f6\"]},{\"need\":\"Prevent welcome-flow and other lifecycle-flow collisions\",\"raw_covered\":true,\"selected_covered\":true,\"keyword_covered\":false,\"supporting_ids\":[\"dfc548f661d230535e9993aa\",\"b6389565ed83cc169d986be1\"]},{\"need\":\"Draft a three-email, no-discount checkout-recovery sequence with product-specific objection handling\",\"raw_covered\":true,\"selected_covered\":true,\"keyword_covered\":true,\"supporting_ids\":[\"bdbde349add0546ce9c3f6f8\",\"abb2fb64e79c352922b4d261\",\"e46b405d55df11eae11a8889\",\"03b1898ead397355565d2be7\"]},{\"need\":\"Use evidence-safe TrailFold objections and policies in copy\",\"raw_covered\":true,\"selected_covered\":true,\"keyword_covered\":true,\"supporting_ids\":[\"abb2fb64e79c352922b4d261\",\"bdbde349add0546ce9c3f6f8\",\"0c6041550953ada78b5ad4a1\",\"e46b405d55df11eae11a8889\"]},{\"need\":\"Return recipients to their specific active checkout\",\"raw_covered\":true,\"selected_covered\":true,\"keyword_covered\":true,\"supporting_ids\":[\"79cdac8bb86eba4c7cf16b77\"]},{\"need\":\"Explain Shopify event generation and Klaviyo flow eligibility/event suppression interaction\",\"raw_covered\":true,\"selected_covered\":false,\"keyword_covered\":true,\"supporting_ids\":[\"059f73755fa8a54856dc04f6\",\"85117c7d09108698841362fb\"]},{\"need\":\"Set up a controlled timing test for the new recovery sequence\",\"raw_covered\":true,\"selected_covered\":false,\"keyword_covered\":true,\"supporting_ids\":[\"5f42a553bc222f955d31880c\",\"fbfeb91636ecfdd4100008ea\",\"d94eb68e5e18ee978a13d588\"]}],\"missing_capabilities\":[\"No candidate provides verified-current, account-specific instructions for enforcing TrailFold’s consent status and 24-hour recent-email rule in Klaviyo; the rules can be applied to the supplied fixtures, but implementation should be checked in the account.\",\"The selected set lacks the clearest card for validating Shopify-to-Klaviyo event delivery and for designing a randomized timing test. This is a selected-retrieval gap, not evidence that no such guidance exists outside the candidate union.\"],\"freshness_checks\":[{\"area\":\"Klaviyo flow configuration\",\"check\":\"Verify the current names and semantics of Checkout Started, Placed Order, flow filters, re-entry controls, and whether filters are evaluated at message send time in TrailFold’s account.\"},{\"area\":\"Consent and frequency control\",\"check\":\"Confirm that TrailFold’s consent field maps to sendable email consent and that the 24-hour recent-email exclusion includes campaigns and all relevant flows, not only this flow.\"},{\"area\":\"Collision handling\",\"check\":\"Test welcome-flow state/exclusion behavior and define priority if checkout recovery and another high-priority lifecycle message become eligible simultaneously.\"},{\"area\":\"Shopify event delivery\",\"check\":\"Use a test checkout and test order to verify Shopify Checkout Started and Placed Order arrive in Klaviyo with usable event timestamps and properties.\"},{\"area\":\"Dynamic links\",\"check\":\"Preview a real Checkout Started event and confirm the current checkout-resume URL property before inserting dynamic links; the cited event.extra.checkout URL is unverified-current guidance.\"},{\"area\":\"Claims and content\",\"check\":\"Use only the supplied facts: free US shipping, 4–7-business-day delivery estimate, 30-day unused-item returns with customer-paid return shipping, 13-inch padded laptop sleeve, and water-resistant—not-waterproof—fabric. Do not turn theme summaries into customer quotes or claim 15-inch compatibility.\"}],\"summary\":\"All 26 supplied candidate cards were reviewed once. The five selected cards are strong for core checkout trigger/suppression, welcome collision handling, three-email copy structure, and checkout-resume links. They omit the most explicit Shopify-event validation and timing-test guidance available in the broader candidate union. Several cards contain source guidance rather than verified-current platform facts; their Klaviyo UI, filter, timing, and dynamic-variable details require account-level verification before execution. Exact fixture eligibility is determined by the task’s supplied rules and data, not by retrieval. This audit covers only the supplied candidate union and does not claim exhaustive recall across the larger card corpus.\"}",
+  "input": {
+    "brand": {
+      "fictional": true,
+      "name": "TrailFold",
+      "market": "US",
+      "currency": "USD",
+      "platforms": [
+        "Shopify",
+        "Meta Ads",
+        "Klaviyo"
+      ],
+      "positioning": "Practical lightweight bags for commuters who take short weekend trips; restrained, useful, plain-spoken voice.",
+      "products": [
+        {
+          "sku": "DAY18",
+          "name": "Daypack 18L",
+          "price": 80,
+          "landed_cogs": 28,
+          "pick_pack": 2,
+          "merchant_shipping_cost": 8,
+          "payment_fee_percent": 3,
+          "features": [
+            "18L capacity",
+            "padded 13-inch laptop sleeve",
+            "water-resistant fabric, not waterproof",
+            "external bottle pocket"
+          ],
+          "stock": 210,
+          "daily_units_sold": 8,
+          "confirmed_replenishment_units": 500,
+          "replenishment_arrival_days": 35
+        },
+        {
+          "sku": "POUCH",
+          "name": "Cable pouch",
+          "price": 20,
+          "landed_cogs": 5,
+          "stock": 800
+        },
+        {
+          "sku": "BOTTLE",
+          "name": "Steel bottle",
+          "price": 32,
+          "landed_cogs": 9,
+          "stock": 600
+        }
+      ],
+      "policies": {
+        "shipping": "Free US shipping; delivery estimate 4-7 business days",
+        "returns": "30-day returns for unused products; return shipping paid by customer",
+        "discounts": "No current discount. Any new discount needs owner approval."
+      },
+      "claim_constraints": [
+        "No evidence for waterproof, medical, sustainability or lifetime-durability claims.",
+        "No verified competitor performance data.",
+        "No clinical or controlled product test results."
+      ],
+      "customer_themes": {
+        "simulated_review_count": 120,
+        "themes": [
+          "fits daily commute",
+          "customers ask whether a 15-inch laptop fits",
+          "customers ask whether rain protection means waterproof"
+        ],
+        "support_tickets_last_30_days": {
+          "delivery_date_questions": 42,
+          "15_inch_laptop_fit": 28,
+          "waterproof_questions": 18
+        },
+        "note": "Themes, not verbatim licensed testimonials; no fabricated quotes or endorsements."
+      },
+      "website_snapshot": {
+        "pdp_headline": "Adventure starts here",
+        "first_image": "product on plain background",
+        "pdp_details": "Laptop sizing and delivery window are below reviews; CTA says Buy now. No field speed or session-recording data."
+      },
+      "shopify": {
+        "previous_30_days": {
+          "sessions": 20000,
+          "orders": 600,
+          "net_product_revenue": 54000,
+          "mobile_sessions": 15000,
+          "mobile_orders": 400,
+          "desktop_sessions": 5000,
+          "desktop_orders": 200,
+          "add_to_cart_sessions": 2000,
+          "checkout_started_sessions": 1200
+        },
+        "current_30_days": {
+          "sessions": 25000,
+          "orders": 500,
+          "net_product_revenue": 45000,
+          "mobile_sessions": 20000,
+          "mobile_orders": 300,
+          "desktop_sessions": 5000,
+          "desktop_orders": 200,
+          "add_to_cart_sessions": 2000,
+          "checkout_started_sessions": 1000
+        },
+        "definitions": "Revenue excludes tax/shipping; periods equal length. Funnel counts are session-based and internally consistent, but no controlled attribution experiment.",
+        "new_customer_share_current": 0.72,
+        "cohort_90_day_repeat_rate": 0.14
+      },
+      "meta": {
+        "previous_30_days": {
+          "spend": 18000,
+          "reported_purchase_value": 54000,
+          "cpm": 12,
+          "link_ctr_percent": 1.5
+        },
+        "current_30_days": {
+          "spend": 22000,
+          "reported_purchase_value": 70400,
+          "cpm": 15,
+          "link_ctr_percent": 1.2
+        },
+        "settings": "7-day click plus 1-day view; no incremental lift study. Meta reported value not reconciled to Shopify orders.",
+        "creative_history": [
+          {
+            "name": "Desk-to-trail demonstration",
+            "spend_share": 0.55,
+            "observed_result": "Largest spend recipient; mature creative. No asset-level contribution data."
+          },
+          {
+            "name": "Laptop-fit comparison",
+            "spend_share": 0.25,
+            "observed_result": "Higher CTR in small test; conversion sample not supplied."
+          },
+          {
+            "name": "Minimal product still",
+            "spend_share": 0.2,
+            "observed_result": "No reliable lift estimate."
+          }
+        ]
+      },
+      "klaviyo": {
+        "marketable_profiles": 12000,
+        "reported_attributed_revenue_current": 14000,
+        "attribution_window": "5-day click plus 5-day open",
+        "flows": [
+          {
+            "name": "welcome",
+            "messages": 1,
+            "offer": "none"
+          },
+          {
+            "name": "checkout abandonment",
+            "trigger": "Started Checkout",
+            "messages": 1,
+            "delay_hours": 24,
+            "observed_gap": "No Added to Cart flow; filters not audited."
+          }
+        ],
+        "campaigns_per_week": 3,
+        "reported_open_rate_percent": 52,
+        "click_rate_percent": 1.1,
+        "order_rate_percent": 0.18,
+        "note": "Revenue attribution overlaps other systems; no holdout or recent deliverability audit."
+      },
+      "resources": {
+        "weekly_designer_hours": 8,
+        "weekly_developer_hours": 4,
+        "owner_hours": 4,
+        "next_14_day_test_budget": 3000,
+        "cash_constraint": "Protect replenishment payments; no additional inventory purchase approved."
+      },
+      "unavailable": [
+        "GA4 breakdowns",
+        "Clarity/Hotjar recordings",
+        "field Core Web Vitals",
+        "SKU-level ad acquisition cost",
+        "cohort contribution LTV",
+        "creative-level conversion sample sizes",
+        "channel incrementality",
+        "email holdout data"
+      ]
+    },
+    "task": {
+      "id": "E2",
+      "title": "Build and test an abandonment audience",
+      "request": "Build a three-email checkout recovery draft and select exactly the eligible customer IDs from the event fixtures. Today is 2026-09-23T12:00:00Z. Eligibility: consent true; checkout at least 2 hours but no more than 48 hours ago; no subsequent purchase; not in welcome flow; no email in last 24h. No discount approved. Provide subjects, actual body copy, delays, purchase suppression, collision handling, and selected_customer_ids. Explain how Shopify events and Klaviyo eligibility interact. Draft only.",
+      "fixtures": [
+        {
+          "id": "c1",
+          "consent": true,
+          "checkout_hours_ago": 5,
+          "purchased_after": false,
+          "welcome_active": false,
+          "last_email_hours_ago": 50
+        },
+        {
+          "id": "c2",
+          "consent": true,
+          "checkout_hours_ago": 8,
+          "purchased_after": true,
+          "welcome_active": false,
+          "last_email_hours_ago": 50
+        },
+        {
+          "id": "c3",
+          "consent": false,
+          "checkout_hours_ago": 8,
+          "purchased_after": false,
+          "welcome_active": false,
+          "last_email_hours_ago": 50
+        },
+        {
+          "id": "c4",
+          "consent": true,
+          "checkout_hours_ago": 8,
+          "purchased_after": false,
+          "welcome_active": true,
+          "last_email_hours_ago": 50
+        },
+        {
+          "id": "c5",
+          "consent": true,
+          "checkout_hours_ago": 8,
+          "purchased_after": false,
+          "welcome_active": false,
+          "last_email_hours_ago": 12
+        },
+        {
+          "id": "c6",
+          "consent": true,
+          "checkout_hours_ago": 1,
+          "purchased_after": false,
+          "welcome_active": false,
+          "last_email_hours_ago": 50
+        },
+        {
+          "id": "c7",
+          "consent": true,
+          "checkout_hours_ago": 60,
+          "purchased_after": false,
+          "welcome_active": false,
+          "last_email_hours_ago": 50
+        },
+        {
+          "id": "c8",
+          "consent": true,
+          "checkout_hours_ago": 48,
+          "purchased_after": false,
+          "welcome_active": false,
+          "last_email_hours_ago": 24
+        }
+      ],
+      "queries": [
+        "Klaviyo checkout abandonment purchase suppression flow filters consent",
+        "ecommerce abandoned checkout email copy sequence objections"
+      ]
+    },
+    "raw_ids": [
+      "393737091e3eff28f945fc98",
+      "85117c7d09108698841362fb",
+      "0a53b00daef33a60cc378037",
+      "fbfeb91636ecfdd4100008ea",
+      "fac642b0957bb2c89c031107",
+      "8d43aac071299466c10cca61",
+      "5aad4467fa44b01bb19b1fc0",
+      "5ad3da1bdb3a5774dcbee3a8",
+      "d94eb68e5e18ee978a13d588",
+      "dfc548f661d230535e9993aa",
+      "b6389565ed83cc169d986be1",
+      "5f42a553bc222f955d31880c",
+      "bdbde349add0546ce9c3f6f8",
+      "abb2fb64e79c352922b4d261",
+      "e502966b22d7930ce4becfe8",
+      "f147a186a98db1c32de933fd",
+      "073d27caa4b0e55dc04a3c61",
+      "84ab96a56baad6b8deb5a003",
+      "e46b405d55df11eae11a8889",
+      "79cdac8bb86eba4c7cf16b77",
+      "0c6041550953ada78b5ad4a1"
+    ],
+    "selected_ids": [
+      "85117c7d09108698841362fb",
+      "dfc548f661d230535e9993aa",
+      "bdbde349add0546ce9c3f6f8",
+      "abb2fb64e79c352922b4d261",
+      "79cdac8bb86eba4c7cf16b77"
+    ],
+    "keyword_ids": [
+      "393737091e3eff28f945fc98",
+      "0a53b00daef33a60cc378037",
+      "85117c7d09108698841362fb",
+      "fbfeb91636ecfdd4100008ea",
+      "fac642b0957bb2c89c031107",
+      "8d43aac071299466c10cca61",
+      "5ad3da1bdb3a5774dcbee3a8",
+      "b6389565ed83cc169d986be1",
+      "d94eb68e5e18ee978a13d588",
+      "5aad4467fa44b01bb19b1fc0",
+      "059f73755fa8a54856dc04f6",
+      "909e75c1eb8da6d99b606aa0",
+      "bdbde349add0546ce9c3f6f8",
+      "abb2fb64e79c352922b4d261",
+      "073d27caa4b0e55dc04a3c61",
+      "e502966b22d7930ce4becfe8",
+      "f147a186a98db1c32de933fd",
+      "5a403376e7b5759cb3b73d7b",
+      "03b1898ead397355565d2be7",
+      "79cdac8bb86eba4c7cf16b77",
+      "59621c0a5c221fb3e816a8b6"
+    ],
+    "cards": [
+      {
+        "id": "393737091e3eff28f945fc98",
+        "text": "[393737091e3eff28f945fc98] Checkout abandonment flow: same structure, different objections\nApplies when: Recovering shoppers who started checkout but did not complete the purchase on an ecommerce store.\n- Clone the abandoned cart flow and change its trigger to 'checkout started'.\n- Remove the 'checkout started 0 times' profile filter (no longer relevant); keep 'placed order 0 times since starting this flow' and the flow-suppression window.\n- Reuse the cart sequence structure but tailor copy to checkout-stage objections — the source cites surprise shipping costs as a common blocker.\n- Consider offering free shipping instead of a percentage discount when shipping is the likely objection; source argues free shipping can cost less (for a $200 AOV) while converting the customer.\n- Adjust reviews, USP content, and discount amounts to the later stage; these customers are one step closer to purchase.\n- Keep discount timing late in the sequence (around email 5) and use urgency with any discount.\nCondition: The free-shipping-vs-discount trade-off depends on your margins and AOV; source gives a $200 AOV example, not a universal rule.\nCondition: Separate cart and checkout flows are both needed; do not rely on a single 'abandoned cart' template for both.",
+        "metadata": {
+          "card_id": "393737091e3eff28f945fc98",
+          "content_hash": "4b34a9105a22285e755bd7f63dae2157f8dd0e5841a200aa144b4168eed55b48",
+          "schema_version": 1,
+          "classification_method": "model-inference-v1",
+          "classification_status": "inferred",
+          "domain": "email-lifecycle",
+          "knowledge_type": "procedure",
+          "roles": [
+            "growth"
+          ],
+          "durability": "periodically-changing",
+          "tasks": [
+            "email-sms",
+            "retention",
+            "checkout-conversion"
+          ],
+          "platform_mentions": [
+            "klaviyo"
+          ],
+          "applies_when": "Recovering shoppers who started checkout but did not complete the purchase on an ecommerce store.",
+          "conditions": [
+            "The free-shipping-vs-discount trade-off depends on your margins and AOV; source gives a $200 AOV example, not a universal rule.",
+            "Separate cart and checkout flows are both needed; do not rely on a single 'abandoned cart' template for both."
+          ],
+          "evidence_type": "source-guidance-unverified",
+          "source_date": null,
+          "last_verified_at": null,
+          "next_review_at": null,
+          "verification_policy": "check-current-details-before-execution",
+          "label_request_id": "b87b6cc6bfcbf0350d4d2b43f4da7564660a1d1831a4998455ea035a0b496ce7"
+        }
+      },
+      {
+        "id": "85117c7d09108698841362fb",
+        "text": "[85117c7d09108698841362fb] Trigger Abandoned Checkout on checkout started With Order Filtering\nApplies when: Building the abandoned checkout flow in Klaviyo and setting the trigger and flow filters.\n- In Klaviyo flow templates, search 'checkout'; the abandoned cart reminder template is actually triggered by the checkout started metric — Klaviyo names it cart but it fires on checkout.\n- Confirm both an abandoned cart flow (added to cart trigger) and an abandoned checkout flow (checkout started trigger) exist, since a shopper who adds to cart without starting checkout will not enter the checkout flow.\n- Add filter: placed order zero times since starting this flow, so Klaviyo checks they haven't already purchased before sending.\n- Optionally add 'has not been in flow in the last X days' — the source keeps this at 2–3 days for clients so returning shoppers who restart checkout still get reminded, arguing interest justifies more sends.\nCondition: Flow filter windows (2–3 days vs. longer suppression) are a source opinion, not a benchmark; longer windows avoid over-messaging but the source believes shorter windows make more money.\nCondition: Verify current Klaviyo template naming and filter options in your account, as interface and labels can change.",
+        "metadata": {
+          "card_id": "85117c7d09108698841362fb",
+          "content_hash": "2678b85a02683385c14bea40e609628f1480479dfbece5b4d491a184a2e38e28",
+          "schema_version": 1,
+          "classification_method": "model-inference-v1",
+          "classification_status": "inferred",
+          "domain": "email-lifecycle",
+          "knowledge_type": "procedure",
+          "roles": [
+            "growth"
+          ],
+          "durability": "periodically-changing",
+          "tasks": [
+            "email-sms",
+            "checkout-conversion"
+          ],
+          "platform_mentions": [
+            "klaviyo"
+          ],
+          "applies_when": "Building the abandoned checkout flow in Klaviyo and setting the trigger and flow filters.",
+          "conditions": [
+            "Flow filter windows (2–3 days vs. longer suppression) are a source opinion, not a benchmark; longer windows avoid over-messaging but the source believes shorter windows make more money.",
+            "Verify current Klaviyo template naming and filter options in your account, as interface and labels can change."
+          ],
+          "evidence_type": "source-guidance-unverified",
+          "source_date": null,
+          "last_verified_at": null,
+          "next_review_at": null,
+          "verification_policy": "check-current-details-before-execution",
+          "label_request_id": "9e3c3d12b5808d2bb492fe75ddefcdbd7f281cbba10372657469720ff44d69e6"
+        }
+      },
+      {
+        "id": "0a53b00daef33a60cc378037",
+        "text": "[0a53b00daef33a60cc378037] Clone the Core Pre-Purchase Flows Instead of Building from Scratch\nApplies when: Standing up pre-purchase automation for a store from zero, or when you need to ship cart/checkout abandonment emails quickly without redesigning content for each.\n- Establish one pre-purchase flow as your structural template (commonly the abandoned cart flow). It holds the general email structure, delays, and offer logic you'll reuse.\n- Clone it and rename for the next flow. Change the trigger to the matching event — for a checkout abandonment flow, the trigger is 'Checkout Started'.\n- Add or remove profile filters so the flow only targets people who haven't already bought. For abandoned cart/checkout, a common filter is 'Placed Order zero times since starting this flow' so buyers don't get further abandon emails.\n- Keep an additional filter such as 'has not been in this flow in the last 7 days' to avoid re-enrolling people too soon.\n- Keep the general content structure but rewrite the copy toward the specific objection — for checkout abandonment the reason is different (usually payment/logistics friction) than for cart abandonment.\n- Note the source positions the welcome, site abandon, browse abandon, cart abandon, and checkout abandon flows as the essential pre-purchase set.\nCondition: The filter logic and trigger names are platform-specific (Klaviyo/Shopify) — verify the current interface before building.\nCondition: Cloning is a starting point; you must tailor the content, not just the trigger.",
+        "metadata": {
+          "card_id": "0a53b00daef33a60cc378037",
+          "content_hash": "95ae0e14059874e240e824da37c1ac68c19bca7c405781a1a119a9050fda3471",
+          "schema_version": 1,
+          "classification_method": "model-inference-v1",
+          "classification_status": "inferred",
+          "domain": "email-lifecycle",
+          "knowledge_type": "procedure",
+          "roles": [
+            "growth"
+          ],
+          "durability": "periodically-changing",
+          "tasks": [
+            "email-sms",
+            "checkout-conversion"
+          ],
+          "platform_mentions": [
+            "klaviyo"
+          ],
+          "applies_when": "Standing up pre-purchase automation for a store from zero, or when you need to ship cart/checkout abandonment emails quickly without redesigning content for each.",
+          "conditions": [
+            "The filter logic and trigger names are platform-specific (Klaviyo/Shopify) — verify the current interface before building.",
+            "Cloning is a starting point; you must tailor the content, not just the trigger."
+          ],
+          "evidence_type": "source-guidance-unverified",
+          "source_date": null,
+          "last_verified_at": null,
+          "next_review_at": null,
+          "verification_policy": "check-current-details-before-execution",
+          "label_request_id": "b87b6cc6bfcbf0350d4d2b43f4da7564660a1d1831a4998455ea035a0b496ce7"
+        }
+      },
+      {
+        "id": "fbfeb91636ecfdd4100008ea",
+        "text": "[fbfeb91636ecfdd4100008ea] Test email and SMS sequencing in abandonment flows\nApplies when: Configuring the channel logic in an abandoned checkout or abandoned cart flow when you have both email and SMS.\n- Review Klaviyo's default template split, which sends SMS if reachable and only sends email 4 hours later if SMS is not possible.\n- Test the source simultaneous-send idea only for eligible recipients and within channel send-time and frequency rules; compare against a staggered sequence.\n- Reason: you cannot know whether a given shopper converts from SMS or email; email carries advantages like visuals that SMS lacks, and after an abandoned checkout every hour counts.\n- A/B test time delays (e.g., 4-hour vs. 2-hour first delay) for your own list rather than adopting a fixed default.\n- Recheck purchase exclusions before messages and keep SMS quiet-hour settings enabled. https://help.klaviyo.com/hc/en-us/articles/9352115400219\nCondition: Source opinion that simultaneously sending beats SMS-first fallback; not backed by a cited benchmark.\nCondition: Shorter time delays 'typically convert better' is the source's testing observation, and they say to A/B test per client.",
+        "metadata": {
+          "card_id": "fbfeb91636ecfdd4100008ea",
+          "content_hash": "f90408d5389e3a952bdc76965b041172b97f8562c2588cd935d0f46c5117f37e",
+          "schema_version": 1,
+          "classification_method": "model-inference-v1",
+          "classification_status": "inferred",
+          "domain": "email-lifecycle",
+          "knowledge_type": "procedure",
+          "roles": [
+            "growth"
+          ],
+          "durability": "periodically-changing",
+          "tasks": [
+            "email-sms",
+            "creative-testing",
+            "checkout-conversion"
+          ],
+          "platform_mentions": [
+            "klaviyo"
+          ],
+          "applies_when": "Configuring the channel logic in an abandoned checkout or abandoned cart flow when you have both email and SMS.",
+          "conditions": [
+            "Source opinion that simultaneously sending beats SMS-first fallback; not backed by a cited benchmark.",
+            "Shorter time delays 'typically convert better' is the source's testing observation, and they say to A/B test per client."
+          ],
+          "evidence_type": "source-guidance-unverified",
+          "source_date": null,
+          "last_verified_at": null,
+          "next_review_at": null,
+          "verification_policy": "check-current-details-before-execution",
+          "label_request_id": "9e3c3d12b5808d2bb492fe75ddefcdbd7f281cbba10372657469720ff44d69e6"
+        }
+      },
+      {
+        "id": "fac642b0957bb2c89c031107",
+        "text": "[fac642b0957bb2c89c031107] Abandoned cart flow: trigger distinction and 6–8 email structure\nApplies when: Setting up or fixing the abandoned cart sequence for an ecommerce store in Klaviyo.\n- Select a Klaviyo template whose trigger is 'added to cart' — the popular 'abandoned cart' template actually uses 'checkout started', so verify the trigger before building.\n- Add profile filters: 'checkout started 0 times', 'placed order 0 times', and 'has not been in flow for the last X days' (Klaviyo defaults to 7 days; source prefers ~14 days, adjusting for repurchase frequency).\n- Set the first-email delay to 30 minutes–2 hours (Klaviyo default 4 hours is described as long), and A/B test 30 minutes vs 2 hours.\n- Email 1: short reminder that the item is still in cart.\n- Email 2 (~1 day later): reviews/UGC/press — the more specific to the exact product, the better.\n- Email 3: objection handling — address reasons someone might hesitate to finish the purchase.\n- Email 4: specific USPs of the product/brand.\n- Email 5 (~1 day later): first discount (e.g. X% off) with 48-hour urgency, because a discount without urgency gives no reason to buy now.\n- Email 6 (~1 day later): 24-hour deadline reminder.\n- Emails 7–8 options: raise the discount, or send a plain-text founder email offering an extended 24-hour sale.\n- Monitor spam-complaint, unsubscribe, and open rates as you lengthen the sequence; source warns long sequences (14–20+ emails) become annoying.\nCondition: Sources disagree on sequence length and suppression windows; treat 6–8 emails and 14 days as source preferences, not industry standards.\nCondition: Discounts should reflect margin realities; the source explicitly ties higher discounts to margins.\nCondition: Adding a post-purchase branch inside the cart flow is described as a common but not recommended pattern — the source prefers separate flows.",
+        "metadata": {
+          "card_id": "fac642b0957bb2c89c031107",
+          "content_hash": "0372629fc213e066b36de4c02a45481b75a819fe694ade7ef2d81ddeb34f45d8",
+          "schema_version": 1,
+          "classification_method": "model-inference-v1",
+          "classification_status": "inferred",
+          "domain": "email-lifecycle",
+          "knowledge_type": "procedure",
+          "roles": [
+            "growth"
+          ],
+          "durability": "periodically-changing",
+          "tasks": [
+            "email-sms",
+            "retention",
+            "checkout-conversion"
+          ],
+          "platform_mentions": [
+            "klaviyo"
+          ],
+          "applies_when": "Setting up or fixing the abandoned cart sequence for an ecommerce store in Klaviyo.",
+          "conditions": [
+            "Sources disagree on sequence length and suppression windows; treat 6–8 emails and 14 days as source preferences, not industry standards.",
+            "Discounts should reflect margin realities; the source explicitly ties higher discounts to margins.",
+            "Adding a post-purchase branch inside the cart flow is described as a common but not recommended pattern — the source prefers separate flows."
+          ],
+          "evidence_type": "source-guidance-unverified",
+          "source_date": null,
+          "last_verified_at": null,
+          "next_review_at": null,
+          "verification_policy": "check-current-details-before-execution",
+          "label_request_id": "b87b6cc6bfcbf0350d4d2b43f4da7564660a1d1831a4998455ea035a0b496ce7"
+        }
+      },
+      {
+        "id": "8d43aac071299466c10cca61",
+        "text": "[8d43aac071299466c10cca61] Cart abandon and checkout abandon are two separate flows\nApplies when: Auditing or building cart and checkout recovery automations.\n- Recognize the difference: adding to cart is a different event from entering the payment/shipping checkout page, so each needs its own flow.\n- Cart abandon trigger: added to cart; exit filters should include 'placed order 0 times' and 'checkout started' so anyone further down the funnel enters checkout abandon instead.\n- Checkout abandon triggers on checkout start with its own exit filter on purchase.\n- Reuse the same email content across both flows — the source uses identical content with different triggers.\n- Source claims roughly 90% of brands audited lack a proper cart-abandon flow; verify your platform actually fires an abandoned-cart trigger (the source says Klaviyo added it via Shopify integration around September 2024) or build a custom trigger.\n- Run 6-8 emails; first email ~30 minutes after the trigger (source's recommendation, test it), then 1-2 day gaps.\nCondition: Platform trigger availability changes — verify the current interface and event names in your platform before assuming it exists.",
+        "metadata": {
+          "card_id": "8d43aac071299466c10cca61",
+          "content_hash": "44a879bf702fb725a4fceb2e5ef22b865609005451f226f05af5f8f7b5f3404f",
+          "schema_version": 1,
+          "classification_method": "model-inference-v1",
+          "classification_status": "inferred",
+          "domain": "email-lifecycle",
+          "knowledge_type": "principle",
+          "roles": [
+            "growth",
+            "operations"
+          ],
+          "durability": "durable",
+          "tasks": [
+            "email-sms",
+            "checkout-conversion"
+          ],
+          "platform_mentions": [],
+          "applies_when": "Auditing or building cart and checkout recovery automations.",
+          "conditions": [
+            "Platform trigger availability changes — verify the current interface and event names in your platform before assuming it exists."
+          ],
+          "evidence_type": "source-guidance-unverified",
+          "source_date": null,
+          "last_verified_at": null,
+          "next_review_at": null,
+          "verification_policy": "assess-source-and-task-fit",
+          "label_request_id": "e3a808899251eba773631cf8fd5783fd9e5d3f7b6b8b92b0a2762540804a893e"
+        }
+      },
+      {
+        "id": "5aad4467fa44b01bb19b1fc0",
+        "text": "[5aad4467fa44b01bb19b1fc0] Browse abandonment flow: trigger, filters, and review-led emails\nApplies when: Re-engaging shoppers who viewed a product but never added to cart on an ecommerce store.\n- Use the 'viewed product' trigger.\n- Add profile filters: 'checkout started 0 times', 'placed order 0 times', 'added to cart 0 times since starting this flow', and 'has not been in flow for the last 30 days'.\n- Set the first-email delay — Klaviyo defaults to 2 hours; test 1 hour vs 3 hours and narrow down.\n- Email 1: simple 'Did you see something you like?' reminder of the viewed product.\n- Email 2 (~1 day later): reviews, UGC, press mentions to build confidence in the specific product.\n- Use trigger filters to build product- or collection-specific browse flows, and make USP/review content specific to the viewed product — the source says specificity converts better.\n- Delay any discount until around email 4–5; source argues giving discounts immediately trains shoppers to wait for codes.\n- Aim for a 4–6 email sequence; turn off smart sending and enable UTM tracking.\nCondition: 'Wait to discount' is the source's opinion, not a tested benchmark across all stores.\nCondition: The 30-day flow suppression window is a default recommendation; your repurchase cycle and catalog should guide the choice.",
+        "metadata": {
+          "card_id": "5aad4467fa44b01bb19b1fc0",
+          "content_hash": "c95006370a117ec1b42de38f5cf48f601e83ab5929836fdaa968fa9344224de5",
+          "schema_version": 1,
+          "classification_method": "model-inference-v1",
+          "classification_status": "inferred",
+          "domain": "email-lifecycle",
+          "knowledge_type": "procedure",
+          "roles": [
+            "growth"
+          ],
+          "durability": "periodically-changing",
+          "tasks": [
+            "email-sms",
+            "retention"
+          ],
+          "platform_mentions": [
+            "klaviyo"
+          ],
+          "applies_when": "Re-engaging shoppers who viewed a product but never added to cart on an ecommerce store.",
+          "conditions": [
+            "'Wait to discount' is the source's opinion, not a tested benchmark across all stores.",
+            "The 30-day flow suppression window is a default recommendation; your repurchase cycle and catalog should guide the choice."
+          ],
+          "evidence_type": "source-guidance-unverified",
+          "source_date": null,
+          "last_verified_at": null,
+          "next_review_at": null,
+          "verification_policy": "check-current-details-before-execution",
+          "label_request_id": "b87b6cc6bfcbf0350d4d2b43f4da7564660a1d1831a4998455ea035a0b496ce7"
+        }
+      },
+      {
+        "id": "5ad3da1bdb3a5774dcbee3a8",
+        "text": "[5ad3da1bdb3a5774dcbee3a8] Set browse abandonment trigger filters and a 30-day cooldown\nApplies when: Building or auditing the browse abandonment flow in your ESP so it fires only for genuinely unconverted browsers.\n- Trigger the flow on viewed product.\n- Add profile filters so the email only sends if the person has placed order zero times since starting this flow, has checkout started zero times since starting this flow, and has added to cart zero times since starting this flow.\n- Allow re-entry after a 30-day time period to create a cooldown window.\n- If you run Shopify, use the Shopify added-to-cart trigger rather than the API added-to-cart trigger. The source flags this as important.\n- Do not split the browse abandonment flow between new and returning customers in most cases. Rationale: browse abandoners are low-intent window shoppers, and even previous buyers are re-evaluating and comparing you against alternatives.\n- Exception: if margins are extremely tight and you truly cannot afford an incentive for returning buyers, consider a conditional split. The source argues that for most brands doing serious volume, the incremental revenue outweighs the marginal discount cost precisely because these visitors were not high-intent to begin with.\n- Note the contrast with cart abandonment, where the source does recommend splitting returning customers from non-buyers because intent is higher.\nCondition: Filter and trigger names differ by ESP and change over time; verify in your current account.\nCondition: The no-split recommendation is the source's general preference with a stated margin-based exception, not an absolute rule.",
+        "metadata": {
+          "card_id": "5ad3da1bdb3a5774dcbee3a8",
+          "content_hash": "ff6107d73e31907e0423c8b5402ba0437eaf8f5eece76af52e22b318705d16f7",
+          "schema_version": 1,
+          "classification_method": "model-inference-v1",
+          "classification_status": "inferred",
+          "domain": "email-lifecycle",
+          "knowledge_type": "procedure",
+          "roles": [
+            "growth",
+            "operations"
+          ],
+          "durability": "periodically-changing",
+          "tasks": [
+            "email-sms",
+            "retention"
+          ],
+          "platform_mentions": [
+            "shopify",
+            "klaviyo"
+          ],
+          "applies_when": "Building or auditing the browse abandonment flow in your ESP so it fires only for genuinely unconverted browsers.",
+          "conditions": [
+            "Filter and trigger names differ by ESP and change over time; verify in your current account.",
+            "The no-split recommendation is the source's general preference with a stated margin-based exception, not an absolute rule."
+          ],
+          "evidence_type": "source-guidance-unverified",
+          "source_date": null,
+          "last_verified_at": null,
+          "next_review_at": null,
+          "verification_policy": "check-current-details-before-execution",
+          "label_request_id": "464ce17beaf16b57c001a90f7397e3095292b94ee818fa25657123dd28ce885d"
+        }
+      },
+      {
+        "id": "d94eb68e5e18ee978a13d588",
+        "text": "[d94eb68e5e18ee978a13d588] Abandoned cart vs abandoned checkout: build side by side\nApplies when: Setting up abandoned cart and abandoned checkout flows inside Klaviyo (verify current interface).\n- In Klaviyo, go to Flows > Create flow, search 'cart' to find the cart flow (it may not appear in the Essentials list — verify current UI).\n- If your store is on Shopify, use the Shopify 'added to cart' trigger, not the generic one. Build the abandoned cart version first.\n- Set flow filters: checkout started zero times since starting this flow, placed order zero times since starting this flow, and (via 'has not been in the flow in the last 30 days') no recent re-entry.\n- Add the first time delay. Klaviyo defaults to 4 hours; the source says this is too long and recommends testing 15 minutes to 1 hour, e.g., 30 minutes. The principle: the closer to purchase intent, the sooner the email.\n- Send email 1 at ~30 minutes, email 2 one day later, email 3 one day later.\n- Add a conditional split: 'has placed order at least once (all time)' — yes = returning customer, no = non-buyer/first-time buyer.\n- Non-buyers get two further emails: email 4 with discount (48-hour deadline) and email 5 one day later with a final discount reminder (24-hour deadline).\n- Returning customers get the founder check-in email. Then clone the whole flow, rename to abandoned checkout, change the trigger to 'checkout started', and remove the 'checkout started zero times' filter since the trigger is now checkout started.\nCondition: Exact Klaviyo menus, defaults and filter names may have changed — verify the current interface before implementing.\nCondition: The 15-60 minute timing is a recommended starting point the presenter says to A/B test; it is not a proven benchmark.\nCondition: Only apply the discount branch if your margins allow it.",
+        "metadata": {
+          "card_id": "d94eb68e5e18ee978a13d588",
+          "content_hash": "b3c52511dd6b77800aac3e5f2e4a2289b09740313e0e531b6888b20f35ae2594",
+          "schema_version": 1,
+          "classification_method": "model-inference-v1",
+          "classification_status": "inferred",
+          "domain": "email-lifecycle",
+          "knowledge_type": "procedure",
+          "roles": [
+            "growth",
+            "operations"
+          ],
+          "durability": "periodically-changing",
+          "tasks": [
+            "email-sms",
+            "checkout-conversion"
+          ],
+          "platform_mentions": [
+            "klaviyo"
+          ],
+          "applies_when": "Setting up abandoned cart and abandoned checkout flows inside Klaviyo (verify current interface).",
+          "conditions": [
+            "Exact Klaviyo menus, defaults and filter names may have changed — verify the current interface before implementing.",
+            "The 15-60 minute timing is a recommended starting point the presenter says to A/B test; it is not a proven benchmark.",
+            "Only apply the discount branch if your margins allow it."
+          ],
+          "evidence_type": "source-guidance-unverified",
+          "source_date": null,
+          "last_verified_at": null,
+          "next_review_at": null,
+          "verification_policy": "check-current-details-before-execution",
+          "label_request_id": "464ce17beaf16b57c001a90f7397e3095292b94ee818fa25657123dd28ce885d"
+        }
+      },
+      {
+        "id": "dfc548f661d230535e9993aa",
+        "text": "[dfc548f661d230535e9993aa] Flow structure and profile filters in Klaviyo\nApplies when: Building or auditing Klaviyo flows for an ecommerce store so customers don't receive conflicting sequences.\n- Pick a trigger based on customer journey stage: active on site, viewed product, added to cart, checkout started, placed order, or added to list/segment.\n- After confirming a trigger, note it cannot be changed without duplicating the flow.\n- Add profile filters under the trigger, e.g. 'has placed order 0 times since starting this flow', 'has checkout started 0 times since starting this flow', 'has added to cart 0 times since starting this flow'.\n- For welcome series, add 'placed order 0 times', 'checkout started 0 times', and 'added to cart 0 times since starting this flow' so buyers and cart/checkout abandoners exit the welcome sequence.\n- Consider excluding 'viewed product' and 'active on site' as well, but source prefers not to exclude those from welcome since browse/site abandonment flows are short and early in the journey.\n- Use profile property updates (e.g. set 'in_welcome_series = true' at flow start, false at end) to segment flow participants in or out of regular campaigns.\n- Use conditional splits with 'placed order since starting flow' to route buyers to a post-purchase email vs continuing the welcome series, or use a random 50/50 split to A/B test flow strategies.\nCondition: Trigger choice is locked after confirmation; you must duplicate the flow to change it.\nCondition: Excluding checkout-started and added-to-cart from a welcome series is the source's preferred approach but is presented as a judgment call.",
+        "metadata": {
+          "card_id": "dfc548f661d230535e9993aa",
+          "content_hash": "f3f80031d35cdc77902b40d43f827df9df951500e4692716e421a3b034958c7f",
+          "schema_version": 1,
+          "classification_method": "model-inference-v1",
+          "classification_status": "inferred",
+          "domain": "email-lifecycle",
+          "knowledge_type": "procedure",
+          "roles": [
+            "operations",
+            "growth"
+          ],
+          "durability": "periodically-changing",
+          "tasks": [
+            "email-sms",
+            "retention"
+          ],
+          "platform_mentions": [
+            "klaviyo"
+          ],
+          "applies_when": "Building or auditing Klaviyo flows for an ecommerce store so customers don't receive conflicting sequences.",
+          "conditions": [
+            "Trigger choice is locked after confirmation; you must duplicate the flow to change it.",
+            "Excluding checkout-started and added-to-cart from a welcome series is the source's preferred approach but is presented as a judgment call."
+          ],
+          "evidence_type": "source-guidance-unverified",
+          "source_date": null,
+          "last_verified_at": null,
+          "next_review_at": null,
+          "verification_policy": "check-current-details-before-execution",
+          "label_request_id": "b87b6cc6bfcbf0350d4d2b43f4da7564660a1d1831a4998455ea035a0b496ce7"
+        }
+      },
+      {
+        "id": "b6389565ed83cc169d986be1",
+        "text": "[b6389565ed83cc169d986be1] Separate cart and checkout flows to avoid double-messaging\nApplies when: Configuring the triggers and filters of both recovery flows in Klaviyo.\n- Build two flows: one triggered by 'Added to Cart', one triggered by 'Checkout Started'. Duplicate the same content into both so you maintain one set of emails.\n- On the added-to-cart flow, add filters: 'Checkout Started = 0 times since starting this flow' (so anyone who moves to checkout exits and enters the checkout flow instead), 'Placed Order = 0 times since starting this flow', and 'has not been in this flow in the last 30 days'.\n- On the checkout-started flow, use the same 'Placed Order = 0 times since starting this flow' and 'not in this flow in the last 30 days' filters, without the checkout exclusion (it's the trigger itself).\n- Confirm both flows fire correctly and that a person who adds to cart then proceeds to checkout doesn't receive both sequences simultaneously.\nCondition: The 'last 30 days' re-entry window is the source's reset choice; adjust to your purchase frequency.\nCondition: Exclusion logic depends on trigger direction; verify in Klaviyo that your filters behave as intended.",
+        "metadata": {
+          "card_id": "b6389565ed83cc169d986be1",
+          "content_hash": "233c7eff8ba7f01e170a0037e8b15ddffd0881dd8765b89ce6fdfc48fd5f53e8",
+          "schema_version": 1,
+          "classification_method": "model-inference-v1",
+          "classification_status": "inferred",
+          "domain": "email-lifecycle",
+          "knowledge_type": "procedure",
+          "roles": [
+            "growth",
+            "operations"
+          ],
+          "durability": "periodically-changing",
+          "tasks": [
+            "email-sms",
+            "checkout-conversion"
+          ],
+          "platform_mentions": [
+            "klaviyo"
+          ],
+          "applies_when": "Configuring the triggers and filters of both recovery flows in Klaviyo.",
+          "conditions": [
+            "The 'last 30 days' re-entry window is the source's reset choice; adjust to your purchase frequency.",
+            "Exclusion logic depends on trigger direction; verify in Klaviyo that your filters behave as intended."
+          ],
+          "evidence_type": "source-guidance-unverified",
+          "source_date": null,
+          "last_verified_at": null,
+          "next_review_at": null,
+          "verification_policy": "check-current-details-before-execution",
+          "label_request_id": "e3a808899251eba773631cf8fd5783fd9e5d3f7b6b8b92b0a2762540804a893e"
+        }
+      },
+      {
+        "id": "5f42a553bc222f955d31880c",
+        "text": "[5f42a553bc222f955d31880c] A/B test abandonment flow timing with conditional splits\nApplies when: Optimizing abandoned cart, abandoned checkout, or browse abandonment flow timing to lift placed orders while watching spam complaint rate.\n- Add a conditional split at the top of the flow and set the condition to a random sample of 50%.\n- Set the 'yes' path to one delay (for example 2 hours) and the 'no' path to another (for example 1 hour) so the difference at the start is meaningful.\n- Duplicate every email so each path carries the full sequence rather than rejoining after the first email; the source prefers this because email 1 may perform worse at the longer delay while emails 2-3 perform better, and you want the full picture.\n- After results come in, narrow the comparison (for example test 2 hours versus 3 hours) to pinpoint the ideal delay.\n- Monitor spam complaint rate alongside placed order rate, since timing changes affect both.\n- Repeat the same conditional-split approach for browse abandonment, starting with a wider gap such as 1 hour versus 3 hours.\nCondition: Splitting every email into two paths multiplies maintenance work; the source prefers it for full-sequence visibility, but it is a tradeoff.\nCondition: Ideal delays are store-specific; the 1/2/3/4-hour values are illustrative test values, not benchmarks.",
+        "metadata": {
+          "card_id": "5f42a553bc222f955d31880c",
+          "content_hash": "73dc572e44af422dc0765467be18e3cc5579f3fa9625bfab40ff64bd287bdc60",
+          "schema_version": 1,
+          "classification_method": "model-inference-v1",
+          "classification_status": "inferred",
+          "domain": "email-lifecycle",
+          "knowledge_type": "procedure",
+          "roles": [
+            "growth"
+          ],
+          "durability": "periodically-changing",
+          "tasks": [
+            "email-sms",
+            "creative-testing",
+            "checkout-conversion"
+          ],
+          "platform_mentions": [
+            "klaviyo"
+          ],
+          "applies_when": "Optimizing abandoned cart, abandoned checkout, or browse abandonment flow timing to lift placed orders while watching spam complaint rate.",
+          "conditions": [
+            "Splitting every email into two paths multiplies maintenance work; the source prefers it for full-sequence visibility, but it is a tradeoff.",
+            "Ideal delays are store-specific; the 1/2/3/4-hour values are illustrative test values, not benchmarks."
+          ],
+          "evidence_type": "source-guidance-unverified",
+          "source_date": null,
+          "last_verified_at": null,
+          "next_review_at": null,
+          "verification_policy": "check-current-details-before-execution",
+          "label_request_id": "b87b6cc6bfcbf0350d4d2b43f4da7564660a1d1831a4998455ea035a0b496ce7"
+        }
+      },
+      {
+        "id": "bdbde349add0546ce9c3f6f8",
+        "text": "[bdbde349add0546ce9c3f6f8] Abandoned cart/checkout email content: 3-stage objection sequence\nApplies when: Writing the copy for abandoned cart and abandoned checkout emails before any discount is offered.\n- Email 1 (30 min-1 hour after abandonment): simple reminder only. No discount, no overselling. Most abandonment is distraction ('phone, a thousand things going on'), not a 'no'. Include a dynamic product block and your risk reversals (guarantees, trials, free shipping, free returns). Example: 'You left something tasty behind — complete my order — why spice fans love us — complete my order.'\n- Email 2 (1 day later): plain-text personalized check-in from the founder. Tone should feel like a one-to-one email. Angle: 'Noticed you were checking out this product — wanted to make sure you didn't run into issues. By the way, here's why people love us.' Keep it 2-3 short paragraphs max, end with a simple CTA and a link back to their cart. This also performs well with Gmail's AI inbox prioritizing conversational email (source's 2026 claim).\n- Email 3 (1 day later): objection handling, not 'our brand is awesome'. Address the real frictions: is it worth the price, shipping time, what if it doesn't fit, what if it doesn't work, what if it's not as good as the photos. Frame strongest USPs/products as answers to those objections (durability/warranty for price, certifications/press for trust, clear differentiation for comparison shopping). Include a dynamic product block.\n- Example of objection handling from a vape brand: 'British made quality' (addresses trust/offshore concerns), '8X cheaper than cigarettes' (price concern), '100% BPA free' (safety concern), 'highly rated service' (social proof).\nCondition: This sequence deliberately holds discounts until escalation; the source argues giving discounts in email one destroys margins and trains customers to wait for discounts.\nCondition: The claim that this structure is 'the highest converting' is the presenter's opinion, not a measured benchmark.",
+        "metadata": {
+          "card_id": "bdbde349add0546ce9c3f6f8",
+          "content_hash": "ffe38d2ee850fbdb3a677448b78abeda24eaa4fa5fe2c44f4a5ecf381c91eb29",
+          "schema_version": 1,
+          "classification_method": "model-inference-v1",
+          "classification_status": "inferred",
+          "domain": "email-lifecycle",
+          "knowledge_type": "procedure",
+          "roles": [
+            "growth"
+          ],
+          "durability": "durable",
+          "tasks": [
+            "email-sms",
+            "checkout-conversion"
+          ],
+          "platform_mentions": [
+            "klaviyo"
+          ],
+          "applies_when": "Writing the copy for abandoned cart and abandoned checkout emails before any discount is offered.",
+          "conditions": [
+            "This sequence deliberately holds discounts until escalation; the source argues giving discounts in email one destroys margins and trains customers to wait for discounts.",
+            "The claim that this structure is 'the highest converting' is the presenter's opinion, not a measured benchmark."
+          ],
+          "evidence_type": "source-guidance-unverified",
+          "source_date": null,
+          "last_verified_at": null,
+          "next_review_at": null,
+          "verification_policy": "assess-source-and-task-fit",
+          "label_request_id": "464ce17beaf16b57c001a90f7397e3095292b94ee818fa25657123dd28ce885d"
+        }
+      },
+      {
+        "id": "abb2fb64e79c352922b4d261",
+        "text": "[abb2fb64e79c352922b4d261] Write plain, item-first recovery copy that overcomes objections\nApplies when: Writing copy for any abandoned cart or checkout email.\n- Make the item the number-one feature. Showing the exact product they left behind via dynamic product sections is described as carrying ~80% of the selling, so don't bury it under graphics or long copy.\n- Keep copy short and to the point; the source states too many words or graphics distract the customer from completing the order.\n- Focus copy on overcoming objections only: quick points on shipping, product use, customer reviews, and answers to FAQs.\n- Use second-person, item-specific wording ('your order ships free') rather than generic broadcast copy ('all orders ship free') so it reads as addressed to them.\n- Answer the questions a hesitant buyer would ask (is it healthy, how long does it last, when will it arrive) with concise facts, not a blog article.\n- The source's stated purpose of every recovery email is narrow: remind, give the specific info needed to decide, and remove uncertainty about the buying process.\nCondition: The '80% carried by the item' figure is the presenter's estimate, not a measured benchmark.\nCondition: Tone can flex (one example uses playful copy), but the source still keeps product-specific substance central.",
+        "metadata": {
+          "card_id": "abb2fb64e79c352922b4d261",
+          "content_hash": "d0e240df1515d83c4f654ad2160452459dcefa2d79a7758f5400a079438b008f",
+          "schema_version": 1,
+          "classification_method": "model-inference-v1",
+          "classification_status": "inferred",
+          "domain": "email-lifecycle",
+          "knowledge_type": "principle",
+          "roles": [
+            "growth"
+          ],
+          "durability": "durable",
+          "tasks": [
+            "email-sms",
+            "checkout-conversion"
+          ],
+          "platform_mentions": [],
+          "applies_when": "Writing copy for any abandoned cart or checkout email.",
+          "conditions": [
+            "The '80% carried by the item' figure is the presenter's estimate, not a measured benchmark.",
+            "Tone can flex (one example uses playful copy), but the source still keeps product-specific substance central."
+          ],
+          "evidence_type": "source-guidance-unverified",
+          "source_date": null,
+          "last_verified_at": null,
+          "next_review_at": null,
+          "verification_policy": "assess-source-and-task-fit",
+          "label_request_id": "e3a808899251eba773631cf8fd5783fd9e5d3f7b6b8b92b0a2762540804a893e"
+        }
+      },
+      {
+        "id": "e502966b22d7930ce4becfe8",
+        "text": "[e502966b22d7930ce4becfe8] Cart/checkout abandon content sequence\nApplies when: Writing the emails inside cart-abandon and checkout-abandon flows.\n- Email 1: simple reminder of the abandoned product with a shop-now CTA and dynamic block showing the item.\n- Email 2: text-based nudge from the founder — informal, personal, 'you left something behind'.\n- Email 3: brand USPs and why to choose you over other stores the shopper is likely comparing.\n- Email 4: customer testimonials plus dynamic abandoned content.\n- Email 5: last-chance urgency — 'your order is expiring, we can't hold it much longer'.\n- Branch the final email: returning buyers get a founder check-in with support offer, no discount; first-time buyers get a discount opener (e.g., '15% off if you buy within 48 hours') followed by a founder 'everything okay?' discount closer.\n- Place the dynamic abandoned-product block at the top of every email and add cross-sell recommendations at the bottom.\nCondition: The 15% / 48-hour figures are examples from the source, not calibrated thresholds for your store.\nCondition: Discounting checkout abandoners can train customers to abandon deliberately — consider testing versus a no-discount branch.",
+        "metadata": {
+          "card_id": "e502966b22d7930ce4becfe8",
+          "content_hash": "78c0e4ac4440debb4ae082683faf4eef4fadb39a6d6cea01310f347e0945e9da",
+          "schema_version": 1,
+          "classification_method": "model-inference-v1",
+          "classification_status": "inferred",
+          "domain": "email-lifecycle",
+          "knowledge_type": "procedure",
+          "roles": [
+            "growth"
+          ],
+          "durability": "periodically-changing",
+          "tasks": [
+            "email-sms",
+            "offer-design"
+          ],
+          "platform_mentions": [],
+          "applies_when": "Writing the emails inside cart-abandon and checkout-abandon flows.",
+          "conditions": [
+            "The 15% / 48-hour figures are examples from the source, not calibrated thresholds for your store.",
+            "Discounting checkout abandoners can train customers to abandon deliberately — consider testing versus a no-discount branch."
+          ],
+          "evidence_type": "source-guidance-unverified",
+          "source_date": null,
+          "last_verified_at": null,
+          "next_review_at": null,
+          "verification_policy": "check-current-details-before-execution",
+          "label_request_id": "e3a808899251eba773631cf8fd5783fd9e5d3f7b6b8b92b0a2762540804a893e"
+        }
+      },
+      {
+        "id": "f147a186a98db1c32de933fd",
+        "text": "[f147a186a98db1c32de933fd] Branch Abandonment Flows by Prospect vs. Existing Customer\nApplies when: Writing content and setting up conditional splits inside abandoned checkout and abandoned cart flows.\n- Add a conditional split on 'has someone placed an order at least once over all time' — yes = existing customer, no = prospect.\n- For prospects: remind them of the welcome offer they're still eligible for, show their abandoned products via Klaviyo dynamic cart content, and restate why they should buy from you (USPs).\n- Use roughly a 20-hour delay between prospect emails as a starting point, then remind them of the offer and cart contents again and address 1–2 common objections (e.g., price, perceived value) using relevant customer reviews.\n- Include a minimum of three abandoned cart emails for prospects, with the third addressing another objection.\n- For existing customers: they are past the acquisition offer, so instead focus on other incentives — subscribe-and-save, loyalty programs, or other reasons to repurchase.\nCondition: The ~20-hour delay is a starting point the source says varies by brand.\nCondition: The three-email minimum is the source's stated floor, not a measured optimum.",
+        "metadata": {
+          "card_id": "f147a186a98db1c32de933fd",
+          "content_hash": "715d0c147150478dcead813a668181f698852fd7b86552f29466432e76a0b65e",
+          "schema_version": 1,
+          "classification_method": "model-inference-v1",
+          "classification_status": "inferred",
+          "domain": "email-lifecycle",
+          "knowledge_type": "procedure",
+          "roles": [
+            "growth"
+          ],
+          "durability": "durable",
+          "tasks": [
+            "email-sms",
+            "retention"
+          ],
+          "platform_mentions": [],
+          "applies_when": "Writing content and setting up conditional splits inside abandoned checkout and abandoned cart flows.",
+          "conditions": [
+            "The ~20-hour delay is a starting point the source says varies by brand.",
+            "The three-email minimum is the source's stated floor, not a measured optimum."
+          ],
+          "evidence_type": "source-guidance-unverified",
+          "source_date": null,
+          "last_verified_at": null,
+          "next_review_at": null,
+          "verification_policy": "assess-source-and-task-fit",
+          "label_request_id": "9e3c3d12b5808d2bb492fe75ddefcdbd7f281cbba10372657469720ff44d69e6"
+        }
+      },
+      {
+        "id": "073d27caa4b0e55dc04a3c61",
+        "text": "[073d27caa4b0e55dc04a3c61] Close with Situational Urgency and a Dropdown FAQ\nApplies when: Finishing a landing page or email sequence with a closing CTA and handling last objections.\n- Use the closing block to make acting now feel like forward motion — example copy: 'you can't afford to wait... in a world driven by progress, standing still is not an option'.\n- Prefer situational urgency/scarcity (the source's stated best form) over generic 'act now' hype; tie it to a real circumstance the buyer recognizes, like a genuine shipping deadline or limited production run.\n- Place an FAQ at the very bottom in dropdown format for people who scroll straight to the end and want bare facts without being marketed to.\n- Write each FAQ as a question plus concise answer so scanning is easy — concise answers get read more readily.\n- Mirror this at the end of PDPs and cart-recovery emails: real deadline or stock condition plus short objection-handling answers.\nCondition: Fake countdowns and phantom scarcity can breach platform rules and erode trust; the source favors situational urgency precisely for this reason.\nCondition: The FAQ rationale that some visitors only read the end is the source's observation, not a measured behavior study.",
+        "metadata": {
+          "card_id": "073d27caa4b0e55dc04a3c61",
+          "content_hash": "66f2615452f448f8f99328f854ced9e33f1ce912ba103f528c34b8fa0804712c",
+          "schema_version": 1,
+          "classification_method": "model-inference-v1",
+          "classification_status": "inferred",
+          "domain": "ad-copy-deployment",
+          "knowledge_type": "procedure",
+          "roles": [
+            "growth"
+          ],
+          "durability": "durable",
+          "tasks": [
+            "checkout-conversion",
+            "email-sms"
+          ],
+          "platform_mentions": [],
+          "applies_when": "Finishing a landing page or email sequence with a closing CTA and handling last objections.",
+          "conditions": [
+            "Fake countdowns and phantom scarcity can breach platform rules and erode trust; the source favors situational urgency precisely for this reason.",
+            "The FAQ rationale that some visitors only read the end is the source's observation, not a measured behavior study."
+          ],
+          "evidence_type": "source-guidance-unverified",
+          "source_date": null,
+          "last_verified_at": null,
+          "next_review_at": null,
+          "verification_policy": "assess-source-and-task-fit",
+          "label_request_id": "14c6f371dcbc0fc8c92ac27a18013dad899eebf060318f277f745e1fd5547031"
+        }
+      },
+      {
+        "id": "84ab96a56baad6b8deb5a003",
+        "text": "[84ab96a56baad6b8deb5a003] Risk reversal and urgency placement in sequence\nApplies when: Ordering content in welcome, browse, cart and checkout abandonment sequences.\n- In the welcome flow, deliver the incentive first, then USPs/product education, then social proof, then urgency ('discount expiring soon') with risk reversal (30-day guarantee, shipping promise), then heavy proof, then last chance.\n- In browse abandon, keep email 1 as a pure reminder, put risk reversal in email 2, and put the discount in email 4 with a 48-hour framing.\n- In cart/checkout abandon, keep the last chance email separate from the discount branch, giving returning buyers a no-discount founder note instead.\n- In win-back, reserve the unique discount for email 2 and the last-chance founder note for email 3.\n- Use short, specific urgency ('expires in 24 hours') rather than vague pressure.\nCondition: Aggressive urgency in the last email may cost list goodwill; the source recommends testing timing and tone.",
+        "metadata": {
+          "card_id": "84ab96a56baad6b8deb5a003",
+          "content_hash": "b95afa91a8ce4f881e27ff210489bc94ba11244caa0a7fbd097793c711ec1772",
+          "schema_version": 1,
+          "classification_method": "model-inference-v1",
+          "classification_status": "inferred",
+          "domain": "email-lifecycle",
+          "knowledge_type": "principle",
+          "roles": [
+            "growth"
+          ],
+          "durability": "durable",
+          "tasks": [
+            "email-sms",
+            "offer-design"
+          ],
+          "platform_mentions": [],
+          "applies_when": "Ordering content in welcome, browse, cart and checkout abandonment sequences.",
+          "conditions": [
+            "Aggressive urgency in the last email may cost list goodwill; the source recommends testing timing and tone."
+          ],
+          "evidence_type": "source-guidance-unverified",
+          "source_date": null,
+          "last_verified_at": null,
+          "next_review_at": null,
+          "verification_policy": "assess-source-and-task-fit",
+          "label_request_id": "e3a808899251eba773631cf8fd5783fd9e5d3f7b6b8b92b0a2762540804a893e"
+        }
+      },
+      {
+        "id": "e46b405d55df11eae11a8889",
+        "text": "[e46b405d55df11eae11a8889] Recover cart abandonment without making discounts the only answer\nApplies when: Building or auditing cart- and browse-abandonment email and SMS flows for shoppers who began but did not complete a purchase.\n- Trigger the first recovery contact quickly after abandonment; the source recommends acting within the first hour rather than waiting until the next day.\n- Build a sequence across roughly 72 hours that escalates from product and objection resolution to urgency and, where justified, an incentive.\n- Lead with the objections most likely to block completion: total cost, delivery timing, return policy, fit, compatibility, or product suitability.\n- Ensure the checkout itself displays fees transparently; recovery messages cannot fully compensate for a recurring late-cost surprise.\n- Use reviews and credibility signals near checkout and in recovery content when trust is the likely barrier.\n- Use real-time intent signals where available to tailor reassurance, such as sizing help, shipping estimates, or compatibility information.\n- Reserve free shipping or time-limited discounts for situations where their incremental order value outweighs margin loss, and compare recovery revenue with a holdout when possible.\nCondition: The source’s first-hour and 72-hour timings are a framework to test, not proven universal optima.\nCondition: Frequent recovery discounts can train shoppers to abandon intentionally; evaluate net margin and future behavior, not recovered-order count alone.",
+        "metadata": {
+          "card_id": "e46b405d55df11eae11a8889",
+          "content_hash": "57765e137c7be6150cd7e973225cf7e981f1b97b6cf585e5b6906fe0561378be",
+          "schema_version": 1,
+          "classification_method": "model-inference-v1",
+          "classification_status": "inferred",
+          "domain": "testing",
+          "knowledge_type": "procedure",
+          "roles": [
+            "growth",
+            "operations"
+          ],
+          "durability": "durable",
+          "tasks": [
+            "email-sms",
+            "retention"
+          ],
+          "platform_mentions": [],
+          "applies_when": "Building or auditing cart- and browse-abandonment email and SMS flows for shoppers who began but did not complete a purchase.",
+          "conditions": [
+            "The source’s first-hour and 72-hour timings are a framework to test, not proven universal optima.",
+            "Frequent recovery discounts can train shoppers to abandon intentionally; evaluate net margin and future behavior, not recovered-order count alone."
+          ],
+          "evidence_type": "source-guidance-unverified",
+          "source_date": null,
+          "last_verified_at": null,
+          "next_review_at": null,
+          "verification_policy": "assess-source-and-task-fit",
+          "label_request_id": "070291efbc7595184ac3c2d8a9d662c764cf8ce7ebd7f677ccd71ed49b796757"
+        }
+      },
+      {
+        "id": "79cdac8bb86eba4c7cf16b77",
+        "text": "[79cdac8bb86eba4c7cf16b77] Link Abandonment Emails Directly Back to Checkout\nApplies when: Setting up links in abandoned checkout/cart email images and buttons so shoppers don't have to re-add products.\n- On all image slices in the abandoned checkout flow, set the link address to the curly-bracket event variable event.extra.checkout URL.\n- You can copy this link from the 'back to my cart' button that Klaviyo already includes in its abandoned cart template.\n- This directs each specific person back to the checkout they started, with their products ready so they only need to place the order.\n- For browse abandonment, do the equivalent: preview/test the email, open the event properties (product name, ID, price, URL), copy the product URL property, and paste it as the link on 'shop now' slices instead of Klaviyo's default organization URL.\nCondition: Dynamic variable names are Klaviyo-specific and may change — verify in the current template and event preview.\nCondition: Copying event properties requires previewing a real triggering event to see the field names.",
+        "metadata": {
+          "card_id": "79cdac8bb86eba4c7cf16b77",
+          "content_hash": "ae3104435b081e79f591f38299ea4c8eea7f99df5735762f7b0e01a97e3bb9b5",
+          "schema_version": 1,
+          "classification_method": "model-inference-v1",
+          "classification_status": "inferred",
+          "domain": "email-lifecycle",
+          "knowledge_type": "procedure",
+          "roles": [
+            "growth"
+          ],
+          "durability": "periodically-changing",
+          "tasks": [
+            "email-sms",
+            "checkout-conversion"
+          ],
+          "platform_mentions": [
+            "klaviyo"
+          ],
+          "applies_when": "Setting up links in abandoned checkout/cart email images and buttons so shoppers don't have to re-add products.",
+          "conditions": [
+            "Dynamic variable names are Klaviyo-specific and may change — verify in the current template and event preview.",
+            "Copying event properties requires previewing a real triggering event to see the field names."
+          ],
+          "evidence_type": "source-guidance-unverified",
+          "source_date": null,
+          "last_verified_at": null,
+          "next_review_at": null,
+          "verification_policy": "check-current-details-before-execution",
+          "label_request_id": "9e3c3d12b5808d2bb492fe75ddefcdbd7f281cbba10372657469720ff44d69e6"
+        }
+      },
+      {
+        "id": "0c6041550953ada78b5ad4a1",
+        "text": "[0c6041550953ada78b5ad4a1] Build testimonial and FAQ emails around objections\nApplies when: Filling launch sequence gaps with social proof and objection handling for a store offer.\n- For the success email, choose format to fit industry and sales model: either one long, powerful testimonial or case study, or several testimonials.\n- Select testimonials by objection, not by general praise. The source stresses it is especially powerful when you understand the angles of objection people have and choose testimonials that speak directly to each one.\n- For the FAQ email, gather real questions from chat features on your site, emails to you, Facebook messages and page comments. The source says review this material for ideas if you do not already know what to include.\n- Open the FAQ email by acknowledging the questions, e.g. 'over the last few days I've been telling you about my product and you sent in so many great questions I wanted to address them all at once', then answer each question in turn.\n- End both emails with a reminder that you are selling and a CTA. The source keeps repeated crutch CTAs like 'reminder' and 'what's next'.\nCondition: Objection mapping requires you to already know what blocks purchase; do the customer-research step if not.\nCondition: The presenter's phrasing examples are templates to adapt, not scripts to clone.",
+        "metadata": {
+          "card_id": "0c6041550953ada78b5ad4a1",
+          "content_hash": "15e6a044f85881128188227a462dae031106d2e83ce20e78beb103d4125ea1b9",
+          "schema_version": 1,
+          "classification_method": "model-inference-v1",
+          "classification_status": "inferred",
+          "domain": "ad-copy-deployment",
+          "knowledge_type": "tactic",
+          "roles": [
+            "growth"
+          ],
+          "durability": "durable",
+          "tasks": [
+            "email-sms",
+            "customer-research"
+          ],
+          "platform_mentions": [],
+          "applies_when": "Filling launch sequence gaps with social proof and objection handling for a store offer.",
+          "conditions": [
+            "Objection mapping requires you to already know what blocks purchase; do the customer-research step if not.",
+            "The presenter's phrasing examples are templates to adapt, not scripts to clone."
+          ],
+          "evidence_type": "source-guidance-unverified",
+          "source_date": null,
+          "last_verified_at": null,
+          "next_review_at": null,
+          "verification_policy": "assess-source-and-task-fit",
+          "label_request_id": "466a014cc3e1c668b9ecdee7ea6c2ed980cc212d5423fc792baee16eb3d24152"
+        }
+      },
+      {
+        "id": "059f73755fa8a54856dc04f6",
+        "text": "[059f73755fa8a54856dc04f6] Use Klaviyo metrics as flow triggers and personalisation filters\nApplies when: Building or debugging flows, especially abandoned checkout/cart, and building personalised dynamic content.\n- Understand the three metric sources: Klaviyo-native (received email, opened, clicked, unsubscribed, marked spam, dropped), Shopify (ordered product, placed order, fulfilled, refunded, checkout started, order cancelled), and API/integration events from other apps.\n- Use metrics as flow triggers. The source's example: the 'Checkout Started' metric triggers the abandoned-checkout flow, with the first email sent about 2 hours later.\n- Use metrics as filters and conditions for who should receive an email and who should not — e.g. don't send a first-purchase offer to someone with a 'Placed Order' metric in their history.\n- Use metric properties for personalisation — an order metric carries what was purchased and for how much, enabling conditional and dynamic content.\n- Confirm each required event is actually firing end-to-end (place a test order, start a test checkout) before relying on it as a trigger, since missing metrics mean silent flow failures.\nCondition: Because events drive triggers, a broken integration produces no errors — flows simply never fire. Test after every app or theme change.\nCondition: Event names differ between Shopify and any custom API implementations; map them deliberately.",
+        "metadata": {
+          "card_id": "059f73755fa8a54856dc04f6",
+          "content_hash": "6d504878b79ccbade1ee9daa0d0ccaf294ed7c9de68a39ed1dd7b190efac8013",
+          "schema_version": 1,
+          "classification_method": "model-inference-v1",
+          "classification_status": "inferred",
+          "domain": "email-lifecycle",
+          "knowledge_type": "procedure",
+          "roles": [
+            "operations"
+          ],
+          "durability": "periodically-changing",
+          "tasks": [
+            "email-sms"
+          ],
+          "platform_mentions": [
+            "klaviyo"
+          ],
+          "applies_when": "Building or debugging flows, especially abandoned checkout/cart, and building personalised dynamic content.",
+          "conditions": [
+            "Because events drive triggers, a broken integration produces no errors — flows simply never fire. Test after every app or theme change.",
+            "Event names differ between Shopify and any custom API implementations; map them deliberately."
+          ],
+          "evidence_type": "source-guidance-unverified",
+          "source_date": null,
+          "last_verified_at": null,
+          "next_review_at": null,
+          "verification_policy": "check-current-details-before-execution",
+          "label_request_id": "55a7d14c15a7bd0c24944c44f5ea84e2486fcef56024c66d5103744e2e42a874"
+        }
+      },
+      {
+        "id": "909e75c1eb8da6d99b606aa0",
+        "text": "[909e75c1eb8da6d99b606aa0] Fix Browse Abandonment Filters and Link to the Viewed Product\nApplies when: Setting up the browse abandonment flow for shoppers who viewed a product but took no further action.\n- Use Klaviyo's browse abandonment template (trigger: viewed product), but note the default profile filters only exclude checkout started and placed order.\n- Add the missing filter: added to cart zero times since starting this flow, so only shoppers who haven't moved down the funnel receive it.\n- Keep 'has not been in flow in the last 30 days' as a reasonable default for most brands, since browse-stage interest doesn't justify frequent reminders.\n- Approve the source's warning about browse abandonment objectives: purchase intent is lower, so write copy that acknowledges this and consider suggesting other products.\n- Emphasize social proof heavily for this audience, as they haven't signaled purchase interest yet.\n- Branch prospects vs. existing customers and show the viewed products via the dynamic table; replace the template's organization-URL link with the product URL from the viewed-product event so 'shop now' goes to the product page, reducing friction.\nCondition: The 30-day flow re-entry window is the source's default preference, not a calculated rule.\nCondition: The source recommends more than the single email Klaviyo provides by default.",
+        "metadata": {
+          "card_id": "909e75c1eb8da6d99b606aa0",
+          "content_hash": "622bb3431c8f6a7d907202d88c7e2fff6f1a35b2a177dcc340ced0ac8443304a",
+          "schema_version": 1,
+          "classification_method": "model-inference-v1",
+          "classification_status": "inferred",
+          "domain": "email-lifecycle",
+          "knowledge_type": "procedure",
+          "roles": [
+            "growth"
+          ],
+          "durability": "periodically-changing",
+          "tasks": [
+            "email-sms",
+            "product-page"
+          ],
+          "platform_mentions": [
+            "klaviyo"
+          ],
+          "applies_when": "Setting up the browse abandonment flow for shoppers who viewed a product but took no further action.",
+          "conditions": [
+            "The 30-day flow re-entry window is the source's default preference, not a calculated rule.",
+            "The source recommends more than the single email Klaviyo provides by default."
+          ],
+          "evidence_type": "source-guidance-unverified",
+          "source_date": null,
+          "last_verified_at": null,
+          "next_review_at": null,
+          "verification_policy": "check-current-details-before-execution",
+          "label_request_id": "9e3c3d12b5808d2bb492fe75ddefcdbd7f281cbba10372657469720ff44d69e6"
+        }
+      },
+      {
+        "id": "5a403376e7b5759cb3b73d7b",
+        "text": "[5a403376e7b5759cb3b73d7b] Write Email Sequences From an Outline Before Drafting\nApplies when: Starting any ecommerce email campaign — launch, welcome, replenishment or abandoned-cart — and deciding where to begin.\n- Commit to a quantity up front before writing anything. The source uses ten emails for a launch and seven for a welcome sequence as defaults; deviate only deliberately.\n- Build an outline row-by-row for each email: number it 1 through N, then for each write out subject, preview text, story, today's content and PS content.\n- Fill in the outline like kindergarten class — literally write email one, email two, email three, and so on.\n- Make sure the outline expresses the through-line of the whole sequence and what each email contributes to the broader objective.\n- Start writing as soon as possible after the outline so you're not staring at a blank page unprepared.\nCondition: The 10-for-launch and 7-for-welcome numbers are the presenter's defaults, described as classic standards, not universal requirements.\nCondition: A too-short or too-long sequence may not fit your catalog or list — the point is deciding the count on purpose.",
+        "metadata": {
+          "card_id": "5a403376e7b5759cb3b73d7b",
+          "content_hash": "801abbe18c8235d415fea0fd3f06b095f064f56dd2815313b10343b16ff8122d",
+          "schema_version": 1,
+          "classification_method": "model-inference-v1",
+          "classification_status": "inferred",
+          "domain": "ad-copy-deployment",
+          "knowledge_type": "procedure",
+          "roles": [
+            "growth"
+          ],
+          "durability": "durable",
+          "tasks": [
+            "email-sms"
+          ],
+          "platform_mentions": [],
+          "applies_when": "Starting any ecommerce email campaign — launch, welcome, replenishment or abandoned-cart — and deciding where to begin.",
+          "conditions": [
+            "The 10-for-launch and 7-for-welcome numbers are the presenter's defaults, described as classic standards, not universal requirements.",
+            "A too-short or too-long sequence may not fit your catalog or list — the point is deciding the count on purpose."
+          ],
+          "evidence_type": "source-guidance-unverified",
+          "source_date": null,
+          "last_verified_at": null,
+          "next_review_at": null,
+          "verification_policy": "assess-source-and-task-fit",
+          "label_request_id": "466a014cc3e1c668b9ecdee7ea6c2ed980cc212d5423fc792baee16eb3d24152"
+        }
+      },
+      {
+        "id": "03b1898ead397355565d2be7",
+        "text": "[03b1898ead397355565d2be7] Segment exit-intent offers by funnel stage\nApplies when: Setting up exit-intent popups or abandoned-cart/checkout email and SMS flows.\n- Split exits into three stages: browsing, added-to-basket, and reached-checkout.\n- For pure browsers (no commitment, still product-aware), be generous and add urgency to give a reason to buy.\n- For basket-abandoners (showing intent, may just need a day or two), avoid giving away all margin — offer only something small.\n- For checkout-abandoners, don't lead with a discount; instead use risk reversal or a shipping offer, because the source judges them likely to buy within a couple of days anyway and warns that discounting here surrenders margin unnecessarily.\n- The source is sceptical of browser-exit popups as gimmicky and says an abandoned-flow email sequence is an alternative — choose which to prioritise based on your flow data.\nCondition: The 'likely to buy within 2–3 days' expectation is the presenter's assertion, not a measured figure.\nCondition: Exit intent should be measured as a cohort to confirm the assumption holds for your store before relying on it.",
+        "metadata": {
+          "card_id": "03b1898ead397355565d2be7",
+          "content_hash": "e68cc62abeeb3fef52c64c26737efa58e047ce1004cdaeff9f2db78693b31b09",
+          "schema_version": 1,
+          "classification_method": "model-inference-v1",
+          "classification_status": "inferred",
+          "domain": "multi",
+          "knowledge_type": "procedure",
+          "roles": [
+            "growth"
+          ],
+          "durability": "durable",
+          "tasks": [
+            "email-sms",
+            "checkout-conversion"
+          ],
+          "platform_mentions": [],
+          "applies_when": "Setting up exit-intent popups or abandoned-cart/checkout email and SMS flows.",
+          "conditions": [
+            "The 'likely to buy within 2–3 days' expectation is the presenter's assertion, not a measured figure.",
+            "Exit intent should be measured as a cohort to confirm the assumption holds for your store before relying on it."
+          ],
+          "evidence_type": "source-guidance-unverified",
+          "source_date": null,
+          "last_verified_at": null,
+          "next_review_at": null,
+          "verification_policy": "assess-source-and-task-fit",
+          "label_request_id": "7a8c848ba67e79ff13200299606e72181dbe06117a793913c75668d3872b976f"
+        }
+      },
+      {
+        "id": "59621c0a5c221fb3e816a8b6",
+        "text": "[59621c0a5c221fb3e816a8b6] Build Emails Before Pages and VSLs\nApplies when: Choosing which copy asset to produce first for a store launch, welcome flow, abandoned-cart sequence or replenishment campaign.\n- Adopt the framing that a video sales letter and a sales page are sequences of emails strung together; each section (hook, story, offer, objection handling) maps to one email beat.\n- Because of that, master short email structures first: they are simple to write, easy to review, and easy to revise.\n- Set a working size of roughly 200-300 words per email as a reviewable unit rather than writing one giant page cold.\n- For a store, build the backbone of a launch or retention sequence as separate emails (curiosity, problem-agitate, story-based) and only then expand the strongest ones into a landing page or VSL.\n- Treat recurring flows (welcome, cart recovery, winback) as evergreen assets that keep producing value, unlike a one-off page.\nCondition: The 200-300 word target is a productivity heuristic from the source, not a proven conversion benchmark for any store.\nCondition: Recurring-revenue framing in the source is about the freelancer's income, not the store's; adapt the reasoning, not the claim.",
+        "metadata": {
+          "card_id": "59621c0a5c221fb3e816a8b6",
+          "content_hash": "10a6a00f66cf67fd8a15947a53e07445e21b21168ffbf121db73ede9fc027b71",
+          "schema_version": 1,
+          "classification_method": "model-inference-v1",
+          "classification_status": "inferred",
+          "domain": "ad-copy-deployment",
+          "knowledge_type": "procedure",
+          "roles": [
+            "growth"
+          ],
+          "durability": "durable",
+          "tasks": [
+            "email-sms",
+            "product-page",
+            "retention"
+          ],
+          "platform_mentions": [],
+          "applies_when": "Choosing which copy asset to produce first for a store launch, welcome flow, abandoned-cart sequence or replenishment campaign.",
+          "conditions": [
+            "The 200-300 word target is a productivity heuristic from the source, not a proven conversion benchmark for any store.",
+            "Recurring-revenue framing in the source is about the freelancer's income, not the store's; adapt the reasoning, not the claim."
+          ],
+          "evidence_type": "source-guidance-unverified",
+          "source_date": null,
+          "last_verified_at": null,
+          "next_review_at": null,
+          "verification_policy": "assess-source-and-task-fit",
+          "label_request_id": "14c6f371dcbc0fc8c92ac27a18013dad899eebf060318f277f745e1fd5547031"
+        }
+      }
+    ]
+  },
+  "system_prompt_sha256": "34593b470f575540992f151d4d7c08169944c99377816bff8d7019b6d41ef7dc"
+}

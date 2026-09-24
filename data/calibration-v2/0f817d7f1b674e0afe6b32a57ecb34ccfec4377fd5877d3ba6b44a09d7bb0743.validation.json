@@ -1,0 +1,1190 @@
+{
+  "summary": {
+    "case_index": 7,
+    "provider": "deepseek",
+    "effort": "high",
+    "request_id": "0f817d7f1b674e0afe6b32a57ecb34ccfec4377fd5877d3ba6b44a09d7bb0743",
+    "complete": true,
+    "completion_limit": 32768,
+    "units": 14,
+    "held": 2,
+    "errors": [],
+    "more_units": true,
+    "cost": 0.034117499999999995
+  },
+  "errors": [],
+  "candidates": [
+    {
+      "id": "6f0caaba090361aa5e78ed3e8fef1507371ccfaedd382a9f1740365d1bd5a458",
+      "unit": {
+        "id": "u1",
+        "kind": "action",
+        "title": "Disable unneeded WordPress assets",
+        "claim": {
+          "text": "The source recommends ticking all listed unnecessary asset options because they are not needed and may slightly improve performance.",
+          "quote": "So I'm just going to tick all of these because we don't need any of these particular assets and this should help with performance a little bit."
+        },
+        "action": {
+          "text": "Disable unneeded WordPress assets such as pingbacks, emojis, and dash icons for logged-out users.",
+          "quote": "We have remove and disable pingbacks, disable emojis, disable dash icons for logged out users, etc."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Unneeded WordPress assets are present.",
+              "quote": "we don't need any of these particular assets"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [
+          {
+            "text": "Save the changes after ticking the options.",
+            "quote": "Let's go ahead and save those changes."
+          }
+        ],
+        "unknowns": [
+          "The full list of asset options to tick is not specified beyond examples."
+        ],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1xw38NANCmS8DmKTMRPULxChkXGSPApKH",
+          "source_sha256": "29e019fd09450f700bea26ac7460276314f022222877081399b01193dd2a6826",
+          "locator": "body:14/paragraph",
+          "start": 19137,
+          "end": 19280,
+          "quote": "So I'm just going to tick all of these because we don't need any of these particular assets and this should help with performance a little bit."
+        },
+        {
+          "field": "action",
+          "source_id": "1xw38NANCmS8DmKTMRPULxChkXGSPApKH",
+          "source_sha256": "29e019fd09450f700bea26ac7460276314f022222877081399b01193dd2a6826",
+          "locator": "body:14/paragraph",
+          "start": 19037,
+          "end": 19136,
+          "quote": "We have remove and disable pingbacks, disable emojis, disable dash icons for logged out users, etc."
+        },
+        {
+          "field": "trigger.0",
+          "source_id": "1xw38NANCmS8DmKTMRPULxChkXGSPApKH",
+          "source_sha256": "29e019fd09450f700bea26ac7460276314f022222877081399b01193dd2a6826",
+          "locator": "body:14/paragraph",
+          "start": 19184,
+          "end": 19228,
+          "quote": "we don't need any of these particular assets"
+        },
+        {
+          "field": "completion.0",
+          "source_id": "1xw38NANCmS8DmKTMRPULxChkXGSPApKH",
+          "source_sha256": "29e019fd09450f700bea26ac7460276314f022222877081399b01193dd2a6826",
+          "locator": "body:14/paragraph",
+          "start": 19281,
+          "end": 19319,
+          "quote": "Let's go ahead and save those changes."
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "ff5a29ad2a09745f98fea33e9e7fd3348a0c0c181c5d85fb2237111802f174da",
+      "unit": {
+        "id": "u2",
+        "kind": "action",
+        "title": "Dequeue and deregister jQuery for logged-out users",
+        "claim": {
+          "text": "The source says jQuery loading for logged-out users can be removed with a code snippet that dequeues and deregisters jQuery and jQuery migrate.",
+          "quote": "we need to dq and dregister jQuery which will get rid of jQuery and jQuery migrate and all those dependencies."
+        },
+        "action": {
+          "text": "Add a filter for WP and Q scripts and dequeue and deregister jQuery.",
+          "quote": "All we have to do is add a filter for WP and Q scripts. and we need to dq and dregister jQuery which will get rid of jQuery and jQuery migrate and all those dependencies."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "jQuery is loading for logged-out users.",
+              "quote": "jQuery is actually loading for logged out users."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": [
+            {
+              "text": "A code snippet mechanism is available.",
+              "quote": "one way we can get rid of that is with a code snippet"
+            }
+          ]
+        },
+        "exclusions": {
+          "op": "any",
+          "args": [
+            {
+              "text": "Logged-in users need jQuery because the WordPress admin bar uses it.",
+              "quote": "It's necessary for loggedin users because the WordPress admin bar uses jQuery"
+            }
+          ]
+        },
+        "completion": [
+          {
+            "text": "Enable the snippet to remove jQuery for logged-out users on the front end.",
+            "quote": "So I'll go ahead and enable this snippet which will get rid of the jQuery bloat on the front end for logged out users."
+          }
+        ],
+        "unknowns": [
+          "The exact hook name and code are not fully shown; source says WP and Q scripts.",
+          "The condition builder setup is described but not reproduced in full."
+        ],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1xw38NANCmS8DmKTMRPULxChkXGSPApKH",
+          "source_sha256": "29e019fd09450f700bea26ac7460276314f022222877081399b01193dd2a6826",
+          "locator": "body:14/paragraph",
+          "start": 19870,
+          "end": 19980,
+          "quote": "we need to dq and dregister jQuery which will get rid of jQuery and jQuery migrate and all those dependencies."
+        },
+        {
+          "field": "action",
+          "source_id": "1xw38NANCmS8DmKTMRPULxChkXGSPApKH",
+          "source_sha256": "29e019fd09450f700bea26ac7460276314f022222877081399b01193dd2a6826",
+          "locator": "body:14/paragraph",
+          "start": 19810,
+          "end": 19980,
+          "quote": "All we have to do is add a filter for WP and Q scripts. and we need to dq and dregister jQuery which will get rid of jQuery and jQuery migrate and all those dependencies."
+        },
+        {
+          "field": "trigger.0",
+          "source_id": "1xw38NANCmS8DmKTMRPULxChkXGSPApKH",
+          "source_sha256": "29e019fd09450f700bea26ac7460276314f022222877081399b01193dd2a6826",
+          "locator": "body:14/paragraph",
+          "start": 19359,
+          "end": 19407,
+          "quote": "jQuery is actually loading for logged out users."
+        },
+        {
+          "field": "prerequisites.0",
+          "source_id": "1xw38NANCmS8DmKTMRPULxChkXGSPApKH",
+          "source_sha256": "29e019fd09450f700bea26ac7460276314f022222877081399b01193dd2a6826",
+          "locator": "body:14/paragraph",
+          "start": 19598,
+          "end": 19651,
+          "quote": "one way we can get rid of that is with a code snippet"
+        },
+        {
+          "field": "exclusions.0",
+          "source_id": "1xw38NANCmS8DmKTMRPULxChkXGSPApKH",
+          "source_sha256": "29e019fd09450f700bea26ac7460276314f022222877081399b01193dd2a6826",
+          "locator": "body:14/paragraph",
+          "start": 19408,
+          "end": 19485,
+          "quote": "It's necessary for loggedin users because the WordPress admin bar uses jQuery"
+        },
+        {
+          "field": "completion.0",
+          "source_id": "1xw38NANCmS8DmKTMRPULxChkXGSPApKH",
+          "source_sha256": "29e019fd09450f700bea26ac7460276314f022222877081399b01193dd2a6826",
+          "locator": "body:14/paragraph",
+          "start": 20690,
+          "end": 20808,
+          "quote": "So I'll go ahead and enable this snippet which will get rid of the jQuery bloat on the front end for logged out users."
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "089b892d0c380c708bc04fd3137abe4ce9d2f2d94759c81ef943b1e3d15fbd7d",
+      "unit": {
+        "id": "u3",
+        "kind": "action",
+        "title": "Unload WooCommerce assets on the landing page",
+        "claim": {
+          "text": "The source says Asset Cleanup is the easiest way to unload WooCommerce assets on specific pages.",
+          "quote": "the easiest way to unload stuff like that on specific pages is a plugin called asset cleanup"
+        },
+        "action": {
+          "text": "Activate Asset Cleanup, open the landing page, and use its metabox to unload specific WooCommerce assets.",
+          "quote": "you activate it and then go to pages, go to your landing page, and we'll have a new metab box here that allows us to unload specific things from this page."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "WooCommerce assets are loading on the landing page and are not needed in its current state.",
+              "quote": "we also had a bunch of Woo Commerce stuff loading which we don't need on the landing page in its current state."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [
+          {
+            "text": "Disable the rest of the WooCommerce assets and save.",
+            "quote": "So, we're just going to disable the rest of this Woo Commerce stuff. And then go ahead and save."
+          }
+        ],
+        "unknowns": [
+          "Which exact WooCommerce assets are safe to unload may vary; the source lists examples like brand styles, source buster, add to cart, block styles CSS, and jQuery block UI."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u16"
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1xw38NANCmS8DmKTMRPULxChkXGSPApKH",
+          "source_sha256": "29e019fd09450f700bea26ac7460276314f022222877081399b01193dd2a6826",
+          "locator": "body:14/paragraph",
+          "start": 20930,
+          "end": 21022,
+          "quote": "the easiest way to unload stuff like that on specific pages is a plugin called asset cleanup"
+        },
+        {
+          "field": "action",
+          "source_id": "1xw38NANCmS8DmKTMRPULxChkXGSPApKH",
+          "source_sha256": "29e019fd09450f700bea26ac7460276314f022222877081399b01193dd2a6826",
+          "locator": "body:14/paragraph",
+          "start": 21104,
+          "end": 21259,
+          "quote": "you activate it and then go to pages, go to your landing page, and we'll have a new metab box here that allows us to unload specific things from this page."
+        },
+        {
+          "field": "trigger.0",
+          "source_id": "1xw38NANCmS8DmKTMRPULxChkXGSPApKH",
+          "source_sha256": "29e019fd09450f700bea26ac7460276314f022222877081399b01193dd2a6826",
+          "locator": "body:14/paragraph",
+          "start": 20814,
+          "end": 20925,
+          "quote": "we also had a bunch of Woo Commerce stuff loading which we don't need on the landing page in its current state."
+        },
+        {
+          "field": "completion.0",
+          "source_id": "1xw38NANCmS8DmKTMRPULxChkXGSPApKH",
+          "source_sha256": "29e019fd09450f700bea26ac7460276314f022222877081399b01193dd2a6826",
+          "locator": "body:14/paragraph",
+          "start": 21949,
+          "end": 22045,
+          "quote": "So, we're just going to disable the rest of this Woo Commerce stuff. And then go ahead and save."
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "a3938fcc301a445b8af9859b6069117da108d344f39a5338dee44367aa516b50",
+      "unit": {
+        "id": "u4",
+        "kind": "warning",
+        "title": "Revisit unloaded WooCommerce assets if adding WooCommerce features",
+        "claim": {
+          "text": "The source warns to remember that WooCommerce assets were unloaded if WooCommerce features are later added to the landing page, such as a mini cart.",
+          "quote": "So, remember that you've unloaded this if you ever decide to add Woo Commerce features [music] to the landing page, like a mini cart, for instance."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Later adding WooCommerce features to the landing page.",
+              "quote": "if you ever decide to add Woo Commerce features [music] to the landing page"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1xw38NANCmS8DmKTMRPULxChkXGSPApKH",
+          "source_sha256": "29e019fd09450f700bea26ac7460276314f022222877081399b01193dd2a6826",
+          "locator": "body:14/paragraph",
+          "start": 21474,
+          "end": 21621,
+          "quote": "So, remember that you've unloaded this if you ever decide to add Woo Commerce features [music] to the landing page, like a mini cart, for instance."
+        },
+        {
+          "field": "trigger.0",
+          "source_id": "1xw38NANCmS8DmKTMRPULxChkXGSPApKH",
+          "source_sha256": "29e019fd09450f700bea26ac7460276314f022222877081399b01193dd2a6826",
+          "locator": "body:14/paragraph",
+          "start": 21513,
+          "end": 21588,
+          "quote": "if you ever decide to add Woo Commerce features [music] to the landing page"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "55525332b6b23462c4ece18ad643adbd577b28f0a3f2341f910a49d42f8be730",
+      "unit": {
+        "id": "u6",
+        "kind": "action",
+        "title": "Load Google Fonts locally as WAFT 2 files",
+        "claim": {
+          "text": "The source wants to load Google Fonts locally instead of embedding or calling Google Fonts, and needs WAFT 2 files to load them as web fonts in WordPress.",
+          "quote": "I need them to be.Waft 2 files in order to be able to load them as web fonts in WordPress."
+        },
+        "action": {
+          "text": "Download the font files and convert them to WAFT 2 files for WordPress.",
+          "quote": "Once I have the font files downloaded, I'm going to have TTF files for the fonts, but I need them to be.Waft 2 files in order to be able to load them as web fonts in WordPress."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Google Fonts are embedded or make calls out to Google Fonts.",
+              "quote": "instead of embedding these or anything else that's going to make a call out to Google Fonts"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Font files are downloaded as TTF.",
+              "quote": "I'm going to have TTF files for the fonts"
+            }
+          ]
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [
+          {
+            "text": "Obtain WAFT 2 files usable in WordPress.",
+            "quote": "it will give us some WAFT 2 files that we can then use in WordPress"
+          }
+        ],
+        "unknowns": [
+          "The term WAFT 2 appears to refer to a web font format but is not normalized in the source.",
+          "Exact font styles and sizes to download are not fully specified."
+        ],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1xw38NANCmS8DmKTMRPULxChkXGSPApKH",
+          "source_sha256": "29e019fd09450f700bea26ac7460276314f022222877081399b01193dd2a6826",
+          "locator": "body:14/paragraph",
+          "start": 22754,
+          "end": 22844,
+          "quote": "I need them to be.Waft 2 files in order to be able to load them as web fonts in WordPress."
+        },
+        {
+          "field": "action",
+          "source_id": "1xw38NANCmS8DmKTMRPULxChkXGSPApKH",
+          "source_sha256": "29e019fd09450f700bea26ac7460276314f022222877081399b01193dd2a6826",
+          "locator": "body:14/paragraph",
+          "start": 22668,
+          "end": 22844,
+          "quote": "Once I have the font files downloaded, I'm going to have TTF files for the fonts, but I need them to be.Waft 2 files in order to be able to load them as web fonts in WordPress."
+        },
+        {
+          "field": "trigger.0",
+          "source_id": "1xw38NANCmS8DmKTMRPULxChkXGSPApKH",
+          "source_sha256": "29e019fd09450f700bea26ac7460276314f022222877081399b01193dd2a6826",
+          "locator": "body:14/paragraph",
+          "start": 22540,
+          "end": 22631,
+          "quote": "instead of embedding these or anything else that's going to make a call out to Google Fonts"
+        },
+        {
+          "field": "prerequisites.0",
+          "source_id": "1xw38NANCmS8DmKTMRPULxChkXGSPApKH",
+          "source_sha256": "29e019fd09450f700bea26ac7460276314f022222877081399b01193dd2a6826",
+          "locator": "body:14/paragraph",
+          "start": 22707,
+          "end": 22748,
+          "quote": "I'm going to have TTF files for the fonts"
+        },
+        {
+          "field": "completion.0",
+          "source_id": "1xw38NANCmS8DmKTMRPULxChkXGSPApKH",
+          "source_sha256": "29e019fd09450f700bea26ac7460276314f022222877081399b01193dd2a6826",
+          "locator": "body:14/paragraph",
+          "start": 22979,
+          "end": 23046,
+          "quote": "it will give us some WAFT 2 files that we can then use in WordPress"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "c30b2e37487c36615dba7552c04b5dfb215e14e9570d34803e754b2bade562f7",
+      "unit": {
+        "id": "u7",
+        "kind": "action",
+        "title": "Convert fonts with Font Squirrel web font generator",
+        "claim": {
+          "text": "The source has used Font Squirrel's web font generator to convert fonts and get WAFT 2 files for WordPress.",
+          "quote": "One website I've used to do this before is called Font Squirrel and we can go over to web font generator."
+        },
+        "action": {
+          "text": "Upload fonts to Font Squirrel's web font generator to produce WAFT 2 files.",
+          "quote": "We can upload our fonts and it will give us some WAFT 2 files that we can then use in WordPress."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Need to convert downloaded fonts to WAFT 2 files.",
+              "quote": "I need them to be.Waft 2 files"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": [
+            {
+              "text": "Font Squirrel did not work for all fonts the source wanted to use.",
+              "quote": "in my testing, this didn't work for all of the fonts that I wanted to use"
+            }
+          ]
+        },
+        "completion": [
+          {
+            "text": "Get WAFT 2 files usable in WordPress.",
+            "quote": "it will give us some WAFT 2 files that we can then use in WordPress"
+          }
+        ],
+        "unknowns": [
+          "Why Font Squirrel failed is uncertain; source speculates it might be because one font is a variable font."
+        ],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1xw38NANCmS8DmKTMRPULxChkXGSPApKH",
+          "source_sha256": "29e019fd09450f700bea26ac7460276314f022222877081399b01193dd2a6826",
+          "locator": "body:14/paragraph",
+          "start": 22845,
+          "end": 22950,
+          "quote": "One website I've used to do this before is called Font Squirrel and we can go over to web font generator."
+        },
+        {
+          "field": "action",
+          "source_id": "1xw38NANCmS8DmKTMRPULxChkXGSPApKH",
+          "source_sha256": "29e019fd09450f700bea26ac7460276314f022222877081399b01193dd2a6826",
+          "locator": "body:14/paragraph",
+          "start": 22951,
+          "end": 23047,
+          "quote": "We can upload our fonts and it will give us some WAFT 2 files that we can then use in WordPress."
+        },
+        {
+          "field": "trigger.0",
+          "source_id": "1xw38NANCmS8DmKTMRPULxChkXGSPApKH",
+          "source_sha256": "29e019fd09450f700bea26ac7460276314f022222877081399b01193dd2a6826",
+          "locator": "body:14/paragraph",
+          "start": 22754,
+          "end": 22784,
+          "quote": "I need them to be.Waft 2 files"
+        },
+        {
+          "field": "exclusions.0",
+          "source_id": "1xw38NANCmS8DmKTMRPULxChkXGSPApKH",
+          "source_sha256": "29e019fd09450f700bea26ac7460276314f022222877081399b01193dd2a6826",
+          "locator": "body:14/paragraph",
+          "start": 23053,
+          "end": 23126,
+          "quote": "in my testing, this didn't work for all of the fonts that I wanted to use"
+        },
+        {
+          "field": "completion.0",
+          "source_id": "1xw38NANCmS8DmKTMRPULxChkXGSPApKH",
+          "source_sha256": "29e019fd09450f700bea26ac7460276314f022222877081399b01193dd2a6826",
+          "locator": "body:14/paragraph",
+          "start": 22979,
+          "end": 23046,
+          "quote": "it will give us some WAFT 2 files that we can then use in WordPress"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "6cdcdec826067f4cd67b79ca8c1baf626ddf07b0e2fa3cfa029f6e22e1aeb5a5",
+      "unit": {
+        "id": "u8",
+        "kind": "action",
+        "title": "Use Google Web Fonts Helper as an alternative converter",
+        "claim": {
+          "text": "The source found Google Web Fonts Helper works well for converting fonts when Font Squirrel did not.",
+          "quote": "I found another tool that works really well, and it's called the Google Web Fonts Helper."
+        },
+        "action": {
+          "text": "Select the font from Google, pick styles and sizes, and download the font files using Google Web Fonts Helper.",
+          "quote": "here we can select our font from Google, and then we can pick which styles and sizes we want, and then we can download the font files."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Font Squirrel did not work for all desired fonts.",
+              "quote": "this didn't work for all of the fonts that I wanted to use"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [
+          {
+            "text": "Get font files usable in WordPress.",
+            "quote": "this is going to give you somewhat 2 files that you can use in WordPress"
+          }
+        ],
+        "unknowns": [
+          "The exact URL is described as wacky and included only in the video description.",
+          "The term somewhat 2 files is not normalized in the source."
+        ],
+        "relations": [
+          {
+            "kind": "alternative_to",
+            "target": "u7"
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1xw38NANCmS8DmKTMRPULxChkXGSPApKH",
+          "source_sha256": "29e019fd09450f700bea26ac7460276314f022222877081399b01193dd2a6826",
+          "locator": "body:14/paragraph",
+          "start": 23193,
+          "end": 23282,
+          "quote": "I found another tool that works really well, and it's called the Google Web Fonts Helper."
+        },
+        {
+          "field": "action",
+          "source_id": "1xw38NANCmS8DmKTMRPULxChkXGSPApKH",
+          "source_sha256": "29e019fd09450f700bea26ac7460276314f022222877081399b01193dd2a6826",
+          "locator": "body:14/paragraph",
+          "start": 23385,
+          "end": 23519,
+          "quote": "here we can select our font from Google, and then we can pick which styles and sizes we want, and then we can download the font files."
+        },
+        {
+          "field": "trigger.0",
+          "source_id": "1xw38NANCmS8DmKTMRPULxChkXGSPApKH",
+          "source_sha256": "29e019fd09450f700bea26ac7460276314f022222877081399b01193dd2a6826",
+          "locator": "body:14/paragraph",
+          "start": 23068,
+          "end": 23126,
+          "quote": "this didn't work for all of the fonts that I wanted to use"
+        },
+        {
+          "field": "completion.0",
+          "source_id": "1xw38NANCmS8DmKTMRPULxChkXGSPApKH",
+          "source_sha256": "29e019fd09450f700bea26ac7460276314f022222877081399b01193dd2a6826",
+          "locator": "body:14/paragraph",
+          "start": 23527,
+          "end": 23599,
+          "quote": "this is going to give you somewhat 2 files that you can use in WordPress"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "87e5f81540b6ebb754e85dca12b0c6aa20c89d22baf0b7f7565a607d4665c3f5",
+      "unit": {
+        "id": "u10",
+        "kind": "action",
+        "title": "Switch font variables to local versions",
+        "claim": {
+          "text": "The source switched body and heading font variables to the local versions so all body text and headings use local fonts.",
+          "quote": "I just need to switch these to the local versions. So I need to go to interlocal and libre Baskerville local."
+        },
+        "action": {
+          "text": "Change the body and heading font variables to the local font versions.",
+          "quote": "I just need to switch these to the local versions."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Custom local fonts have been added to the site.",
+              "quote": "Once that's done, what I did is I went into my variables where I've set up my fonts for my body and headings."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [
+          {
+            "text": "Body text and headings switch to local versions.",
+            "quote": "all my body text and headings will switch to the local versions of these fonts because I changed it on the variable level"
+          }
+        ],
+        "unknowns": [],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u9"
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1xw38NANCmS8DmKTMRPULxChkXGSPApKH",
+          "source_sha256": "29e019fd09450f700bea26ac7460276314f022222877081399b01193dd2a6826",
+          "locator": "body:14/paragraph",
+          "start": 24903,
+          "end": 25012,
+          "quote": "I just need to switch these to the local versions. So I need to go to interlocal and libre Baskerville local."
+        },
+        {
+          "field": "action",
+          "source_id": "1xw38NANCmS8DmKTMRPULxChkXGSPApKH",
+          "source_sha256": "29e019fd09450f700bea26ac7460276314f022222877081399b01193dd2a6826",
+          "locator": "body:14/paragraph",
+          "start": 24903,
+          "end": 24953,
+          "quote": "I just need to switch these to the local versions."
+        },
+        {
+          "field": "trigger.0",
+          "source_id": "1xw38NANCmS8DmKTMRPULxChkXGSPApKH",
+          "source_sha256": "29e019fd09450f700bea26ac7460276314f022222877081399b01193dd2a6826",
+          "locator": "body:14/paragraph",
+          "start": 24789,
+          "end": 24898,
+          "quote": "Once that's done, what I did is I went into my variables where I've set up my fonts for my body and headings."
+        },
+        {
+          "field": "completion.0",
+          "source_id": "1xw38NANCmS8DmKTMRPULxChkXGSPApKH",
+          "source_sha256": "29e019fd09450f700bea26ac7460276314f022222877081399b01193dd2a6826",
+          "locator": "body:14/paragraph",
+          "start": 25044,
+          "end": 25165,
+          "quote": "all my body text and headings will switch to the local versions of these fonts because I changed it on the variable level"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "03492ecee5f5165c127c8d25604a12b37706ea8c22225689a0923093fad9ed73",
+      "unit": {
+        "id": "u11",
+        "kind": "action",
+        "title": "Enable caching and compression on the server",
+        "claim": {
+          "text": "The source says the final tweak is to turn on caching and compression.",
+          "quote": "As our final tweak, we can turn on caching and compression"
+        },
+        "action": {
+          "text": "Turn on gzip compression and caching on the server.",
+          "quote": "I'm going to go enable both gzip compression and caching on my server"
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Core performance fundamentals have been addressed and further speed improvements are wanted.",
+              "quote": "Now that we've taken care of a bunch of our fundamentals"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Core issues have been addressed first.",
+              "quote": "if you don't take care of some of the core issues we've addressed first"
+            }
+          ]
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [
+          {
+            "text": "Response headers show gzip compression and cache hit.",
+            "quote": "you can see now we have content encoding gzip, which tells us we have compression enabled. And then we have this x-cache response header that says hit."
+          }
+        ],
+        "unknowns": [
+          "Server-specific steps for enabling compression and caching vary; the source used Cloudways and Breeze."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u13"
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1xw38NANCmS8DmKTMRPULxChkXGSPApKH",
+          "source_sha256": "29e019fd09450f700bea26ac7460276314f022222877081399b01193dd2a6826",
+          "locator": "body:14/paragraph",
+          "start": 25881,
+          "end": 25939,
+          "quote": "As our final tweak, we can turn on caching and compression"
+        },
+        {
+          "field": "action",
+          "source_id": "1xw38NANCmS8DmKTMRPULxChkXGSPApKH",
+          "source_sha256": "29e019fd09450f700bea26ac7460276314f022222877081399b01193dd2a6826",
+          "locator": "body:14/paragraph",
+          "start": 27731,
+          "end": 27800,
+          "quote": "I'm going to go enable both gzip compression and caching on my server"
+        },
+        {
+          "field": "trigger.0",
+          "source_id": "1xw38NANCmS8DmKTMRPULxChkXGSPApKH",
+          "source_sha256": "29e019fd09450f700bea26ac7460276314f022222877081399b01193dd2a6826",
+          "locator": "body:14/paragraph",
+          "start": 26183,
+          "end": 26239,
+          "quote": "Now that we've taken care of a bunch of our fundamentals"
+        },
+        {
+          "field": "prerequisites.0",
+          "source_id": "1xw38NANCmS8DmKTMRPULxChkXGSPApKH",
+          "source_sha256": "29e019fd09450f700bea26ac7460276314f022222877081399b01193dd2a6826",
+          "locator": "body:14/paragraph",
+          "start": 26110,
+          "end": 26181,
+          "quote": "if you don't take care of some of the core issues we've addressed first"
+        },
+        {
+          "field": "completion.0",
+          "source_id": "1xw38NANCmS8DmKTMRPULxChkXGSPApKH",
+          "source_sha256": "29e019fd09450f700bea26ac7460276314f022222877081399b01193dd2a6826",
+          "locator": "body:14/paragraph",
+          "start": 28441,
+          "end": 28592,
+          "quote": "you can see now we have content encoding gzip, which tells us we have compression enabled. And then we have this x-cache response header that says hit."
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "f4ec51487a56de7725f3675c0ec5766e508bc2f69c40b00e6ed390bf1a5adc17",
+      "unit": {
+        "id": "u12",
+        "kind": "action",
+        "title": "Check caching and compression via response headers",
+        "claim": {
+          "text": "The source shows how to check whether caching and compression are enabled by inspecting DevTools network response headers.",
+          "quote": "Let me show you first how to check whether they're enabled in the first place."
+        },
+        "action": {
+          "text": "Open DevTools, go to Network, refresh with preserve log enabled, and inspect the first request's response headers for caching and content encoding gzip.",
+          "quote": "we'll go into our dev tools and go to the network tab. We're going to refresh. Make sure preserve log is enabled."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Need to verify whether caching and compression are enabled.",
+              "quote": "check whether they're enabled in the first place"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [
+          {
+            "text": "See caching-related header such as Xcache hit and content encoding gzip.",
+            "quote": "you should see something like Xcache or something that says hit related to caching. You should also see content encoding and it should mention gzip"
+          }
+        ],
+        "unknowns": [
+          "Exact header names may vary by server."
+        ],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1xw38NANCmS8DmKTMRPULxChkXGSPApKH",
+          "source_sha256": "29e019fd09450f700bea26ac7460276314f022222877081399b01193dd2a6826",
+          "locator": "body:14/paragraph",
+          "start": 27030,
+          "end": 27108,
+          "quote": "Let me show you first how to check whether they're enabled in the first place."
+        },
+        {
+          "field": "action",
+          "source_id": "1xw38NANCmS8DmKTMRPULxChkXGSPApKH",
+          "source_sha256": "29e019fd09450f700bea26ac7460276314f022222877081399b01193dd2a6826",
+          "locator": "body:14/paragraph",
+          "start": 27113,
+          "end": 27226,
+          "quote": "we'll go into our dev tools and go to the network tab. We're going to refresh. Make sure preserve log is enabled."
+        },
+        {
+          "field": "trigger.0",
+          "source_id": "1xw38NANCmS8DmKTMRPULxChkXGSPApKH",
+          "source_sha256": "29e019fd09450f700bea26ac7460276314f022222877081399b01193dd2a6826",
+          "locator": "body:14/paragraph",
+          "start": 27059,
+          "end": 27107,
+          "quote": "check whether they're enabled in the first place"
+        },
+        {
+          "field": "completion.0",
+          "source_id": "1xw38NANCmS8DmKTMRPULxChkXGSPApKH",
+          "source_sha256": "29e019fd09450f700bea26ac7460276314f022222877081399b01193dd2a6826",
+          "locator": "body:14/paragraph",
+          "start": 27517,
+          "end": 27664,
+          "quote": "you should see something like Xcache or something that says hit related to caching. You should also see content encoding and it should mention gzip"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "2ee5fe005188e92606724a6e5132c870f036395682ac56f98524cb30441dd0c0",
+      "unit": {
+        "id": "u13",
+        "kind": "principle",
+        "title": "Treat caching and compression as band-aids after fundamentals",
+        "claim": {
+          "text": "The source says caching and compression can help a lot but are essentially a band-aid if core issues are not addressed first.",
+          "quote": "while they can help a lot, it's essentially just a band-aid if you don't take care of some of the core issues we've addressed first."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Considering caching and compression for WordPress speed.",
+              "quote": "the common answers to the question, how to speed up a WordPress site"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1xw38NANCmS8DmKTMRPULxChkXGSPApKH",
+          "source_sha256": "29e019fd09450f700bea26ac7460276314f022222877081399b01193dd2a6826",
+          "locator": "body:14/paragraph",
+          "start": 26050,
+          "end": 26182,
+          "quote": "while they can help a lot, it's essentially just a band-aid if you don't take care of some of the core issues we've addressed first."
+        },
+        {
+          "field": "trigger.0",
+          "source_id": "1xw38NANCmS8DmKTMRPULxChkXGSPApKH",
+          "source_sha256": "29e019fd09450f700bea26ac7460276314f022222877081399b01193dd2a6826",
+          "locator": "body:14/paragraph",
+          "start": 25941,
+          "end": 26009,
+          "quote": "the common answers to the question, how to speed up a WordPress site"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "bae93655cb1374865259bb2d3d36fe02686463d2eacf84ac7d35da32daeaea41",
+      "unit": {
+        "id": "u14",
+        "kind": "action",
+        "title": "Rerun performance tests after optimizations",
+        "claim": {
+          "text": "The source reruns tests on GTmetrix, PageSpeed Insights, and Gift of Speed to see performance after optimizations.",
+          "quote": "let's go ahead and rerun our tests and see where we're at."
+        },
+        "action": {
+          "text": "Rerun performance tests on GTmetrix, PageSpeed Insights, and Gift of Speed.",
+          "quote": "We'll run one on Page Speed Insights. We'll retest on GTMetrics. [music] And then we'll retest over here on Gift of Speed."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "After making performance optimizations.",
+              "quote": "Now, let's save that change. And let's go ahead and rerun our GTMetric support and take another look at this waterfall."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [
+          {
+            "text": "Obtain updated performance scores.",
+            "quote": "Our latest test on GTMetrics shows 98% performance, 97% structure, LCP of 1 second, and zero cls."
+          }
+        ],
+        "unknowns": [
+          "Test tools and scores are specific to the source's site and environment."
+        ],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1xw38NANCmS8DmKTMRPULxChkXGSPApKH",
+          "source_sha256": "29e019fd09450f700bea26ac7460276314f022222877081399b01193dd2a6826",
+          "locator": "body:14/paragraph",
+          "start": 26341,
+          "end": 26399,
+          "quote": "let's go ahead and rerun our tests and see where we're at."
+        },
+        {
+          "field": "action",
+          "source_id": "1xw38NANCmS8DmKTMRPULxChkXGSPApKH",
+          "source_sha256": "29e019fd09450f700bea26ac7460276314f022222877081399b01193dd2a6826",
+          "locator": "body:14/paragraph",
+          "start": 28732,
+          "end": 28854,
+          "quote": "We'll run one on Page Speed Insights. We'll retest on GTMetrics. [music] And then we'll retest over here on Gift of Speed."
+        },
+        {
+          "field": "trigger.0",
+          "source_id": "1xw38NANCmS8DmKTMRPULxChkXGSPApKH",
+          "source_sha256": "29e019fd09450f700bea26ac7460276314f022222877081399b01193dd2a6826",
+          "locator": "body:14/paragraph",
+          "start": 25167,
+          "end": 25286,
+          "quote": "Now, let's save that change. And let's go ahead and rerun our GTMetric support and take another look at this waterfall."
+        },
+        {
+          "field": "completion.0",
+          "source_id": "1xw38NANCmS8DmKTMRPULxChkXGSPApKH",
+          "source_sha256": "29e019fd09450f700bea26ac7460276314f022222877081399b01193dd2a6826",
+          "locator": "body:14/paragraph",
+          "start": 26400,
+          "end": 26497,
+          "quote": "Our latest test on GTMetrics shows 98% performance, 97% structure, LCP of 1 second, and zero cls."
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "8bfa685438b508b9ffffb944de6f391146ddfee5e15ad735b418f89ccb66b2b3",
+      "unit": {
+        "id": "u15",
+        "kind": "example",
+        "title": "High scores achieved before compression, caching, or CDN",
+        "claim": {
+          "text": "The source reports high performance scores before enabling compression, caching, or a CDN.",
+          "quote": "Again, this is all without having compression, without having caching enabled, and without a CDN."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "After fundamental asset and font optimizations but before enabling compression, caching, or CDN.",
+              "quote": "we've actually improved things quite a bit without gzip compression, caching, or a CDN enabled"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1xw38NANCmS8DmKTMRPULxChkXGSPApKH",
+          "source_sha256": "29e019fd09450f700bea26ac7460276314f022222877081399b01193dd2a6826",
+          "locator": "body:14/paragraph",
+          "start": 26893,
+          "end": 26990,
+          "quote": "Again, this is all without having compression, without having caching enabled, and without a CDN."
+        },
+        {
+          "field": "trigger.0",
+          "source_id": "1xw38NANCmS8DmKTMRPULxChkXGSPApKH",
+          "source_sha256": "29e019fd09450f700bea26ac7460276314f022222877081399b01193dd2a6826",
+          "locator": "body:14/paragraph",
+          "start": 26245,
+          "end": 26339,
+          "quote": "we've actually improved things quite a bit without gzip compression, caching, or a CDN enabled"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "9190845a43f46cc79ba5cfc2c12344d7497b42cd6038d49836d5f5f079331a5b",
+      "unit": {
+        "id": "u16",
+        "kind": "principle",
+        "title": "Asset Cleanup removes assets surgically on specific pages",
+        "claim": {
+          "text": "The source says Asset Cleanup lets you remove things on specific pages while keeping them active where needed.",
+          "quote": "Asset cleanup lets you kind of surgically remove things on specific pages while keeping stuff active where it needs to be."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Need to unload assets on specific pages without disabling them site-wide.",
+              "quote": "unload stuff like that on specific pages"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1xw38NANCmS8DmKTMRPULxChkXGSPApKH",
+          "source_sha256": "29e019fd09450f700bea26ac7460276314f022222877081399b01193dd2a6826",
+          "locator": "body:14/paragraph",
+          "start": 22126,
+          "end": 22248,
+          "quote": "Asset cleanup lets you kind of surgically remove things on specific pages while keeping stuff active where it needs to be."
+        },
+        {
+          "field": "trigger.0",
+          "source_id": "1xw38NANCmS8DmKTMRPULxChkXGSPApKH",
+          "source_sha256": "29e019fd09450f700bea26ac7460276314f022222877081399b01193dd2a6826",
+          "locator": "body:14/paragraph",
+          "start": 20949,
+          "end": 20989,
+          "quote": "unload stuff like that on specific pages"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    }
+  ],
+  "held": [
+    {
+      "index": 4,
+      "reason": "trigger.0: quote_not_exact"
+    },
+    {
+      "index": 8,
+      "reason": "action: quote_not_exact"
+    }
+  ],
+  "more_units": true,
+  "unresolved": [
+    "Source text is cut off at: And you can see that our score here is a little bit different. I",
+    "Term WAFT 2 and somewhat 2 files appear to refer to a web font format but are not normalized in the source.",
+    "Exact code for the jQuery snippet is not shown.",
+    "The initial sentence fragment ot using Gutenberg is completely unnecessary is incomplete."
+  ]
+}

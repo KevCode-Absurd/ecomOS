@@ -1,0 +1,555 @@
+{
+  "cards": [
+    {
+      "title": "Monthly email business review: campaign revenue decomposition",
+      "summary": "A repeatable month-over-month workflow for explaining why campaign revenue rose or fell by decomposing recipients, unique opens, unique clicks, conversions and AOV.",
+      "use_when": "Running a monthly email/retention performance review and you need to explain a revenue change rather than just report it.",
+      "steps": [
+        "Pull total store revenue (e.g. Shopify), attributed email revenue, and email's share of total revenue; note month-over-month change in the email share.",
+        "Break attributed revenue into campaign revenue vs flow revenue and note each one's month-over-month change separately — they move for different reasons.",
+        "Under campaign revenue, look at conversion value, revenue and total recipients, then the metric rows beneath.",
+        "Test the 'we just sent more' hypothesis first: if total recipients only rose a few percent (e.g. ~3.5%) while revenue rose 54%, volume is not the explanation.",
+        "Then read the chain: unique opens, open rate, unique clicks, click rate. In the source's example unique opens +13.6%, open rate +9.8%, unique clicks +15.6%, click rate +11%.",
+        "Find the outlier — in that example unique conversions +40% and order conversion rate from email +37% — and ask what merchandising or offer caused it (a sale, a launch, or just education content).",
+        "Close the loop by checking top-performing campaigns this month vs last month to see which specific sends drove the outlier.",
+        "Ladder the metrics back up: revenue per recipient and AOV should explain the remaining gap between click growth and revenue growth (source example: RPR +49%, AOV +17%)."
+      ],
+      "caveats": [
+        "The source's numbers are one client's first month with an agency, not a benchmark; treat them as an example of the diagnostic logic.",
+        "The source recommends building a custom dashboard tool for this at scale; Klaviyo's native reporting gives similar insight with more manual work. Verify the current Klaviyo interface.",
+        "Numeric stage bands here are heuristics, not calculations."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "measurement",
+        "email-analytics",
+        "campaign-reporting",
+        "revenue-per-recipient",
+        "retention"
+      ],
+      "id": "8183b1fcc7d0dc5f640ac819",
+      "source_id": "1grdlATLu0lJAmHQTZ_0MyExN3jVkt8xi",
+      "source_sha256": "6305409b97bb58ef4e8967d3ff99f3cde0bf6725a849a0291792799883f8c0dd",
+      "source_name": "2026 Klaviyo Email Marketing Full Course (3+ Hours).docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 5
+    },
+    {
+      "title": "Optimize for unique opens and unique clicks, not open rate and click rate",
+      "summary": "The source's stated agency philosophy: drive revenue by maximizing unique opens and unique clicks, accepting lower rates when sending more volume.",
+      "use_when": "Deciding whether to add campaign sends or widen a segment, and deciding which metrics to report on and optimize.",
+      "steps": [
+        "Translate every metric change into people counts: an open rate falling 10% while unique opens rise 40% means 40% more humans opened, all of whom are eligible to click.",
+        "Accept that sending three campaigns a week instead of one can mechanically lower open rate and click rate while raising unique clicks; do not treat the rate drop as failure.",
+        "Use unique opens as the leading indicator for how many people can act, and unique clicks as the leading indicator of real engagement and (per the source) inbox placement.",
+        "Watch for the source's stated pattern: unique conversions can rise far more than unique clicks (example: +15% clicks, +40% purchases) because of what happens on site — a sale or product launch, not the email alone.",
+        "Report unique metrics in your monthly review so volume decisions aren't punished by rate declines."
+      ],
+      "caveats": [
+        "This is an attributed agency opinion ('at Dispatch we optimize for unique clicks'), not a universal law; it makes most sense for accounts deliberately scaling send volume.",
+        "Attributed revenue and unique conversions depend on your attribution window and platform tracking, so verify before treating a 40% swing as causal."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "measurement",
+        "email-analytics",
+        "unique-clicks",
+        "deliverability",
+        "list-strategy"
+      ],
+      "id": "489a0deaff01f400fc058ee8",
+      "source_id": "1grdlATLu0lJAmHQTZ_0MyExN3jVkt8xi",
+      "source_sha256": "6305409b97bb58ef4e8967d3ff99f3cde0bf6725a849a0291792799883f8c0dd",
+      "source_name": "2026 Klaviyo Email Marketing Full Course (3+ Hours).docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 5
+    },
+    {
+      "title": "Diagnose falling email metrics by which metric moved",
+      "summary": "A decision map that attributes declining email performance to deliverability, content, or merchandising based on which metric is falling.",
+      "use_when": "A monthly review shows email revenue or engagement dropping and you need to decide where to investigate first.",
+      "steps": [
+        "If open rates and unique opens are falling dramatically, investigate deliverability and list health first (sending to unengaged cohorts, list growth quality, sender reputation).",
+        "If unique clicks or click rate are falling, treat it as a content/engagement problem — the emails or subject matter aren't landing with that audience.",
+        "If unique conversions and order conversion rate are falling while clicks hold, treat it as a merchandising and offer problem: the products, offers, and CTAs in the campaigns aren't compelling enough to make people buy.",
+        "Ignore small month-to-month noise — the source treats sub-5% moves as normal fluctuation and looks for jumps over ~10%.",
+        "Check overlap and volume before blaming content: too many sends to the same people depresses rates without any content problem."
+      ],
+      "caveats": [
+        "Apple Mail privacy protection inflates/unreliably measures opens, which is why the source distrusts open rate as a deliverability signal and prefers clicks.",
+        "These are diagnostic heuristics from the source, not statistically derived thresholds."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "measurement",
+        "deliverability",
+        "email-analytics",
+        "conversion-optimization",
+        "diagnostics"
+      ],
+      "id": "dccf91db3e0a02ad9444c772",
+      "source_id": "1grdlATLu0lJAmHQTZ_0MyExN3jVkt8xi",
+      "source_sha256": "6305409b97bb58ef4e8967d3ff99f3cde0bf6725a849a0291792799883f8c0dd",
+      "source_name": "2026 Klaviyo Email Marketing Full Course (3+ Hours).docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 5
+    },
+    {
+      "title": "Flow revenue review: traffic first, then the flow chain",
+      "summary": "How to review flow analytics month over month, starting with site traffic as the dominant driver and then localising the drop to a specific flow.",
+      "use_when": "Monthly retention review of automated flows (welcome, abandoned cart, abandoned checkout, winback) when flow revenue moved.",
+      "steps": [
+        "Gut-check site traffic first: flow revenue down ~30% is usually explained by ~30% fewer people seeing the popup, opting in, and entering the welcome flow. If traffic was up while flow revenue fell, that is the real red flag.",
+        "Split flow revenue into conversion value and recipients, then read recipients: up means more traffic or more emails added into the flows versus last month.",
+        "Read the engagement chain: unique opens, open rate, unique clicks, click rate. Ignore sub-5% moves; investigate >10% jumps.",
+        "If click rate fell meaningfully (example −15%), consider deliverability first, since opens are polluted by Apple Mail privacy; clicks are the primary placement signal.",
+        "Reconcile conversions vs revenue arithmetically: unique conversions −6% with revenue −15% implies AOV fell substantially — confirm in the AOV row (example: −15%).",
+        "Check AOV drivers: a sitewide sale (e.g. 15% off for the month) mechanically cuts flow AOV, as does dynamic content serving lower-priced products than the prior month.",
+        "Go to top-performing flows: expect welcome series then abandonment flows to lead; compare each flow's revenue to last month and open any flow with a large gap.",
+        "Inside a flow, use the per-email analytics to compare open and click rates against the prior month, and check skip counts for people being filtered out unintentionally."
+      ],
+      "caveats": [
+        "The source notes Klaviyo does not natively surface per-flow delivery/click/RPR trends in one view; they use an external dashboard. Verify current Klaviyo reporting.",
+        "AOV movement in flows is often outside email's control (sitewide promotions), so don't attribute it to email execution without checking."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "email-analytics",
+        "flows",
+        "retention",
+        "measurement",
+        "abandoned-cart"
+      ],
+      "id": "d2e68173f29a907e6b6d14af",
+      "source_id": "1grdlATLu0lJAmHQTZ_0MyExN3jVkt8xi",
+      "source_sha256": "6305409b97bb58ef4e8967d3ff99f3cde0bf6725a849a0291792799883f8c0dd",
+      "source_name": "2026 Klaviyo Email Marketing Full Course (3+ Hours).docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 5
+    },
+    {
+      "title": "Audit flow skip logic when a flow's revenue drops",
+      "summary": "The number-one thing the source checks when a specific flow's revenue falls is whether people are being skipped out of it by filters and triggers.",
+      "use_when": "A specific flow (welcome, cart, post-purchase) lost revenue month over month and you've ruled out traffic.",
+      "steps": [
+        "Open the flow and use the per-email analytics/skip view to compare this month against last month.",
+        "Read the skip count against deliveries as a ratio, not in isolation — the source gives an example of 620 skipped vs 190 delivered that they knew was intentional, versus cases where subscribers are skipped inadvertently.",
+        "Inspect trigger filters, conditional splits, and profile filters (e.g. 'has placed order 0 times since starting this flow') for conditions that are now excluding eligible people.",
+        "Check for overlap suppression: flows that don't send because the person is also receiving a campaign or another flow.",
+        "Fix unintended exclusions, then re-check opens, clicks, and purchases in the following period, since fewer deliveries mechanically ladders down to less of all three."
+      ],
+      "caveats": [
+        "A high skip count is not automatically a bug; it can be by design. The source only flags it as the first thing to examine, not as proof of a problem."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "flows",
+        "email-analytics",
+        "segmentation",
+        "retention",
+        "diagnostics"
+      ],
+      "id": "ac6fccd77bd7d1aab7bfcb31",
+      "source_id": "1grdlATLu0lJAmHQTZ_0MyExN3jVkt8xi",
+      "source_sha256": "6305409b97bb58ef4e8967d3ff99f3cde0bf6725a849a0291792799883f8c0dd",
+      "source_name": "2026 Klaviyo Email Marketing Full Course (3+ Hours).docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 5
+    },
+    {
+      "title": "Run one high-leverage campaign A/B test per month",
+      "summary": "Set up campaign split tests with placed order rate as the winning metric, 100% size distribution, and only one variable changed.",
+      "use_when": "Planning the monthly campaign experiment in Klaviyo or equivalent, and choosing what to test.",
+      "steps": [
+        "Build version A (control), then use the platform's 'create A/B test' option and choose content or send-time test. Verify button names in the current interface.",
+        "For send-time tests, keep the copy and design identical and vary only the send hour; the source suggests click rate as the winning metric there, since opens are unreliable.",
+        "For content tests, do not spend the test on subject line or preview text — the source says after hundreds of tests, email body content is the highest-leverage test.",
+        "Test high-leverage content variables: the offer, which product types are featured, imagery type (lifestyle vs product, single image vs four-image layout, static vs GIF), and CTA copy (e.g. 'shop now' vs 'save now').",
+        "Change exactly one thing between A and B. Do not vary subject line and content together, or stack a second content change on top — you won't know which change caused the result.",
+        "Set the winning metric to placed order rate rather than open rate or even clicks, because the goal of every test is revenue.",
+        "Keep size distribution at 100% for most brands so the whole audience is split 50/50; a 40% holdout that decides the winner is not statistically meaningful for typical list sizes.",
+        "Name variations descriptively (e.g. 'one image hero' vs 'four image hero') so the result is readable later.",
+        "Log the test in the experiments section so the learning rolls into the next month's planning."
+      ],
+      "caveats": [
+        "Source opinion: they always use placed order rate as the winning metric and say never to use open rate. This favours tests with enough volume to resolve on a downstream metric.",
+        "The source explicitly says most brands can't reach statistical significance on a partial-holdout test, so a 100% split is a volume-constrained compromise, not a significance guarantee."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "experiment-design",
+        "ab-testing",
+        "campaigns",
+        "conversion-optimization",
+        "measurement"
+      ],
+      "id": "659e9f913086495c15a7fb2e",
+      "source_id": "1grdlATLu0lJAmHQTZ_0MyExN3jVkt8xi",
+      "source_sha256": "6305409b97bb58ef4e8967d3ff99f3cde0bf6725a849a0291792799883f8c0dd",
+      "source_name": "2026 Klaviyo Email Marketing Full Course (3+ Hours).docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 5
+    },
+    {
+      "title": "Flow A/B tests with automatic distribution",
+      "summary": "Flow experiments differ from campaign tests because they run continuously, so the platform can shift traffic automatically toward the winner.",
+      "use_when": "Testing two versions of an email inside a flow (welcome, abandoned cart, post-purchase) while the flow stays live.",
+      "steps": [
+        "Open the specific email inside the flow, keep the current version as A, and use the create A/B test action at the bottom of that email.",
+        "Set the same style of winning metric logic you use for campaigns — the source favours placed order rate as the revenue-linked goal.",
+        "Because flows collect data continuously, select the automatic distribution option: the platform initially sends ~50/50 and shifts allocation as its model identifies a winner, then sends only the winner once significance is reached. Verify this option still exists in the current interface.",
+        "Change only one element between the two versions, exactly as with campaign tests.",
+        "Monitor progress in the experiments section rather than judging on the first few days."
+      ],
+      "caveats": [
+        "Automatic distribution depends on the platform's statistical model; results are only as trustworthy as the traffic volume in that flow email."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "experiment-design",
+        "ab-testing",
+        "flows",
+        "conversion-optimization",
+        "klaviyo"
+      ],
+      "id": "b5c1274e5d109e3371b97d9f",
+      "source_id": "1grdlATLu0lJAmHQTZ_0MyExN3jVkt8xi",
+      "source_sha256": "6305409b97bb58ef4e8967d3ff99f3cde0bf6725a849a0291792799883f8c0dd",
+      "source_name": "2026 Klaviyo Email Marketing Full Course (3+ Hours).docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 5
+    },
+    {
+      "title": "Reviewing completed and in-progress A/B tests",
+      "summary": "How the source decides to call a test and move on, including when to accept a high win probability without formal significance.",
+      "use_when": "Your monthly review of experiment results, or deciding whether to ship a variation and pick next month's test.",
+      "steps": [
+        "Open the experiment/flow A/B test view and compare version A and B on click rate and placed order rate, not on open rate.",
+        "Read the reported win probability. In the source's example, version A showed a 98% win probability, which they describe as not statistically significant but supported by enough data to act.",
+        "Consider account size: the source notes smaller brands may never reach formal significance even after several months of running a test.",
+        "When one version is clearly driving more revenue and the difference is meaningful, declare the winner, keep it live, and move on to planning the next test rather than waiting indefinitely.",
+        "Carry the learning into the test roadmap — for example, if four images beat one, treat that as a hypothesis to build on, not a permanent rule."
+      ],
+      "caveats": [
+        "Win probability is the platform's estimate, not proof; the source explicitly acknowledges the example was not statistically significant and still chose the winner.",
+        "This is a pragmatic agency judgment call, not a statistical standard — hold it to a higher bar for tests that would change pricing or core offer structure."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "experiment-design",
+        "ab-testing",
+        "measurement",
+        "campaigns",
+        "flows"
+      ],
+      "id": "bfa3ffd83c16e8a664648969",
+      "source_id": "1grdlATLu0lJAmHQTZ_0MyExN3jVkt8xi",
+      "source_sha256": "6305409b97bb58ef4e8967d3ff99f3cde0bf6725a849a0291792799883f8c0dd",
+      "source_name": "2026 Klaviyo Email Marketing Full Course (3+ Hours).docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 5
+    },
+    {
+      "title": "Monthly deliverability health check inside Klaviyo",
+      "summary": "Check account-level deliverability score, the recommended thresholds, and per-mailbox-provider reports every 30 days, with clicks as the primary placement signal.",
+      "use_when": "Monthly email operations review, or when open/click metrics have been sliding and you suspect inbox placement.",
+      "steps": [
+        "Open the deliverability tab and read the deliverability score, which the source says is based on open rates, click rates, bounce rates, unsubscribe rates, and spam complaint rates; track it over time.",
+        "Compare your account rates to the platform's recommended healthy ranges. The source cites: open rate above 33% considered okay; click rate above 1.2% considered okay; bounce rate under 1%; unsubscribe rate under 0.3%; spam complaint rate under 0.01%. Re-check these numbers in the current interface as they change.",
+        "Prioritize keeping bounce and spam complaint rates well under the guidelines — the source treats those two as the hard limits; unsubscribe slightly above the recommendation is described as tolerable when send volume drives more revenue.",
+        "Read both sides of the account: recent campaigns and your flows, since flows contribute separately to sender reputation.",
+        "Every ~30 days open the reports section to see performance by mailbox provider; in the source's example Gmail and Verizon sat near 63-70% opens while Hotmail/Outlook were ~46% with a lower click rate, and G Suite showed both high bounce and high unsubscribe rates.",
+        "For weak providers, build tightly engaged segments specific to those providers to stop deteriorating reputation there.",
+        "Verify placement with click rate rather than open rate, since Apple Mail privacy inflation has made opens unreliable."
+      ],
+      "caveats": [
+        "The thresholds above are Klaviyo's recommended values as presented in the source; verify current guidance before treating them as targets.",
+        "The source says deliverability problems generally stem from failing the basics (unengaged segments, excessive sending, flow/campaign overlap) rather than from technical setup."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "deliverability",
+        "measurement",
+        "list-health",
+        "segmentation",
+        "klaviyo"
+      ],
+      "id": "3dca25bfe5452f92f7482e6f",
+      "source_id": "1grdlATLu0lJAmHQTZ_0MyExN3jVkt8xi",
+      "source_sha256": "6305409b97bb58ef4e8967d3ff99f3cde0bf6725a849a0291792799883f8c0dd",
+      "source_name": "2026 Klaviyo Email Marketing Full Course (3+ Hours).docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 5
+    },
+    {
+      "title": "Recover inbox placement by tightening the engagement segment",
+      "summary": "When opens and clicks are steadily falling, shrink from a 90-day engaged segment to 30- or 60-day engaged, then expand again as metrics recover.",
+      "use_when": "Deliverability remediation: your usual engaged segment is no longer producing healthy open and click rates.",
+      "steps": [
+        "Confirm the trend is steady decline in both opens and clicks, not a one-month fluctuation (ignore sub-5% moves).",
+        "If you normally send to a 90-day engaged segment, switch campaign and flow sends to a 30-day or 60-day engaged segment so the audience is more recently active.",
+        "Hold that tighter segment until open and click rates climb back to healthy levels — the goal is to demonstrate to inbox providers that recipients want your mail.",
+        "Expand the window gradually (e.g. 30 → 60 → 90 days) rather than jumping straight back to the wide segment.",
+        "In parallel, check campaign/flow overlap so the same people aren't being hit twice, which drives unsubscribes and complaints."
+      ],
+      "caveats": [
+        "Tightening segments reduces short-term reach and revenue; the source frames it as a deliberate trade to repair reputation.",
+        "No recovery timeline is given in the source; expect it to depend on your volume and reputation damage."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "deliverability",
+        "segmentation",
+        "list-health",
+        "retention",
+        "campaigns"
+      ],
+      "id": "98d43fdb4da165c7bb888885",
+      "source_id": "1grdlATLu0lJAmHQTZ_0MyExN3jVkt8xi",
+      "source_sha256": "6305409b97bb58ef4e8967d3ff99f3cde0bf6725a849a0291792799883f8c0dd",
+      "source_name": "2026 Klaviyo Email Marketing Full Course (3+ Hours).docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 5
+    },
+    {
+      "title": "Dynamic content blocks to merge segmented campaigns into one send",
+      "summary": "Use show/hide logic on content blocks so a single campaign or flow email renders different offers, copy, or reminders based on saved profile properties.",
+      "use_when": "You would otherwise build two near-identical campaigns for different regions, tiers, or customer states (e.g. different free-shipping thresholds, unused acquisition offer, loyalty points balance).",
+      "steps": [
+        "Inside the email block, open the block settings and find the display / show-hide logic area (verify current naming in the interface).",
+        "Choose the profile property and set a condition, e.g. country equals United States.",
+        "Match formatting exactly: the property value you type must use the same spelling and letters as stored on the profile — check a real US profile to copy the exact string (e.g. 'United States').",
+        "Duplicate the block and invert the logic for everyone else (does not equal United States), then edit the copy for that group (e.g. free shipping over $150 instead of $100).",
+        "Preview against test profiles that have the property set and unset — the source shows that a profile with no country set falls into the 'not United States' branch by default, so decide whether that default is acceptable.",
+        "Apply the same technique to other data you hold: show reviews based on zero-party data, remind prospects of an unused acquisition offer, or tell existing customers their current loyalty points balance.",
+        "Keep the blocks' content substantively different so personalisation is real, not cosmetic."
+      ],
+      "caveats": [
+        "Incorrect or inconsistent property formatting silently routes people to the wrong variant — always test both branches.",
+        "Profiles missing the property fall to the negative branch; add an explicit fallback if the wrong message would be harmful."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "personalization",
+        "dynamic-content",
+        "segmentation",
+        "campaigns",
+        "flows"
+      ],
+      "id": "9ba42019fe301f1ca2173696",
+      "source_id": "1grdlATLu0lJAmHQTZ_0MyExN3jVkt8xi",
+      "source_sha256": "6305409b97bb58ef4e8967d3ff99f3cde0bf6725a849a0291792799883f8c0dd",
+      "source_name": "2026 Klaviyo Email Marketing Full Course (3+ Hours).docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 5
+    },
+    {
+      "title": "Trigger a winback from expected next order date",
+      "summary": "Replace average-days-since-purchase winback timing with per-customer predictive date triggers so at-risk customers hear from you at their own predicted repurchase moment.",
+      "use_when": "Building or upgrading a winback / reactivation flow so timing is personalised rather than based on a list-wide average.",
+      "steps": [
+        "Create a flow manually and look for the date-property trigger option rather than a time-delay trigger.",
+        "Select the expected-date-of-next-order property available on each profile.",
+        "Choose to trigger on the date property value (not before it), because that is the date the model expects the repurchase; the source's example fires at 12:00 p.m. local time. Verify trigger timing options in the current interface.",
+        "Set the flow to never repeat, since you don't want the same winback email firing monthly to someone who has already been contacted.",
+        "Add a profile filter requiring zero orders placed since entering the flow, so anyone who buys drops out.",
+        "Add a short delay (the source suggests ~5 days after the expected date) to give them a grace period before you introduce winback offers.",
+        "Optionally branch on predicted or historic customer lifetime value (e.g. CLV at least $1,000) to give high-value customers a more personalised, stronger offer.",
+        "Compare against a simple version of the same flow where you trigger on average days between orders, especially if you have limited data on an individual."
+      ],
+      "caveats": [
+        "Predictive dates are model estimates from Klaviyo and are less reliable for customers with few orders; verify the property is populated before relying on the trigger.",
+        "Treating predicted high CLV customers as already-high-value is the source's suggestion for proactive retention, not a proven conversion lift."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "retention",
+        "flows",
+        "winback",
+        "predictive-analytics",
+        "segmentation"
+      ],
+      "id": "109f8c9de2468a94f5b4f539",
+      "source_id": "1grdlATLu0lJAmHQTZ_0MyExN3jVkt8xi",
+      "source_sha256": "6305409b97bb58ef4e8967d3ff99f3cde0bf6725a849a0291792799883f8c0dd",
+      "source_name": "2026 Klaviyo Email Marketing Full Course (3+ Hours).docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 5
+    },
+    {
+      "title": "Use predictive CLV and churn risk in flow splits",
+      "summary": "Apply Klaviyo's predicted analytics — next order date, churn risk, AOV, historic and predicted CLV — as branch conditions in flows rather than only reading them on profiles.",
+      "use_when": "Designing conditional splits in retention or winback flows to vary offer strength and personalisation by customer value.",
+      "steps": [
+        "Locate the predictive properties on a customer profile (expected next order date, average time between orders, churn risk prediction, average order value, historic and predicted CLV) to confirm which are populated for your account.",
+        "Build a conditional split on customer lifetime value — either historic CLV at least $1,000, or predicted CLV above the threshold.",
+        "Send higher-value customers a more personalised, better discount in the winback path, on the reasoning that recovering them is worth more.",
+        "Use predicted CLV to treat promising customers as high value earlier, before they have reached the threshold historically.",
+        "As with any split, monitor performance per branch over time; the source treats this as personalisation upside and notes Klaviyo keeps improving these models."
+      ],
+      "caveats": [
+        "This is presented as an opportunity, not a tested result; the source gives no lift figures.",
+        "Predictions require sufficient order history to be meaningful — thin accounts will have weak or empty values."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "retention",
+        "predictive-analytics",
+        "flows",
+        "segmentation",
+        "personalization"
+      ],
+      "id": "6818bdf858347fdc1dddfabe",
+      "source_id": "1grdlATLu0lJAmHQTZ_0MyExN3jVkt8xi",
+      "source_sha256": "6305409b97bb58ef4e8967d3ff99f3cde0bf6725a849a0291792799883f8c0dd",
+      "source_name": "2026 Klaviyo Email Marketing Full Course (3+ Hours).docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 5
+    },
+    {
+      "title": "Build multichannel touchpoints into flows (email, SMS, push)",
+      "summary": "Layer SMS and push notifications into existing flows to add high-converting touchpoints at the right time, with time delays deciding channel order.",
+      "use_when": "Designing or upgrading an abandoned cart, abandonment, or similar conversion flow where you already have email and want more touchpoints.",
+      "steps": [
+        "In Klaviyo settings, find the SMS and push notification sections and complete setup — you get a phone number and compliance tooling for SMS, and push requires a custom mobile app; verify current setup requirements in the interface.",
+        "Inside a flow, add an SMS or push step in addition to the email steps.",
+        "Sequence channels by intent: in an abandoned cart flow the source gives the example of sending SMS first to convert, then waiting ~2 hours and sending the email to anyone who hasn't purchased yet.",
+        "Rely on flow filters so someone who converts exits and doesn't receive the later, redundant touchpoint.",
+        "Keep the offer and message consistent across channels so the follow-up feels like one conversation."
+      ],
+      "caveats": [
+        "Push notifications require your own mobile app; they are not available to a mobile-web-only store.",
+        "SMS has consent and compliance obligations that vary by region — the source only notes Klaviyo supplies the compliance pieces, not that setup alone makes you compliant."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "flows",
+        "sms",
+        "push-notifications",
+        "multichannel",
+        "abandoned-cart"
+      ],
+      "id": "4c72969716963a5de17b346d",
+      "source_id": "1grdlATLu0lJAmHQTZ_0MyExN3jVkt8xi",
+      "source_sha256": "6305409b97bb58ef4e8967d3ff99f3cde0bf6725a849a0291792799883f8c0dd",
+      "source_name": "2026 Klaviyo Email Marketing Full Course (3+ Hours).docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 5
+    },
+    {
+      "title": "Integrate ecommerce apps to drive flow triggers and segmentation",
+      "summary": "Connect the Shopify apps you already use so their events and properties flow into Klaviyo and can trigger automations or refine segments.",
+      "use_when": "Setting up or expanding a Klaviyo account and deciding which integrations to add first.",
+      "steps": [
+        "Go to settings → integrations → add integrations and filter to all to see the available directory (source cites 187 live integrations); verify the current count in the interface.",
+        "Start by integrating the apps you already run on Shopify, not new apps you don't use yet. The source's path: check Shopify's app list, then search those app names in Klaviyo's integration settings.",
+        "Install directly from Klaviyo, and read the overview of what data the integration passes and which features it enables before connecting.",
+        "Note that many integrations are configured inside the third-party app, not in Klaviyo — the source's loyalty example has the API key, status, and event triggers managed in the app.",
+        "Map the resulting events to flows — the source's examples: a Recharge subscription pause triggers a flow to unpause; a reviews app passing 'left a review' prevents asking for a review on that product again.",
+        "Map synced properties (e.g. points balance, loyalty status, VIP tier name, birthday, referral URL) to segmentation and personalisation.",
+        "For ad platforms, pass email addresses from Klaviyo segments (e.g. a high-value purchaser segment) to Meta or Google for retargeting and lookalike audiences based on your own data."
+      ],
+      "caveats": [
+        "Integration directory contents and setup screens change — verify in the current interface before following exact menu paths.",
+        "More integrations mean more data flowing, but the source advises starting with what you already use rather than integrating speculatively."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "integrations",
+        "klaviyo",
+        "flows",
+        "segmentation",
+        "acquisition"
+      ],
+      "id": "9ca8e23a01f3d43797f7c2f0",
+      "source_id": "1grdlATLu0lJAmHQTZ_0MyExN3jVkt8xi",
+      "source_sha256": "6305409b97bb58ef4e8967d3ff99f3cde0bf6725a849a0291792799883f8c0dd",
+      "source_name": "2026 Klaviyo Email Marketing Full Course (3+ Hours).docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 5
+    },
+    {
+      "title": "Trigger a birthday flow using loyalty app point properties",
+      "summary": "Use an integration event plus dynamic content to personalise a birthday email with the exact points earned and the customer's current balance.",
+      "use_when": "Running a loyalty-driven retention campaign where members earn birthday points and you want one email that renders per-customer numbers.",
+      "steps": [
+        "Confirm the loyalty app passes a birthday event and the relevant profile properties (points earned on birthday, points balance, loyalty status, VIP tier) into Klaviyo.",
+        "Create a flow triggered by that metric, e.g. the loyalty app's customer-birthday event, then add the email step.",
+        "In the email, insert the event property for points earned in this specific event so each recipient sees their own number (e.g. 250 points earned).",
+        "Add personalisation and search the integration's properties to insert the customer's current points balance, which will differ per person (source example: 1,669 for one customer, 355 for another).",
+        "Use preview and test on the specific profile that triggered the metric to confirm the numbers render correctly, then check a second profile to confirm they differ.",
+        "If different tiers earn different birthday points, the event property handles the variation without separate emails.",
+        "Decide on placement — the source uses birthday as a trigger for both email and SMS — and whether to include a redeem link or code."
+      ],
+      "caveats": [
+        "The flow only works if the integration reliably fires the birthday event and the event property is present; test the event before building the creative.",
+        "Copy used in the source's example is sample copy, not tested copy — build your own."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "personalization",
+        "integrations",
+        "flows",
+        "loyalty",
+        "retention"
+      ],
+      "id": "9b7b4dd86442d8456dfef453",
+      "source_id": "1grdlATLu0lJAmHQTZ_0MyExN3jVkt8xi",
+      "source_sha256": "6305409b97bb58ef4e8967d3ff99f3cde0bf6725a849a0291792799883f8c0dd",
+      "source_name": "2026 Klaviyo Email Marketing Full Course (3+ Hours).docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 5
+    },
+    {
+      "title": "Use dynamic blocks to personalise shipping thresholds and offers in one send",
+      "summary": "Personalise a single email's messaging, offers, and reminders using property-driven conditionals instead of splitting one audience across multiple sends.",
+      "use_when": "Merchandising or offer communication that differs by country, tier, or subscriber state — free shipping thresholds, unused welcome offers, loyalty balances.",
+      "steps": [
+        "Identify messages you currently split into multiple campaigns or segments — for example a US free-shipping-over-$100 message versus a rest-of-world free-shipping-over-$150 message.",
+        "Build one email and add a text block at the top for the first variant, then apply show/hide logic on the property that distinguishes the groups (e.g. country equals United States).",
+        "Duplicate the block, invert the logic, and rewrite the copy for the second group.",
+        "For offer reminders, show prospects the acquisition offer they haven't used yet, and show existing customers their current loyalty points balance — using properties the integrations push onto profiles.",
+        "For zero-party data, show different customer reviews or content based on what the subscriber told you.",
+        "Preview against multiple test profiles, including one missing the property, so you know which branch default behaviour sends them to.",
+        "The source also uses predictive data in the same spirit: a higher-value customer branch can receive a stronger offer."
+      ],
+      "caveats": [
+        "Property formatting must match exactly what is stored on the profile, or the condition won't match.",
+        "Running one conditional email instead of multiple sends reduces work but means a single send's metrics mix groups — plan how you'll read results."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "personalization",
+        "dynamic-content",
+        "merchandising",
+        "campaigns",
+        "segmentation"
+      ],
+      "id": "03624b0754806e2e24358c84",
+      "source_id": "1grdlATLu0lJAmHQTZ_0MyExN3jVkt8xi",
+      "source_sha256": "6305409b97bb58ef4e8967d3ff99f3cde0bf6725a849a0291792799883f8c0dd",
+      "source_name": "2026 Klaviyo Email Marketing Full Course (3+ Hours).docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 5
+    }
+  ],
+  "request_id": "d03e4fe257e93aa8eb57592c7894aa02f54fc48dc9a0f1aaecd95ced86d5c323",
+  "ecommerce_scope_version": 1
+}

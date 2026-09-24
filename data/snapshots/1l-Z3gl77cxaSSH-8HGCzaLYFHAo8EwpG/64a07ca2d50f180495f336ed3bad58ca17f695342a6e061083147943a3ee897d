@@ -1,0 +1,70 @@
+# 05-SET / store and domain setup
+
+**Goes here.** Nothing to a live store. Domain and email, store configuration,
+payments and tax settings, shipping profiles, tracking install, legal pages, and the
+verification step that proves each one worked.
+
+## Not here
+
+- Whether the numbers a tool reports are correct -> 06-MEA
+- Which tax registrations you need and how remittance works -> 20-FIN
+- Ongoing page performance -> 08-SPD
+- Customer experience, delight and service -> 17-CXP
+- Bot protection at checkout -> 23-SEC
+
+SET installs it. MEA verifies it. FIN decides what the obligation is. CXP decides
+what the customer experiences once the store is live.
+
+**Lesson from misfiles.** 3 customer experience essays were filed here. "Experience"
+is not "setup". If the source is about how a customer feels, it is 17-CXP.
+
+## Header
+
+```
+---
+url:                   # REQUIRED. Never blank.
+rights: public_reference
+why:
+modules: [SET]
+platform: []           # [shopify] or [woocommerce]. Effectively required here.
+topics: []
+tier: 1                # prefer platform documentation
+scope_hint: baseline
+---
+```
+
+## Platform policy
+
+Shopify is the default and the priority. WooCommerce is supported but will be a small
+fraction of brands, so it gets a small fraction of the library: 1 good source, not 4.
+Woo brands get the knowledge layer and a brief a human executes, not automated theme
+deploys or test purchases. `platform` is an exception tag everywhere else, but almost
+nothing in SET transfers between platforms, so tag every source here.
+
+## Topics
+
+domain and email, store configuration, payments and tax settings, shipping profiles,
+tracking install, legal pages, verification steps.
+
+## Look for
+
+Exact click paths and settings. What breaks if done in the wrong order. Verification
+steps that prove a step actually worked. Platform documentation is tier 1 and wins; a
+walkthrough is useful for the order of operations only.
+
+## Skip
+
+Anything over 18 months old, because interfaces change and a stale click path is
+worse than none. AI-builds-your-store demos, which decay in months and teach a product
+rather than a mechanism. Multiple beginner tutorials covering the same setup: keep the
+official one plus at most 1.
+
+## Scope mix
+
+Nearly all baseline.
+
+## Done when
+
+A new brand could go from nothing to live following only your cards.
+
+Current file counts, duplicates and holds: see `_INGESTION-STATE.yaml`.

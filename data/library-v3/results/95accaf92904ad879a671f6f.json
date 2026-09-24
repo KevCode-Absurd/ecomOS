@@ -1,0 +1,345 @@
+{
+  "cards": [
+    {
+      "title": "Initializing a Shopify account and choosing a store name",
+      "summary": "Set up a Shopify account email and store name with the understanding that the myshopify.com handle is permanent and the display name is editable.",
+      "use_when": "You are starting a brand-new store from scratch and need to create the Shopify account and store identity.",
+      "steps": [
+        "Register with a business email address you control long-term, not a personal address you may lose access to; this becomes the account owner login and the destination for Shopify's billing and verification notices.",
+        "Choose the store name carefully: the myshopify.com subdomain handle is generated from it and the source notes it is effectively permanent, while the customer-facing store name can be changed later in Settings.",
+        "Before committing, set the store's country/region and currency correctly in the initial onboarding questions, since these influence default tax, payment and pricing behavior.",
+        "Verify the current wording of the Shopify signup onboarding in the admin, because the source warns that click paths change; treat any tutorial path as a guide and confirm each screen live."
+      ],
+      "caveats": [
+        "Shopify onboarding screens change frequently; verify the current flow rather than following a stale path literally.",
+        "The myshopify.com handle is treated as permanent per the source, so decide it before launch rather than after."
+      ],
+      "tags": [
+        "store-setup",
+        "shopify",
+        "domain-and-email",
+        "store-configuration",
+        "verification"
+      ],
+      "id": "2f5a7287fedce5c832cea7a8",
+      "source_id": "1eB2j_ZeImlVA2JjtLr8-WzRNTiMG-oct",
+      "source_sha256": "38e82afe42f3a3c6ef7b2720da18d6d019ac49f1d8268769e2286ebf2beb3a64",
+      "source_name": "The OFFICIAL Shopify 2026 Tutorial.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 0
+    },
+    {
+      "title": "Setting up Shopify Payments with exact legal identity match",
+      "summary": "Enter legal names, addresses and business details in Shopify Payments exactly as they appear on government IDs so payouts are not held.",
+      "use_when": "You are enabling payment capture for the first time and need payouts to clear without verification holds.",
+      "steps": [
+        "Open Settings then Payments and activate Shopify Payments, then fill the business and personal details fields.",
+        "Enter the account holder's legal first and last name exactly as printed on their government ID: the source's example is that 'Robert' must not be shortened to 'Rob' or the account can be flagged for verification.",
+        "Match the address and business registration details to official documents, including any registered business name, tax ID and entity type fields.",
+        "Expect that a mismatch triggers a verification hold that pauses payouts, so correct any discrepancy immediately rather than waiting for a failed payout.",
+        "Review the payout bank account details for the correct currency and account type before saving; changing bank details later re-triggers verification."
+      ],
+      "caveats": [
+        "Name, address and ID mismatch is a documented cause of payout verification holds per the source, not a guarantee of one.",
+        "Requirements for which documents are needed vary by country and entity type; check the current Shopify Payments requirements page for your region."
+      ],
+      "tags": [
+        "store-setup",
+        "shopify",
+        "payments-and-tax",
+        "payments",
+        "verification",
+        "fulfillment"
+      ],
+      "id": "d81e9a676d16179551dc37cf",
+      "source_id": "1eB2j_ZeImlVA2JjtLr8-WzRNTiMG-oct",
+      "source_sha256": "38e82afe42f3a3c6ef7b2720da18d6d019ac49f1d8268769e2286ebf2beb3a64",
+      "source_name": "The OFFICIAL Shopify 2026 Tutorial.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 0
+    },
+    {
+      "title": "Defining physical presence for tax collection",
+      "summary": "Configure the physical presence (nexus) location so Shopify collects tax only where you are legally required, avoiding over- and under-collection.",
+      "use_when": "You are configuring tax regions and need Shopify to calculate the correct rate at checkout.",
+      "steps": [
+        "Go to Settings then Taxes and duties and add the locations where you have a physical presence: warehouse, office, home address used for operations, or any other location that creates a tax obligation.",
+        "Add each region where you have nexus; Shopify collects tax based on the locations you register here, so an unlisted state or country can result in no tax being charged.",
+        "Decide whether to register for tax in additional jurisdictions beyond your physical presence and add them individually if so.",
+        "Where the source distinguishes them, use tax-included pricing settings only for regions where displayed prices must include tax, such as certain VAT countries.",
+        "Review the tax settings after adding new shipping destinations, since a region where you now sell may need tax registration before you collect there."
+      ],
+      "caveats": [
+        "This card covers Shopify's configuration mechanics only; consult a tax professional about where you actually owe tax, because the source does not establish a universal nexus rule.",
+        "Overriding tax rates manually can create compliance risk if your registered obligations change."
+      ],
+      "tags": [
+        "store-setup",
+        "shopify",
+        "payments-and-tax",
+        "tax",
+        "checkout",
+        "store-configuration"
+      ],
+      "id": "9f3db093361852117c1ac884",
+      "source_id": "1eB2j_ZeImlVA2JjtLr8-WzRNTiMG-oct",
+      "source_sha256": "38e82afe42f3a3c6ef7b2720da18d6d019ac49f1d8268769e2286ebf2beb3a64",
+      "source_name": "The OFFICIAL Shopify 2026 Tutorial.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 0
+    },
+    {
+      "title": "Building shipping zones for domestic and international delivery",
+      "summary": "Create separate shipping zones for domestic and international destinations and set rates for each so checkout quotes realistic delivery costs.",
+      "use_when": "You are about to sell to customers outside your home country and need shipping rates that do not undercharge or block checkout.",
+      "steps": [
+        "Open Settings then Shipping and delivery and create a domestic zone containing the home country with the rates you want to offer, using either flat rates, price-based rates or carrier-calculated rates.",
+        "Create a second zone for international destinations and decide which countries to include; the source treats domestic and international as needing separate configuration rather than one global zone.",
+        "Set at least one fallback rate in every zone, because a destination with no rate can block or confuse checkout.",
+        "Check the list of countries you will ship to against the zones you built, adding individual countries or regions as needed.",
+        "Re-test a sample address in each zone after editing, since changing zone membership silently changes which rate a customer sees."
+      ],
+      "caveats": [
+        "Carrier-calculated rates require an appropriate carrier account or Shopify plan feature; verify current requirements in the admin.",
+        "International rules and duties are outside this source's scope; use Shopify's own current documentation for customs configuration."
+      ],
+      "tags": [
+        "store-setup",
+        "shopify",
+        "shipping-profiles",
+        "checkout",
+        "fulfillment",
+        "international"
+      ],
+      "id": "70512e56f11aa61463d05522",
+      "source_id": "1eB2j_ZeImlVA2JjtLr8-WzRNTiMG-oct",
+      "source_sha256": "38e82afe42f3a3c6ef7b2720da18d6d019ac49f1d8268769e2286ebf2beb3a64",
+      "source_name": "The OFFICIAL Shopify 2026 Tutorial.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 0
+    },
+    {
+      "title": "Setting default package weights so calculated rates do not undercharge",
+      "summary": "Enter default package empty weights in the shipping profile so carrier-calculated rates reflect real shipping cost instead of light parcels.",
+      "use_when": "You use carrier-calculated or weight-based shipping rates and are worried about undercharging on multi-item orders.",
+      "steps": [
+        "In Settings then Shipping and delivery, find the packaged weight section for the shipping profile and set a default package empty weight for your standard box or mailer.",
+        "Configure the units consistently in the store settings, since a mismatch between product and package weight units produces wrong quotes.",
+        "Consider that each product's weight plus the default package weight determines the rate quote; a missing package weight makes every calculated rate too low as orders grow.",
+        "Create additional shipping profiles for products that ship in different packaging, if a single default weight would misrepresent them.",
+        "After changing package weights, quote a test order with several items and compare it against the same order before the change to confirm rates moved in the expected direction."
+      ],
+      "caveats": [
+        "This is a source-stated configuration risk, not a benchmark; the correct default weight depends on your actual packaging and carrier.",
+        "Calculated rates also depend on carrier account settings outside Shopify; verify in the carrier's own tools if quotes look wrong."
+      ],
+      "tags": [
+        "store-setup",
+        "shopify",
+        "shipping-profiles",
+        "fulfillment",
+        "measurement",
+        "store-configuration"
+      ],
+      "id": "96efb19e76e268bb07c2d101",
+      "source_id": "1eB2j_ZeImlVA2JjtLr8-WzRNTiMG-oct",
+      "source_sha256": "38e82afe42f3a3c6ef7b2720da18d6d019ac49f1d8268769e2286ebf2beb3a64",
+      "source_name": "The OFFICIAL Shopify 2026 Tutorial.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 0
+    },
+    {
+      "title": "Connecting a custom domain and a business email address",
+      "summary": "Link a purchased custom domain to the Shopify store and set up a matching branded email so the store is reachable and correspondence is credible.",
+      "use_when": "You have bought a domain and need it pointed at the store and a matching email set up before launch.",
+      "steps": [
+        "Purchase the domain from a registrar (Shopify sells one, or use an external registrar), then open Settings then Domains in the admin.",
+        "Add the existing domain rather than buying a new one if you already own it, then follow the DNS instructions: either point A and CNAME records to Shopify values or change nameservers to Shopify's, depending on the method chosen.",
+        "Wait for the domain to show as connected before removing any store password, because a custom domain that has not propagated makes the store unreachable at that address.",
+        "Set the primary domain to the custom one so Shopify uses it in links and emails rather than the myshopify.com URL.",
+        "Set up a branded email address through a mail provider and forward or alias it appropriately, then test sending and receiving before you list it anywhere customer-visible."
+      ],
+      "caveats": [
+        "DNS changes can take time to propagate; the Shopify admin shows the connection status but the timing depends on the registrar.",
+        "Exact button labels in the Domains section change over time, so verify the current interface."
+      ],
+      "tags": [
+        "store-setup",
+        "shopify",
+        "domain-and-email",
+        "store-configuration",
+        "verification",
+        "brand"
+      ],
+      "id": "f1fa31262a902a19e1a80453",
+      "source_id": "1eB2j_ZeImlVA2JjtLr8-WzRNTiMG-oct",
+      "source_sha256": "38e82afe42f3a3c6ef7b2720da18d6d019ac49f1d8268769e2286ebf2beb3a64",
+      "source_name": "The OFFICIAL Shopify 2026 Tutorial.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 0
+    },
+    {
+      "title": "Testing checkout, tax and policy links with test mode transactions",
+      "summary": "Place simulated orders in Shopify Payments test mode to confirm checkout, tax calculation and policy links actually work before you remove the store password.",
+      "use_when": "You are one step from launching and need evidence that payments, tax and legal links function end to end.",
+      "steps": [
+        "Enable test mode on Shopify Payments (or use Shopify's bogus gateway) and place test orders that exercise the full checkout, including card-like test details.",
+        "Verify tax is calculated as expected for each tax region you configured by comparing the test order totals against the rates you set.",
+        "Click every policy and legal page linked in the footer and checkout during the test order, confirming each opens the intended content rather than a placeholder.",
+        "Test a shipping destination in each shipping zone to confirm the correct rate appears and there is always a fallback rate available.",
+        "Only after checkout, tax, shipping and policy links pass, remove the store password to make the store publicly accessible; the source presents the test order as the verification gate before un-gating."
+      ],
+      "caveats": [
+        "Test mode is for verification, not proof of a live payment; make a real transaction separately if the source process requires it before launch.",
+        "Never leave the store in test mode or the password gate on after launch, since either blocks real customers."
+      ],
+      "tags": [
+        "store-setup",
+        "shopify",
+        "verification",
+        "checkout",
+        "payments-and-tax",
+        "measurement"
+      ],
+      "id": "3a6ca3eb1bff69dc683053ea",
+      "source_id": "1eB2j_ZeImlVA2JjtLr8-WzRNTiMG-oct",
+      "source_sha256": "38e82afe42f3a3c6ef7b2720da18d6d019ac49f1d8268769e2286ebf2beb3a64",
+      "source_name": "The OFFICIAL Shopify 2026 Tutorial.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 0
+    },
+    {
+      "title": "Installing tracking and verifying it fires before launch",
+      "summary": "Add analytics and pixel tracking to the store and confirm events actually fire so conversion measurement is not empty after launch.",
+      "use_when": "You are installing analytics or ad pixels and need to confirm data will be captured once the store is live.",
+      "steps": [
+        "Install the tracking scripts or app for analytics and advertising platforms through the Shopify admin or the platform's own app.",
+        "Use a test session with an analytics debug tool to confirm page views and, where configured, add-to-cart and checkout events register rather than assuming the script loaded.",
+        "Check that tracking code is present on the checkout step as well as the storefront, since the source separates PDP and checkout concerns and a script that only covers the storefront misses purchases.",
+        "Verify the data appears in the analytics platform's real-time view during the test session as the end-to-end proof the install worked.",
+        "Re-verify after changing themes or installing new apps, because theme changes can drop tracking snippets."
+      ],
+      "caveats": [
+        "Checkout tracking behavior depends on the Shopify plan, checkout extensibility and the platform's integration; verify current support before relying on it.",
+        "The exact debug workflow differs per analytics tool; this is a verification habit, not a specific tool instruction."
+      ],
+      "tags": [
+        "store-setup",
+        "shopify",
+        "tracking-install",
+        "measurement",
+        "verification",
+        "conversion-optimization"
+      ],
+      "id": "9921264a1167aaebf6669c24",
+      "source_id": "1eB2j_ZeImlVA2JjtLr8-WzRNTiMG-oct",
+      "source_sha256": "38e82afe42f3a3c6ef7b2720da18d6d019ac49f1d8268769e2286ebf2beb3a64",
+      "source_name": "The OFFICIAL Shopify 2026 Tutorial.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 0
+    },
+    {
+      "title": "Publishing required legal and policy pages before removing the password",
+      "summary": "Create the policy and contact pages a store needs, then confirm they are linked and readable, because a password gate hides missing pages until launch day.",
+      "use_when": "You are preparing for launch and need the legal, policy and contact pages in place and linked.",
+      "steps": [
+        "Create the standard policy set: refund and returns, privacy, terms of service, shipping and delivery, and a contact page, using Shopify's generated policy templates where available.",
+        "Edit each generated policy to reflect your actual practices, since templates contain placeholder language that may not match how you operate.",
+        "Confirm the policy pages are linked in the footer and wherever the checkout references them, checking the links during a test order rather than only on a normal page view.",
+        "Where your market requires it, include the legal business identity and contact route on the relevant pages.",
+        "Re-check the pages after publishing, because the source treats verification that each setup step actually worked as part of the setup process rather than optional."
+      ],
+      "caveats": [
+        "This is configuration and completeness guidance, not legal advice; jurisdiction-specific obligations require a qualified source.",
+        "Generated policy templates must be adapted; leaving placeholders on a live store misrepresents your practices."
+      ],
+      "tags": [
+        "store-setup",
+        "shopify",
+        "legal-pages",
+        "verification",
+        "store-configuration",
+        "checkout"
+      ],
+      "id": "64e08ffbebfbb883f87c7ee7",
+      "source_id": "1eB2j_ZeImlVA2JjtLr8-WzRNTiMG-oct",
+      "source_sha256": "38e82afe42f3a3c6ef7b2720da18d6d019ac49f1d8268769e2286ebf2beb3a64",
+      "source_name": "The OFFICIAL Shopify 2026 Tutorial.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 0
+    },
+    {
+      "title": "Doing store setup in the right order to avoid launch breakage",
+      "summary": "Sequence Shopify setup so identity, payments, tax, shipping, domain and tracking are configured before testing and removing the password gate.",
+      "use_when": "You are planning the launch sequence and want to avoid discovering broken checkout or tax settings after customers arrive.",
+      "steps": [
+        "Configure account identity and store settings first, since country, currency and store name affect the defaults of downstream tax and payment screens.",
+        "Set up payments with exact legal identity next, then taxes and physical presence, then shipping zones and package weights, because shipping rates depend on weight data and tax regions depend on where you have presence.",
+        "Connect the custom domain and business email after the store operational settings, so the store is reachable at the final address when you begin testing.",
+        "Install tracking and create the legal pages, then run test-mode orders as the gate that verifies checkout, taxes, shipping rates and policy links together.",
+        "Remove the store password only after the test order passes; the source treats un-gating as the last step, not an early one."
+      ],
+      "caveats": [
+        "This is the source's emphasis on order of operations, not a claim that any other sequence is impossible; it identifies what tends to break if steps are out of order.",
+        "The source warns that interfaces change, so the exact screens for each step should be confirmed in the current Shopify admin."
+      ],
+      "tags": [
+        "store-setup",
+        "shopify",
+        "store-configuration",
+        "verification",
+        "payments-and-tax",
+        "shipping-profiles"
+      ],
+      "id": "a14524485a100465118a5c47",
+      "source_id": "1eB2j_ZeImlVA2JjtLr8-WzRNTiMG-oct",
+      "source_sha256": "38e82afe42f3a3c6ef7b2720da18d6d019ac49f1d8268769e2286ebf2beb3a64",
+      "source_name": "The OFFICIAL Shopify 2026 Tutorial.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 0
+    },
+    {
+      "title": "Verifying each setup step actually worked",
+      "summary": "Close out each store configuration step with a concrete check, because a saved setting is not proof that checkout, tax or links behave correctly.",
+      "use_when": "You have configured a store section such as payments, shipping or domains and want to confirm it works before relying on it.",
+      "steps": [
+        "After saving a setting, perform the action a customer would: place a test order for payments and checkout, quote a multi-item order for shipping rates, and open each footer link for legal pages.",
+        "Check the domain resolves at the custom address rather than only the myshopify.com URL before considering the domain connected.",
+        "Confirm the analytics platform receives data during a test session rather than only checking that a script tag exists in the theme.",
+        "Check tax and shipping appear correctly in the test order total instead of only checking that the settings saved.",
+        "Log any step that cannot be verified and resolve it before removing the store password; treat the test order as the aggregated proof of the whole setup."
+      ],
+      "caveats": [
+        "Some checks, such as DNS propagation, are outside your control and only show status rather than instant confirmation.",
+        "Test mode verifies logic but does not prove a live payment settles; complete any live transaction test the current Shopify process requires."
+      ],
+      "tags": [
+        "store-setup",
+        "shopify",
+        "verification",
+        "measurement",
+        "checkout",
+        "store-configuration"
+      ],
+      "id": "d6854b97be2c5cbde333cc32",
+      "source_id": "1eB2j_ZeImlVA2JjtLr8-WzRNTiMG-oct",
+      "source_sha256": "38e82afe42f3a3c6ef7b2720da18d6d019ac49f1d8268769e2286ebf2beb3a64",
+      "source_name": "The OFFICIAL Shopify 2026 Tutorial.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 0
+    }
+  ],
+  "request_id": "e380a9dde384911f049d0d775ba25facdae2479e3e6f4a5b3e122a4913364379",
+  "ecommerce_scope_version": 1
+}

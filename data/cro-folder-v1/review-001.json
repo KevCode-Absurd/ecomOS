@@ -1,0 +1,151 @@
+{
+  "batch": 1,
+  "request_id": "7c4fe2878e2e2281f2547995967d8e5b11eb3e0b806d6140f2393f90ad133237",
+  "errors": [],
+  "review": {
+    "reviews": [
+      {
+        "candidate_id": "69307e09f10fa7a8fc23575ba8d536e57452aeb897e5033548b59d9987df4ebb",
+        "verdict": "supported",
+        "reasons": [
+          "The method, random exposed/holdout assignment by Meta/Google, conversion-difference measurement, and purpose of measuring true incremental platform conversions are all stated in the source table."
+        ]
+      },
+      {
+        "candidate_id": "fb90c54a37fa5ba273a4ae830ebca4970bf29c93e4fb29c8b2775dc4fea6ae9b",
+        "verdict": "supported",
+        "reasons": [
+          "The source explicitly defines the DIY geo-holdout as pausing ads in matched test regions and comparing them with control regions, to measure channel-level incrementality across markets."
+        ]
+      },
+      {
+        "candidate_id": "cd51fbffd03010788573d1335e92005e38418baf2dfc4ab7b03a282daa0fa348",
+        "verdict": "supported",
+        "reasons": [
+          "The source table explicitly specifies turning a channel or campaign on and off in alternating periods to measure the channel's overall revenue impact."
+        ]
+      },
+      {
+        "candidate_id": "afdc73c0dab9dfeff44b1b67cbe663c3da09a6ac0765bcabcbdacd705903ff94",
+        "verdict": "supported",
+        "reasons": [
+          "The source defines DiD as comparing outcome changes over time between treatment and control groups and says to use it when user-level randomization is unavailable but a comparable control exists.",
+          "The stated pre/post treatment-and-control data requirement is supported by the method-selection table."
+        ]
+      },
+      {
+        "candidate_id": "50c1cc9b89b1919c88cc8c10c30201b6ca04dbd1e84d026a0989c5906fac2744",
+        "verdict": "supported",
+        "reasons": [
+          "The source describes CUPED as using pre-experiment data, including user behavioral history, to reduce variance/noise and gives use of such data as covariates as the example.",
+          "Its stated use condition and user-level pre-period-data requirement are supported by the source."
+        ]
+      },
+      {
+        "candidate_id": "517deb3217d85f9f80dd9d8c4177fb46d05ee522dbc7e1d5b0d09f79d339efd4",
+        "verdict": "supported",
+        "reasons": [
+          "The source states that switchback testing randomizes whole environments such as regions or time periods rather than individual users.",
+          "It specifically recommends the design for marketplace cases in which user-level randomization creates interference, and the table identifies time-based randomization as the data requirement."
+        ]
+      },
+      {
+        "candidate_id": "2f4e091258851c30e96517bf7849dda25948cc2d55e8bc52e2abd4b1a81b2888",
+        "verdict": "supported",
+        "reasons": [
+          "The composite-control construction from weighted imperfect controls is directly described in the source.",
+          "The source says it is for estimating counterfactuals without a true control group, and the table specifies panel data across markets."
+        ]
+      },
+      {
+        "candidate_id": "d2448b49dc0f21062c89785f8810d6d454580977dc9efe6227aeb4232f974b52",
+        "verdict": "supported",
+        "reasons": [
+          "The source describes BSTS using the stated model components and recommends it for time-series settings with strong seasonality, an intervention, and no clean control group.",
+          "The candidate's time-series-data prerequisite matches the method-selection table."
+        ]
+      },
+      {
+        "candidate_id": "e179f3b473c5be68b7635207510296db3c346a9467717146d6feb1a9d31f330f",
+        "verdict": "supported",
+        "reasons": [
+          "The source defines PSM as matching treated customers to control customers with similar treatment propensity based on observed covariates.",
+          "It gives the same nonrandomized, rich-customer-data use condition and lists rich customer covariates as the data requirement."
+        ]
+      },
+      {
+        "candidate_id": "be0042ac523b1a8827cab4ac41b327dd5f463e17c983ef24175084b99166d2e7",
+        "verdict": "supported",
+        "reasons": [
+          "The source defines IV using a variable correlated with treatment but not directly with the outcome except through treatment.",
+          "Its stated applicability to selection bias or nonrandom assignment, conditional on a valid instrument, and its valid-instrument prerequisite are directly supported."
+        ]
+      },
+      {
+        "candidate_id": "2931add505ebba1562f14769dcb92e738de8a135768393a68f9b29020ac2c35e",
+        "verdict": "supported",
+        "reasons": [
+          "The source explicitly describes RDD as exploiting a cutoff where treatment changes discontinuously and recommends it when treatment is threshold-assigned.",
+          "The assignment-variable-with-cutoff prerequisite matches the source table."
+        ]
+      },
+      {
+        "candidate_id": "93c9e1e308b272ff897e101fe6a51f78eab16852b13570ab288b70f8f7ecedfd",
+        "verdict": "supported",
+        "reasons": [
+          "The source explicitly labels this as Step 1 of the framework: deciding the question to answer before selecting a measurement method."
+        ]
+      },
+      {
+        "candidate_id": "3af4122b79a606c2fcd825bf3f2381dd881408b8ba7cda65eedb83b47bf1bbc6",
+        "verdict": "supported",
+        "reasons": [
+          "The source explicitly makes this Step 2 and distinguishes higher-traffic stores above 100k monthly visitors from lower-traffic stores in method feasibility.",
+          "The dependency on first deciding the question is supported by the ordered Step 1 then Step 2 framework."
+        ]
+      },
+      {
+        "candidate_id": "cd64b6825daca317c6db01d2c0402ba590b8e88e288118a0230bbe078e28931f",
+        "verdict": "supported",
+        "reasons": [
+          "The source explicitly says every holdout, incrementality test, and causal analysis should record all four listed fields.",
+          "The claimed longer-term causal-knowledge-base outcome is stated in the source as the result of documenting and compounding these learnings over time."
+        ]
+      },
+      {
+        "candidate_id": "36008405a6345c56167fabb5dc4506b5e0b4e4f35d4c06d989bf9715d6124c5f",
+        "verdict": "supported",
+        "reasons": [
+          "This principle is stated verbatim in the source's key takeaway, with the accompanying explanation distinguishing a variant win from value that would not otherwise have existed."
+        ]
+      },
+      {
+        "candidate_id": "bb30167dcf234a4de7bd5c170d1584560d5b24e892894dd6b134cc5a668147ee",
+        "verdict": "supported",
+        "reasons": [
+          "The source's conclusion explicitly states that Meta drove measurable incremental value and interprets the 10%+ conversion lift as evidence it was not merely taking credit for conversions that would otherwise occur."
+        ]
+      }
+    ],
+    "omissions": [
+      {
+        "description": "The framework specifically maps the question of whether retargeting drives incremental revenue to a user-level holdout; no candidate represents this recommendation.",
+        "quote": "\"Does our retargeting actually drive incremental revenue?\" → User-level holdout"
+      },
+      {
+        "description": "The framework specifically maps evaluating the value generated by an entire CRO program to a CRO-program holdout; no candidate represents this recommendation.",
+        "quote": "\"Has our entire CRO program generated value?\" → CRO program holdout"
+      },
+      {
+        "description": "The framework specifically maps determining whether a particular test won to a standard A/B test; the A/B-versus-holdout principle does not represent this method-selection recommendation.",
+        "quote": "\"Did this specific test win?\" → Standard A/B test"
+      }
+    ],
+    "source_limitations": [
+      "The excerpt begins partway through a prior Meta study, so the study setup, geographic matching process, assignment details, outcome definitions, and analysis underlying its reported results are not available here.",
+      "The source provides high-level method descriptions and some illustrative examples, but generally does not provide implementation protocols, statistical diagnostics, power calculations, or validity checks for the causal methods.",
+      "The reported Meta results and claims about effects such as switchback standard-error reductions are asserted in the excerpt without underlying data, citations, or methodological evidence sufficient for independent verification from this text alone."
+    ]
+  },
+  "publication_allowed": false
+}

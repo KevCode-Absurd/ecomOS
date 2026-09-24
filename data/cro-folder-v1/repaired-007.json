@@ -1,0 +1,2410 @@
+{
+  "batch": 7,
+  "request_id": "138981a7824557c45589b5dc2271a0ed2aabb392db308a2f80bab6842bf5edde",
+  "revision": "source-grounded-repair-v1",
+  "checked": {
+    "errors": [],
+    "candidates": [
+      {
+        "id": "a28b8034db0e39fcddd0c7a7c5558b631569e804e4a692c5b3f8acfcae12f248",
+        "unit": {
+          "id": "e9c917297810e7410bd089ca15660b5a3f7f78a108041730cef5b19bfe9db9b1",
+          "kind": "action",
+          "title": "Use bandits for short-window tactical decisions",
+          "claim": {
+            "text": "The source says bandits are best when the cost of showing the loser during the test is high and the window is short, such as for headlines, seasonal and holiday promotions, banner creative, and product recommendations.",
+            "quote": "Best when the cost of showing the loser during the test is high and the window is short: headlines, seasonal and holiday promotions, banner creative, product recommendations."
+          },
+          "action": {
+            "text": "Use bandits for headlines, seasonal and holiday promotions, banner creative, and product recommendations when the cost of showing the loser is high and the window is short.",
+            "quote": "Best when the cost of showing the loser during the test is high and the window is short: headlines, seasonal and holiday promotions, banner creative, product recommendations."
+          },
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "Cost of showing the loser during the test is high and the window is short.",
+                "quote": "Best when the cost of showing the loser during the test is high and the window is short"
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": [
+              {
+                "text": "Bandits need sticky bucketing so returning users stay on one arm.",
+                "quote": "Bandits need sticky bucketing so returning users stay on one arm."
+              }
+            ]
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "The source does not specify which bandit algorithm (Thompson sampling or UCB) to choose."
+          ],
+          "relations": [
+            {
+              "kind": "depends_on",
+              "target": "64971e5b0fb8c23d7a6b60426857fc4682b153d16fabb241fa0d593a6981b809"
+            }
+          ]
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:81/paragraph",
+            "start": 115,
+            "end": 289,
+            "quote": "Best when the cost of showing the loser during the test is high and the window is short: headlines, seasonal and holiday promotions, banner creative, product recommendations."
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:81/paragraph",
+            "start": 115,
+            "end": 289,
+            "quote": "Best when the cost of showing the loser during the test is high and the window is short: headlines, seasonal and holiday promotions, banner creative, product recommendations."
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:81/paragraph",
+            "start": 115,
+            "end": 202,
+            "quote": "Best when the cost of showing the loser during the test is high and the window is short"
+          },
+          {
+            "field": "prerequisites.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:82/paragraph",
+            "start": 134,
+            "end": 199,
+            "quote": "Bandits need sticky bucketing so returning users stay on one arm."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "6ceaa40e019f1099befe77342bcbf30e43e5be6800f89e2aef7451634c593c7d",
+        "unit": {
+          "id": "64971e5b0fb8c23d7a6b60426857fc4682b153d16fabb241fa0d593a6981b809",
+          "kind": "action",
+          "title": "Implement sticky bucketing for bandits",
+          "claim": {
+            "text": "The source says bandits need sticky bucketing so returning users stay on one arm.",
+            "quote": "Bandits need sticky bucketing so returning users stay on one arm."
+          },
+          "action": {
+            "text": "Implement sticky bucketing for bandits so returning users stay on one arm.",
+            "quote": "Bandits need sticky bucketing so returning users stay on one arm."
+          },
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "Using bandits for experimentation.",
+                "quote": "Bandits need sticky bucketing"
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [
+            {
+              "text": "Returning users stay on one arm.",
+              "quote": "returning users stay on one arm"
+            }
+          ],
+          "unknowns": [],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:82/paragraph",
+            "start": 134,
+            "end": 199,
+            "quote": "Bandits need sticky bucketing so returning users stay on one arm."
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:82/paragraph",
+            "start": 134,
+            "end": 199,
+            "quote": "Bandits need sticky bucketing so returning users stay on one arm."
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:82/paragraph",
+            "start": 134,
+            "end": 163,
+            "quote": "Bandits need sticky bucketing"
+          },
+          {
+            "field": "completion.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:82/paragraph",
+            "start": 167,
+            "end": 198,
+            "quote": "returning users stay on one arm"
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "9b7a335bf88a3f801921f22368d2c9ac0748e3ac6aa054ba1264a889c9dfa01c",
+        "unit": {
+          "id": "210c990d698e6869909b25973cbeafdf6c954c8fc91cb2599677392679fbeff9",
+          "kind": "principle",
+          "title": "Justify bandits by order volume and campaign length",
+          "claim": {
+            "text": "The source says for a $100M/year retailer, most A/B tests reach power within two weeks, so A/B is operationally feasible and bandits are an add-on; below a few thousand orders/month, bandits are only justified for short campaigns.",
+            "quote": "For a $100M/year retailer, most A/B tests reach power within two weeks, so A/B is operationally feasible and bandits are an add-on (leadgen-economy.com). Below a few thousand orders/month, bandits are only justified for short campaigns."
+          },
+          "action": null,
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "Assessing whether bandits are justified for an ecommerce program.",
+                "quote": "Below a few thousand orders/month, bandits are only justified for short campaigns."
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "The source does not define the exact number of orders per month in 'a few thousand'."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:82/paragraph",
+            "start": 200,
+            "end": 436,
+            "quote": "For a $100M/year retailer, most A/B tests reach power within two weeks, so A/B is operationally feasible and bandits are an add-on (leadgen-economy.com). Below a few thousand orders/month, bandits are only justified for short campaigns."
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:82/paragraph",
+            "start": 354,
+            "end": 436,
+            "quote": "Below a few thousand orders/month, bandits are only justified for short campaigns."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "78f3b54935cb09412e7fddc12039a56959d3ee4e73781b7d49f8aa5354efa433",
+        "unit": {
+          "id": "6bdcaf72e0ac1eb3fa9090b041db0cb63404602d6e08fab612a435f4423a11cd",
+          "kind": "action",
+          "title": "Use ICE for small teams building prioritisation habit",
+          "claim": {
+            "text": "The source describes ICE as Impact, Confidence, Ease, each 1-10, averaged; fast, subjective; weakness is pitcher scores idea; best for small teams building the habit.",
+            "quote": "ICE (Sean Ellis / GrowthHackers): Impact, Confidence, Ease, each 1-10, averaged. Fast, subjective. Weakness: whoever pitches the idea also scores it, so everything scores 9/9/9 and nothing gets deprioritised. Best for small teams building the habit."
+          },
+          "action": {
+            "text": "Use ICE for small teams building the prioritisation habit.",
+            "quote": "Best for small teams building the habit."
+          },
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "Small team building a prioritisation habit.",
+                "quote": "Best for small teams building the habit."
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:84/paragraph",
+            "start": 0,
+            "end": 249,
+            "quote": "ICE (Sean Ellis / GrowthHackers): Impact, Confidence, Ease, each 1-10, averaged. Fast, subjective. Weakness: whoever pitches the idea also scores it, so everything scores 9/9/9 and nothing gets deprioritised. Best for small teams building the habit."
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:84/paragraph",
+            "start": 209,
+            "end": 249,
+            "quote": "Best for small teams building the habit."
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:84/paragraph",
+            "start": 209,
+            "end": 249,
+            "quote": "Best for small teams building the habit."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "8bf7abf0983b4f69780487c71dec160e44598e7b29ba14ba9e0c7f4e48a1e095",
+        "unit": {
+          "id": "24abcead7b449c5890d0210fec876aa2e55f4d27364abfd1828b55382556af8d",
+          "kind": "action",
+          "title": "Use PIE as a middle-ground prioritisation framework",
+          "claim": {
+            "text": "The source describes PIE as Potential, Importance (traffic/value of the page), Ease, 1-10 each; forces you to look at traffic data; middle ground.",
+            "quote": "PIE (Chris Goward / WiderFunnel): Potential, Importance (traffic/value of the page), Ease. 1-10 each. Forces you to look at traffic data. Middle ground."
+          },
+          "action": {
+            "text": "Use PIE as a middle-ground prioritisation framework that forces you to look at traffic data.",
+            "quote": "Forces you to look at traffic data. Middle ground."
+          },
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "Need a middle-ground prioritisation framework.",
+                "quote": "Middle ground."
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:85/paragraph",
+            "start": 0,
+            "end": 152,
+            "quote": "PIE (Chris Goward / WiderFunnel): Potential, Importance (traffic/value of the page), Ease. 1-10 each. Forces you to look at traffic data. Middle ground."
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:85/paragraph",
+            "start": 102,
+            "end": 152,
+            "quote": "Forces you to look at traffic data. Middle ground."
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:85/paragraph",
+            "start": 138,
+            "end": 152,
+            "quote": "Middle ground."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "80966297d48f9698a1b380a91bbb63418980f056dbce7de049be0f47957d07fb",
+        "unit": {
+          "id": "e1f995111622bc98dc73d1c08d3cb56cbcd9ea73177b2c7aa80b57e96a70603a",
+          "kind": "action",
+          "title": "Use PXL with evidence gating for mature programmes",
+          "claim": {
+            "text": "The source describes PXL as replacing subjective scores with about 10-14 binary or scaled criteria tied to evidence, weighted, mostly yes/no, cutting scoring subjectivity; best for mature programmes; slowest.",
+            "quote": "PXL (Peep Laja / CXL): replaces subjective scores with about 10-14 binary or scaled criteria tied to evidence: is the change above the fold, is it noticeable within 5 seconds, is it on a high-traffic page, is it backed by heatmaps/user testing/surveys/analytics, how hard to build. Weighted, mostly yes/no, which cuts scoring subjectivity. Best for mature programmes. Slowest."
+          },
+          "action": {
+            "text": "Use PXL-style evidence gating: no test enters the backlog without at least 2 points of evidence, plus a profit-weighted ceiling estimate.",
+            "quote": "Use PXL-style evidence gating (no test enters the backlog without at least 2 points of evidence) plus a profit-weighted ceiling estimate."
+          },
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "Mature prioritisation programme needing less subjectivity and evidence gating.",
+                "quote": "Best for mature programmes."
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "The source does not define what counts as a 'point of evidence'."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:86/paragraph",
+            "start": 0,
+            "end": 376,
+            "quote": "PXL (Peep Laja / CXL): replaces subjective scores with about 10-14 binary or scaled criteria tied to evidence: is the change above the fold, is it noticeable within 5 seconds, is it on a high-traffic page, is it backed by heatmaps/user testing/surveys/analytics, how hard to build. Weighted, mostly yes/no, which cuts scoring subjectivity. Best for mature programmes. Slowest."
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:88/paragraph",
+            "start": 503,
+            "end": 640,
+            "quote": "Use PXL-style evidence gating (no test enters the backlog without at least 2 points of evidence) plus a profit-weighted ceiling estimate."
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:86/paragraph",
+            "start": 340,
+            "end": 367,
+            "quote": "Best for mature programmes."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "a8f33d9ac02af7dcdec71bac42dd36be77e7f3a936e604ebd36f6c95f49e3233",
+        "unit": {
+          "id": "89a617be631249d9369df9c697f4ed11dc554709b777fdf8d8d9fa418cd76cec",
+          "kind": "action",
+          "title": "Prioritise by expected profit, not expected lift",
+          "claim": {
+            "text": "The source says the better objective is expected value = P(win) x expected lift x value per conversion x traffic exposed, minus build cost.",
+            "quote": "The better objective is expected value = P(win) x expected lift x value per conversion x traffic exposed, minus build cost."
+          },
+          "action": {
+            "text": "Prioritise tests by expected profit using expected value = P(win) x expected lift x value per conversion x traffic exposed, minus build cost, rather than by expected lift.",
+            "quote": "Prioritise by expected profit, not expected lift."
+          },
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "Prioritising tests where expected lift alone may mislead.",
+                "quote": "Prioritise by expected profit, not expected lift."
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:88/paragraph",
+            "start": 95,
+            "end": 218,
+            "quote": "The better objective is expected value = P(win) x expected lift x value per conversion x traffic exposed, minus build cost."
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:88/paragraph",
+            "start": 0,
+            "end": 49,
+            "quote": "Prioritise by expected profit, not expected lift."
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:88/paragraph",
+            "start": 0,
+            "end": 49,
+            "quote": "Prioritise by expected profit, not expected lift."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "38e9ad6c29a7c294a658095cd3500d8457443e9b3730550b512293114d2f8398",
+        "unit": {
+          "id": "a757f56fa5ec178ecf725d10e9361abe004948525885f7a12196e3b69af645d0",
+          "kind": "action",
+          "title": "Generate a prioritised evidence-backed hypothesis before testing",
+          "claim": {
+            "text": "The source says the output of research is a prioritised, evidence-backed hypothesis, not a test itself; DRIP reports a 36.3% win rate because it pre-qualifies every hypothesis with analytics, session recordings, and heatmaps before building.",
+            "quote": "The output of research is a prioritised, evidence-backed hypothesis, not a test itself. DRIP reports a 36.3% win rate because it pre-qualifies every hypothesis with analytics, session recordings, and heatmaps before building"
+          },
+          "action": {
+            "text": "Generate a prioritised, evidence-backed hypothesis before building tests.",
+            "quote": "The output of research is a prioritised, evidence-backed hypothesis, not a test itself."
+          },
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "Generating test hypotheses.",
+                "quote": "research process that generates hypotheses"
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "The source lists specific research methods (analytics funnel analysis, session replay, heatmaps/scroll maps, on-site surveys, user testing, customer interviews) but these are omitted due to cap."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:96/paragraph",
+            "start": 110,
+            "end": 334,
+            "quote": "The output of research is a prioritised, evidence-backed hypothesis, not a test itself. DRIP reports a 36.3% win rate because it pre-qualifies every hypothesis with analytics, session recordings, and heatmaps before building"
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:96/paragraph",
+            "start": 110,
+            "end": 197,
+            "quote": "The output of research is a prioritised, evidence-backed hypothesis, not a test itself."
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:89/paragraph",
+            "start": 4,
+            "end": 46,
+            "quote": "research process that generates hypotheses"
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "6135f795606bbca046041f215094172c058dcdabf62392648530878d693a228b",
+        "unit": {
+          "id": "1b33296488a99aca113c8f5484fa64a86b99228197a09c825aafc330bcf4b3e8",
+          "kind": "action",
+          "title": "Use the hypothesis structure template",
+          "claim": {
+            "text": "The source provides a hypothesis structure: Because we observed [evidence], we believe [change] will cause [effect] for [segment], measured by [primary metric]. We will know it worked if [metric moves by MDE].",
+            "quote": "Because we observed [evidence], we believe [change] will cause [effect] for [segment], measured by [primary metric]. We will know it worked if [metric moves by MDE]."
+          },
+          "action": {
+            "text": "Write test hypotheses using the structure: Because we observed [evidence], we believe [change] will cause [effect] for [segment], measured by [primary metric]. We will know it worked if [metric moves by MDE].",
+            "quote": "Because we observed [evidence], we believe [change] will cause [effect] for [segment], measured by [primary metric]. We will know it worked if [metric moves by MDE]."
+          },
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "Designing a test.",
+                "quote": "Ties the test to evidence and a decision."
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:98/paragraph",
+            "start": 23,
+            "end": 188,
+            "quote": "Because we observed [evidence], we believe [change] will cause [effect] for [segment], measured by [primary metric]. We will know it worked if [metric moves by MDE]."
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:98/paragraph",
+            "start": 23,
+            "end": 188,
+            "quote": "Because we observed [evidence], we believe [change] will cause [effect] for [segment], measured by [primary metric]. We will know it worked if [metric moves by MDE]."
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:98/paragraph",
+            "start": 190,
+            "end": 231,
+            "quote": "Ties the test to evidence and a decision."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "079311e6903167a17bc26bc34e3d9f4b6f8de149872244dd1dc89dd3bb17916f",
+        "unit": {
+          "id": "0d162428d09cb5423b9b3d06404feddb4131297ad1ca20e5269eba25e3e0f0a3",
+          "kind": "action",
+          "title": "Use conversion rate for fastest power but note order-value blind spot",
+          "claim": {
+            "text": "The source says conversion rate is binary, low variance, and fastest to power, but its blind spot is that it ignores order value.",
+            "quote": "Conversion rate: binary, low variance, fastest to power. Blind spot: ignores order value."
+          },
+          "action": {
+            "text": "Use conversion rate as a primary metric when fastest power is needed, while accounting for the blind spot that it ignores order value.",
+            "quote": "Conversion rate: binary, low variance, fastest to power. Blind spot: ignores order value."
+          },
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "Choosing a primary metric where fast power is needed.",
+                "quote": "fastest to power"
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:100/paragraph",
+            "start": 0,
+            "end": 89,
+            "quote": "Conversion rate: binary, low variance, fastest to power. Blind spot: ignores order value."
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:100/paragraph",
+            "start": 0,
+            "end": 89,
+            "quote": "Conversion rate: binary, low variance, fastest to power. Blind spot: ignores order value."
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:100/paragraph",
+            "start": 39,
+            "end": 55,
+            "quote": "fastest to power"
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "b5d2a29e319029b770d163dd9997e5cca1c92656db180522ca657d65bab6efec",
+        "unit": {
+          "id": "5f1a47a3639872737aa469d94aa43e354e2563cbe72e7e359c7a4763d9a05d43",
+          "kind": "action",
+          "title": "Use revenue metrics with variance mitigation and gross profit for DTC",
+          "claim": {
+            "text": "Revenue metrics need more sample because variance of order value adds to the binary conversion variance; mitigate by winsorizing outlier orders or using a threshold proportion metric so no single large order dominates. Gross profit per visitor is the honest objective for a DTC brand because it prices in margin and discounting, but it has the same variance problem as RPV plus margin data.",
+            "quote": "Gross profit per visitor: the honest objective for a DTC brand, because it prices in margin and discounting. Same variance problem as RPV, plus margin data.\n\nWhy revenue metrics need more sample: variance of order value adds to the binary conversion variance. Mitigate by winsorizing outlier orders or using a threshold proportion metric (share of visitors who spend more than $X) so no single large order dominates."
+          },
+          "action": {
+            "text": "For a DTC brand, use gross profit per visitor as the primary metric; when using revenue or gross profit metrics, mitigate high variance by winsorizing outlier orders or using a threshold proportion metric (share of visitors who spend more than $X) so no single large order dominates.",
+            "quote": "Gross profit per visitor: the honest objective for a DTC brand, because it prices in margin and discounting. Same variance problem as RPV, plus margin data.\n\nWhy revenue metrics need more sample: variance of order value adds to the binary conversion variance. Mitigate by winsorizing outlier orders or using a threshold proportion metric (share of visitors who spend more than $X) so no single large order dominates."
+          },
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "Using revenue or gross profit metrics where order-value variance matters.",
+                "quote": "Why revenue metrics need more sample"
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "The source does not specify the exact winsorizing threshold or the $X for the threshold proportion metric."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:102/paragraph",
+            "start": 0,
+            "end": 156,
+            "quote": "Gross profit per visitor: the honest objective for a DTC brand, because it prices in margin and discounting. Same variance problem as RPV, plus margin data."
+          },
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:103/paragraph",
+            "start": 0,
+            "end": 258,
+            "quote": "Why revenue metrics need more sample: variance of order value adds to the binary conversion variance. Mitigate by winsorizing outlier orders or using a threshold proportion metric (share of visitors who spend more than $X) so no single large order dominates."
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:102/paragraph",
+            "start": 0,
+            "end": 156,
+            "quote": "Gross profit per visitor: the honest objective for a DTC brand, because it prices in margin and discounting. Same variance problem as RPV, plus margin data."
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:103/paragraph",
+            "start": 0,
+            "end": 258,
+            "quote": "Why revenue metrics need more sample: variance of order value adds to the binary conversion variance. Mitigate by winsorizing outlier orders or using a threshold proportion metric (share of visitors who spend more than $X) so no single large order dominates."
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:103/paragraph",
+            "start": 0,
+            "end": 36,
+            "quote": "Why revenue metrics need more sample"
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "7aab9999c031e4843e65463027e54847bd50bba598cfd7e445949479008f889a",
+        "unit": {
+          "id": "7f8e799e2c84e90a9199467c00cf3f7fe8987d3fe0b77612550a14106f4233f3",
+          "kind": "action",
+          "title": "Define guardrail metrics",
+          "claim": {
+            "text": "The source says guardrail metrics are metrics that must not get worse even if the primary improves: AOV, return rate, refund rate, page load, add-to-cart, margin. A conversion win that tanks AOV or margin is not a win.",
+            "quote": "Guardrail metrics: metrics that must not get worse even if the primary improves: AOV, return rate, refund rate, page load, add-to-cart, margin."
+          },
+          "action": {
+            "text": "Define guardrail metrics such as AOV, return rate, refund rate, page load, add-to-cart, and margin that must not get worse even if the primary improves.",
+            "quote": "Guardrail metrics: metrics that must not get worse even if the primary improves: AOV, return rate, refund rate, page load, add-to-cart, margin."
+          },
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "Designing a test where primary metric could improve at the expense of other metrics.",
+                "quote": "A conversion win that tanks AOV or margin is not a win."
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:104/paragraph",
+            "start": 0,
+            "end": 143,
+            "quote": "Guardrail metrics: metrics that must not get worse even if the primary improves: AOV, return rate, refund rate, page load, add-to-cart, margin."
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:104/paragraph",
+            "start": 0,
+            "end": 143,
+            "quote": "Guardrail metrics: metrics that must not get worse even if the primary improves: AOV, return rate, refund rate, page load, add-to-cart, margin."
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:104/paragraph",
+            "start": 144,
+            "end": 199,
+            "quote": "A conversion win that tanks AOV or margin is not a win."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "49af3385bae3f181883d9a636a19b17029bfdc2e169e8d045efd2a8409db4ad9",
+        "unit": {
+          "id": "a389d459eb472fe3a362b1c297dfe94aba55085499c40ceced20983d4b1a14ac",
+          "kind": "action",
+          "title": "Run tests for sufficient duration and pre-register segments",
+          "claim": {
+            "text": "Test duration should be at least one full week, in practice two, plus enough to hit the pre-computed sample size, and you should not stop just because you hit significance early. Mobile and desktop can move in opposite directions, so pre-register device and traffic-source segments rather than fishing; same for paid vs organic and new vs returning.",
+            "quote": "Test duration: at least one full week, in practice two, plus enough to hit the pre-computed sample size. Do not stop just because you hit significance early.\n\nDevice and traffic-source splits: mobile and desktop convert differently and can move in opposite directions; a blended win can hide a mobile loss. Pre-register these as segments rather than fishing. Same for paid vs organic, new vs returning."
+          },
+          "action": {
+            "text": "Run tests for at least one full week, in practice two, plus enough to hit the pre-computed sample size, and do not stop just because you hit significance early; pre-register device and traffic-source segments rather than fishing.",
+            "quote": "Test duration: at least one full week, in practice two, plus enough to hit the pre-computed sample size. Do not stop just because you hit significance early.\n\nDevice and traffic-source splits: mobile and desktop convert differently and can move in opposite directions; a blended win can hide a mobile loss. Pre-register these as segments rather than fishing. Same for paid vs organic, new vs returning."
+          },
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "Designing test duration and segments.",
+                "quote": "Test duration: at least one full week"
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [
+            {
+              "text": "Enough to hit the pre-computed sample size and segments pre-registered.",
+              "quote": "plus enough to hit the pre-computed sample size"
+            }
+          ],
+          "unknowns": [],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:105/paragraph",
+            "start": 0,
+            "end": 157,
+            "quote": "Test duration: at least one full week, in practice two, plus enough to hit the pre-computed sample size. Do not stop just because you hit significance early."
+          },
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:106/paragraph",
+            "start": 0,
+            "end": 243,
+            "quote": "Device and traffic-source splits: mobile and desktop convert differently and can move in opposite directions; a blended win can hide a mobile loss. Pre-register these as segments rather than fishing. Same for paid vs organic, new vs returning."
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:105/paragraph",
+            "start": 0,
+            "end": 157,
+            "quote": "Test duration: at least one full week, in practice two, plus enough to hit the pre-computed sample size. Do not stop just because you hit significance early."
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:106/paragraph",
+            "start": 0,
+            "end": 243,
+            "quote": "Device and traffic-source splits: mobile and desktop convert differently and can move in opposite directions; a blended win can hide a mobile loss. Pre-register these as segments rather than fishing. Same for paid vs organic, new vs returning."
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:105/paragraph",
+            "start": 0,
+            "end": 37,
+            "quote": "Test duration: at least one full week"
+          },
+          {
+            "field": "completion.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:105/paragraph",
+            "start": 56,
+            "end": 103,
+            "quote": "plus enough to hit the pre-computed sample size"
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "fd512d01d5c33345cc31c0dc9bd4737167d6dfe88475d8b9637d99f11c1e84b0",
+        "unit": {
+          "id": "58c0ead029fbd508e0cb793163f700f524e78274f831abcc16661cb73e053429",
+          "kind": "action",
+          "title": "Account for Shopify checkout A/B testing limits and use server-side where needed",
+          "claim": {
+            "text": "The source says classic client-side checkout A/B testing is not possible on standard Shopify.",
+            "quote": "So classic client-side checkout A/B testing is not possible on standard Shopify."
+          },
+          "action": {
+            "text": "Use client-side for front-end visual tests on product/cart/home pages and use server-side (or Shopify Rollouts) for anything touching checkout, pricing logic, or performance-sensitive paths.",
+            "quote": "Rule for DTC: use client-side for front-end visual tests on product/cart/home pages; use server-side (or Shopify Rollouts) for anything touching checkout, pricing logic, or performance-sensitive paths."
+          },
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "Shopify rolled out checkout extensibility to all merchants (checkout.liquid deprecated; general rollout August 2024), so direct JavaScript injection into checkout is gone.",
+                "quote": "Since Shopify rolled out checkout extensibility to all merchants (checkout.liquid deprecated; general rollout August 2024), direct JavaScript injection into checkout is gone."
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [
+            "The source also lists non-Plus pre-checkout test areas and Shopify Plus checkout extensibility options, but these are not included in this unit due to cap."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:108/paragraph",
+            "start": 426,
+            "end": 506,
+            "quote": "So classic client-side checkout A/B testing is not possible on standard Shopify."
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:115/paragraph",
+            "start": 384,
+            "end": 585,
+            "quote": "Rule for DTC: use client-side for front-end visual tests on product/cart/home pages; use server-side (or Shopify Rollouts) for anything touching checkout, pricing logic, or performance-sensitive paths."
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:108/paragraph",
+            "start": 10,
+            "end": 184,
+            "quote": "Since Shopify rolled out checkout extensibility to all merchants (checkout.liquid deprecated; general rollout August 2024), direct JavaScript injection into checkout is gone."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "ecb475987f999938b9a9461f627ab9e1baa8587658a5508e1a15f4b8a581dcf4",
+        "unit": {
+          "id": "2c7b353c67f7a3af9e259832e1374e8bd91aa6571275638557b4a65b7c74958b",
+          "kind": "action",
+          "title": "Follow legal and ethical constraints for price testing",
+          "claim": {
+            "text": "The source recommends safer practice: test price presentation, framing, tiers, and bundles rather than the raw number for the same SKU; or test different offerings at different prices.",
+            "quote": "Safer practice: test price presentation, framing, tiers, and bundles rather than the raw number for the same SKU; or test different offerings (add/remove a feature) at different prices."
+          },
+          "action": {
+            "text": "Test price presentation, framing, tiers, and bundles rather than the raw number for the same SKU; or test different offerings at different prices, ensuring price differences are not based on protected characteristics and disclosing personalised prices where required.",
+            "quote": "Safer practice: test price presentation, framing, tiers, and bundles rather than the raw number for the same SKU; or test different offerings (add/remove a feature) at different prices."
+          },
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "Price testing is legal in the US and EU provided the price difference is not based on protected characteristics (nationality, gender, race), which is negative price discrimination and illegal.",
+                "quote": "Price testing. Legal in the US and EU provided the price difference is not based on protected characteristics (nationality, gender, race), which is negative price discrimination and illegal."
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": [
+              {
+                "text": "Price differences based on protected characteristics such as nationality, gender, or race are illegal.",
+                "quote": "which is negative price discrimination and illegal"
+              }
+            ]
+          },
+          "completion": [],
+          "unknowns": [],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:110/paragraph",
+            "start": 1574,
+            "end": 1759,
+            "quote": "Safer practice: test price presentation, framing, tiers, and bundles rather than the raw number for the same SKU; or test different offerings (add/remove a feature) at different prices."
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:110/paragraph",
+            "start": 1574,
+            "end": 1759,
+            "quote": "Safer practice: test price presentation, framing, tiers, and bundles rather than the raw number for the same SKU; or test different offerings (add/remove a feature) at different prices."
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:110/paragraph",
+            "start": 635,
+            "end": 825,
+            "quote": "Price testing. Legal in the US and EU provided the price difference is not based on protected characteristics (nationality, gender, race), which is negative price discrimination and illegal."
+          },
+          {
+            "field": "exclusions.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:110/paragraph",
+            "start": 774,
+            "end": 824,
+            "quote": "which is negative price discrimination and illegal"
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "114fe241e5ed813c22f3f94692ecbfe2d7d2ddcbf78f8cb97c23180d29f6f9d9",
+        "unit": {
+          "id": "58e3b0c437d85622b141fa194bc3ba9fe820149644fa152781b32b4777959e40",
+          "kind": "action",
+          "title": "Report confidence intervals over p-values",
+          "claim": {
+            "text": "The source says use confidence intervals over p-values; a CI shows the plausible range of the effect and its magnitude; a bare p-value collapses that to a yes/no at an arbitrary cliff. Report the interval.",
+            "quote": "Confidence intervals over p-values. A CI shows the plausible range of the effect and its magnitude; a bare p-value collapses that to a yes/no at an arbitrary cliff. Report the interval."
+          },
+          "action": {
+            "text": "Report confidence intervals rather than bare p-values when reading test results.",
+            "quote": "Report the interval."
+          },
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "Reading test results.",
+                "quote": "reading results"
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:117/paragraph",
+            "start": 0,
+            "end": 185,
+            "quote": "Confidence intervals over p-values. A CI shows the plausible range of the effect and its magnitude; a bare p-value collapses that to a yes/no at an arbitrary cliff. Report the interval."
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:117/paragraph",
+            "start": 165,
+            "end": 185,
+            "quote": "Report the interval."
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:116/paragraph",
+            "start": 4,
+            "end": 19,
+            "quote": "reading results"
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "22d52ea6e25e679c404449282256bd6089cb95dd4638b932909cae74ad875f3d",
+        "unit": {
+          "id": "e487ab8ccc614f4661f710c632507469efc3756afadc326d3c61c39120781acf",
+          "kind": "action",
+          "title": "Use hybrid testing: A/B for high-stakes, bandits for tactical",
+          "claim": {
+            "text": "The source describes an ecommerce pattern of hybrid testing: A/B tests for site-wide, high-stakes changes and bandits for high-volume tactical decisions.",
+            "quote": "A/B tests for site-wide, high-stakes changes; bandits for high-volume tactical decisions."
+          },
+          "action": {
+            "text": "Use A/B tests for site-wide, high-stakes changes; use bandits for high-volume tactical decisions.",
+            "quote": "A/B tests for site-wide, high-stakes changes; bandits for high-volume tactical decisions."
+          },
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "Ecommerce pattern that has emerged: hybrid.",
+                "quote": "Ecommerce pattern that has emerged: hybrid."
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:82/paragraph",
+            "start": 44,
+            "end": 133,
+            "quote": "A/B tests for site-wide, high-stakes changes; bandits for high-volume tactical decisions."
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:82/paragraph",
+            "start": 44,
+            "end": 133,
+            "quote": "A/B tests for site-wide, high-stakes changes; bandits for high-volume tactical decisions."
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:82/paragraph",
+            "start": 0,
+            "end": 43,
+            "quote": "Ecommerce pattern that has emerged: hybrid."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "1e33bff103150018850ee40b200f18a49990df95da15a6406b262d9e9e89040e",
+        "unit": {
+          "id": "4cd12f4370acf3f36884fc03cc568ffaa156b316375b8d84db846d1e249a8cf8",
+          "kind": "warning",
+          "title": "Bandit tradeoff: less certainty and single-KPI focus",
+          "claim": {
+            "text": "Bandits minimise regret rather than delivering a clean estimate; the tradeoff is less certainty about the losing arms and a heavier focus on one KPI.",
+            "quote": "Minimises regret rather than delivering a clean estimate; the tradeoff is less certainty about the losing arms and a heavier focus on one KPI."
+          },
+          "action": null,
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:81/paragraph",
+            "start": 290,
+            "end": 432,
+            "quote": "Minimises regret rather than delivering a clean estimate; the tradeoff is less certainty about the losing arms and a heavier focus on one KPI."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "84b26d36f69c97824f1ddadcaa3e9a7fd39b0f85748d9adb2e563936a1e8a2bc",
+        "unit": {
+          "id": "0a61e2b7f2c2a8667d96e2bd00bd478681fd7e1740176f8a60b35ab5d4c07b31",
+          "kind": "principle",
+          "title": "RICE prioritisation framework",
+          "claim": {
+            "text": "RICE (Intercom) uses Reach, Impact, Confidence, Effort; it adds audience size and is good when reach varies.",
+            "quote": "RICE (Intercom): Reach, Impact, Confidence, Effort. Adds audience size; good when reach varies."
+          },
+          "action": null,
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:87/paragraph",
+            "start": 0,
+            "end": 95,
+            "quote": "RICE (Intercom): Reach, Impact, Confidence, Effort. Adds audience size; good when reach varies."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "0b7e3b7d47bcdf12f530866d8fe0ee901963b36945a52a46cd1f063a1353de95",
+        "unit": {
+          "id": "f21b6d74526c76b8b4b5dea9e3b1439085f9c8a83a3561baf4e470e8c6131f52",
+          "kind": "action",
+          "title": "Prioritise by expected profit, not expected lift",
+          "claim": {
+            "text": "The source recommends prioritising by expected profit, not expected lift.",
+            "quote": "Prioritise by expected profit, not expected lift."
+          },
+          "action": {
+            "text": "Prioritise by expected profit, not expected lift.",
+            "quote": "Prioritise by expected profit, not expected lift."
+          },
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:88/paragraph",
+            "start": 0,
+            "end": 49,
+            "quote": "Prioritise by expected profit, not expected lift."
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:88/paragraph",
+            "start": 0,
+            "end": 49,
+            "quote": "Prioritise by expected profit, not expected lift."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "701713b2b9c73c8bf6e87bd2134bef4e8e8960c8a99ccf1ff466ad2668431508",
+        "unit": {
+          "id": "b08a8a07b5e38baa243f70e453dc332dca035ae626dcb22f2244335f02658f43",
+          "kind": "action",
+          "title": "Weight DTC tests by gross profit per conversion",
+          "claim": {
+            "text": "For a DTC brand, weight by gross profit per conversion, not revenue, because a conversion lift that shifts mix toward low-margin SKUs can raise revenue and cut profit.",
+            "quote": "For a DTC brand, weight by gross profit per conversion, not revenue, because a conversion lift that shifts mix toward low-margin SKUs can raise revenue and cut profit."
+          },
+          "action": {
+            "text": "For a DTC brand, weight by gross profit per conversion, not revenue.",
+            "quote": "For a DTC brand, weight by gross profit per conversion, not revenue"
+          },
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:88/paragraph",
+            "start": 335,
+            "end": 502,
+            "quote": "For a DTC brand, weight by gross profit per conversion, not revenue, because a conversion lift that shifts mix toward low-margin SKUs can raise revenue and cut profit."
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:88/paragraph",
+            "start": 335,
+            "end": 402,
+            "quote": "For a DTC brand, weight by gross profit per conversion, not revenue"
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "72262f1a61775d900b29eaa6e1eebd51fedc6a7546984edcb6496fed3066a239",
+        "unit": {
+          "id": "9506ac51a8d31935af911cbaa44276aee58a455268defd74f0d12f19c9ebff61",
+          "kind": "action",
+          "title": "Gate backlog with PXL-style evidence",
+          "claim": {
+            "text": "Use PXL-style evidence gating (no test enters the backlog without at least 2 points of evidence) plus a profit-weighted ceiling estimate.",
+            "quote": "Use PXL-style evidence gating (no test enters the backlog without at least 2 points of evidence) plus a profit-weighted ceiling estimate."
+          },
+          "action": {
+            "text": "Use PXL-style evidence gating (no test enters the backlog without at least 2 points of evidence) plus a profit-weighted ceiling estimate.",
+            "quote": "Use PXL-style evidence gating (no test enters the backlog without at least 2 points of evidence) plus a profit-weighted ceiling estimate."
+          },
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [
+            {
+              "text": "No test enters the backlog without at least 2 points of evidence.",
+              "quote": "no test enters the backlog without at least 2 points of evidence"
+            }
+          ],
+          "unknowns": [
+            "The source does not define what counts as a point of evidence."
+          ],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:88/paragraph",
+            "start": 503,
+            "end": 640,
+            "quote": "Use PXL-style evidence gating (no test enters the backlog without at least 2 points of evidence) plus a profit-weighted ceiling estimate."
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:88/paragraph",
+            "start": 503,
+            "end": 640,
+            "quote": "Use PXL-style evidence gating (no test enters the backlog without at least 2 points of evidence) plus a profit-weighted ceiling estimate."
+          },
+          {
+            "field": "completion.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:88/paragraph",
+            "start": 534,
+            "end": 598,
+            "quote": "no test enters the backlog without at least 2 points of evidence"
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "87bb1aa21e73ff69c67d99ce44f150ca3b88ac63be4853d62748f238020300bd",
+        "unit": {
+          "id": "c050a579c4b02f5807d68e6cb469c200b4e4f750491f672aa6c63290c01e9490",
+          "kind": "warning",
+          "title": "RPV has high variance and needs more traffic",
+          "claim": {
+            "text": "Revenue per visitor captures conversion and AOV together, but revenue is highly skewed: in a typical ecommerce case 97% of visitors spend $0, a few spend a lot, so the coefficient of variation can be around 750% (sd $18 on a mean of $2.40). This needs roughly 6x the traffic of a conversion-rate test for the same relative MDE (about 175,000 vs 28,000 per variant at a 3% baseline).",
+            "quote": "Revenue per visitor (RPV): captures conversion and AOV together. But revenue is highly skewed: in a typical ecommerce case 97% of visitors spend $0, a few spend a lot, so the coefficient of variation can be around 750% (sd $18 on a mean of $2.40). This needs roughly 6x the traffic of a conversion-rate test for the same relative MDE (about 175,000 vs 28,000 per variant at a 3% baseline)."
+          },
+          "action": null,
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:101/paragraph",
+            "start": 0,
+            "end": 389,
+            "quote": "Revenue per visitor (RPV): captures conversion and AOV together. But revenue is highly skewed: in a typical ecommerce case 97% of visitors spend $0, a few spend a lot, so the coefficient of variation can be around 750% (sd $18 on a mean of $2.40). This needs roughly 6x the traffic of a conversion-rate test for the same relative MDE (about 175,000 vs 28,000 per variant at a 3% baseline)."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "c46baaa4fd5ac09954330a758a0679de757409b265429169375e37b518a7de04",
+        "unit": {
+          "id": "46e32aa2e248d5dc959c19e41dadc5b806b9abfe3812d2d423550e5dcf3605c5",
+          "kind": "principle",
+          "title": "Use gross profit per visitor as the honest DTC objective",
+          "claim": {
+            "text": "Gross profit per visitor is the honest objective for a DTC brand because it prices in margin and discounting, but it has the same variance problem as RPV plus margin data.",
+            "quote": "Gross profit per visitor: the honest objective for a DTC brand, because it prices in margin and discounting. Same variance problem as RPV, plus margin data."
+          },
+          "action": null,
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:102/paragraph",
+            "start": 0,
+            "end": 156,
+            "quote": "Gross profit per visitor: the honest objective for a DTC brand, because it prices in margin and discounting. Same variance problem as RPV, plus margin data."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "6789a18367e8194412f3e3233a7dc9dae1055052f50fbf1d7dba25efacefa2f9",
+        "unit": {
+          "id": "e4e02d5aac59ac20f3fec0b6fda2a5b60fa8535421ae65b84402452c5a8a8d2a",
+          "kind": "action",
+          "title": "Pre-register device and traffic-source segments",
+          "claim": {
+            "text": "Mobile and desktop convert differently and can move in opposite directions; a blended win can hide a mobile loss. Pre-register these as segments rather than fishing. Same for paid vs organic, new vs returning.",
+            "quote": "Device and traffic-source splits: mobile and desktop convert differently and can move in opposite directions; a blended win can hide a mobile loss. Pre-register these as segments rather than fishing. Same for paid vs organic, new vs returning."
+          },
+          "action": {
+            "text": "Pre-register device and traffic-source segments rather than fishing.",
+            "quote": "Pre-register these as segments rather than fishing."
+          },
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:106/paragraph",
+            "start": 0,
+            "end": 243,
+            "quote": "Device and traffic-source splits: mobile and desktop convert differently and can move in opposite directions; a blended win can hide a mobile loss. Pre-register these as segments rather than fishing. Same for paid vs organic, new vs returning."
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:106/paragraph",
+            "start": 148,
+            "end": 199,
+            "quote": "Pre-register these as segments rather than fishing."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "83459106ea34481922a2eb528cdd71318d03d1398ace9e9ccdd661d9cae1ed0c",
+        "unit": {
+          "id": "64e1daafd61d0d895ededd2a30d2df499eb069126d3db686dac701a45949ba8a",
+          "kind": "action",
+          "title": "Test pre-checkout elements on Non-Plus Shopify plans",
+          "claim": {
+            "text": "On Non-Plus plans (Basic, Shopify, Advanced), you can test everything before checkout: product pages, collection pages, cart, homepage, add-to-cart, trust badges, pricing display. Varify and similar run via a head snippet on all plans.",
+            "quote": "Non-Plus plans (Basic, Shopify, Advanced): everything before checkout: product pages, collection pages, cart, homepage, add-to-cart, trust badges, pricing display. Varify and similar run via a head snippet on all plans."
+          },
+          "action": {
+            "text": "On Non-Plus plans, test everything before checkout: product pages, collection pages, cart, homepage, add-to-cart, trust badges, pricing display.",
+            "quote": "Non-Plus plans (Basic, Shopify, Advanced): everything before checkout: product pages, collection pages, cart, homepage, add-to-cart, trust badges, pricing display."
+          },
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": [
+              {
+                "text": "Being on a Non-Plus plan (Basic, Shopify, Advanced).",
+                "quote": "Non-Plus plans (Basic, Shopify, Advanced)"
+              }
+            ]
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:109/paragraph",
+            "start": 0,
+            "end": 219,
+            "quote": "Non-Plus plans (Basic, Shopify, Advanced): everything before checkout: product pages, collection pages, cart, homepage, add-to-cart, trust badges, pricing display. Varify and similar run via a head snippet on all plans."
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:109/paragraph",
+            "start": 0,
+            "end": 163,
+            "quote": "Non-Plus plans (Basic, Shopify, Advanced): everything before checkout: product pages, collection pages, cart, homepage, add-to-cart, trust badges, pricing display."
+          },
+          {
+            "field": "prerequisites.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:109/paragraph",
+            "start": 0,
+            "end": 41,
+            "quote": "Non-Plus plans (Basic, Shopify, Advanced)"
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "4140129dbae34070d718b5f75806dd4089bce49aa3d879a418eeb6bba504a0d3",
+        "unit": {
+          "id": "1729b5b5cef208d99f856efe01594291896a2e944a7c46ba0b391f8a339c70d3",
+          "kind": "action",
+          "title": "Use checkout extensibility and theme testing on Shopify Plus",
+          "claim": {
+            "text": "On Shopify Plus, use checkout extensibility (Checkout Blocks, UI extensions, Shopify Functions, Branding API) plus native theme A/B testing. Some apps (Personizely, Checkout Boost) run limited checkout-element tests via Checkout Blocks on Plus. About 80% of high-impact ecommerce tests happen before checkout anyway.",
+            "quote": "Shopify Plus: checkout extensibility (Checkout Blocks, UI extensions, Shopify Functions, Branding API) plus native theme A/B testing. Some apps (Personizely, Checkout Boost) run limited checkout-element tests via Checkout Blocks on Plus. About 80% of high-impact ecommerce tests happen before checkout anyway."
+          },
+          "action": {
+            "text": "On Shopify Plus, use checkout extensibility plus native theme A/B testing; some apps can run limited checkout-element tests via Checkout Blocks.",
+            "quote": "Shopify Plus: checkout extensibility (Checkout Blocks, UI extensions, Shopify Functions, Branding API) plus native theme A/B testing. Some apps (Personizely, Checkout Boost) run limited checkout-element tests via Checkout Blocks on Plus."
+          },
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": [
+              {
+                "text": "Being on Shopify Plus.",
+                "quote": "Shopify Plus"
+              }
+            ]
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:110/paragraph",
+            "start": 0,
+            "end": 309,
+            "quote": "Shopify Plus: checkout extensibility (Checkout Blocks, UI extensions, Shopify Functions, Branding API) plus native theme A/B testing. Some apps (Personizely, Checkout Boost) run limited checkout-element tests via Checkout Blocks on Plus. About 80% of high-impact ecommerce tests happen before checkout anyway."
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:110/paragraph",
+            "start": 0,
+            "end": 237,
+            "quote": "Shopify Plus: checkout extensibility (Checkout Blocks, UI extensions, Shopify Functions, Branding API) plus native theme A/B testing. Some apps (Personizely, Checkout Boost) run limited checkout-element tests via Checkout Blocks on Plus."
+          },
+          {
+            "field": "prerequisites.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:110/paragraph",
+            "start": 0,
+            "end": 12,
+            "quote": "Shopify Plus"
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "11c1cbaa6f3cdce4086f7b3991301e1769470f39eb755fe4ed99015ab77ab8d2",
+        "unit": {
+          "id": "bef12d7bc450ce11ba64ee566ed63e870a79aa52724b0cc845fbee313d6035bc",
+          "kind": "action",
+          "title": "Use Shopify Rollouts for server-side theme A/B testing",
+          "claim": {
+            "text": "Shopify's native Rollouts does server-side theme A/B testing: the split happens on Shopify's servers before the page ships, so there is no flicker and no speed penalty. It reports numbers but gives no significance verdict, so the statistical judgment is yours (usestorepilot.com; requires a paid plan tier).",
+            "quote": "Theme testing. Shopify's native \"Rollouts\" does server-side theme A/B testing: the split happens on Shopify's servers before the page ships, so there is no flicker and no speed penalty. It reports numbers but gives no significance verdict, so the statistical judgment is yours (usestorepilot.com; requires a paid plan tier)."
+          },
+          "action": {
+            "text": "Use Shopify's native Rollouts for server-side theme A/B testing.",
+            "quote": "Shopify's native \"Rollouts\" does server-side theme A/B testing"
+          },
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": [
+              {
+                "text": "Requires a paid plan tier.",
+                "quote": "requires a paid plan tier"
+              }
+            ]
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:110/paragraph",
+            "start": 310,
+            "end": 634,
+            "quote": "Theme testing. Shopify's native \"Rollouts\" does server-side theme A/B testing: the split happens on Shopify's servers before the page ships, so there is no flicker and no speed penalty. It reports numbers but gives no significance verdict, so the statistical judgment is yours (usestorepilot.com; requires a paid plan tier)."
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:110/paragraph",
+            "start": 325,
+            "end": 387,
+            "quote": "Shopify's native \"Rollouts\" does server-side theme A/B testing"
+          },
+          {
+            "field": "prerequisites.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:110/paragraph",
+            "start": 607,
+            "end": 632,
+            "quote": "requires a paid plan tier"
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "ef9199c84b6fffff839b6cd6665976ecf66e18bb05728f29f31b79328176afa3",
+        "unit": {
+          "id": "126b09934a04c380f1ac292105b3e05fcd9d801a40c23044aea03573d42d29f6",
+          "kind": "action",
+          "title": "Choose client-side vs server-side by test location",
+          "claim": {
+            "text": "For DTC, use client-side for front-end visual tests on product/cart/home pages; use server-side (or Shopify Rollouts) for anything touching checkout, pricing logic, or performance-sensitive paths.",
+            "quote": "Rule for DTC: use client-side for front-end visual tests on product/cart/home pages; use server-side (or Shopify Rollouts) for anything touching checkout, pricing logic, or performance-sensitive paths."
+          },
+          "action": {
+            "text": "Use client-side for front-end visual tests on product/cart/home pages; use server-side (or Shopify Rollouts) for anything touching checkout, pricing logic, or performance-sensitive paths.",
+            "quote": "use client-side for front-end visual tests on product/cart/home pages; use server-side (or Shopify Rollouts) for anything touching checkout, pricing logic, or performance-sensitive paths."
+          },
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:115/paragraph",
+            "start": 384,
+            "end": 585,
+            "quote": "Rule for DTC: use client-side for front-end visual tests on product/cart/home pages; use server-side (or Shopify Rollouts) for anything touching checkout, pricing logic, or performance-sensitive paths."
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:115/paragraph",
+            "start": 398,
+            "end": 585,
+            "quote": "use client-side for front-end visual tests on product/cart/home pages; use server-side (or Shopify Rollouts) for anything touching checkout, pricing logic, or performance-sensitive paths."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "bc9903e897291fe0215cce1bef54914072056bf818bee66454ee841248c3d3d9",
+        "unit": {
+          "id": "add-research-methods",
+          "kind": "action",
+          "title": "Use research methods to generate evidence-backed hypotheses",
+          "claim": {
+            "text": "The source lists analytics funnel analysis (find where to test), session replay (what is confusing), heatmaps/scroll maps (placement and reach, weighted by revenue per click), on-site surveys (objections), user testing 5-8 people (usability problems), and customer interviews (messaging hypotheses); research output is a prioritised evidence-backed hypothesis.",
+            "quote": "Analytics funnel analysis (GA4, Shopify): find the step with the biggest drop and the most traffic. Feeds where to test.\n\nSession replay: watch real sessions to see rage clicks, dead clicks, loops, form abandonment. Feeds what is confusing.\n\nHeatmaps/scroll maps: see what gets attention and what is missed. Feeds hypotheses about placement and reach. Weight by revenue per click, not raw clicks.\n\nOn-site surveys (exit intent, post-purchase): ask why people did not buy or almost did not. Feeds objections.\n\nUser testing: watch 5-8 people attempt a task and narrate. Feeds usability problems.\n\nCustomer interviews: understand motivation, anxiety, and the words customers use. Feeds messaging hypotheses. The output of research is a prioritised, evidence-backed hypothesis, not a test itself. DRIP reports a 36.3% win rate because it pre-qualifies every hypothesis with analytics, session recordings, and heatmaps before building; teams that test without research see lower win rates."
+          },
+          "action": {
+            "text": "Run analytics funnel analysis to find where to test; session replay to see what is confusing; heatmaps/scroll maps to generate placement and reach hypotheses weighted by revenue per click; on-site surveys to find objections; user testing with 5-8 people to find usability problems; and customer interviews to generate messaging hypotheses.",
+            "quote": "Analytics funnel analysis (GA4, Shopify): find the step with the biggest drop and the most traffic. Feeds where to test.\n\nSession replay: watch real sessions to see rage clicks, dead clicks, loops, form abandonment. Feeds what is confusing.\n\nHeatmaps/scroll maps: see what gets attention and what is missed. Feeds hypotheses about placement and reach. Weight by revenue per click, not raw clicks.\n\nOn-site surveys (exit intent, post-purchase): ask why people did not buy or almost did not. Feeds objections.\n\nUser testing: watch 5-8 people attempt a task and narrate. Feeds usability problems.\n\nCustomer interviews: understand motivation, anxiety, and the words customers use. Feeds messaging hypotheses. The output of research is a prioritised, evidence-backed hypothesis, not a test itself. DRIP reports a 36.3% win rate because it pre-qualifies every hypothesis with analytics, session recordings, and heatmaps before building; teams that test without research see lower win rates."
+          },
+          "trigger": {
+            "op": "all",
+            "args": [
+              {
+                "text": "Generating test hypotheses from research.",
+                "quote": "research process that generates hypotheses"
+              }
+            ]
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [
+            {
+              "text": "A prioritised, evidence-backed hypothesis.",
+              "quote": "The output of research is a prioritised, evidence-backed hypothesis, not a test itself."
+            }
+          ],
+          "unknowns": [],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:91/paragraph",
+            "start": 0,
+            "end": 120,
+            "quote": "Analytics funnel analysis (GA4, Shopify): find the step with the biggest drop and the most traffic. Feeds where to test."
+          },
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:92/paragraph",
+            "start": 0,
+            "end": 118,
+            "quote": "Session replay: watch real sessions to see rage clicks, dead clicks, loops, form abandonment. Feeds what is confusing."
+          },
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:93/paragraph",
+            "start": 0,
+            "end": 154,
+            "quote": "Heatmaps/scroll maps: see what gets attention and what is missed. Feeds hypotheses about placement and reach. Weight by revenue per click, not raw clicks."
+          },
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:94/paragraph",
+            "start": 0,
+            "end": 109,
+            "quote": "On-site surveys (exit intent, post-purchase): ask why people did not buy or almost did not. Feeds objections."
+          },
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:95/paragraph",
+            "start": 0,
+            "end": 84,
+            "quote": "User testing: watch 5-8 people attempt a task and narrate. Feeds usability problems."
+          },
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:96/paragraph",
+            "start": 0,
+            "end": 389,
+            "quote": "Customer interviews: understand motivation, anxiety, and the words customers use. Feeds messaging hypotheses. The output of research is a prioritised, evidence-backed hypothesis, not a test itself. DRIP reports a 36.3% win rate because it pre-qualifies every hypothesis with analytics, session recordings, and heatmaps before building; teams that test without research see lower win rates."
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:91/paragraph",
+            "start": 0,
+            "end": 120,
+            "quote": "Analytics funnel analysis (GA4, Shopify): find the step with the biggest drop and the most traffic. Feeds where to test."
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:92/paragraph",
+            "start": 0,
+            "end": 118,
+            "quote": "Session replay: watch real sessions to see rage clicks, dead clicks, loops, form abandonment. Feeds what is confusing."
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:93/paragraph",
+            "start": 0,
+            "end": 154,
+            "quote": "Heatmaps/scroll maps: see what gets attention and what is missed. Feeds hypotheses about placement and reach. Weight by revenue per click, not raw clicks."
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:94/paragraph",
+            "start": 0,
+            "end": 109,
+            "quote": "On-site surveys (exit intent, post-purchase): ask why people did not buy or almost did not. Feeds objections."
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:95/paragraph",
+            "start": 0,
+            "end": 84,
+            "quote": "User testing: watch 5-8 people attempt a task and narrate. Feeds usability problems."
+          },
+          {
+            "field": "action",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:96/paragraph",
+            "start": 0,
+            "end": 389,
+            "quote": "Customer interviews: understand motivation, anxiety, and the words customers use. Feeds messaging hypotheses. The output of research is a prioritised, evidence-backed hypothesis, not a test itself. DRIP reports a 36.3% win rate because it pre-qualifies every hypothesis with analytics, session recordings, and heatmaps before building; teams that test without research see lower win rates."
+          },
+          {
+            "field": "trigger.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:89/paragraph",
+            "start": 4,
+            "end": 46,
+            "quote": "research process that generates hypotheses"
+          },
+          {
+            "field": "completion.0",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:96/paragraph",
+            "start": 110,
+            "end": 197,
+            "quote": "The output of research is a prioritised, evidence-backed hypothesis, not a test itself."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "660d4a0122df574f8f5507c8f81d81d71006aa83c8ae961718d95149b9607a69",
+        "unit": {
+          "id": "add-amazon-price-test-warning",
+          "kind": "warning",
+          "title": "Amazon's 2000 DVD price test is the cautionary case",
+          "claim": {
+            "text": "Amazon's September 2000 DVD price test tested discount levels of 20% to 40% on 68 DVD titles over five days; after customers compared notes and backlash followed, Amazon refunded 6,896 customers an average of $3.10 each (about $21,377 total); Bezos said they never tested and never will test prices based on customer demographics and called even that a mistake because it created uncertainty for customers.",
+            "quote": "Amazon's September 2000 DVD price test is the cautionary case: per Amazon's own statement it tested discount levels of 20% to 40% on 68 DVD titles over five days; after customers compared notes and backlash followed, Amazon refunded 6,896 customers an average of $3.10 each (about $21,377 total, ABC News, September 29 2000), and Bezos said \"we've never tested and we never will test prices based on customer demographics... even that was a mistake because it created uncertainty for customers.\""
+          },
+          "action": null,
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [],
+          "relations": [
+            {
+              "kind": "depends_on",
+              "target": "2c7b353c67f7a3af9e259832e1374e8bd91aa6571275638557b4a65b7c74958b"
+            }
+          ]
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:110/paragraph",
+            "start": 978,
+            "end": 1473,
+            "quote": "Amazon's September 2000 DVD price test is the cautionary case: per Amazon's own statement it tested discount levels of 20% to 40% on 68 DVD titles over five days; after customers compared notes and backlash followed, Amazon refunded 6,896 customers an average of $3.10 each (about $21,377 total, ABC News, September 29 2000), and Bezos said \"we've never tested and we never will test prices based on customer demographics... even that was a mistake because it created uncertainty for customers.\""
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "959ad77e48c07168f4586bb359938fd3d34d2c6698c1e2bc4c1a8dbd0d627f60",
+        "unit": {
+          "id": "add-tooling-landscape",
+          "kind": "principle",
+          "title": "Choose tooling from the post-Google Optimize landscape",
+          "claim": {
+            "text": "After Google Optimize sunset September 30 2023, there is no native Google replacement; Google points to partners AB Tasty, Optimizely, VWO. Client-side visual editors include VWO, AB Tasty, Convert.com, Kameleoon, Optimizely Web; engineering-led/server-side/feature-flag tools include GrowthBook, Statsig, Eppo, Split, LaunchDarkly; Shopify-native includes Shopify Rollouts plus app-store tools.",
+            "quote": "Tooling landscape after Google Optimize (sunset September 30 2023). No native Google replacement; Google now points to partners AB Tasty, Optimizely, VWO. Current landscape:\n\nClient-side visual editors: VWO (free up to 50,000 tested users/mo), AB Tasty, Convert.com, Kameleoon, Optimizely Web.\n\nEngineering-led / server-side / feature-flag: GrowthBook (open source, self-host free), Statsig (free up to 1M events/mo; powers OpenAI, Notion, Atlassian), Eppo (warehouse-native), Split, LaunchDarkly.\n\nShopify-native: Shopify Rollouts (theme), plus app-store tools."
+          },
+          "action": null,
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:110/paragraph",
+            "start": 1814,
+            "end": 1987,
+            "quote": "Tooling landscape after Google Optimize (sunset September 30 2023). No native Google replacement; Google now points to partners AB Tasty, Optimizely, VWO. Current landscape:"
+          },
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:111/paragraph",
+            "start": 0,
+            "end": 118,
+            "quote": "Client-side visual editors: VWO (free up to 50,000 tested users/mo), AB Tasty, Convert.com, Kameleoon, Optimizely Web."
+          },
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:112/paragraph",
+            "start": 0,
+            "end": 202,
+            "quote": "Engineering-led / server-side / feature-flag: GrowthBook (open source, self-host free), Statsig (free up to 1M events/mo; powers OpenAI, Notion, Atlassian), Eppo (warehouse-native), Split, LaunchDarkly."
+          },
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:113/paragraph",
+            "start": 0,
+            "end": 63,
+            "quote": "Shopify-native: Shopify Rollouts (theme), plus app-store tools."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "c40ebd72800a786048c30649994a8f634dc6708d83d9e09ab3b21baff96e7b9d",
+        "unit": {
+          "id": "add-client-server-tradeoffs",
+          "kind": "warning",
+          "title": "Client-side testing risks flicker and payload; server-side avoids flicker but needs engineers",
+          "claim": {
+            "text": "Client-side testing runs in the browser via JS/DOM manipulation, letting marketers own it and ship fast, but risks flicker, adds JS payload and slows the page, is easier to break, and its logic is public. Server-side testing lets the server or edge decide the variant before render, avoiding flicker, being faster, robust across devices, able to test backend logic, and working with feature flags, but needs engineers and a deploy cycle, costs more, and is slower to ship.",
+            "quote": "Client-side: runs in the browser via JS/DOM manipulation. Pros: marketers own it, visual editor, fast to ship. Cons: flicker risk, adds JS payload and slows the page, easier to break, logic is public. AB Tasty: flicker \"is caused by the basic client-side operation of A/B testing solutions that apply a JavaScript overlayer during page loading\" and there is \"no miracle fix.\"\n\nServer-side: the server or edge decides the variant before render. Pros: no flicker, faster, robust across devices, can test backend logic (pricing, search, recommendations, checkout), works with feature flags. Cons: needs engineers and a deploy cycle, higher cost, slower to ship. GrowthBook: server-side \"avoids any issues with flickering that can happen with client side testing.\""
+          },
+          "action": null,
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:114/paragraph",
+            "start": 0,
+            "end": 375,
+            "quote": "Client-side: runs in the browser via JS/DOM manipulation. Pros: marketers own it, visual editor, fast to ship. Cons: flicker risk, adds JS payload and slows the page, easier to break, logic is public. AB Tasty: flicker \"is caused by the basic client-side operation of A/B testing solutions that apply a JavaScript overlayer during page loading\" and there is \"no miracle fix.\""
+          },
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:115/paragraph",
+            "start": 0,
+            "end": 383,
+            "quote": "Server-side: the server or edge decides the variant before render. Pros: no flicker, faster, robust across devices, can test backend logic (pricing, search, recommendations, checkout), works with feature flags. Cons: needs engineers and a deploy cycle, higher cost, slower to ship. GrowthBook: server-side \"avoids any issues with flickering that can happen with client side testing.\""
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "05816adacb8775d3b51ff61637862670b077d5a0409626bdca6caaa09eaf3646",
+        "unit": {
+          "id": "add-tool-stats",
+          "kind": "principle",
+          "title": "Tool statistical approaches vary",
+          "claim": {
+            "text": "How tools handle stats: Optimizely mSPRT always-valid + FDR; VWO/AB Tasty Bayesian; Statsig sequential; Eppo Bayesian + GAVI; GrowthBook both + sequential + CUPED.",
+            "quote": "How they handle stats: Optimizely mSPRT always-valid + FDR; VWO/AB Tasty Bayesian; Statsig sequential; Eppo Bayesian + GAVI; GrowthBook both + sequential + CUPED."
+          },
+          "action": null,
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [],
+          "relations": []
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:113/paragraph",
+            "start": 64,
+            "end": 226,
+            "quote": "How they handle stats: Optimizely mSPRT always-valid + FDR; VWO/AB Tasty Bayesian; Statsig sequential; Eppo Bayesian + GAVI; GrowthBook both + sequential + CUPED."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "53084c239c00348abb76f6d399c05c01e81cc0f2ed3c9672b5a4d981ce33285a",
+        "unit": {
+          "id": "add-eu-price-disclosure",
+          "kind": "warning",
+          "title": "EU requires disclosure when a price is personalised",
+          "claim": {
+            "text": "The EU requires disclosure when a price is personalised.",
+            "quote": "The EU requires disclosure when a price is personalised."
+          },
+          "action": null,
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [],
+          "relations": [
+            {
+              "kind": "depends_on",
+              "target": "2c7b353c67f7a3af9e259832e1374e8bd91aa6571275638557b4a65b7c74958b"
+            }
+          ]
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:110/paragraph",
+            "start": 1517,
+            "end": 1573,
+            "quote": "The EU requires disclosure when a price is personalised."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      },
+      {
+        "id": "c5a447f9fbdf8e1f6fd732786101e74af47a9903b6e6a53bdc8d59bc1d35b1fd",
+        "unit": {
+          "id": "add-price-testing-ethics-warning",
+          "kind": "warning",
+          "title": "Same-time different prices for identical product is an ethics and brand landmine",
+          "claim": {
+            "text": "Showing two different prices for the identical product to different users at the same time is legal in most places but is an ethics and brand landmine.",
+            "quote": "Showing two different prices for the identical product to different users at the same time is legal in most places but is an ethics and brand landmine."
+          },
+          "action": null,
+          "trigger": {
+            "op": "all",
+            "args": []
+          },
+          "prerequisites": {
+            "op": "all",
+            "args": []
+          },
+          "exclusions": {
+            "op": "any",
+            "args": []
+          },
+          "completion": [],
+          "unknowns": [],
+          "relations": [
+            {
+              "kind": "depends_on",
+              "target": "2c7b353c67f7a3af9e259832e1374e8bd91aa6571275638557b4a65b7c74958b"
+            }
+          ]
+        },
+        "evidence": [
+          {
+            "field": "claim",
+            "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+            "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+            "locator": "body:110/paragraph",
+            "start": 826,
+            "end": 977,
+            "quote": "Showing two different prices for the identical product to different users at the same time is legal in most places but is an ethics and brand landmine."
+          }
+        ],
+        "status": "candidate",
+        "provenance": "unverified",
+        "semantic_review": "required"
+      }
+    ],
+    "held": [],
+    "more_units": true,
+    "unresolved": [
+      "The source does not define 'a few thousand' orders per month.",
+      "The source does not define MDE.",
+      "The source does not define what counts as a 'point of evidence'.",
+      "The source does not specify a winsorizing threshold or the $X for the threshold proportion metric.",
+      "The excerpt does not include primary materials for the external platform, legal, vendor, and historical assertions attributed to named sources.",
+      "The excerpt does not establish that the illustrative traffic and variance figures generalize to other traffic, conversion, or order-value distributions."
+    ],
+    "publication_allowed": false
+  },
+  "normalizations": [],
+  "semantic_recheck": "required",
+  "publication_allowed": false
+}

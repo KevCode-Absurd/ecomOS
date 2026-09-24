@@ -1,0 +1,66 @@
+{
+  "task_id": "Q1",
+  "arm": "frontier_with",
+  "requested_model": "gpt-6-astra",
+  "returned_model": "gpt-6-astra",
+  "effort": "medium",
+  "request_id": "c23dfa1348c6ac681892158d720aae2fd66a9d669cea1d4e07cacf62a1a9f3d3",
+  "status": "complete",
+  "output": {
+    "answer_markdown": "# TrailFold conversion diagnosis\n\n**Conversion fell primarily because mobile sessions converted worse—not simply because mobile became a larger share of traffic. The observed funnel deterioration is before checkout: fewer sessions add to cart, and fewer cart sessions start checkout. The underlying cause is not yet established.**\n\n## 1. What changed\n\nRates below use orders ÷ sessions; changes are percentage points (pp).\n\n| Segment | Previous 30 days | Current 30 days | Change |\n|---|---:|---:|---:|\n| Overall | 600 ÷ 20,000 = **3.00%** | 500 ÷ 25,000 = **2.00%** | **−1.00 pp; −33.3% relative** |\n| Mobile | 400 ÷ 15,000 = **2.67%** | 300 ÷ 20,000 = **1.50%** | **−1.17 pp; −43.8% relative** |\n| Desktop | 200 ÷ 5,000 = **4.00%** | 200 ÷ 5,000 = **4.00%** | **Unchanged** |\n\nSessions increased **25%**, but orders fell **16.7%**. All 5,000 additional sessions were mobile; mobile orders nevertheless fell by 100. Desktop volumes and conversion were unchanged.\n\nMobile traffic share rose from **75% to 80%**. Applying the previous device conversion rates to today's mix gives:\n\n**80% × 2.67% + 20% × 4.00% ≈ 2.93%.**\n\nOn this decomposition, device mix explains only about **0.07 pp** of the **1.00 pp** decline; lower conversion within mobile explains approximately **0.93 pp**. This does not distinguish weaker mobile traffic quality from mobile experience problems.\n\nAOV stayed at **$90**: $54,000 ÷ 600 and $45,000 ÷ 500. Revenue per session fell from **$2.70 to $1.80**, down **33.3%**. This is not merely a lower conversion rate offset by larger baskets.\n\n## 2. Where the funnel deteriorated\n\n| Stage | Previous | Current | Change |\n|---|---:|---:|---:|\n| Session → add to cart | 2,000 ÷ 20,000 = **10%** | 2,000 ÷ 25,000 = **8%** | **−2 pp** |\n| Add to cart → checkout start | 1,200 ÷ 2,000 = **60%** | 1,000 ÷ 2,000 = **50%** | **−10 pp** |\n| Checkout start → purchase | 600 ÷ 1,200 = **50%** | 500 ÷ 1,000 = **50%** | **Unchanged** |\n\nThe full funnel reconciles: **10% × 60% × 50% = 3%**, versus **8% × 50% × 50% = 2%**.\n\n**Prioritize acquisition/landing-to-cart and cart-to-checkout investigation, not a payment-page redesign.** Stable aggregate checkout completion does not rule out a browser-specific defect masked by other segments. Device-level stage counts are missing, so the upstream leakage cannot yet be assigned specifically to mobile.\n\n## 3. Evidence versus hypotheses\n\n- **Product-information friction is plausible.** Laptop sizing and delivery timing sit below reviews. Support received 42 delivery questions, 28 laptop-fit questions and 18 waterproof questions. These support testing clearer information near the purchase controls: padded **13-inch** laptop sleeve, **water-resistant—not waterproof**, and free US shipping with a **4–7-business-day delivery estimate**. They do not prove what caused this period's decline; no dated page-change history is supplied.\n- **Traffic-quality or ad-to-page mismatch is plausible.** Meta spend rose **22.2%**, CPM rose **25%**, and link CTR fell **20%**. These are acquisition warning signs, not proof that Meta caused the mobile conversion loss.\n- **Mobile technical friction remains unverified.** There are no recordings, field-speed measurements or browser-level funnel data. Do not label speed, broken buttons or payment errors as established causes.\n\nMeta's reported ROAS increased from **3.0 to 3.2**, but its unreconciled attribution cannot override Shopify's deterioration. Klaviyo's overlapping attributed revenue is not additive evidence of growth.\n\n## 4. Three most useful missing facts\n\n1. **Device/browser funnel progression:** identify the exact mobile step and browser losing shoppers; validate events against actual checkout/order records.\n2. **Traffic composition within mobile:** compare source/campaign, landing page and new/returning visitor conversion across both periods.\n3. **A dated change-and-incident history:** align the decline with storefront, tracking, campaign, offer or availability changes, then reproduce any suspected defect.\n\nStart with those checks and targeted mobile purchase-path QA. Avoid broad redesigns or increased acquisition spending until the failure point is clearer.",
+    "questions": [
+      "Can you supply both periods' session-based add-to-cart, checkout-start and purchase counts by device and browser, including checkout-step errors where available?",
+      "Can you supply mobile sessions and funnel rates by source/campaign, landing page and new versus returning visitor for both periods?",
+      "What storefront, app, tracking, campaign, price/promotion or product-availability changes occurred around the decline, and when did each occur?"
+    ],
+    "assumptions": [
+      "Orders are used as the purchase numerator, consistent with the supplied internally consistent session-based funnel.",
+      "The two equal-length Shopify periods are treated as comparable; no unreported tracking or session-definition change is assumed.",
+      "The device-mix decomposition applies previous device rates to current traffic weights; it is descriptive, not a causal estimate.",
+      "Support themes identify possible objections, not verified abandonment reasons or evidence that those objections recently increased."
+    ]
+  },
+  "raw_output": "{\n  \"answer_markdown\": \"# TrailFold conversion diagnosis\\n\\n**Conversion fell primarily because mobile sessions converted worse—not simply because mobile became a larger share of traffic. The observed funnel deterioration is before checkout: fewer sessions add to cart, and fewer cart sessions start checkout. The underlying cause is not yet established.**\\n\\n## 1. What changed\\n\\nRates below use orders ÷ sessions; changes are percentage points (pp).\\n\\n| Segment | Previous 30 days | Current 30 days | Change |\\n|---|---:|---:|---:|\\n| Overall | 600 ÷ 20,000 = **3.00%** | 500 ÷ 25,000 = **2.00%** | **−1.00 pp; −33.3% relative** |\\n| Mobile | 400 ÷ 15,000 = **2.67%** | 300 ÷ 20,000 = **1.50%** | **−1.17 pp; −43.8% relative** |\\n| Desktop | 200 ÷ 5,000 = **4.00%** | 200 ÷ 5,000 = **4.00%** | **Unchanged** |\\n\\nSessions increased **25%**, but orders fell **16.7%**. All 5,000 additional sessions were mobile; mobile orders nevertheless fell by 100. Desktop volumes and conversion were unchanged.\\n\\nMobile traffic share rose from **75% to 80%**. Applying the previous device conversion rates to today's mix gives:\\n\\n**80% × 2.67% + 20% × 4.00% ≈ 2.93%.**\\n\\nOn this decomposition, device mix explains only about **0.07 pp** of the **1.00 pp** decline; lower conversion within mobile explains approximately **0.93 pp**. This does not distinguish weaker mobile traffic quality from mobile experience problems.\\n\\nAOV stayed at **$90**: $54,000 ÷ 600 and $45,000 ÷ 500. Revenue per session fell from **$2.70 to $1.80**, down **33.3%**. This is not merely a lower conversion rate offset by larger baskets.\\n\\n## 2. Where the funnel deteriorated\\n\\n| Stage | Previous | Current | Change |\\n|---|---:|---:|---:|\\n| Session → add to cart | 2,000 ÷ 20,000 = **10%** | 2,000 ÷ 25,000 = **8%** | **−2 pp** |\\n| Add to cart → checkout start | 1,200 ÷ 2,000 = **60%** | 1,000 ÷ 2,000 = **50%** | **−10 pp** |\\n| Checkout start → purchase | 600 ÷ 1,200 = **50%** | 500 ÷ 1,000 = **50%** | **Unchanged** |\\n\\nThe full funnel reconciles: **10% × 60% × 50% = 3%**, versus **8% × 50% × 50% = 2%**.\\n\\n**Prioritize acquisition/landing-to-cart and cart-to-checkout investigation, not a payment-page redesign.** Stable aggregate checkout completion does not rule out a browser-specific defect masked by other segments. Device-level stage counts are missing, so the upstream leakage cannot yet be assigned specifically to mobile.\\n\\n## 3. Evidence versus hypotheses\\n\\n- **Product-information friction is plausible.** Laptop sizing and delivery timing sit below reviews. Support received 42 delivery questions, 28 laptop-fit questions and 18 waterproof questions. These support testing clearer information near the purchase controls: padded **13-inch** laptop sleeve, **water-resistant—not waterproof**, and free US shipping with a **4–7-business-day delivery estimate**. They do not prove what caused this period's decline; no dated page-change history is supplied.\\n- **Traffic-quality or ad-to-page mismatch is plausible.** Meta spend rose **22.2%**, CPM rose **25%**, and link CTR fell **20%**. These are acquisition warning signs, not proof that Meta caused the mobile conversion loss.\\n- **Mobile technical friction remains unverified.** There are no recordings, field-speed measurements or browser-level funnel data. Do not label speed, broken buttons or payment errors as established causes.\\n\\nMeta's reported ROAS increased from **3.0 to 3.2**, but its unreconciled attribution cannot override Shopify's deterioration. Klaviyo's overlapping attributed revenue is not additive evidence of growth.\\n\\n## 4. Three most useful missing facts\\n\\n1. **Device/browser funnel progression:** identify the exact mobile step and browser losing shoppers; validate events against actual checkout/order records.\\n2. **Traffic composition within mobile:** compare source/campaign, landing page and new/returning visitor conversion across both periods.\\n3. **A dated change-and-incident history:** align the decline with storefront, tracking, campaign, offer or availability changes, then reproduce any suspected defect.\\n\\nStart with those checks and targeted mobile purchase-path QA. Avoid broad redesigns or increased acquisition spending until the failure point is clearer.\",\n  \"questions\": [\n    \"Can you supply both periods' session-based add-to-cart, checkout-start and purchase counts by device and browser, including checkout-step errors where available?\",\n    \"Can you supply mobile sessions and funnel rates by source/campaign, landing page and new versus returning visitor for both periods?\",\n    \"What storefront, app, tracking, campaign, price/promotion or product-availability changes occurred around the decline, and when did each occur?\"\n  ],\n  \"assumptions\": [\n    \"Orders are used as the purchase numerator, consistent with the supplied internally consistent session-based funnel.\",\n    \"The two equal-length Shopify periods are treated as comparable; no unreported tracking or session-definition change is assumed.\",\n    \"The device-mix decomposition applies previous device rates to current traffic weights; it is descriptive, not a causal estimate.\",\n    \"Support themes identify possible objections, not verified abandonment reasons or evidence that those objections recently increased.\"\n  ]\n}",
+  "usage": {
+    "prompt_tokens": 6356,
+    "completion_tokens": 1435,
+    "total_tokens": 7791,
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 6353,
+      "audio_tokens": 0
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 107,
+      "audio_tokens": 0,
+      "accepted_prediction_tokens": 0,
+      "rejected_prediction_tokens": 0
+    }
+  },
+  "generation_seconds": 47.12,
+  "retrieval_ms": 1012.77,
+  "retrieval_warm_ms": 46.95,
+  "estimated_end_to_end_seconds": 48.13277,
+  "generation_cost_upper_estimate_usd": 0.1512,
+  "finish_reason": "stop",
+  "knowledge_tokens": 4744,
+  "card_ids": [
+    "ae2ed547485eb366baa70c99",
+    "25f9d85cd8e363cdb4527de6",
+    "a6c3105bd9d33400cb7bd163",
+    "ca8c688676278b8a6b34623d",
+    "19d3b54fbeeb31f3bbd23c2d",
+    "f6fbbab529e78f45f5479ee7",
+    "f856d689f3d85f8204d660c1",
+    "a0544e91dab63fd873947ea8",
+    "953e03390b0d2a970fdb03f9",
+    "86ca17cab2864e04b4780234",
+    "50b30a244eb6d2c0d42a7e81",
+    "6d2e6fafa7df9f658707accc",
+    "2b0c86c591158d80a1d65843",
+    "7b56f452ec2a9a850b7c1d4c",
+    "2cac3e89ff275769ef707278",
+    "9568c40e1d888b7224c2468a"
+  ],
+  "recorded_at": "2026-09-22T19:34:53.952604+00:00"
+}

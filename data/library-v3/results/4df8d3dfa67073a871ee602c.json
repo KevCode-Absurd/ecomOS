@@ -1,0 +1,456 @@
+{
+  "cards": [
+    {
+      "title": "Cohort Table Mechanics: Reading Repeat Orders Diagonally",
+      "summary": "How to build and read a customer cohort table so repeat revenue and lifetime order counts are calculated correctly.",
+      "use_when": "Building or auditing a monthly cohort report to decide whether repeat-purchase revenue justifies acquisition spend.",
+      "steps": [
+        "Lay out a grid: one row per acquisition month, one column per subsequent month of customer lifetime (month 0, month 1, month 2...).",
+        "Row totals give new customer orders in that month; the diagonal is what produces recurring orders in a given month. For June: take May's second month, April's third month, March's fourth month and sum them.",
+        "Verify the diagonal sum ties to the returning-customer orders figure reported for that month (in the source example, three diagonal cells summed to 122 recurring orders).",
+        "Read the average orders-per-customer by lifetime length: the source cohort showed roughly 1.2 orders in the first month rising to nearly double within six months, and cumulative orders of 1.67 by five months, 1.63 by four.",
+        "Use the cohort with the longest history to set your lifetime-orders assumption; the presenter used 1.98 orders for a cohort with the most historical data, explicitly choosing conservatism over extrapolating month 7-9 growth.",
+        "Recompute the table every month; if early cohorts' later months keep rising, your lifetime-orders estimate is stale."
+      ],
+      "caveats": [
+        "Cohort-derived lifetime orders are only reliable for cohorts old enough to have lived through the period you're measuring; newer cohorts will understate repeat behavior.",
+        "The 1.98 figure is a source-specific example, not a benchmark for your store.",
+        "Do not read across rows instead of diagonally; that misstates which cohort produced a given month's repeat orders."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "customer-research",
+        "retention",
+        "measurement",
+        "ltv",
+        "cohort-analysis"
+      ],
+      "id": "b6fb728dba040f2fefe1aa6e",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 2
+    },
+    {
+      "title": "From First-Order Economics to Lifetime Value",
+      "summary": "Step-by-step build of first-order contribution margin, LTV, and the CM:CAC ratio so you can see whether acquisition pays back.",
+      "use_when": "Evaluating whether current ad spend is profitable on a first-order and lifetime basis before scaling acquisition.",
+      "steps": [
+        "Compute first-order revenue as AOV times one order; in the source example AOV $138 produced $138 revenue, and subtracting product and fulfillment cost left $100 contribution margin.",
+        "Divide contribution margin by CAC for the first-order ratio; at $100 CM versus $97 CAC the ratio was 1.02, i.e. about $2 of profit on the first order.",
+        "For lifetime, multiply AOV and each cost line by the cohort-derived lifetime order count (here 1.98): revenue went from $238 to $469 and lifetime contribution margin to $197.",
+        "If no additional marketing was spent to drive repeat orders (customers returned via email list/organic), hold CAC flat and divide lifetime CM by the same CAC: $197 / $97 = 2.02, or about $99 profit per customer.",
+        "Interpret the result: a business that is roughly break-even on order one but 2x on lifetime can be profitable on every order once repeat purchases arrive; the presenter called this strong health."
+      ],
+      "caveats": [
+        "Holding CAC flat for repeat orders assumes no incremental remarketing cost; if you pay to re-acquire or retarget, load that cost in.",
+        "First-order contribution margin below your CAC is only acceptable when the cohort data shows meaningful repeat orders.",
+        "The numbers here are one illustrative case, not target benchmarks for every store."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "measurement",
+        "ltv",
+        "cac",
+        "contribution-margin",
+        "acquisition"
+      ],
+      "id": "a592b3f28c58c2e1d522aba3",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 2
+    },
+    {
+      "title": "Why 50% Off Sitewide Destroys Black Friday Unit Economics",
+      "summary": "The mechanical reason a sitewide percentage discount loses money even when traffic and conversion spike.",
+      "use_when": "Planning Black Friday or any sitewide promo and choosing between percentage discount and a multi-unit offer.",
+      "steps": [
+        "Model baseline first: in the source example, 1.75% conversion, $75 CAC, $135 AOV, $124 after refunds/returns, $21 product COGS, $19 fulfillment COGS, leaving $84 contribution margin and only $9 after CAC.",
+        "Then model 50% off: conversion typically jumps to 4-5% and CAC can fall to about $33, but most buyers take one unit, cutting gross order value to about $68 and net order value to roughly 55% of normal AOV when returns/refunds are not offered.",
+        "Critical point: product and fulfillment COGS stay essentially fixed. In the example CM fell to $29 against $33 CAC, so every customer lost money - the presenter said he has seen this many times.",
+        "Watch the volume illusion: orders may jump from 5,000 to 20,000 and revenue skyrockets while contribution margin after CAC goes negative.",
+        "Warning sign for your store: a business already at only $9 CM-after-CAC per order ($50,000 on 5,000 orders) cannot absorb a 50% price cut."
+      ],
+      "caveats": [
+        "Discounting also gives back revenue you would have collected from customers who would have bought anyway.",
+        "The presenter's stated policy: make money on the first order at Black Friday, because Black Friday customers have notoriously poor retention and many buy only once. Subscription brands may rationally choose otherwise.",
+        "The specific conversion, CAC and COGS figures are one brand's example, not universal."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "pricing",
+        "offer-design",
+        "promotion",
+        "contribution-margin",
+        "black-friday",
+        "unit-economics"
+      ],
+      "id": "5425adb4473f22c1786af973",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 2
+    },
+    {
+      "title": "BOGO / Two-for-One as a Black Friday Cash Machine",
+      "summary": "Replace sitewide percentage discounts with a two-for-one or gift-with-purchase to deliver perceived value without giving back revenue.",
+      "use_when": "Designing a seasonal promotion where you want the conversion lift of a deep discount but positive per-order profit.",
+      "steps": [
+        "Recognize the psychological equivalence: two-for-one reads to the customer as twice the product for half the price, so you generally get a similar conversion-rate and CAC lift to 50% off.",
+        "Model the mechanics: at $135 AOV with no returns, product COGS doubles from $21 to $42, shipping rises only marginally since both units ship in one box, and merchant fees stay around $4 because revenue is similar to a normal order.",
+        "Result in the source example: contribution margin of $69 versus $29 on the 50%-off promo, and CM after a lowered CAC of about $33 came to $36 - more than the brand made on a normal non-promo order.",
+        "Compare at equal volume: at the same 20,000 orders, the two-for-one generated roughly twice the revenue of 50% off and on the order of three-quarters of a million dollars in the example.",
+        "Generalize to your product mix: if unit COGS is low, test buy-two-get-one-free or another gift-with-purchase structure rather than a straight percentage cut.",
+        "Run the numbers for your own COGS before committing; the presenter's recommendation is to model it, not to assume it."
+      ],
+      "caveats": [
+        "Only works when marginal product cost is low relative to price; heavy or expensive-to-ship goods erode the advantage.",
+        "Shipping cost per unit is assumed to rise only marginally because units ship together - verify with your 3PL rate card.",
+        "The dollar figures are a single illustrative case, not promised results."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "pricing",
+        "offer-design",
+        "promotion",
+        "bundles",
+        "black-friday",
+        "unit-economics"
+      ],
+      "id": "13df6c347b0eddab629dd46c",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 2
+    },
+    {
+      "title": "The Core Unit Economics Stack: CAC, AOV, CM, LTV and Their Ratios",
+      "summary": "Definitions and relationships for the five metrics that determine whether an ecommerce business model can work.",
+      "use_when": "Setting up your ecommerce financial model or explaining unit economics to your team before scaling spend.",
+      "steps": [
+        "Define CAC as the marketing investment to acquire a customer for the first time, AOV as average basket size per order, and contribution margin as what's left from an order after direct per-order costs (product plus fulfillment).",
+        "Distinguish contribution margin (one order) from customer lifetime value (profit across the series of orders a customer makes) - LTV is CM extended over the customer's lifetime order count.",
+        "Compute CM:CAC as the first-order test and LTV:CAC as the lifetime test; a $100 CAC against $100 CM per order across five orders yields $500 profit and an LTV:CAC of 5.",
+        "Set the goal stated by the presenter: every incremental customer should be more profitable than the last, which means margins rise as the business scales.",
+        "Treat deteriorating unit economics as a hard stop: at 10x size, worsening economics can drive profit to zero or negative."
+      ],
+      "caveats": [
+        "Ratios here are defined from the source's modeling approach; adapt the cost buckets to what your P&L actually captures.",
+        "LTV:CAC of 1.0 is not acceptable by the presenter's standard because it leaves nothing to cover overhead."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "measurement",
+        "unit-economics",
+        "ltv",
+        "cac",
+        "contribution-margin",
+        "metrics"
+      ],
+      "id": "e2eaed277a0d639c28fcff28",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 2
+    },
+    {
+      "title": "Two Valid Models: Break Even on Order One, or Lose Early and Earn Later",
+      "summary": "When it is safe to lose money on the first order and when you must be profitable on it.",
+      "use_when": "Deciding how aggressively to bid on acquisition for one-time-purchase versus repeat-purchase product lines.",
+      "steps": [
+        "Route one: hold margins and break even or better on the first order - required for product categories where most customers buy once, such as many apparel items.",
+        "Route two: run a very high lifetime order count (the source cites customers buying 5, 10, 15 times) so a first-order loss is recovered on the tail; the presenter cautions this only works for highly consumable or repeat-purchase products.",
+        "For repeat-consumable categories, consider subscribe-and-save / subscription box pricing as an antidote to low lifetime order counts.",
+        "Set the guardrail stated in the source: aim to at minimum break even on the first order for most businesses; only deliberately exceed that when the cohort data proves repeat behavior.",
+        "For one-time-buy categories, be careful about running CM:CAC below 1 on the first order - the presenter explicitly warns against it there."
+      ],
+      "caveats": [
+        "A CM:CAC below 1 is only defensible with demonstrated high repeat rates; the source calls running it otherwise a way to lose money on every customer.",
+        "The 5-15 lifetime order range is the source's characterization of certain consumable businesses, not a benchmark for yours."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "unit-economics",
+        "retention",
+        "subscriptions",
+        "cac",
+        "contribution-margin",
+        "product-selection"
+      ],
+      "id": "a004a45541efab247b597e4f",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 2
+    },
+    {
+      "title": "Ecom Gross Margin vs Contribution Margin: Two Different Buckets",
+      "summary": "Separating product-level costs from per-order fulfillment costs so you know which costs scale with each order and which vary by shipment.",
+      "use_when": "Building your P&L model or diagnosing why margin differs between orders and shipping destinations.",
+      "steps": [
+        "Bucket one - product costs: manufacturing, import freight, duties and taxes, i.e. everything to get product to the fulfillment center and ready to ship. In the source example this was 27% of a $175 order, or $47.",
+        "Bucket one result is the ecom gross margin: revenue minus product costs ($175 - $47 = $128 in the example).",
+        "Bucket two - fulfillment costs: pick and pack, materials, 3PL charges and shipping. These vary order by order, with shipping usually the largest line.",
+        "Contribution margin = revenue minus both buckets; in the example $175 - $47 - $40 of fulfillment = $83, and CAC should be at or below that $83.",
+        "Use the split diagnostically: product costs should be stable and improve with scale/supply-chain fixes, while fulfillment costs need per-destination or per-weight scrutiny."
+      ],
+      "caveats": [
+        "This naming convention (ecom gross margin) is the source's, and differs from standard GAAP gross margin presentation.",
+        "Fulfillment cost variability means blended averages can hide unprofitable shipping lanes."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "contribution-margin",
+        "gross-margin",
+        "fulfillment",
+        "unit-economics",
+        "measurement"
+      ],
+      "id": "ca717cbf059378ff1c8b324c",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 2
+    },
+    {
+      "title": "Healthy Unit Economics Benchmarks Across the Business Lifecycle",
+      "summary": "How CAC, AOV, contribution margin and lifetime orders typically move from idea stage to late stage in a strong business.",
+      "use_when": "Benchmarking your own unit economics against a stage-appropriate expectation before raising or deploying growth capital.",
+      "steps": [
+        "Idea phase (vision only): the source's plan was $65 CAC, $165 AOV, 60% contribution margin, 3 lifetime orders, giving $99 CM per order, 1.5 CM:CAC and roughly 5x LTV:CAC.",
+        "Launch phase: low CAC from friends/family but AOV only about $89 due to discounts and 39% contribution margin, with 1 lifetime order - CM:CAC around 1.0 is acceptable here.",
+        "Early stage (early channel fit, e.g. Facebook ads plus organic Instagram): 2,500 orders, $68 CAC, $134 AOV, $49 CM, older cohorts showing 1.7 lifetime orders and $112 LTV; CM:CAC about 1.0 and LTV:CAC about 1.6.",
+        "Growth phase: CAC drops slightly with organic mix, AOV normalizes to $148, CM 51%, LTV $196; CM:CAC 1.4 and LTV:CAC approaching 4.",
+        "Late stage: 250,000 orders, blended CAC down to $48, AOV up to $162 through more products and bundling, CM up to 65% from larger production runs and a fixed supply chain, 3.1 lifetime orders; CM:CAC 2.1 and LTV:CAC 6.7.",
+        "Target stated by the presenter: CM:CAC better than 1 at every stage, and roughly 5x or better LTV:CAC for a late-stage business driven by repeat customers."
+      ],
+      "caveats": [
+        "These are the presenter's illustrative benchmark trajectories, not measured industry medians.",
+        "Excellent businesses can show 3-5x CM:CAC on the first order alone; matching 1.0 is not the ceiling.",
+        "Discounted periods legitimately lower AOV and margin - read them against the same period, not peak months."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "unit-economics",
+        "measurement",
+        "cac",
+        "ltv",
+        "contribution-margin",
+        "scaling"
+      ],
+      "id": "7eeee3aaceaea08220e6ae09",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 2
+    },
+    {
+      "title": "Sub-Optimal Pattern: Rising CAC With Flat Contribution Margin",
+      "summary": "The failure mode where a business scales spend faster than it fixes economics, losing money on every customer.",
+      "use_when": "Reviewing whether an influx of funding should be spent on more acquisition or on fixing supply chain and retention first.",
+      "steps": [
+        "Watch for CAC rising while AOV and contribution margin stay flat or drift down (the source example: 68 to 79 CAC, then 123, then 149, as ad spend increased).",
+        "Check lifetime orders in the same review: in the example they only rose to 1.2, then 1.5, then 1.8, so repeat behavior never covered the rising acquisition cost.",
+        "Compute the ratios: CM:CAC fell below 1 on the first order and LTV:CAC landed at 0.87 and then 1.0 - which the presenter says leaves no money to cover opex.",
+        "Diagnose the actual constraint before adding budget: the example attributed weak contribution margin to unoptimized supply chain, a mislocated distribution center and air freight.",
+        "Verdict stated in the source: this business should not be scaling until unit economics are fixed, even if it raised a large Series A/B."
+      ],
+      "caveats": [
+        "An LTV:CAC of exactly 1.0 is not a passing grade by the presenter's standard.",
+        "Some businesses with strong repeat buyers can run CM:CAC below 1 on the first order; one-time-buy businesses cannot."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "unit-economics",
+        "cac",
+        "ltv",
+        "scaling",
+        "supply-chain",
+        "measurement"
+      ],
+      "id": "cd36c8b5eacc2d9b31e93f61",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 2
+    },
+    {
+      "title": "Splitting COGS Into Product and Fulfillment Buckets for Promo Modeling",
+      "summary": "The two-bucket COGS structure used to compare promotions and normal trading side by side.",
+      "use_when": "Building a promo P&L for Black Friday, bundles or free shipping tests, or recalculating contribution margin per order.",
+      "steps": [
+        "Product COGS bucket: manufacturing cost plus duties and taxes, packaging, and inbound freight to the fulfillment center - in the example $15 manufacturing plus $6 other = $21.",
+        "Fulfillment COGS bucket: shipping and packing ($12), warehouse storage and pick costs ($3), and merchant/payment processing fees ($4) = $19 in the example.",
+        "Net AOV should be reduced for returns and refunds before computing anything else; the source notes losing roughly 5-10% of gross revenue to returns/refunds in many verticals ($135 to $124 in the example).",
+        "Contribution margin = net AOV minus both buckets ($124 - $21 - $19 = $84), then subtract CAC to get CM-after-CAC ($84 - $75 = $9).",
+        "When modeling a promo, hold product COGS fixed and adjust only the lines that actually move (merchant fees on lower revenue, marginally higher shipping for extra units in the same box)."
+      ],
+      "caveats": [
+        "The 5-10% returns figure is described as typical for many verticals, not universal - use your own returns data.",
+        "Promo best practice of not offering refunds or returns is a modeling assumption you must decide on deliberately."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "unit-economics",
+        "cogs",
+        "contribution-margin",
+        "fulfillment",
+        "returns",
+        "promotion"
+      ],
+      "id": "1a6c983c0c2fd4464d3397ab",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 2
+    },
+    {
+      "title": "Three-Statement Model as the Diagnostic for a Profitable-but-Cash-Poor Store",
+      "summary": "Why ecommerce stores show positive net income and falling cash, and which statement lines to inspect in order.",
+      "use_when": "Investigating why your store's bank balance declines in months when the P&L shows profit.",
+      "steps": [
+        "Orient with three lines side by side first: revenue (~$415K/month in the example), net income (positive every month), and free cash flow (negative $22K, then varying wildly - only two of six months had both net income and FCF positive).",
+        "Then walk the income statement for structural mismatches: product cost is not matched to when you buy inventory, only when you sell it.",
+        "Check depreciation versus real asset spend - depreciation is a smoothed, non-cash charge that hides lumpy purchase timing.",
+        "Check debt: interest shows on the P&L but loan principal repayments only appear on the balance sheet, so debt activity is invisible in net income.",
+        "Check taxes: the P&L may accrue monthly while actual quarterly estimated payments leave in lumps.",
+        "Then read the balance sheet for inventory changes (increase = cash out), accounts receivable, and capitalized software, before reconciling to the cash flow statement."
+      ],
+      "caveats": [
+        "Positive net income is described as often misleading for startups; free cash flow clarifies what is really happening.",
+        "Some months with negative net income can increase cash - the source shows this pattern, so never infer cash direction from the P&L alone."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "cash-flow",
+        "inventory",
+        "measurement",
+        "financial-modeling",
+        "balance-sheet"
+      ],
+      "id": "7404abfd63fa70e79c886923",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 2
+    },
+    {
+      "title": "Balance Sheet Cash Traps: Inventory, Capitalized Software, Quarterly Taxes",
+      "summary": "The three balance-sheet movements that most often explain cash going out while the P&L looks healthy.",
+      "use_when": "Planning a buying season, an engineering spend, or a tax payment quarter and forecasting whether cash can support it.",
+      "steps": [
+        "Inventory: buying product is a lumpy cash outflow parked on the balance sheet. In the example, inventory rose $113K in one month (335 to 448) and this was the main driver of a $95K negative FCF on $77K net income; when inventory draws down, cash converts back in.",
+        "Capitalized software: payroll on engineers is moved off the P&L onto the balance sheet and amortized (typically 36 months for software). The example spent $240K over six months on the platform while only $40K hit the P&L.",
+        "Quarterly taxes: the P&L accrues monthly (e.g. $25K), but the balance sheet shows taxes building up and then leaving in lump payments (about $80K, then about $100K to the government).",
+        "Line of credit: reading the balance sheet showed roughly $25K/month of principal being paid down - cash leaving that never appears in net income.",
+        "Practical forecasting rule: before committing to an inventory buy, an engineering hire or a big marketing push, forecast the cash out date, not just the expense recognition date."
+      ],
+      "caveats": [
+        "Capitalization rules and useful-life assumptions vary; confirm with your accountant rather than defaulting to 36 months.",
+        "This case is a constructed teaching model, so the dollar amounts are illustrative."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "cash-flow",
+        "inventory",
+        "balance-sheet",
+        "replenishment",
+        "financial-modeling"
+      ],
+      "id": "2ff9cc0805c2048d15a62e08",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 2
+    },
+    {
+      "title": "Reading the Cash Flow Statement: Operating, Investing, Financing",
+      "summary": "How each section of the cash flow statement maps to ecommerce activity so you can trace where cash actually moves.",
+      "use_when": "Reviewing monthly cash movements and classifying spend the way a lender or investor will read it.",
+      "steps": [
+        "Operating section starts with net income from the P&L, then adjusts: accounts receivable up = cash negative (customers owe you); accounts payable up = cash positive (you still owe suppliers); depreciation is stripped back out as non-cash; inventory change is booked from the balance sheet movement.",
+        "Investing section holds long-term asset purchases - buying assets, investing in the software platform, buying shares in another company. Salary paid one month is an expense, not an investment.",
+        "Financing section holds anything about capital structure: owner distributions, loans taken or repaid, outside capital in. Not day-to-day operations.",
+        "Free cash flow = operating cash flow minus investing cash flow; it is the money left after internal operations are fully funded, with no further obligations other than financing.",
+        "Use FCF as the decision number for what you can do next: pay down debt, take a distribution, or fund the next inventory buy."
+      ],
+      "caveats": [
+        "The definition given is operating cash flow minus investing cash flow - some practitioners compute it other ways; be explicit about which you use.",
+        "In the example, one month showed net income of only $140 while cash flow was $272, so never substitute one for the other."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "cash-flow",
+        "financial-modeling",
+        "measurement",
+        "balance-sheet",
+        "reporting"
+      ],
+      "id": "8c56490f81a24a006520eef9",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 2
+    },
+    {
+      "title": "Diagnosing Gross Margin Drops During Promo Months",
+      "summary": "Tracking gross margin percentage month over month to catch discount-driven margin erosion separate from volume effects.",
+      "use_when": "Reviewing monthly performance after a sale event to see whether volume gains were bought with margin.",
+      "steps": [
+        "Track gross margin as a percentage of revenue, not just dollars, alongside order counts.",
+        "In the example, orders scaled from 3,000 to about 5,000, and in the month where orders more than doubled the gross margin percentage fell - the source attributes this directly to running a discount.",
+        "Cross-check the discount story against the COGS breakdown lines (product cost, import duty and inbound freight, pick and pack, shipping, merchant fees) to confirm the drop is price-driven rather than cost-driven.",
+        "Confirm recovery: the example then shows gross margin recovering in following months as discounting stops.",
+        "Use this pattern to set expectations before a promo: decide in advance what margin dilution you accept for the volume, and measure the actual against it the following month."
+      ],
+      "caveats": [
+        "The source does not give a specific acceptable margin-dilution threshold; set your own based on contribution margin after CAC.",
+        "A margin drop coinciding with a supply-chain cost increase (air freight, for instance) will look similar - check COGS lines individually."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "gross-margin",
+        "promotion",
+        "measurement",
+        "pricing",
+        "contribution-margin"
+      ],
+      "id": "183999c472036a138c34d8a4",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 2
+    }
+  ],
+  "request_id": "8271691db398348be84454df43cca868cd4a8b0e2489ba998998f639a9fc778c",
+  "ecommerce_scope_version": 1
+}

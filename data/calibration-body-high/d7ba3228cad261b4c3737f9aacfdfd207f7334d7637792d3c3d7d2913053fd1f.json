@@ -1,0 +1,122 @@
+{
+  "summary": {
+    "case_index": 7,
+    "provider": "openai",
+    "model": "gpt-5.6-terra",
+    "booked_cost_usd": 0.018051,
+    "seconds": 12.22,
+    "cards": 3,
+    "checks": [
+      "quote_not_exact",
+      "quote_not_exact",
+      "quote_not_exact"
+    ],
+    "origin": "uncertain",
+    "publication_status": "review_only"
+  },
+  "evidence": {
+    "source_id": "1xw38NANCmS8DmKTMRPULxChkXGSPApKH",
+    "source_sha256": "29e019fd09450f700bea26ac7460276314f022222877081399b01193dd2a6826",
+    "folder": "/08-SPD-speed",
+    "locator": "body:14/paragraph",
+    "provenance_status": "unverified_body_candidate",
+    "start": 18991,
+    "end": 28986,
+    "text": "ot using Gutenberg is completely unnecessary. We have remove and disable pingbacks, disable emojis, disable dash icons for logged out users, etc. So I'm just going to tick all of these because we don't need any of these particular assets and this should help with performance a little bit. Let's go ahead and save those changes. Now as I noted in the waterfall chart, jQuery is actually loading for logged out users. It's necessary for loggedin users because the WordPress admin bar uses jQuery, but there's absolutely no reason that a logged out user should be loading jQuery when they visit our site. So, one way we can get rid of that is with a code snippet. And I'm going to use WP code box because it's a really convenient way to create and manage code snippets on your site. Luckily, this is a really simple one. All we have to do is add a filter for WP and Q scripts. and we need to dq and dregister jQuery which will get rid of jQuery and jQuery migrate and all those dependencies. Now, WP Codebox is really awesome because not only does it make [music] it easy for you to create a snippet like this, but you also can control where it loads. Like I said earlier, we still need this for logged in users. So, we need to be kind of picky about when this snippet runs. If we open up the condition builder, you can see I've got a couple of conditions. I've created a condition for the location and I'm telling the snippet only to run if it's on the front end. I also created a condition for user loggedin status to make sure it only runs if the user is not logged in. So with those conditions, this is going to run exactly when we need it and not run in cases where it might cause some problems. So I'll go ahead and enable this snippet which will get rid of the jQuery bloat on the front end for logged out users. Now, we also had a bunch of Woo Commerce stuff loading which we don't need on the landing page in its current state. And the easiest way to unload stuff like that on specific pages is a plugin called asset cleanup. This is free. It's available in the repository. And the [music] way it works is you activate it and then go to pages, go to your landing page, and we'll have a new metab box here that allows us to unload specific things from this page. So, you can see our Woo Commerce category here has 13 files. So, we'll expand that out. And we don't need our brand styles. We don't need source buster. We don't need add to cart right now. We might in the future. So, remember that you've unloaded this if you ever decide to add Woo Commerce features [music] to the landing page, like a mini cart, for instance. We don't need the block styles CSS. We don't need the jQuery block UI. We basically don't need any of this Woo Commerce stuff. Now, there is one thing here that I think I'm going to keep, and it's the WooCommerce coming soon CSS file. I'm not positive that we actually need it, but it's pretty small, so we'll keep it for now. So, we're just going to disable the rest of this Woo Commerce stuff. And then go ahead and save. And that's going to unload it just on this page, which is what we need for now. Asset cleanup lets you kind of surgically remove things on specific pages while keeping stuff active where it needs to be. Now, the next improvement I want to make is to load our Google fonts locally. So, the way we can do that is we can go out to fonts.google.com and we can find our fonts here. In this case, I'm using enter and I'll hit get font to add it to my list. And I'm also using Libre Baskerville. Now, instead of embedding these or anything else that's going to make a call out to Google Fonts, I want to actually download these. Once I have the font files downloaded, I'm going to have TTF files for the fonts, but I need them to be.Waft 2 files in order to be able to load them as web fonts in WordPress. One website I've used to do this before is called Font Squirrel and we can go over to web font generator. We can upload our fonts and it will give us some WAFT 2 files that we can then use in WordPress. Now, in my testing, this didn't work for all of the fonts that I wanted to use, and it might be because one of the fonts is a variable font, but I found another tool that works really well, and it's called the Google Web Fonts Helper. I'll include a link to this in the video description because the URL is kind of wacky. But basically, here we can select our font from Google, and then we can pick which styles and sizes we want, and then we can download the font files. Again, this is going to give you somewhat 2 files that you can use in WordPress. Now, depending on your site builder or your theme, uploading these custom fonts may work a little differently. If your builder or theme don't offer a way to upload custom fonts, you might need to use a custom font plugin, and there are a few available in the WordPress repository. For me, I'm using Oxygen, which has a custom fonts option. So, I'll show you how that works. Let's go ahead and edit this page in Oxygen. And if we go over to the Oxygen logo at the top left and click preferences, we'll see a custom fonts area. To add a font, you simply add one and give it a name. Test, then add your font files. Once you add a font file, for instance, let's add Enter Latin 900. Open that. Then you just have to specify the font weight which in this case is 900 and whether it's itallic or normal. So you can add all those custom WAFT 2 files for that individual font that you downloaded so that Oxygen knows how to work with it. Here's what it looks like once you've actually created them. So I named them the font name and then local so that I know the difference when picking from the font drop down. And here's how they are all set up. And I did the same thing for Libre Baskerville. Once that's done, what I did is I went into my variables where I've set up my fonts for my body and headings. And I just need to switch these to the local versions. So I need to go to interlocal and libre Baskerville local. And since I'm using variables, all my body text and headings will switch to the local versions of these fonts because I changed it on the variable level. Now, let's save that change. And let's go ahead and rerun our GTMetric support and take another look at this waterfall. And the mind-blowing part is we're not even done yet. And our performance score is already up in the high 90s on GTMetrics just from some of those optimizations that we've done. Let's take a look at the waterfall. And now we can see there are far fewer assets being loaded just at a glance. The Woo Commerce stuff is gone. jQuery is no longer loading, etc. So, we've really paired down what is actually loading on this page to what is actually necessary when someone visits the page. We got another big performance score improvement out of these steps. So, we're moving in the right direction. As our final tweak, we can turn on caching and compression, the common answers to the question, how to speed up a WordPress site. We didn't wholly rely on these because while they can help a lot, it's essentially just a band-aid if you don't take care of some of the core issues we've addressed first. Now that we've taken care of a bunch of our fundamentals, and we've actually improved things quite a bit without gzip compression, caching, or a CDN enabled, let's go ahead and rerun our tests and see where we're at. Our latest test on GTMetrics shows 98% performance, 97% structure, LCP of 1 second, and zero cls. So, this is looking really good on GTMetrics. Let's rerun page speed insights and see where we're at. We're starting at 71 overall. We're at 95 performance on mobile and on desktop 99 and then hundreds across the board on all the other metrics on both. Let's go take a look at Gift of Speed and see what it tells us. We're going to go ahead and rerun the test here and we're at a 99 out of 100. Again, this is all without having compression, without having caching enabled, and without a CDN. But we do want to enable those things. Let me show you first how to check whether they're enabled in the first place. So, we'll go into our dev tools and go to the network tab. We're going to refresh. Make sure preserve log is enabled. And we don't need a throttle right now. Let's just refresh. And this first request is the one we want to look at. We're looking at the response headers. If you have caching enabled, you'll see something related to caching. Not cache control cuz this is saying no cache must revalidate, but you should see something like Xcache or something that says hit related to caching. You should also see content encoding and it should mention gzip or whatever your encoding method is here in the response headers. I'm going to go enable both gzip compression and caching on my server and then I'll show you what the response headers look like when those are enabled. All right, I've got compression turned on now and caching. I did load up the breeze plugin which is the cache management plugin for Cloudways's caching system to make sure everything was turned on, but otherwise it was just a matter of turning it on on my server. And now that those are on, let me show you what those response headers look like in an incognito window. Go ahead and load up the site, open dev tools, go to the network tab, make sure disabled cache is unchecked, and then we're going to refresh. And if we go over here to this first request, you can see now we have content encoding gzip, which tells us we have compression enabled. And then we have this x-cache response header that says hit. That means it's hitting the cache. [music] So, now that we have those turned on and ready to go, let's go ahead and rerun our final tests. We'll run one on Page Speed Insights. We'll retest on GTMetrics. [music] And then we'll retest over here on Gift of Speed. Let's pop over to Page Speed Insights and look at what we've got. And you can see that our score here is a little bit different. I "
+  },
+  "usage": {
+    "prompt_tokens": 2550,
+    "completion_tokens": 973,
+    "total_tokens": 3523,
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 2547,
+      "audio_tokens": 0
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 129,
+      "audio_tokens": 0,
+      "accepted_prediction_tokens": 0,
+      "rejected_prediction_tokens": 0
+    }
+  },
+  "output": {
+    "origin_assessment": "uncertain",
+    "cards": [
+      {
+        "title": "Conditionally remove jQuery for logged-out front-end visitors",
+        "claim": "In this WordPress example, jQuery was needed for logged-in users because of the admin bar, but was removed for logged-out front-end visitors with a code snippet.",
+        "action": "Configure the snippet to run only on the front end and only when the user is not logged in; dequeue and deregister jQuery under those conditions.",
+        "applies_when": [
+          "jQuery is loading for logged-out visitors",
+          "Logged-in users still need jQuery for the WordPress admin bar"
+        ],
+        "do_not_use_when": [
+          "The visitor is logged in",
+          "The request is not on the front end",
+          "Removing jQuery would break required front-end functionality"
+        ],
+        "unknowns": [
+          "Which exact code snippet/filter implementation was used",
+          "Whether theme or plugin scripts require jQuery for logged-out visitors"
+        ],
+        "evidence_quotes": [
+          "\"It's necessary for loggedin users because the WordPress admin bar uses jQuery\"",
+          "\"there's absolutely no reason that a logged out user should be loading jQuery when they visit our site.\"",
+          "\"I'm telling the snippet only to run if it's on the front end.\"",
+          "\"make sure it only runs if the user is not logged in.\"",
+          "\"we need to dq and dregister jQuery\""
+        ]
+      },
+      {
+        "title": "Unload WooCommerce assets only on a page that does not need them",
+        "claim": "The example uses Asset CleanUp to disable WooCommerce files on a landing page while retaining assets that may still be needed elsewhere.",
+        "action": "On the specific landing page, use Asset CleanUp to unload WooCommerce assets that the page does not need; retain or revisit assets if WooCommerce features are later added.",
+        "applies_when": [
+          "A specific landing page currently does not use WooCommerce features",
+          "WooCommerce assets are loading on that page"
+        ],
+        "do_not_use_when": [
+          "The page needs WooCommerce functionality such as a mini cart",
+          "You have not verified which WooCommerce files the page requires"
+        ],
+        "unknowns": [
+          "Which listed WooCommerce files are safe to unload on other sites",
+          "Whether the WooCommerce coming-soon CSS file is required"
+        ],
+        "evidence_quotes": [
+          "\"we also had a bunch of Woo Commerce stuff loading which we don't need on the landing page in its current state.\"",
+          "\"the easiest way to unload stuff like that on specific pages is a plugin called asset cleanup.\"",
+          "\"We might in the future. So, remember that you've unloaded this if you ever decide to add Woo Commerce features [music] to the landing page, like a mini cart, for instance.\"",
+          "\"that's going to unload it just on this page\"",
+          "\"Asset cleanup lets you kind of surgically remove things on specific pages while keeping stuff active where it needs to be.\""
+        ]
+      },
+      {
+        "title": "Verify compression and cache status in response headers",
+        "claim": "The example checks the first network request's response headers to confirm gzip compression and a cache hit after enabling server caching and compression.",
+        "action": "In browser dev tools, inspect the first network request's response headers; look for a content-encoding value such as gzip and a cache-related hit header after enabling the relevant server settings.",
+        "applies_when": [
+          "Compression and caching have been enabled or need verification",
+          "You can inspect browser network response headers"
+        ],
+        "do_not_use_when": [
+          "Interpreting \"cache-control\" alone as proof of a cache hit"
+        ],
+        "unknowns": [
+          "Which cache header and encoding method a particular host uses",
+          "Whether a cache hit will use an \"x-cache\" header on every server"
+        ],
+        "evidence_quotes": [
+          "\"If you have caching enabled, you'll see something related to caching. Not cache control cuz this is saying no cache must revalidate, but you should see something like Xcache or something that says hit related to caching.\"",
+          "\"You should also see content encoding and it should mention gzip or whatever your encoding method is here in the response headers.\"",
+          "\"content encoding gzip, which tells us we have compression enabled.\"",
+          "\"we have this x-cache response header that says hit. That means it's hitting the cache.\""
+        ]
+      }
+    ],
+    "more_candidates": true,
+    "abstention_reason": ""
+  },
+  "raw_content": "{\"origin_assessment\":\"uncertain\",\"cards\":[{\"title\":\"Conditionally remove jQuery for logged-out front-end visitors\",\"claim\":\"In this WordPress example, jQuery was needed for logged-in users because of the admin bar, but was removed for logged-out front-end visitors with a code snippet.\",\"action\":\"Configure the snippet to run only on the front end and only when the user is not logged in; dequeue and deregister jQuery under those conditions.\",\"applies_when\":[\"jQuery is loading for logged-out visitors\",\"Logged-in users still need jQuery for the WordPress admin bar\"],\"do_not_use_when\":[\"The visitor is logged in\",\"The request is not on the front end\",\"Removing jQuery would break required front-end functionality\"],\"unknowns\":[\"Which exact code snippet/filter implementation was used\",\"Whether theme or plugin scripts require jQuery for logged-out visitors\"],\"evidence_quotes\":[\"\\\"It's necessary for loggedin users because the WordPress admin bar uses jQuery\\\"\",\"\\\"there's absolutely no reason that a logged out user should be loading jQuery when they visit our site.\\\"\",\"\\\"I'm telling the snippet only to run if it's on the front end.\\\"\",\"\\\"make sure it only runs if the user is not logged in.\\\"\",\"\\\"we need to dq and dregister jQuery\\\"\"]},{\"title\":\"Unload WooCommerce assets only on a page that does not need them\",\"claim\":\"The example uses Asset CleanUp to disable WooCommerce files on a landing page while retaining assets that may still be needed elsewhere.\",\"action\":\"On the specific landing page, use Asset CleanUp to unload WooCommerce assets that the page does not need; retain or revisit assets if WooCommerce features are later added.\",\"applies_when\":[\"A specific landing page currently does not use WooCommerce features\",\"WooCommerce assets are loading on that page\"],\"do_not_use_when\":[\"The page needs WooCommerce functionality such as a mini cart\",\"You have not verified which WooCommerce files the page requires\"],\"unknowns\":[\"Which listed WooCommerce files are safe to unload on other sites\",\"Whether the WooCommerce coming-soon CSS file is required\"],\"evidence_quotes\":[\"\\\"we also had a bunch of Woo Commerce stuff loading which we don't need on the landing page in its current state.\\\"\",\"\\\"the easiest way to unload stuff like that on specific pages is a plugin called asset cleanup.\\\"\",\"\\\"We might in the future. So, remember that you've unloaded this if you ever decide to add Woo Commerce features [music] to the landing page, like a mini cart, for instance.\\\"\",\"\\\"that's going to unload it just on this page\\\"\",\"\\\"Asset cleanup lets you kind of surgically remove things on specific pages while keeping stuff active where it needs to be.\\\"\"]},{\"title\":\"Verify compression and cache status in response headers\",\"claim\":\"The example checks the first network request's response headers to confirm gzip compression and a cache hit after enabling server caching and compression.\",\"action\":\"In browser dev tools, inspect the first network request's response headers; look for a content-encoding value such as gzip and a cache-related hit header after enabling the relevant server settings.\",\"applies_when\":[\"Compression and caching have been enabled or need verification\",\"You can inspect browser network response headers\"],\"do_not_use_when\":[\"Interpreting \\\"cache-control\\\" alone as proof of a cache hit\"],\"unknowns\":[\"Which cache header and encoding method a particular host uses\",\"Whether a cache hit will use an \\\"x-cache\\\" header on every server\"],\"evidence_quotes\":[\"\\\"If you have caching enabled, you'll see something related to caching. Not cache control cuz this is saying no cache must revalidate, but you should see something like Xcache or something that says hit related to caching.\\\"\",\"\\\"You should also see content encoding and it should mention gzip or whatever your encoding method is here in the response headers.\\\"\",\"\\\"content encoding gzip, which tells us we have compression enabled.\\\"\",\"\\\"we have this x-cache response header that says hit. That means it's hitting the cache.\\\"\"]}],\"more_candidates\":true,\"abstention_reason\":\"\"}"
+}

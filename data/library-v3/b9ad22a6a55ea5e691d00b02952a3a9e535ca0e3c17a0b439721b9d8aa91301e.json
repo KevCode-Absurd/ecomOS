@@ -1,0 +1,489 @@
+{
+  "request_id": "b9ad22a6a55ea5e691d00b02952a3a9e535ca0e3c17a0b439721b9d8aa91301e",
+  "provider": "deepseek",
+  "model": "deepseek-flash",
+  "effort": "none",
+  "completion_limit": 16384,
+  "usage": {
+    "prompt_tokens": 7722,
+    "completion_tokens": 5441,
+    "total_tokens": 13163,
+    "prompt_tokens_details": {
+      "cached_tokens": 512
+    },
+    "prompt_cache_hit_tokens": 512,
+    "prompt_cache_miss_tokens": 7210
+  },
+  "booked_cost_usd": 0.0088458,
+  "seconds": 25.94,
+  "finish_reason": "stop",
+  "output": {
+    "cards": [
+      {
+        "title": "Set Up a Domain Property in Google Search Console",
+        "summary": "Choose the Domain property type and complete DNS verification so no URL variant of the store slips through tracking.",
+        "use_when": "Starting organic search measurement for a store, or migrating from an old URL-prefix property that only covers one subdomain or protocol.",
+        "steps": [
+          "Open the property dropdown and add a property, then choose Domain rather than URL prefix. Domain covers every subdomain, www and non-www, plus HTTP and HTTPS, which matters for stores with shop., blog., or checkout subdomains.",
+          "Copy the provided TXT record, sign into the registrar (GoDaddy, Namecheap, Cloudflare, etc.) or ask the webmaster, and paste it into DNS settings.",
+          "If verification fails immediately, use verify later and retry the next day since DNS changes take time to propagate.",
+          "After verification, let data populate, then connect the property to any reporting tools the team already uses so the same click data drives dashboards."
+        ],
+        "caveats": [
+          "The Domain option requires DNS access; if a third party controls DNS, expect a short webmaster task.",
+          "Search Console only retains 16 months of history, so export older data if you need longer trend lines."
+        ],
+        "tags": [
+          "search",
+          "seo-analytics",
+          "google-search-console",
+          "measurement",
+          "site-setup"
+        ]
+      },
+      {
+        "title": "Read Overall Search Performance With Compare Mode",
+        "summary": "Use clicks, impressions, CTR, and average position with a period comparison to answer high-level growth questions on one screen.",
+        "use_when": "Monthly or quarterly reporting on organic traffic to the store, or when deciding whether a decline needs investigation.",
+        "steps": [
+          "Open Performance > Search results and set the date range; options run from 24 hours to 16 months.",
+          "Toggle the metrics you need: total clicks, total impressions, average CTR, average position.",
+          "Turn on Compare and set the last three months against the previous period, or six months versus previous when analyzing a specific drop.",
+          "Read the chart for growth or decline, the Queries tab for what people type, and the Pages tab for which URLs carry the traffic.",
+          "If clicks are up versus the prior period, current activity is working; if down, move to the click-difference sort described in the traffic-drop workflow."
+        ],
+        "caveats": [
+          "Average position is averaged across every impression, location and device, so treat it as a trend line, not a fixed rank.",
+          "Raw click totals mix branded and non-branded demand, so they overstate what content earned."
+        ],
+        "tags": [
+          "search",
+          "seo-analytics",
+          "measurement",
+          "google-search-console",
+          "reporting",
+          "conversion-optimization"
+        ]
+      },
+      {
+        "title": "Isolate Non-Branded Clicks With Custom Regex",
+        "summary": "Filter out branded queries using a doesn't-match regex so reports show only traffic from people who did not already know the brand.",
+        "use_when": "Proving content or SEO impact to leadership, or setting traffic goals where branded demand would flatter the numbers.",
+        "steps": [
+          "In Performance, add a query filter and switch the match type to Custom regex.",
+          "Choose doesn't match and enter brand terms separated by the pipe symbol, which means OR, e.g. brandname|brand name|brandname com.",
+          "Everything branded disappears; what remains is non-branded performance from users who discovered the site through content.",
+          "Layer compare mode on top: non-branded clicks last three months versus the previous period, so the chart shows growth or decline in earned traffic.",
+          "Use that single number to steer content decisions and monthly reporting rather than raw clicks."
+        ],
+        "caveats": [
+          "Branded search still matters on its own, since buyers often discuss purchases with AI assistants and then Google the brand name before buying; track it separately rather than discarding it.",
+          "Regex patterns need care with partial matches; review the filtered query list to confirm nothing legitimate was excluded."
+        ],
+        "tags": [
+          "search",
+          "seo-analytics",
+          "regex",
+          "measurement",
+          "reporting",
+          "branded-search",
+          "conversion-optimization"
+        ]
+      },
+      {
+        "title": "Diagnose Indexation Status With URL Inspection",
+        "summary": "Tell apart 'discovered - currently not indexed' and 'crawled - currently not indexed' to decide whether a page needs links, better content, or patience.",
+        "use_when": "A product, category, or landing page is published but not appearing in Google results.",
+        "steps": [
+          "Paste the page URL into the URL inspection bar; Google reports whether it is indexed, when it was last crawled, and what blocks it.",
+          "If the status is Discovered - currently not indexed, Google knows the page exists but has not crawled yet. This is common on new sites; add internal links from stronger pages to speed crawling.",
+          "If the status is Crawled - currently not indexed, Google read the page and passed on it, usually a content quality or thinness signal. Strengthen the page before requesting recrawl.",
+          "Once fixed, use Request Indexing to prompt a recrawl. There is a daily quota and no guarantee, but it beats waiting.",
+          "If the page is not on Google at all, read the stated reason underneath and act on that specific reason rather than guessing."
+        ],
+        "caveats": [
+          "On newer or smaller sites, 'crawled - currently not indexed' can reflect overall site authority rather than the page itself; the fix may be patience and authority building, not repeated rewrites.",
+          "Request Indexing is quota-limited and not instantaneous."
+        ],
+        "tags": [
+          "search",
+          "site-auditing",
+          "indexation",
+          "technical-seo",
+          "google-search-console",
+          "product-page"
+        ]
+      },
+      {
+        "title": "Audit Site-Level Not-Indexed Pages by Reason",
+        "summary": "Review the Pages report grouped by exclusion reason and confirm each exclusion is deliberate rather than an accident.",
+        "use_when": "Technical health audits, pre- or post-launch checks, or when organic traffic to key store pages is unexpectedly missing.",
+        "steps": [
+          "Open Indexing > Pages in the sidebar to see every not-indexed URL grouped by reason.",
+          "Apply the decision rule: ask whether you want people to find this content on Google. If yes, it should not sit under excluded by noindex tag or blocked by robots.txt.",
+          "Confirm that ad landing pages, thank-you and confirmation pages, internal search results, filtered category pages, and staging or test pages are intentionally excluded so paid tracking stays clean and duplicate filters do not compete with primary categories.",
+          "Look for surprises: staging pages that slipped through robots.txt before launch, or money pages accidentally noindexed.",
+          "Fix only the unintended exclusions; leave deliberate ones alone."
+        ],
+        "caveats": [
+          "Not indexed does not equal an error; many exclusions are the system working as intended.",
+          "Blocking or noindexing ad landing pages is presented as a recommended practice here because it protects ad tracking, not as a universal rule."
+        ],
+        "tags": [
+          "search",
+          "site-auditing",
+          "indexation",
+          "technical-seo",
+          "ecommerce",
+          "category-pages",
+          "checkout"
+        ]
+      },
+      {
+        "title": "Track a Specific Page or Keyword Without a Paid Rank Tracker",
+        "summary": "Use page and exact-query filters plus compare mode to turn Search Console into a free rank tracker for money pages and target keywords.",
+        "use_when": "Monitoring ranking movement on a cornerstone product page, category, or a cluster of posts over time.",
+        "steps": [
+          "In Performance, add a filter, choose Page, and paste the exact URL. Turn on average position and the chart becomes that page's ranking history, up to 16 months.",
+          "To track one keyword instead, filter by Query and switch to Exact query so one term maps to one line on the chart.",
+          "Add compare mode: average position over the last three months versus the previous three months gives a hard delta.",
+          "Focus tracking on non-branded queries, since branded terms sit at position one all day and reveal little about competitive standing."
+        ],
+        "caveats": [
+          "Average position is averaged across impressions, locations and devices; treat it as a trend, not a pinpoint rank.",
+          "Low-volume keywords bounce; a two-position wobble on a keyword with roughly 40 impressions is noise, not a signal."
+        ],
+        "tags": [
+          "search",
+          "rank-tracking",
+          "seo-analytics",
+          "google-search-console",
+          "measurement",
+          "product-page"
+        ]
+      },
+      {
+        "title": "Find the Pages Behind a Traffic Drop",
+        "summary": "Sort the comparison table by click difference ascending to surface the exact URLs that lost traffic and look for patterns across them.",
+        "use_when": "Organic traffic fell and the cause is unclear, especially after an algorithm update.",
+        "steps": [
+          "Set the comparison window to cover the drop, e.g. last six months versus the previous period.",
+          "Sort the table by click difference ascending so the biggest losers float to the top.",
+          "Inspect what the losing pages share: same topic cluster, same page type, thin content, or in the case described, pages cannibalizing each other.",
+          "If the pattern is still unclear, consider that the SERP itself changed: users may now demand more depth, a different format, or the query intent itself may have shifted over time.",
+          "Fix the identified cause on the affected pages, prioritizing those with the largest click loss."
+        ],
+        "caveats": [
+          "The source describes this workflow with a client example, not a guaranteed recovery method.",
+          "Search Console alone shows what dropped; deeper competitor and content-gap analysis usually happens in a separate content optimization tool."
+        ],
+        "tags": [
+          "search",
+          "seo-analytics",
+          "traffic-recovery",
+          "cannibalization",
+          "google-search-console",
+          "content-strategy"
+        ]
+      },
+      {
+        "title": "Re-Target a Page Using Its Own Query Data",
+        "summary": "Check which queries already generate clicks for a page and align the title and H1 to the query Google is actually rewarding.",
+        "use_when": "Post-publish optimization of a product page, category, or blog post that targets a keyword in its title tag.",
+        "steps": [
+          "Pick the page, filter Performance by that page's URL, and open the Queries tab to see every query it appears for and which ones produce clicks.",
+          "Compare the intended target keyword against the actual click leaders. In the example, 'beeswax good for your skin' produced about three clicks in three months while 'benefits of beeswax for skin' produced 19, which signals the keyword the page should target.",
+          "Rewrite the title and H1 around the query with demonstrated click demand.",
+          "Then examine the pages currently ranking for that keyword to see what yours lacks: terms covered, headings, questions answered, and depth.",
+          "Re-crawl the updated page via URL inspection after the changes go live."
+        ],
+        "caveats": [
+          "The click figures are a single case example, so expect different magnitudes on your own data.",
+          "Manual rewriting can be slow and does not account for AI visibility; the source recommends a content optimization tool for the gap analysis part."
+        ],
+        "tags": [
+          "search",
+          "seo-analytics",
+          "keyword-targeting",
+          "content-optimization",
+          "product-page",
+          "conversion-optimization"
+        ]
+      },
+      {
+        "title": "Mine Question Queries for FAQ and Content Ideas",
+        "summary": "Regex-filter question-word queries to find real questions the site already surfaces for, then build direct answers.",
+        "use_when": "Planning FAQ sections, support content, or new pages that should answer buyer questions explicitly.",
+        "steps": [
+          "In Performance, add a query filter and switch to Custom regex.",
+          "Match question words such as who, what, when, where, why, how, can, does.",
+          "Review the returned queries and for each ask whether any page of yours answers it directly.",
+          "Where the answer is no, the site currently ranks only on a passing mention. Add an FAQ section to the relevant page, or write a dedicated page if the topic warrants it.",
+          "Prefer structured, direct answers over mentions buried in prose, since this format is also what AI features tend to draw on."
+        ],
+        "caveats": [
+          "Ranking on a passing mention still means the site appears for the query; the gain comes from answering directly, not from the query being unknown.",
+          "Question words vary by language and phrasing, so adjust the pattern beyond the listed English terms."
+        ],
+        "tags": [
+          "search",
+          "keyword-research",
+          "faq",
+          "content-strategy",
+          "regex",
+          "customer-research"
+        ]
+      },
+      {
+        "title": "Get Backlink and Internal Link Data Free From Search Console",
+        "summary": "Use the Links report for most-linked pages, internal link counts, and referring sites, then route authority toward pages you want to rank.",
+        "use_when": "Planning internal linking during a product launch or category push, or auditing which pages carry authority.",
+        "steps": [
+          "Click Links in the sidebar to see most-linked pages, internal link counts, and which sites link to you, at no cost.",
+          "Click into any page to see the exact sites linking to it.",
+          "Identify high-authority pages, since internal links distribute backlink equity across the site.",
+          "Point internal links from those authority pages at newer or more strategic pages you are trying to rank, such as launch pages or priority categories."
+        ],
+        "caveats": [
+          "The Links report is shallower than dedicated backlink tools: no competitor data and no link quality scores.",
+          "The source accepts that brand mentions matter but argues links remain an important ranking signal; it does not treat mentions as a full replacement."
+        ],
+        "tags": [
+          "search",
+          "backlinks",
+          "internal-linking",
+          "site-auditing",
+          "link-equity",
+          "category-pages"
+        ]
+      },
+      {
+        "title": "Fix Video Indexing by Building Dedicated Watch Pages",
+        "summary": "Give important videos their own page where the video is the main event so Google indexes the video, not just the page.",
+        "use_when": "Publishing product demos, tutorials, or reviews that should earn video results and thumbnails.",
+        "steps": [
+          "Open the Videos report under Indexing to see which indexed pages contain videos Google indexed, and the stated reason for the ones it did not.",
+          "When the reason is 'video isn't on a watch page', apply the underlying rule: Google indexes a video when the video is the main event of the page.",
+          "Model the layout on a YouTube watch page: video front and center above the fold, with watching it the whole reason for visiting.",
+          "Move best-performing videos off mid-post embeds, sidebars, or tiny players onto dedicated pages for those videos.",
+          "Leave blog-post embeds in place if they serve readers, but accept they yield a normal page result rather than video results."
+        ],
+        "caveats": [
+          "A page with an embedded video can still rank normally; what is lost is the video result, video thumbnail, and video search tab placement.",
+          "The watch-page rule is the source's stated reason Google most commonly gives, not a guarantee that every dedicated page gets indexed."
+        ],
+        "tags": [
+          "search",
+          "video-seo",
+          "indexation",
+          "site-auditing",
+          "content-strategy",
+          "product-page"
+        ]
+      },
+      {
+        "title": "Use the Discover and Google News Reports for Non-Query Traffic",
+        "summary": "Read feeds-driven traffic separately, because Discover and News show pages and impressions rather than queries.",
+        "use_when": "Checking whether visual, timely, or list-driven store content earns traffic outside classic search.",
+        "steps": [
+          "Open the Discover report to see whether Google featured your content in the phone feed; there are no queries because Discover pushes content based on interests, so you get pages and impressions instead.",
+          "Open the Google News report, which works the same way, and check whether its numbers are significant for your content type.",
+          "If your content skews timely, visual, or list-driven, treat Discover as a channel that can outdraw search traffic and is only visible in this report.",
+          "Use the page-level data to decide which content formats to repeat."
+        ],
+        "caveats": [
+          "Discover and News traffic is not query-driven, so you cannot mine keywords from these reports.",
+          "The source notes the numbers can be significant for certain content types but provides no benchmark."
+        ],
+        "tags": [
+          "search",
+          "discover",
+          "google-news",
+          "seo-analytics",
+          "content-strategy",
+          "measurement"
+        ]
+      },
+      {
+        "title": "Diagnose Falling Clicks With Stable Rankings",
+        "summary": "When positions hold but clicks shrink, check CTR against position to decide between a snippet refresh and an AI-overview answer stealing the click.",
+        "use_when": "Organic clicks decline while rank tracking shows no meaningful position loss.",
+        "steps": [
+          "Compare CTR against position for the affected pages over time.",
+          "If a page holds position three but CTR has been shrinking for months, one of two things is happening: your title and meta description have gone stale while competitors improved theirs, which is an easy snippet rewrite; or something now sits above you answering the question before anyone scrolls, most likely an AI overview.",
+          "Open the generative AI performance report and check the pages losing clicks: if they register heavy AI impressions, the content is being read inside Google's AI answers rather than on your site.",
+          "If it is a snippet problem, rewrite the title and meta description; if it is an AI answer, treat the content as an AI magnet and consider producing more structured, direct answers on buyer topics.",
+          "Consider that losing the click may not mean losing the sale, since the source frames AI visibility as still winning attention even without a site visit."
+        ],
+        "caveats": [
+          "The generative AI report is in beta, may not yet be available on your property, and initially shows impressions only, with click and position data promised later.",
+          "The report covers only Google's own AI ecosystem and does not show what the AI actually said or whether you were recommended versus name-dropped alongside competitors."
+        ],
+        "tags": [
+          "search",
+          "ctr",
+          "ai-overviews",
+          "seo-analytics",
+          "conversion-optimization",
+          "content-strategy"
+        ]
+      },
+      {
+        "title": "Read the Generative AI Performance Report for AEO Benchmarks",
+        "summary": "Use Google's AI visibility report to see impressions inside AI Overviews and AI mode, broken down by page, country, and device.",
+        "use_when": "Assessing how much of your content is being consumed in AI answers, or deciding whether to opt out of AI features.",
+        "steps": [
+          "Open the generative AI performance report, shipped in beta, and check whether it is rolled out to your property yet.",
+          "Read impressions: how many times a link to your site appeared inside a generative AI feature, broken down by page, country, and device.",
+          "Sort by impressions and study the top pages to learn what the AI already favors. Direct, clearly structured answers are the pattern described as AI magnets.",
+          "Apply the same structure and directness to the topics buyers ask about, since being the source the AI quotes beats being invisible in it.",
+          "If considering Google's toggle to pull content out of AI Overviews and AI mode without affecting normal rankings, use this report as the data for that decision, since it shows exactly how much AI visibility you would give up page by page."
+        ],
+        "caveats": [
+          "The report is beta, shows impressions only, and covers only Google's AI surfaces; it says nothing about ChatGPT, Gemini, Perplexity, or Claude.",
+          "The opt-out toggle began with UK site owners and was rolling out globally; verify availability before relying on it.",
+          "The source does not recommend opting out of AI features."
+        ],
+        "tags": [
+          "search",
+          "aeo",
+          "ai-overviews",
+          "seo-analytics",
+          "measurement",
+          "content-strategy"
+        ]
+      },
+      {
+        "title": "Build a Content Plan From Exported Query Data",
+        "summary": "Export queries, compare them against your sitemap, and ask an LLM where coverage gaps exist.",
+        "use_when": "The content calendar is empty and you need new product-page, category, or blog topics grounded in real search demand.",
+        "steps": [
+          "In Performance, export all queries to a spreadsheet; the interface allows up to 1,000 rows.",
+          "Provide that list to an AI assistant together with your sitemap.xml file.",
+          "Ask where the gaps are: searches where the site surfaces but no page properly covers the topic.",
+          "The result is a list of queries already generating visibility for which you have no dedicated coverage, which are lower-risk topics than entirely new keyword research.",
+          "Turn each gap into either an FAQ section on an existing page or a new page, depending on how much the topic deserves."
+        ],
+        "caveats": [
+          "The export is capped at 1,000 rows, so large sites see a partial query list.",
+          "The LLM output is a starting list; validate demand and difficulty before committing production time."
+        ],
+        "tags": [
+          "search",
+          "keyword-research",
+          "content-strategy",
+          "measurement",
+          "ai-tools",
+          "product-page"
+        ]
+      },
+      {
+        "title": "Track Rankings Automatically and Flag Refresh Candidates",
+        "summary": "Set up monitoring that flags pages slipping to positions 6-8 and pages whose rankings drop over a 7-day stretch.",
+        "use_when": "Managing a large content library where manually filtering Search Console for every page is impractical.",
+        "steps": [
+          "Connect Search Console to a tracking or content optimization tool so it consumes the same performance data.",
+          "Configure alerting for pages that have slipped back to pages 6 through 8 of the search results, described as the band a content refresh can usually recover.",
+          "Configure alerts for a page whose ranking drops over a 7-day stretch.",
+          "Set a quarterly traffic goal in the connected dashboard and track progress plus the daily clicks needed to hit it.",
+          "Keep an activity log of what you changed and when Google updates hit, so movement on the chart can be attributed to your work."
+        ],
+        "caveats": [
+          "The pages 6-8 band and the 7-day drop window are the source's described tooling heuristics, not universal thresholds; verify the current settings in whichever tool you use.",
+          "Tool features and interfaces change; confirm current behavior before configuring alerts."
+        ],
+        "tags": [
+          "search",
+          "rank-tracking",
+          "content-refresh",
+          "measurement",
+          "seo-analytics",
+          "workflow"
+        ]
+      },
+      {
+        "title": "Split Branded From Non-Branded in Ongoing Reporting",
+        "summary": "Keep branded search visible as its own metric while excluding it from earned-traffic reporting.",
+        "use_when": "Building a recurring organic dashboard or content KPI set for a store.",
+        "steps": [
+          "Report non-branded clicks with compare mode as the earned-content metric, since branded clicks come from people who already knew the brand and would have arrived anyway.",
+          "Track branded search separately as its own KPI. The source argues this matters more in AI-first search, because buyers often hold purchase discussions with AI assistants in separate ecosystems and then Google the brand name when ready to buy.",
+          "In a connected dashboard, use a single filter to split branded from non-branded rather than maintaining two manual reports.",
+          "Review both lines together: branded volume can indicate AI-driven demand building even when non-branded content metrics look flat."
+        ],
+        "caveats": [
+          "The source explicitly separates this from non-branded reporting and says branded keywords sitting at position one reveal almost nothing about ranking position.",
+          "The claim that branded search is more important than ever in AI search is the presenter's interpretation, not a measured benchmark."
+        ],
+        "tags": [
+          "search",
+          "branded-search",
+          "measurement",
+          "reporting",
+          "seo-analytics",
+          "retention"
+        ]
+      },
+      {
+        "title": "Add Social Accounts as Search Console Properties",
+        "summary": "Use platform properties to see which search terms lead people to social posts, even for an account with no website attached.",
+        "use_when": "Attributing search-driven discovery to Instagram, TikTok, X, or YouTube content that feeds the store funnel.",
+        "steps": [
+          "Add your social accounts as their own properties in Search Console, using the platform properties feature announced by Google.",
+          "Once enabled, view which search terms lead people to your posts and how those posts perform in Google Search and Discover.",
+          "Pair this with a social analytics platform to close the loop: Search Console shows how social content performs on Google, while the social tool shows performance everywhere else.",
+          "Use the query terms driving social post discovery to inform both social content and site content topics."
+        ],
+        "caveats": [
+          "The source states this was rolling out gradually and none of the presenter's properties had access at the time; check back if it is missing.",
+          "This is a new feature whose interface may change; verify current availability in your account."
+        ],
+        "tags": [
+          "search",
+          "social-search",
+          "measurement",
+          "analytics",
+          "content-strategy",
+          "acquisition"
+        ]
+      },
+      {
+        "title": "Map AI Visibility Beyond Google With a Brand Tracker",
+        "summary": "Supplement Google's AI report by tracking brand mentions and citations across major AI models.",
+        "use_when": "AEO reporting where you need to know whether you are recommended, how you are described, and which sources models cite.",
+        "steps": [
+          "Use a dedicated AI brand tracker to monitor your brand across major AI models, since Search Console covers only Google's AI surfaces.",
+          "Track how often you are mentioned and in what sentiment, which competitors beat you, and which sources the models trust most.",
+          "For the prompts you track, identify which of your pages the AI actually cites. A citation means the model used your page to build its answer, which is a stronger signal than an AI crawler hitting your server logs.",
+          "Compare citation patterns against your structured-answer content to decide what to produce next."
+        ],
+        "caveats": [
+          "Search Console's AI report cannot tell you what the AI said, only that your link appeared; recommendation versus name-drop is invisible there.",
+          "Server log hits from AI bots are weaker evidence than citations, because a crawl does not mean the model used the page."
+        ],
+        "tags": [
+          "search",
+          "aeo",
+          "ai-visibility",
+          "measurement",
+          "content-strategy",
+          "analytics"
+        ]
+      }
+    ]
+  },
+  "raw_content": "{\"cards\":[{\"title\": \"Set Up a Domain Property in Google Search Console\", \"summary\": \"Choose the Domain property type and complete DNS verification so no URL variant of the store slips through tracking.\", \"use_when\": \"Starting organic search measurement for a store, or migrating from an old URL-prefix property that only covers one subdomain or protocol.\", \"steps\": [\"Open the property dropdown and add a property, then choose Domain rather than URL prefix. Domain covers every subdomain, www and non-www, plus HTTP and HTTPS, which matters for stores with shop., blog., or checkout subdomains.\", \"Copy the provided TXT record, sign into the registrar (GoDaddy, Namecheap, Cloudflare, etc.) or ask the webmaster, and paste it into DNS settings.\", \"If verification fails immediately, use verify later and retry the next day since DNS changes take time to propagate.\", \"After verification, let data populate, then connect the property to any reporting tools the team already uses so the same click data drives dashboards.\"], \"caveats\": [\"The Domain option requires DNS access; if a third party controls DNS, expect a short webmaster task.\", \"Search Console only retains 16 months of history, so export older data if you need longer trend lines.\"], \"tags\": [\"search\", \"seo-analytics\", \"google-search-console\", \"measurement\", \"site-setup\"]},{\"title\": \"Read Overall Search Performance With Compare Mode\", \"summary\": \"Use clicks, impressions, CTR, and average position with a period comparison to answer high-level growth questions on one screen.\", \"use_when\": \"Monthly or quarterly reporting on organic traffic to the store, or when deciding whether a decline needs investigation.\", \"steps\": [\"Open Performance > Search results and set the date range; options run from 24 hours to 16 months.\", \"Toggle the metrics you need: total clicks, total impressions, average CTR, average position.\", \"Turn on Compare and set the last three months against the previous period, or six months versus previous when analyzing a specific drop.\", \"Read the chart for growth or decline, the Queries tab for what people type, and the Pages tab for which URLs carry the traffic.\", \"If clicks are up versus the prior period, current activity is working; if down, move to the click-difference sort described in the traffic-drop workflow.\"], \"caveats\": [\"Average position is averaged across every impression, location and device, so treat it as a trend line, not a fixed rank.\", \"Raw click totals mix branded and non-branded demand, so they overstate what content earned.\"], \"tags\": [\"search\", \"seo-analytics\", \"measurement\", \"google-search-console\", \"reporting\", \"conversion-optimization\"]},{\"title\": \"Isolate Non-Branded Clicks With Custom Regex\", \"summary\": \"Filter out branded queries using a doesn't-match regex so reports show only traffic from people who did not already know the brand.\", \"use_when\": \"Proving content or SEO impact to leadership, or setting traffic goals where branded demand would flatter the numbers.\", \"steps\": [\"In Performance, add a query filter and switch the match type to Custom regex.\", \"Choose doesn't match and enter brand terms separated by the pipe symbol, which means OR, e.g. brandname|brand name|brandname com.\", \"Everything branded disappears; what remains is non-branded performance from users who discovered the site through content.\", \"Layer compare mode on top: non-branded clicks last three months versus the previous period, so the chart shows growth or decline in earned traffic.\", \"Use that single number to steer content decisions and monthly reporting rather than raw clicks.\"], \"caveats\": [\"Branded search still matters on its own, since buyers often discuss purchases with AI assistants and then Google the brand name before buying; track it separately rather than discarding it.\", \"Regex patterns need care with partial matches; review the filtered query list to confirm nothing legitimate was excluded.\"], \"tags\": [\"search\", \"seo-analytics\", \"regex\", \"measurement\", \"reporting\", \"branded-search\", \"conversion-optimization\"]},{\"title\": \"Diagnose Indexation Status With URL Inspection\", \"summary\": \"Tell apart 'discovered - currently not indexed' and 'crawled - currently not indexed' to decide whether a page needs links, better content, or patience.\", \"use_when\": \"A product, category, or landing page is published but not appearing in Google results.\", \"steps\": [\"Paste the page URL into the URL inspection bar; Google reports whether it is indexed, when it was last crawled, and what blocks it.\", \"If the status is Discovered - currently not indexed, Google knows the page exists but has not crawled yet. This is common on new sites; add internal links from stronger pages to speed crawling.\", \"If the status is Crawled - currently not indexed, Google read the page and passed on it, usually a content quality or thinness signal. Strengthen the page before requesting recrawl.\", \"Once fixed, use Request Indexing to prompt a recrawl. There is a daily quota and no guarantee, but it beats waiting.\", \"If the page is not on Google at all, read the stated reason underneath and act on that specific reason rather than guessing.\"], \"caveats\": [\"On newer or smaller sites, 'crawled - currently not indexed' can reflect overall site authority rather than the page itself; the fix may be patience and authority building, not repeated rewrites.\", \"Request Indexing is quota-limited and not instantaneous.\"], \"tags\": [\"search\", \"site-auditing\", \"indexation\", \"technical-seo\", \"google-search-console\", \"product-page\"]},{\"title\": \"Audit Site-Level Not-Indexed Pages by Reason\", \"summary\": \"Review the Pages report grouped by exclusion reason and confirm each exclusion is deliberate rather than an accident.\", \"use_when\": \"Technical health audits, pre- or post-launch checks, or when organic traffic to key store pages is unexpectedly missing.\", \"steps\": [\"Open Indexing > Pages in the sidebar to see every not-indexed URL grouped by reason.\", \"Apply the decision rule: ask whether you want people to find this content on Google. If yes, it should not sit under excluded by noindex tag or blocked by robots.txt.\", \"Confirm that ad landing pages, thank-you and confirmation pages, internal search results, filtered category pages, and staging or test pages are intentionally excluded so paid tracking stays clean and duplicate filters do not compete with primary categories.\", \"Look for surprises: staging pages that slipped through robots.txt before launch, or money pages accidentally noindexed.\", \"Fix only the unintended exclusions; leave deliberate ones alone.\"], \"caveats\": [\"Not indexed does not equal an error; many exclusions are the system working as intended.\", \"Blocking or noindexing ad landing pages is presented as a recommended practice here because it protects ad tracking, not as a universal rule.\"], \"tags\": [\"search\", \"site-auditing\", \"indexation\", \"technical-seo\", \"ecommerce\", \"category-pages\", \"checkout\"]},{\"title\": \"Track a Specific Page or Keyword Without a Paid Rank Tracker\", \"summary\": \"Use page and exact-query filters plus compare mode to turn Search Console into a free rank tracker for money pages and target keywords.\", \"use_when\": \"Monitoring ranking movement on a cornerstone product page, category, or a cluster of posts over time.\", \"steps\": [\"In Performance, add a filter, choose Page, and paste the exact URL. Turn on average position and the chart becomes that page's ranking history, up to 16 months.\", \"To track one keyword instead, filter by Query and switch to Exact query so one term maps to one line on the chart.\", \"Add compare mode: average position over the last three months versus the previous three months gives a hard delta.\", \"Focus tracking on non-branded queries, since branded terms sit at position one all day and reveal little about competitive standing.\"], \"caveats\": [\"Average position is averaged across impressions, locations and devices; treat it as a trend, not a pinpoint rank.\", \"Low-volume keywords bounce; a two-position wobble on a keyword with roughly 40 impressions is noise, not a signal.\"], \"tags\": [\"search\", \"rank-tracking\", \"seo-analytics\", \"google-search-console\", \"measurement\", \"product-page\"]},{\"title\": \"Find the Pages Behind a Traffic Drop\", \"summary\": \"Sort the comparison table by click difference ascending to surface the exact URLs that lost traffic and look for patterns across them.\", \"use_when\": \"Organic traffic fell and the cause is unclear, especially after an algorithm update.\", \"steps\": [\"Set the comparison window to cover the drop, e.g. last six months versus the previous period.\", \"Sort the table by click difference ascending so the biggest losers float to the top.\", \"Inspect what the losing pages share: same topic cluster, same page type, thin content, or in the case described, pages cannibalizing each other.\", \"If the pattern is still unclear, consider that the SERP itself changed: users may now demand more depth, a different format, or the query intent itself may have shifted over time.\", \"Fix the identified cause on the affected pages, prioritizing those with the largest click loss.\"], \"caveats\": [\"The source describes this workflow with a client example, not a guaranteed recovery method.\", \"Search Console alone shows what dropped; deeper competitor and content-gap analysis usually happens in a separate content optimization tool.\"], \"tags\": [\"search\", \"seo-analytics\", \"traffic-recovery\", \"cannibalization\", \"google-search-console\", \"content-strategy\"]},{\"title\": \"Re-Target a Page Using Its Own Query Data\", \"summary\": \"Check which queries already generate clicks for a page and align the title and H1 to the query Google is actually rewarding.\", \"use_when\": \"Post-publish optimization of a product page, category, or blog post that targets a keyword in its title tag.\", \"steps\": [\"Pick the page, filter Performance by that page's URL, and open the Queries tab to see every query it appears for and which ones produce clicks.\", \"Compare the intended target keyword against the actual click leaders. In the example, 'beeswax good for your skin' produced about three clicks in three months while 'benefits of beeswax for skin' produced 19, which signals the keyword the page should target.\", \"Rewrite the title and H1 around the query with demonstrated click demand.\", \"Then examine the pages currently ranking for that keyword to see what yours lacks: terms covered, headings, questions answered, and depth.\", \"Re-crawl the updated page via URL inspection after the changes go live.\"], \"caveats\": [\"The click figures are a single case example, so expect different magnitudes on your own data.\", \"Manual rewriting can be slow and does not account for AI visibility; the source recommends a content optimization tool for the gap analysis part.\"], \"tags\": [\"search\", \"seo-analytics\", \"keyword-targeting\", \"content-optimization\", \"product-page\", \"conversion-optimization\"]},{\"title\": \"Mine Question Queries for FAQ and Content Ideas\", \"summary\": \"Regex-filter question-word queries to find real questions the site already surfaces for, then build direct answers.\", \"use_when\": \"Planning FAQ sections, support content, or new pages that should answer buyer questions explicitly.\", \"steps\": [\"In Performance, add a query filter and switch to Custom regex.\", \"Match question words such as who, what, when, where, why, how, can, does.\", \"Review the returned queries and for each ask whether any page of yours answers it directly.\", \"Where the answer is no, the site currently ranks only on a passing mention. Add an FAQ section to the relevant page, or write a dedicated page if the topic warrants it.\", \"Prefer structured, direct answers over mentions buried in prose, since this format is also what AI features tend to draw on.\"], \"caveats\": [\"Ranking on a passing mention still means the site appears for the query; the gain comes from answering directly, not from the query being unknown.\", \"Question words vary by language and phrasing, so adjust the pattern beyond the listed English terms.\"], \"tags\": [\"search\", \"keyword-research\", \"faq\", \"content-strategy\", \"regex\", \"customer-research\"]},{\"title\": \"Get Backlink and Internal Link Data Free From Search Console\", \"summary\": \"Use the Links report for most-linked pages, internal link counts, and referring sites, then route authority toward pages you want to rank.\", \"use_when\": \"Planning internal linking during a product launch or category push, or auditing which pages carry authority.\", \"steps\": [\"Click Links in the sidebar to see most-linked pages, internal link counts, and which sites link to you, at no cost.\", \"Click into any page to see the exact sites linking to it.\", \"Identify high-authority pages, since internal links distribute backlink equity across the site.\", \"Point internal links from those authority pages at newer or more strategic pages you are trying to rank, such as launch pages or priority categories.\"], \"caveats\": [\"The Links report is shallower than dedicated backlink tools: no competitor data and no link quality scores.\", \"The source accepts that brand mentions matter but argues links remain an important ranking signal; it does not treat mentions as a full replacement.\"], \"tags\": [\"search\", \"backlinks\", \"internal-linking\", \"site-auditing\", \"link-equity\", \"category-pages\"]},{\"title\": \"Fix Video Indexing by Building Dedicated Watch Pages\", \"summary\": \"Give important videos their own page where the video is the main event so Google indexes the video, not just the page.\", \"use_when\": \"Publishing product demos, tutorials, or reviews that should earn video results and thumbnails.\", \"steps\": [\"Open the Videos report under Indexing to see which indexed pages contain videos Google indexed, and the stated reason for the ones it did not.\", \"When the reason is 'video isn't on a watch page', apply the underlying rule: Google indexes a video when the video is the main event of the page.\", \"Model the layout on a YouTube watch page: video front and center above the fold, with watching it the whole reason for visiting.\", \"Move best-performing videos off mid-post embeds, sidebars, or tiny players onto dedicated pages for those videos.\", \"Leave blog-post embeds in place if they serve readers, but accept they yield a normal page result rather than video results.\"], \"caveats\": [\"A page with an embedded video can still rank normally; what is lost is the video result, video thumbnail, and video search tab placement.\", \"The watch-page rule is the source's stated reason Google most commonly gives, not a guarantee that every dedicated page gets indexed.\"], \"tags\": [\"search\", \"video-seo\", \"indexation\", \"site-auditing\", \"content-strategy\", \"product-page\"]},{\"title\": \"Use the Discover and Google News Reports for Non-Query Traffic\", \"summary\": \"Read feeds-driven traffic separately, because Discover and News show pages and impressions rather than queries.\", \"use_when\": \"Checking whether visual, timely, or list-driven store content earns traffic outside classic search.\", \"steps\": [\"Open the Discover report to see whether Google featured your content in the phone feed; there are no queries because Discover pushes content based on interests, so you get pages and impressions instead.\", \"Open the Google News report, which works the same way, and check whether its numbers are significant for your content type.\", \"If your content skews timely, visual, or list-driven, treat Discover as a channel that can outdraw search traffic and is only visible in this report.\", \"Use the page-level data to decide which content formats to repeat.\"], \"caveats\": [\"Discover and News traffic is not query-driven, so you cannot mine keywords from these reports.\", \"The source notes the numbers can be significant for certain content types but provides no benchmark.\"], \"tags\": [\"search\", \"discover\", \"google-news\", \"seo-analytics\", \"content-strategy\", \"measurement\"]},{\"title\": \"Diagnose Falling Clicks With Stable Rankings\", \"summary\": \"When positions hold but clicks shrink, check CTR against position to decide between a snippet refresh and an AI-overview answer stealing the click.\", \"use_when\": \"Organic clicks decline while rank tracking shows no meaningful position loss.\", \"steps\": [\"Compare CTR against position for the affected pages over time.\", \"If a page holds position three but CTR has been shrinking for months, one of two things is happening: your title and meta description have gone stale while competitors improved theirs, which is an easy snippet rewrite; or something now sits above you answering the question before anyone scrolls, most likely an AI overview.\", \"Open the generative AI performance report and check the pages losing clicks: if they register heavy AI impressions, the content is being read inside Google's AI answers rather than on your site.\", \"If it is a snippet problem, rewrite the title and meta description; if it is an AI answer, treat the content as an AI magnet and consider producing more structured, direct answers on buyer topics.\", \"Consider that losing the click may not mean losing the sale, since the source frames AI visibility as still winning attention even without a site visit.\"], \"caveats\": [\"The generative AI report is in beta, may not yet be available on your property, and initially shows impressions only, with click and position data promised later.\", \"The report covers only Google's own AI ecosystem and does not show what the AI actually said or whether you were recommended versus name-dropped alongside competitors.\"], \"tags\": [\"search\", \"ctr\", \"ai-overviews\", \"seo-analytics\", \"conversion-optimization\", \"content-strategy\"]},{\"title\": \"Read the Generative AI Performance Report for AEO Benchmarks\", \"summary\": \"Use Google's AI visibility report to see impressions inside AI Overviews and AI mode, broken down by page, country, and device.\", \"use_when\": \"Assessing how much of your content is being consumed in AI answers, or deciding whether to opt out of AI features.\", \"steps\": [\"Open the generative AI performance report, shipped in beta, and check whether it is rolled out to your property yet.\", \"Read impressions: how many times a link to your site appeared inside a generative AI feature, broken down by page, country, and device.\", \"Sort by impressions and study the top pages to learn what the AI already favors. Direct, clearly structured answers are the pattern described as AI magnets.\", \"Apply the same structure and directness to the topics buyers ask about, since being the source the AI quotes beats being invisible in it.\", \"If considering Google's toggle to pull content out of AI Overviews and AI mode without affecting normal rankings, use this report as the data for that decision, since it shows exactly how much AI visibility you would give up page by page.\"], \"caveats\": [\"The report is beta, shows impressions only, and covers only Google's AI surfaces; it says nothing about ChatGPT, Gemini, Perplexity, or Claude.\", \"The opt-out toggle began with UK site owners and was rolling out globally; verify availability before relying on it.\", \"The source does not recommend opting out of AI features.\"], \"tags\": [\"search\", \"aeo\", \"ai-overviews\", \"seo-analytics\", \"measurement\", \"content-strategy\"]},{\"title\": \"Build a Content Plan From Exported Query Data\", \"summary\": \"Export queries, compare them against your sitemap, and ask an LLM where coverage gaps exist.\", \"use_when\": \"The content calendar is empty and you need new product-page, category, or blog topics grounded in real search demand.\", \"steps\": [\"In Performance, export all queries to a spreadsheet; the interface allows up to 1,000 rows.\", \"Provide that list to an AI assistant together with your sitemap.xml file.\", \"Ask where the gaps are: searches where the site surfaces but no page properly covers the topic.\", \"The result is a list of queries already generating visibility for which you have no dedicated coverage, which are lower-risk topics than entirely new keyword research.\", \"Turn each gap into either an FAQ section on an existing page or a new page, depending on how much the topic deserves.\"], \"caveats\": [\"The export is capped at 1,000 rows, so large sites see a partial query list.\", \"The LLM output is a starting list; validate demand and difficulty before committing production time.\"], \"tags\": [\"search\", \"keyword-research\", \"content-strategy\", \"measurement\", \"ai-tools\", \"product-page\"]},{\"title\": \"Track Rankings Automatically and Flag Refresh Candidates\", \"summary\": \"Set up monitoring that flags pages slipping to positions 6-8 and pages whose rankings drop over a 7-day stretch.\", \"use_when\": \"Managing a large content library where manually filtering Search Console for every page is impractical.\", \"steps\": [\"Connect Search Console to a tracking or content optimization tool so it consumes the same performance data.\", \"Configure alerting for pages that have slipped back to pages 6 through 8 of the search results, described as the band a content refresh can usually recover.\", \"Configure alerts for a page whose ranking drops over a 7-day stretch.\", \"Set a quarterly traffic goal in the connected dashboard and track progress plus the daily clicks needed to hit it.\", \"Keep an activity log of what you changed and when Google updates hit, so movement on the chart can be attributed to your work.\"], \"caveats\": [\"The pages 6-8 band and the 7-day drop window are the source's described tooling heuristics, not universal thresholds; verify the current settings in whichever tool you use.\", \"Tool features and interfaces change; confirm current behavior before configuring alerts.\"], \"tags\": [\"search\", \"rank-tracking\", \"content-refresh\", \"measurement\", \"seo-analytics\", \"workflow\"]},{\"title\": \"Split Branded From Non-Branded in Ongoing Reporting\", \"summary\": \"Keep branded search visible as its own metric while excluding it from earned-traffic reporting.\", \"use_when\": \"Building a recurring organic dashboard or content KPI set for a store.\", \"steps\": [\"Report non-branded clicks with compare mode as the earned-content metric, since branded clicks come from people who already knew the brand and would have arrived anyway.\", \"Track branded search separately as its own KPI. The source argues this matters more in AI-first search, because buyers often hold purchase discussions with AI assistants in separate ecosystems and then Google the brand name when ready to buy.\", \"In a connected dashboard, use a single filter to split branded from non-branded rather than maintaining two manual reports.\", \"Review both lines together: branded volume can indicate AI-driven demand building even when non-branded content metrics look flat.\"], \"caveats\": [\"The source explicitly separates this from non-branded reporting and says branded keywords sitting at position one reveal almost nothing about ranking position.\", \"The claim that branded search is more important than ever in AI search is the presenter's interpretation, not a measured benchmark.\"], \"tags\": [\"search\", \"branded-search\", \"measurement\", \"reporting\", \"seo-analytics\", \"retention\"]},{\"title\": \"Add Social Accounts as Search Console Properties\", \"summary\": \"Use platform properties to see which search terms lead people to social posts, even for an account with no website attached.\", \"use_when\": \"Attributing search-driven discovery to Instagram, TikTok, X, or YouTube content that feeds the store funnel.\", \"steps\": [\"Add your social accounts as their own properties in Search Console, using the platform properties feature announced by Google.\", \"Once enabled, view which search terms lead people to your posts and how those posts perform in Google Search and Discover.\", \"Pair this with a social analytics platform to close the loop: Search Console shows how social content performs on Google, while the social tool shows performance everywhere else.\", \"Use the query terms driving social post discovery to inform both social content and site content topics.\"], \"caveats\": [\"The source states this was rolling out gradually and none of the presenter's properties had access at the time; check back if it is missing.\", \"This is a new feature whose interface may change; verify current availability in your account.\"], \"tags\": [\"search\", \"social-search\", \"measurement\", \"analytics\", \"content-strategy\", \"acquisition\"]},{\"title\": \"Map AI Visibility Beyond Google With a Brand Tracker\", \"summary\": \"Supplement Google's AI report by tracking brand mentions and citations across major AI models.\", \"use_when\": \"AEO reporting where you need to know whether you are recommended, how you are described, and which sources models cite.\", \"steps\": [\"Use a dedicated AI brand tracker to monitor your brand across major AI models, since Search Console covers only Google's AI surfaces.\", \"Track how often you are mentioned and in what sentiment, which competitors beat you, and which sources the models trust most.\", \"For the prompts you track, identify which of your pages the AI actually cites. A citation means the model used your page to build its answer, which is a stronger signal than an AI crawler hitting your server logs.\", \"Compare citation patterns against your structured-answer content to decide what to produce next.\"], \"caveats\": [\"Search Console's AI report cannot tell you what the AI said, only that your link appeared; recommendation versus name-drop is invisible there.\", \"Server log hits from AI bots are weaker evidence than citations, because a crawl does not mean the model used the page.\"], \"tags\": [\"search\", \"aeo\", \"ai-visibility\", \"measurement\", \"content-strategy\", \"analytics\"]}]}",
+  "input": {
+    "source_id": "1SFtoeiwB9Njoe-mUK0MHm-4b-f2l_nEC",
+    "source_sha256": "82524cf23b1468f39ca5ac995280691ff6664f698e4b67e8d5d932e0cda70a4d",
+    "source_name": "Google Search Console Tutorial (2026).docx",
+    "folder": "/15-SEO-search",
+    "domain": "search",
+    "section": 0,
+    "section_count": 1,
+    "text": "06-MEA / measurement and analytics\n\nGoes here. SEO tracking, search engine analytics, rank tracking, tracking organic search performance, monitoring technical site health (site audits), analyzing keyword performance, backlink profile tracking, competitor keyword gap analysis, and tracking AI visibility (AEO) benchmarks across LLMs.\n\nNot here.\n\nPaid advertising performance, ROAS, or attribution -> 06-MEA (other sub-topics) or 11-ADC\n\nWriting and executing optimized blog content or copy -> 10-MCR\n\nHeader. url: rights: public_reference why: Details how to use Google Search Console for performance reporting, non-branded click analysis using Regex, technical indexation audits (discovered/crawled currently not indexed), backlink profile tracking, video indexing troubleshooting, and evaluating generative AI overview impressions. modules: [MEA] topics: [seo analytics, rank tracking, site auditing] tier: 3 scope_hint: baseline\n\nTopics. seo analytics / Evaluating high-level search performance using Google Search Console metrics (clicks, impressions, CTR, average position). Isolating true organic growth by filtering out branded search terms using Custom Regex (doesn't match combined with pipe symbols for \"or\"). Identifying content gaps and new content opportunities by exporting Search Console query data to find terms the site surfaces for without dedicated coverage. rank tracking / Monitoring page and keyword positioning over time without paid rank trackers by filtering performance reports by exact query or specific URLs, and using comparison modes to measure rank shifts. Tracking emerging AI-driven search presence through Google's generative AI performance report (covering AI Overviews and AI mode impressions). site auditing / Troubleshooting indexation issues via the URL inspection tool and pages report. Differentiating between \"Discovered - currently not indexed\" (Google knows the page exists but hasn't crawled yet) and \"Crawled - currently not indexed\" (Google read the page and passed due to thin or duplicate content signals). Checking video indexing rules (ensuring videos live on dedicated \"watch pages\" rather than embedded halfway down a post) and reviewing baseline backlink and internal linking reports.\n\nLook for. The definition of \"Discovered - currently not indexed\": Google knows the page exists but hasn't crawled it yet. The definition of \"Crawled - currently not indexed\": Google read the page and chose to pass on it, usually indicating content quality or thinness issues. The specific regex method to filter out branded terms: using doesn't match with brand terms separated by a pipe symbol (|). The rule for Google video indexing: the video must be the main event of the page on a dedicated \"watch page.\"\n\nSkip. Promotional walkthroughs for signing up for or configuring third-party content optimization tools like Surfer. General introductory overviews of Google Search Console's dashboard navigation.\n\nScope mix. Almost all baseline.\n\nVolume. 15 to 20.\n\nWelcome to this comprehensive tutorial on Google Search Console, Google's free and extremely powerful tool for search marketing. Lately, Google has been consistently building new features [music] into Search Console, including its brand new generative AI report and the recently announced social media traffic report. So, there's really never been a better time to learn the ins and outs of this platform for your business. Now, rather than giving you a long, dry, boring deep dive on all the features in Google Search Console, I'm going to give you a really quick high-level overview of what this tool has to offer. And then we're going to go straight into some realworld search [music] marketing scenarios, things that you'll actually encounter in the wild and show you how Google Search Console can help you in each one. By the end of this video, you'll be able to use it [music] to prove to your boss with Google's own data that SEO is working. Fix indexation problems that are costing you traffic, identify the exact keywords people are searching for to find you, and create content for those keywords, [music] and now even see where your site shows up inside Google's AI [music] results, thanks to Google's brand new generative AI performance dashboard. Plus, I'll show you a way to get comprehensive backlink data without paying for a backlink tool, and how you can use Positive Surfer to extend Search Console's already impressive features even further. If you're a marketer or a business owner, and you've only really ever glanced at the clicks graph, but you want to understand how to fully leverage this marketing tech stack staple, stick around because you're in the right place. First, let's walk through how to get search console set up on your site. Now, you've already done this part. You can skip to this timestamp to continue the tutorial. To get set up, click the property dropdown and hit add property. You'll get two options, domain or URL prefix. Pick domain. It covers every URL on every subdomain, www or not, HTTP or HTTPS, so nothing slips through. The trade-off is that it does require DNS verification. Type in your domain and hit continue. Google gives you a txt record. That is the recommended option. Copy it. Then sign into wherever you bought your domain, whether that's GoDaddy, NameCheep, Cloudflare, and paste it into the DNS settings. If someone else manages your site, this is a 2-minute job for a web master. One tip, DNS changes do take a while to propagate sometimes, so if verify fails, just hit verify later, come back tomorrow, and it should go through just fine. Once Google has verified your domain, search console will begin populating your data and your dashboard will come alive. Now down the left sidebar, the property dropdown selects which site we're looking at. The overview tab is the at a glance dashboard and the insights below it turns your data into a plain English performance summary. The URL inspection bar at the top checks the status of any single page on your site and lets us ask Google to rec crawl it. That'll come in handy later. Then come the sections we'll live in. Performance is the heart of the tool. Every query your site appears for in Google, plus the brand new generative AI report showing you where you appear inside AI overviews and AI mode, along with reports for discover and Google news. Indexing tells us whether Google can find and store our pages at all. Pages, videos, site maps, and a removal tool for emergencies. Experience grades how the site feels to real visitors through core web vitals in HTTPS. And if you run an e-commerce site with product markup, shopping and enhancements track your eligibility for rich results. Below those sit security and manual actions, the section you honestly hope stays empty. A surprisingly robust links report, which we'll get into later, and settings where user access and the crawl reports live. So that's the map. Now let's get into some real world scenarios. The most common scenario is simply wanting to understand at a high level how your site is performing in search. The answer lives in performance search results. But before we read anything, there are three quick settings to be aware of. First, our date range. So you can go from 24 hours all the way out to 16 months, which is as much history as Google Search Console keeps. You can toggle all four metrics at the top. Total clicks, total impressions, average CTR, and average position. Then click compare and set the last three months against the previous period. Now, this report answers all the high-level questions in one screen. The chart tells you whether traffic is growing or shrinking. The queries tab tells you what people actually type to find you, and the pages tab tells you which pages are doing the heavy lifting. If clicks are up versus the previous period, whatever you're doing is working. If they're down, the rest of this video shows you how to find out why. And one more thing before we go deeper. If you connect Search Console to Surfer, it monitors all this same performance data for you. It flags pages that have slipped back to pages 6 through 8 of the search results, the ones a content refresh can usually recover, and it notifies you instantly when a page's ranking drops over a 7-day stretch. Now, our next scenario is the one we described in the intro. You've published a page, maybe even waited a couple days or weeks, and it's still nowhere to be found on Google. What gives? This is where Search Console's URL inspection is super handy. Paste the page's URL into the inspection bar at the top, and Google tells you whether the page is indexed, when it was last crawled, and what's blocking it if something is. If it says URL is not on Google, the reason underneath tells you what to do. Two reasons come up constantly and they sound alike but mean different things. The first is discovered currently not indexed. That means Google knows the page exists and just hasn't gotten around to crawling it yet. This is common on new sites and internal links from your stronger pages can help speed this process up. The second is crawled currently not indexed. This means Google read the page and for whatever reason decided to pass on it for now, which is usually a content quality signal. The page is too thin or too similar to something else on your site. It's usually a sign that you need to strengthen the page before you ask Google to rec crawl it. One caveat on this, on newer or smaller sites, this status sometimes has nothing to do with the page at all. Google has just decided that your site hasn't earned the privilege of being indexed by them yet. Ouch. Don't worry. I've been there before as well. In that case, the fix is honestly just patience and building your site's overall authority, not necessarily rewriting the page a bunch of times. Once you've fixed the problem, or if there never was a problem and Google was just slow, you can hit request indexing. Now, this is kind of like raising your hand and saying, \"Hey Google, I made changes. Please send your robots. come crawl this page. There is a daily quota. It's not instantaneous and it's not guaranteed, but it does beat waiting for Google to rec crawl the page on its own schedule. And if you want to see this at the site level instead of page by page, we can do that, too. Just click pages under the indexing section on the sidebar, and you'll see every notindexed URL on your site grouped by reason. Now, this is important. Okay, listen. Big misconception here. I want to clear this up. not indexed does not necessarily equate to an error. There are plenty of exclusions here that are deliberate. Here are some examples of pages that you actually want out of Google's index. Add landing pages. If you run meta or Google ads to a dedicated landing page, you want to know index that so that organic visitors can't wander in and muddy your ad tracking. Same thing goes for thank you and confirmation pages, internal search results and filtered category pages, and staging and test pages, which often get blocked by robots.txt before a site launch, but can slip through there every now and then. The rule of thumb is one simple question. Do I want people to find this content on Google? If yes, then it should not appear under excluded by no index tag or blocked by robots.txt. If the answer is no, you don't want people to find this content on Google, then those exclusions are the system working as intended. This report lets you check the whole site at a glance. Now, for the next scenario, let's say there's one specific page you really care a lot about, a money page, a cornerstone piece of content, or a series of posts in a topical cluster, and you want to watch its ranking over time. You don't need a paid rank tracker for this. You can just use search console. In performance, add a filter, choose page, and paste the exact URL. Turn on average position, and the chart becomes that page's ranking history, up to 16 months of it. To track a specific keyword instead, you can filter by query and switch it to exact query. That gives you one keyword tracked as one line on the chart. And if you want a hard number instead of a trend line, add compare mode. average position over the last three months versus the previous three months tells you exactly how far it moved. Or if you'd rather not babysit filters, you can add the page to Surfer's content audit and it tracks the ranking changes for you automatically. Now, two things keep this data honest. First, this is averaged position, averaged across every impression, every location, and every device. So, treat it like a trend line, not a pinpoint rank. Second, lowvolume keywords will bounce around a lot. So don't freak out over a two position wobble on a keyword with only 40 impressions. And one more tip, your branded keywords will sit at position [music] one all day. That's expected and it tells you almost nothing. The keywords worth tracking, at least from a ranking position standpoint, are the non-branded ones, where movement means you're winning or losing ground with people who don't know your name yet. Which raises the obvious question. How do you look at only those queries? Well, that's our next scenario. So, if you've worked as an in-house marketer or a freelancer, you're likely very familiar with this situation. You need to prove to your boss that the content you're producing actually generates qualified clicks that will ultimately lead to revenue. Now, here's the problem with showing them the raw clicks graph. And you probably already know where I'm going with this based on what I just said. A big share of those clicks are people searching your company's name. They already know about you. They were coming to you anyway. Your content didn't earn them. Now, in this new world of AI search, one of the biggest key metrics to pay attention to is your branded search. Because a lot of times people are having buying discussions with AI assistants in completely separate ecosystems and then when they're ready to make a purchase decision, they Google your brand name. So now more than ever, branded search is really important to track. But that's not what I'm talking about in this point. The fix to all this intermingled data is a concept that sounds scary to non-technical marketers but really is not so bad especially when you use AI to help you write it. And that's regex. Regex or regular expressions is a compact pattern matching language for finding matching or extracting text based on rules you define. When you add a query filter in performance, you can switch it to custom regx, choose doesn't match, and then enter your brand terms with each term separated by a pipe symbol, which means or in regex. So, we're essentially telling search console, show us data for everything except this branded term and this branded term, etc., etc. So, everything branded disappears and what's left is your true non-branded performance. traffic from people who didn't know you existed until your content showed up. Now, we can take it a step further and put compare mode on top of this non-branded clicks last 3 months versus the previous period. This one chart says our content earned this growth or in some scenarios, our content is declining with Google's own data behind it. It's the number I put in front of my clients every month and it dictates a lot of the content decisions we make. And if you do this kind of reporting every month, Surfer utilizes your search console data to give you even more filtering and visibility options. Connect your search console account to Surfer and the site's dashboard runs on this same data. You set a traffic goal for the quarter. It tracks your progress and the daily clicks you need to hit it. It splits branded from non-branded with one filter. And its activity log records what you changed and when Google updates hit. So movement on the chart is attributable to your work. Search console gives you the evidence. Surfer turns it into an even more powerful reporting surface. Okay. Now let's talk about the next scenario which will inevitably happen to you if you're in this business for long enough. Your traffic drops and you have no idea why. A client of mine took a hit from a Google algorithm update earlier this year. So this is very fresh for me. Here's how I found out where he was impacted the most. First, set the comparison to cover the drop. For the sake of the example, we'll say the last 6 months versus the previous period. Then, sort the table by click difference ascending. Now, watch what happens here. The biggest losers float to the top. Now, you're not just guessing why traffic is down. You have the exact pages that lost. And you can look for what they have in common. Are they part of the same topic cluster? Are they the same page type? Do they have thin content? or perhaps in the instance of my client, they're cannibalizing each other. So, if you're still not sure why the pages have dropped in traffic, it could simply be because the SER has changed. So, over time, users can demand a different type of content for their query. Sometimes even the intent of their query changes over time. So, that could be a higher bar of quality, a different level of comprehensiveness, or maybe a different format altogether. Now, this is where Search Conso's features end, and Surfer picks up the slack. In the next scenario, we'll walk through exactly how optimizing a page like this in Surfer's content editor can help you regain the ground that you've lost in the search rankings. So, here's the situation. You've already written the content, and now you want to be sure it's targeting the best possible keyword. This one is my favorite because it's an easy way to reclaim clicks you're leaving on the table. Pick a page you want to optimize. In this case, I'll use a blog post I wrote for a previous client on the benefits of beeswax for skin. Filter by that page and open the queries tab. Now you can see every keyword people search to find this post and which ones actually produce clicks. Say the page targets is beeswax good for your skin in the H1 and title tag. Well, that keyword generated about three clicks to this page in the past 3 months. Benefits of beeswax for skin generated 19. Google is telling you with your own data which keyword this page should be targeting. Now, you could retarget the page by hand. You can rewrite the title in the H1 around the new keyword, then read every top ranking page to figure out what yours is missing. And that works, but it's really inefficient and it doesn't account for AI visibility. This once again is where I hand things off to Surfer. And by the way, this would be the exact play that I'd run in the previous scenario as well when I talked about the unexplained traffic loss. Both ailments are cured by the same remedy. In Surfer, I create a content editor for the keyword that Google Search Console just handed me, and I import my existing page into it. Surfer analyzes the competitor's pages already ranking for that keyword and scores mine against theirs. Instantly, I see the gap, the terms the top pages cover that mine doesn't, the headings and the questions they answer and how deep they go on the topic. Then I can work through these suggestions one by one and watch the content score climb as the page becomes a genuine contender. Now, this is just one of the reasons why Google Search Console Plus Surfer is truly a powerhouse combo for search marketing. Now, suppose you're building out FAQ content, not in a way to gain the algorithm, mind you, but as a way to genuinely answer your customers questions, but you want to know which questions are actually worth answering. You know that you have content scattered around your site that probably half answers a question here and half answers a question there, but you want to be as explicit and thorough as possible. That's a good instinct. Here's how to find what people are actually asking in [snorts] performance. Add a query filter. Switch it to custom reg x, which we're not scared of anymore, remember? And use a pattern that matches question words. Queries like who, what, when, where, why, how, can, or does. What comes back is a list of real questions where your site already appears. Now look at each one and ask, does any page of mine answer this directly? Where the answer is no, you currently just rank on the strength of a passing mention. Imagine how much more you could rank if you built a dedicated page answering that question. Congrats, you just found a ton of free content ideas already validated by real search data. So, you can add an FAQ section to the relevant page answering the question, or if the topic warrants it, you can write an entirely new post that answers it head-on. So, our next scenario is one that I was genuinely surprised Google Search Console could help with, and that's backlink visibility. Many backlink visibility tools are pricey. So, I was genuinely shocked when I found out that if you click links at the bottom of the sidebar, search console shows you your most linked pages, your internal link counts, and even which sites link to you for free. Click into any page and see the exact sites linking to it. Now, maybe I'm dumb. Uh maybe this was obvious to everyone else, but I don't know any other tool that gives you this kind of backlink data at zero cost. If you know of any, please leave them in the comments and let everybody know. So, you might be asking, \"Why do I care, Matt? Haven't you heard?\" Brand mentions are the new backlinks. I hear you. I get it. I I don't know if I'd go that far just yet. Links are still a really important ranking signal, and this report tells you which of your pages are pulling their weight in building your authority. So, check this out. Google has made it abundantly clear that internal links distribute backlink equity throughout your site. And some of you already know where I'm going with this. Those high authority pages are the exact pages you'll want to add internal links pointing at the newer, more strategic pages that you're trying to rank. And if you want to streamline this process, Surfer makes it a piece of cake. Surfer's content audit, which now lives inside sites, connects to the same search console data. It watches your top pages daily, and it flags the ones worth reoptimizing. And from any page it flags, Surfer's internal linking tool finds and inserts contextual internal links across your site. You review each suggestion, accept or decline, and you're done. Search Console shows you which pages have the authority and Surfer puts that authority to work. Now, admittedly, Search Console's links view isn't as deep as a dedicated backlink tool. You're not going to get competitor data or link quality scores here, but it's your link profile straight from Google, which is pretty dope for the low price of free.99. Okay, so here's a scenario for anyone publishing video, which hopefully is all of you, right? I'm talking to you. You should be publishing your videos on YouTube 100%. But you should also be embedding those videos on pages within your site. Doing so increases the likelihood that these videos will show up in Google's video results like these. But what if they're not showing up in Google's video results? Well, the videos report under indexing answers this. It shows which of your indexed pages contain videos that Google indexed. And for the ones it didn't indexed, it tells you why. The reason you'll probably see most often is video isn't on a watch page. That sounds kind of cryptic. >> What is a watch page? >> It basically comes down to one rule. Google only indexes a video when the video is the main event of the page. What Google calls a watch page. So, think of a YouTube video. The video sits front and center above the fold and watching it is the whole reason you're there. And you know, while you're here watching this, you should give this video a like and subscribe to the Surfer Academy YouTube channel. If your video is embedded halfway down within a blog post, I mean, that's a valid thing to do, so you know, no shade. Or if it's tucked down in a sidebar, I probably wouldn't do that. Or sized like a postage stamp. I definitely wouldn't do that. Google sees a regular page that happens to contain a video and it won't index the video itself. The page can still rank for sure. You just won't get video results, video thumbnails, or a spot in the video search tab. So, if video traffic matters to you, and it should, give your best videos a dedicated page where that video is unmistakably the star. And there's a brand new companion to this scenario announced by Google in July 2026, and that's platform properties. So, Search Console now lets you add your social accounts, Instagram, Tik Tok, X, and YouTube as their own properties. So, you can see which search terms lead people to your posts and how those posts perform on Google search and discover, even for an account with no website attached. Now, it is rolling out gradually, so if you don't see it yet, check back soon. I checked all the properties that I have access to, and none of them have access to it yet. And when it does land, pairing it with a social analytics platform is how you can totally close the loop on all of your content performance. Search console tells you how your social content performs on Google. And a tool like Icon Square, which is a sister tool to Surfer over in the positive family, but for social media, tells you how it's doing everywhere else. This next scenario is one you might not even know you have. Google Discover is that scrolling content feed on your phone's Google app. And if Google features your content there, the discover report shows it. Now, there are no queries here because Google discover is in search. Google pushes content to people based on their interests. So, there's nothing typed to report. You get pages and impressions instead. The Google News report works in the same way, but the numbers can be significant here. So, if your content skews toward timely, visual or list driven topics, discover can outdraw your search traffic, and this report is the only place you'll ever see it. Now, for a problem that's become unfortunately common over the last 2 years. Your rankings are holding steady, but your clicks have been falling. Now, if rankings didn't change, what did? The answer is usually the search page itself. Start with a quick quality check. Look at CTR against position. If a page holds position three, but its click-through rate has been shrinking for months, one of two things is happening. Either your title and metad description have gone stale while a competitors got better. That's an easy snippet rewrite. Or more than likely, Google inserted something above you that answers the question before anyone scrolls. And in 2026, you know where I'm going with this, it's more than likely an AI overview. Until recently, you could only suspect the second one. I mean, yes, you could Google it a bunch of times and see if the AI overview appeared, but now you can actually see it plotted on a dashboard. Google shipped a dedicated generative AI performance report in June 2026, the first official window into AI overviews in AI mode. Now, again, this is still in beta. It may not be rolled out to your property yet, but keep checking back because it should be rolled out globally soon. It shows impressions, how many times a link to your site appeared inside a generative AI feature broken down by page, country, and device. Now, it is in beta and there's no click data. Google says clicks in position are coming later, but it does settle the question that this scenario asks. You can open it and check the pages that are losing clicks. If they're pulling heavy AI impressions, your content is being read inside of Google's AI answers instead of on your site. You're not losing rankings, you're just losing the click, which may not actually be a bad thing if you're still winning the sale. So, what do you do with this data? Well, first, you can find out what the AI already loves. You can sort the generative AI report by impressions and study your top pages. Remember that question list we mined a few scenarios back looking for FAQs? Those direct, clearly structured answers are precisely the kind of content that AI loves. So, those are what you might call your AI magnets. And the play is to make more of them. Same structure, same directness applied to the topics your buyers ask about. Being the source the AI quotes beats being invisible in it. Speaking of which, if you'd rather keep your content out of AI features entirely, which I don't really recommend, Google now gives you that choice. A new toggle pulls your content out of AI overviews and AI mode without touching your normal rankings. It started with UK site owners and is now rolling out globally. Before you flip it, this report is the data for the decision. It shows exactly how much AI visibility that you'd be giving up page by page. Now, one more honest limit on Google's report. It counts impressions and only inside Google's own AI ecosystem. It can't tell you what the AI actually said, whether you know you were recommended or you were just name dropped next to three competitors. And of course, it says nothing about ChachiBT, Gemini, Perplexity, Claude, or any other AI assistant. That is the job of Surfer's AI tracker. It tracks your brand across all the major AI models. Shows how often you're mentioned and in what sentiment, which competitors beat you, and which sources the models trust most. Search Console shows you the surface of the AI landscape. AI tracker maps the whole thing. And for the prompts you're tracking, it shows you which of your pages the AI actually sites. A much stronger signal than an AI bot hitting your server logs. Because a citation means the model used your page to build its answer. So here's our last scenario. The content calendar is blank. Your content writer is asking you for topics. You're not really sure what to write next. The good news is that your next content plan is already more than likely sitting in your Google Search Console data. From the performance tab, export all of your queries to Google Sheets. The interface gives you up to 1,000 rows. Then hand that list to Claude or Chad GPT along with your sitemap.xml XML file and ask these are the searches where people find me. This is every page I have. Where are the gaps? What comes back is a list of keywords you're already surfacing for that no page on your site properly covers. Now, this whole export and analyze workflow is exactly what Surfer turned into a feature. If you connect your search console to Positive Surfer, the recommendations tab in your sites dashboard does what we just did by hand continuously. It pulls your query data, clusters it into topics, checks it against what your site already covers, and ranks the opportunities so the lowest hanging fruit sits at the top. Each one scored with data the spreadsheet can't give you, like search volume, keyword difficulty, and how well competitors cover the topic. You can also view those recommendations as a visual map of your clustered topics and even filter that map against your top competitors to spot the most immediate content gaps. Now, here's the part that saves you a ton of time. You don't have to take those ideas somewhere else to act on them. Click a recommendation and you can open it straight into a content editor draft with the guidelines already built. So, the same tool that tells you what content to produce next is the very tool you use to help you write it. And that brings us to the end. You now know how to use Search Console to find keywords you can win, prove your results to leadership, fix what's broken, and see exactly where you stand as search goes AI first. And keep an eye on those new platform properties we covered a few scenarios back. As Google continues the roll out, maybe we'll publish a follow-up on this down the line. If you learned something today, I would really appreciate it if you could like this video, subscribe to the Surfer Academy YouTube channel. Really goes a long way. Plus, it's mutually beneficial because we make practical datadriven SEO videos just like this one. And if you want to keep learning right now, YouTube thinks you'll like this video next. Thanks for watching and happy ranking.",
+    "prior_notes": [],
+    "id": "f634eb134242c392b03a5ff6"
+  },
+  "system_prompt_sha256": "f2341d28186a0dbaee868d37ce33c173f631088eb1754997556740d4905c0f2b"
+}

@@ -1,0 +1,709 @@
+{
+  "cards": [
+    {
+      "title": "Audit Shopify theme files for leftover app code with a code editor",
+      "summary": "Open the theme export in a code editor and search for app names to find and remove residual pixel and tracking code slowing the store.",
+      "use_when": "Store speed work is blocked or polluted by old app scripts you can no longer control from the Shopify admin, and you need to locate the exact theme file and line before deleting anything.",
+      "steps": [
+        "Download your theme (Online Store > Themes > ... > Download theme file) and unzip it, or open it directly in a code editor such as Cursor (free; has AI assistance if you don't write code) using Open Folder.",
+        "Use the editor's global search to find app keywords, e.g. 'hexom' for an uninstalled app, 'Google' for Google-related tags, or 'logs' for a reviews app. See which files contain them.",
+        "When you open a match, note the file name and the approximate line number (e.g. a pixel at line 72 of a .json or .liquid file).",
+        "Back in Shopify, go to Theme > Edit code, search the same file, jump to the nearby line, and remove only the target tag/code.",
+        "Save and verify the store still works before doing the next removal; only remove code you have positively matched to an app you no longer use."
+      ],
+      "caveats": [
+        "Editing live theme code can break functionality or checkout; test after each change and keep a downloaded backup of the original theme.",
+        "The source stresses confirming what a script does before altering it, because some apps require their scripts to load immediately."
+      ],
+      "tags": [
+        "speed",
+        "shopify",
+        "theme-code-cleanup",
+        "app-bloat",
+        "audit",
+        "liquid"
+      ],
+      "id": "58c5589c135fc510ac7a74e1",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 4
+    },
+    {
+      "title": "Find and compress oversized non-product images in Shopify Files",
+      "summary": "Audit the Shopify content/files library for multi-megabyte images, then resize and compress them to under ~1 MB before re-uploading to their sections.",
+      "use_when": "Store images hurt page speed and app-based image compressors only touch product photos, leaving homepage/section banners heavy.",
+      "steps": [
+        "In Shopify go to Content > Files and sort through the media library looking for large offenders (e.g. 3 MB, 5 MB). The presenter's working target: total page weight around 2–3 MB, and individual images under 1 MB, ideally a few hundred KB.",
+        "Identify which theme sections use each heavy image, then download it.",
+        "Resize large images (e.g. reduce width to ~1500px, keeping aspect ratio) if a compression pass alone still leaves them over budget; the presenter's example went from ~5 MB to ~1.6 MB after resize, then to ~400 KB after compression.",
+        "Run the downloaded file through a free compression site (the demo used one that cut size by roughly 50–70%) and download the compressed output.",
+        "Re-upload the compressed image to the same section/file so the reference is preserved, and replace the original wherever it appears."
+      ],
+      "caveats": [
+        "Compression targets are the presenter's heuristics, not Google thresholds; balance quality against weight for hero imagery.",
+        "Always keep the original if you may need higher resolution later."
+      ],
+      "tags": [
+        "speed",
+        "shopify",
+        "image-optimization",
+        "media-library",
+        "lcp",
+        "compression"
+      ],
+      "id": "3a99be49f29200b62bbfa81c",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 4
+    },
+    {
+      "title": "Choose JPEG vs PNG vs GIF for store imagery",
+      "summary": "Upload JPEG for photos because they compress best, reserve PNG for overlay graphics needing transparency, and avoid GIFs entirely for performance.",
+      "use_when": "Deciding export/upload format for product photos, section banners, or overlay graphics that affect page weight.",
+      "steps": [
+        "For standard photos (product shots, lifestyle banners) export and upload as JPEG — the source says JPEGs compress much better and yield lower file sizes than PNGs.",
+        "Use PNG only when you need transparency, e.g. decorative bubbles/graphics overlaid on a product or spanning sections where the background must show through.",
+        "Never use GIF: the source calls GIFs bad for performance and unprofessional-looking, and notes big brands avoid them.",
+        "For any looping background video, use an MP4 file set to autoplay/loop rather than an animated GIF."
+      ],
+      "caveats": [
+        "The 'never use GIF / big brands never do' claim is the presenter's opinion, stated as such; style choices may vary, but the performance point on GIF weight stands.",
+        "Switching a transparent graphic to JPEG will lose the transparency effect."
+      ],
+      "tags": [
+        "speed",
+        "image-optimization",
+        "file-format",
+        "jpeg",
+        "png",
+        "gif",
+        "creative-assets"
+      ],
+      "id": "68ca7da1a081dd4ec281d80a",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 4
+    },
+    {
+      "title": "Lazy-load below-the-fold images but never the hero image",
+      "summary": "Apply lazy loading to off-screen images to cut initial download, while forcing the main hero/in-view image to load eagerly to protect LCP.",
+      "use_when": "Setting theme image behavior or debugging slow perceived load / poor LCP on homepage banners and product grids.",
+      "steps": [
+        "Leave the main hero image (the banner at the top) loading eagerly — do not lazy-load it, because in-view images are usually the Largest Contentful Paint element and lazy-loading them worsens LCP, which the source says Google dislikes.",
+        "Apply lazy loading (loading=\"lazy\") to everything below the fold: lower section images, secondary product images, and decorative overlays.",
+        "If your theme's hero section lazy-loads its first image by default, add custom logic to exempt that first image so it renders immediately.",
+        "Verify behavior in the browser/network panel: the in-view images should download right away, with further images downloading only as the user scrolls."
+      ],
+      "caveats": [
+        "The presenter cautions that if you already have serious LCP or CLS problems, lazy-loading fixes won't be enough — those issues need separate attention.",
+        "Theme behavior differs by theme version; verify the current interface and default markup."
+      ],
+      "tags": [
+        "speed",
+        "lazy-loading",
+        "lcp",
+        "shopify",
+        "theme-code",
+        "image-optimization"
+      ],
+      "id": "51db910ccfc86af5cd3dfc88",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 4
+    },
+    {
+      "title": "Add font-display: swap to custom fonts to avoid render blocking",
+      "summary": "Find @font-face rules in theme files and add font-display: swap so text renders in a fallback font until the custom font downloads.",
+      "use_when": "Custom store fonts create render-blocking delay and you want layout to paint immediately on slow connections.",
+      "steps": [
+        "In your theme code (via the code editor), search for '@font-face' across all theme files — this is how fonts get imported.",
+        "For each @font-face rule, check whether it has a font-display: swap property; if not, add it (e.g. just below the font-family declaration).",
+        "Save and test: on a simulated slow connection (e.g. 3G in devtools) you should see a standard browser font render first, then swap to the custom font once it downloads.",
+        "Accept the brief 'font swap' flash as the trade-off: the document no longer waits for the font before rendering, removing blocking time."
+      ],
+      "caveats": [
+        "Without swap, the whole document can be blocked until the font downloads, creating significant blocking time — this is the problem being fixed.",
+        "On fast connections the swap may be invisible, so test under throttling to confirm it works."
+      ],
+      "tags": [
+        "speed",
+        "fonts",
+        "render-blocking",
+        "shopify",
+        "theme-code",
+        "font-display-swap"
+      ],
+      "id": "027af5f63b68282fe2ed6dd1",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 4
+    },
+    {
+      "title": "Add async or defer to third-party scripts after checking their purpose",
+      "summary": "Inspect scripts in theme.liquid, determine what each does, then add async or defer to non-critical ones to stop them blocking the theme.",
+      "use_when": "Third-party scripts (jQuery, libraries, or app scripts) sit in theme.liquid and load synchronously, slowing first render.",
+      "steps": [
+        "Open theme.liquid and scan for <script> tags, including ones you don't recognize (added by apps or a previous developer).",
+        "Investigate what each script does and how it works before touching it — you must know its dependency on load order.",
+        "Add 'async' to allow the script to download alongside the theme; add 'defer' to make it download only after the theme fully loads.",
+        "Save and re-test; some solutions/apps specifically cannot use async or defer because they need their scripts immediately, so keep those untouched."
+      ],
+      "caveats": [
+        "The source says most (not all) theme scripts can take async/defer — verify app requirements, since loading a required script late can break functionality (e.g. consent, checkout widgets).",
+        "Differentiating async vs defer matters for scripts that depend on DOM readiness."
+      ],
+      "tags": [
+        "speed",
+        "shopify",
+        "theme-code",
+        "async-defer",
+        "render-blocking",
+        "third-party-scripts"
+      ],
+      "id": "07b358e531fb8d469febfcd1",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 4
+    },
+    {
+      "title": "Defer all app scripts until user interaction to cut blocking time",
+      "summary": "Replace Shopify's async-load app-script loader with a snippet that injects app scripts only after the user scrolls, clicks, or otherwise interacts, improving blocking-time metrics.",
+      "use_when": "Many installed apps load their scripts immediately and inflate blocking time; you want to prioritize first paint over third-party app JS.",
+      "steps": [
+        "In devtools, inspect the <head> and find the 'async load' function that injects scripts for all installed apps — it runs concurrently with your theme.",
+        "Comment out that async-load block in the theme's content file (the source uses comment tags around it).",
+        "Paste the provided lazy-load snippet (in the video description) directly beneath the commented-out block; it defers injecting app scripts until the user starts interacting (scroll, click).",
+        "Save and re-run a speed test after a short wait so the change propagates. In the demo the score moved from roughly 40–50 to ~85 after the change and reverted when removed.",
+        "Also go to Customize > App embeds and turn off any app embeds you don't actively use before testing."
+      ],
+      "caveats": [
+        "The code is not as effective if you have high CLS or LCP — those issues take priority over blocking time.",
+        "The demo's 40–50 → ~85 jump is a single case example, not a guarantee; results depend on your app mix and theme.",
+        "Verify the current theme file name and interface before editing; theme markup changes over time."
+      ],
+      "tags": [
+        "speed",
+        "shopify",
+        "app-bloat",
+        "theme-code",
+        "blocking-time",
+        "lazy-loading"
+      ],
+      "id": "4e05290f17d5dc11ee78a0b3",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 4
+    },
+    {
+      "title": "Prune unused apps and app embeds to reduce third-party load",
+      "summary": "Uninstall apps you don't actively use and disable unused app embeds, since third-party app code on external servers is a major Shopify speed drag.",
+      "use_when": "Auditing store speed when many apps are installed, or deciding whether a low-value app is worth keeping.",
+      "steps": [
+        "List installed apps and remove any you aren't currently using — the source's rule: if unsure, uninstall; you can reinstall later.",
+        "Keep only apps that bring clear value to you or your customer, since app code lives on third-party servers and its quality can't be controlled.",
+        "Go to theme Customize > App embeds and turn off any embeds that are enabled but not needed.",
+        "Re-test speed after pruning to see the combined effect."
+      ],
+      "caveats": [
+        "Too many apps can make a store unusable, per the source — but some apps are load-bearing; confirm before removing.",
+        "App embed locations and menus may change in the current Shopify admin; verify the interface."
+      ],
+      "tags": [
+        "speed",
+        "shopify",
+        "app-bloat",
+        "audit",
+        "cleanup"
+      ],
+      "id": "d675d594782b6ed12980e06b",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 4
+    },
+    {
+      "title": "Plan a three-keyword SEO scheme per page with Google Keyword Planner",
+      "summary": "Assign one main and two secondary keywords to each page, balancing search volume, competition, and buyer intent, before editing any page content.",
+      "use_when": "Beginning store SEO work — planning which keywords the homepage, product, and collection pages should target.",
+      "steps": [
+        "Brainstorm keywords that represent your brand and products, then validate them in Google Keyword Planner (requires a Google Ads account; under Tools > Planning).",
+        "Enter a seed term (e.g. 'homemade soap'), set country/language, and read results: monthly search volume, competition, and CPC (in the demo, 'homemade soap' showed 1k–10k searches and bids of $0.20–$1.54).",
+        "Pick a sensible main keyword plus two supporting keywords per page, favoring ones with buying intent (e.g. 'homemade soap for sale') over purely informational ones (e.g. 'how to make homemade soap').",
+        "Use the 'start with website' feature on a competitor's URL to see the keywords they rank for and borrow ideas.",
+        "Cross-check volume/intent in free tools (Google Trends + Glimpse extension, or Google autocomplete predictions) and confirm in Keyword Planner before committing."
+      ],
+      "caveats": [
+        "Volume/competition/CPC figures are the source's tool examples, not universal benchmarks; niches differ.",
+        "Paid tools (Ahrefs, Semrush) give extra intent/depth but aren't required — Keyword Planner is the free baseline."
+      ],
+      "tags": [
+        "speed",
+        "seo",
+        "keyword-research",
+        "keyword-planner",
+        "search-intent",
+        "shopify"
+      ],
+      "id": "a8d01f5b91b684d87bd01609",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 4
+    },
+    {
+      "title": "Optimize the store-level SEO title and meta description",
+      "summary": "Set the main keyword in the site title and supporting keywords plus a call-to-action in the meta description so the brand's search listing earns clicks.",
+      "use_when": "Configuring the global store-level search listing (Online Store > Preferences > Search engine listing) that represents your brand in search results.",
+      "steps": [
+        "Go to Online Store > Preferences > Search engine listing.",
+        "Put the chosen main keyword in the title field and supporting keywords (plus a call to action) in the description field.",
+        "Keep the title within the character limit shown (the demo used 63 of 70 characters) and make sure the keywords genuinely represent your brand and niche — avoid too-broad or off-niche terms.",
+        "Have ChatGPT draft title/description from your keywords, then refine for brand voice and save; verify the listing reflects your store before publishing."
+      ],
+      "caveats": [
+        "The source notes many Shopify owners neglect these fields, but avoid keyword stuffing terms that don't represent the store.",
+        "Meta description length guidance here is the presenter's; search engines may rewrite snippets anyway."
+      ],
+      "tags": [
+        "speed",
+        "seo",
+        "meta-description",
+        "store-settings",
+        "shopify",
+        "brand-voice"
+      ],
+      "id": "198c9b1e585671e0037a344c",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 4
+    },
+    {
+      "title": "Rename generic product titles into keyword-rich H1 titles",
+      "summary": "Convert vague product names into descriptive, keyword-bearing titles, and test keyword candidates in Keyword Planner before finalizing.",
+      "use_when": "Product titles are vague (e.g. a cute name that says nothing to search engines) and need to become the page's explanatory H1.",
+      "steps": [
+        "On a product page, the product title is the page's main H1 and explains to Google what the page is about; a name like 'sweet honey bomb' tells Google nothing — reinforce this by rewriting it.",
+        "Copy the product's spec/description and ask ChatGPT for high-volume keyword candidates for that kind of product.",
+        "Validate the promising candidates in Keyword Planner, keeping ones with good volume; discard the weak ones.",
+        "Feed the validated keywords back to ChatGPT and have it generate several title options containing at least the main keyword; pick/tweak the best.",
+        "Paste the new title into the product, save, and adjust theme title font size in the customizer if the longer title looks oversized."
+      ],
+      "caveats": [
+        "Ensure the title still accurately represents the product and the brand; don't force keywords that misdescribe the item.",
+        "Keyword volumes are tool figures and change over time/region."
+      ],
+      "tags": [
+        "speed",
+        "seo",
+        "product-titles",
+        "h1",
+        "keyword-research",
+        "shopify",
+        "product-page"
+      ],
+      "id": "1ba6eb3b6a8f670498aac042",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 4
+    },
+    {
+      "title": "Write substantive 100–400 word product and collection descriptions",
+      "summary": "Replace bare spec dumps with keyword-inclusive, human-sounding descriptions of at least 100 words (300–400 ideal) to give search engines crawlable content.",
+      "use_when": "Product pages or collection pages have thin descriptions (just specs, or none) and need indexable, keyword-rich copy.",
+      "steps": [
+        "Gather the product's specs/attributes and use ChatGPT to generate a description based on them, instructing it to include keywords found in Keyword Planner.",
+        "Ensure the text sounds human and doesn't read as obviously AI-generated; format with bold, images, etc.",
+        "Meet the length target: the source says at least 100 words, and 300–400 is ideal — copying only specs is a common mistake.",
+        "For collection pages, add a description (100–400 words) with the right keywords; if you don't want it pushing products down, move it below the product grid.",
+        "Save. Collection descriptions matter for ranking even when placed lower on the page."
+      ],
+      "caveats": [
+        "The 100-word minimum and 300–400 ideal are the presenter's guidance, not an official ranking rule.",
+        "Long keyword-stuffed copy can look dull without images — balance readability against keyword coverage."
+      ],
+      "tags": [
+        "speed",
+        "seo",
+        "product-description",
+        "collection-page",
+        "content",
+        "keyword-research"
+      ],
+      "id": "b5556041696c2b1688768010",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 4
+    },
+    {
+      "title": "Write alt text and rename image files for SEO and accessibility",
+      "summary": "Add descriptive alt text and human-readable file names using target keywords and image angle to every product and section image.",
+      "use_when": "Product images and site/section images have gibberish file names or no alt text and you want better indexing and accessibility.",
+      "steps": [
+        "On a product image, write alt text that combines the target keyword, the actual product, key attributes, and the angle (e.g. '[keyword] bath bomb purple frontal').",
+        "Rename the underlying file to match that descriptive alt text instead of a numeric/gibberish name.",
+        "Repeat for all images in the product media gallery.",
+        "For section images, go to Content > Files, open each media item, add descriptive alt text, and rename the file — most library files will be gibberish by default.",
+        "Verify in the product listing (inspect the image) that the URL now reflects the descriptive name."
+      ],
+      "caveats": [
+        "The source notes this also aids visually impaired users and that Google rewards the practice.",
+        "Doing this manually is impractical for very large catalogs — the source points to an automation app instead."
+      ],
+      "tags": [
+        "speed",
+        "seo",
+        "alt-text",
+        "image-optimization",
+        "accessibility",
+        "shopify"
+      ],
+      "id": "66c68817418b85f70ec81ba7",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 4
+    },
+    {
+      "title": "Set SEO-friendly URL handles with automatic redirects",
+      "summary": "Rewrite product and collection handles into keyword-rich slugs and keep the automatic redirect checked so old links don't 404.",
+      "use_when": "Product or collection URLs are vague or non-descriptive and you're finalizing on-page SEO for those pages.",
+      "steps": [
+        "In the product/collection's search engine listing section, replace the URL handle with the title (drop grammar/special characters — handles don't need them).",
+        "Keep the automatic redirect option checked so the old URL forwards to the new one.",
+        "Save; bookmarkers of the old link will be redirected instead of hitting a 404, protecting conversions.",
+        "Apply the same handle cleanup to collections, whose handles are often wrong or generic."
+      ],
+      "caveats": [
+        "Only unchecked redirects cause lost traffic/404s — the source stresses leaving the redirect enabled whenever you change a handle.",
+        "Changing handles has SEO implications; keep them stable once set."
+      ],
+      "tags": [
+        "speed",
+        "seo",
+        "url-handle",
+        "redirects",
+        "product-page",
+        "collection-page",
+        "shopify"
+      ],
+      "id": "0894dbc180a63437a8beeefc",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 4
+    },
+    {
+      "title": "Ensure each page has exactly one H1 tag",
+      "summary": "Check that every page (home, product, collection) has a single H1, since multiple H1s confuse Google's understanding of the page.",
+      "use_when": "Auditing on-page SEO structure, especially after adding custom sections a developer built that may have introduced extra H1s.",
+      "steps": [
+        "Inspect the page in devtools to confirm which element is the H1: on Shopify Dawn, the homepage H1 is the logo, a collection page's H1 is the collection title, and a product page's H1 is the product title.",
+        "Scan custom sections for stray H1 tags — a developer-built or DIY section might use an H1 that competes with the real page H1.",
+        "If two H1s describe different things, Google can't tell which is authoritative; demote the extra ones to H2/H3.",
+        "Enforce one H1 per page across product, collection, and content pages."
+      ],
+      "caveats": [
+        "Confirmed for the Dawn theme by the presenter; other themes may structure H1s differently, so inspect rather than assume.",
+        "Don't rely on visual size — the H1 may be the logo or a heading you didn't expect."
+      ],
+      "tags": [
+        "speed",
+        "seo",
+        "h1",
+        "on-page-seo",
+        "theme-code",
+        "shopify"
+      ],
+      "id": "cdf20f6157c34dd079782f4b",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 4
+    },
+    {
+      "title": "Write 160-character meta descriptions for click-through",
+      "summary": "Craft per-page meta descriptions around ~160 characters focused on enticing clicks rather than keyword density.",
+      "use_when": "Finalizing a product or blog post's search engine listing meta description.",
+      "steps": [
+        "At the bottom of the product/page editor, open the search engine listing and view the meta description (the product page can show an excerpt automatically).",
+        "If the auto-excerpt reads well, you can leave it — especially for large catalogs where manual edits are impractical.",
+        "Otherwise, take the product description and ask ChatGPT for a ~160-character meta description, then paste and save.",
+        "Prioritize persuasion over keyword density here: the meta description's job is to make searchers click, more so than the page title/body copy."
+      ],
+      "caveats": [
+        "The source explicitly says you don't need keywords as heavily here as in the title/description — focus on click appeal.",
+        "Search engines may override the description; the ~160-character figure is a guideline."
+      ],
+      "tags": [
+        "speed",
+        "seo",
+        "meta-description",
+        "ctr",
+        "product-page",
+        "shopify"
+      ],
+      "id": "bc59ae3525fa02b1354ecdef",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 4
+    },
+    {
+      "title": "Use internal linking to speed up crawling and discovery",
+      "summary": "Link products to blog posts and other pages within content so Googlebot discovers and indexes pages faster.",
+      "use_when": "Building blog content or benefit/education pages and planning how they connect to product and collection pages.",
+      "steps": [
+        "Within blog posts and content pages, add links to the relevant products (e.g. a page describing a product's benefits should link to that product).",
+        "Add links wherever you legitimately can across the site — from pages to products, blog posts to collections, etc.",
+        "This helps Google discover more pages faster, because crawling one page reveals the next, which then gets crawled too."
+      ],
+      "caveats": [
+        "Link contextually and relevantly; the source frames it as helping discovery, not as a trick for arbitrary link volume.",
+        "Blog posts each have their own title/content/search-listing fields that should also be optimized."
+      ],
+      "tags": [
+        "speed",
+        "seo",
+        "internal-linking",
+        "crawlability",
+        "content",
+        "blog",
+        "shopify"
+      ],
+      "id": "512774f2b241d3c8b55412f5",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 4
+    },
+    {
+      "title": "Verify mobile friendliness before treating SEO as complete",
+      "summary": "Preview the store as a mobile device to confirm layout, text, and images render correctly, since Google downranks non-mobile-friendly stores.",
+      "use_when": "Pre-launch or SEO audit checklist step to confirm mobile rendering, which Google factors into authority/ranking.",
+      "steps": [
+        "In Chrome, right-click > Inspect, then toggle the device toolbar and pick a device (e.g. iPhone 12 Pro) to preview the store.",
+        "In Safari, use Develop > Enter Responsive Design to preview mobile rendering.",
+        "Check that text stays within the viewport, images aren't shrunken/distorted, and everything is reachable.",
+        "If it all renders well, you pass the mobile-friendliness check and can move to the next step (speed)."
+      ],
+      "caveats": [
+        "Most modern Shopify themes are mobile-friendly out of the box, per the source, but verifying is still worthwhile.",
+        "This is a visual/devtools check, not a formal Lighthouse category."
+      ],
+      "tags": [
+        "speed",
+        "seo",
+        "mobile-friendly",
+        "responsive-design",
+        "audit",
+        "shopify"
+      ],
+      "id": "58bc1e28be2759c3fecbf441",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 4
+    },
+    {
+      "title": "Use PageSpeed Insights for a baseline and install speed snippets",
+      "summary": "Run Google PageSpeed Insights to gauge loading speed, understand its 28-day rolling data, and apply snippets for incremental gains.",
+      "use_when": "Establishing a speed baseline or checking whether recent changes improved performance.",
+      "steps": [
+        "Enter your URL on Google's PageSpeed Insights and click Analyze to get a page score plus field/historical data.",
+        "Note that the historical graphs reflect the past 28 days, so a fix done today won't fully show in those graphs for ~28 days.",
+        "Use the results to prioritize: loading speed is complex, and you need to fix most flagged issues to rank well.",
+        "Apply speed-boost snippets (the source offers them) that the presenter claims can boost store speed by ~10–20%, per his own stores."
+      ],
+      "caveats": [
+        "The 10–20% snippet boost is the presenter's claim, not a guaranteed result.",
+        "Field data lagging 28 days means you can't judge a fix from the field graphs immediately — use lab results in the meantime."
+      ],
+      "tags": [
+        "speed",
+        "pagespeed-insights",
+        "measurement",
+        "shopify",
+        "audit",
+        "loading-speed"
+      ],
+      "id": "0d2d3621b19dee784910a53d",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 4
+    },
+    {
+      "title": "Add rich snippets to earn larger search listings",
+      "summary": "Implement structured data (product, FAQ, article snippets) so listings show ratings, prices, availability, or FAQ answers and draw more clicks.",
+      "use_when": "Search result listings look plain and you want a bigger, richer presence (FAQ dropdowns, product ratings/prices) under your link.",
+      "steps": [
+        "Determine the snippet type that fits a page: FAQ/Q&A for blog posts answering a question, product snippets for products, article snippets for posts.",
+        "Add the corresponding structured data — this requires custom code or an app (the source links a guide and an app that does it).",
+        "For product snippets, include description, rating, number of reviews, price, and availability so the listing shows these visually.",
+        "Once rich snippets are live, your listing can occupy more vertical space (even multiple products), attracting more clicks than plain competitors."
+      ],
+      "caveats": [
+        "Requires custom code or an app; markup must match real page data (accurate prices/ratings) to be eligible.",
+        "The source frames click advantage as the goal; it isn't a guarantee of ranking gains."
+      ],
+      "tags": [
+        "speed",
+        "seo",
+        "rich-snippets",
+        "structured-data",
+        "faq",
+        "product-page",
+        "shopify"
+      ],
+      "id": "91fbb9ca7dd1e780c8bc732c",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 4
+    },
+    {
+      "title": "Publish keyword-researched content at least twice a month",
+      "summary": "Maintain a content cadence (2–4 posts/month) on topics close to your products, researched in Keyword Planner, to feed Google fresh relevant content.",
+      "use_when": "Planning an ongoing SEO content strategy to keep the store's pages fresh and discoverable.",
+      "steps": [
+        "Plan at least two posts a month, ideally four (one per week).",
+        "Research post topics using Keyword Planner and write about topics close to what you sell and that your customers want to learn about.",
+        "For each post, set a title containing a main and secondary keyword, write valuable description/body text containing the keywords, and complete the search engine listing with an enticing ~160-character meta description.",
+        "Give the post a URL handle containing the title's keywords so Google understands the page.",
+        "Optionally connect the post with internal links to relevant products."
+      ],
+      "caveats": [
+        "The 2–4 posts/month cadence is the presenter's recommendation, not a rule Google enforces.",
+        "Content still needs to be genuinely useful and relevant to the niche."
+      ],
+      "tags": [
+        "speed",
+        "seo",
+        "content",
+        "blog",
+        "keyword-research",
+        "publishing-cadence",
+        "shopify"
+      ],
+      "id": "73c6764d7c45129a4e1ffc73",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 4
+    },
+    {
+      "title": "Earn backlinks from authoritative sites and partners",
+      "summary": "Get featured on high-authority websites, influencer posts, or partner blogs linking to your store to inherit credibility and rank higher.",
+      "use_when": "Building off-page SEO and authority for a store competing for higher search placement.",
+      "steps": [
+        "Identify authoritative websites, influencers, or friendly partners who can mention your store.",
+        "Arrange for them to write about your store and include a link to it.",
+        "Paying attention to partner authority matters: links from authoritative sites let your store gain some of that authority, increasing trustworthiness and ranking chances."
+      ],
+      "caveats": [
+        "The source frames backlinks as building trust/authority; link quality/authority matters more than volume.",
+        "No specific quantity benchmark is given."
+      ],
+      "tags": [
+        "speed",
+        "seo",
+        "backlinks",
+        "authority",
+        "off-page-seo",
+        "shopify"
+      ],
+      "id": "d0b33b41e18dc6a71ae4ef5a",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 4
+    },
+    {
+      "title": "Set a primary domain and submit your sitemap to Search Console",
+      "summary": "Configure one primary domain, then submit the Shopify sitemap in Google Search Console so Google crawls and indexes the store.",
+      "use_when": "After on-page SEO is complete, kickstarting Google crawling and indexing of the store.",
+      "steps": [
+        "In Settings > Domains, ensure a single primary domain is set (a premium/custom domain, not the myshopify one) so Google knows which URLs to crawl — do this before submitting the sitemap.",
+        "Load your sitemap by appending /sitemap.xml to your store URL and copy that URL.",
+        "Create/link your property in Google Search Console, then go to Indexing > Sitemaps and submit the sitemap URL.",
+        "Google will begin crawling and indexing the store's pages."
+      ],
+      "caveats": [
+        "If you set the primary domain after submitting, you can submit a new sitemap; getting the primary domain right first avoids confusion.",
+        "The exact Search Console menus can change; verify the current interface."
+      ],
+      "tags": [
+        "speed",
+        "seo",
+        "sitemap",
+        "search-console",
+        "indexing",
+        "primary-domain",
+        "shopify"
+      ],
+      "id": "e42e8ace0dab5f7b6ab11731",
+      "source_id": "1sDLOi4dG3ZYPrmTdOL6BbCrjMwr-hLrw",
+      "source_sha256": "e18802250116251ff2e5499124227716fce13dbbacfe202f0b63fa2c0c5c5cd1",
+      "source_name": "Page speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 4
+    }
+  ],
+  "request_id": "fdd0f9c62899c3364749479d98c159249b41337623288dfb576b796ffd22238d",
+  "ecommerce_scope_version": 1
+}

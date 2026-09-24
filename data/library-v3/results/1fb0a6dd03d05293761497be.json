@@ -1,0 +1,378 @@
+{
+  "cards": [
+    {
+      "title": "Defend storefront links against tab nabbing (reverse tabnabbing)",
+      "summary": "Any outbound link that opens in a new tab can let the destination site navigate your customer's original store tab to a fake page, so add rel=noopener to external links.",
+      "use_when": "Auditing or building outbound links on a storefront, PDP, blog, help center, or email/chat share flow that opens partner, review, ad, or supplier links in a new tab.",
+      "steps": [
+        "Understand the vulnerability condition: if a link uses target=\"_blank\", the newly opened page receives window.opener pointing back at your store tab and can navigate that tab to an attacker-controlled clone (e.g. a fake login). This is a demonstrated classroom result, not a live incident report.",
+        "As the linking site, add rel=\"noopener\" to every external link that opens a new tab. The source frames this as the standard defense on the linking site.",
+        "In a component-based storefront, add the attribute once in the shared link component so every rendered link inherits it, rather than hunting links manually.",
+        "Confirm your framework versions and current browser behavior before assuming a default; the source notes browser vendors have discussed changing defaults, so verify current behavior rather than assuming target=_blank is safe or unsafe today.",
+        "Do not rely on CAPTCHA, HTTPS, or a WAF for this class of issue; those controls address different problems. HTTPS alone never guarantees the destination is trustworthy."
+      ],
+      "caveats": [
+        "The source presents this as an unsettled area; browser defaults and mitigations (and a proposed isolation header) may change, so verify against current browser documentation.",
+        "This card is about links your store produces outward, not about fixing a third party's site."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "storefront-security",
+        "browser-security",
+        "link-integrity",
+        "third-party-integrations",
+        "csrf"
+      ],
+      "id": "d749fee9fe72804830c44e54",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 11
+    },
+    {
+      "title": "Use SameSite cookies to block cross-site state-changing requests",
+      "summary": "SameSite cookie attributes stop another origin from triggering requests that carry a logged-in customer's cookies, defending against cross-site request forgery.",
+      "use_when": "Configuring session cookies for customer login, cart, or admin accounts, or reviewing whether an authenticated action (e.g. cart change, address update, admin mutation) can be triggered from a third-party page.",
+      "steps": [
+        "Recognize the CSRF conflict: an attacker page can point an image, form action, or similar request at your store and the browser may attach the victim's cookies to it. The source notes some large providers have historically appeared vulnerable to this pattern.",
+        "State-changing operations should use POST (or equivalent), not GET-through-an-<img>; a GET URL that logs a user out or mutates state is inherently abusable.",
+        "Set SameSite on session/auth cookies. Strict sends cookies only on top-level navigations from your own site and withholds them on cross-site requests; Lax sends them for normal navigations but blocks them from cross-site subrequests. Treat Lax/Strict as the source's two documented modes and choose per flow.",
+        "Test the tradeoff: Strict can break legitimate cross-site return flows (e.g. returning from a payment or identity provider). Lax is the source's practical compromise for flows that need a normal navigation with cookies.",
+        "Independently verify your CSRF token strategy; SameSite reduces but does not by itself guarantee protection for every browser or legacy flow."
+      ],
+      "caveats": [
+        "The source explicitly says it is uncertain why some major sites appeared to remain vulnerable, so do not treat SameSite as a proven universal fix.",
+        "Strict can break payment/SSO return journeys; validate your checkout flow before switching."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "csrf",
+        "checkout-security",
+        "customer-accounts",
+        "session-management",
+        "cookies"
+      ],
+      "id": "c2bad816cf64735e1ba0958e",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 11
+    },
+    {
+      "title": "Recognize IDN homograph attacks against lookalike domains",
+      "summary": "Unicode look-alike characters let an attacker register a domain that renders identically to a brand domain, so verify the true host and prefer password managers on high-risk flows.",
+      "use_when": "Training support teams, reviewing brand-domain monitoring, or designing login and admin flows where a customer or staff member might be steered to a lookalike domain via a link in a chat, ad, or email.",
+      "steps": [
+        "Vulnerability condition: a hostname can be built from non-ASCII Unicode letters (e.g. Cyrillic) that are visually identical to Latin letters, so the rendered URL looks like the real brand while the bytes differ. This is a demonstrated condition, not a claim about your store.",
+        "Know browser rendering heuristics: browsers may show a domain in 'punycode' (the xn-- form) instead of the Unicode characters when the domain mixes scripts or contains look-alike characters against a non-international TLD. The exact rule differs by browser and version, so verify current behavior rather than trusting a screenshot.",
+        "Note the known weakness: if the whole domain is composed of one non-Latin script, browsers have historically displayed it as normal text and the look-alike can pass unchecked. The source says some browsers still had not fixed this at the time of the recording.",
+        "Practical controls: use a password manager for staff/admin accounts so credentials are never auto-filled on an unrecognized origin; use hardware security keys where possible; keep an eye on brand lookalike registrations.",
+        "Communicate simply: teach staff to read the registrable domain (the part just before the first single slash, roughly the last two dot-separated labels), not the full URL from the left, because attacker-controlled subdomains are prepended."
+      ],
+      "caveats": [
+        "Browser URL rendering changes over time; the 2017-era examples may not match current interfaces.",
+        "The source notes HTTPS padlock and extended-validation UI do not reliably signal trust and historically did not prevent this attack."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "phishing",
+        "domain-security",
+        "customer-accounts",
+        "brand-protection",
+        "password-managers"
+      ],
+      "id": "4f89f80a0b9a67ef1c73cc75",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 11
+    },
+    {
+      "title": "Be skeptical of HTTPS padlock and EV badges as trust signals",
+      "summary": "A padlock proves encrypted transport to some server, not that the operator is legitimate, and attackers can obtain certificates freely.",
+      "use_when": "Deciding which trust indicators to display on a storefront or checkout, or explaining to customers and staff why a padlock is not a legitimacy guarantee.",
+      "steps": [
+        "Understand the distinction: a secure connection means you are talking to the server named in the certificate over encryption. It does not establish that the operator is who they claim.",
+        "Recognize the incentive: certificate authorities are automated and commercial, and free issuance (e.g. the source's mention of Let's Encrypt era behavior) means anyone controlling a domain can obtain a certificate with no human review. Treat certificate issuance as evidence of domain control only.",
+        "For storefront design: do not present a padlock or 'secure' badge as proof of legitimacy in your own UI; that reflects your site, and the customer's browser UI is a separate, attacker-spoofable surface.",
+        "Keep real controls on the sensitive paths instead: password managers, hardware security keys, and verifying the registrable domain.",
+        "Do not claim HTTPS, hashing, CAPTCHA, a WAF, or prompt filtering alone guarantees security in policy or marketing copy."
+      ],
+      "caveats": [
+        "Certificate issuance policies and browser UI (e.g. EV treatment) change; verify current practice before citing specifics.",
+        "This covers why padlocks are insufficient, not how to configure TLS."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "tls",
+        "phishing",
+        "trust-signals",
+        "storefront-security",
+        "checkout-security"
+      ],
+      "id": "08d274b8b745515337994899",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 11
+    },
+    {
+      "title": "Defend against clickjacking that overlays fake trusted UI",
+      "summary": "Attackers can hide or overlay interfaces so store actions (buttons, consent, downloads) get clicked under a misleading visual, and the durable defense is framing/isolation control on your own pages.",
+      "use_when": "Reviewing whether your checkout, login, admin, or consent pages can be embedded by third parties, and hardening framing headers for sensitive store surfaces.",
+      "steps": [
+        "Vulnerability condition: an attacker page embeds or overlays your interface under a decoy visual so the user clicks the real hidden control (the source calls this clickjacking and notes cookie-drag variants). The demonstration is a classroom result; treat it as a vulnerability pattern.",
+        "As the framed site, send an anti-framing header (the source references X-Frame-Options) on sensitive pages so browsers refuse to render them in third-party frames.",
+        "Understand the relevant cookie-mode distinction the source notes: with Strict SameSite, a cross-site request that relies on navigation may not carry cookies, which reduces some overlay utility, but this is a partial layer, not a complete frame defense.",
+        "Test in an owned staging environment whether your checkout, login, and admin pages can be embedded from a different origin you control; document the result rather than assuming.",
+        "Combine with password managers and hardware keys for authentication so a mis-clicked overlay cannot yield reusable credentials."
+      ],
+      "caveats": [
+        "The source's demonstrations are historical and some attacks were later blocked by browser changes; verify current browser support for framing headers.",
+        "Frame headers alone do not stop all overlay tricks on other surfaces."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "clickjacking",
+        "storefront-security",
+        "checkout-security",
+        "frame-options",
+        "browser-security"
+      ],
+      "id": "63b312e58f7d68e0288b757a",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 11
+    },
+    {
+      "title": "Manipulated browser history and UI-suppression tricks are perception attacks",
+      "summary": "Attackers can add embarrassing or misleading entries to a visitor's history and hide the browser UI on scroll, so trust decisions should not rest on ambient browser chrome.",
+      "use_when": "Assessing how a visitor could be convinced a phishing page is a trusted store (e.g. a fake bank or brand login reached from an ad, chat link, or QR code) and choosing defenses that do not rely on browser chrome.",
+      "steps": [
+        "Vulnerability condition: a page can cause top-level navigations that appear in the visitor's history (the source describes opening a popup to a search and navigating a window it holds a reference to). Frames do not add history entries because they are not top-level navigations.",
+        "Recognize the UI-hiding variant: the source shows a page embedding an inner scroll region so the browser hides and never restores its own chrome, letting the page draw a fake URL bar. This is a demonstrated technique, not a claim about current browsers.",
+        "Treat all of this as an attack on human perception, per the source: there is often nothing wrong with the code being attacked, only with the UI cues people rely on.",
+        "Better defenses: password managers (which bind credentials to a known origin and will not autofill on an unfamiliar one) and hardware security keys (which will not release the secret to the wrong site).",
+        "Assume a segment of users will end up on a sketchy page and layer in reputation warnings (safe-browsing-style) rather than expecting users to read the URL bar accurately."
+      ],
+      "caveats": [
+        "These specific demonstrations are historical and reported as fixed or dependent on access to another site's window reference; verify current browser behavior.",
+        "The source explicitly says there is no easy way to defend a site against a picture-in-picture fake-browser attack."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "phishing",
+        "browser-security",
+        "customer-accounts",
+        "password-managers",
+        "hardware-keys"
+      ],
+      "id": "c33f7b739b90120af6adfba8",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 11
+    },
+    {
+      "title": "Verify what your URL bar actually shows before trusting subdomains",
+      "summary": "Browsers render long attacker-controlled subdomains inconsistently, and shrinking the window can hide which domain is real, so teach customers and staff the registrable-domain rule.",
+      "use_when": "Writing security education for staff or customers, and evaluating whether a URL in a support ticket, ad, or partner link is a real brand domain versus a lookalike subdomain.",
+      "steps": [
+        "Vulnerability condition: subdomains are free to create, so an attacker can register any domain they control and prefix it with a brand name (e.g. brand.com.webapps.example-attacker.com). The registrable domain is the part before the first single slash, roughly the last two dot-separated labels.",
+        "Know that browsers differ: the source observed Chrome and Safari rendering the whole hostname in black and greying only the path, while Firefox greyed out the subdomain to highlight the registrable domain. Verify the current behavior in your target browsers.",
+        "Test the shrinking case: when the window narrows, browsers may show only part of the hostname, and the source shows a lookalike subdomain can appear safe ('looks like PayPal'). Do not trust a truncated URL bar.",
+        "Operationalize for ecommerce: in support and staff training, tell people to locate the first single slash and read left to the registrable domain rather than reading the URL left to right.",
+        "Additionally, monitor for and file takedowns of brand-prefixed lookalike subdomains and typo-squatted domains, and use password managers/hardware keys on seller and admin logins."
+      ],
+      "caveats": [
+        "URL bar rendering is browser-specific and changes over time; treat the described behaviors as observations at the time of recording.",
+        "The registrar/domain-attribution rule is a heuristic for reading URLs, not a security control."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "phishing",
+        "domain-security",
+        "brand-protection",
+        "customer-accounts",
+        "staff-training"
+      ],
+      "id": "8b968c78d0192b7d56d88d6f",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 11
+    },
+    {
+      "title": "Treat browser UI/API features as a security-vs-capability tradeoff with fingerprinting cost",
+      "summary": "Powerful browser APIs enable richer shops but expand attack surface and fingerprinting vectors, and the cost/benefit is judged by how often disabling a feature breaks real sites versus how often it is implicated in exploits.",
+      "use_when": "Deciding whether to add a browser-capability-dependent storefront or checkout feature (device APIs, media capture, sandbox/iframe isolation requirements) and judging the customer-risk tradeoff.",
+      "steps": [
+        "Apply the source's rough usefulness metric: if a feature were disabled, how many real sites break? Widely used capabilities (e.g. video/voice calling in the source's example) carry high benefit; rarely used ones (the source's example: vibration) are harder to justify.",
+        "Apply the rough cost metric: how much code does the feature add and how often has it been implicated in browser vulnerabilities? More code and more exploit history mean higher risk.",
+        "For an ecommerce feature decision, ask whether the capability is on a customer-trust-critical path (checkout, login, payment, account) or a low-stakes path; be more conservative on trust-critical paths.",
+        "Prefer build defaults that do the right thing rather than a prompt for every capability. The source cites research that users click through prompts heavily (fewer than a quarter of Chrome malware/phishing warnings and a third of Firefox SSL warnings were clicked through, versus about 70% on older, poorly designed Chrome SSL warnings), so prompt design and frequency matter.",
+        "Do not rely on security prompts as your only control; combine defaults with isolation and authentication controls. Note the source's counterintuitive finding that early-adopter/beta users clicked through phishing warnings at higher rates than average."
+      ],
+      "caveats": [
+        "The usefulness metric is explicitly described as rough; it is a judgment aid, not a benchmark you can cite as fact.",
+        "The prompt click-through figures are from a 2010-era research context and should be treated as historical, not current browser behavior."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "browser-security",
+        "fingerprinting",
+        "product-decisions",
+        "experiment-design",
+        "measurement"
+      ],
+      "id": "e21422b5fbbcd48b822429d9",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 11
+    },
+    {
+      "title": "Check URLs against a safe-browsing list without leaking full browsing history",
+      "summary": "Safe-browsing style protection queries a reputation list using hash prefixes downloaded locally, so a store or browser can warn on known-bad URLs without sending each full URL to the provider.",
+      "use_when": "Evaluating or implementing URL reputation/abuse-warning tooling for a storefront, link shortener, or marketplace, and deciding between real-time URL submission and a downloaded prefix list.",
+      "steps": [
+        "Recognize the naive approach and its two costs: sending each URL in the clear to the reputation service leaks the full request (and by extension browsing behavior) and adds latency because the check must complete before loading.",
+        "Alternative: download a large list of suspicious URLs locally to avoid latency, but accept that the list is constantly changing and enormous. The source frames both as workable but inferior.",
+        "A better model: the provider hashes suspicious URLs, keeps a list of hash prefixes, and distributes only the prefixes to clients. The client hashes each URL it inspects the same way, takes the prefix, and checks membership locally.",
+        "Consequence of prefix matching: a match means the URL may be unsafe, not that it definitely is; treat a hit as a candidate for a fuller check rather than a verdict.",
+        "Apply the principle to ecommerce tooling: prefer local/prefix-based reputation checks over submitting every customer or staff destination URL to a third party, and log which tool used which data source."
+      ],
+      "caveats": [
+        "The source describes the protocol at a high level and defers detailed mechanics to a later session; verify current provider documentation before implementing.",
+        "Hashing obscures the URL but prefix lists are an approximation and produce false positives."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "safe-browsing",
+        "reputation",
+        "privacy",
+        "integrations",
+        "measurement"
+      ],
+      "id": "03536d2e00c04e66a33006c0",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 11
+    },
+    {
+      "title": "Design browser security around an assumed-sketchy-site layer",
+      "summary": "Rather than handicapping the browser with endless prompts, assume users will reach malicious sites and add a separate reputation/warning layer that protects them there.",
+      "use_when": "Deciding how much friction to add to storefront security prompts (login, payment, download, permission requests) and where to invest instead.",
+      "steps": [
+        "Adopt the source's framing: UI security is an attack on human perception, so plan for the case where the visitor is on a sketchy page rather than trying to prevent every such visit through warnings.",
+        "Keep tasteful, well-worded prompts in specific high-value places where research shows they work, per the source's reading of the prompt-effectiveness paper; avoid showing prompts constantly.",
+        "Add an independent protective layer (browser/store warnings, password managers, hardware keys) that works even when the page's own UI is misleading.",
+        "For your own store, keep prompts on sensitive flows specific and actionable, and test whether a prompt is understood rather than assuming more warnings equals more safety.",
+        "Recognize the underlying tension the source describes between the browser as a simple document viewer and as a powerful app platform; this tradeoff does not go away and should be acknowledged rather than claimed solved."
+      ],
+      "caveats": [
+        "Presented as an ongoing design tension with no settled solution; do not present prompt counts or warning text as a guaranteed control.",
+        "Click-through statistics cited are historical research figures, not current benchmarks."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "phishing",
+        "prompt-design",
+        "customer-accounts",
+        "conversion-optimization",
+        "browser-security"
+      ],
+      "id": "22aa8a3d95a7d5b40483fc87",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 11
+    },
+    {
+      "title": "Scope untrusted content and tool output as data, not authority",
+      "summary": "Pages, documents, and agent/tool output can be attacker-influenced and must not be treated as authorization for privileged store actions.",
+      "use_when": "Designing or reviewing ecommerce automation (order bots, support agents, listing tools, integrations) that reads external content or tool output and can take store actions.",
+      "steps": [
+        "Treat any retrieved document, web page, email, review, or tool response as untrusted data. Do not let it authorize actions such as refunds, price changes, credential changes, or fulfillment edits.",
+        "Bind permissions to the brand and the task: an agent that manages listings should not hold payment or customer-account credentials, even if a retrieved document asks it to act.",
+        "Require explicit human approval for irreversible or financially material actions, and log which actor, tool, and source triggered each action.",
+        "Keep secrets out of retrieved content and tool output where possible; store credentials in a scoped secret store and reference them by role rather than pasting them into prompts or configs.",
+        "Rely on authentication/authorization, encryption, hashing, and signing as distinct controls: authentication proves the caller, authorization scopes what they may do, and no reputation list or prompt filter substitutes for either."
+      ],
+      "caveats": [
+        "No single control (HTTPS, hashing, CAPTCHA, WAF, prompt filtering) guarantees security; layer controls and verify against current platform documentation.",
+        "This card transfers the source's phishing/untrusted-content principle to agent tooling; the source itself did not test agent permission models."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "agent-security",
+        "authorization",
+        "secrets-management",
+        "logging",
+        "integrations"
+      ],
+      "id": "5cbb9c84b9fdf3cb5e76b3f3",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 11
+    },
+    {
+      "title": "Convert an embarrassing-history or fake-UI trick into a customer-protection test",
+      "summary": "Use the source's demonstrated browser-abuse techniques as vulnerability conditions to test your own store's exposure rather than as offensive recipes.",
+      "use_when": "Running a defensive review of storefront pages, popups, and iframes that could be repurposed by an attacker, or training support staff to recognize manipulated browser UI.",
+      "steps": [
+        "Frame each technique as a condition to check on owned systems: can a third-party page cause a top-level navigation from my store, can my checkout be framed, can an overlay hide my own controls, and does my session cookie ride along on cross-site requests.",
+        "Test only in owned staging environments and with accounts you control; do not attempt these techniques against third-party sites.",
+        "Record findings as concrete controls to add (rel=noopener on outbound links, anti-framing headers on sensitive pages, SameSite cookie mode, POST for state changes) rather than as payloads.",
+        "For each control added, note the residual risk: frame headers do not stop every overlay, and SameSite strict can break legitimate cross-site returns such as payment provider redirects.",
+        "Re-verify after browser or framework upgrades, since the source's own examples were fixed by vendors over time."
+      ],
+      "caveats": [
+        "Omit or avoid reproducing payload recipes; this card deliberately describes conditions and defenses only.",
+        "The source's demonstrations are classroom and historical; do not present them as current live exploitable behavior without verification."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "security-testing",
+        "storefront-security",
+        "checkout-security",
+        "browser-security",
+        "policies"
+      ],
+      "id": "bf8e4372b7043ffe0aa277f7",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 11
+    }
+  ],
+  "request_id": "783c6cd8d75ce92c029e34f8741f6da9ee6eea2e3b05419476ad293e06ef7cf3",
+  "ecommerce_scope_version": 1
+}

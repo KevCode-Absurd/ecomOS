@@ -1,0 +1,1054 @@
+{
+  "summary": {
+    "case_index": 20,
+    "provider": "deepseek",
+    "effort": "high",
+    "request_id": "7710b3a2f9a6bcdb57b79dc909be870e101655051337041d4eace8cb7d44b1b0",
+    "complete": true,
+    "completion_limit": 32768,
+    "units": 16,
+    "held": 0,
+    "errors": [],
+    "more_units": true,
+    "cost": 0.0249903
+  },
+  "errors": [],
+  "candidates": [
+    {
+      "id": "01221d01635e191ef56896cc159e89864fbdf5a470c495cb139c37be4eacbdad",
+      "unit": {
+        "id": "qc_agent",
+        "kind": "action",
+        "title": "Use a QC agent when using a manufacturer",
+        "claim": {
+          "text": "The source highly recommends a QC agent to check the product the first time a manufacturer is used, and even on the second or third time.",
+          "quote": "I highly highly recommend that every single uh first time that you use a manufacturer even the second or third time that you're using a QC agent to go check the product"
+        },
+        "action": {
+          "text": "Get a QC agent to check the product.",
+          "quote": "I highly recommend first time you're using it get a QC agent"
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "It is the first time using the manufacturer.",
+              "quote": "first time that you use a manufacturer"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [
+          {
+            "text": "A QC agency goes to the factory, uses the Tech pack as reference, weighs and measures the product, and checks the panone color.",
+            "quote": "a QC is where a quality control agency will actually go to the factory they'll use your Tech pack again as a reference and they'll weigh the product they'll measure the product they'll do all kinds of things they'll check the panone color"
+          }
+        ],
+        "unknowns": [
+          "No QC acceptance thresholds or pass/fail criteria are stated."
+        ],
+        "relations": [
+          {
+            "kind": "alternative_to",
+            "target": "alibaba_qc"
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1gkDP7vVRMnDRuuoJDvnTNfumOz3vN926",
+          "source_sha256": "43f7a73810c8cbf37b510fefc54abc2c67a2550db64bfae2e484d6f29f242631",
+          "locator": "body:14/paragraph",
+          "start": 38441,
+          "end": 38609,
+          "quote": "I highly highly recommend that every single uh first time that you use a manufacturer even the second or third time that you're using a QC agent to go check the product"
+        },
+        {
+          "field": "action",
+          "source_id": "1gkDP7vVRMnDRuuoJDvnTNfumOz3vN926",
+          "source_sha256": "43f7a73810c8cbf37b510fefc54abc2c67a2550db64bfae2e484d6f29f242631",
+          "locator": "body:14/paragraph",
+          "start": 38863,
+          "end": 38923,
+          "quote": "I highly recommend first time you're using it get a QC agent"
+        },
+        {
+          "field": "trigger.0",
+          "source_id": "1gkDP7vVRMnDRuuoJDvnTNfumOz3vN926",
+          "source_sha256": "43f7a73810c8cbf37b510fefc54abc2c67a2550db64bfae2e484d6f29f242631",
+          "locator": "body:14/paragraph",
+          "start": 38488,
+          "end": 38526,
+          "quote": "first time that you use a manufacturer"
+        },
+        {
+          "field": "completion.0",
+          "source_id": "1gkDP7vVRMnDRuuoJDvnTNfumOz3vN926",
+          "source_sha256": "43f7a73810c8cbf37b510fefc54abc2c67a2550db64bfae2e484d6f29f242631",
+          "locator": "body:14/paragraph",
+          "start": 38198,
+          "end": 38436,
+          "quote": "a QC is where a quality control agency will actually go to the factory they'll use your Tech pack again as a reference and they'll weigh the product they'll measure the product they'll do all kinds of things they'll check the panone color"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "19dcd2d915cdd1e9b1ffe1d54cea6d34978c50d00bb4563ec3ae7013b0245038",
+      "unit": {
+        "id": "alibaba_qc",
+        "kind": "action",
+        "title": "Use Alibaba's inbuilt QC function",
+        "claim": {
+          "text": "Alibaba has an inbuilt QC function for sending a QC agent to an order.",
+          "quote": "one of the best things about Alibaba is they have an inbuilt QC function"
+        },
+        "action": {
+          "text": "Send a QC agent out to the order via Alibaba's inbuilt QC function.",
+          "quote": "send a QC agent out to this order"
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The exact process, cost and coverage of Alibaba's inbuilt QC function are not stated."
+        ],
+        "relations": [
+          {
+            "kind": "alternative_to",
+            "target": "qc_agent"
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1gkDP7vVRMnDRuuoJDvnTNfumOz3vN926",
+          "source_sha256": "43f7a73810c8cbf37b510fefc54abc2c67a2550db64bfae2e484d6f29f242631",
+          "locator": "body:14/paragraph",
+          "start": 38620,
+          "end": 38692,
+          "quote": "one of the best things about Alibaba is they have an inbuilt QC function"
+        },
+        {
+          "field": "action",
+          "source_id": "1gkDP7vVRMnDRuuoJDvnTNfumOz3vN926",
+          "source_sha256": "43f7a73810c8cbf37b510fefc54abc2c67a2550db64bfae2e484d6f29f242631",
+          "locator": "body:14/paragraph",
+          "start": 38720,
+          "end": 38753,
+          "quote": "send a QC agent out to this order"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "e60bf3fcc53d6c6a85e3083f04d10e6e8c284531bc79613542137453cbca0f33",
+      "unit": {
+        "id": "late_sample_warning",
+        "kind": "warning",
+        "title": "Late samples can cause missed trade periods",
+        "claim": {
+          "text": "Failing to get the sample on time may delay the product, miss the Christmas trade period, and leave product stuck in January and February.",
+          "quote": "if you fail to get the sample on time you might fail to to get the product on time you might miss Christmas trade period and then you'll get stuck with all of the product come January February"
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "The sample is not obtained on time.",
+              "quote": "if you fail to get the sample on time"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not state how to recover once the sample is late beyond using a critical path."
+        ],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1gkDP7vVRMnDRuuoJDvnTNfumOz3vN926",
+          "source_sha256": "43f7a73810c8cbf37b510fefc54abc2c67a2550db64bfae2e484d6f29f242631",
+          "locator": "body:14/paragraph",
+          "start": 38978,
+          "end": 39170,
+          "quote": "if you fail to get the sample on time you might fail to to get the product on time you might miss Christmas trade period and then you'll get stuck with all of the product come January February"
+        },
+        {
+          "field": "trigger.0",
+          "source_id": "1gkDP7vVRMnDRuuoJDvnTNfumOz3vN926",
+          "source_sha256": "43f7a73810c8cbf37b510fefc54abc2c67a2550db64bfae2e484d6f29f242631",
+          "locator": "body:14/paragraph",
+          "start": 38978,
+          "end": 39015,
+          "quote": "if you fail to get the sample on time"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "f597f0f73ac652c54ad437039253438f550e19e26e06f3ee8613fb97eb43fa33",
+      "unit": {
+        "id": "define_steps",
+        "kind": "action",
+        "title": "Define every step of the critical path",
+        "claim": {
+          "text": "The first critical-path step is to define every single step of the process, either with a team member or by writing it out.",
+          "quote": "first we Define every single step of the process and you can do this with your team member or you can just write it out"
+        },
+        "action": {
+          "text": "Define every single step of the process.",
+          "quote": "first we Define every single step of the process and you can do this with your team member or you can just write it out"
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No required level of granularity or template format is stated."
+        ],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1gkDP7vVRMnDRuuoJDvnTNfumOz3vN926",
+          "source_sha256": "43f7a73810c8cbf37b510fefc54abc2c67a2550db64bfae2e484d6f29f242631",
+          "locator": "body:14/paragraph",
+          "start": 39285,
+          "end": 39404,
+          "quote": "first we Define every single step of the process and you can do this with your team member or you can just write it out"
+        },
+        {
+          "field": "action",
+          "source_id": "1gkDP7vVRMnDRuuoJDvnTNfumOz3vN926",
+          "source_sha256": "43f7a73810c8cbf37b510fefc54abc2c67a2550db64bfae2e484d6f29f242631",
+          "locator": "body:14/paragraph",
+          "start": 39285,
+          "end": 39404,
+          "quote": "first we Define every single step of the process and you can do this with your team member or you can just write it out"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "ebcc2aead1659d08127793eacb408b6598ba717c3d731fff9fae06b59892f69d",
+      "unit": {
+        "id": "sequence_events",
+        "kind": "action",
+        "title": "Sequence critical-path events in order",
+        "claim": {
+          "text": "The second critical-path step is to sequence all events in the correct order.",
+          "quote": "the second step is we're going to sequence all of these events in the correct order"
+        },
+        "action": {
+          "text": "Sequence all events in the correct order.",
+          "quote": "the second step is we're going to sequence all of these events in the correct order"
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not specify a formal sequencing method."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "define_steps"
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1gkDP7vVRMnDRuuoJDvnTNfumOz3vN926",
+          "source_sha256": "43f7a73810c8cbf37b510fefc54abc2c67a2550db64bfae2e484d6f29f242631",
+          "locator": "body:14/paragraph",
+          "start": 39405,
+          "end": 39488,
+          "quote": "the second step is we're going to sequence all of these events in the correct order"
+        },
+        {
+          "field": "action",
+          "source_id": "1gkDP7vVRMnDRuuoJDvnTNfumOz3vN926",
+          "source_sha256": "43f7a73810c8cbf37b510fefc54abc2c67a2550db64bfae2e484d6f29f242631",
+          "locator": "body:14/paragraph",
+          "start": 39405,
+          "end": 39488,
+          "quote": "the second step is we're going to sequence all of these events in the correct order"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "650fddbb121366a53783733d41bb8b7f0d9d5e51a5b220278f9eaa823180ea87",
+      "unit": {
+        "id": "pm_tool",
+        "kind": "action",
+        "title": "Use a project management tool to keep tasks visible",
+        "claim": {
+          "text": "A project management tool such as Asana, monday.com, Notion or Excel can be used; the important requirement is that every task is visible in the right order.",
+          "quote": "you can use a project management tool like aana I use monday.com really impartial about which one you use they're all pretty much the same you can use notion but you really want uh some people use Excel as well you just want all of these things visible all of every single task and in the right order"
+        },
+        "action": {
+          "text": "Use a project management tool to keep all tasks visible and in the right order.",
+          "quote": "use a project management tool like aana"
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [
+          {
+            "text": "Every task is visible in the right order.",
+            "quote": "every single task and in the right order"
+          }
+        ],
+        "unknowns": [
+          "The source says the named tools are all pretty much the same but does not prescribe one."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "sequence_events"
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1gkDP7vVRMnDRuuoJDvnTNfumOz3vN926",
+          "source_sha256": "43f7a73810c8cbf37b510fefc54abc2c67a2550db64bfae2e484d6f29f242631",
+          "locator": "body:14/paragraph",
+          "start": 39493,
+          "end": 39793,
+          "quote": "you can use a project management tool like aana I use monday.com really impartial about which one you use they're all pretty much the same you can use notion but you really want uh some people use Excel as well you just want all of these things visible all of every single task and in the right order"
+        },
+        {
+          "field": "action",
+          "source_id": "1gkDP7vVRMnDRuuoJDvnTNfumOz3vN926",
+          "source_sha256": "43f7a73810c8cbf37b510fefc54abc2c67a2550db64bfae2e484d6f29f242631",
+          "locator": "body:14/paragraph",
+          "start": 39501,
+          "end": 39540,
+          "quote": "use a project management tool like aana"
+        },
+        {
+          "field": "completion.0",
+          "source_id": "1gkDP7vVRMnDRuuoJDvnTNfumOz3vN926",
+          "source_sha256": "43f7a73810c8cbf37b510fefc54abc2c67a2550db64bfae2e484d6f29f242631",
+          "locator": "body:14/paragraph",
+          "start": 39753,
+          "end": 39793,
+          "quote": "every single task and in the right order"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "d03eb489f030de36ca610f3742a0714fd027168941546c3894568dcfda21d7ae",
+      "unit": {
+        "id": "define_time",
+        "kind": "action",
+        "title": "Define the time each step takes",
+        "claim": {
+          "text": "After sequencing, the source says to define the time it takes to do each step.",
+          "quote": "then you're going to define the time it takes to do them"
+        },
+        "action": {
+          "text": "Define the time it takes to do each step.",
+          "quote": "then you're going to define the time it takes to do them"
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [
+          {
+            "text": "Every granular part of the process is defined within the critical path.",
+            "quote": "every single granular part of the process needs to be defined within this critical PA"
+          }
+        ],
+        "unknowns": [
+          "The transcript says critical PA, likely a truncated or mispronounced term, but the source does not define it."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "sequence_events"
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1gkDP7vVRMnDRuuoJDvnTNfumOz3vN926",
+          "source_sha256": "43f7a73810c8cbf37b510fefc54abc2c67a2550db64bfae2e484d6f29f242631",
+          "locator": "body:14/paragraph",
+          "start": 39798,
+          "end": 39854,
+          "quote": "then you're going to define the time it takes to do them"
+        },
+        {
+          "field": "action",
+          "source_id": "1gkDP7vVRMnDRuuoJDvnTNfumOz3vN926",
+          "source_sha256": "43f7a73810c8cbf37b510fefc54abc2c67a2550db64bfae2e484d6f29f242631",
+          "locator": "body:14/paragraph",
+          "start": 39798,
+          "end": 39854,
+          "quote": "then you're going to define the time it takes to do them"
+        },
+        {
+          "field": "completion.0",
+          "source_id": "1gkDP7vVRMnDRuuoJDvnTNfumOz3vN926",
+          "source_sha256": "43f7a73810c8cbf37b510fefc54abc2c67a2550db64bfae2e484d6f29f242631",
+          "locator": "body:14/paragraph",
+          "start": 39948,
+          "end": 40033,
+          "quote": "every single granular part of the process needs to be defined within this critical PA"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "687d6e8da909587e3f3173eb010dbf5c7395d0df090e35d06177316f79e69b36",
+      "unit": {
+        "id": "assign_dates",
+        "kind": "action",
+        "title": "Assign dates to every critical-path step",
+        "claim": {
+          "text": "Because the time each step takes is known, dates can be set for every step of the process.",
+          "quote": "because we know how long everything's going to take we can set dates to every single uh step of the process"
+        },
+        "action": {
+          "text": "Set dates for every step of the process.",
+          "quote": "we can set dates to every single uh step of the process"
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not state the starting date or calendar basis for the launch example."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "define_time"
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1gkDP7vVRMnDRuuoJDvnTNfumOz3vN926",
+          "source_sha256": "43f7a73810c8cbf37b510fefc54abc2c67a2550db64bfae2e484d6f29f242631",
+          "locator": "body:14/paragraph",
+          "start": 40450,
+          "end": 40557,
+          "quote": "because we know how long everything's going to take we can set dates to every single uh step of the process"
+        },
+        {
+          "field": "action",
+          "source_id": "1gkDP7vVRMnDRuuoJDvnTNfumOz3vN926",
+          "source_sha256": "43f7a73810c8cbf37b510fefc54abc2c67a2550db64bfae2e484d6f29f242631",
+          "locator": "body:14/paragraph",
+          "start": 40502,
+          "end": 40557,
+          "quote": "we can set dates to every single uh step of the process"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "21b8da34b7e441c442dafd803605b10b5f6eb083bf6b202470ad38763f7ca62e",
+      "unit": {
+        "id": "monitor_daily",
+        "kind": "action",
+        "title": "Monitor the critical path daily",
+        "claim": {
+          "text": "The source says that all that is needed then is to monitor on a daily basis.",
+          "quote": "all we need to do is monitor on a daily basis"
+        },
+        "action": {
+          "text": "Monitor on a daily basis.",
+          "quote": "all we need to do is monitor on a daily basis"
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not define what to monitor, except overdue dates and blowouts elsewhere."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "assign_dates"
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1gkDP7vVRMnDRuuoJDvnTNfumOz3vN926",
+          "source_sha256": "43f7a73810c8cbf37b510fefc54abc2c67a2550db64bfae2e484d6f29f242631",
+          "locator": "body:14/paragraph",
+          "start": 40915,
+          "end": 40960,
+          "quote": "all we need to do is monitor on a daily basis"
+        },
+        {
+          "field": "action",
+          "source_id": "1gkDP7vVRMnDRuuoJDvnTNfumOz3vN926",
+          "source_sha256": "43f7a73810c8cbf37b510fefc54abc2c67a2550db64bfae2e484d6f29f242631",
+          "locator": "body:14/paragraph",
+          "start": 40915,
+          "end": 40960,
+          "quote": "all we need to do is monitor on a daily basis"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "22b30eb054ea46f8d2feb7f3175883426ed2e11865383755ac4d93348e754b3d",
+      "unit": {
+        "id": "supplier_edit_warning",
+        "kind": "warning",
+        "title": "Do not let suppliers edit the project management sheets",
+        "claim": {
+          "text": "The source does not recommend letting suppliers edit the sheets because suppliers can manipulate things and you cannot see it.",
+          "quote": "typically I don't recommend that because the suppliers can manipulate things and then you can't actually see it"
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Suppliers are allowed to edit the project management sheets.",
+              "quote": "you can get your suppliers to edit them as well if you want"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": [
+            {
+              "text": "Letting suppliers edit the project management sheets.",
+              "quote": "get your suppliers to edit them as well"
+            }
+          ]
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not describe a read-only or limited supplier access alternative."
+        ],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1gkDP7vVRMnDRuuoJDvnTNfumOz3vN926",
+          "source_sha256": "43f7a73810c8cbf37b510fefc54abc2c67a2550db64bfae2e484d6f29f242631",
+          "locator": "body:14/paragraph",
+          "start": 41148,
+          "end": 41259,
+          "quote": "typically I don't recommend that because the suppliers can manipulate things and then you can't actually see it"
+        },
+        {
+          "field": "trigger.0",
+          "source_id": "1gkDP7vVRMnDRuuoJDvnTNfumOz3vN926",
+          "source_sha256": "43f7a73810c8cbf37b510fefc54abc2c67a2550db64bfae2e484d6f29f242631",
+          "locator": "body:14/paragraph",
+          "start": 41088,
+          "end": 41147,
+          "quote": "you can get your suppliers to edit them as well if you want"
+        },
+        {
+          "field": "exclusions.0",
+          "source_id": "1gkDP7vVRMnDRuuoJDvnTNfumOz3vN926",
+          "source_sha256": "43f7a73810c8cbf37b510fefc54abc2c67a2550db64bfae2e484d6f29f242631",
+          "locator": "body:14/paragraph",
+          "start": 41096,
+          "end": 41135,
+          "quote": "get your suppliers to edit them as well"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "53ed3f78fa21e9a3fa773b28c317ec32d504d63aac9310791e63132d9e1ff258",
+      "unit": {
+        "id": "forecast_risk",
+        "kind": "warning",
+        "title": "Poor order quantity forecasting is an existential risk",
+        "claim": {
+          "text": "Getting the order quantity wrong on the low end gives zero revenue and can send the business out of business; ordering too much inventory on the high end can also send it out of business.",
+          "quote": "getting this wrong on the low end because they have no stock let's say is going to give you $0 Revenue which can also send you out of business if you've got uh lots of fixed cost getting this on the high end and ordering way too much inventory will also send you out of business"
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Order quantity forecasting is wrong.",
+              "quote": "if you get it wrong"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source mentions both high-end and low-end errors but does not give a quantitative risk threshold."
+        ],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1gkDP7vVRMnDRuuoJDvnTNfumOz3vN926",
+          "source_sha256": "43f7a73810c8cbf37b510fefc54abc2c67a2550db64bfae2e484d6f29f242631",
+          "locator": "body:14/paragraph",
+          "start": 43452,
+          "end": 43730,
+          "quote": "getting this wrong on the low end because they have no stock let's say is going to give you $0 Revenue which can also send you out of business if you've got uh lots of fixed cost getting this on the high end and ordering way too much inventory will also send you out of business"
+        },
+        {
+          "field": "trigger.0",
+          "source_id": "1gkDP7vVRMnDRuuoJDvnTNfumOz3vN926",
+          "source_sha256": "43f7a73810c8cbf37b510fefc54abc2c67a2550db64bfae2e484d6f29f242631",
+          "locator": "body:14/paragraph",
+          "start": 42994,
+          "end": 43013,
+          "quote": "if you get it wrong"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "69043d5c8d098f92aa5d220e1676a8b2fa426ad01d64259adece9ea855cc3548",
+      "unit": {
+        "id": "forecast_cadence",
+        "kind": "action",
+        "title": "Review forecasting on a weekly, fortnightly or monthly cadence",
+        "claim": {
+          "text": "The source says forecasting should realistically be looked at on a weekly, fortnightly or monthly cadence.",
+          "quote": "realistically we should be looking at this on a weekly fortnightly or monthly Cadence"
+        },
+        "action": {
+          "text": "Look at forecasting on a weekly, fortnightly or monthly cadence.",
+          "quote": "we should be looking at this on a weekly fortnightly or monthly Cadence"
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not state how to choose among weekly, fortnightly or monthly."
+        ],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1gkDP7vVRMnDRuuoJDvnTNfumOz3vN926",
+          "source_sha256": "43f7a73810c8cbf37b510fefc54abc2c67a2550db64bfae2e484d6f29f242631",
+          "locator": "body:14/paragraph",
+          "start": 43734,
+          "end": 43819,
+          "quote": "realistically we should be looking at this on a weekly fortnightly or monthly Cadence"
+        },
+        {
+          "field": "action",
+          "source_id": "1gkDP7vVRMnDRuuoJDvnTNfumOz3vN926",
+          "source_sha256": "43f7a73810c8cbf37b510fefc54abc2c67a2550db64bfae2e484d6f29f242631",
+          "locator": "body:14/paragraph",
+          "start": 43748,
+          "end": 43819,
+          "quote": "we should be looking at this on a weekly fortnightly or monthly Cadence"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "bd6e123407eb3f8dbd20170e6d6c895ee3065c24cc721c92fd187ffada081447",
+      "unit": {
+        "id": "forecast_goal",
+        "kind": "principle",
+        "title": "Forecast two things: reorder date and order quantity",
+        "claim": {
+          "text": "Forecasting is about finding both the date to reorder, i.e. the replenishment day, and how much to order.",
+          "quote": "we're trying to find both sorry is at what date do I reorder which is basically a replenishment day and then two how much do I order"
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not give formulas for either reorder date or order quantity in this passage."
+        ],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1gkDP7vVRMnDRuuoJDvnTNfumOz3vN926",
+          "source_sha256": "43f7a73810c8cbf37b510fefc54abc2c67a2550db64bfae2e484d6f29f242631",
+          "locator": "body:14/paragraph",
+          "start": 43937,
+          "end": 44069,
+          "quote": "we're trying to find both sorry is at what date do I reorder which is basically a replenishment day and then two how much do I order"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "347da7771d9d9181a228f916e541ffac11dc1c7d5978f026cb1dbe0a609b3e4d",
+      "unit": {
+        "id": "first_order_quantity",
+        "kind": "action",
+        "title": "Estimate first order quantity from similar products or recent marketing",
+        "claim": {
+          "text": "When first ordering a product, the source says to generally use similar products in the space or a best guess based on recent marketing activities.",
+          "quote": "when you're first ordering the product you're generally going to be using other products that are similar within the space or your best guest based on your marketing activities just recently"
+        },
+        "action": {
+          "text": "Use other products that are similar within the space or a best guess based on recent marketing activities.",
+          "quote": "using other products that are similar within the space or your best guest based on your marketing activities just recently"
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "The product is being ordered for the first time.",
+              "quote": "when you're first ordering the product"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not define best guest or how to select comparable products."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "forecast_goal"
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1gkDP7vVRMnDRuuoJDvnTNfumOz3vN926",
+          "source_sha256": "43f7a73810c8cbf37b510fefc54abc2c67a2550db64bfae2e484d6f29f242631",
+          "locator": "body:14/paragraph",
+          "start": 42719,
+          "end": 42909,
+          "quote": "when you're first ordering the product you're generally going to be using other products that are similar within the space or your best guest based on your marketing activities just recently"
+        },
+        {
+          "field": "action",
+          "source_id": "1gkDP7vVRMnDRuuoJDvnTNfumOz3vN926",
+          "source_sha256": "43f7a73810c8cbf37b510fefc54abc2c67a2550db64bfae2e484d6f29f242631",
+          "locator": "body:14/paragraph",
+          "start": 42787,
+          "end": 42909,
+          "quote": "using other products that are similar within the space or your best guest based on your marketing activities just recently"
+        },
+        {
+          "field": "trigger.0",
+          "source_id": "1gkDP7vVRMnDRuuoJDvnTNfumOz3vN926",
+          "source_sha256": "43f7a73810c8cbf37b510fefc54abc2c67a2550db64bfae2e484d6f29f242631",
+          "locator": "body:14/paragraph",
+          "start": 42719,
+          "end": 42757,
+          "quote": "when you're first ordering the product"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "5b30a2180fc50871effce55abdee6b47a2c8b1b6845307e36779e2a3ccab6ec6",
+      "unit": {
+        "id": "wrong_dates",
+        "kind": "action",
+        "title": "Use in-stock days rather than periods containing stockouts for forecasting",
+        "claim": {
+          "text": "The source says people go wrong by selecting the wrong dates, such as taking 30 days that include 15 out-of-stock days and forecasting the next 90 days from those numbers.",
+          "quote": "I'll see people grab those 30 days and forecast out the next 90 days based on those numbers not not recognizing that they were extremely out of stock in those those 15 days"
+        },
+        "action": {
+          "text": "Grab the days that were in stock and extrapolate those out.",
+          "quote": "grabbing the 15 days that they were in in stock and extrapolating that out"
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "The selected period includes out-of-stock days.",
+              "quote": "you're kind of out of stock for half a month or then you're in stock for the rest of the 15 days"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not state how to handle seasonality or partial stockouts in the extrapolation."
+        ],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1gkDP7vVRMnDRuuoJDvnTNfumOz3vN926",
+          "source_sha256": "43f7a73810c8cbf37b510fefc54abc2c67a2550db64bfae2e484d6f29f242631",
+          "locator": "body:14/paragraph",
+          "start": 46260,
+          "end": 46432,
+          "quote": "I'll see people grab those 30 days and forecast out the next 90 days based on those numbers not not recognizing that they were extremely out of stock in those those 15 days"
+        },
+        {
+          "field": "action",
+          "source_id": "1gkDP7vVRMnDRuuoJDvnTNfumOz3vN926",
+          "source_sha256": "43f7a73810c8cbf37b510fefc54abc2c67a2550db64bfae2e484d6f29f242631",
+          "locator": "body:14/paragraph",
+          "start": 46497,
+          "end": 46571,
+          "quote": "grabbing the 15 days that they were in in stock and extrapolating that out"
+        },
+        {
+          "field": "trigger.0",
+          "source_id": "1gkDP7vVRMnDRuuoJDvnTNfumOz3vN926",
+          "source_sha256": "43f7a73810c8cbf37b510fefc54abc2c67a2550db64bfae2e484d6f29f242631",
+          "locator": "body:14/paragraph",
+          "start": 46163,
+          "end": 46259,
+          "quote": "you're kind of out of stock for half a month or then you're in stock for the rest of the 15 days"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "a362fb01b82c2dd3b809b33fb425d7f8294a6777b6fd76a0527cd07c3110f180",
+      "unit": {
+        "id": "inventory_planner",
+        "kind": "action",
+        "title": "Use Inventory Planner for forecasting",
+        "claim": {
+          "text": "The source keeps coming back to and recommending Inventory Planner and started using it about two years ago.",
+          "quote": "the one that I keep coming back to and recommending is inventory planner I started using this probably 2 years ago"
+        },
+        "action": {
+          "text": "Use Inventory Planner.",
+          "quote": "the one that I keep coming back to and recommending is inventory planner"
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not describe specific Inventory Planner features or the affiliate relationship beyond disclosure."
+        ],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1gkDP7vVRMnDRuuoJDvnTNfumOz3vN926",
+          "source_sha256": "43f7a73810c8cbf37b510fefc54abc2c67a2550db64bfae2e484d6f29f242631",
+          "locator": "body:14/paragraph",
+          "start": 45397,
+          "end": 45511,
+          "quote": "the one that I keep coming back to and recommending is inventory planner I started using this probably 2 years ago"
+        },
+        {
+          "field": "action",
+          "source_id": "1gkDP7vVRMnDRuuoJDvnTNfumOz3vN926",
+          "source_sha256": "43f7a73810c8cbf37b510fefc54abc2c67a2550db64bfae2e484d6f29f242631",
+          "locator": "body:14/paragraph",
+          "start": 45397,
+          "end": 45469,
+          "quote": "the one that I keep coming back to and recommending is inventory planner"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    }
+  ],
+  "held": [],
+  "more_units": true,
+  "unresolved": [
+    "The passage is truncated after huge seasonality, so the seasonality discussion and any following steps are missing.",
+    "The transcript contains unclear terms: aana, Place AO, critical PA, War, net Suite, and panone; these are not resolved in the passage.",
+    "Omitted distinct units due to the 16-unit cap include: assigning roles, notifications when a task blows out, reminders for overdue steps, year-on-year vs month-on-month comparison for businesses less than one or two years old, the 90-95% e-commerce seasonality claim, and SGS as an alternative QC/compliance provider.",
+    "No quantitative forecast thresholds, formulas or risk tolerances are provided."
+  ]
+}

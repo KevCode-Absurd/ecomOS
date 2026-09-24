@@ -1,0 +1,800 @@
+{
+  "cards": [
+    {
+      "title": "Repair vs. test: only experiment under genuine uncertainty",
+      "summary": "Fix objectively broken experiences instead of testing them; run experiments only when both versions are plausibly viable and the outcome is unknown.",
+      "use_when": "Deciding whether a problem needs a fix or an A/B test, e.g. after spotting an add-to-cart failure, a rejecting form field, or double-firing tracking.",
+      "steps": [
+        "Apply the repair test: if the current state is objectively defective — it loses money with no upside, violates a known standard, or is literally broken — repair it and move on without an experiment.",
+        "Diagnose technically broken elements rather than statistically: pages that throw errors, form fields that reject valid input, add-to-cart failures on a specific browser, and tracking that fires twice are all repair cases.",
+        "Reserve experiments (the Kohavi framing) for hypotheses where the outcome is genuinely uncertain: both versions are plausibly viable and you do not know which is better.",
+        "Scope note for this discipline: CRO here means 'is the difference real' — statistics, experiment design, and experimentation discipline. Page design belongs to a different workflow, and tracking accuracy likewise, except where tracking breakage invalidates an experiment.",
+        "If tracking breaks mid-test (pixel or event), treat the experiment as invalid rather than reading the result."
+      ],
+      "caveats": [
+        "Do not run an experiment to decide whether to fix a bug.",
+        "A defective state can still be worth documenting in the experiment log so the same non-experiment is not re-proposed."
+      ],
+      "tags": [
+        "testing",
+        "conversion-optimization",
+        "experiment-design",
+        "measurement",
+        "debugging"
+      ],
+      "id": "9ab3051452b5dd6b92308e6b",
+      "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+      "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+      "source_name": "CRO as testing and experimentation for DTC ecommerce.docx",
+      "folder": "/09-CRO-testing",
+      "domain": "testing",
+      "section": 0
+    },
+    {
+      "title": "Sample-size math: Evan Miller's n=16 formula and MDE",
+      "summary": "Required sample per variant is 16 x variance / delta squared; set MDE to the smallest lift worth shipping and expect sample needs to quadruple when you halve the target effect.",
+      "use_when": "Sizing any A/B test before launch, or rejecting a proposed test as mathematically unpowerable.",
+      "steps": [
+        "Use n = 16 x (sigma^2 / delta^2) per variant, where delta is the absolute minimum effect you want to detect and sigma^2 is the variance. For a conversion rate (binomial), sigma^2 = p(1-p). The constant 16 bakes in 95% significance (two-sided alpha 0.05) and 80% power (Evan Miller, April 2010).",
+        "Know the terms: alpha = false positive rate (standard 0.05); power = chance of detecting a real effect of the target size (standard 0.80); MDE = the smallest lift the test is designed to catch.",
+        "Set the MDE to the smallest lift worth shipping, not the smallest lift theoretically possible.",
+        "Do not confuse relative and absolute lift: a 2% baseline going to 2.4% is +0.4 points absolute but +20% relative. Most calculators take relative MDE.",
+        "Remember halving the target effect quadruples the sample.",
+        "Reference table, visitors per variant at 95% confidence, 80% power, two-sided: at a 2% baseline, 5% relative lift needs ~315,206 per variant, 10% needs ~80,682, 20% needs ~21,109, 30% needs ~9,798, 50% needs ~3,826. At 1% baseline: 637,010 / 163,095 / 42,693 / 19,827 / 7,750. At 5% baseline: 122,124 / 31,234 / 8,158 / 3,780 / 1,471.",
+        "Think in conversions per variant too, since at fixed power the requirement depends mainly on relative MDE, not baseline: roughly 3,830 conversions per variant for a 5% lift, ~1,000 for 10%, ~260 for 20%, ~120 for 30%."
+      ],
+      "caveats": [
+        "Small differences between calculators come from the leading constant (Miller uses slightly below 16) and pooled vs unpooled variance.",
+        "Do not treat 400 conversions per variant per month as a general threshold — it only powers large lifts (roughly 25%+)."
+      ],
+      "tags": [
+        "testing",
+        "conversion-optimization",
+        "experiment-design",
+        "measurement",
+        "statistics",
+        "sample-size"
+      ],
+      "id": "a382172c66a8a3ca54723a06",
+      "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+      "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+      "source_name": "CRO as testing and experimentation for DTC ecommerce.docx",
+      "folder": "/09-CRO-testing",
+      "domain": "testing",
+      "section": 0
+    },
+    {
+      "title": "One-tailed vs two-tailed testing",
+      "summary": "Use two-tailed tests as the safer default; one-tailed only when a negative result would trigger the same action as a null.",
+      "use_when": "Specifying the test design before launch, especially when someone proposes a one-tailed test to reach significance faster.",
+      "steps": [
+        "Default to a two-tailed test: it detects effects in both directions and is the safer choice when you are not certain the change can only help.",
+        "Use a one-tailed test only under a specific decision condition: when a negative result would trigger the same action as a null result (for example, you would ship version A regardless in either case).",
+        "Note the trade-off: one-tailed reaches significance faster but only tests one direction.",
+        "Pair the choice with your pre-computed sample size and fixed analysis plan so the alpha interpretation stays valid."
+      ],
+      "caveats": [
+        "The standard sample-size tables assume two-sided testing; a one-tailed test changes the required n.",
+        "Most off-the-shelf tools assume two-tailed by default, so verify the platform setting."
+      ],
+      "tags": [
+        "testing",
+        "conversion-optimization",
+        "experiment-design",
+        "measurement"
+      ],
+      "id": "b08b5ddd0d34f4940b0bacae",
+      "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+      "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+      "source_name": "CRO as testing and experimentation for DTC ecommerce.docx",
+      "folder": "/09-CRO-testing",
+      "domain": "testing",
+      "section": 0
+    },
+    {
+      "title": "Claim check: what 400 conversions and 200 conversions per variant actually power",
+      "summary": "400 conversions per variant only detects roughly 30-40% relative lifts in a month; about 200-260 per variant powers a 20% lift, so there is no magic conversion threshold.",
+      "use_when": "Evaluating internal rules of thumb like 'you need 400 conversions per month' or '200 conversions detects a 20% lift' before adopting them as policy.",
+      "steps": [
+        "Reject '400+ conversions per month' as a general threshold. There is no magic conversion number (CXL); the real driver is MDE. About 400 conversions per variant per month lets you detect roughly a 30-40% relative lift in a month, which is a large swing.",
+        "Correct the statement: you need enough conversions per variant to detect your target MDE. To detect a 10% lift you need roughly 1,000 conversions per variant, not 400.",
+        "Treat the 'about 200 conversions per variant detects a 20% lift' claim as true but tighten it: roughly 260 conversions per variant is the safer number at 80% power. The improvado.io guide says at least 200 conversions in the control group achieves 80% power for a 10-20% lift; HubSpot's 20,000 rule gives a consistent picture (20,000 recipients per group at a 2% baseline yields about 400 control conversions, enough to detect a 20% lift comfortably).",
+        "Treat 'sequential before-after works at low volume if you accept wider error bars' as directionally true but dangerous as stated — the real problem is bias (confounding with time), not just variance."
+      ],
+      "caveats": [
+        "400 per variant only powers large lifts (25%+); do not apply it as a universal minimum.",
+        "The 200-conversion figure sits at slightly lower power than the 80% standard; 250-260 is safer."
+      ],
+      "tags": [
+        "testing",
+        "conversion-optimization",
+        "experiment-design",
+        "measurement",
+        "sample-size"
+      ],
+      "id": "cd9990989277d675666d50f3",
+      "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+      "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+      "source_name": "CRO as testing and experimentation for DTC ecommerce.docx",
+      "folder": "/09-CRO-testing",
+      "domain": "testing",
+      "section": 0
+    },
+    {
+      "title": "A/B/n and bandits need volume; total traffic scales with arms",
+      "summary": "Every A/B/n arm needs the same per-variant sample as a two-arm test, so total traffic grows with arm count; 3,000-20,000 orders/month is a fair floor for multi-variant and bandit work.",
+      "use_when": "Planning a multi-variant test or bandit deployment and deciding whether your order volume can support it.",
+      "steps": [
+        "Size A/B/n by multiplying: each arm needs the same per-variant sample as a two-arm test, so total traffic scales with the number of arms. A brand doing under a few thousand orders per month cannot power 3-4 variants at a useful MDE.",
+        "Treat the 3,000-20,000 orders/month band as a fair floor for A/B/n and bandit work. Bandits also need volume to learn before they exploit.",
+        "Note the caveat: bandits can be used lower down for short campaigns where the goal is minimising regret rather than getting a clean read — it is not a hard cutoff.",
+        "Follow the source's stage gate: use A/B/n and bandits only at 3,000+ orders/month."
+      ],
+      "caveats": [
+        "The source does not define the exact volume in 'a few thousand' orders per month.",
+        "Below the floor, bandits are only justified for short campaigns focused on regret minimisation."
+      ],
+      "tags": [
+        "testing",
+        "conversion-optimization",
+        "experiment-design",
+        "bandits",
+        "multi-variant",
+        "sample-size"
+      ],
+      "id": "0c2e6e969225bd3c5f51091f",
+      "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+      "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+      "source_name": "CRO as testing and experimentation for DTC ecommerce.docx",
+      "folder": "/09-CRO-testing",
+      "domain": "testing",
+      "section": 0
+    },
+    {
+      "title": "Fixed-horizon stopping and the peeking problem",
+      "summary": "Fixing sample size in advance and looking once at the end is the only design under which p-values and confidence levels are valid; continuous checking and stopping at p<0.05 can push false positives from 5% to 26%+.",
+      "use_when": "Setting a stopping rule for a frequentist test, or diagnosing why a series of early-stopped 'wins' has not replicated.",
+      "steps": [
+        "Set the sample size in advance and look once at the end. The p-value and confidence level are only valid under this fixed-horizon assumption (Evan Miller).",
+        "Understand the inflation: testing after every observation and stopping at first p<0.05 turns a nominal 5% false positive rate into 26.1%.",
+        "If you must peek, apply Miller's adjusted significance thresholds to get a true 5%: report 2.9% after 1 peek, 2.2% after 2, 1.8% after 3, 1.4% after 5, 1.0% after 10.",
+        "See the scale of the risk: Etsy Engineering (October 2018) simulated a true null at a 50% baseline with alpha 0.10 and found that checking significance at every observation gives over a 50% chance of incorrectly declaring a difference after 500 observations. Kohavi and Sonnet's practical number: running two weeks then checking daily for two more weeks pushes a 5% error rate to about 17%.",
+        "Recognise that Bayesian is not immune to peeking: Alex Molas (October 2025) simulated peeking every 100 observations and stopping when P(A>B)>0.95, pushing the false positive rate to about 80%. A fixed posterior threshold does not control frequentist error under optional stopping."
+      ],
+      "caveats": [
+        "Do not extend an inconclusive or significantly negative test hoping for significance — that is peeking.",
+        "The peek-adjusted thresholds come from Miller's table; the source does not restate the full underlying model."
+      ],
+      "tags": [
+        "testing",
+        "conversion-optimization",
+        "experiment-design",
+        "measurement",
+        "statistics",
+        "peeking"
+      ],
+      "id": "d1f6b3137b51456c5eb6aa82",
+      "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+      "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+      "source_name": "CRO as testing and experimentation for DTC ecommerce.docx",
+      "folder": "/09-CRO-testing",
+      "domain": "testing",
+      "section": 0
+    },
+    {
+      "title": "Sequential methods that legitimise looking early",
+      "summary": "Always-valid and group-sequential designs (mSPRT, GAVI, GST, corrected-alpha) let you monitor a test without peeking penalties, at a power cost versus a correctly sized fixed test.",
+      "use_when": "Choosing a statistical engine for a testing programme, or when stakeholders need to monitor results during the test.",
+      "steps": [
+        "Know the four families: mSPRT (mixture sequential probability ratio test) produces always-valid p-values valid at any stopping time (Johari, Koomen, Pekelis, Walsh 2015/2022) and is used by Optimizely, Uber, Netflix and Amplitude. GAVI (generalisation of always-valid inference, Howard et al. 2021) uses confidence sequences and is used by Eppo. Group sequential design with alpha spending (Lan-DeMets 1983) is used by Spotify. Corrected-alpha approach (CAA) is used by Statsig.",
+        "Choose by whether you can size in advance: Spotify's guidance is that if you can estimate the expected sample size well, group sequential testing is more powerful; if you cannot, always-valid inference is safer.",
+        "Account for the trade-off: always-valid methods let you stop any time but cost power (wider intervals) versus a correctly sized fixed test.",
+        "Match the engine to the tool's reporting: Optimizely Stats Engine is frequentist with mSPRT always-valid p-values plus False Discovery Rate control; Statsig is sequential always-valid (corrected alpha); Eppo is Bayesian with shrinkage plus GAVI sequential; GrowthBook offers both frequentist and Bayesian plus sequential; VWO SmartStats is Bayesian (Beta-Binomial with Monte Carlo, reporting probability-to-beat-baseline and expected loss); AB Tasty is Bayesian by preference."
+      ],
+      "caveats": [
+        "Verify current engine behaviour on the vendor's docs — tooling details change.",
+        "A fixed posterior threshold in a Bayesian tool still does not control error under optional stopping."
+      ],
+      "tags": [
+        "testing",
+        "conversion-optimization",
+        "experiment-design",
+        "measurement",
+        "statistics",
+        "sequential-testing",
+        "tooling"
+      ],
+      "id": "23c8b60bfb83fa40c0266a04",
+      "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+      "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+      "source_name": "CRO as testing and experimentation for DTC ecommerce.docx",
+      "folder": "/09-CRO-testing",
+      "domain": "testing",
+      "section": 0
+    },
+    {
+      "title": "Minimum test duration and diagnosing novelty and primacy",
+      "summary": "Run at least one full week, in practice two, plus enough to hit the pre-computed sample size; diagnose novelty/primacy by plotting daily effect and comparing first- vs repeat-exposure conversion.",
+      "use_when": "Setting runtime for any test, and investigating an early spike or dip in a variant's performance.",
+      "steps": [
+        "Run at least one full week, and in practice two, to cover the weekly business cycle (Kohavi). Weekends convert differently from weekdays and buyers differ by day; two weeks captures one full cycle of returning visitors.",
+        "Add enough runtime to hit the pre-computed sample size. Do not stop just because you hit significance early.",
+        "Diagnose novelty (a temporary bump because the change is new, decaying over time) and primacy (existing users primed to the old design so the new one underperforms first, then recovers) — both are threats to external validity.",
+        "Diagnose by plotting the daily effect over time and comparing first-exposure vs repeat-exposure conversion for the variant.",
+        "Kohavi's surprising finding: most suspected novelty/primacy effects are actually statistical artifacts of early, noisy cumulative deltas, not real trends."
+      ],
+      "caveats": [
+        "The source gives no threshold for how much daily-effect change indicates a real novelty or primacy effect.",
+        "Two weeks is a practical minimum, not a substitute for the sample-size calculation."
+      ],
+      "tags": [
+        "testing",
+        "conversion-optimization",
+        "experiment-design",
+        "measurement",
+        "runtime",
+        "novelty-effects"
+      ],
+      "id": "58b818506ceabbbcd72cd3ab",
+      "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+      "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+      "source_name": "CRO as testing and experimentation for DTC ecommerce.docx",
+      "folder": "/09-CRO-testing",
+      "domain": "testing",
+      "section": 0
+    },
+    {
+      "title": "Low-traffic playbook: test bigger, not more",
+      "summary": "Below roughly 100,000 visitors/month, default to bold differentiated changes targeting 10-20%+ effects on high-traffic pages rather than tweaks, and lean on research.",
+      "use_when": "Running an experimentation programme for a store that cannot power small-MDE tests.",
+      "steps": [
+        "Change the goal: below the A/B power threshold, the job shifts from proving things statistically to learning fast and cheaply. Test bigger, not more.",
+        "Default to differentiated changes with a target effect of 10-20%+ below about 100,000 visitors/month, not tweaks. VWO concedes low-traffic sites should make big changes; one bold homepage test teaches more than 10 micro-tests on low-traffic category pages (SplitBase).",
+        "Concentrate tests where the traffic is: homepage, top product pages, cart. Do not test low-traffic category pages.",
+        "Use micro-conversions (add-to-cart, begin-checkout) as the primary metric because they are more frequent and power faster — but a lift in add-to-cart may not carry through to purchase or revenue, so keep purchase and revenue as guardrails and use the micro-conversion as a leading indicator.",
+        "Use sequential before/after with honest error bars only when parallel testing is impossible and you can hold external conditions constant; it is best for large structural changes and should be treated as weak evidence.",
+        "Lead with qualitative research (session replay, surveys, user testing, customer interviews) to generate strong hypotheses when you cannot run many tests.",
+        "Re-test any surprising large winner with a holdout before banking the revenue."
+      ],
+      "caveats": [
+        "The visitor threshold and effect ranges are source heuristics. Actual feasibility depends on baseline conversion, sample size, allocation, detectable effect and runtime; research remains useful at every volume.",
+        "Before/after confounds the change with time — seasonality, promotions, weekday/weekend, traffic-source shifts, news. The real problem is bias, not just wider variance.",
+        "The source does not define a metric for 'teaches more' when preferring one bold test."
+      ],
+      "tags": [
+        "testing",
+        "conversion-optimization",
+        "experiment-design",
+        "low-traffic",
+        "research",
+        "micro-conversions"
+      ],
+      "id": "1a25c92c77dfff8f35ffdbf6",
+      "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+      "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+      "source_name": "CRO as testing and experimentation for DTC ecommerce.docx",
+      "folder": "/09-CRO-testing",
+      "domain": "testing",
+      "section": 0
+    },
+    {
+      "title": "Before/after testing: the bias problem and when it is defensible",
+      "summary": "Pre-post testing uses all traffic on one variant at a time, which helps at low volume but confounds the change with time — treat a clear stable shift as weak evidence, not proof.",
+      "use_when": "Considering a sequential before/after test when you cannot run parallel A/B tests.",
+      "steps": [
+        "Understand the mechanics: before/after uses all traffic on one variant at a time, which helps at low volume but confounds the change with time — seasonality, promotions, weekday/weekend, traffic-source shifts, and news.",
+        "Treat the 'wider error bars' framing as understating the risk: the real problem is bias, not just variance.",
+        "Impose conditions for defensibility: hold external conditions as constant as possible, compare equal and comparable periods, and treat a clear, explainable, stable shift as a weak signal, not proof (customerimpact.be).",
+        "Prefer it for big structural changes where the expected effect dwarfs the noise, and plan to confirm later with a real randomised test when traffic allows.",
+        "For genuinely low-volume stores, note the source's stage gate: under 30 orders/month you cannot power even a 30% lift (roughly 120+ conversions per variant needed), so any before/after result should not carry statistical claims."
+      ],
+      "caveats": [
+        "No method in the source fully controls for all listed confounders.",
+        "Do not convert a before/after result into a confident revenue claim."
+      ],
+      "tags": [
+        "testing",
+        "conversion-optimization",
+        "experiment-design",
+        "low-traffic",
+        "before-after",
+        "bias"
+      ],
+      "id": "6982bd80ecae73446149072e",
+      "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+      "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+      "source_name": "CRO as testing and experimentation for DTC ecommerce.docx",
+      "folder": "/09-CRO-testing",
+      "domain": "testing",
+      "section": 0
+    },
+    {
+      "title": "Verify SRM, flicker, and Twyman's law before trusting a lift",
+      "summary": "Sample ratio mismatch, flicker and implausibly large lifts are the three most common reasons a reported win is an instrumentation artifact rather than a real effect.",
+      "use_when": "Auditing any finished test result or external case study before acting on it.",
+      "steps": [
+        "Check Sample Ratio Mismatch (SRM): the observed traffic split differs from the designed split (e.g. 50/50 comes back 50.3/49.7). Detect it with a chi-square goodness-of-fit test on the randomisation unit — users, not page views. Kohavi reports about 6% of Microsoft experiments show SRM; Kameleoon flags SRM at p<0.001. If SRM is present the result is biased and should not be trusted until the cause is found. Test early and often; it is easy to run in a spreadsheet.",
+        "Check flicker (FOOC, flash of original content): in client-side tests the original page renders briefly before JavaScript swaps in the variant. GrowthBook: flickering can lead to inaccurate or unreliable results, and rather counterintuitively may have a positive effect — the flashing can draw attention to the variation and inflate the effect. So flicker both hurts UX and biases the read. Mitigate with anti-flicker snippets (hide body until variant ready), synchronous script loading high in the head, or server-side testing.",
+        "Check Twyman's law: any figure that looks incredibly interesting or surprising (e.g. a 364% lift) is usually wrong — more likely an instrumentation bug, SRM, or contamination than a discovery (Kohavi). Use this as the anchor rule for auditing case studies.",
+        "Also invalidate for bot traffic skewing the split, tracking breakage mid-test, and seasonality or promotions overlapping one variant's window."
+      ],
+      "caveats": [
+        "Anti-flicker snippets have a cost: they hide the page for up to 3-4 seconds by default and slow initial load (DebugBear; Andy Davies).",
+        "A vendor case study claiming a large lift without sample, duration and baseline is unvalidated hypothesis material only."
+      ],
+      "tags": [
+        "testing",
+        "conversion-optimization",
+        "experiment-design",
+        "measurement",
+        "srm",
+        "flicker",
+        "audit"
+      ],
+      "id": "cbe5ca1ae03d451a23b1a7eb",
+      "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+      "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+      "source_name": "CRO as testing and experimentation for DTC ecommerce.docx",
+      "folder": "/09-CRO-testing",
+      "domain": "testing",
+      "section": 0
+    },
+    {
+      "title": "Multiple comparisons and pre-registered segments",
+      "summary": "Each extra decision metric or segment inflates false positives — one metric is 5%, two about 10%, three about 14% — so correct with Bonferroni or FDR and pre-register slices.",
+      "use_when": "Designing the metric and segment plan, or when someone proposes adding 'just one more' metric or slicing the data after the fact.",
+      "steps": [
+        "Limit decision metrics. With one decision metric the error rate is 5%; two metrics about 10%; three about 14% (Kohavi/Sonnet).",
+        "Correct for multiple comparisons with Bonferroni or FDR when you do test many metrics or segments.",
+        "Pre-register segments before launch: mobile and desktop convert differently and can move in opposite directions, so a blended win can hide a mobile loss. Same caution for paid vs organic and new vs returning.",
+        "Avoid segment fishing: slicing results after the fact until you find a 'winning' segment is p-hacking.",
+        "Keep guardrail metrics separate from decision metrics: AOV, return rate, refund rate, page load, add-to-cart and margin must not get worse even if the primary improves. A conversion win that tanks AOV or margin is not a win."
+      ],
+      "caveats": [
+        "The source gives no rule for choosing between Bonferroni and FDR.",
+        "Guardrail metrics add to the multiple-comparisons burden, so treat them as thresholds to monitor rather than discovery metrics."
+      ],
+      "tags": [
+        "testing",
+        "conversion-optimization",
+        "experiment-design",
+        "measurement",
+        "multiple-comparisons",
+        "guardrail-metrics"
+      ],
+      "id": "b4d4dfcb21d67b3730f2ab1f",
+      "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+      "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+      "source_name": "CRO as testing and experimentation for DTC ecommerce.docx",
+      "folder": "/09-CRO-testing",
+      "domain": "testing",
+      "section": 0
+    },
+    {
+      "title": "Bayesian vs frequentist in practice, and the flat-prior trap",
+      "summary": "Frequentist controls long-run error rates with a fixed sample; Bayesian gives intuitive posteriors but hidden flat priors make most commercial tools mathematically near-frequentist with less transparency.",
+      "use_when": "Choosing a testing platform or explaining to stakeholders what a p-value or 'probability to beat control' actually means.",
+      "steps": [
+        "Know what frequentist testing gives you: control of long-run error rates via a pre-set sample size, fixed alpha and analysis plan, outputting p-values and confidence intervals. Pros: an explicit error-rate contract, forced upfront MDE/sample discipline, and reproducibility across tools (a z-test is a z-test). Cons: p-values are widely misinterpreted, the 0.05 cliff is artificial, the fixed sample is rigid, and peeking silently breaks it.",
+        "Know what Bayesian testing gives you: posterior probabilities given data and a prior, outputting 'probability B beats A' and expected loss. Pros: intuitive for stakeholders, gives magnitude and risk, and credible intervals mean what people think. Cons: priors are subjective and usually hidden by vendors, and 'probability to be best' can mislead without a loss function.",
+        "Flag the first pitfall: Bayesian is not immune to peeking (see the peeking card).",
+        "Flag the second pitfall: most commercial 'Bayesian' tools use uninformative or flat priors, which makes them mathematically close to frequentist tests but with less transparency about what prior was used. If you cannot state the prior, you cannot fully interpret or reproduce the result (Convert.com; dripagency.de)."
+      ],
+      "caveats": [
+        "'Probability to be best' without a loss function does not tell you what to do.",
+        "Priors are not exposed in most vendor interfaces, so reproducibility is limited."
+      ],
+      "tags": [
+        "testing",
+        "conversion-optimization",
+        "experiment-design",
+        "measurement",
+        "statistics",
+        "bayesian"
+      ],
+      "id": "e6232abf12ccbb4645bc9e6d",
+      "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+      "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+      "source_name": "CRO as testing and experimentation for DTC ecommerce.docx",
+      "folder": "/09-CRO-testing",
+      "domain": "testing",
+      "section": 0
+    },
+    {
+      "title": "CUPED variance reduction and its ceiling on DTC traffic",
+      "summary": "CUPED uses pre-experiment data as a covariate to cut variance 30-50% where correlation is strong, but on volatile revenue metrics and anonymous DTC traffic the gain is much smaller.",
+      "use_when": "Evaluating whether to turn on CUPED in your testing platform, or looking for faster ways to reach power on a DTC store.",
+      "steps": [
+        "Understand the method: CUPED (Controlled-experiment Using Pre-Experiment Data; Deng, Xu, Kohavi, Walker, Microsoft 2013) uses pre-experiment data — usually the same metric measured before the test — as a covariate to strip out variance not caused by the treatment. The adjusted estimator stays unbiased but has lower variance, so you reach significance faster or detect smaller effects at the same sample.",
+        "Know the optimistic figure: Optimizely's glossary claims it can cut sample requirements 30-50% for metrics with strong correlation to historical behaviour. It is now default-on in several tools (Datadog, Optimizely) and used by Netflix, Airbnb and Booking.",
+        "Check the DTC practicality: CUPED needs pre-experiment data keyed to the same user, which means logged-in users or stable device IDs. For a DTC brand where most checkout traffic is new or not logged in, the pre-period covariate is often missing or weakly correlated, so the variance reduction is smaller.",
+        "See the ceiling evidence: Jin, Ba and colleagues at LinkedIn ran CUPED on n=400,000 feed members and found it reduces 15.91% of variance versus the difference-in-means estimator, limited because member revenue is volatile with weak autocorrelation across periods.",
+        "Verdict: turn it on if your platform offers it and you have returning identified users; it is not a magic fix for a brand with mostly new, anonymous traffic.",
+        "Use the simpler cousins that help ecommerce more: pick a proportion metric instead of a raw revenue mean, and winsorize (cap) outlier orders."
+      ],
+      "caveats": [
+        "Do not expect 30-50% sample reduction on mostly anonymous DTC traffic.",
+        "CUPED does not remove the skew of order value; winsorization addresses that separately."
+      ],
+      "tags": [
+        "testing",
+        "conversion-optimization",
+        "experiment-design",
+        "measurement",
+        "cuped",
+        "variance-reduction",
+        "dtc"
+      ],
+      "id": "438f0a28f54c6f4f5b7caf9e",
+      "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+      "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+      "source_name": "CRO as testing and experimentation for DTC ecommerce.docx",
+      "folder": "/09-CRO-testing",
+      "domain": "testing",
+      "section": 0
+    },
+    {
+      "title": "Choosing a primary metric: conversion rate, RPV, or gross profit per visitor",
+      "summary": "Conversion rate is fastest to power but ignores order value; revenue and gross-profit metrics need roughly 6x the traffic unless you winsorize or use a threshold proportion metric.",
+      "use_when": "Specifying the decision metric for a test, especially when someone proposes revenue per visitor on a modest-traffic store.",
+      "steps": [
+        "Know conversion rate's profile: binary, low variance, fastest to power. Blind spot: it ignores order value.",
+        "Know revenue per visitor (RPV): it captures conversion and AOV together, but revenue is highly skewed — in a typical ecommerce case 97% of visitors spend $0 and a few spend a lot, so the coefficient of variation can be around 750% (sd $18 on a mean of $2.40). This needs roughly 6x the traffic of a conversion-rate test for the same relative MDE — about 175,000 vs 28,000 per variant at a 3% baseline.",
+        "Know gross profit per visitor: the honest objective for a DTC brand because it prices in margin and discounting, but it carries the same variance problem as RPV plus the need for margin data.",
+        "Mitigate the variance rather than abandoning the metric: winsorize (cap) outlier orders or use a threshold proportion metric (share of visitors who spend more than $X) so no single large order dominates.",
+        "Pair the primary with guardrails: AOV, return rate, refund rate, page load, add-to-cart and margin. A conversion win that tanks AOV or margin is not a win.",
+        "Note the ecommerce pattern where higher conversion rate can yield lower revenue — attribute that example to the source, not to your own test before running it."
+      ],
+      "caveats": [
+        "The source does not specify the exact winsorizing threshold or the $X for a threshold proportion metric.",
+        "RPV availability differs by platform; verify your tool's metric definitions."
+      ],
+      "tags": [
+        "testing",
+        "conversion-optimization",
+        "experiment-design",
+        "measurement",
+        "revenue-per-visitor",
+        "gross-profit",
+        "winsorization"
+      ],
+      "id": "638480d6003666b23f305fa2",
+      "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+      "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+      "source_name": "CRO as testing and experimentation for DTC ecommerce.docx",
+      "folder": "/09-CRO-testing",
+      "domain": "testing",
+      "section": 0
+    },
+    {
+      "title": "Multi-armed bandits vs A/B tests, and the hybrid ecommerce pattern",
+      "summary": "A/B tests give a clean causal read; bandits minimise regret on short tactical windows — high-volume stores often run both, with bandits as the add-on.",
+      "use_when": "Deciding whether a given decision should be a bandit or a clean A/B test.",
+      "steps": [
+        "Use A/B tests when you need a clean, high-confidence causal read before a lasting change: redesigns, pricing, navigation, checkout. An A/B test has two periods — explore by splitting evenly, then exploit by shipping the winner — and gives a defensible answer plus a measured effect size.",
+        "Use bandits when the cost of showing the loser during the test is high and the window is short: headlines, seasonal and holiday promotions, banner creative, product recommendations. Bandits interleave explore and exploit, shifting traffic to the better arm in real time (Thompson sampling, UCB).",
+        "Accept the bandit trade-off: it minimises regret rather than delivering a clean estimate, so there is less certainty about the losing arms and a heavier focus on one KPI.",
+        "Implement sticky bucketing so returning users stay on one arm.",
+        "Adopt the hybrid pattern: A/B tests for site-wide, high-stakes changes; bandits for high-volume tactical decisions. For a $100M/year retailer, most A/B tests reach power within two weeks, so A/B is operationally feasible and bandits are an add-on (leadgen-economy.com).",
+        "Below a few thousand orders per month, bandits are only justified for short campaigns where the goal is regret minimisation."
+      ],
+      "caveats": [
+        "The source does not specify which bandit algorithm to choose between Thompson sampling and UCB.",
+        "The $100M retailer two-week-to-power note is an example, not a promise for your traffic level."
+      ],
+      "tags": [
+        "testing",
+        "conversion-optimization",
+        "experiment-design",
+        "bandits",
+        "regret-minimization",
+        "hybrid"
+      ],
+      "id": "e1408c5a4780e46d1c3bf603",
+      "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+      "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+      "source_name": "CRO as testing and experimentation for DTC ecommerce.docx",
+      "folder": "/09-CRO-testing",
+      "domain": "testing",
+      "section": 0
+    },
+    {
+      "title": "Prioritisation frameworks: ICE, PIE, PXL and RICE compared",
+      "summary": "ICE is fast but subjective, PIE forces traffic awareness, RICE adds reach, and PXL replaces scores with evidence-gated criteria — pick by programme maturity.",
+      "use_when": "Setting up or upgrading the backlog scoring process for an experimentation programme.",
+      "steps": [
+        "ICE (Sean Ellis / GrowthHackers): Impact, Confidence, Ease, each 1-10, averaged. Fast and subjective. Weakness: whoever pitches the idea also scores it, so everything scores 9/9/9 and nothing gets deprioritised. Best for small teams building the habit.",
+        "PIE (Chris Goward / WiderFunnel): Potential, Importance (traffic/value of the page), Ease, 1-10 each. Forces you to look at traffic data. A middle ground.",
+        "PXL (Peep Laja / CXL): replaces subjective scores with about 10-14 binary or scaled criteria tied to evidence — is the change above the fold, is it noticeable within 5 seconds, is it on a high-traffic page, is it backed by heatmaps/user testing/surveys/analytics, how hard to build. Weighted, mostly yes/no, cutting scoring subjectivity. Best for mature programmes; the slowest option.",
+        "RICE (Intercom): Reach, Impact, Confidence, Effort. Adds audience size; good when reach varies between ideas.",
+        "Apply evidence gating: no test enters the backlog without at least 2 points of evidence, plus a profit-weighted ceiling estimate."
+      ],
+      "caveats": [
+        "The source does not define what counts as a 'point of evidence'.",
+        "PXL is the slowest framework to score; do not adopt it before the team has a research habit."
+      ],
+      "tags": [
+        "testing",
+        "conversion-optimization",
+        "prioritization",
+        "ice",
+        "pie",
+        "pxl",
+        "rice"
+      ],
+      "id": "b40eda5546e8b28937501371",
+      "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+      "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+      "source_name": "CRO as testing and experimentation for DTC ecommerce.docx",
+      "folder": "/09-CRO-testing",
+      "domain": "testing",
+      "section": 0
+    },
+    {
+      "title": "Prioritise by expected profit, not expected lift",
+      "summary": "Score expected value as P(win) x expected lift x value per conversion x traffic exposed minus build cost, and weight DTC tests by gross profit per conversion rather than revenue.",
+      "use_when": "Ranking a backlog where ideas differ in the margin and traffic they touch, not just in expected lift.",
+      "steps": [
+        "Replace 'impact' as a loose score with an explicit objective: expected value = P(win) x expected lift x value per conversion x traffic exposed, minus build cost.",
+        "See why it matters: a 20% lift on a low-margin, low-traffic page can be worth less than a 5% lift on the checkout of your hero product.",
+        "For a DTC brand, weight by gross profit per conversion, not revenue, because a conversion lift that shifts mix toward low-margin SKUs can raise revenue and cut profit.",
+        "Combine with evidence gating: use PXL-style criteria (no test enters the backlog without at least 2 points of evidence) plus a profit-weighted ceiling estimate.",
+        "Use the frameworks (ICE, PIE, PXL, RICE) as inputs to this calculation rather than as the decision itself."
+      ],
+      "caveats": [
+        "P(win) must be an honest estimate; if you cannot state it, the calculation is decorative.",
+        "Margin data has to be available at SKU level for the gross-profit weighting to work."
+      ],
+      "tags": [
+        "testing",
+        "conversion-optimization",
+        "prioritization",
+        "expected-value",
+        "profit",
+        "dtc"
+      ],
+      "id": "012c55d3da9921010393d0ca",
+      "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+      "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+      "source_name": "CRO as testing and experimentation for DTC ecommerce.docx",
+      "folder": "/09-CRO-testing",
+      "domain": "testing",
+      "section": 0
+    },
+    {
+      "title": "Research methods that generate testable hypotheses",
+      "summary": "Each research method feeds a specific kind of hypothesis — funnel analysis says where, replay says what confuses, surveys say what objects, interviews say how to message.",
+      "use_when": "Building a backlog from evidence rather than opinion, or when tests keep losing.",
+      "steps": [
+        "Analytics funnel analysis (GA4, Shopify): find the step with the biggest drop and the most traffic. Feeds where to test.",
+        "Session replay: watch real sessions to see rage clicks, dead clicks, loops and form abandonment. Feeds what is confusing.",
+        "Heatmaps and scroll maps: see what gets attention and what is missed. Feeds hypotheses about placement and reach. Weight by revenue per click, not raw clicks.",
+        "On-site surveys (exit intent, post-purchase): ask why people did not buy or almost did not. Feeds objections.",
+        "User testing: watch 5-8 people attempt a task and narrate. Feeds usability problems.",
+        "Customer interviews: understand motivation, anxiety and the words customers use. Feeds messaging hypotheses.",
+        "Treat the output of research as a prioritised, evidence-backed hypothesis, not a test itself. The DRIP experiment database reports a 36.3% win rate because it pre-qualifies every hypothesis with analytics, session recordings and heatmaps before building; teams that test without research see lower win rates."
+      ],
+      "caveats": [
+        "DRIP's 36.3% is a research-prequalified win rate with a looser win definition than platform benchmarks — do not compare it directly to the ~10-20% figures.",
+        "The source gives no sample-size or method-selection criteria for qualitative research beyond the stated user-testing count."
+      ],
+      "tags": [
+        "testing",
+        "conversion-optimization",
+        "customer-research",
+        "research",
+        "hypothesis-generation",
+        "session-replay",
+        "surveys"
+      ],
+      "id": "190b30cb9417b577b0079636",
+      "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+      "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+      "source_name": "CRO as testing and experimentation for DTC ecommerce.docx",
+      "folder": "/09-CRO-testing",
+      "domain": "testing",
+      "section": 0
+    },
+    {
+      "title": "Test design: hypothesis template, guardrails, and pre-registered splits",
+      "summary": "Write the hypothesis as observed evidence -> change -> effect -> segment -> primary metric, define guardrails, and pre-register device and traffic-source segments.",
+      "use_when": "Writing a test brief before build, or reviewing a test request that lacks a decision rule.",
+      "steps": [
+        "Use this hypothesis structure: 'Because we observed [evidence], we believe [change] will cause [effect] for [segment], measured by [primary metric]. We will know it worked if [metric moves by MDE].' This ties the test to evidence and a decision.",
+        "Choose the primary metric deliberately (conversion rate for speed, RPV or gross profit per visitor when order value matters) and state it in advance.",
+        "Declare guardrail metrics that must not get worse even if the primary improves: AOV, return rate, refund rate, page load, add-to-cart, margin.",
+        "Set duration as at least one full week, in practice two, plus enough to hit the pre-computed sample size. Do not stop just because you hit significance early.",
+        "Pre-register segments rather than fishing: mobile and desktop convert differently and can move in opposite directions, so a blended win can hide a mobile loss. Same for paid vs organic and new vs returning.",
+        "Include an SRM check and a plan for what decision each outcome (win, loss, inconclusive) triggers."
+      ],
+      "caveats": [
+        "Pre-registering segments means you cannot then claim a post-hoc segment win as the result.",
+        "A micro-conversion primary (add-to-cart, begin-checkout) powers faster but may not carry through to purchase — keep purchase and revenue as guardrails."
+      ],
+      "tags": [
+        "testing",
+        "conversion-optimization",
+        "experiment-design",
+        "hypothesis",
+        "guardrail-metrics",
+        "pre-registration"
+      ],
+      "id": "ac82f2e395bf76de2a6f3a6b",
+      "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+      "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+      "source_name": "CRO as testing and experimentation for DTC ecommerce.docx",
+      "folder": "/09-CRO-testing",
+      "domain": "testing",
+      "section": 0
+    },
+    {
+      "title": "Shopify checkout testing limits: what is possible per plan (verify yearly)",
+      "summary": "Checkout extensibility killed client-side checkout A/B testing on standard Shopify; non-Plus merchants test everything before checkout, Plus merchants use Checkout Blocks and Rollouts.",
+      "use_when": "Planning a test that touches the Shopify checkout, cart, or pricing display.",
+      "steps": [
+        "Know the change: since Shopify rolled out checkout extensibility to all merchants (checkout.liquid deprecated; general rollout August 2024), direct JavaScript injection into checkout is gone. Third-party client-side tools can no longer A/B test the checkout UI by injecting JS, and Shopify's developer forum confirms there is no built-in way via extensibility rules to show a customisation to one group and hide it from another.",
+        "On non-Plus plans (Basic, Shopify, Advanced), test everything before checkout: product pages, collection pages, cart, homepage, add-to-cart, trust badges, pricing display. Varify and similar run via a head snippet on all plans.",
+        "On Shopify Plus, use checkout extensibility (Checkout Blocks, UI extensions, Shopify Functions, Branding API) plus native theme A/B testing. Some apps (Personizely, Checkout Boost) run limited checkout-element tests via Checkout Blocks on Plus.",
+        "Use Shopify's native Rollouts for server-side theme A/B testing: the split happens on Shopify's servers before the page ships, so there is no flicker and no speed penalty. It reports numbers but gives no significance verdict, so the statistical judgment is yours; it requires a paid plan tier.",
+        "Weigh the general rule: about 80% of high-impact ecommerce tests happen before checkout anyway.",
+        "Decide client-side vs server-side by path: use client-side for front-end visual tests on product, cart and home pages; use server-side or Shopify Rollouts for anything touching checkout, pricing logic or performance-sensitive paths.",
+        "Server-side advantages: no flicker, faster, robust across devices, can test backend logic (pricing, search, recommendations, checkout), works with feature flags. Costs: needs engineers and a deploy cycle, higher cost, slower to ship. Client-side advantages: marketers own it, visual editor, fast to ship. Costs: flicker risk, added JS payload and slower page, easier to break, logic is public."
+      ],
+      "caveats": [
+        "This position is evolving: as of late 2025 native checkout A/B testing is limited to Plus theme/Rollouts and a few Checkout Blocks apps — re-verify yearly because Shopify is actively adding extensibility features.",
+        "AB Tasty describes flicker as inherent to client-side overlayer testing and says there is 'no miracle fix'."
+      ],
+      "tags": [
+        "testing",
+        "conversion-optimization",
+        "shopify",
+        "checkout",
+        "client-side",
+        "server-side",
+        "rollouts"
+      ],
+      "id": "e80571bd7902e981047a1b45",
+      "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+      "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+      "source_name": "CRO as testing and experimentation for DTC ecommerce.docx",
+      "folder": "/09-CRO-testing",
+      "domain": "testing",
+      "section": 0
+    },
+    {
+      "title": "Price testing: legal, ethical and the Amazon 2000 cautionary case",
+      "summary": "Price differences must not be based on protected characteristics, the EU requires disclosure of personalised prices, and even legal same-time price differences are a brand landmine.",
+      "use_when": "Considering any experiment that changes the price shown to different users for the same product.",
+      "steps": [
+        "Apply the legal baseline: price testing is lawful in the US and EU provided the price difference is not based on protected characteristics (nationality, gender, race) — that is negative price discrimination and illegal.",
+        "Apply the disclosure rule: the EU requires disclosure when a price is personalised.",
+        "Recognise the brand risk: showing two different prices for the identical product to different users at the same time is legal in most places but is an ethics and brand landmine.",
+        "Learn the Amazon case: in September 2000 Amazon tested discount levels of 20% to 40% on 68 DVD titles over five days; after customers compared notes and backlash followed, Amazon refunded 6,896 customers an average of $3.10 each (about $21,377 total). Bezos said they had never tested and never will test prices based on customer demographics, and called even that a mistake because it created uncertainty for customers. Amazon still refuses personalised pricing.",
+        "Adopt the safer practice: test price presentation, framing, tiers and bundles rather than the raw number for the same SKU; or test different offerings (add or remove a feature) at different prices.",
+        "Note that dedicated Shopify price-test apps exist (TestSignal) if you decide the safer tests fit your programme."
+      ],
+      "caveats": [
+        "The Amazon refund figures are a case study, not a prediction of backlash magnitude.",
+        "Ethics and legal review should precede build, not follow the result."
+      ],
+      "tags": [
+        "testing",
+        "conversion-optimization",
+        "pricing",
+        "legal",
+        "ethics",
+        "price-discrimination"
+      ],
+      "id": "a7b2f8b945bdfa9714f8eea4",
+      "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+      "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+      "source_name": "CRO as testing and experimentation for DTC ecommerce.docx",
+      "folder": "/09-CRO-testing",
+      "domain": "testing",
+      "section": 0
+    },
+    {
+      "title": "Reading results: confidence intervals, practical significance, and inconclusive tests",
+      "summary": "Report confidence intervals over p-values, judge against the MDE and business value, and treat a fully powered inconclusive test as valid evidence that the effect is small.",
+      "use_when": "Interpreting a finished test and deciding what to ship.",
+      "steps": [
+        "Report confidence intervals rather than bare p-values. A CI shows the plausible range of the effect and its magnitude; a p-value collapses that to a yes/no at an arbitrary cliff.",
+        "Separate statistical from practical significance: a result can be statistically significant but too small to matter, or practically large but not yet significant. Decide against the MDE and the business value, not just p<0.05.",
+        "Do not read significance as '95% likely real'. The 5% in alpha is the false-alarm rate among true nulls, not the chance your specific win is false. If only 10% of your ideas truly work and you test at 80% power, roughly 1 in 5 of your significant wins is a false positive.",
+        "Treat a fully powered inconclusive test as valid evidence that the effect is smaller than your MDE, not a failure. Do not extend it hoping for significance — that is peeking. Ship neither version, or ship the cheaper/simpler one, and move on.",
+        "Heed Kohavi: it is of little value to extend a test that is significantly negative after two weeks; fail fast.",
+        "Keep an institutional experiment log: hypothesis, evidence, primary and guardrail metrics, MDE, planned sample and dates, actual result with CI, SRM check, decision, and what was learned. This stops the same losing idea being re-run and gets surprising winners replicated."
+      ],
+      "caveats": [
+        "The 1-in-5 false-positive illustration depends on assumed base rates (10% of ideas work, 80% power) and is not a universal constant.",
+        "At Booking.com scale (1,000+ concurrent experiments) the bottleneck is not running tests but not fooling yourself with them."
+      ],
+      "tags": [
+        "testing",
+        "conversion-optimization",
+        "measurement",
+        "results-analysis",
+        "confidence-intervals",
+        "experiment-log"
+      ],
+      "id": "b3a6e66bf71a2a7e3d116e55",
+      "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+      "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+      "source_name": "CRO as testing and experimentation for DTC ecommerce.docx",
+      "folder": "/09-CRO-testing",
+      "domain": "testing",
+      "section": 0
+    },
+    {
+      "title": "Ecommerce win-rate benchmarks with their definitions and samples",
+      "summary": "Reported win rates span roughly 8% to 36% because they measure different things — always carry the definition and sample with the number.",
+      "use_when": "Setting expectations for a testing programme, or sanity-checking a vendor's claimed win rate.",
+      "steps": [
+        "Anchor on the most conservative, best-sourced figure: about 10-20% of well-run tests produce a statistically significant winner (Kohavi; Thomke/Ghosh; Optimizely).",
+        "Cite the specific samples: Microsoft about one-third of experiments improved the key metric, but in well-optimised domains like Bing only 10-20% (Kohavi); Microsoft 33%, Bing 15%. Google Ads, Booking.com and Netflix about 10% (Manzi 2012; Thomke 2020). Airbnb Search about 8% (Kohavi).",
+        "Use the largest meta-analysis: Harvard's Stefan Thomke and Sourobh Ghosh analysed about 20,000 anonymised Optimizely experiments across 1,000+ customers and found just 10% had a statistically significant uplift for the primary metric.",
+        "Know Optimizely's own numbers: 127,000 experiments across 1,100 companies showed only 12% win on the primary metric; clients average about 20% across all experiments but only 10% for revenue-tied tests, with a 35-40% conclusive rate. VWO reports about 14%; CXL/Convert about 20%.",
+        "Read the higher figures in context: DRIP's ecommerce experiment database reports 36.3% win rate, 22.1% loss, 41.6% inconclusive, a 62.1% decisive win rate, median winner RPV uplift +2.77% and top quartile +5.21% or higher — higher than industry because DRIP pre-qualifies hypotheses with research.",
+        "Cross-check with an audited sample: ConversionTeam's 2,288 audited tests show 19.1% statistically significant winners per test, 50.5% raw winners, 61.1% decisive.",
+        "Calibrate realistic lift sizes: for mature, well-optimised pages, 1-5% lifts are realistic; for early-stage or unoptimised pages, 10-20%+ is possible. Treat claims of 50%+ with suspicion and re-test them.",
+        "Account for the winner's curse: tests run on small samples (200 conversions instead of 2,000) produce both false positives and inflated lift estimates, so early-stopped big winners regress hard."
+      ],
+      "caveats": [
+        "The figures are not in conflict once you note DRIP pre-qualifies hypotheses with research and reports a looser win definition.",
+        "Never repeat a win-rate number without its definition (significant-per-test vs decisive rate) and sample."
+      ],
+      "tags": [
+        "testing",
+        "conversion-optimization",
+        "measurement",
+        "benchmarks",
+        "win-rate",
+        "statistics",
+        "twymans-law"
+      ],
+      "id": "49d73ccc069dda08095cc8e6",
+      "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+      "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+      "source_name": "CRO as testing and experimentation for DTC ecommerce.docx",
+      "folder": "/09-CRO-testing",
+      "domain": "testing",
+      "section": 0
+    },
+    {
+      "title": "Stage-gated experimentation playbook by monthly order volume",
+      "summary": "A source-specific order-volume heuristic for choosing a research and experimentation approach; verify feasibility with a sample-size calculation.",
+      "use_when": "Choosing an initial experimentation approach, using the source bands as rough planning heuristics rather than statistical eligibility gates.",
+      "steps": [
+        "Before using any band below, calculate sample size and duration for the actual baseline rate, minimum detectable effect, allocation, power and significance level. Crossing an order threshold does not make a test adequately powered.",
+        "Assume a DTC context: roughly 2-3% site conversion rate and mostly new/anonymous traffic. Orders per month is the binding constraint because conversions per variant drive power.",
+        "Under 30 orders/month: valid are qualitative research only (session replay, surveys, user testing, customer interviews, analytics funnel review), best-practice implementation of known fixes, and repairs. Not valid: any A/B test, A/B/n, bandits, or before/after with statistical claims — you cannot power even a 30% lift in a reasonable window (about 120+ conversions per variant needed). Do instead: fix what is broken, apply proven best practices without testing, build the research habit and an experiment log, interview customers.",
+        "30-300 orders/month: valid are bold big-swing A/B tests on the highest-traffic page (home, hero product, cart), designed to detect 20%+ relative lifts over 2-4 weeks with a fixed pre-computed sample. Micro-conversion primary metrics with purchase as guardrail are valid; sequential before/after only for large structural changes with conditions held constant. Not valid: tweak tests needing a small MDE, A/B/n, revenue-per-visitor as primary (needs about 6x traffic), same-SKU price tests. Do instead: one big test at a time, research-heavy, sample-size calculator before every test.",
+        "300-3,000 orders/month: valid are regular A/B tests targeting 10-20% lifts on high-traffic pages with conversion rate as primary and guardrails on AOV/margin/return rate, two-week minimum runtime and SRM checks; use sequential or always-valid engines (Statsig, GrowthBook, Eppo, Optimizely) so you can monitor without peeking penalties. Borderline: RPV as primary, A/B/n with 2-3 arms, CUPED if you have returning identified users. Not valid: detecting sub-5% lifts, many simultaneous variants, same-SKU price tests.",
+        "3,000-20,000 orders/month: valid are A/B/n, bandits for short campaigns and tactical high-volume decisions, RPV with winsorization, CUPED, pre-registered segment analysis, and device/source splits. Detecting 5-10% lifts becomes feasible on hero pages. Not valid: reliably detecting sub-2-3% lifts without long runtimes; same-SKU price discrimination. Do instead: run a proper programme with server-side checkout/pricing testing (Plus), hybrid A/B plus bandit, formal guardrails and stopping rules.",
+        "20,000+ orders/month: valid are small-MDE tests (2-5%), revenue and gross-profit-per-visitor primaries, CUPED and variance reduction, always-valid sequential monitoring, multiple concurrent experiments with FDR control, bandits for personalisation, holdouts for surprising winners, and long-term novelty/primacy analysis. Not valid: naive same-SKU price discrimination, unplanned peeking, uncorrected multiple comparisons. Do instead: operate like Booking or Microsoft in miniature — institutional experiment log, replication of surprising results, A/A tests to validate the platform, and a culture that expects most tests to fail."
+      ],
+      "caveats": [
+        "These numeric bands and timelines are source heuristics, not universal statistical thresholds. Do not promise a 2-4 week test from monthly order volume alone.",
+        "The bands assume the stated 2-3% conversion rate and mostly anonymous traffic; a store with very different dynamics should recompute.",
+        "Bandit use below the 3,000 orders/month gate is defensible only for short regret-minimising campaigns."
+      ],
+      "tags": [
+        "testing",
+        "conversion-optimization",
+        "experiment-design",
+        "stage-gates",
+        "order-volume",
+        "dtc",
+        "programme-design"
+      ],
+      "id": "e11fba22ea67d2c2e3f757f0",
+      "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+      "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+      "source_name": "CRO as testing and experimentation for DTC ecommerce.docx",
+      "folder": "/09-CRO-testing",
+      "domain": "testing",
+      "section": 0
+    }
+  ],
+  "request_id": "cc30cd0938af9f15248af9d63ed847dc9553b876615b2e45d3d91c3392e04738"
+}

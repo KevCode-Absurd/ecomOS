@@ -1,0 +1,268 @@
+{
+  "request_id": "cd2a969711bc9b479367aefbfaa2590db850802b8f335b93da18dbc3253b1423",
+  "provider": "deepseek",
+  "model": "deepseek-flash",
+  "effort": "none",
+  "completion_limit": 16384,
+  "usage": {
+    "prompt_tokens": 3197,
+    "completion_tokens": 3011,
+    "total_tokens": 6208,
+    "prompt_tokens_details": {
+      "cached_tokens": 512
+    },
+    "prompt_cache_hit_tokens": 512,
+    "prompt_cache_miss_tokens": 2685
+  },
+  "booked_cost_usd": 0.0045723,
+  "seconds": 16.14,
+  "finish_reason": "stop",
+  "output": {
+    "cards": [
+      {
+        "title": "Understand the Three Core Web Vitals and Their Thresholds",
+        "summary": "The three Core Web Vitals metrics—LCP, FID, CLS—and the specific thresholds you should chase on every product and landing page.",
+        "use_when": "Setting performance targets for your storefront's key templates (homepage, category, PDP, checkout) before or during a speed optimization project.",
+        "steps": [
+          "Treat LCP (Largest Contentful Paint) as your loading-performance metric: the time until the largest image or text block renders. Target under 2.5 seconds; the source treats anything over 4 seconds as bad and likely to hurt SEO.",
+          "Treat FID (First Input Delay) as your interactivity metric: the time from a user's first click to the browser processing that event handler. Target under 100 ms; over 300 ms is bad. The source's framing: you don't want a page that renders while its controls don't work.",
+          "Treat CLS (Cumulative Layout Shift) as your visual-stability metric: unexpected jumps/movement of elements. Fix it by reserving space so late-loading assets don't shove content around.",
+          "Prioritize by element, not by metric: identify the largest above-the-fold element (often a hero image or headline) for LCP, and the elements that jump for CLS.",
+          "Note the thresholds are the source's framing of Google's guidance; verify current thresholds against Google's live documentation since these bands can change.",
+          "Because customers bounce when a slow page denies them instant gratification, the source argues page-load performance is directly tied to revenue—so don't deprioritize speed behind cosmetic redesigns."
+        ],
+        "caveats": [
+          "FID only captures delay on the first input; it says nothing about ongoing responsiveness after first interaction.",
+          "The source presents 2.5s/4.0s, 100ms/300ms bands as the practical good/bad lines, not a fine-grained calculation."
+        ],
+        "tags": [
+          "speed",
+          "core-web-vitals",
+          "measurement",
+          "product-page",
+          "landing-page",
+          "conversion-optimization",
+          "bounce-rate"
+        ]
+      },
+      {
+        "title": "Diagnose LCP Bottlenecks with the Network Waterfall",
+        "summary": "Use the browser Network tab waterfall to find the wide-bar assets delaying Largest Contentful Paint.",
+        "use_when": "When your homepage, category page, or PDP loads slowly and you need to identify which specific asset is the LCP bottleneck.",
+        "steps": [
+          "Open your store page and open the browser's Network tab, then look at the network waterfall.",
+          "Scan for assets drawn as very wide bars; the source says these are your bottlenecks because they take the longest to load.",
+          "Identify which asset is actually the largest rendered element (often the hero product image or headline) and check whether it's the one blocking LCP.",
+          "Cross-check with the Web Vitals Chrome extension below—the waterfall narrows the timing, the extension names the exact DOM element.",
+          "Once identified, attack the bottleneck with the LCP optimization card (compression, CDN, preload, avoid render-blocking JS)."
+        ],
+        "caveats": [
+          "Waterfall view is browser- and device-environment dependent; what is slow on your connection may differ on mobile networks, which is where most storefront traffic often sits.",
+          "The waterfall shows timing, not which element Google considers the LCP candidate—use the extension for that."
+        ],
+        "tags": [
+          "speed",
+          "core-web-vitals",
+          "lcp",
+          "chrome-devtools",
+          "diagnostics",
+          "product-page"
+        ]
+      },
+      {
+        "title": "Optimize LCP: Compress, Serve via CDN, Unblock Rendering",
+        "summary": "Four mechanical levers for pulling Largest Contentful Paint under 2.5 seconds on storefront pages.",
+        "use_when": "After you've identified your LCP element and need concrete fixes for your hero image, category tiles, or above-the-fold content.",
+        "steps": [
+          "Reduce resource load time: compress images and move to modern formats like WebP; reduce fonts to the bare minimum needed to render the page, since each font is a downloaded asset.",
+          "Serve assets from a CDN. The source notes deploying to platforms like Firebase or Vercel handles CDN delivery automatically, so you don't manually manage edge caching.",
+          "Eliminate render-blocking JavaScript above the fold. If scripts must execute before the hero image displays, they delay LCP. The source cites this as a reason server-side frameworks (e.g., Next.js) beat client-only single-page apps like plain React on initial load—SPAs must run a lot of JS before main content renders.",
+          "Use preload links so important assets are discovered first by the browser, and set fetchpriority to high on critical above-the-fold images so low-priority below-fold images don't compete with them."
+        ],
+        "caveats": [
+          "Switching rendering architecture (SPA to SSR) is a major rebuild, not a quick tactical fix; only pursue it if the simpler levers are insufficient.",
+          "The source's deployment-platform CDN behavior is a snapshot and vendor interfaces change—verify current behavior in your platform's docs."
+        ],
+        "tags": [
+          "speed",
+          "core-web-vitals",
+          "lcp",
+          "cdn",
+          "image-optimization",
+          "webp",
+          "javascript-optimization",
+          "product-page"
+        ]
+      },
+      {
+        "title": "Make the LCP Element Explicit with Preload and Fetchpriority",
+        "summary": "Resource-priority hints that ensure the browser fetches your hero content before lower-priority assets.",
+        "use_when": "When a hero product image or above-the-fold headline loads late because the browser is guessing wrong about priority.",
+        "steps": [
+          "Identify your LCP candidate element first (via the Web Vitals extension), typically the main hero image on a homepage or the primary product image on a PDP.",
+          "Add a preload link for that asset so the browser discovers it early rather than waiting on CSS/JS parsing.",
+          "Set fetchpriority=\"high\" (per the source's guidance) on the critical image; set low priority on below-the-fold images so they don't load ahead of the hero.",
+          "Verify the change reduced LCP in a lab run (Lighthouse or the Web Vitals extension) or field data, rather than assuming the attribute alone fixed it.",
+          "Do not over-apply: marking everything high-priority defeats the point and can re-create competition for bandwidth."
+        ],
+        "caveats": [
+          "Source states this as a general ability of modern browsers; exact syntax and behavior should be verified against current browser support before shipping.",
+          "Preloading too many assets can worsen performance by forcing unnecessary early downloads."
+        ],
+        "tags": [
+          "speed",
+          "lcp",
+          "resource-priority",
+          "preload",
+          "product-page",
+          "landing-page",
+          "core-web-vitals"
+        ]
+      },
+      {
+        "title": "Reduce Interactivity Delay (FID) by Cutting JavaScript Execution",
+        "summary": "The only meaningful FID lever is less JS work on the main thread—via workers, lazy loading, or interactivity-first frameworks.",
+        "use_when": "When customers click add-to-cart, filters, or quantity controls and experience noticeable lag before the page responds.",
+        "steps": [
+          "Measure first: install the Web Vitals Chrome extension to log FID and interaction latency, then click the laggy control to pinpoint the bottleneck.",
+          "The source says the primary optimization is reducing JavaScript execution time—you cannot simply delete all JS, so move or defer it instead.",
+          "Move non-essential third-party scripts (analytics, chat, pixels) off the main thread using Web Workers; the source names Partytown as the tool for offloading third-party scripts to a worker.",
+          "Use framework lazy loading (e.g., React lazy) to defer non-critical components until needed, keeping the main thread free at first interaction.",
+          "Consider interactivity-focused frameworks like Qwik, which the source describes as using aggressive lazy loading to achieve instant interactivity—relevant if you're rebuilding."
+        ],
+        "caveats": [
+          "Third-party scripts (chat widgets, personalization, remarketing pixels) are common in ecommerce and are exactly the scripts worth offloading; test that the offloaded tool still functions.",
+          "Framework-level changes are architectural and costly; treat tools like Qwik as rebuild-time options, not drop-in fixes."
+        ],
+        "tags": [
+          "speed",
+          "core-web-vitals",
+          "fid",
+          "javascript-optimization",
+          "web-workers",
+          "partytown",
+          "lazy-loading",
+          "cart"
+        ]
+      },
+      {
+        "title": "Prevent CLS with Explicit Image Dimensions and aspect-ratio",
+        "summary": "Reserve layout space for images and embeds so late-loading content doesn't shove your layout and cause accidental taps.",
+        "use_when": "When category grids, PDP images, or ingredient/spec elements jump as they load, causing mis-taps or a broken-feeling storefront.",
+        "steps": [
+          "Give every image explicit width and height attributes so the browser can reserve its space before the file loads.",
+          "Alternatively, use the CSS aspect-ratio property to reserve space without hardcoding exact pixel dimensions—the source highlights this as the flexible way to avoid CLS.",
+          "For responsive images that must change aspect ratio by viewport, use the srcset attribute to serve different images under different conditions rather than letting the layout shift.",
+          "Audit known CLS generators in ecommerce: injected advertisements, promotional banners that push content down, and over-ambitious entrance animations. Reserve space for ad/banner slots even when empty.",
+          "Verify with Lighthouse or the Web Vitals extension, which names the DOM elements causing shift so you can investigate each."
+        ],
+        "caveats": [
+          "Explicit dimensions alone don't fix dynamic content such as personalized banners or promo slots—those need reserved containers.",
+          "The source treats animations as a contributor to bad CLS when they do too much; temper motion effects near interactive controls."
+        ],
+        "tags": [
+          "speed",
+          "core-web-vitals",
+          "cls",
+          "image-optimization",
+          "aspect-ratio",
+          "category-page",
+          "product-page",
+          "checkout"
+        ]
+      },
+      {
+        "title": "Use the Web Vitals Chrome Extension to Name the Exact Problem Element",
+        "summary": "Google's Web Vitals extension logs the specific DOM elements and subpart timings behind poor LCP and CLS in the browser console.",
+        "use_when": "When Lighthouse gives you a numeric score but you need to know which actual element on your homepage or PDP to fix.",
+        "steps": [
+          "Install the Web Vitals Chrome extension from the Chrome team, then open its settings and enable console logging.",
+          "Open your storefront page and open the browser console; you will receive console logs for CLS and LCP as the page loads.",
+          "For LCP, the log names exactly which element affects the metric—that's the element to optimize—and it breaks down subparts such as Time to First Byte and element render delay.",
+          "For CLS, the log lists the DOM elements causing layout shift; investigate each and apply the aspect-ratio/dimensions fixes.",
+          "Click something on the page to receive an FID log, plus additional measurement chances for interactions after the first."
+        ],
+        "caveats": [
+          "The source describes the extension as newly released at the time and says it was in personal use for only a couple of days—verify the current interface and available logs.",
+          "Lab measurement on your machine won't equal field performance across your real customers' devices and networks."
+        ],
+        "tags": [
+          "speed",
+          "core-web-vitals",
+          "measurement",
+          "chrome-extension",
+          "lcp",
+          "cls",
+          "fid",
+          "diagnostics"
+        ]
+      },
+      {
+        "title": "Run Site-Wide Audits in Parallel with Unlighthouse",
+        "summary": "One command audits every URL on your domain in parallel, surfacing outlier pages that drag down sitewide performance.",
+        "use_when": "When your store has hundreds or thousands of URLs (product, category, and content pages) and manual per-page auditing is impossible.",
+        "steps": [
+          "Create a new directory for the audit work.",
+          "Run the command `npx unlighthouse --site <url>` with your store's address; the tool runs Google Lighthouse reports on every page in parallel, so hundreds of pages take only a couple of minutes per the source.",
+          "Watch the UI, which shows performance in real time as results come in.",
+          "Review results to find outlier pages with very poor performance—the source's point is these are pages you would never have known were slow from spot-checking.",
+          "Fix outliers and, since Unlighthouse has an SDK, consider integrating it into your continuous integration pipeline so new deploys can't silently regress page performance."
+        ],
+        "caveats": [
+          "Site-wide audits can hammer a production server; run against a staging environment or throttle where appropriate.",
+          "The exact CLI flags may change over time—verify against the current Unlighthouse documentation before relying on the command.",
+          "Parallel lab audits approximate performance; treat scores as triage, confirming important pages with field data."
+        ],
+        "tags": [
+          "speed",
+          "core-web-vitals",
+          "unlighthouse",
+          "auditing",
+          "lighthouse",
+          "ci-cd",
+          "measurement",
+          "diagnostics"
+        ]
+      },
+      {
+        "title": "Use Lighthouse Scores to Triage, Not to Judge Vendors",
+        "summary": "How to interpret popular-site performance comparisons and avoid cargo-culting someone else's scores.",
+        "use_when": "When deciding which performance targets are realistic for your store, or when a stakeholder points at a competitor's high score.",
+        "steps": [
+          "Treat audit scores as triage for finding slow pages, not as an absolute judgment of site quality. The source's sample of major sites (Amazon, Google, Reddit, Hub, Astro) averaged around 90, with Astro's framework homepage near perfect—these are examples, not benchmarks you must hit.",
+          "Recognize that a complex commerce site can still perform well: the source expected Amazon to do poorly given heavy imagery but found it actually did quite well, while the Web Vitals extension still showed CLS issues on it.",
+          "Prioritize the pages that actually drive revenue (homepage, top category pages, top PDPs, cart/checkout entry) rather than chasing a uniform score across every URL.",
+          "Pair the aggregate score with element-level diagnosis (Web Vitals extension, network waterfall) so you fix real user-visible problems rather than optimizing for the audit tool.",
+          "Set expectations: a perfect score on a marketing site (like the Astro homepage) is not a fair target for an image-heavy catalog."
+        ],
+        "caveats": [
+          "Scores vary by device profile, network throttling, and third-party scripts, so comparisons across different setups are not apples-to-apples.",
+          "The source only observed these sites briefly in its own tests; do not treat its impressions as durable benchmark data."
+        ],
+        "tags": [
+          "speed",
+          "core-web-vitals",
+          "lighthouse",
+          "auditing",
+          "measurement",
+          "prioritization",
+          "conversion-optimization"
+        ]
+      }
+    ]
+  },
+  "raw_content": "{\"cards\":[{\"title\":\"Understand the Three Core Web Vitals and Their Thresholds\",\"summary\":\"The three Core Web Vitals metrics—LCP, FID, CLS—and the specific thresholds you should chase on every product and landing page.\",\"use_when\":\"Setting performance targets for your storefront's key templates (homepage, category, PDP, checkout) before or during a speed optimization project.\",\"steps\":[\"Treat LCP (Largest Contentful Paint) as your loading-performance metric: the time until the largest image or text block renders. Target under 2.5 seconds; the source treats anything over 4 seconds as bad and likely to hurt SEO.\",\"Treat FID (First Input Delay) as your interactivity metric: the time from a user's first click to the browser processing that event handler. Target under 100 ms; over 300 ms is bad. The source's framing: you don't want a page that renders while its controls don't work.\",\"Treat CLS (Cumulative Layout Shift) as your visual-stability metric: unexpected jumps/movement of elements. Fix it by reserving space so late-loading assets don't shove content around.\",\"Prioritize by element, not by metric: identify the largest above-the-fold element (often a hero image or headline) for LCP, and the elements that jump for CLS.\",\"Note the thresholds are the source's framing of Google's guidance; verify current thresholds against Google's live documentation since these bands can change.\",\"Because customers bounce when a slow page denies them instant gratification, the source argues page-load performance is directly tied to revenue—so don't deprioritize speed behind cosmetic redesigns.\"],\"caveats\":[\"FID only captures delay on the first input; it says nothing about ongoing responsiveness after first interaction.\",\"The source presents 2.5s/4.0s, 100ms/300ms bands as the practical good/bad lines, not a fine-grained calculation.\"],\"tags\":[\"speed\",\"core-web-vitals\",\"measurement\",\"product-page\",\"landing-page\",\"conversion-optimization\",\"bounce-rate\"]},{\"title\":\"Diagnose LCP Bottlenecks with the Network Waterfall\",\"summary\":\"Use the browser Network tab waterfall to find the wide-bar assets delaying Largest Contentful Paint.\",\"use_when\":\"When your homepage, category page, or PDP loads slowly and you need to identify which specific asset is the LCP bottleneck.\",\"steps\":[\"Open your store page and open the browser's Network tab, then look at the network waterfall.\",\"Scan for assets drawn as very wide bars; the source says these are your bottlenecks because they take the longest to load.\",\"Identify which asset is actually the largest rendered element (often the hero product image or headline) and check whether it's the one blocking LCP.\",\"Cross-check with the Web Vitals Chrome extension below—the waterfall narrows the timing, the extension names the exact DOM element.\",\"Once identified, attack the bottleneck with the LCP optimization card (compression, CDN, preload, avoid render-blocking JS).\"],\"caveats\":[\"Waterfall view is browser- and device-environment dependent; what is slow on your connection may differ on mobile networks, which is where most storefront traffic often sits.\",\"The waterfall shows timing, not which element Google considers the LCP candidate—use the extension for that.\"],\"tags\":[\"speed\",\"core-web-vitals\",\"lcp\",\"chrome-devtools\",\"diagnostics\",\"product-page\"]},{\"title\":\"Optimize LCP: Compress, Serve via CDN, Unblock Rendering\",\"summary\":\"Four mechanical levers for pulling Largest Contentful Paint under 2.5 seconds on storefront pages.\",\"use_when\":\"After you've identified your LCP element and need concrete fixes for your hero image, category tiles, or above-the-fold content.\",\"steps\":[\"Reduce resource load time: compress images and move to modern formats like WebP; reduce fonts to the bare minimum needed to render the page, since each font is a downloaded asset.\",\"Serve assets from a CDN. The source notes deploying to platforms like Firebase or Vercel handles CDN delivery automatically, so you don't manually manage edge caching.\",\"Eliminate render-blocking JavaScript above the fold. If scripts must execute before the hero image displays, they delay LCP. The source cites this as a reason server-side frameworks (e.g., Next.js) beat client-only single-page apps like plain React on initial load—SPAs must run a lot of JS before main content renders.\",\"Use preload links so important assets are discovered first by the browser, and set fetchpriority to high on critical above-the-fold images so low-priority below-fold images don't compete with them.\"],\"caveats\":[\"Switching rendering architecture (SPA to SSR) is a major rebuild, not a quick tactical fix; only pursue it if the simpler levers are insufficient.\",\"The source's deployment-platform CDN behavior is a snapshot and vendor interfaces change—verify current behavior in your platform's docs.\"],\"tags\":[\"speed\",\"core-web-vitals\",\"lcp\",\"cdn\",\"image-optimization\",\"webp\",\"javascript-optimization\",\"product-page\"]},{\"title\":\"Make the LCP Element Explicit with Preload and Fetchpriority\",\"summary\":\"Resource-priority hints that ensure the browser fetches your hero content before lower-priority assets.\",\"use_when\":\"When a hero product image or above-the-fold headline loads late because the browser is guessing wrong about priority.\",\"steps\":[\"Identify your LCP candidate element first (via the Web Vitals extension), typically the main hero image on a homepage or the primary product image on a PDP.\",\"Add a preload link for that asset so the browser discovers it early rather than waiting on CSS/JS parsing.\",\"Set fetchpriority=\\\"high\\\" (per the source's guidance) on the critical image; set low priority on below-the-fold images so they don't load ahead of the hero.\",\"Verify the change reduced LCP in a lab run (Lighthouse or the Web Vitals extension) or field data, rather than assuming the attribute alone fixed it.\",\"Do not over-apply: marking everything high-priority defeats the point and can re-create competition for bandwidth.\"],\"caveats\":[\"Source states this as a general ability of modern browsers; exact syntax and behavior should be verified against current browser support before shipping.\",\"Preloading too many assets can worsen performance by forcing unnecessary early downloads.\"],\"tags\":[\"speed\",\"lcp\",\"resource-priority\",\"preload\",\"product-page\",\"landing-page\",\"core-web-vitals\"]},{\"title\":\"Reduce Interactivity Delay (FID) by Cutting JavaScript Execution\",\"summary\":\"The only meaningful FID lever is less JS work on the main thread—via workers, lazy loading, or interactivity-first frameworks.\",\"use_when\":\"When customers click add-to-cart, filters, or quantity controls and experience noticeable lag before the page responds.\",\"steps\":[\"Measure first: install the Web Vitals Chrome extension to log FID and interaction latency, then click the laggy control to pinpoint the bottleneck.\",\"The source says the primary optimization is reducing JavaScript execution time—you cannot simply delete all JS, so move or defer it instead.\",\"Move non-essential third-party scripts (analytics, chat, pixels) off the main thread using Web Workers; the source names Partytown as the tool for offloading third-party scripts to a worker.\",\"Use framework lazy loading (e.g., React lazy) to defer non-critical components until needed, keeping the main thread free at first interaction.\",\"Consider interactivity-focused frameworks like Qwik, which the source describes as using aggressive lazy loading to achieve instant interactivity—relevant if you're rebuilding.\"],\"caveats\":[\"Third-party scripts (chat widgets, personalization, remarketing pixels) are common in ecommerce and are exactly the scripts worth offloading; test that the offloaded tool still functions.\",\"Framework-level changes are architectural and costly; treat tools like Qwik as rebuild-time options, not drop-in fixes.\"],\"tags\":[\"speed\",\"core-web-vitals\",\"fid\",\"javascript-optimization\",\"web-workers\",\"partytown\",\"lazy-loading\",\"cart\"]},{\"title\":\"Prevent CLS with Explicit Image Dimensions and aspect-ratio\",\"summary\":\"Reserve layout space for images and embeds so late-loading content doesn't shove your layout and cause accidental taps.\",\"use_when\":\"When category grids, PDP images, or ingredient/spec elements jump as they load, causing mis-taps or a broken-feeling storefront.\",\"steps\":[\"Give every image explicit width and height attributes so the browser can reserve its space before the file loads.\",\"Alternatively, use the CSS aspect-ratio property to reserve space without hardcoding exact pixel dimensions—the source highlights this as the flexible way to avoid CLS.\",\"For responsive images that must change aspect ratio by viewport, use the srcset attribute to serve different images under different conditions rather than letting the layout shift.\",\"Audit known CLS generators in ecommerce: injected advertisements, promotional banners that push content down, and over-ambitious entrance animations. Reserve space for ad/banner slots even when empty.\",\"Verify with Lighthouse or the Web Vitals extension, which names the DOM elements causing shift so you can investigate each.\"],\"caveats\":[\"Explicit dimensions alone don't fix dynamic content such as personalized banners or promo slots—those need reserved containers.\",\"The source treats animations as a contributor to bad CLS when they do too much; temper motion effects near interactive controls.\"],\"tags\":[\"speed\",\"core-web-vitals\",\"cls\",\"image-optimization\",\"aspect-ratio\",\"category-page\",\"product-page\",\"checkout\"]},{\"title\":\"Use the Web Vitals Chrome Extension to Name the Exact Problem Element\",\"summary\":\"Google's Web Vitals extension logs the specific DOM elements and subpart timings behind poor LCP and CLS in the browser console.\",\"use_when\":\"When Lighthouse gives you a numeric score but you need to know which actual element on your homepage or PDP to fix.\",\"steps\":[\"Install the Web Vitals Chrome extension from the Chrome team, then open its settings and enable console logging.\",\"Open your storefront page and open the browser console; you will receive console logs for CLS and LCP as the page loads.\",\"For LCP, the log names exactly which element affects the metric—that's the element to optimize—and it breaks down subparts such as Time to First Byte and element render delay.\",\"For CLS, the log lists the DOM elements causing layout shift; investigate each and apply the aspect-ratio/dimensions fixes.\",\"Click something on the page to receive an FID log, plus additional measurement chances for interactions after the first.\"],\"caveats\":[\"The source describes the extension as newly released at the time and says it was in personal use for only a couple of days—verify the current interface and available logs.\",\"Lab measurement on your machine won't equal field performance across your real customers' devices and networks.\"],\"tags\":[\"speed\",\"core-web-vitals\",\"measurement\",\"chrome-extension\",\"lcp\",\"cls\",\"fid\",\"diagnostics\"]},{\"title\":\"Run Site-Wide Audits in Parallel with Unlighthouse\",\"summary\":\"One command audits every URL on your domain in parallel, surfacing outlier pages that drag down sitewide performance.\",\"use_when\":\"When your store has hundreds or thousands of URLs (product, category, and content pages) and manual per-page auditing is impossible.\",\"steps\":[\"Create a new directory for the audit work.\",\"Run the command `npx unlighthouse --site <url>` with your store's address; the tool runs Google Lighthouse reports on every page in parallel, so hundreds of pages take only a couple of minutes per the source.\",\"Watch the UI, which shows performance in real time as results come in.\",\"Review results to find outlier pages with very poor performance—the source's point is these are pages you would never have known were slow from spot-checking.\",\"Fix outliers and, since Unlighthouse has an SDK, consider integrating it into your continuous integration pipeline so new deploys can't silently regress page performance.\"],\"caveats\":[\"Site-wide audits can hammer a production server; run against a staging environment or throttle where appropriate.\",\"The exact CLI flags may change over time—verify against the current Unlighthouse documentation before relying on the command.\",\"Parallel lab audits approximate performance; treat scores as triage, confirming important pages with field data.\"],\"tags\":[\"speed\",\"core-web-vitals\",\"unlighthouse\",\"auditing\",\"lighthouse\",\"ci-cd\",\"measurement\",\"diagnostics\"]},{\"title\":\"Use Lighthouse Scores to Triage, Not to Judge Vendors\",\"summary\":\"How to interpret popular-site performance comparisons and avoid cargo-culting someone else's scores.\",\"use_when\":\"When deciding which performance targets are realistic for your store, or when a stakeholder points at a competitor's high score.\",\"steps\":[\"Treat audit scores as triage for finding slow pages, not as an absolute judgment of site quality. The source's sample of major sites (Amazon, Google, Reddit, Hub, Astro) averaged around 90, with Astro's framework homepage near perfect—these are examples, not benchmarks you must hit.\",\"Recognize that a complex commerce site can still perform well: the source expected Amazon to do poorly given heavy imagery but found it actually did quite well, while the Web Vitals extension still showed CLS issues on it.\",\"Prioritize the pages that actually drive revenue (homepage, top category pages, top PDPs, cart/checkout entry) rather than chasing a uniform score across every URL.\",\"Pair the aggregate score with element-level diagnosis (Web Vitals extension, network waterfall) so you fix real user-visible problems rather than optimizing for the audit tool.\",\"Set expectations: a perfect score on a marketing site (like the Astro homepage) is not a fair target for an image-heavy catalog.\"],\"caveats\":[\"Scores vary by device profile, network throttling, and third-party scripts, so comparisons across different setups are not apples-to-apples.\",\"The source only observed these sites briefly in its own tests; do not treat its impressions as durable benchmark data.\"],\"tags\":[\"speed\",\"core-web-vitals\",\"lighthouse\",\"auditing\",\"measurement\",\"prioritization\",\"conversion-optimization\"]}]}",
+  "input": {
+    "source_id": "1ket4M_Zd7LiPyCcX37SEQ5RN_x2S_kxi",
+    "source_sha256": "112414b9b593a874eb3057fac105429c029f54b8f465119cf202606f250b4cf6",
+    "source_name": "The ultimate guide to web performance.docx",
+    "folder": "/08-SPD-speed",
+    "domain": "speed",
+    "section": 0,
+    "section_count": 1,
+    "text": "08-SPD / speed and performance\n\nGoes here. Loading performance, browser rendering, perceived performance, resource optimization, Core Web Vitals (CWV), caching strategies, and the technical mechanics of shrinking file sizes and reducing execution time. Specifically capturing the definitions and optimization tactics for Largest Contentful Paint (LCP), First Input Delay (FID), and Cumulative Layout Shift (CLS).\n\nNot here.\n\nWebsite security, SSL certificates, or DDoS protection -> 23-SEC\n\nGoogle Analytics 4 installation and event tracking -> 06-MEA\n\nHeader.\n\nurl:\n\nrights: public_reference\n\nwhy: Provides baseline definitions for Core Web Vitals (LCP, FID, CLS) and explains mechanical optimization tactics like setting image aspect ratios, utilizing preload links, and analyzing performance across an entire domain using Unlighthouse.\n\nmodules: [SPD]\n\ntopics: [core web vitals]\n\ntier: 3\n\nscope_hint: baseline\n\nTopics.\n\ncore web vitals / Understanding the three primary metrics of Google's Core Web Vitals. Largest Contentful Paint (LCP): measures loading performance, tracking the time it takes to render the largest image or text block. LCP must occur within 2.5 seconds (anything over 4 seconds negatively impacts SEO). Optimizations include compressing images (using WebP formats), utilizing CDNs (like Firebase or Vercel), minimizing render-blocking JavaScript, and using HTML preload links and fetchpriority attributes on critical assets. First Input Delay (FID): measures interactivity, tracking the time from a user's first click to the browser's response. FID must be under 100 milliseconds. Optimizations include reducing JavaScript execution time via lazy loading, using frameworks like Qwik, or offloading scripts to Web Workers (via tools like Partytown). Cumulative Layout Shift (CLS): measures visual stability, tracking unexpected page jumps. Optimizations include explicitly defining image dimensions (width and height) or using the CSS aspect-ratio property, and utilizing the srcset attribute for responsive images to reserve space before they load.\n\nauditing tools / Using the Chrome Network Tab waterfall to identify asset bottlenecks. Installing the Web Vitals Chrome Extension to log specific DOM elements causing LCP or CLS issues directly in the browser console. Running Unlighthouse (npx unlighthouse --site <url>) to perform parallel Lighthouse audits across hundreds of URLs simultaneously to find outlier pages with poor performance.\n\nLook for. The specific LCP threshold: good is <2.5 seconds, poor is >4.0 seconds. The specific FID threshold: good is <100 milliseconds, poor is >300 milliseconds. The CSS attribute used to prevent CLS without hardcoding exact pixels: aspect-ratio. The tool to offload third-party scripts to a Web Worker: Partytown. The exact terminal command to run site-wide audits: npx unlighthouse.\n\nSkip. Plugs for Fireship Pro. The subjective analysis of Amazon, Reddit, or Astro's homepage scores.\n\nScope mix.\n\nAlmost all baseline.\n\nVolume.\n\n10 to 15.\n\nif I don't capture your attention in the next five seconds you're not going to watch this video humans today have extremely short attention spans thanks to the nearly unlimited number of ways to get instant gratification and pleasure and because of that web developers need to be obsessed with initial page load performance if your website is slow it will lose money because people won't get their instant gratification and then bounce but achieving Optimal Performance is complex like do you really understand things like largest contentful paint first input delay and cumulative layout shift by the end of today's video you'll understand what these are but more importantly how to measure and optimize them in your own project and I'm not just talking about Lighthouse here but I'll show you how to use some tools you've never heard of like unlike house and the new web vitals Chrome extension and we'll use them to analyze popular websites in the real world like Amazon Google and of course in order to use these tools effectively though we first need to understand core web vitals let's start with the largest contentful paint simply put this metric is most important for measuring loading performance when a website loads it needs to fetch a bunch of assets from the internet somewhere like your CSS HTML JavaScript images is and videos initially you'll get the first contentful paint then gradually the web page will load all the images and videos which will be your largest contentful paint to achieve good performance Google says you need to get to LCP within 2.5 seconds anything beyond 4 seconds is bad and will likely have an impact on things like search engine optimization the most basic way to analyze it is to open up the network tab in your browser and examine the network waterfall this will show you how each asset is loaded and you can identify bottlenecks because they'll have a really Wide Bar in the chart so once you've identified an issue how do you actually optimize for largest contentful pain well there's quite a few things we can do the first and most obvious thing is to reduce the resource load time if you have massive images and assets they're going to take longer to load make sure your images are compressed and you likely want to use modern formats like webp same thing goes for fonts and you should only use the bare minimum number of fonts that you need to render the page that's step one but in production you'll also want to make sure you're serving your assets from a Content delivery network if you deploy to a place like Firebase or versel it'll handle all the CDN magic for you automatically the other big potential issue is render blocking JavaScript for example maybe you need to run some JavaScript before you display the actual image in the page which will delay LCP you should try to avoid this at all cost and it's one of the reasons that server-side Frameworks like nexjs have taken favor over single page applications like plain react because on initial page load single page applications need to run a bunch of JavaScript before they can render the main content that's good to know but there's at least one more cool optimization we can make in modern browsers you can optimize resource priority by using preload links to make sure that important assets are discovered first in addition you can change the fetch priority on images to either high or low so that low priority image is at the bottom of the page won't get loaded before the more important ones unfortunately though largest contentful paint isn't the only thing we need to worry about we also have first input delay which measures interactivity a website needs to have a first input delay of 100 milliseconds or less and at 300 milliseconds becomes bad what it's measuring is the amount of time it takes from the moment a user interacts with the page like when they click on a button to the time it takes the browser to process event handler is for that interaction basically you don't want a website to render if the actual things on it don't work measuring it is a little more tricky but I'll show you how to do it in just a minute with the new web vitals plugin and basically the only way to optimize it is to reduce your JavaScript execution time but One does not simply just get rid of their JavaScript you can use tools like web workers and Party Town to move some of your JavaScript into a worker or most JavaScript Frameworks have the option for lazy loading like react lazy for example or there are Frameworks like quick that are optimized for instant interactivity by using highly aggressive lazy loading but that brings us to our final metric cumulative layout shift it measures visual stability or in other words elements on the page shouldn't be jumping around in unexpected ways you can measure it by generating a lighthouse reporting Chrome Dev tools or with the web vitals extension as we'll see in a minute one of the easiest ways to get bad CLS is to use images without Dimensions when using images they should always have a width and height or alternatively use the CSS aspect ratio property that's usually an easy fix unless you have responsive images that need to change their aspect ratio based on the viewport in that case you'll likely want to use Source set to use different images under different conditions in addition you might get bad CLS as a result of advertisements being injected into the website or from poorly designed animations that try to do too much we could talk all day about performance but I think these three metrics are the most important to understand now that you know how they work let's do some real world analysis the Chrome team at Google just released a new web vitals extension and go ahead and install it and then also go to the settings and enable console login after that go to your favorite webpage like fireship.io and open up the console you'll notice that we now get console logs for CLS and LCP when it comes to largest contentful paint it will tell us exactly which element is affecting that metric which is extremely important because that's the thing you want to optimize in addition it will break down the time for its subparts like time to First byte and element render delay then when it comes to layout shift it will give us the elements in the Dom that are affecting that metric so we might want to investigate those and see if we can do anything to optimize them if we then click on something we'll also get a log for first input delay and we'll also get measurement chance for any interactions thereafter and this will allow you to pinpoint any bottlenecks with interactivity I've only been using this extension for a couple days now but it's been a game changer for analyzing performance on my own website primarily because it's so good at pinpointing the exact things that need to be fixed but when you have a website that has hundreds or thousands of different pages it's impossible to go through and analyze performance on every single page and that's why you should know about this other tool called unlite house it's an open source tool that runs a Google Lighthouse report on every single page in your website and it does everything in parallel so it only takes a couple of minutes to analyze hundreds of pages to run it simply create a new directory and then run npx on Lighthouse with your website address it'll bring up a UI to show you how bad your website performance is in real time and while I was happy to find that most pages had great performance there were some unexpected pages that had very poor performance and I never would have known that otherwise I thought that was pretty interesting so I went ahead and ran on lighthouse on a variety of popular websites first I tried amazon.com I expected it to have relatively poor performance just because it's relatively complex with tons of images but it actually did quite well although when using the web vitals plugin I noticed a lot of cumulative layout shift issues on Amazon Google as expected performed very well because they're the ones that create all these performance rules in the first place and almost every major website I analyzed including Reddit and hub all performed extremely well with an average performance of around 90. the one website that really crushed it in performance though is astro.build the homepage for the Astro framework it almost got perfect 100s across the board so it really does live up to its claims for awesome performance what's cool about unlite house though is that it also has an SDK so you can integrate it into your continuous integration pipeline as well if you want to learn more about stuff like this become a pro member at fireship i o for even more content thanks for watching and I will see you in the next one",
+    "prior_notes": [],
+    "id": "305700a778695aef7d619a8c"
+  },
+  "system_prompt_sha256": "f2341d28186a0dbaee868d37ce33c173f631088eb1754997556740d4905c0f2b"
+}

@@ -1,0 +1,225 @@
+{
+  "request_id": "c23dfa1348c6ac681892158d720aae2fd66a9d669cea1d4e07cacf62a1a9f3d3",
+  "provider": "openai",
+  "model": "gpt-6-astra",
+  "effort": "medium",
+  "completion_limit": 8192,
+  "usage": {
+    "prompt_tokens": 6356,
+    "completion_tokens": 1435,
+    "total_tokens": 7791,
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 6353,
+      "audio_tokens": 0
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 107,
+      "audio_tokens": 0,
+      "accepted_prediction_tokens": 0,
+      "rejected_prediction_tokens": 0
+    }
+  },
+  "booked_cost_usd": 0.1512,
+  "seconds": 47.12,
+  "finish_reason": "stop",
+  "output": {
+    "answer_markdown": "# TrailFold conversion diagnosis\n\n**Conversion fell primarily because mobile sessions converted worse—not simply because mobile became a larger share of traffic. The observed funnel deterioration is before checkout: fewer sessions add to cart, and fewer cart sessions start checkout. The underlying cause is not yet established.**\n\n## 1. What changed\n\nRates below use orders ÷ sessions; changes are percentage points (pp).\n\n| Segment | Previous 30 days | Current 30 days | Change |\n|---|---:|---:|---:|\n| Overall | 600 ÷ 20,000 = **3.00%** | 500 ÷ 25,000 = **2.00%** | **−1.00 pp; −33.3% relative** |\n| Mobile | 400 ÷ 15,000 = **2.67%** | 300 ÷ 20,000 = **1.50%** | **−1.17 pp; −43.8% relative** |\n| Desktop | 200 ÷ 5,000 = **4.00%** | 200 ÷ 5,000 = **4.00%** | **Unchanged** |\n\nSessions increased **25%**, but orders fell **16.7%**. All 5,000 additional sessions were mobile; mobile orders nevertheless fell by 100. Desktop volumes and conversion were unchanged.\n\nMobile traffic share rose from **75% to 80%**. Applying the previous device conversion rates to today's mix gives:\n\n**80% × 2.67% + 20% × 4.00% ≈ 2.93%.**\n\nOn this decomposition, device mix explains only about **0.07 pp** of the **1.00 pp** decline; lower conversion within mobile explains approximately **0.93 pp**. This does not distinguish weaker mobile traffic quality from mobile experience problems.\n\nAOV stayed at **$90**: $54,000 ÷ 600 and $45,000 ÷ 500. Revenue per session fell from **$2.70 to $1.80**, down **33.3%**. This is not merely a lower conversion rate offset by larger baskets.\n\n## 2. Where the funnel deteriorated\n\n| Stage | Previous | Current | Change |\n|---|---:|---:|---:|\n| Session → add to cart | 2,000 ÷ 20,000 = **10%** | 2,000 ÷ 25,000 = **8%** | **−2 pp** |\n| Add to cart → checkout start | 1,200 ÷ 2,000 = **60%** | 1,000 ÷ 2,000 = **50%** | **−10 pp** |\n| Checkout start → purchase | 600 ÷ 1,200 = **50%** | 500 ÷ 1,000 = **50%** | **Unchanged** |\n\nThe full funnel reconciles: **10% × 60% × 50% = 3%**, versus **8% × 50% × 50% = 2%**.\n\n**Prioritize acquisition/landing-to-cart and cart-to-checkout investigation, not a payment-page redesign.** Stable aggregate checkout completion does not rule out a browser-specific defect masked by other segments. Device-level stage counts are missing, so the upstream leakage cannot yet be assigned specifically to mobile.\n\n## 3. Evidence versus hypotheses\n\n- **Product-information friction is plausible.** Laptop sizing and delivery timing sit below reviews. Support received 42 delivery questions, 28 laptop-fit questions and 18 waterproof questions. These support testing clearer information near the purchase controls: padded **13-inch** laptop sleeve, **water-resistant—not waterproof**, and free US shipping with a **4–7-business-day delivery estimate**. They do not prove what caused this period's decline; no dated page-change history is supplied.\n- **Traffic-quality or ad-to-page mismatch is plausible.** Meta spend rose **22.2%**, CPM rose **25%**, and link CTR fell **20%**. These are acquisition warning signs, not proof that Meta caused the mobile conversion loss.\n- **Mobile technical friction remains unverified.** There are no recordings, field-speed measurements or browser-level funnel data. Do not label speed, broken buttons or payment errors as established causes.\n\nMeta's reported ROAS increased from **3.0 to 3.2**, but its unreconciled attribution cannot override Shopify's deterioration. Klaviyo's overlapping attributed revenue is not additive evidence of growth.\n\n## 4. Three most useful missing facts\n\n1. **Device/browser funnel progression:** identify the exact mobile step and browser losing shoppers; validate events against actual checkout/order records.\n2. **Traffic composition within mobile:** compare source/campaign, landing page and new/returning visitor conversion across both periods.\n3. **A dated change-and-incident history:** align the decline with storefront, tracking, campaign, offer or availability changes, then reproduce any suspected defect.\n\nStart with those checks and targeted mobile purchase-path QA. Avoid broad redesigns or increased acquisition spending until the failure point is clearer.",
+    "questions": [
+      "Can you supply both periods' session-based add-to-cart, checkout-start and purchase counts by device and browser, including checkout-step errors where available?",
+      "Can you supply mobile sessions and funnel rates by source/campaign, landing page and new versus returning visitor for both periods?",
+      "What storefront, app, tracking, campaign, price/promotion or product-availability changes occurred around the decline, and when did each occur?"
+    ],
+    "assumptions": [
+      "Orders are used as the purchase numerator, consistent with the supplied internally consistent session-based funnel.",
+      "The two equal-length Shopify periods are treated as comparable; no unreported tracking or session-definition change is assumed.",
+      "The device-mix decomposition applies previous device rates to current traffic weights; it is descriptive, not a causal estimate.",
+      "Support themes identify possible objections, not verified abandonment reasons or evidence that those objections recently increased."
+    ]
+  },
+  "raw_content": "{\n  \"answer_markdown\": \"# TrailFold conversion diagnosis\\n\\n**Conversion fell primarily because mobile sessions converted worse—not simply because mobile became a larger share of traffic. The observed funnel deterioration is before checkout: fewer sessions add to cart, and fewer cart sessions start checkout. The underlying cause is not yet established.**\\n\\n## 1. What changed\\n\\nRates below use orders ÷ sessions; changes are percentage points (pp).\\n\\n| Segment | Previous 30 days | Current 30 days | Change |\\n|---|---:|---:|---:|\\n| Overall | 600 ÷ 20,000 = **3.00%** | 500 ÷ 25,000 = **2.00%** | **−1.00 pp; −33.3% relative** |\\n| Mobile | 400 ÷ 15,000 = **2.67%** | 300 ÷ 20,000 = **1.50%** | **−1.17 pp; −43.8% relative** |\\n| Desktop | 200 ÷ 5,000 = **4.00%** | 200 ÷ 5,000 = **4.00%** | **Unchanged** |\\n\\nSessions increased **25%**, but orders fell **16.7%**. All 5,000 additional sessions were mobile; mobile orders nevertheless fell by 100. Desktop volumes and conversion were unchanged.\\n\\nMobile traffic share rose from **75% to 80%**. Applying the previous device conversion rates to today's mix gives:\\n\\n**80% × 2.67% + 20% × 4.00% ≈ 2.93%.**\\n\\nOn this decomposition, device mix explains only about **0.07 pp** of the **1.00 pp** decline; lower conversion within mobile explains approximately **0.93 pp**. This does not distinguish weaker mobile traffic quality from mobile experience problems.\\n\\nAOV stayed at **$90**: $54,000 ÷ 600 and $45,000 ÷ 500. Revenue per session fell from **$2.70 to $1.80**, down **33.3%**. This is not merely a lower conversion rate offset by larger baskets.\\n\\n## 2. Where the funnel deteriorated\\n\\n| Stage | Previous | Current | Change |\\n|---|---:|---:|---:|\\n| Session → add to cart | 2,000 ÷ 20,000 = **10%** | 2,000 ÷ 25,000 = **8%** | **−2 pp** |\\n| Add to cart → checkout start | 1,200 ÷ 2,000 = **60%** | 1,000 ÷ 2,000 = **50%** | **−10 pp** |\\n| Checkout start → purchase | 600 ÷ 1,200 = **50%** | 500 ÷ 1,000 = **50%** | **Unchanged** |\\n\\nThe full funnel reconciles: **10% × 60% × 50% = 3%**, versus **8% × 50% × 50% = 2%**.\\n\\n**Prioritize acquisition/landing-to-cart and cart-to-checkout investigation, not a payment-page redesign.** Stable aggregate checkout completion does not rule out a browser-specific defect masked by other segments. Device-level stage counts are missing, so the upstream leakage cannot yet be assigned specifically to mobile.\\n\\n## 3. Evidence versus hypotheses\\n\\n- **Product-information friction is plausible.** Laptop sizing and delivery timing sit below reviews. Support received 42 delivery questions, 28 laptop-fit questions and 18 waterproof questions. These support testing clearer information near the purchase controls: padded **13-inch** laptop sleeve, **water-resistant—not waterproof**, and free US shipping with a **4–7-business-day delivery estimate**. They do not prove what caused this period's decline; no dated page-change history is supplied.\\n- **Traffic-quality or ad-to-page mismatch is plausible.** Meta spend rose **22.2%**, CPM rose **25%**, and link CTR fell **20%**. These are acquisition warning signs, not proof that Meta caused the mobile conversion loss.\\n- **Mobile technical friction remains unverified.** There are no recordings, field-speed measurements or browser-level funnel data. Do not label speed, broken buttons or payment errors as established causes.\\n\\nMeta's reported ROAS increased from **3.0 to 3.2**, but its unreconciled attribution cannot override Shopify's deterioration. Klaviyo's overlapping attributed revenue is not additive evidence of growth.\\n\\n## 4. Three most useful missing facts\\n\\n1. **Device/browser funnel progression:** identify the exact mobile step and browser losing shoppers; validate events against actual checkout/order records.\\n2. **Traffic composition within mobile:** compare source/campaign, landing page and new/returning visitor conversion across both periods.\\n3. **A dated change-and-incident history:** align the decline with storefront, tracking, campaign, offer or availability changes, then reproduce any suspected defect.\\n\\nStart with those checks and targeted mobile purchase-path QA. Avoid broad redesigns or increased acquisition spending until the failure point is clearer.\",\n  \"questions\": [\n    \"Can you supply both periods' session-based add-to-cart, checkout-start and purchase counts by device and browser, including checkout-step errors where available?\",\n    \"Can you supply mobile sessions and funnel rates by source/campaign, landing page and new versus returning visitor for both periods?\",\n    \"What storefront, app, tracking, campaign, price/promotion or product-availability changes occurred around the decline, and when did each occur?\"\n  ],\n  \"assumptions\": [\n    \"Orders are used as the purchase numerator, consistent with the supplied internally consistent session-based funnel.\",\n    \"The two equal-length Shopify periods are treated as comparable; no unreported tracking or session-definition change is assumed.\",\n    \"The device-mix decomposition applies previous device rates to current traffic weights; it is descriptive, not a causal estimate.\",\n    \"Support themes identify possible objections, not verified abandonment reasons or evidence that those objections recently increased.\"\n  ]\n}",
+  "input": {
+    "brand": {
+      "fictional": true,
+      "name": "TrailFold",
+      "market": "US",
+      "currency": "USD",
+      "platforms": [
+        "Shopify",
+        "Meta Ads",
+        "Klaviyo"
+      ],
+      "positioning": "Practical lightweight bags for commuters who take short weekend trips; restrained, useful, plain-spoken voice.",
+      "products": [
+        {
+          "sku": "DAY18",
+          "name": "Daypack 18L",
+          "price": 80,
+          "landed_cogs": 28,
+          "pick_pack": 2,
+          "merchant_shipping_cost": 8,
+          "payment_fee_percent": 3,
+          "features": [
+            "18L capacity",
+            "padded 13-inch laptop sleeve",
+            "water-resistant fabric, not waterproof",
+            "external bottle pocket"
+          ],
+          "stock": 210,
+          "daily_units_sold": 8,
+          "confirmed_replenishment_units": 500,
+          "replenishment_arrival_days": 35
+        },
+        {
+          "sku": "POUCH",
+          "name": "Cable pouch",
+          "price": 20,
+          "landed_cogs": 5,
+          "stock": 800
+        },
+        {
+          "sku": "BOTTLE",
+          "name": "Steel bottle",
+          "price": 32,
+          "landed_cogs": 9,
+          "stock": 600
+        }
+      ],
+      "policies": {
+        "shipping": "Free US shipping; delivery estimate 4-7 business days",
+        "returns": "30-day returns for unused products; return shipping paid by customer",
+        "discounts": "No current discount. Any new discount needs owner approval."
+      },
+      "claim_constraints": [
+        "No evidence for waterproof, medical, sustainability or lifetime-durability claims.",
+        "No verified competitor performance data.",
+        "No clinical or controlled product test results."
+      ],
+      "customer_themes": {
+        "simulated_review_count": 120,
+        "themes": [
+          "fits daily commute",
+          "customers ask whether a 15-inch laptop fits",
+          "customers ask whether rain protection means waterproof"
+        ],
+        "support_tickets_last_30_days": {
+          "delivery_date_questions": 42,
+          "15_inch_laptop_fit": 28,
+          "waterproof_questions": 18
+        },
+        "note": "Themes, not verbatim licensed testimonials; no fabricated quotes or endorsements."
+      },
+      "website_snapshot": {
+        "pdp_headline": "Adventure starts here",
+        "first_image": "product on plain background",
+        "pdp_details": "Laptop sizing and delivery window are below reviews; CTA says Buy now. No field speed or session-recording data."
+      },
+      "shopify": {
+        "previous_30_days": {
+          "sessions": 20000,
+          "orders": 600,
+          "net_product_revenue": 54000,
+          "mobile_sessions": 15000,
+          "mobile_orders": 400,
+          "desktop_sessions": 5000,
+          "desktop_orders": 200,
+          "add_to_cart_sessions": 2000,
+          "checkout_started_sessions": 1200
+        },
+        "current_30_days": {
+          "sessions": 25000,
+          "orders": 500,
+          "net_product_revenue": 45000,
+          "mobile_sessions": 20000,
+          "mobile_orders": 300,
+          "desktop_sessions": 5000,
+          "desktop_orders": 200,
+          "add_to_cart_sessions": 2000,
+          "checkout_started_sessions": 1000
+        },
+        "definitions": "Revenue excludes tax/shipping; periods equal length. Funnel counts are session-based and internally consistent, but no controlled attribution experiment.",
+        "new_customer_share_current": 0.72,
+        "cohort_90_day_repeat_rate": 0.14
+      },
+      "meta": {
+        "previous_30_days": {
+          "spend": 18000,
+          "reported_purchase_value": 54000,
+          "cpm": 12,
+          "link_ctr_percent": 1.5
+        },
+        "current_30_days": {
+          "spend": 22000,
+          "reported_purchase_value": 70400,
+          "cpm": 15,
+          "link_ctr_percent": 1.2
+        },
+        "settings": "7-day click plus 1-day view; no incremental lift study. Meta reported value not reconciled to Shopify orders.",
+        "creative_history": [
+          {
+            "name": "Desk-to-trail demonstration",
+            "spend_share": 0.55,
+            "observed_result": "Largest spend recipient; mature creative. No asset-level contribution data."
+          },
+          {
+            "name": "Laptop-fit comparison",
+            "spend_share": 0.25,
+            "observed_result": "Higher CTR in small test; conversion sample not supplied."
+          },
+          {
+            "name": "Minimal product still",
+            "spend_share": 0.2,
+            "observed_result": "No reliable lift estimate."
+          }
+        ]
+      },
+      "klaviyo": {
+        "marketable_profiles": 12000,
+        "reported_attributed_revenue_current": 14000,
+        "attribution_window": "5-day click plus 5-day open",
+        "flows": [
+          {
+            "name": "welcome",
+            "messages": 1,
+            "offer": "none"
+          },
+          {
+            "name": "checkout abandonment",
+            "trigger": "Started Checkout",
+            "messages": 1,
+            "delay_hours": 24,
+            "observed_gap": "No Added to Cart flow; filters not audited."
+          }
+        ],
+        "campaigns_per_week": 3,
+        "reported_open_rate_percent": 52,
+        "click_rate_percent": 1.1,
+        "order_rate_percent": 0.18,
+        "note": "Revenue attribution overlaps other systems; no holdout or recent deliverability audit."
+      },
+      "resources": {
+        "weekly_designer_hours": 8,
+        "weekly_developer_hours": 4,
+        "owner_hours": 4,
+        "next_14_day_test_budget": 3000,
+        "cash_constraint": "Protect replenishment payments; no additional inventory purchase approved."
+      },
+      "unavailable": [
+        "GA4 breakdowns",
+        "Clarity/Hotjar recordings",
+        "field Core Web Vitals",
+        "SKU-level ad acquisition cost",
+        "cohort contribution LTV",
+        "creative-level conversion sample sizes",
+        "channel incrementality",
+        "email holdout data"
+      ]
+    },
+    "task": {
+      "title": "Diagnose conversion decline",
+      "request": "Why has conversion fallen? Calculate overall and device rates, locate the likely funnel problem, distinguish evidence from hypotheses, and identify the three most useful missing facts."
+    },
+    "reference_guidance": "[ae2ed547485eb366baa70c99] Diagnose checkout drop-off by device or browser\nApplies when: Optimizing the cart and checkout flow — locating funnel steps that lose the most shoppers and checking whether a specific browser/device has a technical problem.\n- Open the checkout journey report to see drop-off between steps: users who started checkout, added shipping info, added payment info, then purchased.\n- Change the breakdown dimension to Device category to compare completion rates across desktop, mobile and tablet.\n- Switch the breakdown to Browser and scan for a step where one browser drops off significantly more — that pattern suggests a technical bug rather than a UX preference.\n- Investigate the suspect step in that browser (e.g. reproduce the failing checkout) before assuming it is a design issue.\n- Repeat across steps to prioritise which fix affects the most lost orders.\nCondition: Requires ecommerce events (begin_checkout, add_shipping_info, add_payment_info, purchase) to be configured; GA4 does not collect these automatically.\nCondition: A higher drop-off for one browser is a hypothesis pointing to a bug, not proof.\n\n[25f9d85cd8e363cdb4527de6] Diagnose funnel constraints with stage metrics and revenue per session\nApplies when: Choosing whether to prioritize product-page content, category discovery, cart, checkout, or acquisition-landing improvements.\n- Instrument the journey from session to PDP view, add to cart, checkout start, checkout completion, purchase, AOV, and revenue per session.\n- Use the source’s stage bands only as directional context: overall conversion below 1% is labeled poor and above 5% excellent; add-to-cart below 5% poor and above 18% excellent; cart-to-checkout below 30% poor and above 70% excellent; checkout completion below 50% poor and above 80% excellent.\n- Compare PDP conversion within a relevant vertical before drawing conclusions. The source notes different expected dynamics for beauty, fashion, electronics, home goods, and subscriptions.\n- Use category context to form hypotheses: fit uncertainty may suppress apparel conversion, research intensity may suppress electronics conversion, and repeat purchase can elevate beauty results.\n- Make revenue per session a primary evaluation metric when a change could affect AOV, such as bundles, recommendations, delivery thresholds, or trust messaging.\n- Use observed leakage to prioritize. For example, a strong add-to-cart rate paired with weak checkout completion points toward checkout work rather than another PDP redesign.\nCondition: All stage bands are source-reported heuristics that vary with traffic source, device, vertical, measurement definitions, and customer mix.\nCondition: A higher conversion rate can still be commercially worse if it lowers AOV or margin; include financial guardrails.\n\n[a6c3105bd9d33400cb7bd163] Read conversion-rate funnel breakdowns to find where buyers drop\nApplies when: Diagnosing a weak conversion rate or deciding whether the problem sits in merchandising, PDP, cart or checkout.\n- Open Analytics > Reports and locate the conversion-rate breakdown report, which shows the funnel stages: sessions, add-to-cart rate, reached-checkout rate and completed checkout (conversion rate).\n- Use the window and comparison settings deliberately — a single day's number is not your average conversion rate; pick a longer window (the source uses last 12 months and year-over-year comparisons) so the average is meaningful.\n- Locate the largest drop-off between adjacent stages rather than staring at the final number.\n- If the big gap is between add-to-cart and completed checkout, the source's example diagnosis is a shipping-rate problem pushing people away at checkout — investigate shipping cost presentation before rewriting product copy.\n- If add-to-cart itself is low, the issue is upstream: traffic quality or product page persuasion, not checkout.\n- Compare against your own historical baseline and niche, not a universal benchmark — the source calls 10% add-to-cart 'very good' and 2.63% completed conversion 'acceptable for our niche' as its own example, not a target.\n- When you know which stage leaks, at least one specific fix (shipping thresholds, PDP clarity, offer) can be tested instead of guessing.\nCondition: The stated rates are the source's example store, not benchmarks to hit.\nCondition: Shopify reports these metrics using its own definitions of gross vs net sales and session counting; check Shopify's documentation for current calculation methods.\n\n[ca8c688676278b8a6b34623d] Diagnose where shoppers drop off in the add-to-cart-to-purchase flow\nApplies when: You suspect shoppers abandon between cart and checkout or between checkout and payment, and want data on which stage loses the most people before deciding where to optimize.\n- Instrument three click events — add_to_cart, checkout (or begin_checkout) and purchase — using GTM click triggers as described in the tracking card.\n- Let data accumulate, then in GA4 open an Exploration or Funnel report and compare event counts across the three steps for a chosen date range.\n- Read the flow as a drop-off profile. The source's illustrative example: 100 add-to-cart, 60 checkout, 10 purchase — i.e. 40% lost between cart and checkout and roughly 83% lost between checkout and purchase. These are illustration figures from the presenter, not benchmarks.\n- Direct optimization at the largest gap: heavy cart-to-checkout loss suggests cart UI, shipping-cost surprises or forced account creation; heavy checkout-to-purchase loss suggests payment options, form friction or trust signals.\n- Re-measure after each change to confirm the drop-off actually narrowed rather than just moving to another step.\nCondition: The 100/60/10 figures are illustrative examples the presenter gave for reading the flow, not targets or industry benchmarks.\nCondition: Click-based events count button clicks, not confirmed completions — some clicks may not represent true funnel progress.\nCondition: GA4 sampling, bot traffic and ad blockers can distort counts; validate against the platform's own checkout or order reports before acting on large gaps.\n\n[19d3b54fbeeb31f3bbd23c2d] Diagnosing Falling Conversion Rate: Tracking, Landing Page, Audience, Learning, Offer\nApplies when: Ad platform conversion rate or site conversion rate has dropped and you need to separate measurement artefacts from real storefront problems before rebuilding anything.\n- Check tracking first: has the pixel or tag stopped firing, or are you reading a window shorter than the actual conversion lag? Conversion-by-time views exist for exactly this; a bad tracking setup makes conversion rate look broken when nothing on the platform changed.\n- Check whether the landing page materially changed: a different URL, a price change, a redirect, added upsells or cross-sells, or altered merchandising. The source calls this probably the number one real cause of conversion-rate declines.\n- Check whether the audience changed: read search term reports for new, non-converting terms, and review whether the bidding strategy change pushed you toward a different audience. Low congruency between query, ad and landing page depresses conversion.\n- Check whether the learning phase reset. Large structural account changes push Google Ads back into learning, during which it enters wrong auctions and drives poor traffic.\n- Check whether the offer changed: expired promo, removed discount, or an altered free-shipping threshold all depress conversion rate independently of ads.\nCondition: Conversion lag means short-window reads systematically understate conversion rate; always compare like-for-like windows.\nCondition: The source gives no numeric thresholds, so treat the ordering as a diagnostic sequence, not a ranked statistical model.\n\n[f6fbbab529e78f45f5479ee7] Diagnose creative through the attention-to-purchase journey\nApplies when: An ad is underperforming and you need to decide whether to rebuild the creative, the landing page or something else.\n- First ask: did we get their attention? If nobody stops, the hook may be too weak or the visual itself is not interesting.\n- Second ask: did they click to the site? If people watch but nobody clicks, the creative may be entertaining but the product and its value are not compelling or not being communicated — possibly they don't understand why they need the product.\n- Third ask: what happened after the click? If an ad gets lots of quality clicks but nobody buys, do not blame the creative immediately — it may be a good ad acting as the vehicle to the website, with the problem sitting in landing page load speed or quality.\n- When investigating post-click problems, review conversion rate, add-to-carts, checkouts, offer, pricing, shipping and website experience.\n- Frame the whole system as a two-piece puzzle: the cost to acquire attention and the conversion rate. The source's illustration: sending a million people to a site converting at 0.5% can never be profitable because the cost of that traffic is too high.\nCondition: The 0.5% figure is an illustrative example used to make the arithmetic point, not a benchmark or threshold.\nCondition: Use the diagnostic order as a way to assign blame, not as a claim that only one stage can be at fault.\n\n[f856d689f3d85f8204d660c1] Turn research into evidence-backed ecommerce hypotheses\nApplies when: Building a test backlog for product pages, cart, checkout, bundles, or acquisition landing pages after repeated weak or inconclusive tests.\n- Use Shopify or GA4 funnel analysis to locate the high-traffic step with the largest drop; it identifies where to investigate.\n- Watch session replays for rage clicks, dead clicks, loops, hesitation, and form abandonment; these suggest what is confusing.\n- Use heatmaps and scroll maps to identify missed information or placement problems, but assess attention by revenue per click rather than raw clicks alone.\n- Ask on-site exit or post-purchase survey questions to uncover objections and reasons shoppers almost bought but did not.\n- Run task-based user testing with roughly 5–8 participants, as cited by the source, to expose usability barriers.\n- Interview customers to learn motivations, anxieties, and their own language; use this for messaging and offer hypotheses.\n- Write a testable statement: because of observed evidence, a specific change should affect a defined shopper segment and metric by the chosen MDE.\nCondition: Research creates hypotheses; it does not itself establish that a proposed change will improve purchase conversion.\nCondition: The source’s cited 36.3% DRIP win rate applies to research-prequalified tests and a looser win definition than some platform benchmarks.\n\n[a0544e91dab63fd873947ea8] Find your largest funnel drop-off with the conversion rate breakdown report\nApplies when: Traffic is steady but purchases are low and you need to know which funnel stage to fix first.\n- Go to Analytics, select Reports, open the category filter and choose Behavior.\n- Open the conversion rate breakdown report.\n- Read the chart on the right: sessions, sessions with cart additions, sessions that reached checkout, sessions that completed checkout.\n- Identify the largest proportional drop. Example from the source: out of 100 sessions, 5 added to cart while 95 left without adding — the drop is before cart, so the leak is on product pages and merchandising, not checkout.\n- Fix the stage with the biggest drop first; different stages call for different work (product page visuals/copy vs checkout friction).\n- Ask Sidekick targeted questions such as 'Why is my product page conversion rate low?' — it surfaces common causes and suggested fixes you can act on.\n- Optimization is continuous: recheck the funnel after changes because what works now can change in months.\nCondition: Stage comparisons are your own data, not industry benchmarks; read proportions within your funnel rather than comparing to another store's numbers.\nCondition: Sidekick insight cards and report locations shift between Shopify releases — verify the current interface.\n\n[953e03390b0d2a970fdb03f9] Diagnose a conversion-rate change before redesigning the page\nApplies when: Investigating a conversion-rate decline after scaling paid acquisition or deciding whether a PDP redesign is the right next investment.\n- Separate the metric from its drivers: assess category, price point, AOV, acquisition source, purchase intent, and how much the ad already educates a visitor before they land.\n- Account for traffic mix. The source argues cold traffic generally converts below warm and returning traffic, so blended conversion rate can fall as cold paid traffic becomes a larger share of sessions.\n- Do not compare your store’s conversion rate with another store’s without understanding traffic source and economics. The source contrasts a high-converting, lower-AOV bottom-funnel store with a lower-converting but much larger, high-contribution business.\n- Audit whether the page already provides clear product understanding, a credible offer, and proof. If it does, investigate product quality, first-order contribution margin, launches, and repeat purchase before repeatedly redesigning the page.\n- Judge the strategic outcome with RPV or contribution per visitor, particularly when increased cold traffic lowers conversion rate while improving total profitable growth.\nCondition: This is not an argument to ignore a truly weak PDP or checkout; conversion rate remains useful for diagnosis.\nCondition: The source provides no fixed conversion-rate ceiling or universal threshold for deciding that a page is sufficiently optimized.\n\n[86ca17cab2864e04b4780234] Conversion-rate troubleshooting: tracking, landing page, audience, learning, offer\nApplies when: When the conversion-rate leg of the revenue equation has fallen and you need to find which factor is responsible.\n- Check tracking first: confirm conversion tracking still fires and that you aren't reading the last few days using default conversion columns instead of conversions by conversion time.\n- Check landing page changes: did the URL change, were prices changed, is a redirect pushing traffic elsewhere, were upsells/cross-sells added, did merchandising shift? The speaker treats this as the number one likely cause of a conversion rate decrease.\n- Check audience change: same page and site but lower-quality traffic from premium auctions converts worse, and vice versa. Inspect search terms for relevancy to the landing page and whether a bidding-strategy change is pushing toward a different audience.\n- Check learning phase: a large structural change to the account resets the learning phase, which reliably lowers conversion rates because the system enters the wrong auctions and sends poor traffic.\n- Check the offer: a promo ended, a discount was removed, or the free shipping threshold changed — all directly affect conversion rate.\nCondition: A learning-phase reset from structural change can push you into a feedback loop of decline; avoid causing it unnecessarily.\nCondition: The ordering reflects the speaker's experience, not a published causal test.\n\n[50b30a244eb6d2c0d42a7e81] Segment Conversion Rate, AOV and RPV by Device\nApplies when: Setting a mobile-versus-desktop optimisation priority for a store where most traffic is mobile but most revenue looks like it comes from desktop.\n- In GA4 open Reports > Technology > Tech Overview and set a 6-12 month window depending on data volume.\n- Click View device categories, then Customize report and add: user key event rate, session key event rate, bounce rate, average engagement time per session, average purchase revenue (AOV) and average purchase revenue per active user (revenue per visitor).\n- Filter key events or purchases so the conversion columns reflect purchase conversion.\n- Compare devices: the source's example site had about 80% mobile traffic but desktop revenue per visitor roughly double mobile, with higher desktop bounce rate and longer desktop sessions.\n- Treat a large mobile-versus-desktop gap as evidence that the desktop experience exposes something mobile users never see; form hypotheses about what that element is.\n- Remember a user is one unique visitor while sessions can repeat, so session conversion rate and user conversion rate differ; industry practice in the source is to look at session conversion rate first.\nCondition: Metric labels vary by GA4 configuration and may need to be mapped to your own events.\nCondition: Device analysis shows the gap, not its cause; use heatmaps and recordings to find the specific element.\n\n[6d2e6fafa7df9f658707accc] Turn Clarity evidence into a testable ecommerce hypothesis\nApplies when: Converting Clarity findings into a prioritized experiment or implementation brief for a PDP, collection, cart, checkout, or landing page.\n- Define the page's single intended progression: view a product, select a variant, add to cart, begin checkout, or complete checkout.\n- Use click and scroll maps to establish whether shoppers reach the relevant section and interact with the intended element. Locate the most specific apparent barrier, such as a long block before add to cart, a hidden filter, a misleading static banner, or missing delivery information.\n- Open recordings for the same page, device, and behaviour to validate that the map pattern reflects actual shopper friction and to understand the likely intent.\n- Write a focused hypothesis in change-and-reason form: for example, 'Because shoppers repeatedly return to the top to change the collection filter, test a persistent filter trigger so refinements remain available while browsing products.'\n- Specify the behaviour to evaluate after release: reach to add-to-cart, CTA click share, filter use without scroll-back, PDP views from collection, cart starts, checkout progression, or purchase conversion. Choose the metric appropriate to the page's role.\n- Use this qualitative evidence to prioritize the test, then apply the store's normal experiment design and sample-size calculation before making causal claims about conversion or revenue.\nCondition: Clarity demonstrates behaviour and supports hypotheses; it does not by itself establish causality or statistical significance.\nCondition: The source demonstrates the diagnostic loop but does not provide experiment outcomes or a statistical testing design.\n\n[2b0c86c591158d80a1d65843] Diagnose a Failed Product Test: Ads Problem or Funnel Problem\nApplies when: A product test underperforms and you're deciding whether to kill the product, fix creatives, or fix the funnel.\n- Run the full process — market, problem, product selection, validation, then a sales game plan — before concluding the method failed. The presenter stresses that people often test with no plan and quit at the first unprofitable day.\n- Recognize that the product is rarely the issue. The presenter says top six-, seven- and eight-figure brands sell nothing especially remarkable; they have ads and funnel dialed in.\n- Ask which bucket the failure falls into: ad-related (creatives not good enough) or funnel-related (store, advertorial or checkout not good enough).\n- If concrete funnel KPI checks surface a checkout or payment-processing problem, fix that before touching the product.\n- The presenter claims roughly 90% of the failures he sees are ad-related, usually because sellers believe their ads are good when they aren't.\nCondition: The 90% figure is the presenter's observation, not a measured statistic.\nCondition: This is in scope as test-triage, but optimizing the ads themselves belongs to creative and media-buying work, and fixing the checkout belongs to storefront work.\n\n[7b56f452ec2a9a850b7c1d4c] Measure organic add-to-cart, checkout and purchase in GA4 to find funnel leaks\nApplies when: Reviewing whether organic traffic is producing revenue, or diagnosing whether a traffic decline is actually a conversion problem.\n- In Google Analytics, go to Reports → Engagement → Events. Locate the event list (add_to_cart, begin_checkout, purchase, form_submit).\n- Set the date range, then compare against the previous period or the same period last year using the compare option.\n- Add a breakdown dimension of 'Session default channel group' (via the plus button) so you can isolate Organic Search from the rest.\n- Filter the event to Organic Search specifically. Read each funnel event's user count for the current vs. comparison window.\n- Interpret the pattern, not just individual numbers. In the source's example, add-to-cart fell 25%, begin_checkout fell 27%, but purchase rose from 152 to 395 — the source attributes this to a prior technical/payment failure at the final step rather than a genuine conversion gain.\n- Where a mid-funnel step collapses, investigate payment or technical failures before changing content or keywords.\n- For non-ecommerce stores, use form_submit as the equivalent conversion action.\nCondition: GA4 interface and report paths change; verify current navigation before training a team on it.\nCondition: The source's numbers are one store's example, not benchmarks.\nCondition: Filters and comparisons can produce misleading results if the underlying tracking is not correctly configured.\n\n[2cac3e89ff275769ef707278] Funnel exploration: build an ecommerce funnel with breakdowns\nApplies when: Pinpointing the biggest conversion leak in your purchase path and checking whether it differs by device category.\n- Open Explore, add a Funnel exploration, and click the pencil to edit Steps.\n- Define each step as an event condition: step 1 view_item, step 2 add_to_cart, step 3 begin_checkout, step 4 purchase (use your platform's actual event names).\n- Optional: narrow a step with a parameter (e.g. item ID) to funnel only a specific product, or by page host name/location.\n- Apply and read the counts of users reaching each step and the drop-off between them.\n- Add a breakdown dimension such as Device category to compare completion rates — the demo shows desktop completing better, hinting mobile UX is worth investigating.\n- Only treat ecommerce events as available if you or your platform send them; GA4 does not collect them out of the box.\nCondition: Requires configured ecommerce events; absent them the funnel will have no steps to match.\nCondition: Higher desktop completion is a signal to investigate, not proof of a mobile defect.\n\n[9568c40e1d888b7224c2468a] Use funnel analysis and heatmaps to locate purchase friction\nApplies when: Beginning a CRO audit or diagnosing a drop in PDP-to-cart, cart-to-checkout, or checkout-to-purchase performance.\n- Map the journey from paid ad or entry page through PDP, cart, checkout, thank-you page, and any upsell flow; identify the largest abandonment points.\n- Use analytics to understand where people leave, even if a full GA4 audit is not practical at lower traffic volumes.\n- Install a heatmap tool on key product pages and inspect click maps, scroll behavior, and scroll depth. The source names Microsoft Clarity as a free option and Heatmap.com as a revenue-oriented alternative; verify current tool capabilities and setup.\n- Check whether important selling points are placed where shoppers actually see them. The source cites a case where a critical factor near the footer reached only about 6% of visitors.\n- Identify false and rage clicks, especially on elements that resemble buttons, links, or controls but do not work, then remove that friction.\n- Use findings to form test hypotheses or fix clear defects, and pair them with qualitative research to learn why behavior occurred.\nCondition: The source's 6% visibility example is a single case, not a target or benchmark.\nCondition: Heatmaps identify behavioral patterns but do not by themselves explain shopper intent."
+  },
+  "system_prompt_sha256": "b5b18ab514fe53d15702daf16979d3d02f2501c3c36cc602c3042f750540c6a3"
+}

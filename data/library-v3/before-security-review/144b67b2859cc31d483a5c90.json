@@ -1,0 +1,354 @@
+{
+  "cards": [
+    {
+      "title": "Renderer/browser process separation to limit storefront breach damage",
+      "summary": "Isolate untrusted parsing (HTML, CSS, JS, images) in sandboxed renderer processes that must request file and network access through a privileged browser process, so a store takeover stays contained.",
+      "use_when": "Architecting or reviewing the security boundaries of a custom storefront, headless-rendering service, or in-house checkout so a rendering bug cannot touch customer data or admin files.",
+      "steps": [
+        "Apply the source's 'rule of two' heuristic defensively: code that (1) processes untrusted input, (2) is written in an unsafe/memory-unsafe language, and (3) runs with privileged permissions should be avoided — any single component doing all three is high-risk. The source credits Chrome with popularizing this framing; treat it as a design heuristic, not a hard rule.",
+        "Split your system: put complicated parsing of untrusted content (product images, CSV feeds, user-supplied HTML, JS-heavy widgets) into a low-privilege process or sandbox that has no direct disk, network, or credential access.",
+        "Keep the sensitive operations (reading customer records, session cookies, payment tokens, admin files) in a separate privileged process. The low-privilege side must request these over an explicit IPC channel that the privileged side can refuse.",
+        "Label each IPC channel by the origin/tenant it serves, so a compromised renderer can only request data it legitimately owns (the site-isolation principle).",
+        "Assume the low-privilege process WILL be compromised and deny it cookies, tokens, and files belonging to other origins or customers; enforce cross-origin read blocking server-side so foreign HTML is not delivered into an untrusted renderer as data.",
+        "Verify current sandboxing, site-isolation and header behavior against your platform's present documentation before relying on specific defaults."
+      ],
+      "caveats": [
+        "The source notes limitations: prior multi-site-per-tab designs put multiple origins in one process, weakening isolation, and Spectre-class CPU attacks can cross process boundaries — process isolation alone is not a guarantee.",
+        "Some flexibility is intentional: cross-origin images and CORS-permitted responses may still need to load. Do not block all legitimate cross-origin asset loading."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "storefront-architecture",
+        "sandboxing",
+        "defense-in-depth",
+        "session-security",
+        "integration-security"
+      ],
+      "id": "d88edc4583e14a2c18f0dc5d",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 26
+    },
+    {
+      "title": "Defend against memory-safety bugs as the dominant vulnerability class",
+      "summary": "Memory-corruption bugs make up most critical browser vulns, so choose memory-safe languages and isolation for code handling untrusted storefront input.",
+      "use_when": "Selecting a stack or writing parsers/decoders for untrusted store inputs (images, feeds, uploads, custom widgets) on a storefront or checkout service.",
+      "steps": [
+        "Recognize that the source reports memory-safety issues dominate critical browser bugs (a Microsoft stat cited ~70% of yearly patched vulns; Chrome reportedly ~130 critical bugs of which only ~5 were non-memory-corruption). Treat these as directional, time-bound figures, not current benchmarks.",
+        "For any new service that parses untrusted content (image/PDF decoders, feed parsers, user-upload handlers), prefer memory-safe languages (Rust, Go, managed runtimes) where the platform prevents buffer overruns if implemented correctly.",
+        "Where you must keep C/C++ components (existing CDN edge code, native image libraries), wrap them in a low-privilege sandbox and give them no direct access to credentials, customer DBs, or the order system.",
+        "Route all untrusted-input parsing through an isolated worker so a decoder bug cannot reach the payment or account service.",
+        "Track memory-safety advisories for your native dependencies and patch promptly; auto-updating these components is a strong control.",
+        "Verify current language/runtime guarantees with the vendor rather than assuming a language is automatically safe."
+      ],
+      "caveats": [
+        "Memory-safe languages reduce but do not eliminate risk if the runtime itself has bugs; the source emphasizes correctness of the runtime matters.",
+        "The cited percentages are from the source's era and should be re-checked against current data before quoting."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "memory-safety",
+        "input-parsing",
+        "language-selection",
+        "sandboxing",
+        "upload-handling"
+      ],
+      "id": "cc9507377ff5fcc7054253a7",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 26
+    },
+    {
+      "title": "Enforce strong auto-update for storefront dependencies",
+      "summary": "Ship automatic, non-optional updates for browser/agent components and dependencies so known vulns are closed without relying on users or admins.",
+      "use_when": "Designing update policy for a storefront, an in-store kiosk browser, an embedded widget, or a dependency pipeline.",
+      "steps": [
+        "Adopt Chrome's precedent (per the source, initially controversial): make security updates automatic and on by default rather than prompting users, because outdated versions are a primary attack vector.",
+        "For customer-facing or kiosk browsers running your checkout, configure silent auto-updates so a device cannot linger on an old vulnerable build.",
+        "Build an update mechanism early — the source notes Chrome's project literally started as an auto-updater with a blank window before any browser features existed, so treat update infrastructure as a first-class dependency, not an afterthought.",
+        "For your dependency tree, pin versions but run automated vulnerability scans and PR bots so patches flow quickly; do not freeze indefinitely on an old package set.",
+        "Retire or block access from unsupported old client versions to reduce the population of vulnerable clients hitting your endpoints.",
+        "Verify the current auto-update configuration interfaces for your browser/OS, as these change over time."
+      ],
+      "caveats": [
+        "Auto-update can introduce regressions; the source treats forced updates as standard practice now but acknowledges it was once controversial.",
+        "Deleting old binaries (as the source says Chrome does) may conflict with a need to support legacy clients — decide per store."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "patching",
+        "dependency-management",
+        "kiosk-security",
+        "update-policy"
+      ],
+      "id": "4eebd777221695d9b3a575ef",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 26
+    },
+    {
+      "title": "Use site isolation and single-origin rendering per process",
+      "summary": "Give each distinct site/origin its own process and tag its IPC channel to that origin so a compromised tenant renderer cannot read other sites' cookies or data.",
+      "use_when": "Running multi-tenant embeddable storefronts, marketplaces, or iframe-based checkout widgets where one origin could attack another.",
+      "steps": [
+        "Follow the source's 'site isolation' idea: instead of isolating per tab, put each distinct site/origin into its own sandboxed process, then stitch the rendered output together in the trusted parent.",
+        "Tag each sandboxed process's IPC channel with the site it belongs to. Refuse requests from process A for origin B's cookies, tokens, or data even when A legitimately embeds B's content in an iframe.",
+        "Enforce same-origin policy and CORS decisions in the trusted parent process, not inside the untrusted renderer, so a compromised renderer cannot override them.",
+        "Implement cross-origin read blocking: if a request would deliver foreign HTML or other non-loadable data into an untrusted renderer (which could then leak via Spectre-style side channels), reject it in the parent rather than fetching it.",
+        "Allow legitimate cross-origin asset loads (images, CORS-flagged responses) through a deliberate allowlist, not by default.",
+        "For embedded third-party storefront widgets, verify the vendor actually implements origin isolation; ask for it explicitly.",
+        "Confirm the current behavior of your browser/embedded framework's site-isolation and CORB settings, as these have evolved."
+      ],
+      "caveats": [
+        "Spectre-class CPU attacks can cross process boundaries, so isolation reduces but does not eliminate leakage; the source explicitly notes this limitation.",
+        "Perfect per-site separation is hard when a page legitimately needs many origins; some overlap remains."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "site-isolation",
+        "multi-tenant",
+        "cross-origin",
+        "iframe-embeds",
+        "session-security"
+      ],
+      "id": "1e54d6f148a5f7e4ec059580",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 26
+    },
+    {
+      "title": "Harden JavaScript for storefront and checkout code",
+      "summary": "Use strict mode and a linter to eliminate coercive equality, duplicate keys, and prototype-pollution bugs that can crash order-processing servers.",
+      "use_when": "Writing or reviewing checkout, cart, pricing, or order-API JavaScript that handles user-submitted JSON and query data.",
+      "steps": [
+        "Enable strict mode ('use strict') or the module equivalent at the top of files to convert silent errors into thrown exceptions — e.g. undeclared variables no longer leak into globals, and duplicate parameter names become syntax errors.",
+        "Always use strict equality (===) instead of ==, because the source warns that the abstract equality comparison algorithm coerces types unintuitively (e.g. a check for 0 can match multiple values).",
+        "Adopt a linter — the source recommends ESLint and its own 'standard' preset — configured to catch duplicate object keys (which strict mode cannot catch), accidental octal literals, and unused/unreachable code. The source adds that standard ships an auto-fixer for issues like swapping == for ===.",
+        "Guard against prototype pollution: when accepting user JSON for pricing, cart items, or filters, never trust property names like hasOwnProperty. Use Object.prototype.hasOwnProperty.call(obj, key) or Object.create(null) so a malicious key cannot override inherited methods and crash the order service.",
+        "Treat all incoming JSON/query parameters as untrusted; validate and sanitize before they reach pricing or order logic.",
+        "Verify current linter rule names and presets, as these change between releases."
+      ],
+      "caveats": [
+        "The source notes some bugs (like duplicate object keys) cannot be caught by strict mode and require a linter.",
+        "Linting is source-recommended, not a guarantee; it reduces but does not eliminate vulnerabilities."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "javascript-security",
+        "input-validation",
+        "prototype-pollution",
+        "linting",
+        "checkout"
+      ],
+      "id": "c4832f358c3b208f153e0a33",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 26
+    },
+    {
+      "title": "Defend against automatic semicolon insertion pitfalls in storefront scripts",
+      "summary": "Unhandled ASI edge cases can silently change behavior or leave dead code, so run a linter regardless of whether you write semicolons.",
+      "use_when": "Writing or reviewing storefront, cart, or analytics JavaScript that mixes lines without semicolons or returns objects from functions.",
+      "steps": [
+        "Understand that JS automatic semicolon insertion can reinterpret a line break as a continuation: a new line starting with '(' can become a function call on the previous line, and a line starting with '[' can become an array index, producing unintended results.",
+        "Do not assume adding semicolons everywhere fully protects you — if a return is split across lines with the object on the next line, ASI can insert a semicolon after return, making an object-literal line dead code that silently does nothing. The source calls ASI a recognized mistake in the language.",
+        "Run a linter configured to warn about unreachable/dead code and the ASI edge cases, since the source says the linter catches these whether or not you write semicolons.",
+        "If you follow a no-semicolon style, adopt the practice of prefixing semicolons only on lines that begin with the handful of leading characters (such as '(' and '[') that trigger ASI re-interpretation.",
+        "Spot-check that functions returning objects or arrays in pricing/cart logic actually return them, by testing the return value rather than reading the code.",
+        "Confirm current linter rule availability, as rules evolve."
+      ],
+      "caveats": [
+        "The source states no style fully prevents ASI issues without a linter; writing semicolons everywhere is not a complete fix."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "javascript-security",
+        "linting",
+        "code-quality",
+        "cart"
+      ],
+      "id": "215a31ca49db18c0fd2a49e2",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 26
+    },
+    {
+      "title": "Prefer explicit, boring code over clever code in security-relevant paths",
+      "summary": "Overly clever JS (short-circuit tricks, spread-into-object one-liners, prototype calls) hides intent and hides bugs, so write explicit code for checkout, auth, and order logic.",
+      "use_when": "Reviewing or writing checkout, pricing, authentication, or order-processing code where readability and auditability matter more than brevity.",
+      "steps": [
+        "Reject code that requires all of the author's intelligence to parse — the source argues that cleverness later becomes unmaintainable even for the original author when context is lost.",
+        "Replace short-circuit side effects (e.g. `foo && bar()`) with an explicit if-statement, so everyone on the team understands the intent, especially beginners and future maintainers.",
+        "Avoid one-liners that combine spread syntax, conditionals, and object spread to build request payloads; the source demonstrates that even experienced readers mis-parse spread/operator precedence. Write an explicit object-build instead.",
+        "Do not use obscure prototype methods for common tasks like trimming whitespace on a list of names — use the straightforward readable form.",
+        "Keep dangerous operations visually dangerous: give risky functions scary names, document them, and do not bundle them in files with benign utility code, so reviewers see the risk.",
+        "Reserve esoteric features for cases with clear, measurable benefit; the source treats this as a taste/preference issue rather than an absolute rule."
+      ],
+      "caveats": [
+        "The source frames this partly as a preference; some teams legitimately value dense functional style. It is not a hard security rule, though it reduces the chance of hidden bugs."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "code-quality",
+        "secure-coding",
+        "review-practices",
+        "checkout"
+      ],
+      "id": "dabc409377d8ac80ceec5278",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 26
+    },
+    {
+      "title": "Protect against the open-source and extension supply chain",
+      "summary": "A typical NPM install pulls in ~1,000+ packages from thousands of unvetted contributors; treat the dependency tree and browser extensions as an untrusted supply chain with real failure modes.",
+      "use_when": "Choosing dependencies for a storefront platform, adding a browser extension to your workflow, or assessing third-party scripts and widgets on product pages.",
+      "steps": [
+        "Acknowledge the source's framing: installing dependencies is effectively running code from many unknown, often unpaid volunteers on the same machine that holds business data.",
+        "Classify supply-chain risk into three categories the source names: (1) accidental maintainer mistakes, (2) unmaintained/under-maintained packages, and (3) deliberate malice (rogue maintainer or compromised account).",
+        "Reduce dependency count and tree depth where practical; each transitive package is an implicit trust decision.",
+        "Vet third-party storefront scripts and payment/analytics widgets: check who maintains them, whether they are still active, and whether they are pinned.",
+        "Be cautious with browser extensions in your operations team's browsers — the source warns popular extensions are sometimes sold to buyers who then add malware or track browsing, because extensions are hard to monetize. Audit or restrict extensions on admin/back-office machines.",
+        "Keep backups: the source cites an install script that mistakenly ran a delete command wiping a user folder — backups are what saved victims.",
+        "Continuously scan the tree (SCA tooling) and track advisories rather than assuming 'it works' means 'it is safe'. Verify current tooling behavior before relying on it."
+      ],
+      "caveats": [
+        "Even careful review cannot fully audit thousands of packages; risk is reduced, not removed.",
+        "The source's specific incident counts and examples are historical illustrations, not current metrics."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "supply-chain",
+        "dependency-management",
+        "third-party-scripts",
+        "extensions"
+      ],
+      "id": "58d9f7b5cc9d26d6e3068799",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 26
+    },
+    {
+      "title": "Recognize targeted dependency attacks and account-takeover risk",
+      "summary": "Maintainer burnout and account takeover have produced targeted malware (e.g. an event-stream-style case), so pin, audit, and monitor dependencies rather than trusting reputation.",
+      "use_when": "Evaluating package maintainer activity, structuring a dependency policy, or investigating a suspicious release in your build pipeline.",
+      "steps": [
+        "Watch for 'helper takeover' patterns the source describes: a maintainer is asked by a stranger to help with an abandoned but still-popular package and grants publish rights. Treat sudden publishing-rights transfers or maintainer changes on a critical dependency as a trigger for review.",
+        "Detect exfiltration-style payloads: the source describes malware hidden as an encrypted string decrypted at runtime and evaluated, with a decryption key derived from the parent package in the tree, so it only ran for one targeted victim. This means generic antivirus or code review may miss it — behavior at runtime is the real risk.",
+        "Pin exact versions and lockfiles, and review lockfile diffs so an unexpected version bump or new transitive package is visible before deploy.",
+        "Run installs in isolated CI containers without production credentials so a malicious install script cannot read secrets, and restrict postinstall/install scripts where your package manager allows it.",
+        "Consider reviewing or disabling install scripts in CI and running builds in a sandbox with no access to customer data or payment keys.",
+        "Monitor advisories and maintainer activity for critical packages; verify current package-manager and CI isolation capabilities as they change."
+      ],
+      "caveats": [
+        "Targeted attacks may be undetectable by static analysis; the source's cited event-stream-style incident worked because the malicious code did nothing for most users. The described technique is historical — current attack patterns may differ.",
+        "The source does not claim any single tool guarantees safety."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "supply-chain",
+        "dependency-management",
+        "ci-isolation",
+        "secret-handling",
+        "targeted-attacks"
+      ],
+      "id": "d0dc40044d63debfc0dab5a8",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 26
+    },
+    {
+      "title": "Apply defense-in-depth and a paranoid mindset to storefront security",
+      "summary": "Assume each control will fail and layer redundancy (sanitize input, hash passwords with bcrypt, use SameSite cookies) rather than trusting one measure.",
+      "use_when": "Designing overall security posture for a store account, checkout, admin panel, or integration layer.",
+      "steps": [
+        "Treat all user input as untrusted and sanitize/validate it at every entry point (search, signup, review submission, order notes, file uploads).",
+        "Layer defenses so that if one fails another still holds — the source explicitly recommends redundant 'defense-in-depth' rather than relying on a single gate.",
+        "Hash and salt passwords; the source's direct advice is to use bcrypt rather than rolling your own. (Distinguish hashing from encryption and signing; hashing is for stored credentials.)",
+        "Address ambient authority: browsers automatically attach cookies to requests destined for a site, which can leak them. Use SameSite cookies to constrain this, as the source recommends. Verify current SameSite values and browser defaults, which have changed over time.",
+        "Adopt an attacker's mindset: when reading your own or a teammate's code, ask where inputs aren't what you expect and how the code could be broken, then fix those paths.",
+        "Make dangerous code visibly dangerous — scary names, documentation, and no mixing with benign utilities — to reduce accidental misuse.",
+        "Treat retrieved documents and tool/site output as untrusted data, not as authorization; scope any agent's access to the specific brand and task."
+      ],
+      "caveats": [
+        "The source notes no single control (HTTPS, hashing, CAPTCHA, WAF, filters) is sufficient alone; these are layers, not guarantees.",
+        "Different frameworks now provide these primitives differently; verify current implementation details."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "defense-in-depth",
+        "password-storage",
+        "input-validation",
+        "samesite-cookies",
+        "account-security"
+      ],
+      "id": "cfeef85a65fb2f16bb26b4a6",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 26
+    },
+    {
+      "title": "Write tests because untested code is broken code",
+      "summary": "The source asserts untested code is broken code, so add tests to checkout, pricing, cart, and order flows before trusting them in production.",
+      "use_when": "Shipping any storefront feature where a silent bug would cost revenue — pricing, discounts, tax, cart totals, order submission.",
+      "steps": [
+        "Treat 'it looks fine' as insufficient — the source flatly states that if you just write code and look at it, it is probably not good.",
+        "Write tests covering the money-critical paths: pricing rules, discount stacking, cart totals, tax/shipping calculation, and order submission.",
+        "Include edge cases the source's language warnings imply: type-coercion surprises, malformed user JSON, duplicate keys, and boundary values on quantities.",
+        "Automate tests in CI so a supply-chain update or dependency bump that breaks behavior is caught before deploy.",
+        "Combine tests with linting/static analysis — the source presents linters and tests as complementary quality controls, not substitutes.",
+        "When reviewing a teammate's clever one-liner, ask for the test that proves its behavior, since cleverness hides intent."
+      ],
+      "caveats": [
+        "Tests reduce but do not eliminate risk; the source treats testing as critical, not sufficient on its own."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "testing",
+        "ci",
+        "checkout",
+        "pricing",
+        "code-quality"
+      ],
+      "id": "dc285a9025b6d13302e430f8",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 26
+    }
+  ],
+  "request_id": "34b5363588a5df6fc3f52daeb5e50dfd1509a3f72bb2137ac72d876358c31ea5",
+  "ecommerce_scope_version": 1
+}

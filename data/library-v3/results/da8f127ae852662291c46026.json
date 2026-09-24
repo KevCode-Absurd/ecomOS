@@ -1,0 +1,274 @@
+{
+  "cards": [
+    {
+      "title": "Measure purchase conversion rate, not raw key event rate",
+      "summary": "GA4's 'key events' bundle purchases with other actions, so you must manually filter to the purchase event before reading any conversion rate.",
+      "use_when": "Judging whether your store's or a channel's conversion rate is healthy before making merchandising or media-spend decisions.",
+      "steps": [
+        "Understand the trap: in GA4, key events are not only purchase events; page views, add-to-carts and other actions can be marked as key events.",
+        "When you add the 'session key event rate' metric to any report, drill into the metric and set the event filter explicitly to 'purchase'.",
+        "Only then read the percentage as your conversion rate.",
+        "Sanity-check the result against total revenue in the same table so you are not reading a rate built on the wrong event set.",
+        "Re-check this filter after any GA4 configuration change, since the key-event set can drift over time."
+      ],
+      "caveats": [
+        "The source's own store showed ~1.7% conversion rate after filtering to purchase; treat that as an example, not a benchmark.",
+        "GA4's interface changes over time, so verify the current click path before relying on it."
+      ],
+      "tags": [
+        "measurement",
+        "conversion-optimization",
+        "ga4",
+        "event-contracts",
+        "analytics"
+      ],
+      "id": "d5605a4c54a85175d75c9743",
+      "source_id": "19zPkTFzbRWj1MTf9vQAbowNTQsmeQrpY",
+      "source_sha256": "b58bba311194e64b5999fd7df3957a116ac68fbfd7c279f81ef89f591b1e154f",
+      "source_name": "Google Analytics 4 For eCommerce 2025 ( Perfect for beginners).docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 0
+    },
+    {
+      "title": "Find conversion rate by traffic channel",
+      "summary": "Customize the Traffic Acquisition report to add session key event rate filtered to purchase so you can compare conversion performance across organic, CPC and email.",
+      "use_when": "Deciding where to shift acquisition budget or fix a channel that drives traffic but no sales.",
+      "steps": [
+        "Go to Reports -> Life Cycle -> Traffic Acquisition.",
+        "Click 'Customize report', then under Metrics add 'Session key event rate'.",
+        "Filter that metric to the purchase event only, as raw key events overstate conversion.",
+        "Optionally add the 'medium' dimension to split further, e.g. distinguishing organic from CPC and identifying specific senders like an email platform.",
+        "Save the customized report so you can return to it without redoing the setup.",
+        "Compare conversion rate across channels: a channel with strong sessions but weak purchase rate is a targeting or landing-page problem, not a volume problem."
+      ],
+      "caveats": [
+        "Channel grouping depends on correct UTM tagging; untagged campaigns will fall into the wrong bucket and distort the comparison."
+      ],
+      "tags": [
+        "measurement",
+        "acquisition",
+        "ga4",
+        "traffic-acquisition",
+        "conversion-optimization"
+      ],
+      "id": "5dde1ccb7160bd3e0de954bd",
+      "source_id": "19zPkTFzbRWj1MTf9vQAbowNTQsmeQrpY",
+      "source_sha256": "b58bba311194e64b5999fd7df3957a116ac68fbfd7c279f81ef89f591b1e154f",
+      "source_name": "Google Analytics 4 For eCommerce 2025 ( Perfect for beginners).docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 0
+    },
+    {
+      "title": "Read engaged sessions as a traffic-relevance signal",
+      "summary": "GA4 counts a session as engaged when it lasts longer than 10 seconds, making it a quick relevance check on the traffic you are buying or earning.",
+      "use_when": "Diagnosing whether paid or organic traffic is actually reaching a page that matches the visitor's intent.",
+      "steps": [
+        "Open the Traffic Acquisition report and read engaged sessions, engagement rate and average engagement time by channel.",
+        "Treat a very low engaged-session count on a channel as a signal that visitors are not finding what they searched for or that the landing page does not match the query.",
+        "Cross-reference with the Landing Pages report to see whether specific entry pages are dragging the channel's engagement down.",
+        "If paid traffic shows low engagement, check ad-to-landing-page message match before increasing spend.",
+        "If organic shows low engagement, review whether the ranking page's content and product selection match the search intent."
+      ],
+      "caveats": [
+        "The 10-second threshold is GA4's definition of an engaged session, not a performance target you must hit.",
+        "Low engagement can also come from bot traffic or mis-tagged campaigns, so rule those out first."
+      ],
+      "tags": [
+        "measurement",
+        "ga4",
+        "traffic-quality",
+        "landing-page",
+        "acquisition"
+      ],
+      "id": "22a5b5e7d62e09fc2580f87c",
+      "source_id": "19zPkTFzbRWj1MTf9vQAbowNTQsmeQrpY",
+      "source_sha256": "b58bba311194e64b5999fd7df3957a116ac68fbfd7c279f81ef89f591b1e154f",
+      "source_name": "Google Analytics 4 For eCommerce 2025 ( Perfect for beginners).docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 0
+    },
+    {
+      "title": "Compare product-page conversion rates in the Landing Pages report",
+      "summary": "Add the purchase-filtered session key event rate to the Landing Pages report to see which product pages convert and which are leaking.",
+      "use_when": "Deciding which product pages need new copy, photography or price tests, or whether a page's traffic is simply mismatched.",
+      "steps": [
+        "Go to Reports -> Engagement -> Landing Pages.",
+        "Click to edit the report and add the 'session key event rate' metric.",
+        "Filter the metric to the purchase event so the rate reflects buyers, not all key events.",
+        "Compare rates across your top product pages, looking for outliers far above or far below the others.",
+        "Interpret a low outlier as one of three causes: wrong traffic being sent to that page, a page that needs more work, or a product that is simply less appealing.",
+        "Investigate the cause before rewriting the page, since a traffic mismatch will not be fixed by design changes."
+      ],
+      "caveats": [
+        "Small traffic volumes produce noisy rates; a page with a handful of sessions can look dramatically better or worse than it is.",
+        "Shopify's native analytics does not expose this page-level conversion rate, which is why the GA4 setup matters."
+      ],
+      "tags": [
+        "measurement",
+        "product-page",
+        "conversion-optimization",
+        "ga4",
+        "merchandising"
+      ],
+      "id": "b700e12faf0c92d501dfbee3",
+      "source_id": "19zPkTFzbRWj1MTf9vQAbowNTQsmeQrpY",
+      "source_sha256": "b58bba311194e64b5999fd7df3957a116ac68fbfd7c279f81ef89f591b1e154f",
+      "source_name": "Google Analytics 4 For eCommerce 2025 ( Perfect for beginners).docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 0
+    },
+    {
+      "title": "Diagnose funnel drop-off with the Purchase Journey report",
+      "summary": "The Monetization -> Purchase Journey report shows drop-off between session start, product view, add to cart, checkout and purchase so you can localise friction.",
+      "use_when": "Investigating where shoppers abandon so you can decide whether to fix navigation, cart, pricing or checkout trust.",
+      "steps": [
+        "Go to Reports -> Monetization -> Purchase Journey and set your date range.",
+        "Read the step-by-step progression: session started, viewed product, added to cart, began checkout, purchased.",
+        "Treat the drop between session started and viewed product as largely normal—many visitors are just browsing.",
+        "Focus on the drops between add to cart, checkout and purchase, which are the diagnostically meaningful ones.",
+        "If many sessions never view a product, question collection clarity, navigation and search rather than the product pages themselves.",
+        "If shoppers drop between add to cart and checkout, suspect the cart page; if they drop between checkout and purchase, suspect shipping cost, trust or checkout process friction."
+      ],
+      "caveats": [
+        "In the source example, roughly half of sessions viewed a product, most viewers added to cart, 63% of those began checkout and 50% of those purchased—these are illustrative, not targets.",
+        "Funnel steps depend on correct event tracking; missing add-to-cart or checkout events will show fake drop-offs."
+      ],
+      "tags": [
+        "measurement",
+        "ga4",
+        "funnel-analysis",
+        "checkout",
+        "cart"
+      ],
+      "id": "000e5a39ddc84c983bd12524",
+      "source_id": "19zPkTFzbRWj1MTf9vQAbowNTQsmeQrpY",
+      "source_sha256": "b58bba311194e64b5999fd7df3957a116ac68fbfd7c279f81ef89f591b1e154f",
+      "source_name": "Google Analytics 4 For eCommerce 2025 ( Perfect for beginners).docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 0
+    },
+    {
+      "title": "Segment traffic by channel and medium together",
+      "summary": "Adding the medium dimension to the Traffic Acquisition report gives a second layer of detail, separating CPC from paid social and identifying specific senders like your email platform.",
+      "use_when": "Working out which specific paid or owned channel is producing sessions, before shifting budget or cadence.",
+      "steps": [
+        "Open Traffic Acquisition and customize the report to display the medium dimension alongside session primary channel group.",
+        "Read the resulting rows to separate, for example, CPC campaigns from paid social placements and email sends.",
+        "Use the split to spot channels that consume budget or send volume without contributing purchases.",
+        "Combine with the purchase-filtered session key event rate to rank mediums by conversion, not just volume.",
+        "Save the view and re-check on a regular cadence rather than a single snapshot."
+      ],
+      "caveats": [
+        "Medium values come from UTM parameters, so discipline in tagging determines whether this view is trustworthy."
+      ],
+      "tags": [
+        "measurement",
+        "ga4",
+        "traffic-acquisition",
+        "utm",
+        "acquisition"
+      ],
+      "id": "b84c5ad106a22eb7dda25d8d",
+      "source_id": "19zPkTFzbRWj1MTf9vQAbowNTQsmeQrpY",
+      "source_sha256": "b58bba311194e64b5999fd7df3957a116ac68fbfd7c279f81ef89f591b1e154f",
+      "source_name": "Google Analytics 4 For eCommerce 2025 ( Perfect for beginners).docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 0
+    },
+    {
+      "title": "Customize and save GA4 reports instead of reading defaults",
+      "summary": "Default GA4 tables omit the metrics you actually need; adding metrics under Customize Report -> Metrics and saving the view is the core workflow.",
+      "use_when": "Setting up a repeatable weekly reporting routine you do not want to rebuild each time.",
+      "steps": [
+        "Open the report you want to change (Traffic Acquisition or Landing Pages are the reported starting points).",
+        "Click 'Customize report', then under Metrics add the fields you care about—session key event rate, engagement rate, average engagement time, total revenue.",
+        "Apply the metric, then set any event filters (notably purchase) so the numbers mean what you think they mean.",
+        "Save the customized report so it persists for future sessions.",
+        "Use the Library section to add or remove report elements if the default navigation is distracting, but keeping defaults is also a valid choice."
+      ],
+      "caveats": [
+        "The source explicitly warns that key events include more than purchases, so any added key-event-based metric must be filtered before interpretation.",
+        "GA4's customization interface is subject to change; confirm current labels before writing internal documentation."
+      ],
+      "tags": [
+        "measurement",
+        "ga4",
+        "reporting",
+        "analytics",
+        "process"
+      ],
+      "id": "67d1533fdd9cdbbe3e0ebc98",
+      "source_id": "19zPkTFzbRWj1MTf9vQAbowNTQsmeQrpY",
+      "source_sha256": "b58bba311194e64b5999fd7df3957a116ac68fbfd7c279f81ef89f591b1e154f",
+      "source_name": "Google Analytics 4 For eCommerce 2025 ( Perfect for beginners).docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 0
+    },
+    {
+      "title": "Use GA4 to fill gaps Shopify analytics leaves",
+      "summary": "GA4's traffic-source and per-page detail exceeds what the Shopify dashboard reports, so treat GA4 as the channel and page diagnostic layer and Shopify as the order-level view.",
+      "use_when": "Deciding which analytics tool to check for a given question about traffic or page performance.",
+      "steps": [
+        "Keep the GA4 home dashboard for a quick overview only; the source notes most of those numbers duplicate Shopify.",
+        "Use GA4 Reports for channel-level traffic detail, engagement quality and per-landing-page conversion, which Shopify does not provide at this granularity.",
+        "Use Shopify for order and product sales totals, and GA4's e-commerce purchases report to explore product-level purchase behaviour.",
+        "If you run Google Ads, link GA4 to Google Ads and to your store through the Shopify integration so advertising results surface inside GA4.",
+        "Walk the Life Cycle report set in GA4 as a standing review habit rather than relying on the default home screen."
+      ],
+      "caveats": [
+        "Numbers will differ between GA4 and Shopify due to different attribution and session definitions; decide which system is your source of truth per question."
+      ],
+      "tags": [
+        "measurement",
+        "ga4",
+        "shopify",
+        "reporting",
+        "attribution"
+      ],
+      "id": "1735fbb29aff9b59b8605dc1",
+      "source_id": "19zPkTFzbRWj1MTf9vQAbowNTQsmeQrpY",
+      "source_sha256": "b58bba311194e64b5999fd7df3957a116ac68fbfd7c279f81ef89f591b1e154f",
+      "source_name": "Google Analytics 4 For eCommerce 2025 ( Perfect for beginners).docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 0
+    },
+    {
+      "title": "Read GA4's AI Insights for quick answers, not deep analysis",
+      "summary": "The Insights tool offers predefined suggested questions and short answers, useful for fast orientation when you are new to the platform.",
+      "use_when": "Getting a fast orientation answer such as which countries your visitors come from, before digging into a full report.",
+      "steps": [
+        "Open the Insights tool from the GA4 home area and browse the suggested questions.",
+        "Pick a question relevant to the decision at hand—for example demographics or country distribution.",
+        "Read the short answer as a starting pointer, then verify in the underlying report before acting on it.",
+        "Do not treat the predefined question list as comprehensive; it is limited by what GA4 offers."
+      ],
+      "caveats": [
+        "The question set is limited and predefined by GA4; it cannot answer arbitrary business questions.",
+        "The source treats this as a convenience only, not a substitute for the Traffic Acquisition and Landing Pages reports."
+      ],
+      "tags": [
+        "measurement",
+        "ga4",
+        "analytics",
+        "reporting"
+      ],
+      "id": "7cef7f4d4e54c0ec00bb51ef",
+      "source_id": "19zPkTFzbRWj1MTf9vQAbowNTQsmeQrpY",
+      "source_sha256": "b58bba311194e64b5999fd7df3957a116ac68fbfd7c279f81ef89f591b1e154f",
+      "source_name": "Google Analytics 4 For eCommerce 2025 ( Perfect for beginners).docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 0
+    }
+  ],
+  "request_id": "9482845984b5a87c1f1d1259829782157906bbc7a3ca8b2c1c0c7eccc58652e0",
+  "ecommerce_scope_version": 1
+}

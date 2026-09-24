@@ -1,0 +1,342 @@
+{
+  "cards": [
+    {
+      "title": "Read PageSpeed Insights: Field Data (CrUX) vs Lab Data (Lighthouse)",
+      "summary": "PageSpeed Insights shows two separate reports — 28-day real-user CrUX field data and simulated Lighthouse lab data — and you optimize against the lab half.",
+      "use_when": "Interpreting a PageSpeed Insights report for a product page, category page, or homepage and deciding which numbers to trust when setting speed work priorities.",
+      "steps": [
+        "Open pagespeed.web.dev (verify the current interface) and enter the URL of the store page you want to assess.",
+        "Keep the toggle on Mobile. The source's focus is always mobile because most web browsing happens on phones, not because mobile is harder.",
+        "Read the top section as field data: anonymized Chrome UX Report (CrUX) data aggregated over the past 28 days from real Chrome users on that URL. This is what real shoppers experienced.",
+        "Read the second section as lab data (Lighthouse): a simulation of a mid-tier device on a mobile network, run once, used for immediate diagnostic feedback.",
+        "Expect the two sections to disagree — the source shows LCP of 1.6s in field data vs 1.1s FCP in lab data on the same page. That does not mean one is wrong.",
+        "Prioritize fixing lab data issues, because improvements there eventually surface in field data, but expect a roughly 28-day lag before the field numbers reflect your work.",
+        "If you are failing Core Web Vitals but lab looks clean, the cause is real-user conditions (device mix, network, third-party scripts), not a reporting error."
+      ],
+      "caveats": [
+        "Field data needs enough Chrome traffic in the 28-day window; low-traffic pages show no URL data at all.",
+        "Lab data measures Total Blocking Time, not First Input Delay — FID only exists in field data because it requires real interactions."
+      ],
+      "tags": [
+        "speed",
+        "core-web-vitals",
+        "pagespeed-insights",
+        "measurement",
+        "diagnostics",
+        "product-page"
+      ],
+      "id": "085b91000740ea6d8a0a336c",
+      "source_id": "1TOW4yOCvuB0RbkEc_o8nsRhR2xxi8VuG",
+      "source_sha256": "5d52f3e952423cce3287c0aa10dc25879016ebcae2a7c233787265c0bc53e053",
+      "source_name": "Google PageSpeed Insights_ Step-by-Step tutorial to Boost Site Speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 0
+    },
+    {
+      "title": "Use the Origin vs URL toggle to read low-traffic page speed",
+      "summary": "When a specific page lacks enough traffic for CrUX data, PageSpeed Insights blocks the URL view and shows the site-wide average instead.",
+      "use_when": "Auditing speed on a new product page, a low-traffic landing page, or a niche category page and wondering why the field data does not match what you expect for that page.",
+      "steps": [
+        "Look at the URL/Origin toggle in the field data section after running the test.",
+        "Notice whether the URL option is greyed out — if it is, the specific page did not receive enough Chrome traffic in the past 28 days.",
+        "Accept the Origin figure as the site-wide average across all pages, and read it as a general health signal, not a diagnosis of that page.",
+        "Use lab data for that page instead: it runs on every URL regardless of traffic and gives you page-specific issues to fix.",
+        "If the whole site lacks traffic for 28 days, no field data will appear at all — work entirely from lab data until volume builds.",
+        "Track the Origin trend over weeks as a proxy for site-wide speed health on lower-traffic stores."
+      ],
+      "caveats": [
+        "Origin data blends your fastest and slowest pages, so a single broken template can hide inside a healthy average.",
+        "The 28-day window means recent fixes will not show up immediately."
+      ],
+      "tags": [
+        "speed",
+        "core-web-vitals",
+        "pagespeed-insights",
+        "measurement",
+        "landing-page",
+        "diagnostics"
+      ],
+      "id": "7d6d1e80db3cba6c4948738d",
+      "source_id": "1TOW4yOCvuB0RbkEc_o8nsRhR2xxi8VuG",
+      "source_sha256": "5d52f3e952423cce3287c0aa10dc25879016ebcae2a7c233787265c0bc53e053",
+      "source_name": "Google PageSpeed Insights_ Step-by-Step tutorial to Boost Site Speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 0
+    },
+    {
+      "title": "Fix LCP by identifying the largest element and optimizing it",
+      "summary": "LCP measures how long the largest above-the-fold element takes to load; identify that element in lab diagnostics, then optimize it by type.",
+      "use_when": "Improving page speed on a product page or homepage where the hero image, banner, or headline is the first thing shoppers see.",
+      "steps": [
+        "Treat LCP under 2.5s as good (green), 2.5–4.0s as needs improvement (orange), and over 4.0s as poor (red) — these are the thresholds the source states.",
+        "Find the LCP element: in lab data, expand Diagnostics and open 'Largest Contentful Paint element' to see exactly what it is (image, video, or text block).",
+        "If it is an image: resize to the dimensions actually rendered, compress the file below roughly 250KB, and serve in a modern format such as WebP or AVIF.",
+        "If it is a video: compress the file to reduce its size.",
+        "If it is text: leave it. The source's opinion is that a text LCP is the fastest-loading option, so prefer a text-led hero when design allows.",
+        "Remember that a slow LCP is usually not a web server problem — the source attributes it mainly to your theme, plugins, and the page elements you placed."
+      ],
+      "caveats": [
+        "The 250KB image guidance and text-LCP preference are the source's recommendations, not vendor-published requirements.",
+        "The 1,200px recommended image width mentioned in the source is tied to Google Discover eligibility, not LCP itself."
+      ],
+      "tags": [
+        "speed",
+        "core-web-vitals",
+        "lcp",
+        "image-optimization",
+        "product-page",
+        "landing-page",
+        "resource-optimization"
+      ],
+      "id": "eb9525bda54a6337bff04b4b",
+      "source_id": "1TOW4yOCvuB0RbkEc_o8nsRhR2xxi8VuG",
+      "source_sha256": "5d52f3e952423cce3287c0aa10dc25879016ebcae2a7c233787265c0bc53e053",
+      "source_name": "Google PageSpeed Insights_ Step-by-Step tutorial to Boost Site Speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 0
+    },
+    {
+      "title": "Fix CLS on checkout and product pages with reserved space and image dimensions",
+      "summary": "CLS measures how far elements shift after load; on an ecommerce page it can cause a shopper to tap the wrong quantity or button.",
+      "use_when": "Diagnosing layout jumps on a cart, checkout, or product page where shoppers mis-tap quantities, variants, or the place-order button.",
+      "steps": [
+        "Read the score as: 0.1 or less good, 0.1–0.25 needs improvement, above 0.25 poor — the thresholds the source states.",
+        "Remember the source's illustration: a shopper on the checkout page who casually selects 56 items by accident is the result of a layout shift moving the control under their finger.",
+        "Audit the page for dynamically injected content — ads, embeds, iframes — that loads after the initial render and pushes content down.",
+        "For each such element, reserve a dedicated placeholder with fixed space, regardless of the final shape or dimensions the element will take. The source flags this as technical work worth involving a designer on.",
+        "Add explicit width and height attributes to every image so the browser reserves space before the file arrives. Wrapping image tags in fixed-ratio containers is the equivalent modern technique.",
+        "If you run WP Rocket, enable its 'Add missing width and height attributes' image setting to apply this broadly with a single checkbox.",
+        "Re-test after each change; a single attribute fix on a large template can move the CLS score substantially."
+      ],
+      "caveats": [
+        "Placeholder layout for third-party ads and embeds is genuinely technical and often needs developer or designer time.",
+        "Fix CLS before chasing other metrics on checkout — the revenue risk from mis-taps is direct."
+      ],
+      "tags": [
+        "speed",
+        "core-web-vitals",
+        "cls",
+        "checkout",
+        "product-page",
+        "image-optimization",
+        "resource-optimization"
+      ],
+      "id": "883371c7111c3b454a58e17a",
+      "source_id": "1TOW4yOCvuB0RbkEc_o8nsRhR2xxi8VuG",
+      "source_sha256": "5d52f3e952423cce3287c0aa10dc25879016ebcae2a7c233787265c0bc53e053",
+      "source_name": "Google PageSpeed Insights_ Step-by-Step tutorial to Boost Site Speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 0
+    },
+    {
+      "title": "Reduce TBT by unblocking the main thread with JS minify, defer, and delay",
+      "summary": "TBT is the summed time long tasks over 50ms occupy the browser's main thread, and it is the lab metric that replaces FID for interactivity.",
+      "use_when": "A product or checkout page feels unresponsive on mobile — taps on add-to-cart, variant selectors, or nav menus lag — and lab data flags Total Blocking Time.",
+      "steps": [
+        "Understand the mechanism: the main thread parses HTML, renders content, and processes user input. Any task running longer than 50ms is a 'long task' and blocks everything else while it runs.",
+        "TBT is the accumulated blocking from those long tasks; the source describes a failing TBT as a sign your page runs a lot of complex JavaScript.",
+        "The fastest fix per the source is to minify JavaScript files and defer or delay JavaScript execution so non-critical scripts stop occupying the main thread during load.",
+        "In WP Rocket, go to the File Optimization tab (verify current interface) and enable JS minification alone first. The plugin warns it can break things.",
+        "Save, clear the cache, and re-test the live site in an incognito window, clicking through a few pages to confirm every element renders and works.",
+        "If nothing breaks, keep it on, then repeat the same activate-save-clear-test cycle for combining JS files.",
+        "If something breaks, uncheck that single setting — the failure tells you which optimization is unsafe for your site.",
+        "Then enable deferred JS loading and delay JS execution, using the exclusion list to keep specific scripts loading first, and optionally defer plugin and theme scripts.",
+        "Re-run PageSpeed Insights to confirm TBT and the overall performance score moved."
+      ],
+      "caveats": [
+        "Never enable minify/combine/defer/delay in bulk without clearing cache and testing incognito — the source's protocol exists precisely because each can break UI.",
+        "Delay JS can break interactive elements like add-to-cart or sliders if you delay scripts the page needs at first paint; exclude those.",
+        "A cached copy of the page will produce stale lab results, so clear cache before every re-test."
+      ],
+      "tags": [
+        "speed",
+        "tbt",
+        "javascript-optimization",
+        "wp-rocket",
+        "core-web-vitals",
+        "resource-optimization",
+        "product-page"
+      ],
+      "id": "8f0d567d984475f5025d2392",
+      "source_id": "1TOW4yOCvuB0RbkEc_o8nsRhR2xxi8VuG",
+      "source_sha256": "5d52f3e952423cce3287c0aa10dc25879016ebcae2a7c233787265c0bc53e053",
+      "source_name": "Google PageSpeed Insights_ Step-by-Step tutorial to Boost Site Speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 0
+    },
+    {
+      "title": "Cache-bust your speed tests with an above-the-fold indicator",
+      "summary": "Place a visible marker above the fold and confirm it appears in the PageSpeed snapshot to prove the test ran against your updated, uncached page.",
+      "use_when": "Re-testing speed after editing a product page, template, or plugin setting and you need confidence the reported score reflects the new version.",
+      "steps": [
+        "Before you re-run PageSpeed Insights, add a small, obvious text or element to the page — for example a temporary line reading 'test build 2' — and keep it above the fold.",
+        "Run the assessment on the live URL.",
+        "Look at the above-the-fold screenshot PageSpeed Insights renders next to the performance score.",
+        "If your indicator element appears in the snapshot, the crawl captured your latest changes and the metrics are trustworthy.",
+        "If it does not appear, your test hit a cached or stale version — clear the cache and re-run before interpreting any number.",
+        "Remove the indicator once you have confirmed the build and before you consider the page finished.",
+        "Do this on every iteration of a speed project; it prevents hours spent reacting to stale metrics."
+      ],
+      "caveats": [
+        "The indicator must be above the fold or it will not appear in the rendered snapshot.",
+        "This confirms freshness of the crawl, not that the crawl matches what a real shopper's device will render."
+      ],
+      "tags": [
+        "speed",
+        "measurement",
+        "pagespeed-insights",
+        "experiment-design",
+        "diagnostics",
+        "product-page"
+      ],
+      "id": "f1a837edbfbeb4107f0fbc4e",
+      "source_id": "1TOW4yOCvuB0RbkEc_o8nsRhR2xxi8VuG",
+      "source_sha256": "5d52f3e952423cce3287c0aa10dc25879016ebcae2a7c233787265c0bc53e053",
+      "source_name": "Google PageSpeed Insights_ Step-by-Step tutorial to Boost Site Speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 0
+    },
+    {
+      "title": "Use the performance score's hover hint to pick your highest-impact fix",
+      "summary": "PageSpeed Insights tells you which metric would most improve the performance score if fixed, so you do not have to guess the order of work.",
+      "use_when": "You have a long list of speed issues on a store page and limited time before a launch or campaign, and need to sequence the work.",
+      "steps": [
+        "Read the overall performance score: green at 90 or above, orange from 50 to 89, red below 50 — the bands the source states.",
+        "Hover over the score indicator circle to reveal which metric would create the most impact on the score for that page.",
+        "Scroll to the optimization opportunities section, which PageSpeed Insights groups by the metric each fix affects.",
+        "Open the group matching the flagged metric first — in the source's walkthrough, TBT was the flagged area, so the TBT opportunities were the ones to work.",
+        "Work those opportunities top-down, re-testing after each change, rather than working through the whole checklist in list order.",
+        "Use the recommendations inside each opportunity as a starting point: the source notes the 'serve images in next-gen formats' item recommends converting images to WebP via a performance plugin or WP Rocket's Image Optimization tab.",
+        "Expect the score to move in jumps, not gradually — the source's example shows a WP Rocket configuration pass taking a page from 69 to 99 with nothing visibly broken."
+      ],
+      "caveats": [
+        "Score movement like 69-to-99 is one demonstration on one page, not a guaranteed result for your store.",
+        "The source explicitly warns against chasing a 100 or a CrUX pass for its own sake; content depth and serving the audience are what ultimately drive rankings.",
+        "Verify the current PageSpeed Insights hover behavior and recommendation links before relying on them."
+      ],
+      "tags": [
+        "speed",
+        "pagespeed-insights",
+        "prioritization",
+        "core-web-vitals",
+        "measurement",
+        "landing-page"
+      ],
+      "id": "693051f7daf709b6480271cd",
+      "source_id": "1TOW4yOCvuB0RbkEc_o8nsRhR2xxi8VuG",
+      "source_sha256": "5d52f3e952423cce3287c0aa10dc25879016ebcae2a7c233787265c0bc53e053",
+      "source_name": "Google PageSpeed Insights_ Step-by-Step tutorial to Boost Site Speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 0
+    },
+    {
+      "title": "Sequence metrics: TTFB, FCP, FID, INP and what each one actually measures",
+      "summary": "A shopper's page-load experience breaks into server response, first paint, click-to-processing, and click-to-visible-change — each with its own score bands.",
+      "use_when": "Translating a PageSpeed report into a decision about whether to change hosting, theme, plugin stack, or front-end code on a store.",
+      "steps": [
+        "Time to First Byte (TTFB): time from the browser's request to the server returning the first byte. Good is below 0.8s and it should not exceed 1.8s, per the source.",
+        "First Contentful Paint (FCP): time until the first object renders, signaling to the shopper that the page is loading. Good is under 1.8s, 1.8–3.0s needs improvement, above 3.0s is poor.",
+        "First Input Delay (FID): the browser's internal processing delay between a click and starting to process it; it does not measure any visible change. Good is under 100ms, 100–300ms needs improvement, above 300ms poor. It exists only in field data.",
+        "Interaction to Next Paint (INP): the full time from interaction to the next visual change — for example an add-to-cart item visibly appearing, or a mobile menu actually opening. Good is 200ms or less, 200–500ms needs improvement, above 500ms poor.",
+        "Read the restaurant analogy: FID is the time until the waiter acknowledges your raised hand; INP is everything through to the water arriving in your glass.",
+        "When FCP is poor, the source argues the cause is usually your theme, plugins, and page elements rather than the web server — so audit the front end before buying new hosting.",
+        "Only the top three field metrics are Core Web Vitals in the current report; the rest are 'notable' or experimental, so treat them as context rather than pass/fail gates.",
+        "Verify the current report layout, as Google has shifted which metrics are labeled Core Web Vitals."
+      ],
+      "caveats": [
+        "The source describes INP and FID together, but FID is field-only while INP is the broader interaction metric — do not treat them as identical.",
+        "These score bands are the source's stated thresholds; confirm against current Google documentation, since metric definitions and thresholds change."
+      ],
+      "tags": [
+        "speed",
+        "core-web-vitals",
+        "ttfb",
+        "first-contentful-paint",
+        "inp",
+        "measurement",
+        "diagnostics"
+      ],
+      "id": "77543d9ed9bb49b9cc1102d6",
+      "source_id": "1TOW4yOCvuB0RbkEc_o8nsRhR2xxi8VuG",
+      "source_sha256": "5d52f3e952423cce3287c0aa10dc25879016ebcae2a7c233787265c0bc53e053",
+      "source_name": "Google PageSpeed Insights_ Step-by-Step tutorial to Boost Site Speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 0
+    },
+    {
+      "title": "Speed Index and the remaining Lighthouse audits beyond performance",
+      "summary": "Speed Index tracks how quickly above-the-fold content becomes visible, while the accessibility, best-practices, and SEO audits cover non-speed quality checks.",
+      "use_when": "Running a full Lighthouse review on a product page or checkout before launch and deciding which audit failures actually matter to the store.",
+      "steps": [
+        "Interpret Speed Index as how fast the above-the-fold content visually fills in. The source's view is that if the other metrics are healthy, Speed Index generally follows — so fix the underlying metrics rather than targeting Speed Index directly.",
+        "Read above-the-fold as everything visible on first load; everything else is below the fold.",
+        "Use the Accessibility audit to catch missing descriptive labels on buttons (needed by screen-reader users) and insufficient contrast between background and foreground colors — both affect real shoppers.",
+        "Use the Best Practices audit as a check on modern development standards for speed, security, and overall user experience.",
+        "Use the SEO audit to confirm structured data is valid, the page is not blocked from indexing, and a title and meta description exist — factors that help search engines index product pages.",
+        "Treat the SEO audit as a shallow check; the source notes a thorough on-page SEO checklist covers more than Lighthouse does."
+      ],
+      "caveats": [
+        "The accessibility audit is a subset of real accessibility work; passing it does not make a store accessible.",
+        "The SEO audit does not assess content quality or commercial intent."
+      ],
+      "tags": [
+        "speed",
+        "lighthouse",
+        "accessibility",
+        "seo",
+        "product-page",
+        "diagnostics",
+        "measurement"
+      ],
+      "id": "d162377f34463b857723c5ac",
+      "source_id": "1TOW4yOCvuB0RbkEc_o8nsRhR2xxi8VuG",
+      "source_sha256": "5d52f3e952423cce3287c0aa10dc25879016ebcae2a7c233787265c0bc53e053",
+      "source_name": "Google PageSpeed Insights_ Step-by-Step tutorial to Boost Site Speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 0
+    },
+    {
+      "title": "Share a frozen PageSpeed report with your developer or agency",
+      "summary": "PageSpeed Insights produces a copyable link that reproduces the exact report, so speed issues can be handed off without screenshot arguments.",
+      "use_when": "You need a web developer or consultant to fix speed problems on a product template or checkout and want them working from the same evidence you saw.",
+      "steps": [
+        "Run the assessment on the exact URL and device (mobile) you want fixed.",
+        "Click the copy-link control in the report interface (verify the current control and label).",
+        "Send the link with a short note naming the metric to fix — for example, 'TBT on the mobile product page' — rather than sending the whole report unexplained.",
+        "Instruct the recipient to open the link, which reproduces the same report rather than re-running the test on a possibly changed page.",
+        "Ask them to confirm the indicator or snapshot matches before starting, so you know they are looking at your build.",
+        "Keep the link as a record of the before state so you can compare it to the after state once fixes ship."
+      ],
+      "caveats": [
+        "A stored report reflects the page at test time; if the site changes, it is a historical artifact, not a live view.",
+        "Lab data in a shared report is simulated, so do not present it to stakeholders as actual customer experience."
+      ],
+      "tags": [
+        "speed",
+        "pagespeed-insights",
+        "measurement",
+        "workflow",
+        "diagnostics",
+        "core-web-vitals"
+      ],
+      "id": "f338ed52ce8fc6a34d8a526e",
+      "source_id": "1TOW4yOCvuB0RbkEc_o8nsRhR2xxi8VuG",
+      "source_sha256": "5d52f3e952423cce3287c0aa10dc25879016ebcae2a7c233787265c0bc53e053",
+      "source_name": "Google PageSpeed Insights_ Step-by-Step tutorial to Boost Site Speed.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 0
+    }
+  ],
+  "request_id": "b8845edce41703bf4b43058421dcfa7f01aafd313f6adc6ab761d5452d0a651d",
+  "ecommerce_scope_version": 1
+}

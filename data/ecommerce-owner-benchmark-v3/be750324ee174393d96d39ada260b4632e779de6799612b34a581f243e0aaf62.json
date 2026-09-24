@@ -1,0 +1,298 @@
+{
+  "request_id": "be750324ee174393d96d39ada260b4632e779de6799612b34a581f243e0aaf62",
+  "provider": "openai",
+  "model": "gpt-5.6-sol",
+  "effort": "medium",
+  "completion_limit": 12288,
+  "usage": {
+    "prompt_tokens": 4899,
+    "completion_tokens": 1940,
+    "total_tokens": 6839,
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 4896,
+      "audio_tokens": 0
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 512,
+      "audio_tokens": 0,
+      "accepted_prediction_tokens": 0,
+      "rejected_prediction_tokens": 0
+    }
+  },
+  "booked_cost_usd": 0.063295,
+  "seconds": 29.38,
+  "finish_reason": "stop",
+  "output": {
+    "answer_markdown": "## 14-day acquisition decision\n\n**Keep the Daypack at full price and pause Daypack-specific acquisition for 14 days. Do not launch the proposed 20% discount.** Current total demand already exceeds the inventory-safe pace, and the discounted order would be unprofitable at a $30 CAC.\n\n### Inventory guardrail\n\n- On hand: **210 Daypacks**\n- Required buffer: **30**\n- Available to sell before replenishment: **180**\n- Replenishment arrival: **35 days**\n- Inventory-safe rate: **180 ÷ 35 = 5.14 units/day**\n- Proposed total-demand cap: **5 Daypacks/day**\n- Current sales rate: **8/day**\n\nAt the current rate, TrailFold would sell the 180 available units in **22.5 days**, reaching the buffer roughly **12.5 days before replenishment**. At five units per day, 175 units sell over 35 days and approximately 35 remain.\n\nThe five-unit cap applies to **all Shopify Daypack orders**, not just paid orders. It is an operating guardrail rather than a native Meta control. Pausing ads may not reduce demand enough; if total sales remain above five per day, the owner must accept an earlier stockout or approve a Shopify availability/order-control plan.\n\n### Proposed discount economics\n\n| Scenario | Revenue | Landed cost | Pick/pack | Shipping | Payment fee | Pre-ad contribution | After $30 CAC |\n|---|---:|---:|---:|---:|---:|---:|---:|\n| Full price | $80.00 | $28.00 | $2.00 | $8.00 | $2.40 | **$39.60** | **$9.60** |\n| 20% discount | $64.00 | $28.00 | $2.00 | $8.00 | $1.92 | **$24.08** | **-$5.92** |\n\nThe discounted break-even CAC is **$24.08**, equivalent to a **2.66 revenue ROAS**. At the proposed $30 CAC, each acquired order loses $5.92 before fixed overhead, target profit, and unmeasured return-related costs. There is no discount-response evidence showing enough incremental conversion to justify that loss, and the discount lacks required owner approval.\n\nFull-price acquisition could produce $9.60 per order at a genuine $30 incremental CAC, but inventory is currently the binding constraint.\n\n### Ad CPA versus total demand\n\n**Ad CPA** is ad spend divided by purchases attributed to advertising. It neither measures incremental sales nor captures organic, direct, and email demand. A campaign reporting $30 CPA could add orders on top of the existing eight daily units.\n\nMeta’s current reported ROAS is **3.20** ($70,400 ÷ $22,000), but reported purchase value exceeds Shopify’s entire $45,000 net product revenue and uses a 7-day-click/1-day-view attribution window. It is not reconciled enough to set the inventory plan. CPM also increased from $12 to $15 while link CTR fell from 1.5% to 1.2%.\n\n## Campaign-change draft\n\n**Campaign:** `DAY18 | US | Inventory Hold`  \n**Status change:** Pause every ad set or catalog placement specifically promoting or landing on DAY18.  \n**Daypack budget:** **$0/day for 14 days**  \n**Discount:** **0%**; do not create a Shopify code or publish promotional language.  \n**Budget disposition:** Retain the full **$3,000** to protect replenishment cash. Do not automatically move it to POUCH or BOTTLE without their shipping, fulfillment, and acquisition economics.\n\n**Full-price copy held for a future inventory-safe restart:**\n\n- **Primary text:** One practical bag for the weekday commute and a short weekend away. The Daypack 18L has a padded 13-inch laptop sleeve, an external bottle pocket, and water-resistant fabric. It is not waterproof. Free US shipping; estimated delivery in 4–7 business days.\n- **Headline:** Daypack 18L — $80\n- **Description:** 18L capacity for everyday carry.\n- **CTA:** Shop Now\n\nDo not claim that a 15-inch laptop fits until that compatibility is physically verified.\n\n### Monitoring and restart dependencies\n\nRecord total DAY18 units each morning and review the rolling seven-day average. Keep acquisition paused throughout this 14-day window. At day 14, consider a full-price restart only if the average is at or below five units, the replenishment ETA remains firm, and projected stock on arrival remains at least 30 units.\n\nBefore restart, reconcile Meta purchases with Shopify DAY18 orders, obtain SKU-specific spend and paid units, confirm whether the 35-day ETA includes warehouse receiving, and quantify return-related variable costs.",
+    "actions": {
+      "proposed_daily_total_daypack_units_cap": 5,
+      "discount_percent": 0,
+      "launch_status": "draft",
+      "inventory_buffer_units": 30,
+      "inventory_safe_units_before_replenishment": 180,
+      "inventory_safe_daily_rate": 5.14,
+      "current_daily_units": 8,
+      "projected_days_to_buffer_at_current_rate": 22.5,
+      "daypack_meta_daily_budget": 0,
+      "daypack_14_day_budget": 0,
+      "retained_test_budget": 3000,
+      "full_price_pre_ad_contribution": 39.6,
+      "full_price_break_even_cac": 39.6,
+      "discounted_pre_ad_contribution": 24.08,
+      "discounted_break_even_cac": 24.08,
+      "discounted_break_even_revenue_roas": 2.66,
+      "discounted_post_ad_contribution_at_30_cac": -5.92,
+      "monitoring_days": 14
+    },
+    "questions": [
+      "What share of current DAY18 units and Meta spend is attributable specifically to Daypack acquisition campaigns?",
+      "Does the 35-day replenishment timing mean inventory is available for sale, or must warehouse receiving time be added?",
+      "Can operations implement a Shopify order or availability control if non-paid demand remains above five Daypacks per day?"
+    ],
+    "applied_card_ids": [
+      "013834b51f3c09687d62b861",
+      "c49b93d6bb680198b6d98962"
+    ],
+    "rejected_guidance": [
+      "A new paid creative test was not proposed because total Daypack demand already exceeds the inventory-safe rate.",
+      "Discount-volume optimization cannot be completed without measured discount elasticity or an estimated incremental order count.",
+      "Ad-set scaling guidance was not applied because DAY18-specific acquisition data is unavailable and inventory, rather than media scale, is the immediate constraint."
+    ]
+  },
+  "raw_content": "{\"answer_markdown\":\"## 14-day acquisition decision\\n\\n**Keep the Daypack at full price and pause Daypack-specific acquisition for 14 days. Do not launch the proposed 20% discount.** Current total demand already exceeds the inventory-safe pace, and the discounted order would be unprofitable at a $30 CAC.\\n\\n### Inventory guardrail\\n\\n- On hand: **210 Daypacks**\\n- Required buffer: **30**\\n- Available to sell before replenishment: **180**\\n- Replenishment arrival: **35 days**\\n- Inventory-safe rate: **180 ÷ 35 = 5.14 units/day**\\n- Proposed total-demand cap: **5 Daypacks/day**\\n- Current sales rate: **8/day**\\n\\nAt the current rate, TrailFold would sell the 180 available units in **22.5 days**, reaching the buffer roughly **12.5 days before replenishment**. At five units per day, 175 units sell over 35 days and approximately 35 remain.\\n\\nThe five-unit cap applies to **all Shopify Daypack orders**, not just paid orders. It is an operating guardrail rather than a native Meta control. Pausing ads may not reduce demand enough; if total sales remain above five per day, the owner must accept an earlier stockout or approve a Shopify availability/order-control plan.\\n\\n### Proposed discount economics\\n\\n| Scenario | Revenue | Landed cost | Pick/pack | Shipping | Payment fee | Pre-ad contribution | After $30 CAC |\\n|---|---:|---:|---:|---:|---:|---:|---:|\\n| Full price | $80.00 | $28.00 | $2.00 | $8.00 | $2.40 | **$39.60** | **$9.60** |\\n| 20% discount | $64.00 | $28.00 | $2.00 | $8.00 | $1.92 | **$24.08** | **-$5.92** |\\n\\nThe discounted break-even CAC is **$24.08**, equivalent to a **2.66 revenue ROAS**. At the proposed $30 CAC, each acquired order loses $5.92 before fixed overhead, target profit, and unmeasured return-related costs. There is no discount-response evidence showing enough incremental conversion to justify that loss, and the discount lacks required owner approval.\\n\\nFull-price acquisition could produce $9.60 per order at a genuine $30 incremental CAC, but inventory is currently the binding constraint.\\n\\n### Ad CPA versus total demand\\n\\n**Ad CPA** is ad spend divided by purchases attributed to advertising. It neither measures incremental sales nor captures organic, direct, and email demand. A campaign reporting $30 CPA could add orders on top of the existing eight daily units.\\n\\nMeta’s current reported ROAS is **3.20** ($70,400 ÷ $22,000), but reported purchase value exceeds Shopify’s entire $45,000 net product revenue and uses a 7-day-click/1-day-view attribution window. It is not reconciled enough to set the inventory plan. CPM also increased from $12 to $15 while link CTR fell from 1.5% to 1.2%.\\n\\n## Campaign-change draft\\n\\n**Campaign:** `DAY18 | US | Inventory Hold`  \\n**Status change:** Pause every ad set or catalog placement specifically promoting or landing on DAY18.  \\n**Daypack budget:** **$0/day for 14 days**  \\n**Discount:** **0%**; do not create a Shopify code or publish promotional language.  \\n**Budget disposition:** Retain the full **$3,000** to protect replenishment cash. Do not automatically move it to POUCH or BOTTLE without their shipping, fulfillment, and acquisition economics.\\n\\n**Full-price copy held for a future inventory-safe restart:**\\n\\n- **Primary text:** One practical bag for the weekday commute and a short weekend away. The Daypack 18L has a padded 13-inch laptop sleeve, an external bottle pocket, and water-resistant fabric. It is not waterproof. Free US shipping; estimated delivery in 4–7 business days.\\n- **Headline:** Daypack 18L — $80\\n- **Description:** 18L capacity for everyday carry.\\n- **CTA:** Shop Now\\n\\nDo not claim that a 15-inch laptop fits until that compatibility is physically verified.\\n\\n### Monitoring and restart dependencies\\n\\nRecord total DAY18 units each morning and review the rolling seven-day average. Keep acquisition paused throughout this 14-day window. At day 14, consider a full-price restart only if the average is at or below five units, the replenishment ETA remains firm, and projected stock on arrival remains at least 30 units.\\n\\nBefore restart, reconcile Meta purchases with Shopify DAY18 orders, obtain SKU-specific spend and paid units, confirm whether the 35-day ETA includes warehouse receiving, and quantify return-related variable costs.\",\"actions\":{\"proposed_daily_total_daypack_units_cap\":5,\"discount_percent\":0,\"launch_status\":\"draft\",\"inventory_buffer_units\":30,\"inventory_safe_units_before_replenishment\":180,\"inventory_safe_daily_rate\":5.14,\"current_daily_units\":8,\"projected_days_to_buffer_at_current_rate\":22.5,\"daypack_meta_daily_budget\":0,\"daypack_14_day_budget\":0,\"retained_test_budget\":3000,\"full_price_pre_ad_contribution\":39.6,\"full_price_break_even_cac\":39.6,\"discounted_pre_ad_contribution\":24.08,\"discounted_break_even_cac\":24.08,\"discounted_break_even_revenue_roas\":2.66,\"discounted_post_ad_contribution_at_30_cac\":-5.92,\"monitoring_days\":14},\"questions\":[\"What share of current DAY18 units and Meta spend is attributable specifically to Daypack acquisition campaigns?\",\"Does the 35-day replenishment timing mean inventory is available for sale, or must warehouse receiving time be added?\",\"Can operations implement a Shopify order or availability control if non-paid demand remains above five Daypacks per day?\"],\"applied_card_ids\":[\"013834b51f3c09687d62b861\",\"c49b93d6bb680198b6d98962\"],\"rejected_guidance\":[\"A new paid creative test was not proposed because total Daypack demand already exceeds the inventory-safe rate.\",\"Discount-volume optimization cannot be completed without measured discount elasticity or an estimated incremental order count.\",\"Ad-set scaling guidance was not applied because DAY18-specific acquisition data is unavailable and inventory, rather than media scale, is the immediate constraint.\"]}",
+  "input": {
+    "experiment": "owner-v3",
+    "brand": {
+      "fictional": true,
+      "name": "TrailFold",
+      "market": "US",
+      "currency": "USD",
+      "platforms": [
+        "Shopify",
+        "Meta Ads",
+        "Klaviyo"
+      ],
+      "positioning": "Practical lightweight bags for commuters who take short weekend trips; restrained, useful, plain-spoken voice.",
+      "products": [
+        {
+          "sku": "DAY18",
+          "name": "Daypack 18L",
+          "price": 80,
+          "landed_cogs": 28,
+          "pick_pack": 2,
+          "merchant_shipping_cost": 8,
+          "payment_fee_percent": 3,
+          "features": [
+            "18L capacity",
+            "padded 13-inch laptop sleeve",
+            "water-resistant fabric, not waterproof",
+            "external bottle pocket"
+          ],
+          "stock": 210,
+          "daily_units_sold": 8,
+          "confirmed_replenishment_units": 500,
+          "replenishment_arrival_days": 35
+        },
+        {
+          "sku": "POUCH",
+          "name": "Cable pouch",
+          "price": 20,
+          "landed_cogs": 5,
+          "stock": 800
+        },
+        {
+          "sku": "BOTTLE",
+          "name": "Steel bottle",
+          "price": 32,
+          "landed_cogs": 9,
+          "stock": 600
+        }
+      ],
+      "policies": {
+        "shipping": "Free US shipping; delivery estimate 4-7 business days",
+        "returns": "30-day returns for unused products; return shipping paid by customer",
+        "discounts": "No current discount. Any new discount needs owner approval."
+      },
+      "claim_constraints": [
+        "No evidence for waterproof, medical, sustainability or lifetime-durability claims.",
+        "No verified competitor performance data.",
+        "No clinical or controlled product test results."
+      ],
+      "customer_themes": {
+        "simulated_review_count": 120,
+        "themes": [
+          "fits daily commute",
+          "customers ask whether a 15-inch laptop fits",
+          "customers ask whether rain protection means waterproof"
+        ],
+        "support_tickets_last_30_days": {
+          "delivery_date_questions": 42,
+          "15_inch_laptop_fit": 28,
+          "waterproof_questions": 18
+        },
+        "note": "Themes, not verbatim licensed testimonials; no fabricated quotes or endorsements."
+      },
+      "website_snapshot": {
+        "pdp_headline": "Adventure starts here",
+        "first_image": "product on plain background",
+        "pdp_details": "Laptop sizing and delivery window are below reviews; CTA says Buy now. No field speed or session-recording data."
+      },
+      "shopify": {
+        "previous_30_days": {
+          "sessions": 20000,
+          "orders": 600,
+          "net_product_revenue": 54000,
+          "mobile_sessions": 15000,
+          "mobile_orders": 400,
+          "desktop_sessions": 5000,
+          "desktop_orders": 200,
+          "add_to_cart_sessions": 2000,
+          "checkout_started_sessions": 1200
+        },
+        "current_30_days": {
+          "sessions": 25000,
+          "orders": 500,
+          "net_product_revenue": 45000,
+          "mobile_sessions": 20000,
+          "mobile_orders": 300,
+          "desktop_sessions": 5000,
+          "desktop_orders": 200,
+          "add_to_cart_sessions": 2000,
+          "checkout_started_sessions": 1000
+        },
+        "definitions": "Revenue excludes tax/shipping; periods equal length. Funnel counts are session-based and internally consistent, but no controlled attribution experiment.",
+        "new_customer_share_current": 0.72,
+        "cohort_90_day_repeat_rate": 0.14
+      },
+      "meta": {
+        "previous_30_days": {
+          "spend": 18000,
+          "reported_purchase_value": 54000,
+          "cpm": 12,
+          "link_ctr_percent": 1.5
+        },
+        "current_30_days": {
+          "spend": 22000,
+          "reported_purchase_value": 70400,
+          "cpm": 15,
+          "link_ctr_percent": 1.2
+        },
+        "settings": "7-day click plus 1-day view; no incremental lift study. Meta reported value not reconciled to Shopify orders.",
+        "creative_history": [
+          {
+            "name": "Desk-to-trail demonstration",
+            "spend_share": 0.55,
+            "observed_result": "Largest spend recipient; mature creative. No asset-level contribution data."
+          },
+          {
+            "name": "Laptop-fit comparison",
+            "spend_share": 0.25,
+            "observed_result": "Higher CTR in small test; conversion sample not supplied."
+          },
+          {
+            "name": "Minimal product still",
+            "spend_share": 0.2,
+            "observed_result": "No reliable lift estimate."
+          }
+        ]
+      },
+      "klaviyo": {
+        "marketable_profiles": 12000,
+        "reported_attributed_revenue_current": 14000,
+        "attribution_window": "5-day click plus 5-day open",
+        "flows": [
+          {
+            "name": "welcome",
+            "messages": 1,
+            "offer": "none"
+          },
+          {
+            "name": "checkout abandonment",
+            "trigger": "Started Checkout",
+            "messages": 1,
+            "delay_hours": 24,
+            "observed_gap": "No Added to Cart flow; filters not audited."
+          }
+        ],
+        "campaigns_per_week": 3,
+        "reported_open_rate_percent": 52,
+        "click_rate_percent": 1.1,
+        "order_rate_percent": 0.18,
+        "note": "Revenue attribution overlaps other systems; no holdout or recent deliverability audit."
+      },
+      "resources": {
+        "weekly_designer_hours": 8,
+        "weekly_developer_hours": 4,
+        "owner_hours": 4,
+        "next_14_day_test_budget": 3000,
+        "cash_constraint": "Protect replenishment payments; no additional inventory purchase approved."
+      },
+      "unavailable": [
+        "GA4 breakdowns",
+        "Clarity/Hotjar recordings",
+        "field Core Web Vitals",
+        "SKU-level ad acquisition cost",
+        "cohort contribution LTV",
+        "creative-level conversion sample sizes",
+        "channel incrementality",
+        "email holdout data"
+      ]
+    },
+    "task": {
+      "id": "E1",
+      "title": "Inventory-aware acquisition and offer decision",
+      "request": "Use Shopify product economics, stock and Meta evidence to produce a 14-day acquisition decision and a usable campaign-change draft. Evaluate the proposed 20% Daypack discount at $30 CAC. Owner has not approved discounts. Reserve 30 Daypacks as an inventory buffer. Replenishment is 35 days away. Explain the distinction between ad CPA and total demand. Submit a proposed daily_total_daypack_units_cap, discount_percent and launch_status. Include actual ad copy, budget decision, dependencies and missing evidence."
+    },
+    "reference_guidance": "[013834b51f3c09687d62b861] Calculate pre-marketing contribution using explicit delivery costs\nApplies when: Setting marketing budget allocation per product or category, or when a product looks profitable but the business isn't.\n- Start from revenue excluding pass-through taxes and recorded discounts/refunds.\n- Subtract landed product cost, fulfillment, outbound shipping, payment fees and incremental expected return costs exactly once.\n- Illustration: $100 collected less $9 tax gives $91 revenue. Product $30 + inbound $4 + outbound $11 + pick/pack $4 + fees $3 + assumed return loss $15 leaves $24 contribution, or 24/91 = 26.4%.\n- If the $15 includes revenue refunds, remove those from the revenue denominator too; document the definition rather than mixing net and gross bases.\n- Use pre-ad contribution dollars to fund acquisition, overhead and target profit; calculate separately for each SKU and channel.\nCondition: This is an internal contribution model, not a universal statutory COGS classification.\nCondition: The source calls its full-delivery metric gross margin; preserve explicit included costs when comparing reports.\n\n[c49b93d6bb680198b6d98962] Recalculate contribution and break-even acquisition cost before discounting\nApplies when: Pricing and offer decisions — planning a promo, a bundle, a gift-with-purchase, or a clearance push, and setting the media efficiency target that promo must hit.\n- Calculate pre-ad contribution per order as net revenue less landed product cost, fulfillment, payment fees and expected return costs, without double-counting discounts or refunds.\n- With $100 net revenue and $60 variable costs, contribution is $40; break-even CAC is $40 and revenue ROAS is 100/40 = 2.5.\n- At $70 discounted net revenue and unchanged $60 costs, contribution is $10: break-even CAC is $10 and ROAS is 70/10 = 7.\n- Compare a bundle or gift-with-purchase using actual basket costs and measured incremental conversion; a $4 gift does not guarantee another $100 sale.\n- Check clearance cash recovery separately from profitable ongoing acquisition.\nCondition: Break-even here excludes fixed overhead and target profit; set a lower operating CAC ceiling.\nCondition: Shipping, fees and returns can change with the offer; use store-specific assumptions.\n\n[993ecc7a19f08496eb4203ec] Choose the discount/CAC mix that maximises total contribution margin\nApplies when: You are setting a promotional calendar or ad budget and deciding whether a bigger discount can be offset by higher volume.\n- For each scenario multiply purchases × net AOV to get net sales, and purchases × COGS for total COGS.\n- Subtract total COGS and total ad spend from net sales to get total post-marketing contribution margin.\n- In the source's worked example: no discount returns $25,000; $30 off returns $36,000; $60 off returns $63,000 on the same $100,000 ad spend.\n- Compare this against the opposite strategy: shrinking revenue on a smaller set of customers can also maximise profit if per-customer unit economics are exceptional. There is no universal winner.\n- Choose the scenario with the highest total contribution margin subject to your brand and capacity constraints.\nCondition: Source-specific example numbers; your conversion elasticity to discount depth may be much flatter or steeper.\nCondition: Deeper discounts that attract discount-only buyers can raise future churn and erode base-price demand.\n\n[92354a4e70a243a65fa1780a] Zero-to-One Paid Test Campaign Framework\nApplies when: You want to screen new ad creatives for a product or offer before scaling spend.\n- Set up a dedicated test campaign spending roughly $10–$50/day, separate from your scaling campaigns.\n- Inject 1–3 new creatives every few days so the platform always has fresh material to evaluate.\n- Judge creatives in two stages: first check whether the platform allocates spend at all (algorithmic engagement signal), then check ROAS to validate that the funnel converts.\n- A creative that gets spend but no ROAS points to a funnel or offer problem; a creative that gets no spend points to a creative or hook problem — treat these as different diagnoses.\n- Promote test winners into the scaling campaign only after they pass both checks.\nCondition: Platform behavior and reporting change; verify current ad manager interface and naming before building the structure.\nCondition: Source frames this as a baseline heuristic, not a universal benchmark.\n\n[1c683e007b76790275ae9f51] Size test budgets from target conversions, CPA, and duration\nApplies when: Planning any Meta ad test (creative concept, audience, structure) and needing to know how much to spend and for how long.\n- Answer two questions before launch: what conversion count is your statistical-significance threshold (e.g. 5, 10, 20), and over how many days do you want to learn (3, 7, 14, 30)?\n- Compute daily test budget = (target conversions × expected CPA) ÷ test duration in days. Example from the source: 20 target conversions × $100 CPA ÷ 14 days = ~$143/day.\n- Compare against Meta's standard advice of 50 conversions per 7 days: at $100 CPA that requires $714/day for a single concept adset, which the source calls unrealistic for most advertisers once you run several tests.\n- Because Meta's 50/7 guidance blows out test budgets, use your own commercially viable threshold instead of defaulting to platform guidance.\n- Decide up front what result ends the test and what action (scale, kill, or extend) follows at the threshold.\nCondition: The 20-conversion, $100-CPA, 14-day example is the source's worked illustration, not a benchmark; your threshold depends on your traffic, margin, and risk tolerance.\nCondition: Meta's learning-phase guidance and definitions change over time — verify the current platform documentation.\n\n[df475f552102d5f042b874f4] Rotating Hooks and Angles Before Adding Media Budget\nApplies when: Scaling creative testing on Meta or planning a new creative sprint for a single hero SKU.\n- Count how many distinct hooks and angles you currently run — the source says founders often stall at 3–4.\n- Recruit new angles from categories the product touches: use-case, occupation, gifting occasion, social proof, and objection handling.\n- Study outlier ads from adjacent categories for the opening frame, not just the product story (the source cites a personal-assistant gifting angle for jewelry).\n- Volume-test angles with consistent production sprints and kill losers quickly; expect only a fraction to print.\n- Feed the winning frameworks back into your production brief so new variants stay aligned with the proven promise.\nCondition: Creative testing is not a substitute for a weak offer — the source treats offer as lever #1 and hooks as lever #2.\nCondition: No fixed 'correct' hook count is given; the direction is 'more than 3–4.'\n\n[ab729ba34368891859d923c9] Judge creative at the adset level, not the ad level\nApplies when: Deciding which creatives to scale, pause or replicate when ad-level ROAS numbers conflict with spend.\n- Recognize the distortion: Meta attributes by last click while optimizing across multi-click journeys, so a top-of-funnel ad warming cold audiences can show low ROAS while a follow-up ad takes the credit.\n- Expect reliability to decline as you move down the account: campaign-level 7-day-click ROAS correlates reasonably with acquisition; adset is less reliable; ad level is very unreliable.\n- Instead of debating ad-level theories (turn it off? launch it in a new adset?), bundle 5–20 creatives per adset and evaluate the adset's overall KPI.\n- If the adset hits KPI, scale budget without needing to know which individual ads worked — the combination works.\n- Use ad spend as a proxy for performance inside a winning adset: typically only a few of the ads absorb most spend, so those are the ones to model new creative on.\n- Build the adset as the unit of decision-making so learnings recursively feed creative design.\nCondition: The source treats campaign and adset ROAS as directional proxies, not exact calculators.\nCondition: Ad-level data can still inform rough creative reads via spend patterns, but the source says it should not drive budget decisions.",
+    "previous_draft": {
+      "answer_markdown": "## 14-day decision\n\n**Do not run the proposed 20% Daypack discount. Pause Daypack-specific acquisition for 14 days and retain the $3,000 test budget.** Existing demand already exceeds the inventory-safe pace, so paying to accelerate sales risks a stockout before replenishment.\n\n### Inventory constraint\n\n- On hand: **210 Daypacks**\n- Required buffer: **30**\n- Sellable before replenishment: **180**\n- Replenishment arrival: **35 days**\n- Inventory-safe pace: 180 ÷ 35 = **5.14 units/day**\n- Proposed operational cap: **5 total Daypack units/day**\n- Current pace: **8 units/day**, already 60% above the cap\n\nAt five units per day, 175 units sell before replenishment and approximately 35 remain, preserving the 30-unit buffer. This is a total-demand guardrail, not a native Meta control: Shopify orders from paid, organic, direct, and email all consume the same inventory.\n\n### Discount economics\n\n| Scenario | Revenue | Product cost | Pick/pack | Shipping | Payment fee | Pre-ad contribution | Contribution at $30 CAC |\n|---|---:|---:|---:|---:|---:|---:|---:|\n| Full price | $80.00 | $28.00 | $2.00 | $8.00 | $2.40 | **$39.60** | **$9.60** |\n| 20% discount | $64.00 | $28.00 | $2.00 | $8.00 | $1.92 | **$24.08** | **-$5.92** |\n\nThe discounted offer’s break-even CAC is **$24.08**, excluding fixed overhead, target profit, and any incremental return-processing cost. At the proposed **$30 CAC**, each acquired order loses **$5.92** on this contribution basis. No discount-conversion lift or total-volume estimate was supplied to offset that loss, and owner approval is absent.\n\nBy comparison, full-price break-even CAC is **$39.60**. Full-price acquisition at a genuine $30 incremental CAC could be profitable, but inventory—not theoretical unit margin—is currently binding.\n\n### Meta evidence and CPA distinction\n\nMeta’s current reported ROAS is **3.20** ($70,400 ÷ $22,000), but its reported purchase value exceeds Shopify’s entire $45,000 net product revenue and uses a 7-day-click/1-day-view window. It is therefore unsuitable for setting an inventory plan without reconciliation.\n\n**Ad CPA** is ad spend divided by purchases attributed to ads. It does not represent total demand. A campaign delivering purchases at $30 CPA can add paid orders on top of organic, direct, and email orders. Inventory control must use **total Shopify DAY18 units ordered per day**, regardless of attribution.\n\n## Campaign-change draft\n\n**Campaign:** DAY18 — Inventory Hold — US  \n**Change:** Pause all ads and ad sets whose destination or promoted product is DAY18. Do not apply a catalog discount or publish discount language.  \n**Daypack budget:** **$0/day for 14 days**  \n**Budget disposition:** Keep the **$3,000 unspent** to protect replenishment cash. Do not automatically transfer it to POUCH or BOTTLE without their fulfillment costs, conversion evidence, and campaign economics.\n\n**Held full-price ad copy for later inventory-safe testing:**\n\n- **Primary text:** One bag for the weekday commute and a short weekend away. The Daypack 18L has a padded 13-inch laptop sleeve, an external bottle pocket, and water-resistant fabric. It is not waterproof. Free US shipping; estimated delivery in 4–7 business days.\n- **Headline:** Daypack 18L — $80\n- **Description:** 18L capacity. Built for practical everyday carry.\n- **CTA:** Shop Now\n\n### Operating rule\n\nReview total DAY18 units every morning using a rolling seven-day average. Do not restart paid acquisition while that average exceeds **5 units/day**. If demand remains near eight units/day despite the pause, paid media alone cannot preserve the buffer; the owner must choose between accepting an earlier stockout or implementing a Shopify availability/order-control plan.\n\n### Dependencies and missing evidence\n\nBefore restarting acquisition: reconcile Meta purchase value to Shopify DAY18 orders; obtain DAY18-specific paid spend and attributed units; verify the replenishment ETA remains firm; and measure return-related variable costs. Laptop-fit creative must not claim 15-inch compatibility until physically verified. The Shopify funnel deterioration is concentrated on mobile, but no field-speed or session-recording evidence is available to diagnose its cause.",
+      "actions": {
+        "proposed_daily_total_daypack_units_cap": 5,
+        "discount_percent": 0,
+        "launch_status": "draft",
+        "inventory_buffer_units": 30,
+        "inventory_safe_units_before_replenishment": 180,
+        "inventory_safe_daily_rate": 5.14,
+        "daypack_meta_daily_budget": 0,
+        "daypack_14_day_budget": 0,
+        "full_price_pre_ad_contribution": 39.6,
+        "full_price_break_even_cac": 39.6,
+        "discounted_pre_ad_contribution": 24.08,
+        "discounted_break_even_cac": 24.08,
+        "discounted_post_ad_contribution_at_30_cac": -5.92,
+        "monitoring_days": 14
+      },
+      "questions": [
+        "What portion of current DAY18 units and Meta spend is attributable specifically to Daypack acquisition campaigns?",
+        "Is the 35-day replenishment date a warehouse-available date, or does receiving time need to be added?"
+      ],
+      "applied_card_ids": [
+        "013834b51f3c09687d62b861",
+        "c49b93d6bb680198b6d98962",
+        "993ecc7a19f08496eb4203ec"
+      ],
+      "rejected_guidance": [
+        "A new paid creative test was not proposed because total Daypack demand already exceeds the inventory-safe rate; additional acquisition would conflict with the 30-unit buffer.",
+        "Ad-level or ad-set scaling guidance was not applied because DAY18-specific conversion samples and reconciled acquisition data are unavailable, while inventory is the immediate constraint."
+      ]
+    },
+    "sandbox_feedback": {
+      "checks": {
+        "inventory_buffer_respected": true,
+        "no_unapproved_discount": true,
+        "draft_only": true
+      },
+      "passed": 3,
+      "total": 3,
+      "all_pass": true,
+      "note": "Limited semantic action checks; original outputs preserved. These checks do not validate the whole plan or its prose. Formatting deviations are not automatically business errors.",
+      "normalization_notes": [
+        "Accepted proposed_daily_total_daypack_units_cap alias."
+      ]
+    },
+    "validation_protocol": "semantic-v2",
+    "instruction": "Return the complete revised deliverable. Check prose and schedule as well as fields. Equivalent field names and explicit negative values have been normalized in checks, not altered in your original draft. Passing these limited checks is not proof of full correctness."
+  },
+  "system_prompt_sha256": "19fa52d4890cab2fc112e25875ff944d7a1753802461639c43bf7fdafc87d7e8"
+}

@@ -1,0 +1,461 @@
+{
+  "cards": [
+    {
+      "title": "Fix XSS with Context-Aware Output Encoding",
+      "summary": "Encode untrusted values separately for each output context (HTML body, attribute, JavaScript string, URL) rather than escaping once at input.",
+      "use_when": "Reviewing or briefing developers on your storefront's product review fields, search results pages, or any template that echoes customer-supplied content.",
+      "steps": [
+        "Identify every place customer-controlled data is echoed: product reviews, search query display, cart notes, custom engraving text, account names.",
+        "For each output location, apply the encoding matching that context: HTML-entity encoding in HTML body, attribute encoding inside attributes, JavaScript-string escaping inside script blocks, URL encoding inside hrefs.",
+        "Do not encode only at input or only once: a value written into a JavaScript string and then injected into HTML needs a second round of context-appropriate encoding.",
+        "Avoid deeply nested encoding chains where the same value passes through several languages or contexts; if a value must cross contexts, isolate it into a data attribute or JSON blob rather than embedding it inline.",
+        "Add a review step or linting rule so new template code that echoes user input gets a context check before release."
+      ],
+      "caveats": [
+        "Encode at output, not just input; input filtering alone does not cover stored XSS in reviews or legacy data.",
+        "The source presenter calls deep nested encoding fragile and advises against it."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "xss",
+        "output-encoding",
+        "product-page",
+        "input-validation",
+        "code-review"
+      ],
+      "id": "0393d1e220fb106fb065cd07",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 9
+    },
+    {
+      "title": "Treat XSS Filtering Browser Features as Unreliable",
+      "summary": "Built-in reflected-XSS filters can be bypassed and even aid attackers, so do not count on them as your storefront's XSS defense.",
+      "use_when": "Deciding whether browser-level XSS filtering removes the need for server-side sanitization on your storefront's reflected input pages.",
+      "steps": [
+        "Assume the browser's reflected-XSS filter may decide not to block an attack, or may be absent entirely, and that some bypasses can degrade into new attack classes.",
+        "Keep reflected XSS prevention on the server and in templates: encode output by context and validate input, rather than relying on the browser to strip script from URLs.",
+        "When testing your own storefront, use your own staging copy, not third-party sites.",
+        "Verify the current state of any named browser filter before relying on descriptions of it, since browser behavior and availability change."
+      ],
+      "caveats": [
+        "The source describes this as a historical browser feature; verify its current status before citing it.",
+        "No filter, header, or browser feature alone guarantees XSS protection."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "xss",
+        "browser-security",
+        "output-encoding",
+        "verification"
+      ],
+      "id": "825a61a6a5f9fbfbdf926efb",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 9
+    },
+    {
+      "title": "Choose Between Content-Matched and Person-Targeted Ads",
+      "summary": "Content-based ad placement ties ad revenue to page quality; person-level tracking decouples ad value from content and shifts spend toward cheap, low-quality pages.",
+      "use_when": "Deciding whether your store should buy content-matched placements (relevant publishers, category pages) or behavioral audiences, and understanding why cheap inventory may outperform contextually relevant inventory on cost.",
+      "steps": [
+        "For each campaign, state whether the targeting is against content (site, category, article context) or against the person (retargeting pools, lookalikes, cross-site profiles).",
+        "If using person-level targeting, compare effective cost per acquisition on premium publishers versus low-cost long-tail inventory, since the same user may be reachable much more cheaply elsewhere.",
+        "If you are the publisher or content site, recognize that person-level buying reduces the marginal value of quality content and pushes ad revenue toward cheap inventory; budget for this when forecasting content-driven revenue.",
+        "For sensitive product categories (e.g. health, fertility, baby, debt), suppress or exclude person-level audiences where downstream disclosure could harm the customer; the source cites a case where pregnancy-related targeting revealed a pregnancy to a family member."
+      ],
+      "caveats": [
+        "The source's ad-economics discussion is the presenter's analysis, not a measured benchmark for your account.",
+        "Historical claims about which ad companies were profitable are dated; verify current figures."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "acquisition",
+        "creative-strategy",
+        "audience-targeting",
+        "privacy",
+        "measurement"
+      ],
+      "id": "1fed4e98ef85962763259aec",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 9
+    },
+    {
+      "title": "Plan for Third-Party Tags as Tracking Surfaces",
+      "summary": "A typical page loads around twenty third-party resources with tracking vantage, and roughly 70-80% of first-party URLs may be observable by one large analytics provider, per the cited census.",
+      "use_when": "Auditing your store's third-party script footprint or preparing a privacy review before adding another analytics, personalization or ad tag.",
+      "steps": [
+        "Build an inventory of every third-party resource loaded on home, category, product, cart and checkout templates: analytics, pixels, chat, reviews, A/B tools, payment SDKs.",
+        "For each tag, record what data it can observe (URL, referrer, cookies, form contents) and whether it operates in the first-party context.",
+        "Prefer tags that make explicit contractual privacy commitments and avoid others; the source notes some CDNs publish such guarantees, though a published promise is not enforcement.",
+        "On checkout and account pages, minimize third-party scripts because those paths carry payment and identity data.",
+        "Re-audit after each new tool ships, since tags accumulate."
+      ],
+      "caveats": [
+        "The census figures cited are several years old; treat the ~20 third parties and ~70-80% reach as directional, not current measurements.",
+        "A vendor privacy promise is a legal commitment, not a technical control."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "third-party-scripts",
+        "privacy",
+        "audit",
+        "checkout",
+        "measurement"
+      ],
+      "id": "89687968a429e8e181399fc2",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 9
+    },
+    {
+      "title": "Understand Cookies and Third-Party Cookie Exposure",
+      "summary": "Cookies store a server-issued identifier returned on subsequent requests; the decision to send them on third-party image and iframe requests is what enabled cross-site tracking.",
+      "use_when": "Reviewing how your store's session, cart persistence and embedded third-party content handle cookies.",
+      "steps": [
+        "Distinguish first-party cookies (set and read by your own domain) from third-party cookies (set by embedded resources); cart and login typically depend on first-party cookies.",
+        "Audit embedded third-party elements (images, iframes, widgets) and whether they receive cookies on your pages.",
+        "Set session cookies with HttpOnly and Secure attributes where applicable, and scope cookie domains narrowly, so attached third-party resources do not inherit your identifiers.",
+        "Recognize that third-party request cookie behavior has been restricted by several major browsers; verify current behavior in the specific browsers your customers use before assuming a cookie will or will not be sent."
+      ],
+      "caveats": [
+        "Browser cookie policy changes frequently; treat any specific current restriction as subject to change.",
+        "Secure cookies prevent interception over plaintext, not tracking via other identifiers."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "cookies",
+        "tracking",
+        "checkout",
+        "session-management",
+        "privacy"
+      ],
+      "id": "4f8916cd06ba104c098ba3a7",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 9
+    },
+    {
+      "title": "Treat HSTS as a Security Feature That Can Be Repurposed",
+      "summary": "HSTS tells browsers to refuse plaintext requests to a domain, but subdomain-level rules can be abused to encode per-user bits.",
+      "use_when": "Reviewing domain and subdomain configuration for your store, especially if you control or delegate many subdomains.",
+      "steps": [
+        "Deploy HSTS on your storefront domains deliberately, with care about preload and long max-age, since the setting is effectively sticky for returning visitors.",
+        "Inventory subdomains: because HSTS rules can be set per subdomain, a large delegated subdomain space becomes a tracking surface.",
+        "Restrict who can create subdomains and which parties can set headers on them, and retire unused subdomains.",
+        "Treat HSTS as transport protection only; it is not an anti-tracking or XSS control."
+      ],
+      "caveats": [
+        "The subdomain encoding technique is discussed in the source as an observed abuse; do not rely on HSTS to prevent tracking.",
+        "HSTS configuration mistakes can lock users out of plaintext access; test before preloading."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "hsts",
+        "transport-security",
+        "domains",
+        "tracking",
+        "configuration"
+      ],
+      "id": "97ced779fbd0ae50d6f37795",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 9
+    },
+    {
+      "title": "Assess Fingerprinting Risk on Your Storefront Analytics",
+      "summary": "Fingerprinting identifies a browser by combining many semi-unique attributes without storing anything, so it survives cookie clearing and third-party cookie blocking.",
+      "use_when": "Evaluating whether removing third-party cookies actually reduces cross-site tracking of your store's visitors, or choosing an analytics approach for privacy-sensitive audiences.",
+      "steps": [
+        "List the attributes your site or its tags can read: user-agent string, installed fonts, screen and window dimensions, canvas rendering output, audio rendering output, hardware concurrency, device memory, WebGL parameters, network type.",
+        "Treat any single attribute as non-identifying but the combination as highly identifying, and measure the combined entropy using a tool like the EFF's Panopticlick-style test against your own site.",
+        "If you are the publisher or merchant, note that fingerprinting continues working after cookies are cleared, so cookie-consent banners alone do not stop cross-site identification.",
+        "If you are evaluating privacy tooling, prefer approaches that address the combined fingerprint set rather than any single attribute."
+      ],
+      "caveats": [
+        "Fingerprinting libraries and browser countermeasures change; check current implementations before acting.",
+        "The source discusses defensive countermeasures and open problems, not guaranteed solutions."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "fingerprinting",
+        "tracking",
+        "analytics",
+        "privacy",
+        "measurement"
+      ],
+      "id": "a443b97281a3e4745a1ab486",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 9
+    },
+    {
+      "title": "Recognize Font Enumeration and Why It Is Hard to Fix",
+      "summary": "Pages infer installed local fonts by measuring whether applying a candidate font changes an element's size, giving one entropy bit per unusual font.",
+      "use_when": "Evaluating a privacy-preserving analytics or anti-tracking approach that claims to neutralize fingerprinting, to check whether font enumeration is addressed.",
+      "steps": [
+        "Understand the mechanism: a page iterates a long list of font names, applies each to a test element, and checks if the rendered size changed; changed size implies the font is installed.",
+        "Accept that you cannot block reading element dimensions without breaking page layout, so a simple blocker is not the answer.",
+        "Consider the tradeoffs used in practice: treating local fonts as unavailable is acceptable for many Western sites but breaks some sites, especially in Asian-language contexts where local fonts are commonly required because system fonts are poor.",
+        "Alternative mitigations include mapping a language to a small permitted font set (trading privacy-set size for compatibility) and gating font access behind a permission prompt.",
+        "If you are auditing your own store, note that you almost certainly do not need local font enumeration for legitimate function."
+      ],
+      "caveats": [
+        "The source notes defenses here are unsatisfying and standards work is contested.",
+        "Permission prompts help only when users decline; network traffic can still reveal font loading."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "fingerprinting",
+        "fonts",
+        "privacy",
+        "product-page",
+        "configuration"
+      ],
+      "id": "c076d1ca33f9b13a2047ec4a",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 9
+    },
+    {
+      "title": "Treat Canvas and Audio Fingerprinting as Unpredictable APIs",
+      "summary": "Canvas and audio rendering produce slightly different output across hardware and drivers, which can be hashed into an identifier the user never sees.",
+      "use_when": "Understanding what browser-based fingerprinting can extract from visitors to your store, or assessing what a privacy tool must suppress.",
+      "steps": [
+        "Recognize that drawing operations rendered to a canvas can be read back as a blob or data URL and hashed; harmless uses exist (e.g. checking emoji support) but the same API serves fingerprinting.",
+        "Note that audio processing can be fingerprinted either by querying capability information or by generating a waveform and hashing subtle device-specific differences.",
+        "Treat these as hard-to-lie-about signals, since the rendering difference is inherent to the hardware and usually imperceptible to users.",
+        "When evaluating fingerprinting protections, check whether canvas and audio outputs are perturbed or blocked and whether that breaks legitimate functionality."
+      ],
+      "caveats": [
+        "The source describes these techniques as observed in a widely used fingerprinting library; it does not claim they cover every device or browser.",
+        "Perturbing rendering can break legitimate canvas applications, so blanket blocking is a tradeoff."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "fingerprinting",
+        "canvas",
+        "audio",
+        "privacy",
+        "measurement"
+      ],
+      "id": "6a092ece850234cec27ddcd7",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 9
+    },
+    {
+      "title": "Audit Permissionless Hardware and Network APIs",
+      "summary": "Several APIs expose hardware and network characteristics without any permission prompt, giving every script on the page identifying data.",
+      "use_when": "Auditing third-party scripts on your store or judging how much identifying data your pages already leak by default.",
+      "steps": [
+        "Enumerate what scripts on your pages can read without asking: hardware concurrency (CPU cores), Web Audio channel configuration, WebGL shader capabilities, an approximate device memory value, and network-touching APIs that reveal connection type and IP-adjacent details.",
+        "Treat these as available to every script on every page; there is no user-facing consent gate for them in the browsers described.",
+        "When adding a new script or SDK, include these APIs in the review of what that vendor can observe.",
+        "For privacy-sensitive storefronts, consider which scripts genuinely need hardware or network information and remove those that do not.",
+        "Verify the current standardization and browser support for each API before relying on any specific one."
+      ],
+      "caveats": [
+        "Standardization status varies; some APIs are non-standard or Chromium-only per the source.",
+        "These APIs are not the only identifying sources; they are a subset."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "fingerprinting",
+        "browser-apis",
+        "third-party-scripts",
+        "privacy",
+        "audit"
+      ],
+      "id": "a23628ea774a333c07ed6866",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 9
+    },
+    {
+      "title": "Treat Viewport Size as the Hardest Fingerprint to Fake",
+      "summary": "True visible window dimensions are difficult to spoof without breaking layout, making them among the most identifying browser attributes.",
+      "use_when": "Assessing how much identifying information your responsive storefront design indirectly exposes, or evaluating anti-fingerprinting tooling.",
+      "steps": [
+        "Distinguish between querying window dimensions via JavaScript (easy to override) and inferring them by measuring whether an image displays or how text flows (hard to override without breaking rendering).",
+        "Recognize that because the hard method cannot be faked without breaking pages, viewport size tends to be a strong identifying signal.",
+        "When designing responsive storefront layouts, be aware that layout APIs used to measure rendering can serve as fingerprinting side channels.",
+        "If evaluating privacy tooling, check whether it addresses dimension-based identification, not only JavaScript-visible values."
+      ],
+      "caveats": [
+        "Countermeasures here are limited; the source calls it the hardest case.",
+        "Any specific tool's handling of viewport fingerprinting should be verified for the current version."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "fingerprinting",
+        "viewport",
+        "privacy",
+        "web-design",
+        "measurement"
+      ],
+      "id": "406cd5055820176b9aeff3ab",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 9
+    },
+    {
+      "title": "Use Hashing Aggregation to Reason About Poisoning Fingerprints",
+      "summary": "Fingerprinting implementations typically hash many inputs into one combined value; corrupting one input can invalidate the whole fingerprint.",
+      "use_when": "Evaluating anti-fingerprinting approaches or deciding which single signal a protection should target when full masking is impractical.",
+      "steps": [
+        "Understand the implementation pattern: each input (font set, viewport, canvas output) is separately hashed, then all hashes are combined into one stored value.",
+        "Recognize the implication: altering any one contributing input changes the combined output, so you do not necessarily need to neutralize every signal.",
+        "Treat this as a reason to prioritize which signal is cheapest to randomize reliably without breaking functionality, rather than trying to mask all signals.",
+        "Do not assume this always works: the source notes it is often, not universally, true, and sophisticated implementations may be resilient."
+      ],
+      "caveats": [
+        "The source explicitly qualifies this as 'not always true', so treat it as a heuristic.",
+        "Randomizing an input may degrade legitimate functionality such as localization or rendering."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "fingerprinting",
+        "hashing",
+        "privacy",
+        "countermeasures",
+        "experiment-design"
+      ],
+      "id": "2e4e38aa841d5ec20152a8e5",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 9
+    },
+    {
+      "title": "Account for Cookie Syncing Across Identifiers",
+      "summary": "Tracking consolidates multiple cookie identifiers into one person by matching them with fingerprint data when a cookie is new or unrecognized.",
+      "use_when": "Understanding why clearing cookies or blocking third-party cookies alone does not sever an existing cross-site profile of your store's visitors.",
+      "steps": [
+        "Understand the pattern: when a tracker sees a recognized cookie, it stops; when it sees an unrecognized cookie, it fingerprints the browser and links the new cookie to the existing profile.",
+        "Recognize that this makes cookie clearing insufficient on its own to prevent identity linking across sites.",
+        "For analytics and personalization on your store, avoid embedding tracking vendors whose linking behavior you cannot inspect, since identifiers you set may be joined to external profiles.",
+        "Prefer first-party measurement where practical, and document which identifiers (cookies, local storage) your own stack writes so you can reason about linkage risk."
+      ],
+      "caveats": [
+        "The source describes this as an extremely difficult problem to work around; do not present a simple fix as guaranteed.",
+        "Specific tracker behavior changes; verify current practices of any vendor you use."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "fingerprinting",
+        "cookies",
+        "tracking",
+        "privacy",
+        "measurement"
+      ],
+      "id": "200b1e6c4e9fa2470b89fc2d",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 9
+    },
+    {
+      "title": "Check New Tags for Identity-Linking Risk Before Adding",
+      "summary": "Any script with broad page access may join your visitors' identifiers to external profiles; review new store tools for this before shipping.",
+      "use_when": "Before adding a personalization, reviews, chat, A/B testing, or attribution vendor to your storefront.",
+      "steps": [
+        "Ask what identifiers the tool reads and writes, and whether it operates across other sites where it already has a foothold.",
+        "Check whether the vendor claims to fingerprint or sync cookies with other data; independent value does not require cross-site identity linkage.",
+        "Prefer tools that operate with limited page access and explicit privacy commitments, and confirm whether those commitments are contractual.",
+        "For account and checkout pages, restrict script access to data beyond what the tool needs to function.",
+        "Re-check after vendor updates, since a tool's data collection can change post-integration."
+      ],
+      "caveats": [
+        "Vendor claims and practices change; verify rather than assuming.",
+        "Independent functionality does not guarantee no cross-site linkage."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "third-party-scripts",
+        "privacy",
+        "personalization",
+        "audit",
+        "checkout"
+      ],
+      "id": "387ecddc03c752c337f2135d",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 9
+    },
+    {
+      "title": "Set Up a Repeatable External Script Review",
+      "summary": "Consistent periodic review of embedded scripts, APIs used, and identifiers collected keeps tracking exposure from quietly expanding as the store changes.",
+      "use_when": "Scheduling a recurring privacy and security review of your ecommerce site, or onboarding a new developer to review standards.",
+      "steps": [
+        "Establish a checklist that covers every template: home, category, product, search results, cart, checkout, account, order confirmation.",
+        "For each template, record the third-party resources loaded, what data they can read (URL, cookies, form fields, hardware signals), and whether they require permission.",
+        "Note which screens reveal sensitive product interest (health, fertility, baby, financial) where person-level targeting could create downstream disclosure harms.",
+        "Review on a recurring cadence and after each release that adds a tag, script, or integration.",
+        "Spot-check against an available fingerprint-testing tool to see how identifying your own site's configuration makes an average visitor, without assuming any single tool covers all signals."
+      ],
+      "caveats": [
+        "Specific testing tools and their signal coverage change; verify current versions.",
+        "Automated tests reveal what your own rendering exposes, not what external trackers can infer from elsewhere."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "audit",
+        "third-party-scripts",
+        "privacy",
+        "process",
+        "checkout"
+      ],
+      "id": "0e0a82e0cb684ad08c829036",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 9
+    }
+  ],
+  "request_id": "2d3bb0e68beab1e5b1263c32ef7e04456085e46628674c8a01ffcab0769b7563",
+  "ecommerce_scope_version": 1
+}

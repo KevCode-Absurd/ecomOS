@@ -1,0 +1,496 @@
+{
+  "cards": [
+    {
+      "title": "Build an engaged-90-day segment as your campaign workhorse",
+      "summary": "Construct an engaged segment combining email and site activity with OR logic, then clone it across 14/30/60/90/120-day windows.",
+      "use_when": "Setting up campaign send audiences or starting deliverability recovery in Klaviyo.",
+      "steps": [
+        "Create a segment starting with the condition 'person can receive email marketing' as a base for every segment you build.",
+        "Add condition: 'has opened email at least once in the last 90 days', then clone that condition and set it to 'has clicked email at least once in the last 90 days' — keep logic on OR, because an open may fail to track while a click registers.",
+        "Keep everything on OR and add further conditions: placed order at least once in last 90 days, checkout started at least once, active on site at least once. Do not add 'viewed product' or 'added to cart' because these are already captured by active-on-site.",
+        "Clone the segment and swap the timeframe to 14, 30, 60 and 120 days so you have a ladder of engagement windows.",
+        "If you have severe spam issues, temporarily drop the website conditions and use only opened/clicked email until open rates recover.",
+        "Use the engaged-90 segment as the default audience for most campaigns; use tighter windows (14/30) when repairing deliverability."
+      ],
+      "caveats": [
+        "The source reports typically achieving 50%+ open rates with engaged-90 segments for its clients; this is a source-specific experience, not a guaranteed benchmark.",
+        "For EU lists you must filter further on 'because person subscribed' due to GDPR consent rules; US-based lists can rely on 'can receive email marketing' alone, though subscribed contacts usually engage better."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "segmentation",
+        "klaviyo",
+        "deliverability",
+        "campaigns",
+        "or-logic"
+      ],
+      "id": "6e06d938ff3fcc1234716c63",
+      "source_id": "1WQcWqe36XxPolHopi-PTOYh8vY8HC1zr",
+      "source_sha256": "69b3b9e9495ed44c6cb3241fbb24a4afac37bdcd623d5fd26d7ebd82e1e3a344",
+      "source_name": "Klaviyo email.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 5
+    },
+    {
+      "title": "Mandatory exclusion segments for every campaign",
+      "summary": "Create suppression segments for spam markers and bounced addresses and apply them to all sends.",
+      "use_when": "Before sending any campaign, or during a list-cleaning pass.",
+      "steps": [
+        "Build a 'marked as spam' exclusion segment: person can receive email marketing AND has marked email as spam at least once over all time.",
+        "Build a bounce exclusion segment with two branches: has bounced email at least 4 times over all time where bounce type = soft, OR has bounced email at least once over all time where bounce type = hard.",
+        "Treat hard bounces as permanent (suppress after one) and soft bounces as temporary (allow up to four attempts before suppressing).",
+        "Add these as exclusions on every single campaign you send.",
+        "To remove them permanently, open the segment, click the three-dot menu, choose 'suppress current members', then bulk suppress.",
+        "Allow roughly one to two hours for Klaviyo to update suppression counts depending on segment size.",
+        "Maintain an 'all but unsubscribed and suppressed' master segment: can receive email marketing, email does not contain the text 'q.com' (bot addresses), and has marked email as spam zero times over all time.",
+        "Send to this master segment roughly one to two times per month to give unengaged people a chance to re-engage without burning your reputation."
+      ],
+      "caveats": [
+        "Always send campaigns to segments, not lists, per the source's stated preference.",
+        "Bot filters and suppression counts may need refreshing as data changes; re-check segment membership over time."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "segmentation",
+        "deliverability",
+        "klaviyo",
+        "suppression",
+        "list-hygiene",
+        "bounces"
+      ],
+      "id": "951b0132a90b5ffd5b2c107d",
+      "source_id": "1WQcWqe36XxPolHopi-PTOYh8vY8HC1zr",
+      "source_sha256": "69b3b9e9495ed44c6cb3241fbb24a4afac37bdcd623d5fd26d7ebd82e1e3a344",
+      "source_name": "Klaviyo email.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 5
+    },
+    {
+      "title": "Build unengaged segments that exclude past customers",
+      "summary": "Create 120-day and 180-day unengaged segments using AND logic that quarantine never-purchasers but retain past buyers.",
+      "use_when": "Building sunset flows and long-term suppression rules to protect deliverability and reduce Klaviyo costs.",
+      "steps": [
+        "Create unengaged-120: opened email zero times in last 120 days AND clicked email zero times in last 120 days AND placed order zero times over all time AND checkout started zero times in last 120 days AND active on site zero times in last 120 days.",
+        "Use AND here, not OR — you want fully inactive contacts, the opposite of the engaged-segment logic.",
+        "Set placed order to 'zero times over all time' (not 120 days) so that anyone who ever bought stays on the list and can still be re-activated.",
+        "Clone to unengaged-180 (six months) and use it as an exclusion segment and periodic suppression source.",
+        "Use unengaged-120 as the trigger audience for a sunset/unengaged reactivation flow.",
+        "Suppress the 180-day group over time if they never purchased, because removing them improves deliverability and lowers Klaviyo cost."
+      ],
+      "caveats": [
+        "The source deliberately keeps past buyers on the list indefinitely, reasoning that a customer from over a year ago can still be reactivated; this is a judgment call you can adjust to your margin structure."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "segmentation",
+        "deliverability",
+        "klaviyo",
+        "sunset-flow",
+        "retention"
+      ],
+      "id": "336b88ac711fec232bb379a1",
+      "source_id": "1WQcWqe36XxPolHopi-PTOYh8vY8HC1zr",
+      "source_sha256": "69b3b9e9495ed44c6cb3241fbb24a4afac37bdcd623d5fd26d7ebd82e1e3a344",
+      "source_name": "Klaviyo email.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 5
+    },
+    {
+      "title": "Specialty segments for buyer-stage targeting",
+      "summary": "Create first-time buyer, returning customer, non-buyer and VIP segments to target differentiated offers.",
+      "use_when": "Planning sales events, loyalty messaging or new-customer reactivation offers.",
+      "steps": [
+        "First-time buyers: placed order = 1 over all time AND can receive email marketing — use for a specific second-purchase offer.",
+        "Returning customers: placed order at least 2 times over all time — differentiate loyalty messaging from first-timer messaging.",
+        "Non-buyers: placed order zero times over all time — during sales events the source gives non-buyers an extra discount on top of the event discount, since existing customers don't need the extra nudge.",
+        "VIPs: define per brand, e.g. placed order at least 4 times over all time, or total spend at 3–4× AOV.",
+        "High potentials: checkout started, added to cart, viewed product, or active on site at least once in the last 30 days, AND did not place an order in the last 30 days — use as a base for a targeted flow or one-off offer.",
+        "Win-back: placed order at least once in the last 6 months but zero times in the last 90 days — use as the base for a win-back flow or a one-off campaign."
+      ],
+      "caveats": [
+        "VIP thresholds differ by brand and niche; the source explicitly says there is no universal definition — set thresholds from your own AOV and repeat-purchase data.",
+        "The extra-discount-for-non-buyers tactic is the source's agency practice; validate margin impact before adopting."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "segmentation",
+        "klaviyo",
+        "retention",
+        "win-back",
+        "offers",
+        "vip"
+      ],
+      "id": "3ffe21f635f993aa6fff54a6",
+      "source_id": "1WQcWqe36XxPolHopi-PTOYh8vY8HC1zr",
+      "source_sha256": "69b3b9e9495ed44c6cb3241fbb24a4afac37bdcd623d5fd26d7ebd82e1e3a344",
+      "source_name": "Klaviyo email.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 5
+    },
+    {
+      "title": "Diagnose deliverability with placement testing and Klaviyo metrics",
+      "summary": "Use inbox placement tools and Klaviyo's deliverability tab to find whether the problem is placement, provider or geography.",
+      "use_when": "Open rates are consistently low and you need to locate the cause before changing strategy.",
+      "steps": [
+        "Treat open rates consistently below 30–35% as a likely inbox placement problem (the source cites 50%+ as achievable for engaged segments, so far below that signals an issue).",
+        "Option 1: send a test campaign to a seed list via a placement tool (the source names GlockApps) to see primary-inbox, promotions and spam split, blocklist status and IP reputation; the source suggests running this monthly.",
+        "Option 2: in Klaviyo, open the last five sent campaigns and go to the deliverability tab to review open rate, click rate, bounce rate, unsubscribe rate and spam complaint rate.",
+        "Check 'performance by inbox provider' — a problem may exist only with Hotmail/Outlook while Gmail is healthy.",
+        "Check 'performance by country' — if one country underperforms, send only to a tighter engaged segment there for a while to rebuild engagement."
+      ],
+      "caveats": [
+        "Tool names and menu locations change; verify current interfaces before relying on paths.",
+        "The 30–35% and 50%+ figures are the source's heuristics for its own clients, not universal benchmarks."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "deliverability",
+        "klaviyo",
+        "measurement",
+        "diagnostics",
+        "list-hygiene"
+      ],
+      "id": "75378f892825b095d0613eb5",
+      "source_id": "1WQcWqe36XxPolHopi-PTOYh8vY8HC1zr",
+      "source_sha256": "69b3b9e9495ed44c6cb3241fbb24a4afac37bdcd623d5fd26d7ebd82e1e3a344",
+      "source_name": "Klaviyo email.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 5
+    },
+    {
+      "title": "Four-step technical setup for email sending",
+      "summary": "Configure branded sending domain, default sender, DMARC and optionally BIMI as the baseline deliverability setup.",
+      "use_when": "Initial Klaviyo setup or auditing an account with unexplained placement problems.",
+      "steps": [
+        "Add a branded sending domain in Klaviyo under Settings > Account > Domains; enter the root domain and add the required DNS records until status shows live.",
+        "Set your default sender email address to an address ending in the branded domain (e.g. hello@yourbrand.com) — never a free-mail or unrelated domain.",
+        "Add a DMARC record as a TXT record with name '_dmarc' in your DNS; the source identifies this as the most commonly missing piece when auditing ecommerce brands.",
+        "Verify DMARC with a free checker tool (the source names GlockApps' DMARC checker) to confirm the record resolves correctly.",
+        "Optionally implement BIMI to authenticate your logo in the inbox and, on some clients, display a blue verification check; the source cites roughly $1,500/year and says it's worth considering for eight- and nine-figure brands, sometimes seven-figure.",
+        "Treat technical setup as necessary but rarely the main cause — the source states it rarely fixes a deliverability problem on its own."
+      ],
+      "caveats": [
+        "BIMI requires DNS configuration and provider support (Gmail, Yahoo and some Apple versions per the source); costs and requirements should be verified at implementation time.",
+        "DMARC/SPF/DKIM values must match your specific provider's current instructions."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "deliverability",
+        "klaviyo",
+        "dns",
+        "dmarc",
+        "technical-setup",
+        "bimi"
+      ],
+      "id": "e758ab334635099f143d1598",
+      "source_id": "1WQcWqe36XxPolHopi-PTOYh8vY8HC1zr",
+      "source_sha256": "69b3b9e9495ed44c6cb3241fbb24a4afac37bdcd623d5fd26d7ebd82e1e3a344",
+      "source_name": "Klaviyo email.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 5
+    },
+    {
+      "title": "Five-step list-cleaning protocol",
+      "summary": "Suppress five categories of dead weight to cut costs and improve sender reputation.",
+      "use_when": "Any account with a large list and low engagement, or as a periodic hygiene pass.",
+      "steps": [
+        "Segment 1 — long-term unengaged: opened email zero times in last 90 days, clicked zero, active on site zero in last 180 days, placed order zero times in last 365 days, received email at least 10 times in last 180 days, and can receive email marketing.",
+        "Segment 2 — no recent sends: active or created at least a year ago, received email zero times in the last year, active on site zero times in the last year, and can still receive email marketing.",
+        "Segment 3 — never opened: active or created at least a year ago and received email zero times over all time (i.e. essentially never contacted).",
+        "Segment 4 — spam markers: marked email as spam at least once over all time.",
+        "Segment 5 — bounces: soft bounced 4+ times over all time OR hard bounced at least once.",
+        "Suppress each segment via the three-dot menu > suppress current members > bulk suppress; wait one to two hours for Klaviyo to process.",
+        "Result: remaining list is engaged or semi-engaged, and you stop signaling to Gmail/Outlook that you mail people who report or reject you."
+      ],
+      "caveats": [
+        "Suppression is not reversible in bulk without re-adding contacts, so apply segments carefully and confirm counts before bulk suppressing.",
+        "The '10 emails in 180 days' and '365 days' thresholds are the source's cleaning heuristics; seasonality or low-frequency programs may justify adapting them."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "deliverability",
+        "list-hygiene",
+        "klaviyo",
+        "suppression",
+        "cost-reduction"
+      ],
+      "id": "6dcb0bfce104aa395a353baa",
+      "source_id": "1WQcWqe36XxPolHopi-PTOYh8vY8HC1zr",
+      "source_sha256": "69b3b9e9495ed44c6cb3241fbb24a4afac37bdcd623d5fd26d7ebd82e1e3a344",
+      "source_name": "Klaviyo email.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 5
+    },
+    {
+      "title": "Ramp deliverability back with a staged engagement ladder",
+      "summary": "Recover inbox placement by sending only to progressively wider engaged segments while watching open rate gates.",
+      "use_when": "A store has a known deliverability problem (consistently low opens, spam complaints) and needs a recovery sequence.",
+      "steps": [
+        "Week 1–2: turn off all flows except welcome, post-purchase and browse/checkout abandonment.",
+        "Week 1–2: send 3 campaigns per week only to the engaged-14-day segment (6 emails total).",
+        "After 2 weeks, check those campaigns' open rates. If at or above 50%, move up. If below 50%, repeat another 2 weeks at 14 days.",
+        "If still below 50%, strip website activity from the engaged segments and use only opened/clicked email conditions.",
+        "Then send 3 campaigns/week for 2 weeks to engaged-30; re-check. Expect a small dip but require it to stay near 50% to advance; otherwise repeat 2 more weeks.",
+        "Continue the same two-week-per-stage process for engaged-60 and engaged-90.",
+        "Once engaged-90 is stable, make it your main campaign audience and turn all flows back on.",
+        "If opens trend toward 60%, you can keep widening to 120/150/180 days while staying above 50%, though the source still recommends keeping the majority of sends at engaged-90."
+      ],
+      "caveats": [
+        "The 50% open-rate gate is the source's operational target for its own clients, not a universal benchmark.",
+        "Ramp speed depends on list size and existing reputation; smaller engaged windows may send very few emails in week one."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "deliverability",
+        "klaviyo",
+        "campaigns",
+        "segmentation",
+        "recovery"
+      ],
+      "id": "df98522f016b70f2fb5a5823",
+      "source_id": "1WQcWqe36XxPolHopi-PTOYh8vY8HC1zr",
+      "source_sha256": "69b3b9e9495ed44c6cb3241fbb24a4afac37bdcd623d5fd26d7ebd82e1e3a344",
+      "source_name": "Klaviyo email.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 5
+    },
+    {
+      "title": "Make emails readable to Gmail's AI filter",
+      "summary": "Replace image-only email elements with live text so AI inbox systems can parse and prioritize your emails.",
+      "use_when": "Designing or auditing campaign templates for inbox placement.",
+      "steps": [
+        "Write descriptive alt text for every image — say what is shown and include any discount and code (e.g. 'person eating pizza — 15% off with code X').",
+        "Switch from design product blocks to Klaviyo's native product blocks so product information is live text rather than baked into an image.",
+        "Use live-text top bars for offers instead of image banners.",
+        "Put live text in the footer: product category links, loyalty status, store locator, support information.",
+        "Keep sending plain-text emails regularly (the source suggests 1–3 per month) for AI readability and strong engagement.",
+        "Do not abandon design entirely — the requirement is that the email is understandable without reading the images.",
+        "Keep the above-the-fold section highly optimized since most readers never scroll: a single clear primary call to action with a contrasting button."
+      ],
+      "caveats": [
+        "This is the source's forward-looking adaptation to Gmail's AI features; results will vary as inbox providers change behavior.",
+        "Plain-text emails should still carry your brand voice and offer, not be blank utility messages."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "deliverability",
+        "creative-strategy",
+        "pdp",
+        "email-design",
+        "gmail",
+        "plain-text"
+      ],
+      "id": "31b2f58bfc95dbeb29084248",
+      "source_id": "1WQcWqe36XxPolHopi-PTOYh8vY8HC1zr",
+      "source_sha256": "69b3b9e9495ed44c6cb3241fbb24a4afac37bdcd623d5fd26d7ebd82e1e3a344",
+      "source_name": "Klaviyo email.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 5
+    },
+    {
+      "title": "Structure emails for clicks and replies, not just opens",
+      "summary": "Adopt conventions that maximize the metrics inbox providers weigh most: clicks, replies and engagement diversity.",
+      "use_when": "Writing or redesigning campaign templates after a low click-through or low reply rate.",
+      "steps": [
+        "Use conversational subject lines; the source's test is whether a friend would send that subject line to a friend — if not, Gmail is likely to classify it as promotional.",
+        "Keep emails short and use shorter body copy.",
+        "Include a single primary call to action above the fold with a contrasting button.",
+        "Share only 3–5 products per email, for example in a 2×2 grid, each with its own 'shop now' button, and end with a 'shop all' button for people who don't like the featured items.",
+        "Periodically send plain-text emails to invite replies; the source stresses that replies are a powerful human-interaction signal for Gmail.",
+        "Use live-text footer links to product categories, which the source reports reliably lifts click rates.",
+        "Avoid sending a heavily promotional email every single week; mix in non-promotional sends."
+      ],
+      "caveats": [
+        "The source's click-rate targets (5%+ minimum, explicitly rejecting Klaviyo's reported 1–1.2% benchmark) are its own opinion and depend on list quality and offer strength.",
+        "Reply invitations only work if someone monitors and responds to the inbox."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "deliverability",
+        "creative-strategy",
+        "email-design",
+        "conversion-optimization",
+        "copywriting"
+      ],
+      "id": "660cfc96df6247717c84895a",
+      "source_id": "1WQcWqe36XxPolHopi-PTOYh8vY8HC1zr",
+      "source_sha256": "69b3b9e9495ed44c6cb3241fbb24a4afac37bdcd623d5fd26d7ebd82e1e3a344",
+      "source_name": "Klaviyo email.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 5
+    },
+    {
+      "title": "Use AI to analyze exported campaign analytics",
+      "summary": "Export Klaviyo campaign data and prompt an AI to surface bottlenecks and prioritized tests.",
+      "use_when": "You lack analyst bandwidth and need a quick diagnostic of recent campaign performance.",
+      "steps": [
+        "In Klaviyo, go to Campaigns, open the three-dot menu and choose 'export analytics'.",
+        "Select the time range (year-to-date or at least the last 90 days), choose email only (or include SMS), and include all A/B test message variations.",
+        "Export the CSV and upload it to an AI assistant (the source uses ChatGPT).",
+        "Prompt it as an email marketing data specialist and ask for a specific number of data-backed observations with recommendations.",
+        "Example framing the source used: 'analyze this data set and give me 10 observations with recommendations on how to improve it'.",
+        "Use the output to identify bottleneck metrics (e.g. high uncorrected opens but low unique clicks) and get concrete next actions like redesigning templates around one above-fold CTA, adding contrasting buttons and shortening copy.",
+        "Look for the AI's diagnosis of day-of-week and send-time patterns, subject-line features (e.g. emoji presence) and bounce spikes, then design controlled tests from those hypotheses."
+      ],
+      "caveats": [
+        "Treat AI recommendations as hypotheses to test, not instructions; the AI may propose test windows or KPIs that don't match your business.",
+        "The source notes it optimizes for placed-order rate rather than open rate when testing send times, since opens can be high in the morning while purchases concentrate in the evening."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "measurement",
+        "experiment-design",
+        "campaigns",
+        "ai-tools",
+        "klaviyo"
+      ],
+      "id": "7dccf4216521769e5cdbca27",
+      "source_id": "1WQcWqe36XxPolHopi-PTOYh8vY8HC1zr",
+      "source_sha256": "69b3b9e9495ed44c6cb3241fbb24a4afac37bdcd623d5fd26d7ebd82e1e3a344",
+      "source_name": "Klaviyo email.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 5
+    },
+    {
+      "title": "Use AI to diagnose flow performance and prioritize tests",
+      "summary": "Export Klaviyo flow analytics, analyze with AI, then focus testing on the flows and emails carrying the most revenue.",
+      "use_when": "Deciding which email flow to optimize next, or auditing a mature automation program.",
+      "steps": [
+        "In Klaviyo, go to Flows, open the options menu and choose 'export analytics'.",
+        "Select at least the last 90 days (year-to-date is fine), aggregate by day, include all A/B test message variations, and export the CSV.",
+        "Prompt the AI as an email marketing data specialist to analyze the flow data set and return a set number of data-backed observations with concrete recommendations.",
+        "Use the output to rank flows by revenue contribution and to identify where a small lift compounds most.",
+        "Prioritize A/B tests on the highest-volume, highest-revenue flow rather than low-traffic emails, because a lift on a flow with few recipients barely moves the business.",
+        "Follow up with a focused prompt on one flow (e.g. the welcome series) to get email-by-email findings and prioritized actions."
+      ],
+      "caveats": [
+        "This is the source's workflow with ChatGPT on its agency client data; the specific observation counts and findings are examples, not promises.",
+        "AI output quality depends on data completeness and the clarity of your prompt; always verify claims against the raw CSV before acting."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "measurement",
+        "experiment-design",
+        "flows",
+        "ai-tools",
+        "klaviyo",
+        "prioritization"
+      ],
+      "id": "87afe3ecbaf60a41f024e87f",
+      "source_id": "1WQcWqe36XxPolHopi-PTOYh8vY8HC1zr",
+      "source_sha256": "69b3b9e9495ed44c6cb3241fbb24a4afac37bdcd623d5fd26d7ebd82e1e3a344",
+      "source_name": "Klaviyo email.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 5
+    },
+    {
+      "title": "Where welcome-flow revenue actually concentrates",
+      "summary": "Expect the first email of a welcome series to carry most revenue and rethink the purpose of later emails.",
+      "use_when": "Auditing or rebuilding a welcome/onboarding flow.",
+      "steps": [
+        "Export welcome-flow analytics and check revenue by email. In the source's case, email one contributed roughly 88% of welcome-series revenue and the flow generated a large share of total flow revenue.",
+        "Accept that email one converting hardest is natural — subscribers sign up to use the discount they just saw.",
+        "Treat emails two through five-plus as nurture for the majority not ready to buy, with the goal of guiding them toward a future first purchase rather than matching email one's revenue.",
+        "If trailing emails generate zero revenue, consider shortening the series or repurposing them as behavior-based follow-ups rather than sending low-impact messages.",
+        "A/B test subject lines on email one first, since that is where volume is highest and any lift compounds fastest."
+      ],
+      "caveats": [
+        "The 88% figure comes from one client's data set in the source and should be treated as an illustrative example, not a benchmark you should expect.",
+        "The source still notes that email marketing ROI is high, so cutting later emails should be justified by their poor incremental performance, not just low revenue."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "flows",
+        "welcome-flow",
+        "retention",
+        "experiment-design",
+        "measurement"
+      ],
+      "id": "a0d2e94690df51325c69b129",
+      "source_id": "1WQcWqe36XxPolHopi-PTOYh8vY8HC1zr",
+      "source_sha256": "69b3b9e9495ed44c6cb3241fbb24a4afac37bdcd623d5fd26d7ebd82e1e3a344",
+      "source_name": "Klaviyo email.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 5
+    },
+    {
+      "title": "Spot under-monetized flows and channel gaps",
+      "summary": "Use flow analytics to find flows with high opens but weak clicks or orders, and consider SMS as a follow-up for non-clickers.",
+      "use_when": "Reviewing browse abandonment, cart abandonment and cross-channel follow-up performance.",
+      "steps": [
+        "For each flow, compare open rate, click rate and order rate; the source's example flagged a browse flow with 42% opens but only ~2.3% clicks and a 6% order rate.",
+        "Where clicks are weak relative to opens, add dynamic product blocks and a single hero call to action to rebuild intent.",
+        "For non-clickers, consider an SMS follow-up if your SMS flow shows strong revenue per recipient — in the source's case the SMS browse flow showed €1.70 per recipient while the email version underperformed.",
+        "Check for channel-specific gaps: the source's analysis flagged checkout abandonment traffic as small, SMS checkout as a hidden gem, post-purchase leaving money on the table and win-back flows barely converting.",
+        "Prioritize the fixes with the highest combination of traffic volume and revenue impact."
+      ],
+      "caveats": [
+        "The specific rates and €1.70 per-recipient figure are one client's data used as an illustration, not a benchmark.",
+        "SMS follow-up requires separate consent collection and compliance, which the source does not detail here."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "flows",
+        "measurement",
+        "sms",
+        "browse-abandonment",
+        "conversion-optimization",
+        "cross-channel"
+      ],
+      "id": "af644216425f8395c3bae68c",
+      "source_id": "1WQcWqe36XxPolHopi-PTOYh8vY8HC1zr",
+      "source_sha256": "69b3b9e9495ed44c6cb3241fbb24a4afac37bdcd623d5fd26d7ebd82e1e3a344",
+      "source_name": "Klaviyo email.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 5
+    },
+    {
+      "title": "2026 deliverability KPI targets for ecommerce email",
+      "summary": "Set measurement thresholds for open, click, spam-complaint and unsubscribe rates before diagnosing strategy.",
+      "use_when": "Reviewing Klaviyo campaign health or setting reporting thresholds for an email program.",
+      "steps": [
+        "Open rate: target at least 45% minimum, ideally 50% or higher, on engaged segments.",
+        "Click rate: target 5% or higher; the source explicitly argues against Klaviyo's suggested 1–1.2% benchmark because it forces overly tight segments.",
+        "Spam complaint rate: keep at 0.01% or lower and actively monitor it.",
+        "Unsubscribe rate: aim for 0.3% or lower, but treat it as less critical than in the past because one-click unsubscribe in Gmail has raised unsubscribe rates and unsubscribes don't directly hurt deliverability.",
+        "Still minimize unsubscribes because a shrinking list costs long-term revenue.",
+        "Track provider- and country-level breakdowns in addition to overall numbers, since averages can mask local problems."
+      ],
+      "caveats": [
+        "These thresholds are the source's recommendations for its own client work, not industry standards; they depend heavily on list source and offer strength.",
+        "The source's disagreement with Klaviyo's click-rate guidance is an opinion — test against your own conversion economics rather than adopting either figure blindly."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "deliverability",
+        "measurement",
+        "klaviyo",
+        "kpis",
+        "campaigns"
+      ],
+      "id": "91d6fd433f58386ce8c70f4a",
+      "source_id": "1WQcWqe36XxPolHopi-PTOYh8vY8HC1zr",
+      "source_sha256": "69b3b9e9495ed44c6cb3241fbb24a4afac37bdcd623d5fd26d7ebd82e1e3a344",
+      "source_name": "Klaviyo email.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 5
+    }
+  ],
+  "request_id": "9f29007061fed5161bbcf633ed7f867d5d8bc833711c09c7c0f40a45586ef38b",
+  "ecommerce_scope_version": 1
+}

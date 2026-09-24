@@ -1,0 +1,451 @@
+{
+  "cards": [
+    {
+      "title": "Create variable products with size/color attributes and variation images",
+      "summary": "Build a variable product by defining attributes first, generating variations, then assigning per-variation image and price so the PDP swaps visuals by customer selection.",
+      "use_when": "Setting up a product with multiple options (sizes, colors) on the PDP so customers see the correct image and price per choice.",
+      "steps": [
+        "Create the product and set Product Data to 'Variable product'.",
+        "Open the Attributes tab and add your first attribute (e.g. 'Size'), entering each term (e.g. 10, 11, 12). To enter multiple terms in the field, hold Shift and press the key above your keyboard's Enter key to separate values. Click Save attributes.",
+        "Add a second attribute (e.g. 'Color' with gray, red, beige), save attributes again.",
+        "Open the Variations tab and click Generate variations — WooCommerce combines every term of both attributes (size 10 gray, size 10 red, size 11 gray, etc.).",
+        "Edit each variation individually: assign the matching image, set the price, and optionally weight. This is the tedious part but you must do it per variation.",
+        "Set the product short description, then set the main Product image and Default form values (default size and color) so the default selection matches the default image shown.",
+        "Publish. Confirm the storefront displays a price range (e.g. $50–$80) and that selecting a different combination swaps the image and price."
+      ],
+      "caveats": [
+        "Every variation must have a price — a variation without a price cannot be added to the cart.",
+        "Attribute term entry, the generate-variations button and default-form-values labels can shift between WooCommerce versions; verify the current interface."
+      ],
+      "tags": [
+        "store-setup",
+        "product-page",
+        "merchandising",
+        "variations",
+        "woocommerce",
+        "attributes",
+        "pdp"
+      ],
+      "id": "4c504a8098d0a59174780d68",
+      "source_id": "1N7_C41dloQEP_i1ovlcx9YLjlibrEIwZ",
+      "source_sha256": "2c40c37ef7180ab77b5f811028b7999b787b548b7c8ada6ca9daf98ce78a3a25",
+      "source_name": "WooCommerce Tutorial for Beginners 2026.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 2
+    },
+    {
+      "title": "Configure selling locations, shipping locations and customer location sensibly",
+      "summary": "Restrict selling to your actual markets and base the default customer location on the shop address rather than geolocation.",
+      "use_when": "Configuring store-wide General settings on a new store so checkout country fields and shipping match where you actually do business.",
+      "steps": [
+        "Enter the store address first — it drives tax and shipping calculations.",
+        "Under General > Selling locations choose 'Sell to specific countries' and select only the countries you actually serve (e.g. United States and Canada). This is the most commonly used setting in the source's web-design experience.",
+        "Set shipping location to the countries you sell to rather than all countries, so you only ship where you do business.",
+        "Set the default customer location to Shop country rather than Geolocate — the source recommends this because many customers use VPNs, so geolocation is unreliable.",
+        "Skip address autocomplete unless you are willing to add the third-party plugin it requires.",
+        "Enable taxes and enable the use of coupons, check the remaining boxes, and choose your store currency. Save."
+      ],
+      "caveats": [
+        "The source's preference for shop-country default over geolocation is a practitioner recommendation, not a rule — test it against your actual buyer mix."
+      ],
+      "tags": [
+        "store-setup",
+        "fulfillment",
+        "tax",
+        "shipping",
+        "woocommerce",
+        "settings",
+        "checkout"
+      ],
+      "id": "0e315f3cac6ec2afb7b36fb0",
+      "source_id": "1N7_C41dloQEP_i1ovlcx9YLjlibrEIwZ",
+      "source_sha256": "2c40c37ef7180ab77b5f811028b7999b787b548b7c8ada6ca9daf98ce78a3a25",
+      "source_name": "WooCommerce Tutorial for Beginners 2026.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 2
+    },
+    {
+      "title": "Decide add-to-cart redirect behavior and product review permissions",
+      "summary": "Configure whether adding to cart diverts users to the cart page and whether reviews require a verified purchase or allow open reviews.",
+      "use_when": "Setting up Products settings on a multi-product store to reduce cart-page bounce and choose a review policy.",
+      "steps": [
+        "In WooCommerce > Settings > Products, review the 'Add to cart behavior' option. The source advises against redirecting to the cart page when you have multiple products, because users get pulled away from browsing every time they add something.",
+        "Choose measurement and dimension units matching your market (pounds/ounces for the US; kilograms/grams for Europe; inches or centimeters for dimensions).",
+        "Under Reviews, decide whether to enable reviews at all, and whether to only allow reviews from customers who actually purchased. Star ratings can be enabled independently.",
+        "Save changes.",
+        "Optionally visit Inventory settings to enable stock management, and the Downloadable products settings if you sell digital goods."
+      ],
+      "caveats": [
+        "The source's own store leaves verified-purchase-only reviews unchecked; treat this as a policy choice, not a recommendation.",
+        "The no-redirect advice is attributed to the source and suits catalog browsing; a single-product store may reasonably differ."
+      ],
+      "tags": [
+        "store-setup",
+        "cart",
+        "product-page",
+        "reviews",
+        "woocommerce",
+        "settings"
+      ],
+      "id": "e05ffae1f1e76a528149110e",
+      "source_id": "1N7_C41dloQEP_i1ovlcx9YLjlibrEIwZ",
+      "source_sha256": "2c40c37ef7180ab77b5f811028b7999b787b548b7c8ada6ca9daf98ce78a3a25",
+      "source_name": "WooCommerce Tutorial for Beginners 2026.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 2
+    },
+    {
+      "title": "Set tax calculation basis correctly by origin vs destination state",
+      "summary": "Choose shop-base address vs customer shipping address for tax calculation depending on whether your state is an origin-based sales-tax state.",
+      "use_when": "Configuring WooCommerce tax settings before going live in the US, to avoid collecting tax on the wrong basis.",
+      "steps": [
+        "In WooCommerce > Settings > Tax, keep 'Prices entered with tax' unchecked so product prices display without tax, which the source says is what most stores do.",
+        "Set 'Calculate tax based on' to the correct basis: a handful of states (the source names Arizona, California, Ohio, Pennsylvania, Tennessee as examples) are origin-based, meaning you charge tax based on where you are physically located — use Shop base address. For most other states, use Customer shipping address.",
+        "Verify your own state's status with a current tax reference (the source cites taxjar.com's map and state lists) rather than relying on the example list.",
+        "Leave 'Shipping tax class' based on cart items unless you charge a single flat rate, in which case select Standard.",
+        "Set rounding and rate naming as you prefer, and save — then add rates under Standard rates by inserting a row with country code (US), state code (CA), postcode, rate (e.g. 7.25), a tax name, priority for competing rates, whether the rate compounds, and whether shipping is taxable in that state."
+      ],
+      "caveats": [
+        "Origin-state lists and rates change over time — confirm with a current tax source; the source's list is illustrative, not authoritative.",
+        "Enabled taxes are required before any of these settings matter."
+      ],
+      "tags": [
+        "store-setup",
+        "tax",
+        "woocommerce",
+        "pricing",
+        "checkout",
+        "compliance"
+      ],
+      "id": "810ad7d0f208de62c05c455a",
+      "source_id": "1N7_C41dloQEP_i1ovlcx9YLjlibrEIwZ",
+      "source_sha256": "2c40c37ef7180ab77b5f811028b7999b787b548b7c8ada6ca9daf98ce78a3a25",
+      "source_name": "WooCommerce Tutorial for Beginners 2026.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 2
+    },
+    {
+      "title": "Use reduced tax rates for special product classes",
+      "summary": "Create a reduced tax class (e.g. 0% for digital goods) and assign it to specific products so mixed catalogs are taxed correctly.",
+      "use_when": "Selling a catalog mixing physical and digital (or otherwise differently taxed) items on one store.",
+      "steps": [
+        "Under Tax > Reduced rates, insert rows for special rates — for example in California, digital products carry no sales tax, so enter a 0% rate named 'Digital'. Save.",
+        "Edit the affected product and open the General tab under Product data.",
+        "Set Tax status and change Tax class from Standard to your reduced class (e.g. 'Reduced rate'). Update the product.",
+        "Result: standard products use your general rate (e.g. 7.25%) while the digital product is charged at 0%.",
+        "Confirm with a test checkout that the correct rate applies to each product type."
+      ],
+      "caveats": [
+        "Rate treatment per category varies by state/country — verify the actual taxability of digital goods where you are registered.",
+        "Reduced-rate handling and labels may differ in current WooCommerce versions; check the interface."
+      ],
+      "tags": [
+        "store-setup",
+        "tax",
+        "digital-products",
+        "woocommerce",
+        "compliance",
+        "pricing"
+      ],
+      "id": "e551ef1a9cb2edead902000f",
+      "source_id": "1N7_C41dloQEP_i1ovlcx9YLjlibrEIwZ",
+      "source_sha256": "2c40c37ef7180ab77b5f811028b7999b787b548b7c8ada6ca9daf98ce78a3a25",
+      "source_name": "WooCommerce Tutorial for Beginners 2026.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 2
+    },
+    {
+      "title": "Automate tax rates with the WooCommerce Tax plugin",
+      "summary": "Install and connect the official WooCommerce Tax plugin to pull calculated rates from a live tax service instead of maintaining rows manually.",
+      "use_when": "You want hands-off sales-tax rates across many jurisdictions instead of hand-building standard and reduced rate rows.",
+      "steps": [
+        "Go to Plugins > Add new, search for 'WooCommerce Tax', install and activate the plugin published by WooCommerce.",
+        "Click Connect and create/authorize a free WordPress.com account when prompted — this uses the WordPress.com API.",
+        "When connected, return to WooCommerce > Settings > Tax and enable automated taxes, then save.",
+        "Rates are drawn from the connected tax service (the source cites TaxJar) which WooCommerce partners with, so they stay current.",
+        "If you prefer full manual control, you can still maintain Standard and Reduced rate rows instead of enabling automation."
+      ],
+      "caveats": [
+        "Requires a WordPress.com connection and a live service; plugin name, connection flow and settings screens may change — verify in the current interface.",
+        "Automation may not cover every edge case (mixed digital/physical rules), so spot-check representative products."
+      ],
+      "tags": [
+        "store-setup",
+        "tax",
+        "woocommerce",
+        "automation",
+        "plugins",
+        "compliance"
+      ],
+      "id": "cdf8caa5f07e280d5ea7b71f",
+      "source_id": "1N7_C41dloQEP_i1ovlcx9YLjlibrEIwZ",
+      "source_sha256": "2c40c37ef7180ab77b5f811028b7999b787b548b7c8ada6ca9daf98ce78a3a25",
+      "source_name": "WooCommerce Tutorial for Beginners 2026.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 2
+    },
+    {
+      "title": "Build shipping zones with free shipping, flat rate and local pickup",
+      "summary": "Create a shipping zone, then layer free-shipping thresholds, a flat rate and local pickup as selectable methods at checkout.",
+      "use_when": "Setting up shipping options for a store that ships to specific countries or regions.",
+      "steps": [
+        "Go to WooCommerce > Shipping and click Add shipping zone; name it (e.g. 'United States').",
+        "Set zone regions to 'Everywhere' if the zone name already reflects your selling countries and you ship to all of them, or restrict to specific states/regions if you only ship to some.",
+        "Add a shipping method: choose Free shipping, then set its requirement — the options are no requirement, a valid free-shipping coupon, a minimum order amount, or a combination. The source uses a $100 minimum order amount as the free-shipping threshold.",
+        "Add a second method: Flat rate, and enter a default rate (the source uses $5) for orders that don't qualify for free shipping.",
+        "Add a third method: Local pickup, typically with a zero fee, and mark it not taxable.",
+        "Save each method; the storefront cart then offers these options to the customer."
+      ],
+      "caveats": [
+        "All three methods being offered together assumes you accept pickup — omit it if you only ship.",
+        "Zone and method labels differ slightly between WooCommerce versions; verify the current interface."
+      ],
+      "tags": [
+        "store-setup",
+        "shipping",
+        "fulfillment",
+        "woocommerce",
+        "checkout",
+        "cart"
+      ],
+      "id": "83e072152c921a7e0b627698",
+      "source_id": "1N7_C41dloQEP_i1ovlcx9YLjlibrEIwZ",
+      "source_sha256": "2c40c37ef7180ab77b5f811028b7999b787b548b7c8ada6ca9daf98ce78a3a25",
+      "source_name": "WooCommerce Tutorial for Beginners 2026.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 2
+    },
+    {
+      "title": "Charge per-product shipping with shipping classes and per-class calculation",
+      "summary": "Create shipping classes for bulky or heavy items and set the flat-rate method to charge per class so large items cost more to ship.",
+      "use_when": "Your catalog contains items with very different shipping costs (small apparel vs heavy/bulky goods) and you need item-level pricing.",
+      "steps": [
+        "Go to WooCommerce > Shipping > Shipping classes and add a class (e.g. 'Heavy' / heavy packages) and create it.",
+        "Return to the shipping zone's Flat rate method and edit it. Keep the default flat rate (e.g. $5) for normal products, then add a per-class cost row for your heavy class (e.g. $10).",
+        "Set Calculation type to 'Per class' rather than 'Per order'. Per class charges the rate for each item in the cart; per order applies only the most expensive shipping class across the cart, which undercharges mixed carts.",
+        "Save the method.",
+        "Edit each product that should use the class, open the Shipping tab under Product data, set its Shipping class to the heavy class, and update.",
+        "Test with a cart containing both a normal and a heavy item to confirm both class rates apply as expected."
+      ],
+      "caveats": [
+        "Per-class is the source's recommendation for accuracy; per-order is a simpler but less precise alternative.",
+        "The example rates ($5 default, $10 heavy) are illustrative — set your own based on real carrier costs."
+      ],
+      "tags": [
+        "store-setup",
+        "shipping",
+        "fulfillment",
+        "woocommerce",
+        "pricing",
+        "cart"
+      ],
+      "id": "da4f0f4ea5152b002d3a0da1",
+      "source_id": "1N7_C41dloQEP_i1ovlcx9YLjlibrEIwZ",
+      "source_sha256": "2c40c37ef7180ab77b5f811028b7999b787b548b7c8ada6ca9daf98ce78a3a25",
+      "source_name": "WooCommerce Tutorial for Beginners 2026.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 2
+    },
+    {
+      "title": "Connect Stripe and PayPal payment gateways",
+      "summary": "Add card and PayPal payments by installing the recommended gateway plugins, creating the merchant accounts, and connecting them to the store.",
+      "use_when": "Enabling card and PayPal checkout on a new WooCommerce store.",
+      "steps": [
+        "In Plugins > Add new, search for the Stripe plugin from the 'payment plugins' developer. The source specifically does not recommend the official Stripe plugin, stating it malfunctions often; the third-party plugin is described as an official Stripe partner and shows high ratings. Install and activate it.",
+        "Likewise install and activate the payment-plugins PayPal extension when prompted.",
+        "Create a free Stripe account — the source notes Stripe has no setup cost, no credit check and no monthly fee, only a per-transaction fee. Connect it from the plugin's settings, login in the browser, select the business, and connect; leave it in Test mode until ready for real payments.",
+        "Create a PayPal Business account (a personal account will not sync with the site) and use the plugin's click-to-connect flow.",
+        "Save changes; a card field and PayPal option then appear at checkout."
+      ],
+      "caveats": [
+        "The anti-official-Stripe-plugin opinion is the presenter's from his own experience — re-evaluate current plugin quality and Stripe's own recommended integrations before choosing.",
+        "Fees, onboarding and whether a personal PayPal account works can change; verify current terms and interface."
+      ],
+      "tags": [
+        "store-setup",
+        "checkout",
+        "payments",
+        "woocommerce",
+        "stripe",
+        "paypal",
+        "plugins"
+      ],
+      "id": "840926e7dab9ffd73e8dfae6",
+      "source_id": "1N7_C41dloQEP_i1ovlcx9YLjlibrEIwZ",
+      "source_sha256": "2c40c37ef7180ab77b5f811028b7999b787b548b7c8ada6ca9daf98ce78a3a25",
+      "source_name": "WooCommerce Tutorial for Beginners 2026.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 2
+    },
+    {
+      "title": "Run a test order to verify shipping, tax and checkout end to end",
+      "summary": "Place a live checkout with test card details to confirm free-shipping thresholds, taxes and gateway behavior before launch.",
+      "use_when": "Pre-launch QA of checkout, shipping options and tax configuration in a new store.",
+      "steps": [
+        "Add a product to the cart and view the cart: confirm the flat rate (e.g. $5) and local pickup appear and choose as appropriate.",
+        "Increase quantity until the cart passes the free-shipping threshold (the source uses $100) and click Update; confirm free shipping becomes selectable, then proceed to checkout.",
+        "Fill in billing details: confirm the country dropdown only lists your configured selling countries (e.g. US and Canada).",
+        "Uncheck 'ship to a different address' if shipping to the billing address, or enter an alternate shipping address to verify separate shipping fields.",
+        "With Stripe in test mode, enter test card number 4242 across the card field and any future expiry/CVC, then place the order.",
+        "Confirm the order appears under WooCommerce > Orders with totals, line items, billing and shipping addresses — and that the My Account page shows the order for the customer."
+      ],
+      "caveats": [
+        "The 4242 test card only works while Stripe is in test mode; switch to live mode for real transactions.",
+        "Tax shown depends on your origin/destination configuration — confirm it matches your intended rule."
+      ],
+      "tags": [
+        "store-setup",
+        "checkout",
+        "shipping",
+        "tax",
+        "testing",
+        "woocommerce",
+        "payments"
+      ],
+      "id": "e56e3a1335afe26e6b6c062a",
+      "source_id": "1N7_C41dloQEP_i1ovlcx9YLjlibrEIwZ",
+      "source_sha256": "2c40c37ef7180ab77b5f811028b7999b787b548b7c8ada6ca9daf98ce78a3a25",
+      "source_name": "WooCommerce Tutorial for Beginners 2026.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 2
+    },
+    {
+      "title": "Manage and fulfill orders, issue refunds, and understand the customer My Account page",
+      "summary": "Locate orders, mark them complete to notify the customer, process refunds from the order screen, and confirm what customers can self-serve.",
+      "use_when": "Post-purchase operations: fulfilling orders, handling refund requests, and supporting customer self-service.",
+      "steps": [
+        "Go to WooCommerce > Orders and open an order to see status, order details, and billing/shipping addresses.",
+        "Change the status to Completed and click Update, which notifies the customer that the order is done and shipping. (The source notes auto-fulfillment is an option you can configure, but by default orders sit as 'Processing'.)",
+        "To refund, scroll to the bottom of the order and use the Refund action, entering the refund amount and confirming; test orders show $0 because no real funds exist.",
+        "Direct customers to the automatically created My Account page, where they can view their past orders and totals, update addresses, update payment methods, and log in or out.",
+        "Optionally offer social-login via a third-party WordPress plugin to simplify customer sign-in."
+      ],
+      "caveats": [
+        "Refund amounts on test orders will read $0 by design; real refunds require live payments.",
+        "Status names and available actions may vary by WooCommerce version and installed extensions."
+      ],
+      "tags": [
+        "store-setup",
+        "fulfillment",
+        "retention",
+        "refunds",
+        "woocommerce",
+        "customer-accounts",
+        "orders"
+      ],
+      "id": "694b2885835d4464ef80c033",
+      "source_id": "1N7_C41dloQEP_i1ovlcx9YLjlibrEIwZ",
+      "source_sha256": "2c40c37ef7180ab77b5f811028b7999b787b548b7c8ada6ca9daf98ce78a3a25",
+      "source_name": "WooCommerce Tutorial for Beginners 2026.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 2
+    },
+    {
+      "title": "Organize product categories and handle undeletable defaults",
+      "summary": "Clean up imported categories, keep only what you need, and repurpose the undeletable default category instead of leaving it unused.",
+      "use_when": "Tidying catalog navigation and category structure after a theme import on a new store.",
+      "steps": [
+        "Go to Products > Categories in the dashboard. Themes often import categories you don't need.",
+        "Select the unwanted categories and delete them.",
+        "Note that one default category cannot be deleted. The source's workaround is to rename and repurpose it as a real category (e.g. rename it to your brand gear such as 'Daryl's Gear') and update it.",
+        "Use that repurposed category as a legitimate part of your navigation, and make sure any products that land in it intentionally belong there."
+      ],
+      "caveats": [
+        "If you create categories, the source advises using the existing undeletable category as one of yours rather than fighting it.",
+        "Category labels and the delete/rename flow may differ slightly by WooCommerce version."
+      ],
+      "tags": [
+        "store-setup",
+        "merchandising",
+        "categories",
+        "woocommerce",
+        "navigation",
+        "catalog"
+      ],
+      "id": "61bbf15291749004213a6531",
+      "source_id": "1N7_C41dloQEP_i1ovlcx9YLjlibrEIwZ",
+      "source_sha256": "2c40c37ef7180ab77b5f811028b7999b787b548b7c8ada6ca9daf98ce78a3a25",
+      "source_name": "WooCommerce Tutorial for Beginners 2026.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 2
+    },
+    {
+      "title": "Check email deliverability and customize transactional emails",
+      "summary": "Ensure customer order emails actually send by configuring SMTP, and optionally customize email templates with a free builder plugin.",
+      "use_when": "After store setup, before launch, and when customers report missing order emails.",
+      "steps": [
+        "Recognize that on a brand-new WooCommerce install, emails to customers often fail to send — plan to fix this before launch rather than after complaints.",
+        "Configure SMTP settings (the source points to a separate free-plugin walkthrough) so order emails reliably reach customers.",
+        "Review email recipients in WooCommerce > Settings > Emails: new-order notifications go to you, while processing/on-hold and similar status emails go to customers.",
+        "Leave the default subject lines and headings as-is — the source recommends defaults for simplicity.",
+        "If you want branded emails, install a free drag-and-drop email builder plugin and design templates visually, since the built-in email cannot be edited directly."
+      ],
+      "caveats": [
+        "The source warns plugin pop-ups and marketing nags appear in the WordPress admin; expect and dismiss them.",
+        "Specific SMTP plugin and email-builder names are not given in this source — verify current options."
+      ],
+      "tags": [
+        "store-setup",
+        "retention",
+        "fulfillment",
+        "email",
+        "woocommerce",
+        "deliverability",
+        "notifications"
+      ],
+      "id": "9a06652f2c2b2dad31773b3f",
+      "source_id": "1N7_C41dloQEP_i1ovlcx9YLjlibrEIwZ",
+      "source_sha256": "2c40c37ef7180ab77b5f811028b7999b787b548b7c8ada6ca9daf98ce78a3a25",
+      "source_name": "WooCommerce Tutorial for Beginners 2026.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 2
+    },
+    {
+      "title": "Tune coupon and review settings for a workable default configuration",
+      "summary": "Enable coupons, set measurement units and review permissions so the store behaves correctly from day one.",
+      "use_when": "Final pass through WooCommerce Products and General settings before launch.",
+      "steps": [
+        "In General settings, enable coupons alongside taxes so coupon functionality is available for promotions.",
+        "In Products settings, set weight and dimension units matching your market so shipping calculations and product details are correct.",
+        "Decide the review policy: leave reviews open, or require a verified purchase, and independently enable star ratings.",
+        "Leave the remaining product settings at their defaults unless you sell inventory-tracked or downloadable goods, then visit Inventory or Downloadable products settings accordingly.",
+        "Revisit General > Accounts and privacy: the source calls disabling guest checkout 'a terrible idea' and treats the default account/privacy options as standard for ecommerce."
+      ],
+      "caveats": [
+        "The guest-checkout opinion is attributed to the source and reflects his experience; evaluate against your own conversion and account strategy.",
+        "Default labels and option placement vary between WooCommerce versions."
+      ],
+      "tags": [
+        "store-setup",
+        "checkout",
+        "reviews",
+        "coupons",
+        "woocommerce",
+        "settings",
+        "conversion-optimization"
+      ],
+      "id": "be71d70a5e089e6f5c9bc9be",
+      "source_id": "1N7_C41dloQEP_i1ovlcx9YLjlibrEIwZ",
+      "source_sha256": "2c40c37ef7180ab77b5f811028b7999b787b548b7c8ada6ca9daf98ce78a3a25",
+      "source_name": "WooCommerce Tutorial for Beginners 2026.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 2
+    }
+  ],
+  "request_id": "b289255682184894246747b49d3e36980b7f5a2d114ea4f2b0371eb997f69cb1",
+  "ecommerce_scope_version": 1
+}

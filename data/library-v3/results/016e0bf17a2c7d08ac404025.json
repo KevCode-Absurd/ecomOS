@@ -1,0 +1,421 @@
+{
+  "cards": [
+    {
+      "title": "Choose the right incrementality test by revenue scale",
+      "summary": "Match geo-lift, in-platform lift, and causal-impact methods to your budget level instead of running one test type everywhere.",
+      "use_when": "Deciding how to validate whether a paid channel or campaign is actually driving incremental revenue before increasing spend.",
+      "steps": [
+        "At lower spend levels, use in-platform lift experiments (Meta, Google, TikTok) because they split audiences at the individual user ID level rather than by geography, so they need less budget and Meta allows running them repeatedly.",
+        "Verify current minimum spend requirements before planning: the source states TikTok and Google require roughly $200k spend to run a lift test — treat this as a source-specific heuristic and confirm the live interface.",
+        "Know the trade-off: in-platform lift relies on the platform's own data science and attribution, you get no visibility into the raw data set, so you cannot verify their math.",
+        "At higher spend with complex channel and revenue mixes, run geo-lift experiments outside the platform, splitting control and treatment at state level (or commuting-zone level in Australia) and measuring against actual business revenue.",
+        "Accept that geo-lift takes longer, needs high spend for statistical relevance, and requires you to control variables like state selection through the test period.",
+        "Run both types in your experiment design: neither is a magic solution, and each covers the other's weaknesses.",
+        "For retrospective questions (e.g. 'did YouTube help?') where no clean split exists, use Google's open-source causal impact package with confounding variables like ad spend, keyword seasonality, influencer spend and inflation to generate a predicted counterfactual.",
+        "Compare predicted counterfactual revenue to actual revenue to estimate incremental contribution; treat the result as directional, not proof of causation.",
+        "Apply the resulting incrementality factor to in-platform attributed ROAS numbers, and run consistent, high-frequency geo-lift tests across channels and campaign types to keep those factors current."
+      ],
+      "caveats": [
+        "Causal impact uses a predictive model with third-party variables and cannot prove causation — the presenter describes it as directional only.",
+        "Geo-lift testing in Australia requires commuting-zone-level regions, not state-level, and frequent tests muddy the clustering data used for region selection.",
+        "Platform lift minimum spend figures are the presenter's recollection and should be re-verified."
+      ],
+      "tags": [
+        "multi",
+        "measurement",
+        "incrementality",
+        "experiment-design",
+        "attribution",
+        "paid-media",
+        "geo-lift"
+      ],
+      "id": "c357a526bf80823f96c4a116",
+      "source_id": "1Ta2RSp1n8gCTsxoz38HIw1ZHjRtrCjTL",
+      "source_sha256": "19a89cf51ff5bb9e0e5038c8cb1877e1211529b1fa94761ff5b73fce003770d6",
+      "source_name": "How to Scale an eCommerce Brand Profitably in 2026_ The Full System.docx",
+      "folder": "/99-multi",
+      "domain": "multi",
+      "section": 2
+    },
+    {
+      "title": "Audit nine common paid-media measurement mistakes",
+      "summary": "A checklist of recurring tracking and account-structure errors that inflate reported ROAS and misdirect budget.",
+      "use_when": "Reviewing a paid media account or onboarding a new agency to find where reported performance diverges from actual business results.",
+      "steps": [
+        "Check whether 1-day view attribution is running across all campaigns and being used in reporting; the source claims 30–50% of reported ROAS can come from view-throughs, so remove it for a realistic read.",
+        "Be sceptical of Google ROAS: the 'halo effect' means Google takes credit for demand created on other platforms, so a high paid-search ROAS with brand excluded does not mean adding budget will return proportionally.",
+        "Audit brand campaign waste: keeping brand terms in to lift blended ROAS causes spend on demand you already own — described as very common even at 8-figure retailers.",
+        "Count campaign segmentation against business complexity and spend so data isn't fragmented across too many campaigns.",
+        "Review tertiary channels (Snapchat, Pinterest, Reddit) with very low spend allocation — at low spend the platform prioritises warm pixel audiences, producing high ROAS without genuinely new incremental growth.",
+        "Check for existing-customer overspend inflating numbers and driving budget increases on warm demand.",
+        "Question top-of-funnel objective campaigns (traffic, reach) on Meta: the source says nobody running them has a real measurement system, and a 3%-of-budget test during Black Friday is too small to produce measurable impact.",
+        "Check for over-spend on dynamic product ads (DPAs) driven purely by good-looking ROAS, given they sit bottom-of-funnel and may not be incremental.",
+        "Confirm a testing structure exists for anything you run: the source's position is that if you cannot validate whether an activity works, it isn't worth doing.",
+        "Fix measurement first: the source argues most brands that fail to scale have a measurement problem, not a paid media problem."
+      ],
+      "caveats": [
+        "The 30–50% view-through attribution figure is the presenter's observation, not a benchmark guarantee.",
+        "The presenter notes Google can still acquire genuinely incremental customers profitably — the halo effect is a caution, not a ban."
+      ],
+      "tags": [
+        "multi",
+        "measurement",
+        "paid-media",
+        "attribution",
+        "conversion-optimization",
+        "audit",
+        "meta-ads",
+        "google-ads"
+      ],
+      "id": "c3b26441e2aab84bb3e48137",
+      "source_id": "1Ta2RSp1n8gCTsxoz38HIw1ZHjRtrCjTL",
+      "source_sha256": "19a89cf51ff5bb9e0e5038c8cb1877e1211529b1fa94761ff5b73fce003770d6",
+      "source_name": "How to Scale an eCommerce Brand Profitably in 2026_ The Full System.docx",
+      "folder": "/99-multi",
+      "domain": "multi",
+      "section": 2
+    },
+    {
+      "title": "Take the right measurement actions by revenue tier",
+      "summary": "A staged action list for cleaning up tracking and reporting at $1–5M, $5–20M and $20M+ revenue.",
+      "use_when": "Planning the next round of measurement and reporting improvements for a store based on its current annual revenue.",
+      "steps": [
+        "At $1–5M revenue: switch Meta to 7-day click reporting, which the source says correlates better to acquisition metrics in the business.",
+        "At $1–5M: tag Shopify cost of goods on all products so gross margin is visible in real time, then build a daily dashboard showing acquisition-metric profit contribution, new customer profit contribution, new customer revenue, new customer orders and blended CAC.",
+        "At $1–5M: exclude existing customers from top-of-funnel campaigns and minimise brand search spend.",
+        "At $5–20M: keep everything above and layer in in-platform lift studies for top-of-funnel experimentation, measured against lift, plus incremental attribution as a second validation layer beyond 7-day click.",
+        "At $20M+: run geo-lift tests outside the platform and build a dashboard that pulls in omnichannel metrics from every revenue-capture channel, adding one or two extra metrics to the baseline set.",
+        "At $20M+: introduce incrementality factors — derived from repeated geo-lift tests — applied to in-platform attributed ROAS to give a more realistic incremental read across platforms and campaign types.",
+        "Track P&L-level financial KPIs rather than platform ROAS as the north star: the source argues winning brands in 2026–27 move toward financial-based KPIs and incrementality testing."
+      ],
+      "caveats": [
+        "The revenue bands are the presenter's heuristics, not established thresholds.",
+        "Incrementality factors require consistent, high-frequency geo-lift testing across all channels and campaign types — without that volume they will be unreliable."
+      ],
+      "tags": [
+        "multi",
+        "measurement",
+        "incrementality",
+        "paid-media",
+        "reporting",
+        "dashboard",
+        "meta-ads"
+      ],
+      "id": "f78b03e4db0e30f1f5fa1fb6",
+      "source_id": "1Ta2RSp1n8gCTsxoz38HIw1ZHjRtrCjTL",
+      "source_sha256": "19a89cf51ff5bb9e0e5038c8cb1877e1211529b1fa94761ff5b73fce003770d6",
+      "source_name": "How to Scale an eCommerce Brand Profitably in 2026_ The Full System.docx",
+      "folder": "/99-multi",
+      "domain": "multi",
+      "section": 2
+    },
+    {
+      "title": "Set up Conversions API and treat GA4 as a redundancy layer",
+      "summary": "Tracking hygiene: server-side events, avoiding Shopify attribution reports, and keeping GA4 as a fallback.",
+      "use_when": "Auditing or rebuilding the tracking stack for a store that spends on Meta and needs reliable event data for optimisation.",
+      "steps": [
+        "Ensure Conversions API (CAPI) is set up on Meta: instead of the purchase event firing only from the browser pixel, it fires on your own local server and is rerouted to Meta.",
+        "Understand the two benefits: it removes reliance on the browser, which the source describes as unreliable due to iOS, ad blockers and privacy regulation, and it improves event matching using first-party data (hashed email, phone, customer ID) so data stays privatised.",
+        "Use CAPI to pass offline conversion data, e.g. an in-store purchase linked back via email or phone to a served ad.",
+        "Verify CAPI is actually working — the source says improved tracking increases the data flowing into the platform, which improves optimisation.",
+        "Avoid making decisions from Shopify's marketing or attribution reports: the presenter says these are generally unreliable.",
+        "Treat GA4 as a redundancy layer: set it up properly (events firing, campaign segmentation correct) so that if platform tracking fails you have directional fallback data.",
+        "Do not use GA4 as your primary decision dashboard — the source states nothing in GA4 can't be obtained from Shopify or the ad platforms, as of May 2026, so check the current interface before relying on this.",
+        "Note the source's context: the brands discussed are typically doing $10–20M+ revenue, where tracking being broken would be a serious problem."
+      ],
+      "caveats": [
+        "The assessment of GA4, Shopify attribution reports and CAPI capabilities is dated to May 2026 and platform interfaces change — verify current behaviour.",
+        "Server-side tracking improves match rates but does not guarantee complete attribution or measurement accuracy."
+      ],
+      "tags": [
+        "multi",
+        "measurement",
+        "tracking",
+        "meta-ads",
+        "analytics",
+        "shopify",
+        "conversions-api"
+      ],
+      "id": "e2b6cdb21e10af8714dad979",
+      "source_id": "1Ta2RSp1n8gCTsxoz38HIw1ZHjRtrCjTL",
+      "source_sha256": "19a89cf51ff5bb9e0e5038c8cb1877e1211529b1fa94761ff5b73fce003770d6",
+      "source_name": "How to Scale an eCommerce Brand Profitably in 2026_ The Full System.docx",
+      "folder": "/99-multi",
+      "domain": "multi",
+      "section": 2
+    },
+    {
+      "title": "Distinguish gross and net revenue to diagnose monthly swings",
+      "summary": "Break revenue into gross, refunds, discounts and shipping collected before concluding why net revenue moved.",
+      "use_when": "Reviewing month-over-month revenue changes or diagnosing why net revenue rose or fell despite stable ad spend.",
+      "steps": [
+        "Separate gross revenue (cash collected at topline) from net revenue, which accounts for returns, refunds, chargebacks and sometimes a discount allowance.",
+        "Note that Shopify shows this gross-to-net breakdown but accounting software like Xero or QuickBooks typically only gives a net or cash read, so gross-to-net must be pulled through deliberately if you want to use it for decisions.",
+        "When net revenue moves from e.g. $100k to $110k, don't go straight to marketing or headcount to explain it — check gross revenue, refunds, discounts and shipping collected first, since the driver may sit above the net line.",
+        "Worked pattern: if gross revenue was $120k in both months but refunds were $20k vs $10k, the revenue difference is a refund effect, not a demand effect.",
+        "Treat refunds, discounts and shipping collected at checkout as three direct profitability levers: reducing refunds, reducing discounts, or collecting more shipping each increase net revenue.",
+        "Recognise most stores under-collect on shipping at checkout, so this is a common improvement lever.",
+        "Apply the general troubleshooting rule: if a target P&L line isn't hitting target, the fault lies in everything above it — so a gross margin miss points to revenue or cost of delivery."
+      ],
+      "caveats": [
+        "Accounting-software behaviour differs by provider and configuration — confirm how your own stack handles gross-to-net before relying on it.",
+        "The discount and refund figures in the worked example are illustrative."
+      ],
+      "tags": [
+        "multi",
+        "measurement",
+        "profitability",
+        "revenue",
+        "shopify",
+        "returns",
+        "pricing"
+      ],
+      "id": "6b261e1e25a56d59c79b8638",
+      "source_id": "1Ta2RSp1n8gCTsxoz38HIw1ZHjRtrCjTL",
+      "source_sha256": "19a89cf51ff5bb9e0e5038c8cb1877e1211529b1fa94761ff5b73fce003770d6",
+      "source_name": "How to Scale an eCommerce Brand Profitably in 2026_ The Full System.docx",
+      "folder": "/99-multi",
+      "domain": "multi",
+      "section": 2
+    },
+    {
+      "title": "Calculate pre-marketing contribution using explicit delivery costs",
+      "summary": "Separate accounting gross profit from the management contribution metric used to fund ecommerce acquisition.",
+      "use_when": "Setting marketing budget allocation per product or category, or when a product looks profitable but the business isn't.",
+      "steps": [
+        "Start from revenue excluding pass-through taxes and recorded discounts/refunds.",
+        "Subtract landed product cost, fulfillment, outbound shipping, payment fees and incremental expected return costs exactly once.",
+        "Illustration: $100 collected less $9 tax gives $91 revenue. Product $30 + inbound $4 + outbound $11 + pick/pack $4 + fees $3 + assumed return loss $15 leaves $24 contribution, or 24/91 = 26.4%.",
+        "If the $15 includes revenue refunds, remove those from the revenue denominator too; document the definition rather than mixing net and gross bases.",
+        "Use pre-ad contribution dollars to fund acquisition, overhead and target profit; calculate separately for each SKU and channel."
+      ],
+      "caveats": [
+        "This is an internal contribution model, not a universal statutory COGS classification.",
+        "The source calls its full-delivery metric gross margin; preserve explicit included costs when comparing reports."
+      ],
+      "tags": [
+        "multi",
+        "profitability",
+        "measurement",
+        "unit-economics",
+        "pricing",
+        "cogs",
+        "returns"
+      ],
+      "id": "013834b51f3c09687d62b861",
+      "source_id": "1Ta2RSp1n8gCTsxoz38HIw1ZHjRtrCjTL",
+      "source_sha256": "19a89cf51ff5bb9e0e5038c8cb1877e1211529b1fa94761ff5b73fce003770d6",
+      "source_name": "How to Scale an eCommerce Brand Profitably in 2026_ The Full System.docx",
+      "folder": "/99-multi",
+      "domain": "multi",
+      "section": 2
+    },
+    {
+      "title": "Use contribution margin to back-solve a net profit target",
+      "summary": "Convert a net margin target into a contribution margin target using stable operating expenses.",
+      "use_when": "Setting monthly profitability guardrails for paid media spend and marketing decisions.",
+      "steps": [
+        "Define the P&L levels precisely so comparison is meaningful: CM1 = product margin, CM2 = gross margin (including all variable cost-of-delivery expenses), CM3 = contribution margin (revenue − cost of delivery − all marketing), which is what people usually mean by contribution margin.",
+        "Calculate contribution margin as both a percentage and a dollar figure — it sits one step above net profit, with only operating expenses between them.",
+        "Back-solve the target: if opex is held at 15% and you want 20% net margin, contribution margin must reach 35%.",
+        "In dollars: if you want $1M net profit and expect $1M opex, the business must produce $2M contribution margin for the year.",
+        "Track contribution margin as a percentage month on month to see whether it is expanding or contracting, and use it as the primary index of performance over time.",
+        "Use it as an early warning: if contribution margin compresses, diagnose marketing (M/E creeping up) or cost of delivery first, since those are the only two inputs below revenue.",
+        "Keep opex ratio stable as a design goal: the source's model assumes opex stays roughly flat as revenue scales, which is what causes profit to expand as a percentage."
+      ],
+      "caveats": [
+        "Opex stability is an assumption, not a guarantee — the source notes many seven-figure founders let opex grow faster than revenue and end up with flat dollar profit.",
+        "The 10/15/20/30% margins in the examples are illustrations."
+      ],
+      "tags": [
+        "multi",
+        "profitability",
+        "measurement",
+        "unit-economics",
+        "reporting",
+        "margin"
+      ],
+      "id": "002934fe70f3146c6408e4f1",
+      "source_id": "1Ta2RSp1n8gCTsxoz38HIw1ZHjRtrCjTL",
+      "source_sha256": "19a89cf51ff5bb9e0e5038c8cb1877e1211529b1fa94761ff5b73fce003770d6",
+      "source_name": "How to Scale an eCommerce Brand Profitably in 2026_ The Full System.docx",
+      "folder": "/99-multi",
+      "domain": "multi",
+      "section": 2
+    },
+    {
+      "title": "Calculate CAC correctly and pair it with first-purchase gross profit",
+      "summary": "Blended CAC, defined on new customers, is meaningless without the gross profit of a first order.",
+      "use_when": "Setting acquisition cost targets or evaluating whether to scale paid spend on a new-customer campaign.",
+      "steps": [
+        "Calculate CAC as total advertising spend over the period divided by the number of new customers acquired in that same period — daily, weekly or monthly.",
+        "Do not use platform CPA: it runs off attributed numbers and will show a better figure than the business actually delivered.",
+        "Do not try to break CAC down channel by channel: the source states this is impossible because it depends on attribution, which is unreliable.",
+        "Pair CAC with gross profit on first purchase, not average order value: returning customers have higher AOV, which inflates the blended figure and hides a worse new-customer reality.",
+        "Worked reasoning: if the blended AOV is $100 at 70% GP, a $35 CAC looks fine — but if the new-customer AOV is actually $90 and front-end discount offers compress GP to $50, the CAC target is wrong in conjunction with real gross profit.",
+        "Reject the question 'what is a good CAC?' in isolation: a $100 CAC against a $10,000 order is excellent, while the same CAC against $20 gross profit loses $80 per customer.",
+        "Verify that your gross profit calculation uses true gross margin (landed and variable costs included) — a misstated margin percentage corrupts every downstream CAC decision.",
+        "Treat data integrity here as a precondition for scaling: the source's view is that brands scaling on flawed CAC and GP numbers are scaling on fundamentally wrong metrics."
+      ],
+      "caveats": [
+        "Channel-level CAC is ruled out only because of attribution limits — the presenter treats this as a structural constraint, not a technique gap.",
+        "The AOV and GP figures in the example are illustrative."
+      ],
+      "tags": [
+        "multi",
+        "measurement",
+        "unit-economics",
+        "acquisition",
+        "cac",
+        "attribution",
+        "profitability"
+      ],
+      "id": "82a77847f6751593e82154c9",
+      "source_id": "1Ta2RSp1n8gCTsxoz38HIw1ZHjRtrCjTL",
+      "source_sha256": "19a89cf51ff5bb9e0e5038c8cb1877e1211529b1fa94761ff5b73fce003770d6",
+      "source_name": "How to Scale an eCommerce Brand Profitably in 2026_ The Full System.docx",
+      "folder": "/99-multi",
+      "domain": "multi",
+      "section": 2
+    },
+    {
+      "title": "Classify marketing, content and fulfilment staff costs correctly",
+      "summary": "Where flexing creative spend, fulfilment labour and transaction fees belong on the P&L, and why it changes gross margin.",
+      "use_when": "Structuring the P&L chart of accounts, or benchmarking gross margin and contribution margin against targets.",
+      "steps": [
+        "Put all advertising-adjacent spend into marketing: paid ads, influencer payments, events and out-of-home.",
+        "Decide content production by whether it is fixed or variable: in-house content capacity that must be retained year-round is an operating expense; agency or short-term hire capacity used to flex creative volume through seasonal peaks is a variable marketing expense.",
+        "Map creative volume to the demand curve — the source describes flat Q1, a June end-of-financial-year spike, a build to a big November/December, then a fall-off — because a fixed four-person in-house team will be underworked at troughs and overworked at peaks.",
+        "Put fulfilment labour in cost of delivery, not opex: take a staff member's daily salary (e.g. $400) divided by packages shipped per day (e.g. 100) to get a per-order cost ($4) that your bookkeeper tags into cost of delivery for an accurate monthly gross margin.",
+        "Keep 3PL/warehouse product-fulfilment costs in cost of delivery as well.",
+        "Place everyone not directly fulfilling orders (head of marketing, head of operations, etc.) in opex.",
+        "Put transaction fees in cost of delivery because they vary with revenue.",
+        "Keep interest repayments out of opex and below EBITDA, since interest is leverage rather than an operating cost and a buyer will zero out loans."
+      ],
+      "caveats": [
+        "Some operators prefer to put all content production in marketing regardless; the source acknowledges this is a per-brand design decision.",
+        "The salary and packages-per-day figures are illustrative."
+      ],
+      "tags": [
+        "multi",
+        "profitability",
+        "measurement",
+        "unit-economics",
+        "fulfilment",
+        "reporting",
+        "cogs"
+      ],
+      "id": "f82391a766c6158726c2f5f1",
+      "source_id": "1Ta2RSp1n8gCTsxoz38HIw1ZHjRtrCjTL",
+      "source_sha256": "19a89cf51ff5bb9e0e5038c8cb1877e1211529b1fa94761ff5b73fce003770d6",
+      "source_name": "How to Scale an eCommerce Brand Profitably in 2026_ The Full System.docx",
+      "folder": "/99-multi",
+      "domain": "multi",
+      "section": 2
+    },
+    {
+      "title": "Control operating expenses as the main profit leak",
+      "summary": "Why reinvestment in ecommerce should go to marketing, not headcount, software or offices.",
+      "use_when": "Deciding how to deploy incremental profit, or diagnosing flat dollar profit despite revenue growth.",
+      "steps": [
+        "Separate the three expense buckets and hold opex roughly flat as revenue scales: with stable opex, profit expands as a percentage of revenue as cost of delivery and marketing grow proportionally.",
+        "Avoid the common seven-figure failure mode the source describes: opex growing faster than revenue and cost of delivery, leaving profit flat in dollar terms year after year.",
+        "Recognise the reinvestment logic specific to ecommerce: the primary growth lever is marketing spend, whereas hiring more people, buying more software or a bigger office generally isn't a revenue-generating exercise.",
+        "Push back on arbitrary revenue growth: the source prefers a $5M business at 20% net margin ($1M profit) over a $10M business at 5% net margin ($500k profit), calling the larger business a more stressful asset to hold.",
+        "Treat people as the highest-leverage line on the P&L but acknowledge the hiring constraint: small brands usually lack the scale to attract strong talent and haven't done enough interviews to recognise it, so they overinflate people spend.",
+        "Assign clear ownership of opex discipline — in a larger business it is the CFO's responsibility, in a smaller one it is the owner's."
+      ],
+      "caveats": [
+        "The presenter's preference for margin over revenue is a stated opinion with the specific $5M/$10M comparison as an illustration.",
+        "The source also states people are the highest-leverage expense — this is a tension with cost-cutting, so treat opex control as discipline rather than simply minimising headcount."
+      ],
+      "tags": [
+        "multi",
+        "profitability",
+        "unit-economics",
+        "opex",
+        "measurement",
+        "margin",
+        "retention"
+      ],
+      "id": "9840c923e170e23077018219",
+      "source_id": "1Ta2RSp1n8gCTsxoz38HIw1ZHjRtrCjTL",
+      "source_sha256": "19a89cf51ff5bb9e0e5038c8cb1877e1211529b1fa94761ff5b73fce003770d6",
+      "source_name": "How to Scale an eCommerce Brand Profitably in 2026_ The Full System.docx",
+      "folder": "/99-multi",
+      "domain": "multi",
+      "section": 2
+    },
+    {
+      "title": "Replace keystone and markup pricing with waterfall pricing",
+      "summary": "Price from a required contribution or net profit target upward instead of applying arbitrary multiples to product cost.",
+      "use_when": "Setting or repricing a product, or deciding whether a product is viable to sell at all.",
+      "steps": [
+        "Identify keystone pricing (doubling product cost, e.g. $6 cost to $12) as the weakest approach: the source estimates around 40% of the startup market prices this way, and it ignores all variable fulfilment costs so true margins end up far below 50%.",
+        "Recognise initial markup (IMU) pricing as the same flaw with a bigger multiple (3x, 4x, 5x): it is still an arbitrary multiple on product cost with no relationship to price elasticity of demand, competitor pricing or the actual cost structure of delivering that product.",
+        "Build the price using waterfall pricing from the bottom up: start with the required contribution profit target (e.g. 20%, 30% or 40% depending on your opex load) or net profit target (e.g. 10%) established from your existing P&L.",
+        "Add every cost layer above it: cost of delivery (product, duties, freight, outbound shipping, pick and pack, transaction fees, tax), then refund and discount allowances.",
+        "Derive the price that produces the target margin, then decide whether to sell the product at that price — the source frames the decision as 'do we even sell this product', not 'how do we sell it cheaper'.",
+        "Check the resulting price against competitor pricing and demand elasticity, since waterfall pricing alone does not validate willingness to pay.",
+        "Do not underprice out of a belief that high margin is unfair to customers — the source argues that reluctance is exactly why many brands cannot scale."
+      ],
+      "caveats": [
+        "The 'roughly 40% of the startup market' figure is the presenter's estimate, not measured data.",
+        "Waterfall pricing sets a floor for viability, not a ceiling — competitive and elasticity checks are still required."
+      ],
+      "tags": [
+        "multi",
+        "pricing",
+        "unit-economics",
+        "profitability",
+        "measurement",
+        "cogs",
+        "offer-design"
+      ],
+      "id": "2ddbe78b987711cb9f4568ce",
+      "source_id": "1Ta2RSp1n8gCTsxoz38HIw1ZHjRtrCjTL",
+      "source_sha256": "19a89cf51ff5bb9e0e5038c8cb1877e1211529b1fa94761ff5b73fce003770d6",
+      "source_name": "How to Scale an eCommerce Brand Profitably in 2026_ The Full System.docx",
+      "folder": "/99-multi",
+      "domain": "multi",
+      "section": 2
+    },
+    {
+      "title": "Troubleshoot the P&L from the bottom up",
+      "summary": "Convert P&L percentages into a diagnosis rule: a missed line means the problem lies in everything above it.",
+      "use_when": "Monthly P&L review to decide where to intervene in pricing, marketing spend or cost of delivery.",
+      "steps": [
+        "Assign percentage allocations to every level of the P&L (cost of delivery, gross margin, marketing, contribution margin, opex, EBITDA, net profit) and track them month on month to see expansion or contraction.",
+        "Apply the diagnosis rule: if you miss your net profit or EBITDA target, the issue is in opex, marketing, cost of delivery or revenue above it.",
+        "If contribution margin misses target, look at marketing and cost of delivery only.",
+        "If gross margin misses target, look at cost of delivery or revenue — and remember revenue means gross-to-net, including refunds and discounts.",
+        "Interpret specific signals: rising marketing as a percentage means declining marketing efficiency compressing the bottom line; compressing gross margin points to a discounting or returns problem to investigate.",
+        "Use a simple waterfall to sanity-check: on $100 revenue with $40 cost of delivery, $20 marketing and $20 opex, gross margin is $60, contribution margin $40 and EBITDA $20 before interest, tax, depreciation and amortisation.",
+        "Track percentage allocations against targets as the day-to-day or month-to-month decision tool, not just absolute dollar values.",
+        "Set targets from the bottom up: a net profit target plus a known opex ratio yields a contribution margin target that marketing must not breach."
+      ],
+      "caveats": [
+        "The diagnosis rule assumes clean classification of costs — a misplaced transaction fee or interest payment will send you looking in the wrong place.",
+        "Dollar and percentage examples are illustrative only."
+      ],
+      "tags": [
+        "multi",
+        "profitability",
+        "measurement",
+        "reporting",
+        "unit-economics",
+        "margin",
+        "opex"
+      ],
+      "id": "29f6666ae3104498c96f3f74",
+      "source_id": "1Ta2RSp1n8gCTsxoz38HIw1ZHjRtrCjTL",
+      "source_sha256": "19a89cf51ff5bb9e0e5038c8cb1877e1211529b1fa94761ff5b73fce003770d6",
+      "source_name": "How to Scale an eCommerce Brand Profitably in 2026_ The Full System.docx",
+      "folder": "/99-multi",
+      "domain": "multi",
+      "section": 2
+    }
+  ],
+  "request_id": "5fbba1274eb8a78c673d959b8b9b9c8795ecf6b5933fb52f801b90375e9d7422",
+  "ecommerce_scope_version": 1
+}

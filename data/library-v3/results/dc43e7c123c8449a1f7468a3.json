@@ -1,0 +1,241 @@
+{
+  "cards": [
+    {
+      "title": "Redundant Meta Ads tracking: browser pixel plus server Conversions API",
+      "summary": "Meta's recommended setup fires the same event twice — once from the browser pixel and once from the server-side Conversions API — then merges them with deduplication.",
+      "use_when": "Planning or auditing the tracking architecture that feeds Meta Ads purchase and lead optimization for your store, e.g. after iOS/ad-blocker signal loss hurts reported ROAS.",
+      "steps": [
+        "Keep the standard Facebook/Meta pixel firing client-side from your normal GTM container, and add server-side tags that send the same events to the Conversions API from a server-side GTM container.",
+        "Treat the result as two streams for the same event: the presenter shows this as the setup Meta recommends, framed as a redundant setup where the same event is tracked twice.",
+        "Verify in Meta Events Manager that each event appears once from the browser and once from the server (the presenter demos a PageView and a Contact event showing both sources).",
+        "Do not stop at 'both are firing' — without deduplication Meta would count the event twice, so pair this with matching Event IDs on both streams.",
+        "Note the server event often arrives later than the browser event, so check again a moment after the browser event appears before concluding the server tag failed.",
+        "In the server container's preview mode confirm each Meta tag reports 'succeeded'; a failed/succeeded=false result usually points to a wrong or malformed API access token."
+      ],
+      "caveats": [
+        "Redundancy without deduplication means double counting; the two parts must ship together.",
+        "Setup depends on an existing server-side GTM container and consent mode configuration; the presenter treats this as a follow-on to those tutorials."
+      ],
+      "tags": [
+        "measurement",
+        "meta-ads",
+        "conversions-api",
+        "server-side-tagging",
+        "google-tag-manager",
+        "tracking-implementation",
+        "conversion-tracking"
+      ],
+      "id": "0b762a5084497ce6d49600c1",
+      "source_id": "1hqJghZ6POtNwWAMCKIdbJqUS7O7Y8lPK",
+      "source_sha256": "92deead23640ee35b87783d0db5f95ced759e0f56dd6be1b7131000f7349d989",
+      "source_name": "Install Facebook (Meta Ads) Conversion API with server-side GTM.docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 0
+    },
+    {
+      "title": "Get the two credentials the Conversions API setup requires",
+      "summary": "Meta Conversions API setup needs exactly two credentials from Events Manager: the pixel/dataset ID and a Conversions API access token.",
+      "use_when": "Starting a store's Meta Conversions API implementation and you need the identifiers to paste into GTM variables.",
+      "steps": [
+        "Open Meta Events Manager, go to Data Sources, and copy the pixel ID — in the current interface the presenter finds it labelled as the dataset ID.",
+        "Still under Data Sources, open Settings and scroll to the Conversions API section, then press 'Generate access token' to produce the token.",
+        "Save both values where you can reference them repeatedly (the presenter keeps a text file and uses GTM constant variables rather than pasting raw values into tags).",
+        "If the generate-token button is greyed out, you cannot create it yourself — ask whoever administers the Meta account to generate it and send it to you.",
+        "In GTM, create a constant variable for the pixel ID and a constant variable for the token in each container so tags reference one place rather than duplicated literals.",
+        "Verify the current Events Manager label and button names before following — Meta's interface changes over time."
+      ],
+      "caveats": [
+        "Token generation is permission-gated; do not assume your role can create it.",
+        "Each GTM container needs its own copy of the constant variable — server and client containers do not share variables."
+      ],
+      "tags": [
+        "measurement",
+        "meta-ads",
+        "conversions-api",
+        "access-token",
+        "google-tag-manager",
+        "tracking-implementation",
+        "setup"
+      ],
+      "id": "729a4812f715c8b14cd88c00",
+      "source_id": "1hqJghZ6POtNwWAMCKIdbJqUS7O7Y8lPK",
+      "source_sha256": "92deead23640ee35b87783d0db5f95ced759e0f56dd6be1b7131000f7349d989",
+      "source_name": "Install Facebook (Meta Ads) Conversion API with server-side GTM.docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 0
+    },
+    {
+      "title": "Consent-gate the client-side Meta pixel so it fires on the same page as opt-in",
+      "summary": "Require marketing/storage consent on the pixel tag and trigger it on the cookie-consent-update event so opt-in is recorded on the first page view rather than only on the next page.",
+      "use_when": "Formatting the client-side pixel tag in GTM for a store with a cookie banner, where you need Meta to receive the event on the page where the shopper actually consents.",
+      "steps": [
+        "Create the pixel tag (in the presenter's naming habit, something like 'meta ads page view') and choose the Facebook pixel template from the Community Template Gallery, adding it to the workspace.",
+        "In the tag's event name field enter the standard 'PageView' event.",
+        "Under Advanced Settings > Consent Settings, select 'Require additional consent for tag to fire' and require 'ad_storage' so the tag only loads when the user granted marketing permission.",
+        "Do not use the Initialization – All Pages trigger for this: the presenter demonstrates that when a visitor accepts cookies, the initialization trigger has already run and the tag is blocked, so the pixel only fires on the following page.",
+        "Change the trigger to the cookie consent update dataLayer event instead, so the pixel fires on the same first page load once consent is granted.",
+        "Test with preview: with consent denied the tag shows as blocked by consent settings; after clicking 'Allow all', the pixel fires immediately on the same page."
+      ],
+      "caveats": [
+        "Correct behaviour depends on your consent-mode implementation being in place first.",
+        "The consent variable naming and structure come from the presenter's earlier consent-mode tutorial; adapt to your own consent setup."
+      ],
+      "tags": [
+        "measurement",
+        "consent-mode",
+        "meta-ads",
+        "google-tag-manager",
+        "privacy-compliance",
+        "tag-triggers",
+        "cookie-consent"
+      ],
+      "id": "1cdafb95b157c1ecccc58db8",
+      "source_id": "1hqJghZ6POtNwWAMCKIdbJqUS7O7Y8lPK",
+      "source_sha256": "92deead23640ee35b87783d0db5f95ced759e0f56dd6be1b7131000f7349d989",
+      "source_name": "Install Facebook (Meta Ads) Conversion API with server-side GTM.docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 0
+    },
+    {
+      "title": "Send Meta store events server-side with the Conversions API template",
+      "summary": "Configure server-side GTM tags with the Facebook Conversions API template, overriding event names, wiring token and pixel variables, and gating on consent.",
+      "use_when": "Building the server-side half of a store's Meta tracking, for example sending PageView and a form/purchase-style conversion event through the Conversions API.",
+      "steps": [
+        "In the server container create a new tag, pick the Facebook Conversions API template from the Community Template Gallery, and add it to the workspace.",
+        "For Event Name Setup Method choose Override rather than inheriting from the client — the presenter prefers explicit control so you can name exactly which event is sent.",
+        "Set Action Source to Website.",
+        "Reference your constant variable for the API access token, and create a second constant variable for the pixel ID inside this container (variables are not shared across containers).",
+        "Create a trigger for all pages that passes a consent condition — the presenter uses a consent-mode variable requiring consent granted, so nothing is transmitted to Meta without permission.",
+        "For conversion events (e.g. contact form submit), build a custom-event trigger whose event name exactly matches the event name arriving in the server container's preview, and attach the same consent condition.",
+        "Test by submitting the form and confirming the event arrives in the server container preview and the Meta tag reports success."
+      ],
+      "caveats": [
+        "Only send data to Meta when consent is given — the presenter stresses this repeatedly.",
+        "The custom event name must match exactly or the trigger will never fire."
+      ],
+      "tags": [
+        "measurement",
+        "conversions-api",
+        "server-side-tagging",
+        "google-tag-manager",
+        "meta-ads",
+        "consent-mode",
+        "event-tracking"
+      ],
+      "id": "44e509c9fd369c405a27e44d",
+      "source_id": "1hqJghZ6POtNwWAMCKIdbJqUS7O7Y8lPK",
+      "source_sha256": "92deead23640ee35b87783d0db5f95ced759e0f56dd6be1b7131000f7349d989",
+      "source_name": "Install Facebook (Meta Ads) Conversion API with server-side GTM.docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 0
+    },
+    {
+      "title": "Automate the Meta test event ID with a Debug Mode lookup table",
+      "summary": "A GTM lookup table keyed on Debug Mode supplies the Meta test event code only in preview, so a forgotten test ID can never leak into production and suppress live conversion data.",
+      "use_when": "Testing Meta Conversions API tags in a live store, where forgetting to remove a hard-coded test event code would silently divert real conversions into the test screen.",
+      "steps": [
+        "In Meta Events Manager open the Test Events tab and copy the test event code it displays.",
+        "In GTM create a variable named for the Meta test ID and set it as a Lookup Table rather than a constant.",
+        "Choose Debug Mode as the input variable (it is a built-in variable, found under built-in variables).",
+        "Leave the default value empty so that outside preview the tag sends no test ID at all.",
+        "Add one output row: when Debug Mode equals true, output the test event code you copied.",
+        "Reference this variable in the Test ID field of every Meta tag that has one (the presenter wires it into both the page view and contact tags).",
+        "Inspect the outgoing request or Events Manager to confirm that in preview the test ID is attached, and that a normal visit contains no test ID.",
+        "If the test code has changed between sessions, update the lookup table's output value manually."
+      ],
+      "caveats": [
+        "The presenter notes the test event code can change day to day, so the stored output may need refreshing before a new test session.",
+        "Test events do not count in the real data — they appear in the test screen only."
+      ],
+      "tags": [
+        "measurement",
+        "meta-ads",
+        "test-events",
+        "google-tag-manager",
+        "debug-mode",
+        "lookup-table",
+        "tracking-qa"
+      ],
+      "id": "e1c161b2fe2db4494c4cdd33",
+      "source_id": "1hqJghZ6POtNwWAMCKIdbJqUS7O7Y8lPK",
+      "source_sha256": "92deead23640ee35b87783d0db5f95ced759e0f56dd6be1b7131000f7349d989",
+      "source_name": "Install Facebook (Meta Ads) Conversion API with server-side GTM.docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 0
+    },
+    {
+      "title": "Deduplicate Meta events by passing one Event ID into both streams",
+      "summary": "The Conversions API and the browser pixel only merge when both carry the identical Event ID, which Meta uses to collapse the duplicate into one event.",
+      "use_when": "Finishing a redundant Meta tracking setup on a store so that each page view and conversion is counted once, not twice.",
+      "steps": [
+        "In the client container, install an Event ID variable from the Community Template Gallery (the presenter uses one by Markus Baersch; Stape's is also noted as good) — it has no settings to configure.",
+        "Open the client-side Meta pixel tag, go to More Settings, and set its Event ID field to that variable; repeat for every pixel tag (the presenter does it for both page view and contact).",
+        "For the server side, send the same Event ID through your GA4 events, because those events ultimately trigger the Meta Ads tags: add an event parameter with the name 'event ID' and the Event ID variable as its value.",
+        "Apply that event parameter to every GA4 tag that drives a Meta event (the presenter does it for the page view tag and the contact form submit tag).",
+        "The Meta tag recognises the 'event ID' key and forwards the same ID into the outgoing Conversions API request automatically — inspect the outgoing request to confirm the field is present.",
+        "Prove deduplication by copying an Event ID from the browser event and searching for it in Events Manager: the browser event and server event should both carry the same ID and appear as one deduplicated event.",
+        "Re-check after each change; the presenter notes the forwarding does not always work, so the copy-and-search test is the real verification."
+      ],
+      "caveats": [
+        "The site's GA4 event naming and parameter conventions must be consistent for the 'event ID' parameter to propagate.",
+        "Deduplication depends on identical IDs — any divergence reintroduces double counting."
+      ],
+      "tags": [
+        "measurement",
+        "deduplication",
+        "event-id",
+        "meta-ads",
+        "conversions-api",
+        "google-tag-manager",
+        "ga4"
+      ],
+      "id": "0954c80debf424571eafc808",
+      "source_id": "1hqJghZ6POtNwWAMCKIdbJqUS7O7Y8lPK",
+      "source_sha256": "92deead23640ee35b87783d0db5f95ced759e0f56dd6be1b7131000f7349d989",
+      "source_name": "Install Facebook (Meta Ads) Conversion API with server-side GTM.docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 0
+    },
+    {
+      "title": "Verification checks that both Meta tracking streams land and merge",
+      "summary": "A three-place check — server container preview, tag success status, and Events Manager — confirms the Conversions API is correctly receiving deduplicated events.",
+      "use_when": "After deploying or editing Meta tracking tags for a store, before trusting the reported conversion counts.",
+      "steps": [
+        "Load a page and confirm in the server-side container's preview that a page view event arrives from the client container.",
+        "Check that the Meta tag in that preview reports succeeded; a failure usually means a bad pixel ID or API access token, so re-check the values entered.",
+        "In Meta Events Manager (Test Events tab when using a test ID) confirm that you see two entries — one browser, one server — for the same event.",
+        "Repeat the flow for a real conversion action (the presenter submits a contact form) and confirm both a browser and a server conversion appear.",
+        "Where a test ID is configured, run everything under preview so the checks stay out of production data; when finished, normal visits should show no test ID.",
+        "Once deduplication is added, look up a single Event ID in Events Manager to confirm the two entries now sit under the same ID rather than counting separately."
+      ],
+      "caveats": [
+        "Server events can lag behind browser events, so allow time before diagnosing a failure.",
+        "The presenter's tested events are page views and contact submissions; substitute your store's own conversion event names."
+      ],
+      "tags": [
+        "measurement",
+        "meta-ads",
+        "conversions-api",
+        "tracking-qa",
+        "events-manager",
+        "google-tag-manager",
+        "debugging"
+      ],
+      "id": "8d023b8f223e88868c69e6cf",
+      "source_id": "1hqJghZ6POtNwWAMCKIdbJqUS7O7Y8lPK",
+      "source_sha256": "92deead23640ee35b87783d0db5f95ced759e0f56dd6be1b7131000f7349d989",
+      "source_name": "Install Facebook (Meta Ads) Conversion API with server-side GTM.docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 0
+    }
+  ],
+  "request_id": "e469b1df20e5f2aa35475f61f6bfc519e259cd991c10d4ebf30a4bd3d0997826",
+  "ecommerce_scope_version": 1
+}

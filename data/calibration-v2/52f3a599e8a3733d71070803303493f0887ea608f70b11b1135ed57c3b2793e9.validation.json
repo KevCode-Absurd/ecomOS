@@ -1,0 +1,1069 @@
+{
+  "summary": {
+    "case_index": 17,
+    "provider": "deepseek",
+    "effort": "high",
+    "request_id": "52f3a599e8a3733d71070803303493f0887ea608f70b11b1135ed57c3b2793e9",
+    "complete": true,
+    "completion_limit": 32768,
+    "units": 16,
+    "held": 0,
+    "errors": [],
+    "more_units": true,
+    "cost": 0.0284598
+  },
+  "errors": [],
+  "candidates": [
+    {
+      "id": "e56be710fbe172786dbda52dc6441aa80bfdac97806a27b0387b5800241b6c10",
+      "unit": {
+        "id": "u1",
+        "kind": "action",
+        "title": "Build a detailed landed-cost spreadsheet",
+        "claim": {
+          "text": "The source says it is important to build a detailed spreadsheet breaking down product, freight, packaging, duties, taxes, warehousing, platform fees, transaction costs, and payment transfer fees, and to include courier fees for landed cost.",
+          "quote": "it's important to build out a detailed spreadsheet breaking down everything: product, freight, packaging, duties, taxes, warehousing, platform fees, transaction costs, and payment transfer fees. If you want to understand your landed cost for customers, you'll also need courier fees."
+        },
+        "action": {
+          "text": "Build out a detailed spreadsheet breaking down product, freight, packaging, duties, taxes, warehousing, platform fees, transaction costs, and payment transfer fees.",
+          "quote": "it's important to build out a detailed spreadsheet breaking down everything: product, freight, packaging, duties, taxes, warehousing, platform fees, transaction costs, and payment transfer fees."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "Exact spreadsheet template is not provided in the passage."
+        ],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1FiwNYMNjTIvmwNZVGywVhaM3xH2lJYGp",
+          "source_sha256": "8d9d01f01cfde65a9ae22f50f05dbc4af95c4190bdbcf58f7f52911e7c8ab753",
+          "locator": "body:14/paragraph",
+          "start": 9499,
+          "end": 9782,
+          "quote": "it's important to build out a detailed spreadsheet breaking down everything: product, freight, packaging, duties, taxes, warehousing, platform fees, transaction costs, and payment transfer fees. If you want to understand your landed cost for customers, you'll also need courier fees."
+        },
+        {
+          "field": "action",
+          "source_id": "1FiwNYMNjTIvmwNZVGywVhaM3xH2lJYGp",
+          "source_sha256": "8d9d01f01cfde65a9ae22f50f05dbc4af95c4190bdbcf58f7f52911e7c8ab753",
+          "locator": "body:14/paragraph",
+          "start": 9499,
+          "end": 9693,
+          "quote": "it's important to build out a detailed spreadsheet breaking down everything: product, freight, packaging, duties, taxes, warehousing, platform fees, transaction costs, and payment transfer fees."
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "3a5f31cc6a4bceb4cbee55bd908f3d5372bb1c655b3ccf95c53dde2306edb6ab",
+      "unit": {
+        "id": "u2",
+        "kind": "action",
+        "title": "Use Chat TBT to generate hidden-cost template",
+        "claim": {
+          "text": "If help is needed building the spreadsheet, the source says to go to Chat TBT and prompt it for all of these hidden costs and then fill out the template.",
+          "quote": "If you need help building the spreadsheet, just go to Chat TBT and prompt it asking for all of these hidden costs and then fill out the template."
+        },
+        "action": {
+          "text": "Go to Chat TBT and prompt it asking for all of these hidden costs and then fill out the template.",
+          "quote": "just go to Chat TBT and prompt it asking for all of these hidden costs and then fill out the template."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "You need help building the spreadsheet.",
+              "quote": "If you need help building the spreadsheet"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [
+          {
+            "text": "Fill out the template.",
+            "quote": "and then fill out the template."
+          }
+        ],
+        "unknowns": [],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u1"
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1FiwNYMNjTIvmwNZVGywVhaM3xH2lJYGp",
+          "source_sha256": "8d9d01f01cfde65a9ae22f50f05dbc4af95c4190bdbcf58f7f52911e7c8ab753",
+          "locator": "body:14/paragraph",
+          "start": 9783,
+          "end": 9928,
+          "quote": "If you need help building the spreadsheet, just go to Chat TBT and prompt it asking for all of these hidden costs and then fill out the template."
+        },
+        {
+          "field": "action",
+          "source_id": "1FiwNYMNjTIvmwNZVGywVhaM3xH2lJYGp",
+          "source_sha256": "8d9d01f01cfde65a9ae22f50f05dbc4af95c4190bdbcf58f7f52911e7c8ab753",
+          "locator": "body:14/paragraph",
+          "start": 9826,
+          "end": 9928,
+          "quote": "just go to Chat TBT and prompt it asking for all of these hidden costs and then fill out the template."
+        },
+        {
+          "field": "trigger.0",
+          "source_id": "1FiwNYMNjTIvmwNZVGywVhaM3xH2lJYGp",
+          "source_sha256": "8d9d01f01cfde65a9ae22f50f05dbc4af95c4190bdbcf58f7f52911e7c8ab753",
+          "locator": "body:14/paragraph",
+          "start": 9783,
+          "end": 9824,
+          "quote": "If you need help building the spreadsheet"
+        },
+        {
+          "field": "completion.0",
+          "source_id": "1FiwNYMNjTIvmwNZVGywVhaM3xH2lJYGp",
+          "source_sha256": "8d9d01f01cfde65a9ae22f50f05dbc4af95c4190bdbcf58f7f52911e7c8ab753",
+          "locator": "body:14/paragraph",
+          "start": 9897,
+          "end": 9928,
+          "quote": "and then fill out the template."
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "5dc24173cc9d577631bf5488708da3ff4be9ca31f1ccce85e1a83aba6b47cce7",
+      "unit": {
+        "id": "u3",
+        "kind": "principle",
+        "title": "Prioritize early flexibility over lowest unit cost",
+        "claim": {
+          "text": "Most founders chase the lowest possible unit cost and end up with unsold products, while early flexibility is worth more than margin.",
+          "quote": "Most founders chase the lowest possible unit cost, thinking it's the key to profit, and end up sitting in warehouses full of unsold products."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No numeric threshold for 'slightly more per unit' is stated."
+        ],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1FiwNYMNjTIvmwNZVGywVhaM3xH2lJYGp",
+          "source_sha256": "8d9d01f01cfde65a9ae22f50f05dbc4af95c4190bdbcf58f7f52911e7c8ab753",
+          "locator": "body:14/paragraph",
+          "start": 10279,
+          "end": 10420,
+          "quote": "Most founders chase the lowest possible unit cost, thinking it's the key to profit, and end up sitting in warehouses full of unsold products."
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "f0d9b052c63fa81182dead4c7d5f5cb545571ea626db382c0e55393b4a5e3aff",
+      "unit": {
+        "id": "u4",
+        "kind": "principle",
+        "title": "Use first production runs for learning",
+        "claim": {
+          "text": "The first few production runs might be about learning how fast stock sells, how consistent quality is, and where delays happen rather than maximizing profit.",
+          "quote": "Your first few production runs might not be about maximizing profit. They might be about learning, such as how fast does the stock sell, how consistent is quality, and where delays happen."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No specific measurement method for learning metrics is detailed."
+        ],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1FiwNYMNjTIvmwNZVGywVhaM3xH2lJYGp",
+          "source_sha256": "8d9d01f01cfde65a9ae22f50f05dbc4af95c4190bdbcf58f7f52911e7c8ab753",
+          "locator": "body:14/paragraph",
+          "start": 10659,
+          "end": 10847,
+          "quote": "Your first few production runs might not be about maximizing profit. They might be about learning, such as how fast does the stock sell, how consistent is quality, and where delays happen."
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "12cd8ea259d48810ec997585592853991aa82b4ea0969afb72ef11ee029386a0",
+      "unit": {
+        "id": "u5",
+        "kind": "action",
+        "title": "Negotiate confidently after learning from early runs",
+        "claim": {
+          "text": "Once the answers about sell-through, quality consistency, and delays are known, the source says that is when you can negotiate confidently.",
+          "quote": "Once you know those answers, that's when you can negotiate confidently."
+        },
+        "action": {
+          "text": "Negotiate confidently once you know those answers.",
+          "quote": "Once you know those answers, that's when you can negotiate confidently."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": [
+            {
+              "text": "You know the answers from early production runs.",
+              "quote": "Once you know those answers"
+            }
+          ]
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u4"
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1FiwNYMNjTIvmwNZVGywVhaM3xH2lJYGp",
+          "source_sha256": "8d9d01f01cfde65a9ae22f50f05dbc4af95c4190bdbcf58f7f52911e7c8ab753",
+          "locator": "body:14/paragraph",
+          "start": 10848,
+          "end": 10919,
+          "quote": "Once you know those answers, that's when you can negotiate confidently."
+        },
+        {
+          "field": "action",
+          "source_id": "1FiwNYMNjTIvmwNZVGywVhaM3xH2lJYGp",
+          "source_sha256": "8d9d01f01cfde65a9ae22f50f05dbc4af95c4190bdbcf58f7f52911e7c8ab753",
+          "locator": "body:14/paragraph",
+          "start": 10848,
+          "end": 10919,
+          "quote": "Once you know those answers, that's when you can negotiate confidently."
+        },
+        {
+          "field": "prerequisites.0",
+          "source_id": "1FiwNYMNjTIvmwNZVGywVhaM3xH2lJYGp",
+          "source_sha256": "8d9d01f01cfde65a9ae22f50f05dbc4af95c4190bdbcf58f7f52911e7c8ab753",
+          "locator": "body:14/paragraph",
+          "start": 10848,
+          "end": 10875,
+          "quote": "Once you know those answers"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "0a6ff5a4664ea3f4fbac23436832180559be3370bc20386a653e23a9dd81cc8d",
+      "unit": {
+        "id": "u6",
+        "kind": "principle",
+        "title": "Treat negotiation as partnership",
+        "claim": {
+          "text": "Negotiation is not just about price; it is about partnership.",
+          "quote": "And remember, negotiation isn't just about price."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": [
+            {
+              "text": "Squeezing a supplier too hard can lead to cheaper materials, skipped quality control, or slower timelines.",
+              "quote": "If you squeeze a supplier too hard, they'll make up the difference somewhere else, such as cheaper materials, skipped quality control, or sometimes even slower timelines."
+            }
+          ]
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1FiwNYMNjTIvmwNZVGywVhaM3xH2lJYGp",
+          "source_sha256": "8d9d01f01cfde65a9ae22f50f05dbc4af95c4190bdbcf58f7f52911e7c8ab753",
+          "locator": "body:14/paragraph",
+          "start": 10920,
+          "end": 10969,
+          "quote": "And remember, negotiation isn't just about price."
+        },
+        {
+          "field": "exclusions.0",
+          "source_id": "1FiwNYMNjTIvmwNZVGywVhaM3xH2lJYGp",
+          "source_sha256": "8d9d01f01cfde65a9ae22f50f05dbc4af95c4190bdbcf58f7f52911e7c8ab753",
+          "locator": "body:14/paragraph",
+          "start": 10994,
+          "end": 11164,
+          "quote": "If you squeeze a supplier too hard, they'll make up the difference somewhere else, such as cheaper materials, skipped quality control, or sometimes even slower timelines."
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "6699244af7cf540dc871530e1351f0329a08befd8aaca177ff708783e3b4ff50",
+      "unit": {
+        "id": "u7",
+        "kind": "action",
+        "title": "Get quotes or samples from another supplier",
+        "claim": {
+          "text": "No factory will lower price or offer better payment terms unless they know you have options, so it is smart to get quotes or samples from at least one other supplier.",
+          "quote": "Now, no factory will ever lower their price or offer better payment terms unless they know that you have options."
+        },
+        "action": {
+          "text": "Get quotes or samples from at least one other supplier.",
+          "quote": "That's why it's smart to get quotes or samples from at least one other supplier."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "A factory will not lower price or offer better payment terms unless it knows you have options.",
+              "quote": "no factory will ever lower their price or offer better payment terms unless they know that you have options"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1FiwNYMNjTIvmwNZVGywVhaM3xH2lJYGp",
+          "source_sha256": "8d9d01f01cfde65a9ae22f50f05dbc4af95c4190bdbcf58f7f52911e7c8ab753",
+          "locator": "body:14/paragraph",
+          "start": 11325,
+          "end": 11438,
+          "quote": "Now, no factory will ever lower their price or offer better payment terms unless they know that you have options."
+        },
+        {
+          "field": "action",
+          "source_id": "1FiwNYMNjTIvmwNZVGywVhaM3xH2lJYGp",
+          "source_sha256": "8d9d01f01cfde65a9ae22f50f05dbc4af95c4190bdbcf58f7f52911e7c8ab753",
+          "locator": "body:14/paragraph",
+          "start": 11439,
+          "end": 11519,
+          "quote": "That's why it's smart to get quotes or samples from at least one other supplier."
+        },
+        {
+          "field": "trigger.0",
+          "source_id": "1FiwNYMNjTIvmwNZVGywVhaM3xH2lJYGp",
+          "source_sha256": "8d9d01f01cfde65a9ae22f50f05dbc4af95c4190bdbcf58f7f52911e7c8ab753",
+          "locator": "body:14/paragraph",
+          "start": 11330,
+          "end": 11437,
+          "quote": "no factory will ever lower their price or offer better payment terms unless they know that you have options"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "70d1157a86fec067fb1e9135ca437250396df6c833734f23378c628bcdd8199b",
+      "unit": {
+        "id": "u8",
+        "kind": "action",
+        "title": "Be transparent about negotiation goal and share forecast",
+        "claim": {
+          "text": "The source advises being transparent about your goal, sharing your forecast, and showing you are serious about scaling.",
+          "quote": "Be transparent about your goal. Share your forecast and show them your serious about scaling."
+        },
+        "action": {
+          "text": "Be transparent about your goal.",
+          "quote": "Be transparent about your goal."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [
+          {
+            "text": "Share your forecast and show you are serious about scaling.",
+            "quote": "Share your forecast and show them your serious about scaling."
+          }
+        ],
+        "unknowns": [
+          "What specific forecast details to share is not stated."
+        ],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1FiwNYMNjTIvmwNZVGywVhaM3xH2lJYGp",
+          "source_sha256": "8d9d01f01cfde65a9ae22f50f05dbc4af95c4190bdbcf58f7f52911e7c8ab753",
+          "locator": "body:14/paragraph",
+          "start": 11595,
+          "end": 11688,
+          "quote": "Be transparent about your goal. Share your forecast and show them your serious about scaling."
+        },
+        {
+          "field": "action",
+          "source_id": "1FiwNYMNjTIvmwNZVGywVhaM3xH2lJYGp",
+          "source_sha256": "8d9d01f01cfde65a9ae22f50f05dbc4af95c4190bdbcf58f7f52911e7c8ab753",
+          "locator": "body:14/paragraph",
+          "start": 11595,
+          "end": 11626,
+          "quote": "Be transparent about your goal."
+        },
+        {
+          "field": "completion.0",
+          "source_id": "1FiwNYMNjTIvmwNZVGywVhaM3xH2lJYGp",
+          "source_sha256": "8d9d01f01cfde65a9ae22f50f05dbc4af95c4190bdbcf58f7f52911e7c8ab753",
+          "locator": "body:14/paragraph",
+          "start": 11627,
+          "end": 11688,
+          "quote": "Share your forecast and show them your serious about scaling."
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "a0b4e0a01ee4f94cc547e6a37e4882f128e92ba8b59d541c1f41bcdf946ac296",
+      "unit": {
+        "id": "u9",
+        "kind": "action",
+        "title": "Plan lead times backwards and reorder when current shipment lands",
+        "claim": {
+          "text": "Waiting until nearly out of stock to reorder is already too late; start planning the next shipment the moment the current one lands.",
+          "quote": "Start planning your next shipment the moment your current one lands."
+        },
+        "action": {
+          "text": "Start planning your next shipment the moment your current one lands.",
+          "quote": "Start planning your next shipment the moment your current one lands."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Waiting until nearly out of stock to reorder is already too late.",
+              "quote": "That means that if you wait until you are nearly out of stock to reorder, you're already too late."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No specific reorder point formula is given."
+        ],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1FiwNYMNjTIvmwNZVGywVhaM3xH2lJYGp",
+          "source_sha256": "8d9d01f01cfde65a9ae22f50f05dbc4af95c4190bdbcf58f7f52911e7c8ab753",
+          "locator": "body:14/paragraph",
+          "start": 13308,
+          "end": 13376,
+          "quote": "Start planning your next shipment the moment your current one lands."
+        },
+        {
+          "field": "action",
+          "source_id": "1FiwNYMNjTIvmwNZVGywVhaM3xH2lJYGp",
+          "source_sha256": "8d9d01f01cfde65a9ae22f50f05dbc4af95c4190bdbcf58f7f52911e7c8ab753",
+          "locator": "body:14/paragraph",
+          "start": 13308,
+          "end": 13376,
+          "quote": "Start planning your next shipment the moment your current one lands."
+        },
+        {
+          "field": "trigger.0",
+          "source_id": "1FiwNYMNjTIvmwNZVGywVhaM3xH2lJYGp",
+          "source_sha256": "8d9d01f01cfde65a9ae22f50f05dbc4af95c4190bdbcf58f7f52911e7c8ab753",
+          "locator": "body:14/paragraph",
+          "start": 13209,
+          "end": 13307,
+          "quote": "That means that if you wait until you are nearly out of stock to reorder, you're already too late."
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "b772b8a65c0d77cf21425d7eb3cc94827192548868995a31d25d358ffb28d7e8",
+      "unit": {
+        "id": "u10",
+        "kind": "action",
+        "title": "Use a hybrid air and sea freight strategy based on product size and weight",
+        "claim": {
+          "text": "Most successful brands use a hybrid strategy: air freight a small batch to start selling quickly, then follow up with sea shipments to restock at lower cost.",
+          "quote": "Most successful brands use a hybrid strategy."
+        },
+        "action": {
+          "text": "Use a hybrid strategy: air freight a small batch to start selling quickly, then follow up with C shipments to restock at lower cost.",
+          "quote": "Air freight, a small batch to start selling quickly, then follow up with C shipments to restock at lower cost."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": [
+            {
+              "text": "This depends on product size and weight.",
+              "quote": "But this really depends on your product size and weight."
+            }
+          ]
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No exact split between air and sea volumes is given."
+        ],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1FiwNYMNjTIvmwNZVGywVhaM3xH2lJYGp",
+          "source_sha256": "8d9d01f01cfde65a9ae22f50f05dbc4af95c4190bdbcf58f7f52911e7c8ab753",
+          "locator": "body:14/paragraph",
+          "start": 12639,
+          "end": 12684,
+          "quote": "Most successful brands use a hybrid strategy."
+        },
+        {
+          "field": "action",
+          "source_id": "1FiwNYMNjTIvmwNZVGywVhaM3xH2lJYGp",
+          "source_sha256": "8d9d01f01cfde65a9ae22f50f05dbc4af95c4190bdbcf58f7f52911e7c8ab753",
+          "locator": "body:14/paragraph",
+          "start": 12685,
+          "end": 12795,
+          "quote": "Air freight, a small batch to start selling quickly, then follow up with C shipments to restock at lower cost."
+        },
+        {
+          "field": "prerequisites.0",
+          "source_id": "1FiwNYMNjTIvmwNZVGywVhaM3xH2lJYGp",
+          "source_sha256": "8d9d01f01cfde65a9ae22f50f05dbc4af95c4190bdbcf58f7f52911e7c8ab753",
+          "locator": "body:14/paragraph",
+          "start": 12796,
+          "end": 12852,
+          "quote": "But this really depends on your product size and weight."
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "e190f3162b57b0b7419fc27b26534986d52df9b1acb4a30bb8a59c23b96142fa",
+      "unit": {
+        "id": "u11",
+        "kind": "action",
+        "title": "Use a freight forwarder to manage shipping complexity",
+        "claim": {
+          "text": "Freight forwarders manage booking containers, customs, and coordinating delivery to your warehouse, and a good forwarder updates you before problems happen and helps navigate global delays.",
+          "quote": "These companies manage the complex stuff for you."
+        },
+        "action": {
+          "text": "Use freight forwarders.",
+          "quote": "That's where freight forwarders come in."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Handling shipping yourself is chaos.",
+              "quote": "If you've ever tried to handle shipping yourself, you know it's chaos."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [
+          {
+            "text": "A good forwarder will update you before problems happen and help you navigate global delays.",
+            "quote": "A good forwarder will update you before problems happen and help you navigate global delays."
+          }
+        ],
+        "unknowns": [
+          "No specific forwarder selection criteria or rates are given."
+        ],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1FiwNYMNjTIvmwNZVGywVhaM3xH2lJYGp",
+          "source_sha256": "8d9d01f01cfde65a9ae22f50f05dbc4af95c4190bdbcf58f7f52911e7c8ab753",
+          "locator": "body:14/paragraph",
+          "start": 13636,
+          "end": 13685,
+          "quote": "These companies manage the complex stuff for you."
+        },
+        {
+          "field": "action",
+          "source_id": "1FiwNYMNjTIvmwNZVGywVhaM3xH2lJYGp",
+          "source_sha256": "8d9d01f01cfde65a9ae22f50f05dbc4af95c4190bdbcf58f7f52911e7c8ab753",
+          "locator": "body:14/paragraph",
+          "start": 13595,
+          "end": 13635,
+          "quote": "That's where freight forwarders come in."
+        },
+        {
+          "field": "trigger.0",
+          "source_id": "1FiwNYMNjTIvmwNZVGywVhaM3xH2lJYGp",
+          "source_sha256": "8d9d01f01cfde65a9ae22f50f05dbc4af95c4190bdbcf58f7f52911e7c8ab753",
+          "locator": "body:14/paragraph",
+          "start": 13862,
+          "end": 13932,
+          "quote": "If you've ever tried to handle shipping yourself, you know it's chaos."
+        },
+        {
+          "field": "completion.0",
+          "source_id": "1FiwNYMNjTIvmwNZVGywVhaM3xH2lJYGp",
+          "source_sha256": "8d9d01f01cfde65a9ae22f50f05dbc4af95c4190bdbcf58f7f52911e7c8ab753",
+          "locator": "body:14/paragraph",
+          "start": 13769,
+          "end": 13861,
+          "quote": "A good forwarder will update you before problems happen and help you navigate global delays."
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "9598cef20868a061c90d3af13e9103a9ccc54db969bb2e02125782d15669099a",
+      "unit": {
+        "id": "u12",
+        "kind": "warning",
+        "title": "Do not always chase the cheapest freight rate",
+        "claim": {
+          "text": "The source warns against always chasing the cheapest freight rate because the cheapest forwarder might leave goods sitting at a port for weeks.",
+          "quote": "And again, don't always chase the cheapest rate. The cheapest freight forer might leave your goods sitting at a port for weeks and fill a container instead."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No specific rate-selection method is stated."
+        ],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1FiwNYMNjTIvmwNZVGywVhaM3xH2lJYGp",
+          "source_sha256": "8d9d01f01cfde65a9ae22f50f05dbc4af95c4190bdbcf58f7f52911e7c8ab753",
+          "locator": "body:14/paragraph",
+          "start": 14148,
+          "end": 14304,
+          "quote": "And again, don't always chase the cheapest rate. The cheapest freight forer might leave your goods sitting at a port for weeks and fill a container instead."
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "7f979c3f7e24b06939356870b6412d6f032423741c3c0454c2ecd0b003ef1137",
+      "unit": {
+        "id": "u13",
+        "kind": "action",
+        "title": "Book a final inspection before the container leaves the factory",
+        "claim": {
+          "text": "Before the container leaves the factory, book a final inspection as the last chance to catch mistakes before they multiply.",
+          "quote": "Finally, before that container leaves the factory, book your final inspection."
+        },
+        "action": {
+          "text": "Book your final inspection before the container leaves the factory.",
+          "quote": "Finally, before that container leaves the factory, book your final inspection."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": [
+            {
+              "text": "The container has not yet left the factory.",
+              "quote": "before that container leaves the factory"
+            }
+          ]
+        },
+        "exclusions": {
+          "op": "any",
+          "args": [
+            {
+              "text": "Once the shipment is on the water, it is too late.",
+              "quote": "Once it's on the water, it's just too late."
+            }
+          ]
+        },
+        "completion": [
+          {
+            "text": "Approve or reject the shipment based on the report and only release final payment once everything passes.",
+            "quote": "You approve or reject the shipment based on that report and only release final payment once everything passes."
+          }
+        ],
+        "unknowns": [
+          "No inspection provider or exact report format is specified."
+        ],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1FiwNYMNjTIvmwNZVGywVhaM3xH2lJYGp",
+          "source_sha256": "8d9d01f01cfde65a9ae22f50f05dbc4af95c4190bdbcf58f7f52911e7c8ab753",
+          "locator": "body:14/paragraph",
+          "start": 14305,
+          "end": 14383,
+          "quote": "Finally, before that container leaves the factory, book your final inspection."
+        },
+        {
+          "field": "action",
+          "source_id": "1FiwNYMNjTIvmwNZVGywVhaM3xH2lJYGp",
+          "source_sha256": "8d9d01f01cfde65a9ae22f50f05dbc4af95c4190bdbcf58f7f52911e7c8ab753",
+          "locator": "body:14/paragraph",
+          "start": 14305,
+          "end": 14383,
+          "quote": "Finally, before that container leaves the factory, book your final inspection."
+        },
+        {
+          "field": "prerequisites.0",
+          "source_id": "1FiwNYMNjTIvmwNZVGywVhaM3xH2lJYGp",
+          "source_sha256": "8d9d01f01cfde65a9ae22f50f05dbc4af95c4190bdbcf58f7f52911e7c8ab753",
+          "locator": "body:14/paragraph",
+          "start": 14314,
+          "end": 14354,
+          "quote": "before that container leaves the factory"
+        },
+        {
+          "field": "exclusions.0",
+          "source_id": "1FiwNYMNjTIvmwNZVGywVhaM3xH2lJYGp",
+          "source_sha256": "8d9d01f01cfde65a9ae22f50f05dbc4af95c4190bdbcf58f7f52911e7c8ab753",
+          "locator": "body:14/paragraph",
+          "start": 14872,
+          "end": 14915,
+          "quote": "Once it's on the water, it's just too late."
+        },
+        {
+          "field": "completion.0",
+          "source_id": "1FiwNYMNjTIvmwNZVGywVhaM3xH2lJYGp",
+          "source_sha256": "8d9d01f01cfde65a9ae22f50f05dbc4af95c4190bdbcf58f7f52911e7c8ab753",
+          "locator": "body:14/paragraph",
+          "start": 15109,
+          "end": 15219,
+          "quote": "You approve or reject the shipment based on that report and only release final payment once everything passes."
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "24481c645e80f937da33e29a4e2ea6c46b853cfd74bb9ad23185ec9a51f87e73",
+      "unit": {
+        "id": "u14",
+        "kind": "action",
+        "title": "Select a 3PL by asking operational questions and visiting the warehouse",
+        "claim": {
+          "text": "To pick the right 3PL, ask questions that expose accuracy, speed, communication, scalability, returns/damages/restocks, and never skip visiting their warehouse.",
+          "quote": "Ask questions that really expose how they operate, such as accuracy."
+        },
+        "action": {
+          "text": "Ask questions that really expose how they operate.",
+          "quote": "Ask questions that really expose how they operate"
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": [
+            {
+              "text": "Do not just compare prices or promises.",
+              "quote": "Don't just compare prices or promises."
+            }
+          ]
+        },
+        "completion": [
+          {
+            "text": "Once you have seen two or three, you realize who the true players actually are.",
+            "quote": "Once you've seen two or three, you realize who the true players actually are."
+          }
+        ],
+        "unknowns": [
+          "Specific threshold values for error rate, speed, and scalability are not stated."
+        ],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1FiwNYMNjTIvmwNZVGywVhaM3xH2lJYGp",
+          "source_sha256": "8d9d01f01cfde65a9ae22f50f05dbc4af95c4190bdbcf58f7f52911e7c8ab753",
+          "locator": "body:14/paragraph",
+          "start": 16497,
+          "end": 16565,
+          "quote": "Ask questions that really expose how they operate, such as accuracy."
+        },
+        {
+          "field": "action",
+          "source_id": "1FiwNYMNjTIvmwNZVGywVhaM3xH2lJYGp",
+          "source_sha256": "8d9d01f01cfde65a9ae22f50f05dbc4af95c4190bdbcf58f7f52911e7c8ab753",
+          "locator": "body:14/paragraph",
+          "start": 16497,
+          "end": 16546,
+          "quote": "Ask questions that really expose how they operate"
+        },
+        {
+          "field": "exclusions.0",
+          "source_id": "1FiwNYMNjTIvmwNZVGywVhaM3xH2lJYGp",
+          "source_sha256": "8d9d01f01cfde65a9ae22f50f05dbc4af95c4190bdbcf58f7f52911e7c8ab753",
+          "locator": "body:14/paragraph",
+          "start": 16458,
+          "end": 16496,
+          "quote": "Don't just compare prices or promises."
+        },
+        {
+          "field": "completion.0",
+          "source_id": "1FiwNYMNjTIvmwNZVGywVhaM3xH2lJYGp",
+          "source_sha256": "8d9d01f01cfde65a9ae22f50f05dbc4af95c4190bdbcf58f7f52911e7c8ab753",
+          "locator": "body:14/paragraph",
+          "start": 16908,
+          "end": 16985,
+          "quote": "Once you've seen two or three, you realize who the true players actually are."
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "ceeb5718007ed48ef4dca733abd73037a30ed210d0af87dafa9a4132e195d247",
+      "unit": {
+        "id": "u15",
+        "kind": "principle",
+        "title": "Run fulfillment as a living system with weekly tracking and monthly reviews",
+        "claim": {
+          "text": "Fulfillment is not a set-and-forget system; the best operators track inventory turnover weekly, maintain shared dashboards with warehouses, and hold monthly reviews with 3PL partners.",
+          "quote": "The best operators track inventory turnover weekly, maintain shared dashboards with their warehouses, and hold monthly reviews with their 3PL partners."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No specific dashboard metrics beyond inventory turnover are stated."
+        ],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1FiwNYMNjTIvmwNZVGywVhaM3xH2lJYGp",
+          "source_sha256": "8d9d01f01cfde65a9ae22f50f05dbc4af95c4190bdbcf58f7f52911e7c8ab753",
+          "locator": "body:14/paragraph",
+          "start": 17331,
+          "end": 17482,
+          "quote": "The best operators track inventory turnover weekly, maintain shared dashboards with their warehouses, and hold monthly reviews with their 3PL partners."
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    },
+    {
+      "id": "93aac34fb65de98f25b8d2ee10eb8e85b1cec514c3534872af3f8ee0a82c1878",
+      "unit": {
+        "id": "u16",
+        "kind": "unresolved_claim",
+        "title": "Forecasting chapter is cut off",
+        "claim": {
+          "text": "The passage ends mid-sentence while describing damage from poor planning in the forecasting chapter.",
+          "quote": "Worse, it damaged the"
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "Continuation after the mid-sentence cut-off is missing.",
+          "The forecasting and reordering procedure is incomplete."
+        ],
+        "relations": []
+      },
+      "evidence": [
+        {
+          "field": "claim",
+          "source_id": "1FiwNYMNjTIvmwNZVGywVhaM3xH2lJYGp",
+          "source_sha256": "8d9d01f01cfde65a9ae22f50f05dbc4af95c4190bdbcf58f7f52911e7c8ab753",
+          "locator": "body:14/paragraph",
+          "start": 19473,
+          "end": 19494,
+          "quote": "Worse, it damaged the"
+        }
+      ],
+      "status": "candidate",
+      "provenance": "unverified",
+      "semantic_review": "required"
+    }
+  ],
+  "held": [],
+  "more_units": true,
+  "unresolved": [
+    "Omitted due to output cap: alternative recommendation to join Daily Mentor for templates.",
+    "Omitted due to output cap: using real cost per unit to inform marketing spend, ad testing, offer strategy, pricing, and negotiation.",
+    "Omitted due to output cap: 3PL collapse example during Q4 with lost revenue and news coverage.",
+    "Omitted due to output cap: fulfillment is a living part of the business, not a set-and-forget system.",
+    "Omitted due to output cap: forecasting as one of the most important parts of sourcing.",
+    "Omitted due to output cap: logistics as the bloodstream and idle inventory burning cash.",
+    "Omitted due to output cap: QC cost example of a $200 check saving $20,000.",
+    "Omitted due to output cap: asking 3PL about returns, damages, restocks, and proactive issue flagging.",
+    "Omitted due to output cap: fulfillment success defined as predictable, repeatable, reliable, and calm.",
+    "Source passage ends mid-sentence in forecasting chapter; continuation needed."
+  ]
+}

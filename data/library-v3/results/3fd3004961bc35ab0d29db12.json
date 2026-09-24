@@ -1,0 +1,401 @@
+{
+  "cards": [
+    {
+      "title": "Treat all client-supplied data as untrusted input",
+      "summary": "Any value from URLs, form fields, headers or profile data must be escaped before insertion into HTML or JavaScript, because client data can never be trusted.",
+      "use_when": "Designing or reviewing any storefront feature that echoes user input — search terms, review text, profile names, wishlist labels, coupon codes, or URL parameters — back into the page.",
+      "steps": [
+        "Assume every value originating from the browser (query string, form field, header, stored profile field) is suspect regardless of how mundane it looks.",
+        "Identify every place that value is inserted into HTML, an attribute, or inline JavaScript — each insertion point needs its own correct escaping.",
+        "Prefer the escaping mechanism built into your framework or templating language (e.g. ejs, Jade) over hand-rolled concatenation of HTML strings with user data.",
+        "Read the framework docs to find the safe insertion helper and the explicitly dangerous opt-out; treat the opt-out as requiring justification, not convenience.",
+        "For high-power attributes (src, href, style, event handlers), do not rely on generic escaping; validate the value separately (see related cards).",
+        "Log where untrusted data enters your stack so future features inherit the same discipline."
+      ],
+      "caveats": [
+        "The source cites research (a WhiteHat Security report circa 2015-2016) that roughly half of sites had XSS issues; this is a historical statistic, not a current benchmark.",
+        "Framework behaviour and default escaping change over time — verify the current interface and defaults for whatever framework you use."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "input-validation",
+        "output-escaping",
+        "pdp",
+        "customer-research",
+        "checkout"
+      ],
+      "id": "0799f5180e4178d9d582a572",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 8
+    },
+    {
+      "title": "Escape user data inside HTML element contexts",
+      "summary": "When inserting untrusted data between HTML tags, escape the left angle bracket, ampersand, and both quote characters to neutralize injected markup.",
+      "use_when": "Rendering user-supplied text into normal page regions such as review bodies, collection descriptions, order notes, or any block that is not a script, style, comment or tag name.",
+      "steps": [
+        "Replace left angle brackets (<) with the HTML entity (&lt;) so the browser shows the character instead of starting a tag.",
+        "Also replace ampersands (&) with the entity (&amp;) — otherwise a user typing the literal sequence '&lt;' would be rendered as a real '<' and could re-open an injection.",
+        "For attribute values, additionally convert both single and double quotes to their HTML entities, so it does not matter which quote character surrounds the attribute.",
+        "Do not apply HTML entity escaping to the whole page — that would show every legitimate tag as visible text; only escape the specific untrusted variables.",
+        "Where possible delegate this to your framework's safe-insertion helper, but understand what it does so you can audit it."
+      ],
+      "caveats": [
+        "This rule covers ordinary element text and quoted attribute values only; script and style blocks have completely different rules.",
+        "Escaping entities inside a script block does not work because the JavaScript parser does not understand HTML entities.",
+        "Over-escaping is generally harmless to display (any character can be turned into an entity), but it breaks contexts where the parser expects raw characters."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "output-escaping",
+        "html-entities",
+        "pdp",
+        "input-validation"
+      ],
+      "id": "6ee053ebfcc995ae33e5da8a",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 8
+    },
+    {
+      "title": "Always quote HTML attribute values you build",
+      "summary": "Unquoted attributes let browsers treat many characters as ending the value, so never build storefront attributes without surrounding quotes.",
+      "use_when": "Generating HTML snippets for product images, alt text, srcsets, data attributes, or any element whose attribute values include dynamic store data.",
+      "steps": [
+        "Always wrap dynamic attribute values in quotes in your templates; do not emit attributes like alt=userText with no quotes.",
+        "Recognise that an unquoted value cannot safely contain a space, and browsers also treat many other characters as ending the value, not just spaces.",
+        "Treat unquoted attributes as effectively impossible to escape correctly, because you would need to block a long and browser-dependent list of characters.",
+        "When reviewing templates or generated markup, flag any attribute whose value is unquoted and dynamic.",
+        "Rely on the framework's templating, which quotes attributes for you, rather than manual string concatenation."
+      ],
+      "caveats": [
+        "Historically browsers disagreed on which characters terminated unquoted values; behaviour is more standardised now but still a poor practice.",
+        "This is defence-in-depth: quoting alone does not make high-power attributes safe."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "output-escaping",
+        "attributes",
+        "pdp",
+        "input-validation"
+      ],
+      "id": "0501be5927e00b4f87d3f9a0",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 8
+    },
+    {
+      "title": "High-power attributes need value validation, not just escaping",
+      "summary": "Attributes like src and href can execute or load attacker-controlled content even when quotes are correctly escaped, so validate the URL itself.",
+      "use_when": "Any storefront flow that lets a user or merchant supply a URL for an image, link, iframe, or script — user avatars, custom collection banners, affiliate links, or rich-text product descriptions.",
+      "steps": [
+        "Do not assume that escaping quotes is sufficient for src or href; even a well-contained value can cause a script to load or a page to navigate somewhere dangerous.",
+        "Validate that the supplied value is a well-formed, expected URL (correct scheme and shape) in addition to quoting and escaping it.",
+        "Explicitly reject the data: and javascript: schemes, which are legitimate URL forms but enable script execution and page injection.",
+        "For iframe or script sources specifically, restrict to trusted origins you control or explicitly allow.",
+        "When writing validation regexes, test them against data: and javascript: payloads, since these are easy to overlook and cause serious outcomes."
+      ],
+      "caveats": [
+        "Data URLs have legitimate uses (see the data-URL card); the risk depends on where the value is inserted.",
+        "The source notes uncertainty about how some data-URL iframes are treated origin-wise; do not rely on iframe origin isolation without verifying."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "url-validation",
+        "attributes",
+        "landing-page",
+        "pdp",
+        "acquisition"
+      ],
+      "id": "95fe4dae87431c19904911b4",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 8
+    },
+    {
+      "title": "Reject data: and javascript: URLs in user-supplied links",
+      "summary": "data: and javascript: URLs can execute arbitrary code, so block them wherever users can supply a link or source.",
+      "use_when": "Building any feature that accepts a user-submitted link or image source — user-generated content, curated wishlists, third-party product feeds, or rich product description editors.",
+      "steps": [
+        "Understand that a data: URL is a synthetic response from a non-existent server: the browser pretends to fetch it and treats the contents after the comma as the document.",
+        "Understand that a javascript: URL runs code in the current page; browsers such as Chrome may strip the javascript: prefix on paste, but users can re-add it, so do not rely on that.",
+        "Whitelist accepted schemes for user links (typically https) and reject everything else, rather than blacklisting only the two known-bad schemes.",
+        "For images, restrict to image data URLs or a controlled CDN origin if you must permit them at all.",
+        "Re-test after any change to link handling, and log rejected scheme attempts to spot abuse."
+      ],
+      "caveats": [
+        "Chrome, Firefox and Safari handle pasted javascript: URLs differently (stripping the scheme or requiring a setting), so browser behaviour is not a reliable control.",
+        "Even if a data-URL iframe is isolated by origin, a heavy or blocking script inside it can still lock up the page in the shared event loop (a denial-of-service concern)."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "url-validation",
+        "scheme-allowlist",
+        "acquisition",
+        "landing-page"
+      ],
+      "id": "3a22eb964e07c48d94afe390",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 8
+    },
+    {
+      "title": "Escaping alone fails inside inline event handlers and JS strings",
+      "summary": "When user data sits inside an inline handler (onclick) or a script string, you need JavaScript-level escaping in addition to HTML escaping, or break out is possible.",
+      "use_when": "Generating trigger text, analytics labels, or inline event handlers that embed store data, or embedding a user string inside a <script> variable.",
+      "steps": [
+        "Recognise that data inside an onclick or script variable is in a JavaScript context nested inside an HTML context — one layer of escaping is not enough.",
+        "For strings inside JavaScript, escape quotes by prefixing with a backslash, and also escape backslashes themselves, otherwise a supplied backslash can neutralise your escape.",
+        "For values inserted into script variables, consider hex-encoding the data (using only 0-9 and A-F) so it cannot contain quotes, closing script tags or other breakout characters; decode it at runtime.",
+        "Alternatively use the HTML <template> tag as inert storage: put the escaped user data between tags (only < and & need escaping), then read it via JavaScript when needed.",
+        "Write tests with inputs containing quotes, backslashes, closing script tags and mixed contexts."
+      ],
+      "caveats": [
+        "Pure HTML entity escaping inside a script produces garbage because the JavaScript parser has no concept of entities, so the user sees the wrong text.",
+        "The source notes some edge cases (e.g. double-backslash handling) were uncertain in the lecture — validate against your own parser and runtime."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "javascript-context",
+        "output-escaping",
+        "pdp",
+        "input-validation"
+      ],
+      "id": "48e61c95a937f72e2f78d16a",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 8
+    },
+    {
+      "title": "Avoid pages where user data passes through nested parsers",
+      "summary": "Layered contexts (HTML attribute to JavaScript string to eval-like call) require multiple correctly-ordered escapes and are extremely error-prone, so avoid the pattern.",
+      "use_when": "Designing features where store data flows through an HTML attribute, then a JavaScript string, then a dynamic execution call (e.g. rich-text widgets, custom button scripts, or analytics configuration).",
+      "steps": [
+        "Identify nesting when a single value must be escaped at multiple levels — e.g. user data inside a string inside an onclick attribute, which the browser parses as HTML, then as JavaScript, then as a string argument.",
+        "Count the escapes required: each nested context adds its own layer, and getting the order or characters wrong breaks security.",
+        "Prefer architectures that avoid inline scripting and multi-layer embedding: pass data as escaped HTML between tags and read it via a script, rather than rebuilding scripts from strings.",
+        "If you cannot avoid nesting, write explicit tests that inject breakout characters at each layer and confirm nothing escapes.",
+        "Document the escaping contract wherever developers must remember multiple layers."
+      ],
+      "caveats": [
+        "The source describes such nesting as surprisingly common in real code, but its recommended remedy is to avoid it rather than perfect the escaping.",
+        "No numeric guidance is given; the rule is architectural, not a formula."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "context-awareness",
+        "output-escaping",
+        "pdp",
+        "experiment-design"
+      ],
+      "id": "6c2c6186326c6f729e497a2b",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 8
+    },
+    {
+      "title": "Only HTML element text and quoted attributes are reliably escapable",
+      "summary": "Several HTML contexts (comments, tag names, script bodies as plain text) cannot be escaped safely, so refuse to insert user data there.",
+      "use_when": "Reviewing or designing any template or editor where store or customer data could land in a comment, in a tag name, or directly in a script body.",
+      "steps": [
+        "Refuse to insert user data into HTML comments — they do not affect rendering, so there is no legitimate need, and the parser rules are difficult to get right.",
+        "Refuse to build tag names from user input; even a blacklist of dangerous tags (script, style) will miss new tags and browser-specific interpretations.",
+        "Never place raw user data in an unquoted script position; use the hex-encoding or template-tag approaches described elsewhere.",
+        "Reserve the escapable contexts — ordinary element text and quoted attribute values — for any user-dependent content.",
+        "When a feature seems to require a non-escapable context, redesign the feature rather than attempting clever escaping."
+      ],
+      "caveats": [
+        "The source states the comment-parsing rules were hard to pin down, which is itself a reason to avoid, not to improvise.",
+        "Blacklist approaches fail as browsers evolve and add new elements."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "input-validation",
+        "output-escaping",
+        "pdp",
+        "experiment-design"
+      ],
+      "id": "1ffc9074018e92dec944215e",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 8
+    },
+    {
+      "title": "Recognise reflected versus stored XSS and prioritise accordingly",
+      "summary": "Reflected XSS lives in the request, while stored XSS persists in your data and reaches every visitor regardless of the URL they use.",
+      "use_when": "Triageing vulnerability findings or designing storefront features: deciding where user data is stored (reviews, profiles, messages) versus only reflected in a response (search, filters).",
+      "steps": [
+        "Classify a potential issue as reflected if the payload must be carried in a link the victim clicks (URL path or query).",
+        "Classify it as stored if the payload is persisted server-side — in a database, cache, or any durable field — and rendered for other visitors.",
+        "Treat stored issues as higher impact because the delivery route is irrelevant: the victim need not click anything from the attacker, so the whole user base is exposed.",
+        "Accept that the entry route for stored payloads can be obscure — an HTTP header, an API import, or a bribed insider — because any route to the data store suffices.",
+        "Prioritise fixes for stored flows: user profiles, uploaded content, review text, and anything that imports external data."
+      ],
+      "caveats": [
+        "This is a classification framework, not a numeric severity scale; actual risk depends on the page and audience.",
+        "Stored XSS can be reached by means that would be impractical for reflected XSS, so do not use 'the attacker could not get them to click it' as a rejection reason."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "stored-xss",
+        "reflected-xss",
+        "input-validation",
+        "retention",
+        "customer-research"
+      ],
+      "id": "7bec48d403c6448e88967c08",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 8
+    },
+    {
+      "title": "Escaping cannot defeat breakouts caused by a closing script tag",
+      "summary": "The HTML parser locates script tag boundaries before JavaScript parsing, so a literal closing script tag anywhere in a script breaks out regardless of string escaping.",
+      "use_when": "Reviewing any storefront or checkout page where user data or third-party content is embedded in a script, or when evaluating page-builder widgets that inject sequences into scripts.",
+      "steps": [
+        "Understand the parser order: the HTML parser runs first and identifies script boundaries, then a separate JavaScript parser runs on each script body.",
+        "Recognise that including the literal characters for a closing script tag inside a string or comment in JavaScript still terminates the script element and can let an attacker resume HTML context, executing code.",
+        "Do not rely on escape sequences for quotes or backslashes to prevent this, because the boundary is determined before those sequences are interpreted.",
+        "Fix the embedding pattern: hex-encode the data so no breakout characters exist, or keep the data out of script bodies entirely.",
+        "Prefer loading third-party scripts by src from a trusted destination, which avoids this class of problem."
+      ],
+      "caveats": [
+        "The source notes a syntax error in one script generally does not prevent other script elements from running, but the breakout itself is the security concern.",
+        "This applies wherever user data reaches a script body, including dynamically generated widgets."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "output-escaping",
+        "script-context",
+        "pdp",
+        "checkout"
+      ],
+      "id": "c9669d9997786ccae97c5212",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 8
+    },
+    {
+      "title": "Blacklist filtering of tag names fails against forgiving HTML parsers",
+      "summary": "HTML parsers are deliberately lenient, accepting many syntax variations that bypass tag-name blacklists.",
+      "use_when": "Evaluating any input sanitisation that tries to block specific tags or words in customer reviews, product descriptions, or rich-text fields.",
+      "steps": [
+        "Treat blacklists of tag names (script, style, etc.) as unreliable, because browsers accept unusual whitespace, slashes and other characters between a tag name and its attributes.",
+        "Assume new elements and browser-specific quirks will appear after your blacklist is written.",
+        "Where possible, work from an allowlist of the exact, minimal markup and attributes you intend to support, and escape everything else.",
+        "Understand the robustness principle ('be conservative in what you send, forgiving in what you accept') is why parsers are lenient — that leniency is a security liability for filters.",
+        "Validate changes against real browsers rather than assuming a filter behaves as written, and treat consistency across browsers as unproven."
+      ],
+      "caveats": [
+        "The source notes older browsers differed significantly in how they interpreted unusual characters; modern behaviour is more consistent but still not safe to filter against.",
+        "This is a validation caution, not a recommendation to write your own full sanitiser."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "input-validation",
+        "allowlist",
+        "pdp",
+        "customer-research"
+      ],
+      "id": "fef60fc21b51451cd9bb0abe",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 8
+    },
+    {
+      "title": "Beware DOM-injected globals via user-controlled element IDs",
+      "summary": "The DOM exposes elements with IDs as global JavaScript variables, so letting users choose an ID can let them inject or override variables your script depends on.",
+      "use_when": "Designing features that assign element IDs from user input, such as personalised widgets, review anchors, or per-customer page components.",
+      "steps": [
+        "Recognise that the DOM creates a global JavaScript variable automatically for each element with an ID — this is a DOM behaviour, not a JavaScript feature.",
+        "If a script references a variable that is normally undefined and a user can set an element ID to that name, the condition can flip to truthy and divert the script's logic.",
+        "Do not let users control element IDs or form field names; generate IDs server-side from a safe pattern (e.g. a numeric token) instead.",
+        "Also avoid letting users control form field 'name' attributes, since forms rely on them.",
+        "When reviewing templates, treat any user-controlled identifier as a potential variable-injection point."
+      ],
+      "caveats": [
+        "The source was uncertain how duplicate IDs are resolved, but notes duplicates can change which element JavaScript selects.",
+        "This is an indirect attack that depends on what your script does with the variable; not every case is exploitable."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "dom-security",
+        "input-validation",
+        "pdp",
+        "experiment-design"
+      ],
+      "id": "87e4396070131e17c360ae3d",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 8
+    },
+    {
+      "title": "Use data URLs for small inline assets, not large ones",
+      "summary": "Data URLs can inline small images or stylesheets into a page to save an HTTP round trip, but they cannot be cached and bloat the document.",
+      "use_when": "Choosing whether to inline small storefront assets such as icons or logos into the page or CSS, versus serving them as separate requests.",
+      "steps": [
+        "Understand that an inlined data URL travels with the HTML or CSS, so the browser shows the asset on the first response instead of making an extra request, then waiting.",
+        "Inline only genuinely small assets; the source suggests a tiny icon may be worth it while a multi-megabyte image is not.",
+        "Recognise that inlined assets cannot be cached separately, so a large or repeat-viewed asset re-downloads with every page load.",
+        "Use the same technique inside CSS to avoid an extra HTTP request for small background images.",
+        "Weigh the round-trip saved against the added page weight before deciding."
+      ],
+      "caveats": [
+        "The source gives no specific size threshold, only the principle that small is suitable and multi-megabyte is not.",
+        "Separately, data URLs are a security risk when users can supply them as link or source values — context determines whether they are helpful or dangerous."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "performance",
+        "page-weight",
+        "pdp",
+        "landing-page"
+      ],
+      "id": "495d42e7ad57f0d9599f2912",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 8
+    }
+  ],
+  "request_id": "d2d7869a11be296d5ca790f5383caace76239fedc16f125b32aa114e82364ed2",
+  "ecommerce_scope_version": 1
+}

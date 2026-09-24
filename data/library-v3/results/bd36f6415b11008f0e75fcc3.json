@@ -1,0 +1,579 @@
+{
+  "cards": [
+    {
+      "title": "Set State and Country Tax Rates with Priority Rules",
+      "summary": "Create WooCommerce tax rate rows for specific states, whole countries and fallback rates, then use priority numbers to resolve overlapping rules.",
+      "use_when": "Configuring tax tables for a store that ships to multiple US states or countries and you need correct rates at checkout.",
+      "steps": [
+        "Open WooCommerce > Settings > Tax (verify current label) and create rate rows. Enter a two-letter country code and, for state-level rules, the two-letter state code; leave state empty for a country-wide fallback rule.",
+        "Enter rates in four-decimal format, e.g. California 7.2500 or a source-quoted New York 4.0000, so rounding behaves predictably.",
+        "Build a hierarchy: state-specific rows for states with known rates, plus one country-wide row (e.g. US at 5.0000) as a catch-all.",
+        "Resolve overlap with priority: when a California customer matches both a California row and the US row, the lower priority number wins. The source set California to priority 1 and the country fallback to priority 2, so California paid 7.25%.",
+        "Turn off the shipping-tax flag on rows where you do not want tax charged on shipping cost, then save changes.",
+        "Verify at checkout with a test address in each state before launch, and keep the rate table updated as jurisdictions change."
+      ],
+      "caveats": [
+        "Source caution: lower number = higher priority; getting this backwards silently charges the wrong rate.",
+        "Use your jurisdiction's official rates; the quoted 7.25% California, 4% New York and 5% placeholder are examples, not current guidance."
+      ],
+      "tags": [
+        "store-setup",
+        "tax",
+        "checkout",
+        "woocommerce",
+        "compliance",
+        "settings"
+      ],
+      "id": "7275017fd366388a4dec7cd7",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 2
+    },
+    {
+      "title": "Use Shipping Zones to Localize Fulfillment Offers",
+      "summary": "WooCommerce shipping zones let you scope free-shipping and flat-rate rules to a country or a single state.",
+      "use_when": "Deciding what shipping to offer for a whole country versus a specific state or region, and wanting region-specific perks.",
+      "steps": [
+        "Go to WooCommerce > Settings > Shipping and click Add Zone (verify current interface).",
+        "Name the zone (e.g. 'Whole USA') and search the region list for the country; for a state-level zone search and select the state entry, e.g. California, United States.",
+        "Add a shipping method to the zone and click Continue; repeat per method.",
+        "For a national zone, add a flat rate covering all states. For a narrower zone like California, add a different method such as free shipping with a requirement.",
+        "Attach requirements to free shipping: a valid free-shipping coupon or a minimum order amount. The source example granted California free shipping only above a $400 order.",
+        "Stack zones deliberately: general rules in the country zone, localized perks in the state zone, so a customer sees both applicable options at checkout."
+      ],
+      "caveats": [
+        "The $400 free-shipping threshold is the presenter's example setup, not a recommended benchmark.",
+        "Zone and method names may differ in your WooCommerce version; confirm labels in the current UI."
+      ],
+      "tags": [
+        "store-setup",
+        "shipping",
+        "fulfillment",
+        "woocommerce",
+        "settings",
+        "offer-design"
+      ],
+      "id": "2331d72754453e2436c5d3a9",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 2
+    },
+    {
+      "title": "Choose Per-Order or Per-Item Flat Rate Shipping",
+      "summary": "Flat-rate shipping can be charged once per order or multiplied by quantity using a formula, and heavy goods usually need the per-item version.",
+      "use_when": "Setting the delivery cost for a physical product line where shipping multiple units would otherwise be unprofitable.",
+      "steps": [
+        "In the zone's flat-rate method settings, enter the base cost as a number with two decimals, e.g. 10.00. By default this charges $10 per order regardless of quantity.",
+        "Test the math: with per-order pricing, 10 units still cost $10 total.",
+        "To charge per unit, write the cost as a formula using the quantity placeholder: a bracket-wrapped QTY token, a space, an asterisk, then the unit price. The source used [qty] * 10, so 1 unit = $10, 3 units = $30, 10 units = $100.",
+        "Decide by product economics: bulky or high-cube goods like furniture should use per-item pricing because one bed pack cannot cost the same to ship as three; low-cost repeat-purchase goods like pet food packets can use per-order pricing to make bulk buys attractive.",
+        "Set taxable/none on shipping to match your tax decisions, then save."
+      ],
+      "caveats": [
+        "The formula syntax and placeholder tokens can vary by shipping method and version; verify in your settings before relying on it.",
+        "Mixing per-order simplicity with heavy goods can erode margin on large orders."
+      ],
+      "tags": [
+        "store-setup",
+        "shipping",
+        "pricing",
+        "woocommerce",
+        "fulfillment",
+        "margin"
+      ],
+      "id": "5c049a84968e082e9b9e9da7",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 2
+    },
+    {
+      "title": "Create Shipping Classes for Heavy or Premium Packaging",
+      "summary": "Shipping classes let one zone charge a different rate for special packaging while keeping a normal default cost for everything else.",
+      "use_when": "Storing products whose packaging weight or cost differs materially from the standard packaging, e.g. premium or heavy packs.",
+      "steps": [
+        "In WooCommerce > Settings > Shipping > Classes, click Add Shipping Class (verify current labels).",
+        "Name it for the customer-facing consequence (e.g. Premium Shipping), give it a unique slug, and describe what it covers, such as heavy packages.",
+        "Return to the zone and edit the flat-rate method; a shipping-class cost field appears alongside a no-shipping-class cost.",
+        "Enter the premium class price (source example: $20) and the default no-class price (source example: $10), so products without a class fall back to $10.",
+        "Assign the class per product later on the product's Shipping tab, or assign it to a whole variable product so all variations inherit it.",
+        "Review margins: raising a class rate is the lever for heavy packaging; keeping a low default keeps light goods competitive."
+      ],
+      "caveats": [
+        "The $10/$20 figures are the presenter's illustrative numbers; price from your own carrier rates.",
+        "Only one class applies per product, so plan classes around your main cost drivers."
+      ],
+      "tags": [
+        "store-setup",
+        "shipping",
+        "fulfillment",
+        "woocommerce",
+        "pricing",
+        "margin"
+      ],
+      "id": "e7fc88f9231f3f42fb92799b",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 2
+    },
+    {
+      "title": "Enable Cod and Verify Stripe and PayPal Setup",
+      "summary": "Add cash on delivery plus Stripe and PayPal so customers can pay on-site, and test connections before switching to live.",
+      "use_when": "Turning on payment methods in a new store and connecting gateway accounts safely.",
+      "steps": [
+        "In WooCommerce > Settings > Payments, enable offline methods such as direct bank transfer, check payments and cash on delivery; the source treated COD as a popular, easy win.",
+        "Install and activate a Stripe plugin and a PayPal plugin from the plugin repository (the source chose the 'payment plugins' vendor versions; verify current vendor and compatibility).",
+        "For Stripe: log into the Stripe dashboard, open Developers > API keys, copy the publishable key and secret key, paste them into the plugin's API settings, then run the connection test.",
+        "While testing, stay in test mode and confirm a successful connection message before touching live keys.",
+        "For go-live, switch the Stripe account to live mode, complete identity/bank verification, select live mode in the plugin too, and replace keys with live ones.",
+        "For PayPal: use API settings with production (not sandbox) environment and paste production client ID and secret, or use Connect to PayPal and log in to link automatically; confirm the status reads connected."
+      ],
+      "caveats": [
+        "Plugin menu names and OAuth flows change; verify the current steps in the plugin UI. Never paste live keys while the plugin is still in test mode, and vice versa."
+      ],
+      "tags": [
+        "store-setup",
+        "payments",
+        "checkout",
+        "stripe",
+        "paypal",
+        "woocommerce"
+      ],
+      "id": "780a428b87023f20183ff2ef",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 2
+    },
+    {
+      "title": "Configure Accounts and Checkout Login Options",
+      "summary": "Guest checkout plus optional account creation reduces checkout friction while still building a customer list.",
+      "use_when": "Setting account and checkout behaviour for a new store to balance frictionless purchase against account-based retention.",
+      "steps": [
+        "Open WooCommerce > Settings > Accounts and Privacy (verify label).",
+        "Enable guest checkout so buyers can complete an order without registering; the source calls this recommended.",
+        "Enable login during checkout so returning customers can sign in from the cart/checkout flow.",
+        "Allow account creation during checkout and on the My Account page so new buyers can register in one step rather than after the fact.",
+        "Leave remaining defaults unless you have a specific need; the source kept them as-is.",
+        "Save changes and test the whole path: add to cart as a guest, checkout, then confirm the account was created so order history, downloads and addresses are available."
+      ],
+      "caveats": [
+        "Guest checkout trades some account data capture for higher completion; if subscriptions or repeat purchases dominate, weigh whether requiring an account is worth the friction."
+      ],
+      "tags": [
+        "store-setup",
+        "checkout",
+        "account-creation",
+        "retention",
+        "woocommerce",
+        "settings"
+      ],
+      "id": "fab5bea4ff2544d87bec4bda",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 2
+    },
+    {
+      "title": "Turn On Transactional Email Notifications Per Event",
+      "summary": "WooCommerce emails are per-event and many are off by default, so enable and edit each one you actually want sent.",
+      "use_when": "After orders start flowing, when customers report missing confirmations or you want branded status emails.",
+      "steps": [
+        "Open WooCommerce > Settings > Emails and review each event: new order, cancelled, failed, on hold, processing, completed, refunded, and customer-facing copies.",
+        "Identify the recipient for each: admin events go to your store email address, customer events go to the buyer.",
+        "Enable each notification you want by opening Manage and using its enable toggle, then save; the source noted disabled notifications simply never send.",
+        "Edit the recipient address, subject line, heading, and additional content to match your brand tone; the source edited a cancellation email's heading and closing line.",
+        "Adjust the email colour palette so the template matches your store branding.",
+        "Confirm both sides of a two-step flow, e.g. an order cancellation first notifies the admin and then, once confirmed, notifies the customer."
+      ],
+      "caveats": [
+        "Email delivery depends on your host or SMTP provider; if mail lands in spam, fix sending infrastructure rather than the templates."
+      ],
+      "tags": [
+        "store-setup",
+        "emails",
+        "retention",
+        "customer-experience",
+        "woocommerce",
+        "settings"
+      ],
+      "id": "6346d90f2e591b02b154d76c",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 2
+    },
+    {
+      "title": "Keep the Store in Coming Soon Until Catalogs and Pages Are Ready",
+      "summary": "Site visibility is a launch switch; keep the store hidden while building, then go live deliberately.",
+      "use_when": "Building a store before launch and deciding when customers should be able to reach it.",
+      "steps": [
+        "Find the visibility setting (the source used WooCommerce > Settings > Site Visibility; verify current location) and confirm it currently reads Coming Soon.",
+        "While in Coming Soon, build the tax, shipping, payment, product and design work with real settings and products.",
+        "Before switching to Live, complete a full purchase test: add to cart, checkout with each payment method, apply a coupon, confirm emails and download links arrive.",
+        "Set a static homepage and confirm navigation, cart, checkout and My Account pages all resolve.",
+        "Switch visibility to Live and save; the dashboard status should change to show the store is live.",
+        "Treat launch as the last step, not a first one: the source deliberately published products, tested purchase flow, then went live."
+      ],
+      "caveats": [
+        "Coming Soon blocks search-engine and customer access, so switch it off only when products, pages and payments are verified."
+      ],
+      "tags": [
+        "store-setup",
+        "launch",
+        "settings",
+        "woocommerce",
+        "checkout",
+        "customer-experience"
+      ],
+      "id": "c4521eb764683e57bfca3e92",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 2
+    },
+    {
+      "title": "Fill Store Details and Page Assignments in Settings",
+      "summary": "Store name, address, policies and page assignments power invoices, emails and checkout links, so set them rather than relying on placeholders.",
+      "use_when": "Finalizing store identity and confirming the cart, checkout, account and policy pages WooCommerce uses.",
+      "steps": [
+        "In the point-of-sale/store settings area, replace the default store name with your brand name.",
+        "Add the physical store address, phone number and email if you operate a physical location; these feed documents and contact details.",
+        "Paste your refund and return policy text in the provided field so it can surface where policies are referenced.",
+        "Under Advanced > Page Setup, verify the Cart, Checkout and My Account pages are assigned; the source kept WooCommerce defaults because they worked and looked fine.",
+        "Assign a Terms and Conditions page; until you write one, the source temporarily selected the privacy policy page and planned to swap it once the real page existed.",
+        "Save and click through each assigned page on the front end to confirm it loads and behaves."
+      ],
+      "caveats": [
+        "Do not leave a borrowed policy page as your terms permanently; replace it with accurate terms before launch.",
+        "Interface labels for store details and page setup can move between versions."
+      ],
+      "tags": [
+        "store-setup",
+        "settings",
+        "legal-pages",
+        "woocommerce",
+        "customer-experience",
+        "checkout"
+      ],
+      "id": "ce82c02fc4c634fba279bb45",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 2
+    },
+    {
+      "title": "Create a Simple Physical Product With Pricing, SKU and Stock",
+      "summary": "The simple product flow covers name, description, price/sale price, SKU, stock, shipping dimensions and categories.",
+      "use_when": "Adding standard physical products to the catalog at initial setup.",
+      "steps": [
+        "Go to Products > Add New, enter the product name and edit the auto-generated permalink slug only if needed.",
+        "Write the rich-text description (headings, bold, lists) that appears in the product's main description area.",
+        "In Product Data choose Simple. Set regular price and sale price with two decimals; the sale price displays as the active price with the original struck through.",
+        "Set tax status to taxable and pick the tax class you built earlier so the product inherits your state/country rate logic.",
+        "Add a unique SKU: the source built it from the title, lowercased, spaces replaced with hyphens, plus a sequence number (e.g. canine-crunch-01) so later variants become 02, 03.",
+        "Enable stock management and enter quantity so the product page shows e.g. 10 in stock.",
+        "On the Shipping tab enter weight in grams and length/width/height of the full package, not the bare product, then attach a shipping class or leave none for the default rate.",
+        "Assign categories and tags for on-site search, set the thumbnail and gallery images, add a short description, and publish; then view /shop to confirm it appears."
+      ],
+      "caveats": [
+        "Measure the shipped package, not the item, or carrier rates will be wrong.",
+        "SKU conventions are the presenter's suggestion; any unique, consistent scheme works."
+      ],
+      "tags": [
+        "store-setup",
+        "product-page",
+        "catalog",
+        "shipping",
+        "woocommerce",
+        "merchandising"
+      ],
+      "id": "f81c2abfc7fbfacf786ae728",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 2
+    },
+    {
+      "title": "Build Variable Products from Global Attributes",
+      "summary": "Create attributes once at the global level, then generate all variation combinations and price each one individually.",
+      "use_when": "Selling a product in multiple sizes, weights or bundle options where price and stock differ per option.",
+      "steps": [
+        "Create attributes globally under Products > Attributes so they are reusable across products; the source created a Weight attribute with button type and terms 200g, 400g, 600g, and a Toy attribute with radio type and terms with-toy/without-toy.",
+        "On the product, choose Variable, then use Add Existing to attach attributes and select their values, saving attributes each time.",
+        "Click Generate Variations to auto-create every combination (two attributes with 3 and 2 values produced 6 variations).",
+        "Open each variation and set its thumbnail, unique SKU, price, weight, shipping class and tax class; class and tax class set at the top level apply to all variations unless you override.",
+        "Price by value logic: the source charged less for without-toy and more for larger weights, illustrating that option differences should be reflected in price.",
+        "Set the parent product's short description, thumbnail, gallery, categories and tags, publish, then check the product page shows Select Options, the price range (e.g. $37–$68) and that switching options updates price."
+      ],
+      "caveats": [
+        "The source's per-variation pricing accidentally inverted the with-toy/without-toy logic, showing that option-price mapping must be reviewed.",
+        "Many attributes multiply variation count quickly; too many combinations make maintenance heavy."
+      ],
+      "tags": [
+        "store-setup",
+        "product-page",
+        "variants",
+        "merchandising",
+        "pricing",
+        "woocommerce"
+      ],
+      "id": "a065c6dfec574cad23ac9e2c",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 2
+    },
+    {
+      "title": "Create Virtual Downloadable Products for Digital Goods",
+      "summary": "Marking a product virtual removes shipping; making it downloadable attaches files customers receive after purchase.",
+      "use_when": "Selling ebooks, guides, templates or other digital files in the store.",
+      "steps": [
+        "Add a new product and keep it Simple, then tick Virtual: the shipping fields disappear because nothing ships.",
+        "Tick Downloadable and add files either by pasting a URL or choosing a file from the media library; the source inserted a PDF and attached its file URL.",
+        "Set regular and sale price as for a physical product, and assign the appropriate tax class.",
+        "Decide download limits and expiry: the source left downloads unlimited and expiry at never; if you want controlled access, set a limit or day count.",
+        "Skip stock management because digital goods do not deplete; give the product a SKU such as ebook-01.",
+        "Link the digital product to other products as upsells/cross-sells, add a short description, thumbnail, tags and publish.",
+        "After a test purchase, verify the order confirmation page exposes the download button and the file opens."
+      ],
+      "caveats": [
+        "Unlimited downloads and no expiry make sharing easy; if piracy matters, set limits and expiry or use protected delivery.",
+        "File hosting and link stability affect delivery; host files somewhere durable."
+      ],
+      "tags": [
+        "store-setup",
+        "digital-products",
+        "fulfillment",
+        "product-page",
+        "woocommerce",
+        "retention"
+      ],
+      "id": "5c8864617956814a3569b5ff",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 2
+    },
+    {
+      "title": "List Affiliate Products as External Products",
+      "summary": "External/affiliate product type sends buyers to a partner URL with custom button text while keeping the listing on your store.",
+      "use_when": "Monetizing affiliate programs by merchandising partner goods without fulfillment responsibility.",
+      "steps": [
+        "Add a new product and choose External/Affiliate in Product Data.",
+        "Paste your affiliate product URL in the product URL field; this is where the purchase button sends visitors.",
+        "Set the button text to set expectations, e.g. 'Buy from Amazon'; the source used exactly that phrasing.",
+        "Enter the partner's displayed price so listings look comparable, and skip tax status/class because the transaction occurs off-site.",
+        "Add a description, short description, a product image you are allowed to use, and categories/tags, then publish.",
+        "On the front end, confirm the button reads as intended and opens the partner page in the expected way."
+      ],
+      "caveats": [
+        "Commission is earned only when the tracked link converts; the source frames this as an example, not a guaranteed revenue channel.",
+        "Check partner program terms for image and price display rules."
+      ],
+      "tags": [
+        "store-setup",
+        "affiliate",
+        "monetization",
+        "merchandising",
+        "woocommerce",
+        "product-page"
+      ],
+      "id": "5c9382dfb0929f728d739b0e",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 2
+    },
+    {
+      "title": "Use Upsells and Cross-Sells to Raise Cart Value",
+      "summary": "Upsells appear as upgrade suggestions on the product/cart, while cross-sells appear as complementary recommendations.",
+      "use_when": "Configuring related-product recommendations on product pages and in the cart.",
+      "steps": [
+        "On the product's Linked Products tab, add products to Upsells; the source says these surface in the cart as 'you may be interested in' suggestions tied to the viewed product.",
+        "Add products to Cross-Sells; these render as 'you may also like' style recommendations connected to the cart contents.",
+        "Build the catalog first: the source could not demonstrate upsells/cross-sells on the first product because no other products existed yet.",
+        "Add complementary logic, not duplicates: pair the ebook guide with food, or an accessory with the main item, so the suggestion is relevant.",
+        "After publishing, buy-through once to confirm both recommendation blocks appear in the cart and product page."
+      ],
+      "caveats": [
+        "Recommendations only work once there are other published products to select.",
+        "The source notes upsell/cross-sell placements are tied to how WooCommerce renders them, which theme customization can change."
+      ],
+      "tags": [
+        "store-setup",
+        "merchandising",
+        "cart",
+        "upsell",
+        "woocommerce",
+        "conversion-optimization"
+      ],
+      "id": "b5fc3d2b7b4c3500142340d5",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 2
+    },
+    {
+      "title": "Configure Coupon Type, Restrictions and Usage Limits",
+      "summary": "Coupons combine a discount type with spend thresholds, product/category restrictions and per-user or per-coupon caps.",
+      "use_when": "Running a promotional discount and controlling who can use it, on what, and how often.",
+      "steps": [
+        "Go to Marketing > Coupons > Add New and set the customer-facing code (e.g. JFD20) plus an internal description.",
+        "Pick a discount type: Percentage Discount applies a percent of order or product value (20% of $100 = $20), while Fixed Cart/Fixed Product Discount subtract a flat amount regardless of price.",
+        "Optionally set an expiry date so the promotion ends automatically.",
+        "Use usage restrictions to steer behaviour: minimum spend (e.g. $200) makes the coupon unusable below the threshold; maximum spend (e.g. $500) switches it off above a ceiling because a large percentage becomes expensive; the source left both off.",
+        "Include specific products/categories to target the offer, or exclude products/categories to protect low-margin lines.",
+        "Set usage limit per coupon (total redemptions, source example 10) and usage limit per user (source example 10 per customer), then publish.",
+        "Verify in checkout by applying the code and confirming the discount line and new total update."
+      ],
+      "caveats": [
+        "High percentages plus no maximum spend can gut margin on large carts; maximum-spend ceilings exist for that reason.",
+        "Limits and thresholds shown are the presenter's examples, not recommended defaults."
+      ],
+      "tags": [
+        "store-setup",
+        "pricing",
+        "promotions",
+        "checkout",
+        "woocommerce",
+        "offer-design"
+      ],
+      "id": "ba99780859ec81a9c77392e2",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 2
+    },
+    {
+      "title": "Run an End-to-End Purchase and Order Management Test",
+      "summary": "Testing the full buyer journey and then processing the order from admin verifies setup before launch.",
+      "use_when": "Before going live, and whenever payments, tax, shipping or emails change.",
+      "steps": [
+        "As a shopper, add several product types: a simple product, a downloadable product and a variable product with a chosen option; manage quantities from the mini-cart and full cart.",
+        "Open the cart page and read the totals breakdown: subtotal, shipping (flat rate), tax and estimated total, confirming each reflects your settings.",
+        "Proceed to checkout, enter contact and shipping details, choose the shipping method, select a payment method (cash on delivery, Stripe card or PayPal), and optionally add an order note.",
+        "Apply the coupon in the order summary and confirm the discount and new total, e.g. a 20% code reducing the total.",
+        "Place the order and inspect the thank-you page for order details and, for digital products, the download button.",
+        "As admin, go to WooCommerce > Orders, open the order, review items and prices, then set status (pending, on hold, completed, cancelled, refunded, failed) and update; shipping happens before marking completed, and the customer is notified.",
+        "Check the My Account area for order history, downloads, addresses and payment methods as the customer sees it."
+      ],
+      "caveats": [
+        "Test mode payments do not move real money; repeat key checks with live credentials before relying on the flow.",
+        "Order status wording and available statuses may vary with installed extensions."
+      ],
+      "tags": [
+        "store-setup",
+        "checkout",
+        "orders",
+        "testing",
+        "woocommerce",
+        "fulfillment"
+      ],
+      "id": "fa39013559f56e289362523f",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 2
+    },
+    {
+      "title": "Set a Static Homepage Before Building the Storefront",
+      "summary": "WordPress serves posts on the root URL by default; assigning a static page makes your designed homepage reachable at the domain.",
+      "use_when": "After creating the homepage page and before designing it in a page builder.",
+      "steps": [
+        "Go to Pages > Add New, title it Home and publish; it can be empty at first.",
+        "Open Settings > Reading and under homepage display change from latest posts to a static page, then select the new Home page as the homepage.",
+        "Save changes and visit the bare domain to confirm the Home page loads instead of a blog roll.",
+        "Then open the page with the Elementor editor (or your page builder) to design it.",
+        "Note that default WooCommerce pages such as cart, checkout and my account already exist; leave them assigned and do not overwrite them with the homepage."
+      ],
+      "caveats": [
+        "Changing homepage display later requires re-selecting the page; if the root looks empty, check this setting first.",
+        "Page-builder menu names and locations shift across versions."
+      ],
+      "tags": [
+        "store-setup",
+        "homepage",
+        "landing-page",
+        "wordpress",
+        "pages",
+        "launch"
+      ],
+      "id": "ef53f8ba81ec1da7f353e0bd",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 2
+    },
+    {
+      "title": "Know Free Page Builder Versus Pro Widget Boundaries",
+      "summary": "Elementor's free widgets cover layout, headings, images, text, video and buttons, while advanced widgets such as posts, portfolio, loop and carousel require the pro tier or add-on plugins.",
+      "use_when": "Planning how to build product and homepage sections without buying pro, and deciding whether add-on widget plugins are needed.",
+      "steps": [
+        "In the editor sidebar, inventory the free widgets: containers, grid, heading, image, text editor, video, button and similar basics.",
+        "Scroll to the pro group to see advanced widgets like search, posts, portfolio, gallery, loop and carousel; these will not be available on the free tier.",
+        "Plan sections using free equivalents: build image grids and headings manually rather than expecting a loop or portfolio widget.",
+        "Consider add-on widget plugins such as the source's Elementskit to expand available widgets if the free set is insufficient.",
+        "Check compatibility and performance before stacking multiple widget plugins, since each adds weight and update risk."
+      ],
+      "caveats": [
+        "Feature tiers and widget lists change; verify what your installed version includes.",
+        "The source mentions a paid template marketplace; evaluate whether templates or building from scratch fits your time budget."
+      ],
+      "tags": [
+        "store-setup",
+        "page-builder",
+        "elementor",
+        "homepage",
+        "landing-page",
+        "tooling"
+      ],
+      "id": "4c3e5a5a53038bc289f5a05a",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 2
+    }
+  ],
+  "request_id": "14a0a97c8cf174116b77aaa63b8d75178dcc2be9843488b11cec8ba4d4f997f9",
+  "ecommerce_scope_version": 1
+}

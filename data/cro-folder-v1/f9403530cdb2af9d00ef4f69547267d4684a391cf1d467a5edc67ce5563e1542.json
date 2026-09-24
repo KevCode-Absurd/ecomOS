@@ -1,0 +1,508 @@
+{
+  "request_id": "f9403530cdb2af9d00ef4f69547267d4684a391cf1d467a5edc67ce5563e1542",
+  "provider": "deepseek",
+  "model": "deepseek-flash",
+  "effort": "high",
+  "completion_limit": 65536,
+  "usage": {
+    "prompt_tokens": 3384,
+    "completion_tokens": 22403,
+    "total_tokens": 25787,
+    "prompt_tokens_details": {
+      "cached_tokens": 1152
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 19559
+    },
+    "prompt_cache_hit_tokens": 1152,
+    "prompt_cache_miss_tokens": 2232
+  },
+  "booked_cost_usd": 0.027898799999999998,
+  "seconds": 83.95,
+  "finish_reason": "stop",
+  "output": {
+    "units": [
+      {
+        "id": "u1",
+        "kind": "action",
+        "title": "Roll losing-test learnings into the next test",
+        "claim": {
+          "text": "Only 13 of 135 tests won; more tests lose than win.",
+          "quote": "13 tests out of 135 won"
+        },
+        "action": {
+          "text": "Roll the learnings from the losing test into the next test.",
+          "quote": "roll the learnings from the losing test into the next test"
+        },
+        "trigger": {
+          "op": "any",
+          "args": [
+            {
+              "text": "An A/B test lost, which is expected for most tests.",
+              "quote": "13 tests out of 135 won"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "any",
+          "args": [
+            {
+              "text": "Someone (you or an agency) must be able to understand why the test lost.",
+              "quote": "you need an agency or someone who can understand why that test lost"
+            }
+          ]
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "Method for determining why a test lost is not specified."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u2",
+        "kind": "action",
+        "title": "Raise AOV with full in-cart optimization",
+        "claim": {
+          "text": "Complete in-cart optimization gamified the cart with free shipping prompt thresholds and free gift thresholds that unlock as spend increases, plus in-cart upsells.",
+          "quote": "we gamified the car by adding uh free shipping prompts thresholds and free gift thresholds. So not just stopping at three uh free shipping but pushing it one step further offering free gifts unlocking as they spent more money in car upselles"
+        },
+        "action": {
+          "text": "Set up full in-cart optimization.",
+          "quote": "We set up full incar optimization"
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "The client's AOV was plateauing between $60 and $80.",
+              "quote": "they were struggling with AOV between $60 and $80"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [
+          {
+            "text": "Monthly revenue increased by nearly $60,000.",
+            "quote": "we increased um the monthly revenue here by nearly $60,000"
+          }
+        ],
+        "unknowns": [
+          "Time period over which the nearly $60,000 monthly revenue increase was measured is not stated.",
+          "The sticker sets, gift cards, and box and socks bundle used are mentioned but not tied to specific steps."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u3",
+        "kind": "action",
+        "title": "Test a product bundle offer for cold acquisition",
+        "claim": {
+          "text": "A product bundle test functioned as a cold-acquisition offer test and worked well for the brand.",
+          "quote": "this is more of an offer test for cold acquisition, which worked really well for this brand"
+        },
+        "action": {
+          "text": "Add a bundle option just below the add to cart letting customers buy three packs of sunglasses and save 20%.",
+          "quote": "we added this bundle uh bundle option here where you could buy three packs of sunglasses and save 20%"
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [
+          {
+            "text": "Monthly revenue increased by over $180,000.",
+            "quote": "over 180,000 in monthly revenue increase from this test"
+          }
+        ],
+        "unknowns": [
+          "The custom color-selection modal is mentioned but its implementation is not specified."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u4"
+          }
+        ]
+      },
+      {
+        "id": "u4",
+        "kind": "principle",
+        "title": "Bundling fits low-priced products bought in multiples",
+        "claim": {
+          "text": "The bundle worked because the sunglasses were low-priced (about $30-$40), not luxury.",
+          "quote": "These aren't thousand sunglasses. These are maybe $30, $40 sunglasses."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No explicit price threshold is given for when bundling applies."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u5",
+        "kind": "action",
+        "title": "Redesign the product page to align with customer pain points",
+        "claim": {
+          "text": "A mini audit suggested the product page copy wasn't aligning with the customer's pain points and desires.",
+          "quote": "the uh copy of the the product page wasn't aligning with the pain point and desires of the customer"
+        },
+        "action": {
+          "text": "Redefine above the fold and the description, and add benefit-driven bullet points.",
+          "quote": "We redefined the above the fold. We redefined the description, but most importantly, we added benefit driven bullet points"
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "A mini audit flagged the misalignment.",
+              "quote": "when we did that mini audit"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "any",
+          "args": [
+            {
+              "text": "Use post-purchase surveys and phone interviews with customers.",
+              "quote": "we took those from post-purchase surveys and from surveying and interviewing picking up the phone and talking to their customers"
+            }
+          ]
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [
+          {
+            "text": "Nearly $2 million incremental revenue per year.",
+            "quote": "2 million in in nearly incremental revenue per year"
+          }
+        ],
+        "unknowns": [
+          "Currency for the $2 million figure is not stated."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u11"
+          }
+        ]
+      },
+      {
+        "id": "u6",
+        "kind": "action",
+        "title": "Convert blocks of product text into benefit-driven bullets",
+        "claim": {
+          "text": "Product page copy should talk about the outcome for the consumer, not features.",
+          "quote": "Make sure it talks about the outcome and the result that you're going to get for your consumer, not the shiny objects or the features"
+        },
+        "action": {
+          "text": "Take big blocks of product page description text, put them into GPT, and tell it to transform them into benefit-driven bullet points, bolding key words.",
+          "quote": "take them, put them into GPT, and tell them to transform them into benefit driven bullet points"
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Product page descriptions contain big blocks of text.",
+              "quote": "If you have big blocks of text on your product page descriptions"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "Specific GPT tool/model is not specified; accuracy of the transformation is not addressed."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u7",
+        "kind": "action",
+        "title": "Redesign the homepage hero for clarity and trust",
+        "claim": {
+          "text": "The redesigned hero pushed social proof up and included a clear headline, benefit-driven bullet points, a product image, and a clear CTA supported by trust seals.",
+          "quote": "We pushed the social proof up. We had a nice clear headline, benefit driven bullet points right here. Nice image of the product, clear CTA which was supported by trust seals."
+        },
+        "action": {
+          "text": "Test a redesigned homepage hero section with enhanced UX/UI and trust-building elements.",
+          "quote": "we tested a redesigned uh homepage hero section with an enhanced UX and UI uh with trust building elements"
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "The audit suggested increasing clarity on what the product is, who it's for, and why you would use it, with improved trust and engagement.",
+              "quote": "increasing clarity on what the product is and who it's for and why you would use it with improved user trust and engagement"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "Specific performance uplift figures for the homepage hero test are not provided."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u8",
+        "kind": "example",
+        "title": "Examples of trust seals for the hero",
+        "claim": {
+          "text": "Trust seals can include money back guarantee, over 10,000 happy customers, vegan friendly, and made in the US.",
+          "quote": "money back guarantee, over 10,000 happy customers, vegan friendly, made in the US"
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": []
+      },
+      {
+        "id": "u9",
+        "kind": "action",
+        "title": "Redesign the sales page above the fold",
+        "claim": {
+          "text": "The call to action should explain what happens once clicked and where people go in the journey.",
+          "quote": "explain on that clear call to action where what happens once it's clicked and where exactly people are going in your journey"
+        },
+        "action": {
+          "text": "Redesign the sales page above the fold with a trust policy bar, a higher-converting outcome-driven headline, benefit-driven bullet points, and one clear call to action.",
+          "quote": "we introduced a trust policy bar a higher converting headline that was outcome driven benefit driven bullet points one clear call to action"
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "Performance figures for the sales page test are not provided."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u11"
+          }
+        ]
+      },
+      {
+        "id": "u10",
+        "kind": "example",
+        "title": "Shop bestsellers as a default CTA",
+        "claim": {
+          "text": "When unsure of CTA copy, something like shop bestsellers typically works best.",
+          "quote": "something like shop bestsellers probably typically works the best"
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": []
+      },
+      {
+        "id": "u11",
+        "kind": "action",
+        "title": "Use post-purchase surveys to surface objections",
+        "claim": {
+          "text": "Surveys asked customers what almost stopped them from buying the product.",
+          "quote": "we asked them what almost stopped you from buying"
+        },
+        "action": {
+          "text": "Use post-purchase insights to find common objections and friction points.",
+          "quote": "we used the post-purchase insights to find common objections and friction points"
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": []
+      },
+      {
+        "id": "u12",
+        "kind": "action",
+        "title": "Rewrite the hero copy to answer the key objection",
+        "claim": {
+          "text": "Most surveyed customers said they didn't know the leather quality was good enough.",
+          "quote": "we didn't know the quality of the leather was good enough"
+        },
+        "action": {
+          "text": "Change the hero copy to focus on craftsmanship, leather quality and sourcing, handcrafted construction, and the quality of the sandals and leather.",
+          "quote": "we changed the whole hero copy to focus around the art artship and the craftsmanship of how high quality the leather was, where the leather was sourced, that it was handcrafted, and the quality of these sandals and the leather"
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "The client had not articulated that friction point on the homepage.",
+              "quote": "the client did a didn't do a good enough job articulating that friction point on the homepage"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [
+          {
+            "text": "Conversion rates went through the roof; a 77K monthly incremental increase.",
+            "quote": "77K in monthly incremental increases"
+          }
+        ],
+        "unknowns": [
+          "Currency for the 77K figure is not stated."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u11"
+          }
+        ]
+      },
+      {
+        "id": "u13",
+        "kind": "action",
+        "title": "Request a free CRO growth plan offer",
+        "claim": {
+          "text": "A limited number of free CRO growth plans are offered; a typeform collects brand info and a call is booked.",
+          "quote": "we will then book in a call with you"
+        },
+        "action": {
+          "text": "Request one of a limited amount of free CRO growth plans.",
+          "quote": "we are going to offer a limited amount of CRO growth plans"
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "any",
+          "args": [
+            {
+              "text": "Fill in brand information such as sessions and store URL via a typeform.",
+              "quote": "You'll fill in some important information about your brand just around sessions"
+            }
+          ]
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "Availability is limited and may fill up; the URL 'conversion wise.com/zipify' is transcribed with a possible space."
+        ],
+        "relations": []
+      }
+    ],
+    "more_units": false,
+    "unresolved": [
+      "Opening passage is a truncated continuation ('but it allowed them to scale um before as as said someone else came in took over...'); preceding context is missing.",
+      "Currency is not specified for several revenue figures (e.g., '77K', 'over 180,000', 'nearly $60,000', '2 million'); '$' figures may be USD but this is not stated.",
+      "Time basis varies and is sometimes unclear: '$180,000 in monthly revenue increase', '2 million... nearly incremental revenue per year', '77K in monthly incremental increases'.",
+      "The custom color-selection modal in the bundle test is mentioned but not specified in detail."
+    ]
+  },
+  "raw_content": "{\"units\":[{\"id\":\"u1\",\"kind\":\"action\",\"title\":\"Roll losing-test learnings into the next test\",\"claim\":{\"text\":\"Only 13 of 135 tests won; more tests lose than win.\",\"quote\":\"13 tests out of 135 won\"},\"action\":{\"text\":\"Roll the learnings from the losing test into the next test.\",\"quote\":\"roll the learnings from the losing test into the next test\"},\"trigger\":{\"op\":\"any\",\"args\":[{\"text\":\"An A/B test lost, which is expected for most tests.\",\"quote\":\"13 tests out of 135 won\"}]},\"prerequisites\":{\"op\":\"any\",\"args\":[{\"text\":\"Someone (you or an agency) must be able to understand why the test lost.\",\"quote\":\"you need an agency or someone who can understand why that test lost\"}]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"Method for determining why a test lost is not specified.\"],\"relations\":[]},{\"id\":\"u2\",\"kind\":\"action\",\"title\":\"Raise AOV with full in-cart optimization\",\"claim\":{\"text\":\"Complete in-cart optimization gamified the cart with free shipping prompt thresholds and free gift thresholds that unlock as spend increases, plus in-cart upsells.\",\"quote\":\"we gamified the car by adding uh free shipping prompts thresholds and free gift thresholds. So not just stopping at three uh free shipping but pushing it one step further offering free gifts unlocking as they spent more money in car upselles\"},\"action\":{\"text\":\"Set up full in-cart optimization.\",\"quote\":\"We set up full incar optimization\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"The client's AOV was plateauing between $60 and $80.\",\"quote\":\"they were struggling with AOV between $60 and $80\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[{\"text\":\"Monthly revenue increased by nearly $60,000.\",\"quote\":\"we increased um the monthly revenue here by nearly $60,000\"}],\"unknowns\":[\"Time period over which the nearly $60,000 monthly revenue increase was measured is not stated.\",\"The sticker sets, gift cards, and box and socks bundle used are mentioned but not tied to specific steps.\"],\"relations\":[]},{\"id\":\"u3\",\"kind\":\"action\",\"title\":\"Test a product bundle offer for cold acquisition\",\"claim\":{\"text\":\"A product bundle test functioned as a cold-acquisition offer test and worked well for the brand.\",\"quote\":\"this is more of an offer test for cold acquisition, which worked really well for this brand\"},\"action\":{\"text\":\"Add a bundle option just below the add to cart letting customers buy three packs of sunglasses and save 20%.\",\"quote\":\"we added this bundle uh bundle option here where you could buy three packs of sunglasses and save 20%\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[{\"text\":\"Monthly revenue increased by over $180,000.\",\"quote\":\"over 180,000 in monthly revenue increase from this test\"}],\"unknowns\":[\"The custom color-selection modal is mentioned but its implementation is not specified.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u4\"}]},{\"id\":\"u4\",\"kind\":\"principle\",\"title\":\"Bundling fits low-priced products bought in multiples\",\"claim\":{\"text\":\"The bundle worked because the sunglasses were low-priced (about $30-$40), not luxury.\",\"quote\":\"These aren't thousand sunglasses. These are maybe $30, $40 sunglasses.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"No explicit price threshold is given for when bundling applies.\"],\"relations\":[]},{\"id\":\"u5\",\"kind\":\"action\",\"title\":\"Redesign the product page to align with customer pain points\",\"claim\":{\"text\":\"A mini audit suggested the product page copy wasn't aligning with the customer's pain points and desires.\",\"quote\":\"the uh copy of the the product page wasn't aligning with the pain point and desires of the customer\"},\"action\":{\"text\":\"Redefine above the fold and the description, and add benefit-driven bullet points.\",\"quote\":\"We redefined the above the fold. We redefined the description, but most importantly, we added benefit driven bullet points\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"A mini audit flagged the misalignment.\",\"quote\":\"when we did that mini audit\"}]},\"prerequisites\":{\"op\":\"any\",\"args\":[{\"text\":\"Use post-purchase surveys and phone interviews with customers.\",\"quote\":\"we took those from post-purchase surveys and from surveying and interviewing picking up the phone and talking to their customers\"}]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[{\"text\":\"Nearly $2 million incremental revenue per year.\",\"quote\":\"2 million in in nearly incremental revenue per year\"}],\"unknowns\":[\"Currency for the $2 million figure is not stated.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u11\"}]},{\"id\":\"u6\",\"kind\":\"action\",\"title\":\"Convert blocks of product text into benefit-driven bullets\",\"claim\":{\"text\":\"Product page copy should talk about the outcome for the consumer, not features.\",\"quote\":\"Make sure it talks about the outcome and the result that you're going to get for your consumer, not the shiny objects or the features\"},\"action\":{\"text\":\"Take big blocks of product page description text, put them into GPT, and tell it to transform them into benefit-driven bullet points, bolding key words.\",\"quote\":\"take them, put them into GPT, and tell them to transform them into benefit driven bullet points\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Product page descriptions contain big blocks of text.\",\"quote\":\"If you have big blocks of text on your product page descriptions\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"Specific GPT tool/model is not specified; accuracy of the transformation is not addressed.\"],\"relations\":[]},{\"id\":\"u7\",\"kind\":\"action\",\"title\":\"Redesign the homepage hero for clarity and trust\",\"claim\":{\"text\":\"The redesigned hero pushed social proof up and included a clear headline, benefit-driven bullet points, a product image, and a clear CTA supported by trust seals.\",\"quote\":\"We pushed the social proof up. We had a nice clear headline, benefit driven bullet points right here. Nice image of the product, clear CTA which was supported by trust seals.\"},\"action\":{\"text\":\"Test a redesigned homepage hero section with enhanced UX/UI and trust-building elements.\",\"quote\":\"we tested a redesigned uh homepage hero section with an enhanced UX and UI uh with trust building elements\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"The audit suggested increasing clarity on what the product is, who it's for, and why you would use it, with improved trust and engagement.\",\"quote\":\"increasing clarity on what the product is and who it's for and why you would use it with improved user trust and engagement\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"Specific performance uplift figures for the homepage hero test are not provided.\"],\"relations\":[]},{\"id\":\"u8\",\"kind\":\"example\",\"title\":\"Examples of trust seals for the hero\",\"claim\":{\"text\":\"Trust seals can include money back guarantee, over 10,000 happy customers, vegan friendly, and made in the US.\",\"quote\":\"money back guarantee, over 10,000 happy customers, vegan friendly, made in the US\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[],\"relations\":[]},{\"id\":\"u9\",\"kind\":\"action\",\"title\":\"Redesign the sales page above the fold\",\"claim\":{\"text\":\"The call to action should explain what happens once clicked and where people go in the journey.\",\"quote\":\"explain on that clear call to action where what happens once it's clicked and where exactly people are going in your journey\"},\"action\":{\"text\":\"Redesign the sales page above the fold with a trust policy bar, a higher-converting outcome-driven headline, benefit-driven bullet points, and one clear call to action.\",\"quote\":\"we introduced a trust policy bar a higher converting headline that was outcome driven benefit driven bullet points one clear call to action\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"Performance figures for the sales page test are not provided.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u11\"}]},{\"id\":\"u10\",\"kind\":\"example\",\"title\":\"Shop bestsellers as a default CTA\",\"claim\":{\"text\":\"When unsure of CTA copy, something like shop bestsellers typically works best.\",\"quote\":\"something like shop bestsellers probably typically works the best\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[],\"relations\":[]},{\"id\":\"u11\",\"kind\":\"action\",\"title\":\"Use post-purchase surveys to surface objections\",\"claim\":{\"text\":\"Surveys asked customers what almost stopped them from buying the product.\",\"quote\":\"we asked them what almost stopped you from buying\"},\"action\":{\"text\":\"Use post-purchase insights to find common objections and friction points.\",\"quote\":\"we used the post-purchase insights to find common objections and friction points\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[],\"relations\":[]},{\"id\":\"u12\",\"kind\":\"action\",\"title\":\"Rewrite the hero copy to answer the key objection\",\"claim\":{\"text\":\"Most surveyed customers said they didn't know the leather quality was good enough.\",\"quote\":\"we didn't know the quality of the leather was good enough\"},\"action\":{\"text\":\"Change the hero copy to focus on craftsmanship, leather quality and sourcing, handcrafted construction, and the quality of the sandals and leather.\",\"quote\":\"we changed the whole hero copy to focus around the art artship and the craftsmanship of how high quality the leather was, where the leather was sourced, that it was handcrafted, and the quality of these sandals and the leather\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"The client had not articulated that friction point on the homepage.\",\"quote\":\"the client did a didn't do a good enough job articulating that friction point on the homepage\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[{\"text\":\"Conversion rates went through the roof; a 77K monthly incremental increase.\",\"quote\":\"77K in monthly incremental increases\"}],\"unknowns\":[\"Currency for the 77K figure is not stated.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u11\"}]},{\"id\":\"u13\",\"kind\":\"action\",\"title\":\"Request a free CRO growth plan offer\",\"claim\":{\"text\":\"A limited number of free CRO growth plans are offered; a typeform collects brand info and a call is booked.\",\"quote\":\"we will then book in a call with you\"},\"action\":{\"text\":\"Request one of a limited amount of free CRO growth plans.\",\"quote\":\"we are going to offer a limited amount of CRO growth plans\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"any\",\"args\":[{\"text\":\"Fill in brand information such as sessions and store URL via a typeform.\",\"quote\":\"You'll fill in some important information about your brand just around sessions\"}]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"Availability is limited and may fill up; the URL 'conversion wise.com/zipify' is transcribed with a possible space.\"],\"relations\":[]}],\"more_units\":false,\"unresolved\":[\"Opening passage is a truncated continuation ('but it allowed them to scale um before as as said someone else came in took over...'); preceding context is missing.\",\"Currency is not specified for several revenue figures (e.g., '77K', 'over 180,000', 'nearly $60,000', '2 million'); '$' figures may be USD but this is not stated.\",\"Time basis varies and is sometimes unclear: '$180,000 in monthly revenue increase', '2 million... nearly incremental revenue per year', '77K in monthly incremental increases'.\",\"The custom color-selection modal in the bundle test is mentioned but not specified in detail.\"]}",
+  "input": {
+    "source": {
+      "source_id": "1A1kUIcTa4OUFsdEjv-UkG0iqCuQCBg2v",
+      "source_sha256": "1cac622fd0463eeabf65125eb3c15c456b88ffc25fc184a5c0492bd92a757d01",
+      "locator": "batch",
+      "start": 0,
+      "text": " but it allowed them to scale um before as as said someone else came in took over and now we're just working on reinstating these pages because uh we're going to get we're going to get going to uh drive the business forward again. So I think this is really important to share. I've got more five more case studies to share with you that I've not shared before. So stick around, but this is really important to share. Okay, these were the tests that we did. 13 tests out of 135 won. So not all of the tests win. I'm not here going every test you do uh they're going to win. No, some tests will lose. More tests will lose than win. you need to understand or you need an agency or someone who can understand why that test lost and roll the learnings from the losing test into the next test. And that's what we do for our clients. Um guys, who wants to see some more case studies? I will definitely get to your questions, but give me a little uh yes in the chat if you want me to run through five more. Go, go, go. Yes, yes, yes. Guys, it's so crazy to see so many of you on here. in there. Yeah, love it. Thank you so much. Okay, let's do it. And then don't worry, after that I've got that very kind of special opportunity for all of you on this live workshop. So, let's run through it. Okay, here's another winning test that we got for one of our clients. Um, really cool clothing brand. Uh, AOV was plateauing. So, AOV, they were struggling with AOV between $60 and $80. Um, so what we did, we did took a bigger swing. We set up full incar optimization. You can see we gamified the car by adding uh free shipping prompts thresholds and free gift thresholds. So not just stopping at three uh free shipping but pushing it one step further offering free gifts unlocking as they spent more money in car upselles uh worked really really well. So, we used um two sticker sets, gift cards, uh and box and socks bundle as well. And we increased um the monthly revenue here by nearly $60,000, which was awesome. Uh another test here for you guys. I'm just going to keep adding the value for you, keep hopefully getting your your your appetite going for CRO and running some tests. Um this is a product bundle test. So, again, this is more of an offer test for cold acquisition, which worked really well for this brand. I mean, huge winning test. These are a big big big brand. Tus big uh sunglass brand that we work with. Um over 180,000 in monthly revenue increase from this test. What did we do? Well, just below the add to cart, we added this bundle uh bundle option here where you could buy three packs of sunglasses and save 20%. Now again, this worked because they're not buying Gucci sunglasses. These aren't thousand sunglasses. These are maybe $30, $40 sunglasses. I bet everyone on this workshop has three pairs of sunglasses. You have one at home, you have one in your car, you probably just sat on one when you sat down in your desk. Um, and this works really, really well uh for these guys. So, we put the bundle here. We then did a custom modal that popped out where you could select your color per per one. Um, and the revenues went through the roof. But testing that offer really important. Uh, another big swing test. So a brand uh who was originally doing over that 300,000 sessions but we had massive results here and we redesigned their whole product page. So uh data basically when we did that mini audit uh suggested that the uh copy of the the product page wasn't aligning with the pain point and desires of the customer. So we took those from post-purchase surveys and from surveying and interviewing picking up the phone and talking to their customers. Uh and we redefine the above the fold. We redefined the description, but most importantly, we added benefit driven bullet points. If you have big blocks of text on your product page descriptions, take them, put them into GPT, and tell them to transform them into benefit driven bullet points. Bold some of the key words in there. Make sure it talks about the outcome and the result that you're going to get for your consumer, not the shiny objects or the features. What is it going to do for your customer in simple scannable text? Massive, massive win here. 2 million in in nearly incremental revenue per year. Again, a huge swing, a big hero redesign of the homepage. They suggested intro uh increasing clarity on what the product is and who it's for and why you would use it with improved user trust and engagement. So, we tested a redesigned uh homepage hero section with an enhanced UX and UI uh with trust building elements. So, again, you can see this versus this. We pushed the social proof up. We had a nice clear headline, benefit driven bullet points right here. Nice image of the product, clear CTA which was supported by trust seals. So these are seals like money back guarantee, over 10,000 happy customers, vegan friendly, made in the US, whatever you want to say, whatever makes you trusted as a brand, put it here. And then featured in logos as well. So this brand was featured by uh a lot of brands as well. So we put that in the the messaging as well. And then last but not least before we get into that uh offer for you guys the sales page above the fold. So this was a sales page uh again we redesigned we follow similar stuff uh we we took bigger swings we introduced a trust policy bar a higher converting headline that was outcome driven benefit driven bullet points one clear call to action. Again explain on that clear call to action where what happens once it's clicked and where exactly people are going in your journey. If you don't know, uh, something like shop bestsellers probably typically works the best. Um, and we used the post-purchase insights to find common objections and friction points. Um, this was a really cool one. This was actually a sandal brand that sell these beautifully um handcrafted sandals. And through post-purchase survey data and through surveying their audience, we asked them what almost stopped you from buying uh the product and most people said uh we didn't know the quality of the leather was good enough. So we didn't do originally the client did a didn't do a good enough job articulating that friction point on the homepage. So, we changed the whole hero copy to focus around the art artship and the craftsmanship of how high quality the leather was, where the leather was sourced, that it was handcrafted, and the quality of these sandals and the leather were so well thought of and high quality that conversion rates went through the roof, 77K in monthly incremental increases. Guys, we got something special for you. Before we get into that Q&A, I don't want to be the guy here who's pitching you special pricing and offers. All I want to say to you guys is we consistently get results. These are results uh that we got over the last 6 to 12 months for clients. I literally have pages and pages. You can go to our site. We've got a page called reviews. We've got over 500 five-star reviews. We've got pages and pages of case studies, monthly incremental uplifts. brands of all sizes. No matter what the size your brand are, whether you're 120 million a year brand that we work with or you're just getting started, we will work with you. We will get results with you. I'm going to get sick of going through these because there are so many of them. Uh, and all I want to offer to you, sorry, I didn't realize there was so many in here. But all I want to offer to you guys is the following. Take out your phone. If you're watching this workshop or you're watching the replay, just take out your phone now. It'll make sense why on the next page. Take out your phone. Give me 5 seconds. Take out your phone. Everyone get their mobiles out. Scan this QR code or you can go to conversion wise.com/zipify and we are going to offer a limited amount of CRO growth plans. So what that means is you'll get redirected to a type form. You'll fill in some important information about your brand just around sessions uh and your store URL and we will then book in a call with you and we will take you through a free comprehensive CRO growth plan where we will suggest with no no obligation to use us as an agency. We will suggest and tell you exactly what you need to be doing for the size of your brand to incre to increase your profit per visitor to dramatically increase uh your store revenue and smash the rest of 2025. This is my promise to you. We've got a limited amount. So, take your phone out, take a picture now, go and do this now or save this link on your computer. If you're doing this after the workshop, you or on the replay, you might be lucky enough still to get a space, but I presume these are going to fall fill up because we've got hundreds of people on the call. Um, and yeah, we can't wait to talk to you. There's no obligation. It's just a free plan for you guys. You can take it. You can go and do it yourself or you can utilize us. But hopefully that was informational, guys. T"
+    },
+    "already_extracted_claims": [],
+    "instruction": "Extract remaining distinct task-sized units. Do not repeat already extracted claims."
+  },
+  "system_prompt_sha256": "f23d9572f5bf1b93a5822a96b30f4ea85c0469c454d5ce80d227418df3d2e25e"
+}

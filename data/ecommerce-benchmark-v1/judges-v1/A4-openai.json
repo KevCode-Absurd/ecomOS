@@ -1,0 +1,207 @@
+{
+  "status": "complete",
+  "mapping": {
+    "A": "frontier_with",
+    "B": "frontier_without",
+    "C": "cheap_with",
+    "D": "cheap_without"
+  },
+  "judge_model": "gpt-5.6-terra",
+  "output": {
+    "reviews": [
+      {
+        "label": "A",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 4,
+          "prioritization": 4
+        },
+        "strengths": [
+          "Calculations are accurate: conversion and funnel changes, AOV, stock bridge, and DAY18 pre-ad contribution are correctly derived.",
+          "Correctly distinguishes Shopify revenue/spend, Meta-reported ROAS, and overlapping Klaviyo attribution rather than combining them.",
+          "Treats the DAY18 replenishment gap as a binding gate and does not authorize additional demand generation while it remains unresolved.",
+          "Provides a genuinely usable 14-day calendar, ranked backlog, accountable owners, exact 16 designer/8 developer/8 owner-hour allocation, and a $3,000 allocation including held funds.",
+          "Uses factual, restrained PDP language that complies with the 13-inch, water-resistant-not-waterproof, delivery, and returns facts.",
+          "Clearly separates operational stops (tracking, claims, checkout, stock) from statistical inference and explicitly avoids claiming conversion proof from six research participants or an underpowered live test."
+        ],
+        "issues": [
+          "The research recruitment and tooling estimates are planning assumptions rather than verified quotes, though this is clearly disclosed.",
+          "The proposed live PDP experiment is necessarily deferred under the stated inventory gate, so the sprint's likely output is preparation and research rather than a completed online experiment; this is appropriate but limits near-term causal learning."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Allocations total no more than $3000; hours within 16 designer/8 developer over two weeks.",
+            "met": true,
+            "reason": "The table totals $3,000, 16 designer hours, 8 developer hours, and 8 owner hours; held cash is explicitly not automatic spend."
+          },
+          {
+            "criterion": "Prioritize constrained inventory and mobile product clarity; avoid running too many confounded changes.",
+            "met": true,
+            "reason": "It puts measurement/stock first, prioritizes one bundled mobile clarity prototype, and defers media and flow expansion until gates pass."
+          },
+          {
+            "criterion": "Distinguish operational stop rules from statistical significance; actual usable calendar.",
+            "met": true,
+            "reason": "It gives immediate operational blocks and stops, states the live-test sample limitation, and schedules work across days 1–14."
+          }
+        ]
+      },
+      {
+        "label": "B",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 3,
+          "actionability": 3,
+          "uncertainty_and_questions": 4,
+          "prioritization": 4
+        },
+        "strengths": [
+          "Correctly computes conversion, funnel, inventory-bridge, contribution, and single-item break-even-ROAS figures.",
+          "Appropriately treats Meta and Klaviyo attribution as non-additive and non-incremental evidence.",
+          "Puts a stock and measurement gate ahead of scaling DAY18 demand and explicitly notes that ad pauses do not ensure organic demand falls.",
+          "PDP copy is specific, plain-spoken, and compliant with product and policy constraints.",
+          "Includes useful prerequisites for randomization, email suppression, consent, purchaser exclusions, and inventory pacing.",
+          "The calendar and budget remain within the stated maximum capacities, and the questions about budget scope, test infrastructure, and replenishment buffer are useful."
+        ],
+        "issues": [
+          "The hours are not fully reconciled between backlog and calendar. Backlog allocations total 7 owner hours, while the text says the final readout uses an additional hour but the calendar assigns 1.5 owner hours on day 14; this is a minor planning inconsistency.",
+          "The PDP test prerequisites do not explicitly list inventory clearance, even though the earlier immediate gate makes it clear that stock pacing applies. The launch wording should repeat that gate at the experiment level.",
+          "The plan calls the optional $300 item a QA/tool contingency without defining the artifact or decision it funds, reducing budget specificity slightly.",
+          "The calendar's phrase 'launch PDP only if ready' is less precise than A's explicit no-go condition: readiness should include passing measurement, inventory, and assignment prerequisites, not only implementation readiness."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Allocations total no more than $3000; hours within 16 designer/8 developer over two weeks.",
+            "met": true,
+            "reason": "The stated budget is $1,200 conditional media + $300 contingency + $1,500 reserve, and the calendar states 16 designer, 8 developer, and 8 owner hours, though owner-hour accounting needs minor reconciliation."
+          },
+          {
+            "criterion": "Prioritize constrained inventory and mobile product clarity; avoid running too many confounded changes.",
+            "met": true,
+            "reason": "It prioritizes the mobile PDP package and stock gate, while paid creative is explicitly no-go at current demand."
+          },
+          {
+            "criterion": "Distinguish operational stop rules from statistical significance; actual usable calendar.",
+            "met": true,
+            "reason": "It supplies operational stops and says day 14 is not a promised significance deadline, with a day-by-day work schedule."
+          }
+        ]
+      },
+      {
+        "label": "C",
+        "scores": {
+          "factual_accuracy": 2,
+          "brand_fit": 2,
+          "task_completion": 2,
+          "actionability": 2,
+          "uncertainty_and_questions": 2,
+          "prioritization": 1
+        },
+        "strengths": [
+          "Several core calculations are correct, including team-hour totals, current funnel rates, current stock cover, and DAY18 contribution before advertising.",
+          "It recognizes that current 14-day PDP traffic is better suited to an add-to-cart signal than a purchase-conversion claim and states that results should be directional without a valid holdout.",
+          "It includes owners, costs, metrics, guardrails, prerequisites, a calendar, and go/no-go sections.",
+          "It correctly flags the lack of verified 15-inch fit testing and asks for email-deliverability baselines."
+        ],
+        "issues": [
+          "It invents an unsupported product claim in the PDP hypothesis: '15-inch laptops are not fitted.' The supplied facts establish a padded 13-inch sleeve but do not establish that a 15-inch laptop cannot fit elsewhere in the bag.",
+          "It launches the PDP test, Added-to-Cart flow, and Meta test on day 1 despite the known DAY18 inventory shortfall. This conflicts with the requirement to prioritize constrained inventory and is particularly risky because the plan assumes core Meta spend continues.",
+          "The proposed Meta test economics are unfavorable even under its own projection: projected CPA is about $62.50, above the stated $39.60 pre-ad contribution. Its later '$55' go threshold and '$70' stop threshold are also above contribution, before returns and overhead.",
+          "The plan spends $2,200 on demand generation without an inventory headroom gate, a cash-safe CAC threshold, or a reconciled purchase-measurement prerequisite.",
+          "PDP clarity, an Added-to-Cart flow, and paid creative all launch together, making interpretation more confounded. This is contrary to the task's instruction to avoid too many confounded changes.",
+          "Several stop/go thresholds are arbitrary or insufficiently grounded, such as a 20% purchase-CVR decline for three days and CPA thresholds above contribution. They may be operational guardrails, but they are not economically safe as written.",
+          "The Meta click-to-order projection applies site conversion directly to estimated ad clicks without addressing traffic-quality differences or reconciled attribution; it should be presented more cautiously if retained."
+        ],
+        "critical_errors": [
+          "Unsupported assertion that 15-inch laptops are not fitted.",
+          "Authorizes demand-generating tests during a documented DAY18 inventory bridge shortfall.",
+          "Recommends and permits media CPA thresholds that exceed the product's stated pre-ad contribution."
+        ],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Allocations total no more than $3000; hours within 16 designer/8 developer over two weeks.",
+            "met": true,
+            "reason": "Listed work totals 16 designer, 8 developer, and 8 owner hours; hard allocations sum to $3,000."
+          },
+          {
+            "criterion": "Prioritize constrained inventory and mobile product clarity; avoid running too many confounded changes.",
+            "met": false,
+            "reason": "It launches multiple PDP, email, and Meta changes immediately and funds Meta demand generation despite the DAY18 replenishment gap."
+          },
+          {
+            "criterion": "Distinguish operational stop rules from statistical significance; actual usable calendar.",
+            "met": true,
+            "reason": "It states results are directional without valid support and provides a day-by-day calendar, although several decision thresholds need revision."
+          }
+        ]
+      },
+      {
+        "label": "D",
+        "scores": {
+          "factual_accuracy": 2,
+          "brand_fit": 3,
+          "task_completion": 3,
+          "actionability": 2,
+          "uncertainty_and_questions": 3,
+          "prioritization": 2
+        },
+        "strengths": [
+          "Core historical calculations are accurate: conversion, AOV, funnel progression, Meta CPM/CTR changes, Klaviyo share of Shopify revenue, DAY18 contribution, and stock-cover gap.",
+          "It uses compliant factual language for water resistance, delivery timing, and the 13-inch sleeve, and it asks before making any 15-inch assertion.",
+          "It includes a structured calendar, owners, hours, budget, primary metrics, guardrails, prerequisites, and decision rules.",
+          "It recognizes attribution limitations and says results are directional unless a valid split is available.",
+          "The stated labor allocation is within capacity: 13 designer, 8 developer, and 6 owner hours, with remaining capacity held as contingency."
+        ],
+        "issues": [
+          "The stock-control rule is materially misaligned with the known inventory bridge. Capping DAY18 at 12 units/day is double the no-buffer bridge allowance of 6 units/day, so it does not protect availability through the 35-day replenishment arrival.",
+          "The Meta CPA stop of more than $40 is above the $39.60 contribution before returns and overhead. Allowing spend up to that threshold can still lose money on a first-order basis.",
+          "It schedules a Meta creative launch despite the inventory shortfall and despite its own stated demand-stimulation constraint. The prerequisite says 'reallocate existing Meta budget where possible' but does not require inventory clearance.",
+          "The PDP clarity module already includes delivery information, then a separate delivery-estimate experiment is proposed at the same time. This duplicates the intervention and creates avoidable confounding.",
+          "The statement that the funnel 'leak is earlier: traffic mix and PDP/cart clarity' is too causal. The funnel identifies where progression declined, but it does not establish traffic mix or PDP/cart clarity as the cause.",
+          "The contingency-release condition of stock above 120 units and daily units below 12 does not ensure stock lasts to the confirmed replenishment date."
+        ],
+        "critical_errors": [
+          "Uses a 12-units/day DAY18 cap despite a calculated no-buffer bridge capacity of 6 units/day.",
+          "Permits a Meta CPA ceiling above stated pre-ad contribution while returns and overhead are excluded.",
+          "Schedules demand-generating media without a stock-clearance gate."
+        ],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Allocations total no more than $3000; hours within 16 designer/8 developer over two weeks.",
+            "met": true,
+            "reason": "The plan assigns $1,800 Meta spend plus $1,200 held and uses 13 designer, 8 developer, and 6 owner hours."
+          },
+          {
+            "criterion": "Prioritize constrained inventory and mobile product clarity; avoid running too many confounded changes.",
+            "met": false,
+            "reason": "Although mobile clarity is included, the plan launches paid DAY18 creative with an unsafe inventory cap and splits overlapping delivery/PDP interventions."
+          },
+          {
+            "criterion": "Distinguish operational stop rules from statistical significance; actual usable calendar.",
+            "met": true,
+            "reason": "It has operational stops, avoids a significance claim, and provides day ranges through day 14, though the economic and stock stop thresholds are flawed."
+          }
+        ]
+      }
+    ],
+    "ranking": [
+      "A",
+      "B",
+      "D",
+      "C"
+    ],
+    "summary": "A is the most complete and disciplined plan: its arithmetic, inventory gate, resource accounting, and separation of research from live deployment are all strong. B is also solid and inventory-aware, but has minor reconciliation and gating-specification issues. D has a useful structure but undermines its own inventory analysis with an unsafe daily-sales cap and unprofitable CPA threshold. C contains useful measurement thinking but makes an unsupported 15-inch statement and improperly authorizes multiple demand-generating, confounded tests during the documented inventory shortfall."
+  },
+  "request_id": "c1af10d4743d118d2517bc1bd1de296de990d50cf3be7b1013e496ca630cea5a",
+  "cost_upper_estimate_usd": 0.076722375
+}

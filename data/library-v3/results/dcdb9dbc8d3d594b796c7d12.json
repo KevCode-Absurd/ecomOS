@@ -1,0 +1,217 @@
+{
+  "cards": [
+    {
+      "title": "Store passwords with a maintained adaptive password hasher",
+      "summary": "Use purpose-built password hashing with unique salts and tested cost settings rather than raw fast hashes or reversible encryption.",
+      "use_when": "Reviewing how your store platform, custom app or admin panel stores customer and staff login credentials.",
+      "steps": [
+        "Prefer the maintained identity system or framework password hasher over custom cryptography.",
+        "For new implementations evaluate current Argon2id guidance and platform support; retain a planned migration path for legacy bcrypt hashes.",
+        "Let the library manage salts and encoded parameters; a salted fast SHA hash is not a substitute for an adaptive password hasher.",
+        "Benchmark safe cost settings against login capacity, rate limits and current guidance.",
+        "Verify using the library API and rehash on successful login when the stored format needs upgrading."
+      ],
+      "caveats": [
+        "Algorithm requirements can differ by platform or compliance context. Password hashing does not stop credential reuse, phishing or a compromised login endpoint."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "authentication",
+        "password-storage",
+        "cryptography",
+        "customer-accounts",
+        "admin-access"
+      ],
+      "id": "5d7219b293c0ceb222a97141",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 27
+    },
+    {
+      "title": "Ambient Authority via Cookies: Use SameSite",
+      "summary": "Browsers automatically attach cookies to requests for a site, which lets other origins trigger authenticated actions; SameSite cookies are the source's fix.",
+      "use_when": "Hardening cookie-based sessions for your storefront, customer accounts or admin panel so other sites cannot silently trigger authenticated requests.",
+      "steps": [
+        "Understand 'ambient authority': the browser automatically attaches a site's cookies to requests destined for that site, so a request from another page can arrive already authenticated as your logged-in user.",
+        "This is the mechanism behind cross-site request forgery for state-changing actions — a logged-in shopper or admin visiting another page could have requests fired at your site carrying their session.",
+        "The source's stated solution is SameSite cookies: configure your session cookies with a SameSite attribute (typically Lax or Strict) so the browser withholds them on cross-site requests.",
+        "For state-changing endpoints — add-to-cart changes, address updates, payment or refund actions, admin mutations — consider requiring an explicit per-request token in addition to the session cookie, since SameSite policy and browser behavior can vary. Verify current browser SameSite defaults for your supported browsers.",
+        "Test the flows that legitimately need cross-site cookies (for example a payment provider returning to your site) before tightening the attribute, or you may break checkout."
+      ],
+      "caveats": [
+        "Cookie attributes and browser SameSite defaults have changed over time and between browsers; verify against current browser documentation rather than relying on remembered defaults.",
+        "SameSite cookies reduce one class of cross-site request risk but are not a complete defense by themselves."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "cookies",
+        "session-security",
+        "checkout",
+        "admin-access",
+        "cross-site-request-forgery"
+      ],
+      "id": "05aa24ef18f6e79914f347c4",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 27
+    },
+    {
+      "title": "Prefer Explicit Code Over Clever Code in Store Systems",
+      "summary": "In security-relevant store code, choose boring, plain, repetitive and explicit implementations over magical abstractions.",
+      "use_when": "Reviewing or writing code that touches checkout, payments, authentication, refunds or customer data on your store.",
+      "steps": [
+        "Adopt the source's stated preference: take boring, plain, repetitive, explicit code over 'magical' code — even though the clever version is more fun to write.",
+        "Apply this especially to security-relevant paths: authentication, session handling, pricing and discount calculation, refund and payment logic.",
+        "When a framework or library hides behavior behind convention or reflection, spell out the security-relevant behavior explicitly where practical, so a reviewer can see what actually happens.",
+        "This is a tradeoff, not an absolute: a well-maintained framework's built-in auth is often safer than custom code. The claim is specifically that among things you write yourself, explicit beats magical."
+      ],
+      "caveats": [
+        "This is the source's stated opinion, not a measured rule. It should be weighed against using maintained, well-tested library implementations for security primitives."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "code-review",
+        "secure-development",
+        "checkout",
+        "maintainability"
+      ],
+      "id": "708eeab33a81ed123b47b074",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 27
+    },
+    {
+      "title": "Make Dangerous Code Look Dangerous",
+      "summary": "Risky functions should have alarming names, clear documentation and should not be mixed with benign-looking operations.",
+      "use_when": "Naming and organizing internal APIs in your store platform — especially functions that move money, expose customer data or change account state.",
+      "steps": [
+        "Give genuinely risky operations a scary, unmistakable name rather than a friendly one (a function that irreversibly deletes customer data or force-charges a card should sound like what it does).",
+        "Document the danger properly: what the function assumes, what it can destroy, and what the caller must guarantee before calling it.",
+        "Do not combine dangerous operations with benign ones in the same function or call path — the source explicitly warns against putting the two together, because callers then invoke risk without realizing it.",
+        "Apply this when designing internal tooling and admin actions: an admin 'quick fix' endpoint that can silently issue refunds or export customer data should be clearly labeled and separately permissioned.",
+        "This supports auditability: a reader skimming the code should be able to spot the dangerous operations from the names alone."
+      ],
+      "caveats": [
+        "Naming is a human safeguard, not a technical control — it does not prevent misuse by a caller that ignores the warning."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "secure-development",
+        "code-review",
+        "admin-access",
+        "api-design"
+      ],
+      "id": "3465725696aa2a77fdcbc48f",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 27
+    },
+    {
+      "title": "Adopt a Paranoid, Vigilant Security Mindset",
+      "summary": "The source treats constant paranoia and vigilance as a genuine asset when maintaining store security.",
+      "use_when": "Setting expectations and habits for whoever maintains your store's security posture over time — platform owner, in-house dev or agency.",
+      "steps": [
+        "Treat the source's claim that 'you can never be too paranoid in security' as a cultural stance: assume something you depend on can fail or be attacked.",
+        "Translate vigilance into concrete practice rather than anxiety: keep dependency inventories, watch security advisories for your platform and payment stack, and re-check assumptions after major upgrades.",
+        "Assume inputs from customers, webhooks, third-party integrations and other systems are untrusted until validated — this is the practical expression of paranoia in an ecommerce stack.",
+        "Keep a paranoid posture toward your own past decisions too: a control that was adequate a year ago may not be adequate after a replatform or new integration.",
+        "Balance this against change management: constant churn in checkout and payment code carries its own risk, so schedule reviews rather than making unscheduled risky edits during peak trading."
+      ],
+      "caveats": [
+        "Paranoia is a mindset, not a checklist; the source offers no specific procedures or benchmarks behind this advice.",
+        "Vigilance must be bounded — unbounded rewrites of working checkout code during peak season are themselves a risk."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "security-culture",
+        "risk-management",
+        "maintainability",
+        "payment-security"
+      ],
+      "id": "6e3562b35c0b53bfa999c11c",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 27
+    },
+    {
+      "title": "Smaller Packages Have Enlarged Modern Dependency Trees",
+      "summary": "Modern package managers enable many small packages with conflicting versions installed locally, so dependency trees and ecosystems are far larger than in older ecosystems.",
+      "use_when": "Assessing supply-chain and update risk for the libraries your storefront, checkout or integrations depend on.",
+      "steps": [
+        "Recognize the structural change the source describes: package managers like npm and Rust's ecosystem allow a local dependency model, so conflicting versions can coexist in a folder rather than forcing global resolution.",
+        "That freedom lets authors publish much smaller units of functionality, so a single dependency can pull in a very large tree of transitive packages.",
+        "The source frames this as a security tradeoff: more code arrives from more places, so there are more parties and more maintainers in your dependency graph.",
+        "For your store, maintain an inventory of direct and transitive dependencies in your storefront, checkout and integration code, and check where each package's code actually originates.",
+        "When a dependency or advisory affects you, evaluate the whole path — a tiny package can be the entry point to a deep tree.",
+        "The source does not claim smaller packages are good or bad, only that their proliferation is a major ecosystem shift with more parties involved."
+      ],
+      "caveats": [
+        "The source is describing an ecosystem trend from its own time; package manager behavior and ecosystem norms continue to change, so verify current tooling for your stack.",
+        "Dependency count alone is not a risk score — provenance, maintainership and how deeply a package sits in your checkout matter more."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "supply-chain",
+        "dependencies",
+        "npm",
+        "secure-development",
+        "open-source"
+      ],
+      "id": "5bef1a8b8d767ad450b09053",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 27
+    },
+    {
+      "title": "Standardized Collaboration Platforms Accelerated Code Flow",
+      "summary": "GitHub-style standardization means code moves faster and between more hands than in the older, per-project mailing-list era, expanding the trust surface.",
+      "use_when": "Evaluating the risk of third-party code, templates, plugins or themes you pull into your store from public repositories.",
+      "steps": [
+        "The source contrasts older open source — where each project ran its own process, mailing list, version control and access model — with today's standardized platforms where everything is on GitHub.",
+        "The consequence it highlights is scale and velocity: code flies around constantly, more contributors participate, and the review and governance process that used to be project-specific is now often lightweight and uniform.",
+        "Translate this to your store: before adding a theme, app, plugin or library from a public repository, check who actually maintains it, how active it is and whether contributions are reviewed.",
+        "Prefer sources with a visible maintenance process you can inspect over repositories that only look popular.",
+        "When vendoring third-party code into checkout or customer-data paths, treat the speed and openness of the ecosystem as the reason for extra scrutiny, not less."
+      ],
+      "caveats": [
+        "The source is describing the general open-source ecosystem shift, not prescribing a vetting checklist; the specific vetting criteria above are the ecommerce adaptation, not a result the source demonstrated.",
+        "Platform interfaces and repository features change; verify current tooling when checking maintainership signals."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "supply-chain",
+        "open-source",
+        "third-party-integrations",
+        "code-review",
+        "risk-management"
+      ],
+      "id": "cd71b97b8356c4041a6fc1fd",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 27
+    }
+  ],
+  "request_id": "05715ea3e619a50ae46d050970a064b09b385cc250dbf55c03836af7ae77d4ab",
+  "ecommerce_scope_version": 1
+}

@@ -1,0 +1,580 @@
+{
+  "request_id": "5babf3c4fa4e3c750caf16746c4d77066785c0a997b46cfbeb45fe4de5753af5",
+  "provider": "deepseek",
+  "model": "deepseek-flash",
+  "effort": "high",
+  "completion_limit": 65536,
+  "usage": {
+    "prompt_tokens": 3384,
+    "completion_tokens": 15550,
+    "total_tokens": 18934,
+    "prompt_tokens_details": {
+      "cached_tokens": 1024
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 11894
+    },
+    "prompt_cache_hit_tokens": 1024,
+    "prompt_cache_miss_tokens": 2360
+  },
+  "booked_cost_usd": 0.0196752,
+  "seconds": 64.0,
+  "finish_reason": "stop",
+  "output": {
+    "units": [
+      {
+        "id": "u1",
+        "kind": "action",
+        "title": "Filter the Clarity dashboard to a roughly six-month sample period",
+        "claim": {
+          "text": "The source says the first thing it does on the main Clarity dashboard is filter for a good enough sample size or sample period.",
+          "quote": "filter for a good enough sample size or good enough sample period"
+        },
+        "action": {
+          "text": "Set the dashboard date range to roughly the last 6 months, or the last 90 days when less history exists.",
+          "quote": "typically that's going to be the last 6 months of data it could also be last 90 days of data"
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Opening the main Clarity dashboard to review metrics.",
+              "quote": "the first thing that I like to do when looking at the main dashboard"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Clarity must have been set up long enough ago to retain the desired window; the source says this varies by account.",
+              "quote": "depending on when you set up Clarity you may or may not have the ability to go that far back"
+            }
+          ]
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [
+          {
+            "text": "The window selected is roughly six months; the exact boundary does not have to match.",
+            "quote": "so roughly 6 months doesn't have to be exact"
+          }
+        ],
+        "unknowns": [
+          "The source calls 6 months generally good while also offering last 90 days, without a rule for choosing between them."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u2",
+        "kind": "principle",
+        "title": "Prioritize the Insights block over baseline KPIs on the main dashboard",
+        "claim": {
+          "text": "The source identifies the Insights block as the part of the main dashboard that is important to focus on.",
+          "quote": "the part that I find is important to focus on on the main dashboard is really this insights block here"
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Most other dashboard metrics can be pulled from Google Analytics and are not unique to Clarity.",
+              "quote": "a lot of the metrics on the main Clarity dashboard you can actually pull directly from Google analytics"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The named baseline KPIs (scroll depth, active time, pages per session, total sessions) are described as obtainable elsewhere, not as unusable."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u1"
+          }
+        ]
+      },
+      {
+        "id": "u3",
+        "kind": "action",
+        "title": "Open recordings from an insight metric's camera icon and watch them",
+        "claim": {
+          "text": "The source says watching the matching recordings is worthwhile when a rage-click metric warrants a particular change, to see where people hit frustration or friction.",
+          "quote": "if the rage clicks actually warrant particular change then it's worth watching those recordings to see you know where people experiencing frustration or friction"
+        },
+        "action": {
+          "text": "Click the camera icon next to the insight metric to open the recordings page and watch the sessions of people who experienced that insight.",
+          "quote": "you can actually click on this little camera icon and it's going to open up the recordings page where you can watch the actual recordings of people that experienced the rage clicks"
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "A rage-click rate is displayed in the dashboard Insights block.",
+              "quote": "rage clicks is the first one here which sits at 0 2%"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source's fuller recordings walkthrough is promised later in the video and is not in this passage."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u2"
+          }
+        ]
+      },
+      {
+        "id": "u4",
+        "kind": "principle",
+        "title": "Interpret rage clicks as attempts to exit an experience",
+        "claim": {
+          "text": "Rage clicks are people clicking multiple times on an element, typically to exit that experience.",
+          "quote": "this is actually people that you know rage clicking or clicking multiple times on an element typically to kind of exit that experience"
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "A popup landing in the first few seconds, or a chatbot blocking add-to-cart or form submission, commonly produces rage clicking.",
+              "quote": "you have a popup that lands immediately on the first 5 Seconds somebody's barely even scrolled on the site and they're just rage clicking trying to get rid of that popup"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The chatbot illustration is given for B2B sites; no general rule is stated.",
+          "The source calls rage clicks generally a low hanging fruit opportunity but gives no required value."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u5",
+        "kind": "principle",
+        "title": "Author's heuristic range for an acceptable rage-click rate",
+        "claim": {
+          "text": "The source offers a heuristic that anything under 1 to 2 percent is good.",
+          "quote": "I would say anything really under 1 to two% is good"
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "This is presented as the author's heuristic, not a verified platform benchmark.",
+          "The source also describes the observed 0.2% as typically a pretty good rate (0. 2% you know that's typically a pretty good rate), which is not reconciled with the 1 to 2 percent guidance.",
+          "The denominator for the rate is not defined in this passage."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u6",
+        "kind": "action",
+        "title": "Watch recordings across all insight types regardless of the metric percentage",
+        "claim": {
+          "text": "The source says it does not really matter what the metrics are; fundamental usability issues existing on the site should be resolved regardless of the percentage.",
+          "quote": "it doesn't really matter what the metrics are if there's usability issues fundamental that exist on the site ultimately you want to resolve them regardless of what the percentage is"
+        },
+        "action": {
+          "text": "Watch the recordings behind all of the insight metrics, not only the ones with high rates.",
+          "quote": "again I would consider watching the recordings of all of these"
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "An insight metric looks low, for example excessive scrolling under 0.01 percent, and appears not to be a major concern.",
+              "quote": "in this particular scenario it's less than 0.01% so it's not really a major concern"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not define what counts as a fundamental usability issue or how resolution is verified."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u3"
+          }
+        ]
+      },
+      {
+        "id": "u7",
+        "kind": "principle",
+        "title": "Understand dead clicks as clicks on elements that are not clickable",
+        "claim": {
+          "text": "Dead clicks are when somebody tries to click an element and that element is actually not clickable, hence the word dead.",
+          "quote": "dead clicks is where somebody tries to click on an element then what happens is that element is actually not clickable hence the word dead"
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No dead-click rate threshold or benchmark is given in this passage."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u8",
+        "kind": "principle",
+        "title": "Some dead clicks are acceptable when linking out would cost conversions",
+        "claim": {
+          "text": "In some scenarios dead clicks are fine because the site may not want to send people outside.",
+          "quote": "in some scenarios dead clicks are fine because you might not want to send people outside"
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Clickable-looking elements such as as seen on or as featured logos risk sending users off-site.",
+              "quote": "you might not necessarily want to send people outbound and outside of the website because your main goal is ultimately conversions"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source frames this as an argument for keeping logos non-clickable, i.e. a judgement call rather than a rule."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u9",
+        "kind": "principle",
+        "title": "Other dead clicks are harmful when clickable elements would help conversion",
+        "claim": {
+          "text": "The other scenario is elements that should be clickable and that help people in their journey to conversion actually being not clickable.",
+          "quote": "there's the other scenario in which elements that should be clickable and that actually help people in their journey to complete a conversion is is not clickable"
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not state how to decide which elements should be clickable beyond the examples given."
+        ],
+        "relations": [
+          {
+            "kind": "alternative_to",
+            "target": "u8"
+          }
+        ]
+      },
+      {
+        "id": "u10",
+        "kind": "example",
+        "title": "SaaS client pricing section registered dead clicks",
+        "claim": {
+          "text": "In a SaaS client audit, people thought pricing elements were clickable, but the only clickable element was the button for getting a number of free credits.",
+          "quote": "people thought that these elements were clickable but the only element that was actually clickable was the button that said get X number of free credits"
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "Client identity, dates, traffic volume and conversion impact are not stated in this passage.",
+          "The source adds that it would benefit users if those elements were clickable because people want the price, but the fix applied is not described."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u11",
+        "kind": "example",
+        "title": "Non-clickable site logo produced dead clicks and rage clicks",
+        "claim": {
+          "text": "People were clicking the logo in the center of the site and the logo was not clickable.",
+          "quote": "people were actually clicking on this logo uh in the center of the site and the logo wasn't even clickable"
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "The pattern was noticed on the main dashboard and confirmed by watching recordings of people.",
+              "quote": "they were kind of Rage clicking and basically going through that dead click where it increased that percentage substantially and we noticed that on the main dashboard and we actually saw recordings of people as well"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source states the convention that clicking a logo returns you to the homepage, but does not say whether the logo was made clickable or what effect that had.",
+          "Users were trying to reach the homepage from the checkout and product pages; the pages involved are given only in general terms."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u12",
+        "kind": "principle",
+        "title": "Read excessive scrolling as the user failing to find information",
+        "claim": {
+          "text": "Excessive scrolling can mean the user is trying to find information on the site but cannot find it.",
+          "quote": "it could be the fact that they're the user is trying to find information on the site but they can't find it"
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Excessive scrolling is recorded when a visitor scrolls a page top to bottom very quickly.",
+              "quote": "excessive scrolling is when somebody is on a website and they're just scrolling very excessively on a particular page right so that just means they're going from top to bottom like very quickly"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "Candidate causes given by the source are users hunting for reviews, hunting for a missing call to action or price, or skimming a long block of text; no rule for distinguishing them is stated.",
+          "The source notes its own example account sat under 0.01 percent for excessive scrolling."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u13",
+        "kind": "principle",
+        "title": "Read quick backs as information not found immediately",
+        "claim": {
+          "text": "With quick backs, people look for information on a page but are not able to find it immediately and bounce back and forth.",
+          "quote": "people are looking for information on a page but they're not able to find it immediately right so they have to constantly bounce back and forth"
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Quick backs are recorded when a visitor goes to a page and quickly returns to the previous one.",
+              "quote": "quick back so this is people where they're going to a page as cler saying right here and then they're quickly returning back to the previous one"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The only illustration given is a product page expected to show certain information; no benchmark is provided."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u14",
+        "kind": "warning",
+        "title": "Avoid spending time on dashboard metrics Google Analytics already covers",
+        "claim": {
+          "text": "The source says it would really spend too much time there, in the context of funnel, channel, campaign, browser, device and popular-page data that Google Analytics can do as well or better.",
+          "quote": "so I would really spend too much time there"
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Dashboard sections such as smart events, referrer and channel breakdown, campaign source, browser and device data and most popular pages are available in Google Analytics.",
+              "quote": "you can do all of this inside of Google analytics and a much better job at that as well"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The clause appears garbled, plausibly missing a negation such as wouldn't; its polarity is unresolved and must not be settled from memory.",
+          "The list of duplicative metrics is enumerated only loosely across the preceding sentences."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u15",
+        "kind": "action",
+        "title": "Open the heat map tab and pick a popular page to review",
+        "claim": {
+          "text": "The source says clicking the heat map tab presents the most popular pages of the account.",
+          "quote": "I'll click on the heat map tab up there and then I'll be presented with the most popular Pages"
+        },
+        "action": {
+          "text": "Open the heat map tab and click into one of the listed popular pages to review its heat map.",
+          "quote": "let's just click on the homepage here"
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source says accounts typically list 5 to 10 most popular pages segmented by traffic volume, while the demo account showed only two pages.",
+          "How a page is selected for review beyond picking from the list is not stated."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u16",
+        "kind": "unresolved_claim",
+        "title": "Heat map screenshot may not match expectations on sites with pop-ups",
+        "claim": {
+          "text": "The source begins to say the heat map screenshot might not look exactly like what was anticipated for clients whose sites have pop-ups, but the sentence is cut off.",
+          "quote": "you might have a screenshot here that might not look exactly like what you anticipated for some of our clients where they have pop-ups under website"
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The passage ends mid-phrase after pop-ups under website, so the rest of the pop-up effect and any remedy are missing.",
+          "Neighboring source text is required to complete this claim."
+        ],
+        "relations": []
+      }
+    ],
+    "more_units": true,
+    "unresolved": [
+      "The supplied source text is truncated mid-sentence in the heat map screenshot/pop-ups passage; the continuation is missing.",
+      "The sentence about spending time on dashboard metrics duplicating Google Analytics appears to be missing a negation, so its polarity is unresolved.",
+      "The video promises later real-life examples and agency case studies on using Clarity to increase conversion rates, plus a fuller recordings walkthrough, none of which appear in this passage.",
+      "Extraction reached the 16-unit cap; the passage continues beyond the cut-off and further units (heat map interpretation as demonstrated, recordings walkthrough, case studies) are expected in the remaining source."
+    ]
+  },
+  "raw_content": "{\"units\":[{\"id\":\"u1\",\"kind\":\"action\",\"title\":\"Filter the Clarity dashboard to a roughly six-month sample period\",\"claim\":{\"text\":\"The source says the first thing it does on the main Clarity dashboard is filter for a good enough sample size or sample period.\",\"quote\":\"filter for a good enough sample size or good enough sample period\"},\"action\":{\"text\":\"Set the dashboard date range to roughly the last 6 months, or the last 90 days when less history exists.\",\"quote\":\"typically that's going to be the last 6 months of data it could also be last 90 days of data\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Opening the main Clarity dashboard to review metrics.\",\"quote\":\"the first thing that I like to do when looking at the main dashboard\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[{\"text\":\"Clarity must have been set up long enough ago to retain the desired window; the source says this varies by account.\",\"quote\":\"depending on when you set up Clarity you may or may not have the ability to go that far back\"}]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[{\"text\":\"The window selected is roughly six months; the exact boundary does not have to match.\",\"quote\":\"so roughly 6 months doesn't have to be exact\"}],\"unknowns\":[\"The source calls 6 months generally good while also offering last 90 days, without a rule for choosing between them.\"],\"relations\":[]},{\"id\":\"u2\",\"kind\":\"principle\",\"title\":\"Prioritize the Insights block over baseline KPIs on the main dashboard\",\"claim\":{\"text\":\"The source identifies the Insights block as the part of the main dashboard that is important to focus on.\",\"quote\":\"the part that I find is important to focus on on the main dashboard is really this insights block here\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Most other dashboard metrics can be pulled from Google Analytics and are not unique to Clarity.\",\"quote\":\"a lot of the metrics on the main Clarity dashboard you can actually pull directly from Google analytics\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The named baseline KPIs (scroll depth, active time, pages per session, total sessions) are described as obtainable elsewhere, not as unusable.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u1\"}]},{\"id\":\"u3\",\"kind\":\"action\",\"title\":\"Open recordings from an insight metric's camera icon and watch them\",\"claim\":{\"text\":\"The source says watching the matching recordings is worthwhile when a rage-click metric warrants a particular change, to see where people hit frustration or friction.\",\"quote\":\"if the rage clicks actually warrant particular change then it's worth watching those recordings to see you know where people experiencing frustration or friction\"},\"action\":{\"text\":\"Click the camera icon next to the insight metric to open the recordings page and watch the sessions of people who experienced that insight.\",\"quote\":\"you can actually click on this little camera icon and it's going to open up the recordings page where you can watch the actual recordings of people that experienced the rage clicks\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"A rage-click rate is displayed in the dashboard Insights block.\",\"quote\":\"rage clicks is the first one here which sits at 0 2%\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source's fuller recordings walkthrough is promised later in the video and is not in this passage.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u2\"}]},{\"id\":\"u4\",\"kind\":\"principle\",\"title\":\"Interpret rage clicks as attempts to exit an experience\",\"claim\":{\"text\":\"Rage clicks are people clicking multiple times on an element, typically to exit that experience.\",\"quote\":\"this is actually people that you know rage clicking or clicking multiple times on an element typically to kind of exit that experience\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"A popup landing in the first few seconds, or a chatbot blocking add-to-cart or form submission, commonly produces rage clicking.\",\"quote\":\"you have a popup that lands immediately on the first 5 Seconds somebody's barely even scrolled on the site and they're just rage clicking trying to get rid of that popup\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The chatbot illustration is given for B2B sites; no general rule is stated.\",\"The source calls rage clicks generally a low hanging fruit opportunity but gives no required value.\"],\"relations\":[]},{\"id\":\"u5\",\"kind\":\"principle\",\"title\":\"Author's heuristic range for an acceptable rage-click rate\",\"claim\":{\"text\":\"The source offers a heuristic that anything under 1 to 2 percent is good.\",\"quote\":\"I would say anything really under 1 to two% is good\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"This is presented as the author's heuristic, not a verified platform benchmark.\",\"The source also describes the observed 0.2% as typically a pretty good rate (0. 2% you know that's typically a pretty good rate), which is not reconciled with the 1 to 2 percent guidance.\",\"The denominator for the rate is not defined in this passage.\"],\"relations\":[]},{\"id\":\"u6\",\"kind\":\"action\",\"title\":\"Watch recordings across all insight types regardless of the metric percentage\",\"claim\":{\"text\":\"The source says it does not really matter what the metrics are; fundamental usability issues existing on the site should be resolved regardless of the percentage.\",\"quote\":\"it doesn't really matter what the metrics are if there's usability issues fundamental that exist on the site ultimately you want to resolve them regardless of what the percentage is\"},\"action\":{\"text\":\"Watch the recordings behind all of the insight metrics, not only the ones with high rates.\",\"quote\":\"again I would consider watching the recordings of all of these\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"An insight metric looks low, for example excessive scrolling under 0.01 percent, and appears not to be a major concern.\",\"quote\":\"in this particular scenario it's less than 0.01% so it's not really a major concern\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source does not define what counts as a fundamental usability issue or how resolution is verified.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u3\"}]},{\"id\":\"u7\",\"kind\":\"principle\",\"title\":\"Understand dead clicks as clicks on elements that are not clickable\",\"claim\":{\"text\":\"Dead clicks are when somebody tries to click an element and that element is actually not clickable, hence the word dead.\",\"quote\":\"dead clicks is where somebody tries to click on an element then what happens is that element is actually not clickable hence the word dead\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"No dead-click rate threshold or benchmark is given in this passage.\"],\"relations\":[]},{\"id\":\"u8\",\"kind\":\"principle\",\"title\":\"Some dead clicks are acceptable when linking out would cost conversions\",\"claim\":{\"text\":\"In some scenarios dead clicks are fine because the site may not want to send people outside.\",\"quote\":\"in some scenarios dead clicks are fine because you might not want to send people outside\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Clickable-looking elements such as as seen on or as featured logos risk sending users off-site.\",\"quote\":\"you might not necessarily want to send people outbound and outside of the website because your main goal is ultimately conversions\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source frames this as an argument for keeping logos non-clickable, i.e. a judgement call rather than a rule.\"],\"relations\":[]},{\"id\":\"u9\",\"kind\":\"principle\",\"title\":\"Other dead clicks are harmful when clickable elements would help conversion\",\"claim\":{\"text\":\"The other scenario is elements that should be clickable and that help people in their journey to conversion actually being not clickable.\",\"quote\":\"there's the other scenario in which elements that should be clickable and that actually help people in their journey to complete a conversion is is not clickable\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source does not state how to decide which elements should be clickable beyond the examples given.\"],\"relations\":[{\"kind\":\"alternative_to\",\"target\":\"u8\"}]},{\"id\":\"u10\",\"kind\":\"example\",\"title\":\"SaaS client pricing section registered dead clicks\",\"claim\":{\"text\":\"In a SaaS client audit, people thought pricing elements were clickable, but the only clickable element was the button for getting a number of free credits.\",\"quote\":\"people thought that these elements were clickable but the only element that was actually clickable was the button that said get X number of free credits\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"Client identity, dates, traffic volume and conversion impact are not stated in this passage.\",\"The source adds that it would benefit users if those elements were clickable because people want the price, but the fix applied is not described.\"],\"relations\":[]},{\"id\":\"u11\",\"kind\":\"example\",\"title\":\"Non-clickable site logo produced dead clicks and rage clicks\",\"claim\":{\"text\":\"People were clicking the logo in the center of the site and the logo was not clickable.\",\"quote\":\"people were actually clicking on this logo uh in the center of the site and the logo wasn't even clickable\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"The pattern was noticed on the main dashboard and confirmed by watching recordings of people.\",\"quote\":\"they were kind of Rage clicking and basically going through that dead click where it increased that percentage substantially and we noticed that on the main dashboard and we actually saw recordings of people as well\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source states the convention that clicking a logo returns you to the homepage, but does not say whether the logo was made clickable or what effect that had.\",\"Users were trying to reach the homepage from the checkout and product pages; the pages involved are given only in general terms.\"],\"relations\":[]},{\"id\":\"u12\",\"kind\":\"principle\",\"title\":\"Read excessive scrolling as the user failing to find information\",\"claim\":{\"text\":\"Excessive scrolling can mean the user is trying to find information on the site but cannot find it.\",\"quote\":\"it could be the fact that they're the user is trying to find information on the site but they can't find it\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Excessive scrolling is recorded when a visitor scrolls a page top to bottom very quickly.\",\"quote\":\"excessive scrolling is when somebody is on a website and they're just scrolling very excessively on a particular page right so that just means they're going from top to bottom like very quickly\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"Candidate causes given by the source are users hunting for reviews, hunting for a missing call to action or price, or skimming a long block of text; no rule for distinguishing them is stated.\",\"The source notes its own example account sat under 0.01 percent for excessive scrolling.\"],\"relations\":[]},{\"id\":\"u13\",\"kind\":\"principle\",\"title\":\"Read quick backs as information not found immediately\",\"claim\":{\"text\":\"With quick backs, people look for information on a page but are not able to find it immediately and bounce back and forth.\",\"quote\":\"people are looking for information on a page but they're not able to find it immediately right so they have to constantly bounce back and forth\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Quick backs are recorded when a visitor goes to a page and quickly returns to the previous one.\",\"quote\":\"quick back so this is people where they're going to a page as cler saying right here and then they're quickly returning back to the previous one\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The only illustration given is a product page expected to show certain information; no benchmark is provided.\"],\"relations\":[]},{\"id\":\"u14\",\"kind\":\"warning\",\"title\":\"Avoid spending time on dashboard metrics Google Analytics already covers\",\"claim\":{\"text\":\"The source says it would really spend too much time there, in the context of funnel, channel, campaign, browser, device and popular-page data that Google Analytics can do as well or better.\",\"quote\":\"so I would really spend too much time there\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Dashboard sections such as smart events, referrer and channel breakdown, campaign source, browser and device data and most popular pages are available in Google Analytics.\",\"quote\":\"you can do all of this inside of Google analytics and a much better job at that as well\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The clause appears garbled, plausibly missing a negation such as wouldn't; its polarity is unresolved and must not be settled from memory.\",\"The list of duplicative metrics is enumerated only loosely across the preceding sentences.\"],\"relations\":[]},{\"id\":\"u15\",\"kind\":\"action\",\"title\":\"Open the heat map tab and pick a popular page to review\",\"claim\":{\"text\":\"The source says clicking the heat map tab presents the most popular pages of the account.\",\"quote\":\"I'll click on the heat map tab up there and then I'll be presented with the most popular Pages\"},\"action\":{\"text\":\"Open the heat map tab and click into one of the listed popular pages to review its heat map.\",\"quote\":\"let's just click on the homepage here\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source says accounts typically list 5 to 10 most popular pages segmented by traffic volume, while the demo account showed only two pages.\",\"How a page is selected for review beyond picking from the list is not stated.\"],\"relations\":[]},{\"id\":\"u16\",\"kind\":\"unresolved_claim\",\"title\":\"Heat map screenshot may not match expectations on sites with pop-ups\",\"claim\":{\"text\":\"The source begins to say the heat map screenshot might not look exactly like what was anticipated for clients whose sites have pop-ups, but the sentence is cut off.\",\"quote\":\"you might have a screenshot here that might not look exactly like what you anticipated for some of our clients where they have pop-ups under website\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The passage ends mid-phrase after pop-ups under website, so the rest of the pop-up effect and any remedy are missing.\",\"Neighboring source text is required to complete this claim.\"],\"relations\":[]}],\"more_units\":true,\"unresolved\":[\"The supplied source text is truncated mid-sentence in the heat map screenshot/pop-ups passage; the continuation is missing.\",\"The sentence about spending time on dashboard metrics duplicating Google Analytics appears to be missing a negation, so its polarity is unresolved.\",\"The video promises later real-life examples and agency case studies on using Clarity to increase conversion rates, plus a fuller recordings walkthrough, none of which appear in this passage.\",\"Extraction reached the 16-unit cap; the passage continues beyond the cut-off and further units (heat map interpretation as demonstrated, recordings walkthrough, case studies) are expected in the remaining source.\"]}",
+  "input": {
+    "source": {
+      "source_id": "1codPdK-qaL_2SoPf_nmftxOcUIzNczWB",
+      "source_sha256": "e90e771f91c35367be3e31ee5a6d6c7d4137d599fdc8b78c4865c1d6673569bb",
+      "locator": "batch",
+      "start": 0,
+      "text": "in this video I'm going to show you a complete in-depth tutorial on how to use Microsoft Clarity and all of the features available within the platform I'll show you not only how to use all of the features but also a complete tutorial on how to actually interpret the data within Clarity and if you stick towards the end of the video I'll show you real life examples and case studies of how we've used Clarity at our agency for our clients to increase their conversion rates getting right into it we have the main Clarity dashboard open up here so the first thing that I like to do when looking at the main dashboard is trying to filter for a good enough sample size or good enough sample period right so typically that's going to be the last 6 months of data it could also be last 90 days of data you know depending on when you set up Clarity you may or may not have the ability to go that far back so this might vary but you know 6 months is generally a good time period so I'm going to go back to January 2024 today's July 29th 2024 so roughly 6 months doesn't have to be exact and now I have all of the data available here so a lot of the metrics on the main Clarity dashboard you can actually pull directly from Google analytics so things like the scroll depth for example active time spent pages per session the total number of sessions these are all kind of Baseline kpis that you know doesn't really make Clarity unique in any regard like you can get this from other data sources the part that I find is important to focus on on the main dashboard is really this insights block here so we're looking at rage clicks dead clicks sucessive scrolling and then quick backs so rage clicks is the first one here which sits at 0 2% so this is actually people that are you know rage clicking or clicking multiple times on an element typically to kind of exit that experience so if you think about a like a website and you have a popup that lands immediately on the first 5 Seconds somebody's barely even scrolled on the site and they're just rage clicking trying to get rid of that popup you know that's where you'll typically find a lot of rage clicks right another use case might be where you know you're on a page and you're trying to exit a chat bot that's preventing you from adding to card or filling out a form and clicking the submit button if it's a B2B site right so again you know people are just trying to exit that and that's you know generally low hanging fruit opportunity what I like about Clarity is that you can actually click on this little camera icon and it's going to open up the recordings page where you can watch the actual recordings of people that experienced the rage clicks and later in the video we'll do a more in-depth walkth through of how to do recordings but for now we're just focusing on the main kpis so 0. 2% you know that's typically a pretty good rate I would say anything really under 1 to two% is good um but obviously these are low hanging food opportunities so if the rage clicks actually warrant particular change then it's worth watching those recordings to see you know where people experiencing frustration or friction the next thing is dead clicks so dead clicks is where somebody tries to click on an element then what happens is that element is actually not clickable hence the word dead right so normally what we see on client sites is you might have logos demonstrated on your your website and people think that those logos are clickable but they're actually not clickable right like if you have a ass featured on or ass seen on and people are trying to click on the logos right so that's an example of a dead click now in some scenarios dead clicks are fine because you might not want to send people outside right like the argument for as scen on or ass featured logos where you have places you've been featured in you might not necessarily want to send people outbound and outside of the website because your main goal is ultimately conversions if you're sending people outside they're not going to complete the the main action you want them to complete um so that's a scenario in which dead clicks are okay now there's the other scenario in which elements that should be clickable and that actually help people in their journey to complete a conversion is is not clickable so a good example of this would be this is uh actually an audit report that we do for our clients and this was an example where this is a SAS client so on their pricing section of their website they had a lot of clicks and movement registered around their pricing if you can see that on the right right so people thought that these elements were clickable but the only element that was actually clickable was the button that said get X number of free credits but you can see all of the other clicks that are registered in and around this area right and we'll get into this in the heat map part as well but this is an example of of dead clicks right where people think something's clickable it would actually benefit the the user a lot if they were clickable because people want to get the price but they're just clicking on things that you know are not designed to be clickable in the first place and hence that's going to increase the dead click rate another example of dead clicks would be this website here so when we went to the heat map tab uh what we noticed was that people were actually clicking on this logo uh in the center of the site and the logo wasn't even clickable like typically when you go on a website and you click on a logo it'll take you back to the homepage right most websites these days follow that convention but for some reason on the site the logo was not clickable and people were trying to click there from the checkout page from the product page to get back to the home but hence you know they couldn't and they were kind of Rage clicking and basically going through that dead click where it increased that percentage substantially and we noticed that on the main dashboard and we actually saw recordings of people as well right so dead clicks are super important uh and they're very useful okay so the next metric here is now excessive scrolling so excessive scrolling is when somebody is on a website and they're just scrolling very excessively on a particular page right so that just means they're going from top to bottom like very quickly um Clarity has certain metrics to identify this and typically what you can derive from this Insight is a couple different things it could be the fact that they're the user is trying to find information on the site but they can't find it right so for example they might be trying to look for reviews and you know they're just quickly scrolling through to try and find that information um another example might be they're trying to find a like a call to action Buton like the button to add to cart or the price of the product and it's nowhere to be found and they have to just scroll quickly to find it other use case might be you might have a long block of text that uh is just going throughout the entire page and I've seen examples of this so people are just completely skimming by it and going through the entire site uh to skip through it right so that's that's common use cases of excessive scrolling in this use case right now in this particular scenario it's less than 0.01% so it's not really a major concern and the last thing is Qui cck back so this is people where they're going to a page as cler saying right here and then they're quickly returning back to the previous one so this is normally derived the the Insight that can be derived from this is that you know people are looking for information on a page but they're not able to find it immediately right so they have to constantly bounce back and forth we'll typically notice this where somebody goes to like a page on the site and they're expecting certain information right for example a product page you'd expect to find certain information about the product but if you can't find it you're going to immediately go back right so that's also super important to understand and again I would consider watching the recordings of all of these um I know I kind of gave Baseline metrics for them but it doesn't really matter what the metrics are if there's usability issues fundamental that exist on the site ultimately you want to resolve them regardless of what the percentage is then as I scroll down there's a lot of different metrics here so you have Smart event so you can see different stages of the funnel this is a e-commerce site so I can see you know people that act to cart you can check out again you can do all of this inside of Google analytics and a much better job at that as well so I would really spend too much time there you can also see things like the refer the channel breakdown campaign Source again most of this you can do in uh GA and then you can see your browser data device Etc most popular Pages again a lot of this you can pretty much find inside of Google analytics so really the main piece of insight is the insights part of the dashboard okay so now we're going to segue over to the heat map portion of clarity I have a live demo count open up here for demonstration purposes where I'll actually walk through the data for the clarity website and this will give you a good idea of how to actually interpret the data that you're seeing so what I'll do is I'll click on the heat map tab up there and then I'll be presented with the most popular Pages since this is an example account you know there's only two pages that are listed here but typically you'll have 5 to 10 of the most popular Pages segmented by the volume of traffic that is coming to those pages but let's just click on the homepage here so the first thing I'm just going to mention is you might have a screenshot here that might not look exactly like what you anticipated for some of our clients where they have pop-ups under website "
+    },
+    "already_extracted_claims": [],
+    "instruction": "Extract remaining distinct task-sized units. Do not repeat already extracted claims."
+  },
+  "system_prompt_sha256": "f23d9572f5bf1b93a5822a96b30f4ea85c0469c454d5ce80d227418df3d2e25e"
+}

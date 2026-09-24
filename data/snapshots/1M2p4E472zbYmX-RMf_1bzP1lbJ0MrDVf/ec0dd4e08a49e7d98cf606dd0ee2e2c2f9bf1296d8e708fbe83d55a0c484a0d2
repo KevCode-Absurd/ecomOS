@@ -1,0 +1,46 @@
+# 00-inbox
+
+**What this is for.** The worst outcome is a source you did not capture. When you are
+moving fast, drop the file here with a correct header and move on.
+
+The pipeline processes the inbox like any other folder, because the header decides
+where a source goes, not the folder. If the filename carries a module prefix such as
+`MCR_2026-03-14_...`, the tracker sync routes it automatically.
+
+## Use this instead of guessing
+
+Most misfiles so far came from filing into a module folder under time pressure: SEO
+into measurement, advertorials into ads, brand psychology into organic, customer
+experience into store setup. If you are not sure which module a source belongs to,
+**drop it here**. A source in the inbox with a good header is better than a source in
+the wrong folder, because the wrong folder looks finished and gets trusted.
+
+## The only rule
+
+Write the header before you drop it. At minimum:
+
+```
+---
+url:                   # REQUIRED. Never blank. offline for books and PDFs.
+rights:                # owned | public_reference | licensed | study_only
+why:                   # what a good model would not say unprompted
+---
+```
+
+Those 3 fields cannot be recovered later. Everything else can.
+
+## When to use a module folder instead
+
+When you already know where it goes and it costs you nothing to put it there. Check the
+`_README` in that folder if the boundary is not obvious. The most common traps:
+
+```
+advertorials, quiz funnels             -> 07-LPG, not ads
+copywriting craft                      -> 11-ADC, not creative
+anything about ranking or citation     -> 15-SEO or 16-AEO, not measurement
+brand meaning, positioning, naming     -> 04-BRD, not organic or ops
+customer experience                    -> 17-CXP, not store setup
+founder stories and brand teardowns    -> 99-multi
+```
+
+Current file counts, duplicates and holds: see `_INGESTION-STATE.yaml`.

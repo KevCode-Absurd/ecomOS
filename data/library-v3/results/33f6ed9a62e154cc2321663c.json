@@ -1,0 +1,486 @@
+{
+  "cards": [
+    {
+      "title": "HSTS: force browsers to HTTPS and rewrite HTTP requests",
+      "summary": "Deploy Strict-Transport-Security so browsers internally upgrade HTTP requests to HTTPS and block certificate-error bypass for your store domain.",
+      "use_when": "You are hardening checkout, login and account pages against network interception, and deciding an HSTS rollout plan for your storefront domain.",
+      "steps": [
+        "Serve the Strict-Transport-Security response header from your store; browsers will then internally rewrite HTTP requests for that host to HTTPS before they hit the network, and will not offer users a click-through on certificate errors for that site.",
+        "Set the max-age directive to the cache lifetime. When first testing, use a very low max-age so you can back out; mature deployments move to long values (the speaker cites around a year as a cap).",
+        "Use includeSubDomains only after auditing every subdomain, because it applies to all of them — the source notes large organizations get stuck when one vendor-operated subdomain lacks HTTPS.",
+        "Because a subdomain cannot set HSTS for the whole registered domain, if users land on www.example.com, load an invisible first-party resource from example.com that carries the includeSubDomains header.",
+        "Submit to the preload list only when you are committed long-term: preloading fixes the vulnerable first-visit gap but removals are slow and bottlenecked on browser release cycles."
+      ],
+      "caveats": [
+        "HSTS is effectively irreversible once cached by real users — there is no undo, which is why gradual max-age increases are recommended.",
+        "The first visit is still unprotected unless your domain is on the browser preload list.",
+        "HSTS state can be abused as a tracking/supercookie vector in third-party contexts; HTTPS and HSTS do not guarantee safety on their own."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "checkout",
+        "account-security",
+        "encryption",
+        "transport-security",
+        "hsts",
+        "storefront-hardening"
+      ],
+      "id": "05ffb117c8363e8e47ee6558",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 15
+    },
+    {
+      "title": "Recognize HSTS as a persistent third-party tracking vector",
+      "summary": "An ad-network script can set and read HSTS state across subdomains to build a supercookie that survives normal cookie clearing.",
+      "use_when": "You are assessing third-party scripts, pixels or ad-network embeds on product and checkout pages for privacy and tracking exposure, or responding to a data-subject request to clear tracking state.",
+      "steps": [
+        "Understand the mechanism: a third-party script sets HSTS on many unique subdomains to encode an identifier in bits, then reads it on other sites by detecting which sub-resource loads are upgraded to HTTPS.",
+        "Treat any persistent per-browser state that can be set and read in third-party contexts as a potential tracking vector, not only cookies.",
+        "Recall that HSTS state is not cleared by clearing cookies — a user (or your own QA) may believe they started fresh while persistent state remains.",
+        "Audit which third parties load sub-resources on your store templates and reduce the number of distinct third-party origins, especially on payment and login flows.",
+        "When evaluating browser protections, prefer the stable principle (limit third-party state) over current vendor-specific rules, which change; verify the current behavior in each target browser before relying on it."
+      ],
+      "caveats": [
+        "The source describes Apple/Safari and Chrome mitigations as evolving and states Chrome's plan was not final at the time; do not treat any specific vendor rule as a permanent guarantee.",
+        "Prevention is described as a trade-off between security and privacy, not a solved problem."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "privacy",
+        "customer-research",
+        "third-party-scripts",
+        "tracking",
+        "hsts",
+        "measurement"
+      ],
+      "id": "3db5a465b9a7197e481a024d",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 15
+    },
+    {
+      "title": "Treat HTTPS as baseline, not a proof of trustworthiness",
+      "summary": "HTTPS provides confidentiality, integrity and server authentication, but only as strong as the certificate chain behind it, so it must not be treated as a standalone safety guarantee.",
+      "use_when": "You are deciding what security claims to make on your storefront landing page or checkout (badges, trust copy) and which protections to actually implement.",
+      "steps": [
+        "State the real properties HTTPS gives: confidentiality, integrity and authentication of the server over TLS — and that it does not by itself validate the merchant, the content, or the product.",
+        "Account for the certificate bottleneck: any certificate authority can issue for any domain, so a compromised or fraudulent CA can impersonate your store to users on the attack path.",
+        "Do not stop at redirecting HTTP to HTTPS: an attacker on the network can strip the redirect and inject content, so serve HSTS rather than relying on redirects.",
+        "Prefer controls that are checkable and auditable (CAA DNS records, certificate transparency monitoring) over claims that cannot be verified, and describe them accurately.",
+        "If you use a hosted platform (hosted CMS, cloud web server), confirm whether it enables HTTPS/HSTS for you by default and what you still need to configure yourself."
+      ],
+      "caveats": [
+        "Positive security indicators such as lock icons were found by research cited in the source to be unreliable — users generally do not notice a missing indicator.",
+        "The source notes HTTPS adoption lagged in some regions historically and migrating large existing sites remains technically challenging."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "encryption",
+        "pdp",
+        "checkout",
+        "trust-signals",
+        "certificates",
+        "transport-security"
+      ],
+      "id": "a8dbfcc8c9d3e8e8d08f7983",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 15
+    },
+    {
+      "title": "Use CAA DNS records to constrain who may issue certificates for your domain",
+      "summary": "Certificate Authority Authorization is an advisory DNS record that tells CAs which issuers are allowed for your domain, reducing rogue issuance without the unreliability of key pinning.",
+      "use_when": "You are setting up or reviewing domain-level certificate management for your storefront and want an implementable control against mis-issuance.",
+      "steps": [
+        "Publish a CAA DNS record listing the CA(s) you actually use, so a CA checking before issuance sees it is not authorized and should stop.",
+        "Treat CAA as advisory enforcement: it relies on CAs behaving correctly, and remediation is after the fact (revocation, escalation) rather than runtime prevention.",
+        "Understand the gap: DNS itself was not integrity-protected or authenticated at the time of the source, so an on-path attacker between CA and your DNS could tamper with the response; the source treats it as better than nothing, not a guarantee.",
+        "Pair CAA with certificate transparency monitoring to detect issuance you did not request.",
+        "Keep records current when you change issuers, since a stale CAA record can block legitimate renewal."
+      ],
+      "caveats": [
+        "CAA does not stop a determined or compromised CA from mis-issuing.",
+        "CAs generally do adhere, but this is behavioral, not cryptographic enforcement."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "certificates",
+        "dns",
+        "domain-security",
+        "mis-issuance",
+        "encryption"
+      ],
+      "id": "302263a7609a37fd6dd69995",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 15
+    },
+    {
+      "title": "Treat browser certificate pinning as deprecated and use the alternatives",
+      "summary": "Dynamic public-key pinning (HPKP) was removed from Chrome because chain-building differences, unrecoverable errors and hostile-pinning risk made it too unreliable; CAA, static pinning and certificate transparency replace it for most needs.",
+      "use_when": "You are evaluating whether to implement HPKP or certificate pinning on your storefront or deciding how to respond to pinning advice from a vendor or agency.",
+      "steps": [
+        "Do not plan new adoption of dynamic HPKP: the source states Chrome unshipped it years after launch because server operators could not reliably predict the chain a client would build, and failures were unrecoverable and non-actionable for users.",
+        "If you still have HPKP configured, remove it and rely on safer mechanisms; a wrong pin with a long max-age can lock users out of your site even after you recover from an incident.",
+        "Make sure any pinning you do pin public keys, not serial numbers or other certificate fields — the source calls non-key pinning forgeable and incorrect.",
+        "Prefer CAA records plus certificate-transparency monitoring as your primary mis-issuance defense; understand both are after-the-fact/audit-based rather than runtime prevention.",
+        "Recognize hostile pinning as a risk: an attacker who compromises your server could set pins that brick access to your domain."
+      ],
+      "caveats": [
+        "The source notes some operators were unhappy to lose pinning's safety benefits and were using hostile pinning as a feature; removal was a deliberate trade-off, not a claim pinning never helps.",
+        "Static preloaded pins still exist in Chrome for a curated set of high-value sites, but are not something a typical merchant can self-serve quickly."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "certificates",
+        "encryption",
+        "tls",
+        "mis-issuance",
+        "vendor-evaluation",
+        "deprecated-technology"
+      ],
+      "id": "214a75be3710ecab7f760e12",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 15
+    },
+    {
+      "title": "Plan HSTS preload carefully: it fixes the first-visit gap but is slow to reverse",
+      "summary": "Preload lists bake HSTS opt-in into browsers so the first visit is protected, but removal requires waiting on release cycles and getting off the list is difficult.",
+      "use_when": "You are deciding whether to submit your storefront domain to the HSTS preload list and how to sequence that decision.",
+      "steps": [
+        "First recognize the gap you would be closing: without preload, the very first visit to your site is unprotected because the browser has not yet received your HSTS header.",
+        "To prove domain control for preload, serve the HSTS header with the preload directive on the site — that is the ownership proof mechanism described.",
+        "Meet the list's automated requirements, then submit via the public preload site; note that Chromium maintains the list and other browsers apply their own policies on top, so removal may take even longer.",
+        "Know the reversal cost before committing: removal could require waiting on a release cycle for Chrome and potentially longer for other browsers.",
+        "Do not submit expecting to check the site's ongoing health: the source says entries were not pruned for liveness at the time.",
+        "Weigh the binary-size cost context: on Android, larger browser binaries can mean a percentage of users do not get updates, and users may pay for the download data."
+      ],
+      "caveats": [
+        "The preload list was originally intended for a small set of high-value sites and grew into an unsustainable general list, per the source.",
+        "Verify the current preload submission and removal process, as the interface and policies may have changed."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "hsts",
+        "transport-security",
+        "certificates",
+        "release-management",
+        "storefront-hardening"
+      ],
+      "id": "982af2ed0756cc2ffa4e26fa",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 15
+    },
+    {
+      "title": "Track your HTTPS/HSTS adoption as a migration metric",
+      "summary": "Migration of a store from HTTP to HTTPS should be run as a measured rollout, not a one-step switch, using max-age ramps and breakage data.",
+      "use_when": "You are migrating a legacy or large storefront to HTTPS/HSTS and need to sequence the rollout without breaking customers.",
+      "steps": [
+        "Start with short HSTS max-age values to test, then increase toward long values once confident; the source specifically warns against jumping straight to a one-year expiration.",
+        "Before enabling includeSubDomains, inventory subdomains and any vendor-hosted services; domains without HTTPS support will block you from enabling it across the whole domain.",
+        "To cover a registered domain from a www landing page, use the first-party sub-resource trick described (an invisible resource loaded from the apex carrying includeSubDomains).",
+        "Expect breakage when disabling insecure subresources: the source describes running experiments for an extended period and measuring breakage before phasing out mixed content.",
+        "Keep the old HTTP behavior available while measuring, then deprecate it deliberately — the source frames platform changes as breaking things carefully on the platform's terms."
+      ],
+      "caveats": [
+        "The specific timelines in the source are historical and may not match current browser behavior; verify against current documentation.",
+        "Not all environments can migrate at once — hosted platforms may enable HTTPS for you, while large custom deployments remain harder."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "hsts",
+        "transport-security",
+        "migration",
+        "measurement",
+        "release-management",
+        "mixed-content"
+      ],
+      "id": "896529f5c8fd1898c18ecac7",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 15
+    },
+    {
+      "title": "Harden mixed content by eliminating HTTP subresources on HTTPS pages",
+      "summary": "Removing HTTP subresources from HTTPS pages closes a class of tampering and tracking exposure, at the cost of breaking pages that still rely on them.",
+      "use_when": "You are auditing product, category and checkout templates for insecure subresource loads (images, scripts, fonts, pixels) and planning remediation.",
+      "steps": [
+        "Inventory every subresource loaded by your templates and flag any absolute http:// URLs, hard-coded HTTP links and HTTP-scheme embeds.",
+        "Convert them to HTTPS or same-origin resources; verify the source actually serves HTTPS, and re-test after each batch rather than flipping everything at once.",
+        "Treat the known trade-off: the source states that when a page is already served over HTTP and loads an HTTP subresource, HSTS will not be applied — you lose the upgrade on those loads.",
+        "If you sponsor or operate vendors/ad networks, require HTTPS subresource delivery in your contracts and audit their scripts, since insecure third-party scripts can be replaced with malicious content (the source cites a real-world case of analytics scripts loaded over HTTP and swapped in transit).",
+        "Run the migration as a measured experiment: the source describes a multi-year measurement phase and a staged timeline rather than a single cutover."
+      ],
+      "caveats": [
+        "Legitimate HTTP links will stop working, and the source acknowledges the change causes breakage.",
+        "Browser behavior around mixed content autoupgrading has evolved; verify current behavior in your target browsers before relying on it."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "mixed-content",
+        "transport-security",
+        "storefront-hardening",
+        "third-party-scripts",
+        "checkout",
+        "pdp"
+      ],
+      "id": "6d423be1f8d76318e8d22ea0",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 15
+    },
+    {
+      "title": "Do not trust positive security indicators or geographic CA blocking",
+      "summary": "Lock icons and region-based blocking are unreliable defenses; the source argues both fail in practice and should not be the basis of a storefront security plan.",
+      "use_when": "You are deciding how to communicate security to shoppers or being asked to approve a 'block by country/region' style control for your store or infrastructure.",
+      "steps": [
+        "Do not rely on users noticing a missing lock icon: research cited in the source shows positive security indicators are not a reliable signal, so treat visual trust badges as reassurance copy, not a control.",
+        "Reject 'just block a region or country' as a certificate mis-issuance defense; the source notes issuers serve customers globally and that mis-issuance has come from various geographies, and blocking is unenforceable and hard to define.",
+        "If a vendor proposes region blocking as a security or anti-fraud measure, ask what specific threat it addresses and what false-negative rate it creates for legitimate international customers.",
+        "Invest effort instead in controls that apply to all traffic: TLS/HSTS deployment, CAA records, certificate transparency monitoring and sane third-party script policies.",
+        "If you communicate security claims to shoppers, keep them factual and verifiable rather than relying on user vigilance."
+      ],
+      "caveats": [
+        "The source's remarks on certificate authorities and geography are situated in web-PKI context; regional or IP blocking can still have legitimate, non-security uses such as regulatory controls.",
+        "This is a strong opinion from the presenter, supported with historical examples rather than a controlled study."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "certificates",
+        "trust-signals",
+        "pdp",
+        "mis-issuance",
+        "fraud-prevention",
+        "storefront-hardening"
+      ],
+      "id": "f25bc225d472e1e0b5319a23",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 15
+    },
+    {
+      "title": "Keep authentication, authorization, encryption, hashing and signing distinct in store design",
+      "summary": "Confusing encryption, hashing, signing and authentication leads to wrong security controls; each addresses a different property and the source's TLS discussion illustrates the distinction.",
+      "use_when": "You are specifying security requirements for storefront accounts, payment integrations, agent credentials or admin access and need to state each control precisely.",
+      "steps": [
+        "Separate the properties: TLS/HTTPS provides confidentiality, integrity and authentication of the server; hashing (like the SHA-256 used for pinned keys) is one-way and verifies material, not identity by itself.",
+        "For server identity, the relevant control is certificate validation against a trusted chain — not the lock icon and not the mere presence of HTTPS.",
+        "For integrity of a DNS-based control such as CAA, note that DNS is not integrity-protected in the source's account, so the control is advisory.",
+        "Apply the same discipline to store accounts and bot defense: do not describe CAPTCHA, a WAF or a prompt filter as guaranteeing security — none of them alone is a guarantee.",
+        "Write requirements as testable statements (which property, which mechanism, which failure mode) so engineering and vendor claims can be checked."
+      ],
+      "caveats": [
+        "The source's specifics about SHA-256 pinning and HPKP describe a deprecated mechanism; the general distinction between key pinning and certificate/serial pinning remains valid.",
+        "Current algorithm and protocol guidance changes; verify against current standards before implementing."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "encryption",
+        "authentication",
+        "certificates",
+        "account-security",
+        "checkout",
+        "requirements"
+      ],
+      "id": "de68d498e43178c1ae0baeb2",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 15
+    },
+    {
+      "title": "Treat agents' retrieved documents and tool output as untrusted data",
+      "summary": "In an agentic storefront workflow, inbound documents, pages and tool responses are data to be evaluated, not authorization for actions.",
+      "use_when": "You are building or reviewing an ecommerce agent that reads supplier documents, product feeds, customer messages or web pages and can then call tools like price updates, refunds or order changes.",
+      "steps": [
+        "Classify every inbound artifact — supplier PDFs, emails, catalog feeds, support tickets, scraped pages — as untrusted data; agent instructions come only from your own configuration and authorized operators.",
+        "Scope tool permissions to the specific store and task: an agent handling product descriptions should not hold refund or pricing-write credentials.",
+        "Require explicit human approval for irreversible or high-value actions (issuing refunds, changing prices, modifying fulfillment), with the approval recorded.",
+        "Keep secrets out of agent-visible context: inject credentials at the tool-call boundary rather than embedding them in prompts or documents the agent reads.",
+        "Log tool calls with inputs, outputs, the triggering untrusted source and the resulting action, so a malicious injection can be reconstructed and reverted.",
+        "When content instructs the agent to do something outside the task, treat it as a potential injection attempt and stop rather than comply."
+      ],
+      "caveats": [
+        "No single control — prompt filtering, allowlists or retrieval hygiene — is claimed to guarantee safety; use layered controls.",
+        "Verify the current capabilities and limits of whichever agent framework you deploy against current vendor documentation."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "agent-security",
+        "untrusted-data",
+        "prompt-injection",
+        "tool-permissions",
+        "logging",
+        "checkout"
+      ],
+      "id": "8af1481061ca80b5ef911906",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 15
+    },
+    {
+      "title": "Bound validation of storefront attacks to systems you own",
+      "summary": "When verifying that a vulnerability actually affects your store, test only against your own properties and describe the vulnerability condition rather than weaponizing it.",
+      "use_when": "You are validating a suspected weakness (timing side channel, credential stuffing, insecure subresource, injection) in your own storefront before remediation.",
+      "steps": [
+        "Establish written authorization over the exact assets in scope: your domains, staging environments, test accounts and test payment flows.",
+        "Convert observed behaviors into vulnerability conditions you can check — for example, whether an endpoint returns measurably different response times depending on whether a queried condition is true, or whether responses differ based on an attacker-controlled predicate.",
+        "Design validation to confirm the condition and the fix, then verify the fix; do not build reusable extraction tooling against third-party systems.",
+        "Involve engineering early to change the design where possible (constant-time or unconditioned responses) rather than trying to detect the probing.",
+        "Record the finding with timings, parameters and environment so a fix can be regression-tested."
+      ],
+      "caveats": [
+        "Testing systems you do not own or are not authorized to test is out of scope and potentially unlawful.",
+        "A timing difference observed on your environment may not reproduce on production due to caching, load balancing and network variance."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "vulnerability-validation",
+        "timing-attack",
+        "authorization",
+        "storefront-hardening",
+        "experiment-design"
+      ],
+      "id": "39365bbd8ce0ad86a5be8b32",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 15
+    },
+    {
+      "title": "Assume any certificate authority can issue for your store domain",
+      "summary": "The web PKI lets any CA issue for any domain, so planning must assume impersonation is possible and rely on detection and authorization controls.",
+      "use_when": "You are threat-modeling domain impersonation of your storefront (phishing clones, fake checkout pages) and choosing which certificate controls to deploy.",
+      "steps": [
+        "Accept the premise: any of the trust-store CAs can issue for your domain, which cuts both ways — you can buy cheap or free certificates from almost anyone, and so can an attacker.",
+        "Layer after-the-fact detection and authorization controls: publish CAA records, monitor certificate transparency logs for your domains, and keep an inventory of who can issue for you.",
+        "Understand the trade-off: after-the-fact controls (CAA, CT) reveal and remediate mis-issuance rather than prevent a certificate from being used at runtime.",
+        "Account for attackers inside the trust path: impersonation is most effective against users on the attacker's network path, so combine certificate controls with HSTS and mixed-content hardening.",
+        "Watch for fake-checkout clones as a business risk independent of your own server security, since a mis-issued certificate makes a clone look legitimate."
+      ],
+      "caveats": [
+        "CAA is advisory and DNS was not integrity-protected at the time of the source, so on-path tampering of the CAA lookup is possible.",
+        "Certificate transparency is described as auditing, with enforcement handled socially/legally rather than automatically."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "certificates",
+        "mis-issuance",
+        "domain-security",
+        "phishing",
+        "checkout",
+        "monitoring"
+      ],
+      "id": "380c74d6b66f5aa5d8d711d7",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 15
+    },
+    {
+      "title": "Expect migration resistance and budget for it",
+      "summary": "Security migrations provoke strong resistance from some operators; plan ramp, measurement and deprecation rather than arguing about old costs.",
+      "use_when": "You are pushing an HTTPS/HSTS or mixed-content cleanup across a large store or multi-brand ecommerce organization with legacy systems.",
+      "steps": [
+        "Anticipate the standard objections — cost of certificates, performance penalties, effort — and prepare current data; the source notes certificates are now often free or cheap and modern HTTPS can outperform HTTP.",
+        "Prioritize measurement over argument: track adoption percentages and page loads still using the old scheme so you can decide when the old path can be shut off.",
+        "Handle non-expert operators by making the safe option the default where possible — the source points to hosted platforms enabling HTTPS for large numbers of sites at once.",
+        "Plan phased timelines and expect to measure breakage before removing the legacy path rather than declaring a hard cutover.",
+        "Accept that some resistance will not be resolved by evidence and sequence the migration so holdouts do not block the security goal for the rest of the estate."
+      ],
+      "caveats": [
+        "The source's remarks on adoption levels and regional patterns are historical observations, not current benchmarks.",
+        "Specific performance claims about modern protocols should be verified in your own environment before being used as a business case."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "migration",
+        "transport-security",
+        "hsts",
+        "stakeholder-management",
+        "measurement",
+        "mixed-content"
+      ],
+      "id": "191bf7e72dfe1dc4b1e158ae",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 15
+    },
+    {
+      "title": "Decide between CA-permissive convenience and stricter issuance assurance",
+      "summary": "There is no reliable way to validate an arbitrary CA's authority; controls must either reduce which CAs can issue for you or detect their failures.",
+      "use_when": "You are selecting a certificate-issuance strategy or vendor for your store and weighing convenience against assurance.",
+      "steps": [
+        "Recognize the failed approaches: dynamic pinning was tried and removed because chain building, error recovery and hostile pinning made it unreliable; geographic blocking is unenforceable.",
+        "Choose a detect-and-constrain strategy: publish CAA records, monitor certificate transparency, and enroll in static preload or pin programs only where you can accept the release-cycle coupling.",
+        "If you pursue static pinning, include every issuer in your pin set and be aware that a key change you cannot migrate from can brick your site in Chrome until a new release ships.",
+        "For the storefront, prefer broad compatibility (any reputable issuer) with strong detection over narrow issuer restrictions that create operational fragility.",
+        "Review any agency recommendation to implement certificate pinning with skepticism, given the source's account that the web platform removed the feature."
+      ],
+      "caveats": [
+        "The source presents pinning removal as a deliberate trade-off, noting that pinning works when everything is aligned.",
+        "Static preload pinning still exists for a curated set of high-value sites; eligibility and process are not self-serve."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "certificates",
+        "mis-issuance",
+        "vendor-evaluation",
+        "tls",
+        "monitoring",
+        "deprecated-technology"
+      ],
+      "id": "ee326648c4322bce58ad9c8f",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 15
+    }
+  ],
+  "request_id": "ab1e1663497dabeb369ff079489b7fb2f0f41478458f406c27785b198fb18367",
+  "ecommerce_scope_version": 1
+}

@@ -1,0 +1,967 @@
+{
+  "request_id": "21766021144e56e54d3f0e08328f48b667f0041ac8c6f2457bccf78096e97248",
+  "provider": "deepseek",
+  "model": "deepseek-flash",
+  "effort": "low",
+  "completion_limit": 16384,
+  "usage": {
+    "prompt_tokens": 7951,
+    "completion_tokens": 6084,
+    "total_tokens": 14035,
+    "prompt_tokens_details": {
+      "cached_tokens": 256
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 1496
+    },
+    "prompt_cache_hit_tokens": 256,
+    "prompt_cache_miss_tokens": 7695
+  },
+  "booked_cost_usd": 0.0096861,
+  "seconds": 30.41,
+  "finish_reason": "stop",
+  "output": {
+    "cards": [
+      {
+        "title": "Choose CRO strategy by monthly session volume",
+        "summary": "Split CRO approach: big swings under 300,000 monthly sessions, comprehensive AB testing above it.",
+        "use_when": "Deciding how to allocate CRO effort for a store based on traffic and order volume",
+        "steps": [
+          "Pull monthly session volume from your analytics and compare it to the roughly 300,000 sessions/month line used as the decision point.",
+          "Under that line, default to big swings rather than micro-tests: full landing page design concepts, PDP redesigns based on data, and offer/price tests. Comprehensive CRO (long audits, deep quantitative and qualitative research, isolated AB tests) is not worth the overhead at low volume.",
+          "Above that line, with a decent conversion rate and enough orders to quantify results, run comprehensive full CRO: AB testing, data analysis, long audits and deep data work. At this level comprehensive CRO remains the most powerful lever for growing revenue per visitor.",
+          "Treat the threshold as a moving internal benchmark rather than a fixed law — the source notes it changed within roughly the last six to twelve months — and re-check whether your data volume is actually sufficient before committing to an AB testing program."
+        ],
+        "caveats": [
+          "The source does not define what counts as a 'good enough' conversion rate or 'enough orders' above the threshold.",
+          "300,000 monthly sessions is a heuristic benchmark, not a validated industry constant."
+        ],
+        "tags": [
+          "testing",
+          "cro-strategy",
+          "ab-testing",
+          "traffic-volume",
+          "experiment-design",
+          "resource-allocation"
+        ]
+      },
+      {
+        "title": "Run big swings instead of micro-tests on small stores",
+        "summary": "Low-traffic stores should redesign PDPs, test offers and build landing pages instead of testing button colors.",
+        "use_when": "Planning the CRO roadmap for a store with limited traffic that cannot power small element tests",
+        "steps": [
+          "Stop allocating testing capacity to small PDP elements such as button color, above-fold image swaps or small copy snippets — at low volume these rarely reach significance and rarely move revenue.",
+          "Instead do PDP redesigns driven by data, and treat the 'based on data' part as mandatory: the redesign should follow from funnel, survey, interview or heatmap findings rather than taste.",
+          "Layer in landing page design concepts, since pre-sell pages carry the biggest uplift for stores under the volume threshold, and run offer/price experiments monthly.",
+          "Expect the model to work differently when cost per click is high: scaling ad spend or refreshing creative may lift conversion little, whereas bigger on-site swings can produce a step change in conversion rate or revenue per session."
+        ],
+        "caveats": [
+          "The source gives no specification for what a data-driven PDP redesign should change.",
+          "'Can literally double conversion or revenue per session' is a rhetorical claim without baseline, sample size or test period."
+        ],
+        "tags": [
+          "testing",
+          "cro-strategy",
+          "product-page",
+          "landing-page",
+          "offer-design",
+          "low-traffic"
+        ]
+      },
+      {
+        "title": "Insert a landing page between ad click and money pages",
+        "summary": "Put a pre-sell landing page between the ad and product or collection pages instead of sending traffic straight to the store.",
+        "use_when": "Paid traffic is being routed directly to PDPs, homepages or collection pages and performance is flat",
+        "steps": [
+          "Stop sending paid clicks straight to product pages, homepages, or collection pages — the source treats that as leaving money on the table.",
+          "Add an intermediate step: a dedicated landing page that visitors hit first and that pre-sells them before they continue to the product or collection ('money') pages.",
+          "Design that page as a concept with a defined angle and offer, because landing page design concepts are counted among the big swings available to stores under the traffic threshold, and the source reports landing pages have the biggest uplift for those stores.",
+          "Once the page is live, measure its contribution in revenue per visitor and use it as a lever to scale cold traffic rather than judging it purely on click-through."
+        ],
+        "caveats": [
+          "The source does not specify landing page format, length, or offer structure.",
+          "One reported example — about 20k per month on cold traffic with the ability to scale — is a case illustration, not a benchmark; the currency and period are not stated."
+        ],
+        "tags": [
+          "testing",
+          "landing-page",
+          "paid-traffic",
+          "pre-sell",
+          "offer-design",
+          "cro-strategy"
+        ]
+      },
+      {
+        "title": "Test offers and price points on a monthly cadence",
+        "summary": "Run month-to-month offer experiments: BOGO, three-for-two, build-a-bundle pages, and different price points.",
+        "use_when": "Looking for revenue-per-visitor gains that do not depend on design changes or page-level test traffic",
+        "steps": [
+          "Set a monthly cadence for offer experiments rather than treating offers as a permanent setting.",
+          "Test structures such as buy one get one free, three for the price of two, and build-a-bundle pages.",
+          "Test different price points directly — the source lists price testing alongside offer testing as something that moves the needle.",
+          "Because offer changes can shift both conversion rate and average order value, evaluate them on revenue per visitor or revenue per session rather than conversion rate alone.",
+          "Keep the offer tests distinct from layout tests so you can attribute the revenue effect, and note that offer work is typically easier to power than small page-element tests at low traffic."
+        ],
+        "caveats": [
+          "The source does not state test duration, sample size, or a decision rule for declaring an offer winner.",
+          "'Three for the power of two' appears in the source material and is likely a transcription artifact for three for the price of two."
+        ],
+        "tags": [
+          "testing",
+          "offer-design",
+          "pricing",
+          "bundles",
+          "revenue-per-visitor",
+          "experiment-design"
+        ]
+      },
+      {
+        "title": "Remove the discount code box when no promotion is active",
+        "summary": "An empty discount field on the cart drives coupon-hunting abandonment; remove it unless discounts are live.",
+        "use_when": "Auditing cart or coupon page design on a store with no active promotions",
+        "steps": [
+          "Check whether a discount or coupon code field is present on the cart or coupon page while no promotion is running.",
+          "If nothing is active, remove the field. An empty box invites shoppers to leave the site to search for a code, which breaks the purchase flow and frequently ends in abandonment.",
+          "Pair the removal with other cart-level trust elements such as a trust policy bar, which the source groups into the same cart optimization package.",
+          "Measure the change on revenue per visitor, not conversion rate alone, and keep the field out until there is a real promotion to justify it."
+        ],
+        "caveats": [
+          "Coupon-hunting abandonment is given as the rationale, not as a measured outcome in the source.",
+          "A reported result of about $40,000 in monthly revenue is attributed to the combined cart optimization (discount box removal plus trust policy bar), not to either change alone; currency and period are not stated."
+        ],
+        "tags": [
+          "testing",
+          "checkout",
+          "cart",
+          "conversion-optimization",
+          "trust-signals",
+          "revenue-per-visitor"
+        ]
+      },
+      {
+        "title": "Use bestseller carousels in the mega-menu to create FOMO",
+        "summary": "Surface bestsellers in the mega-menu so shoppers see what other people are buying.",
+        "use_when": "Optimizing site navigation and category discovery for a store with a broad catalog",
+        "steps": [
+          "Add a bestseller carousel into the mega-menu so products other shoppers are buying are visible during navigation.",
+          "The mechanism is social proof and scarcity of attention: the source reports more shoppers reacting with FOMO toward products flagged as popular once the carousel was added.",
+          "Treat the carousel as one of the larger structural changes rather than a micro-test, since it changes how visitors are routed into the catalog.",
+          "Evaluate the effect at the level of product and category entry, watching whether interest translates into purchases rather than only clicks."
+        ],
+        "caveats": [
+          "The source does not specify selection criteria for bestsellers or rules for placing the carousel.",
+          "It does not confirm that the observed FOMO translated into purchases versus interest or clicking only."
+        ],
+        "tags": [
+          "testing",
+          "navigation",
+          "merchandising",
+          "social-proof",
+          "product-discovery",
+          "mega-menu"
+        ]
+      },
+      {
+        "title": "Pair quantitative and qualitative data to form test hypotheses",
+        "summary": "Use heatmaps and funnel drop-off to find what is broken, then surveys and interviews to find why.",
+        "use_when": "Building a prioritized test hypothesis backlog instead of guessing at changes",
+        "steps": [
+          "Start with quantitative instruments — heatmaps and funnel drop-off analysis — to locate what is happening. A typical finding is that users never see a below-the-fold trust or guarantee section.",
+          "Then run qualitative research — post-purchase surveys and customer interviews — to discover why. For example, ask what almost stopped someone from buying today.",
+          "Combine both signals into hypotheses before designing tests, so the test is aimed at a mechanism rather than a surface element.",
+          "Do not skip either half: numbers tell you where to look, customer language tells you what to change and how to phrase it."
+        ],
+        "caveats": [
+          "No specific heatmap or funnel tooling is prescribed, and the 'users missing below-the-fold guarantees' case is illustrative rather than a completion criterion.",
+          "No sample size or interview protocol is given."
+        ],
+        "tags": [
+          "testing",
+          "customer-research",
+          "heatmaps",
+          "funnel-analysis",
+          "hypothesis",
+          "measurement"
+        ]
+      },
+      {
+        "title": "Ask the two core post-purchase survey questions",
+        "summary": "Set up post-purchase surveys and always ask what made them purchase and what almost stopped them.",
+        "use_when": "Setting up or auditing survey instrumentation on any store",
+        "steps": [
+          "Ensure a post-purchase survey is live. The source treats this as non-negotiable and the single most effective optimization lever, so if it does not exist, set it up before other work.",
+          "Ask at least two questions: 'What made you purchase today?' and 'What made you almost not purchase today?' (a close variant in the source wording is 'what almost stopped you from buying today?').",
+          "Treat the first question as a source of purchase motivations — for example, a customer buying because they want to lose weight — and the second as a source of objections and friction.",
+          "Review answers regularly and route them into copy, angle and layout decisions rather than filing them as reporting."
+        ],
+        "caveats": [
+          "No survey timing or placement (page, email, widget) is specified.",
+          "The tool named in the source material is transcription-ambiguous and should be verified against current options rather than treated as a fixed recommendation."
+        ],
+        "tags": [
+          "testing",
+          "customer-research",
+          "post-purchase-survey",
+          "voice-of-customer",
+          "measurement",
+          "conversion-optimization"
+        ]
+      },
+      {
+        "title": "Turn 'almost didn't buy' answers into front-end copy changes",
+        "summary": "Use objections surfaced by post-purchase surveys to rewrite the copy or angle on the front end of the site.",
+        "use_when": "Survey responses reveal recurring uncertainties that are not addressed on the page",
+        "steps": [
+          "Mine the second survey question for concrete objections. A recurring example: customers did not know how long it would take to see results.",
+          "Convert the objection into an explicit claim on the front end — for instance, telling visitors they will see noticeable results in the first six weeks.",
+          "Place that language where the objection arises: above the fold, near the add-to-cart, or in the PDP copy that frames the offer.",
+          "Re-survey after the change to check whether the objection stops appearing, and treat the change as a big swing rather than a word-level test."
+        ],
+        "caveats": [
+          "The source gives one worked example but no process for selecting which answers to act on or how to rank objections."
+        ],
+        "tags": [
+          "testing",
+          "customer-research",
+          "copywriting",
+          "objection-handling",
+          "post-purchase-survey",
+          "product-page"
+        ]
+      },
+      {
+        "title": "Run a one-time survey when no post-purchase survey exists",
+        "summary": "Email VIPs and customers a one-time Typeform-style survey with a gift-card incentive to collect feedback fast.",
+        "use_when": "You need customer insight but no post-purchase survey is instrumented yet",
+        "steps": [
+          "Stand up a one-time survey using a form tool such as Typeform, aimed at your list of VIPs and past customers.",
+          "Ask the questions that matter for feedback on the product and store rather than generic satisfaction items.",
+          "Offer a chance to win a $250 Amazon gift card as the participation incentive.",
+          "Use the responses as input to hypotheses and copy changes while the permanent post-purchase survey is being set up."
+        ],
+        "caveats": [
+          "The exact tool and incentive terms should be verified before use; they are not fixed requirements.",
+          "Incentivized one-time surveys can bias responses toward incentive-motivated participants."
+        ],
+        "tags": [
+          "testing",
+          "customer-research",
+          "survey-design",
+          "email",
+          "incentives",
+          "voice-of-customer"
+        ]
+      },
+      {
+        "title": "Run user testing and phone interviews with customers",
+        "summary": "Watch users on the site and call customers to ask why they bought and what was unclear.",
+        "use_when": "You need qualitative depth beyond survey answers, especially on usability problems",
+        "steps": [
+          "Recruit people to go onto your site and survey them, then run proper usability tests and user interviews to surface friction.",
+          "In parallel, call customers directly. The described practice is to phone customers and quiz them with questions like: why did you purchase, did you have a good purchasing experience, and was anything unclear?",
+          "Record the language customers use about clarity and hesitation, and feed it back into hypotheses and copy.",
+          "Treat this as an ongoing practice rather than a one-off project, since it produces the 'why' that heatmaps and funnels cannot."
+        ],
+        "caveats": [
+          "No sample size, cadence or screening criteria are given for user tests or customer calls."
+        ],
+        "tags": [
+          "testing",
+          "user-testing",
+          "customer-research",
+          "usability",
+          "interviews",
+          "voice-of-customer"
+        ]
+      },
+      {
+        "title": "Make revenue per visitor the primary CRO metric",
+        "summary": "Optimize revenue per visitor or per session rather than raw conversion rate, because it blends conversion rate and average order value.",
+        "use_when": "Choosing the headline metric for a test program or reporting CRO results to stakeholders",
+        "steps": [
+          "Report and optimize revenue per visitor (or revenue per session) as the primary metric; the source recommends focusing on it roughly nine times out of ten.",
+          "Use it because it combines conversion rate and average order value, so it prevents wins on one dimension from being paid for by losses on the other.",
+          "Watch it expose false wins: slashing prices can lift conversion rate dramatically while the brand makes less per visitor, so a conversion-rate-only dashboard would celebrate a revenue-losing change.",
+          "In comprehensive programs, look for isolated AB tests that produce incremental increases in revenue per visitor and treat those increments as the compounding output of the program."
+        ],
+        "caveats": [
+          "The source describes revenue per visitor as a blend of conversion rate and average order value but gives no calculation formula and no target level.",
+          "It does not specify what to do in the remaining one-out-of-ten cases where another metric may lead."
+        ],
+        "tags": [
+          "testing",
+          "measurement",
+          "revenue-per-visitor",
+          "average-order-value",
+          "metrics",
+          "conversion-optimization"
+        ]
+      },
+      {
+        "title": "Run tests long enough to survive external factors",
+        "summary": "Test for two to four weeks and cover repeated weekdays so competitor sales and day effects don't kill winners.",
+        "use_when": "Setting test duration and scheduling for anyone running AB tests",
+        "steps": [
+          "Plan around a two-to-four-week window rather than stopping early; external factors such as a competitor's sale on a single day can push a test down and trigger a rash decision to kill a potentially winning variant.",
+          "For comprehensive tests on stores above the traffic threshold, run for at least two weeks so external factors do not distort the result.",
+          "Use a repeated-weekday schedule — for example two Mondays, two Tuesdays, two Wednesdays and two Thursdays — so day-of-week effects are balanced across variants.",
+          "When running concurrent tests, separate them by area: a homepage test and a cart test can run together because they are far apart, as can an above-fold test with a below-fold test."
+        ],
+        "caveats": [
+          "The two-week minimum is stated for comprehensive tests above the traffic threshold; the source does not say whether it replaces the broader two-to-four-week guidance.",
+          "The repeated-weekday schedule is given as an example, not as a mandatory rule, and the source does not define how 'far apart' concurrent tests must be."
+        ],
+        "tags": [
+          "testing",
+          "experiment-design",
+          "test-duration",
+          "ab-testing",
+          "validity",
+          "measurement"
+        ]
+      },
+      {
+        "title": "Ensure statistical power before trusting a test",
+        "summary": "Design tests with adequate statistical power rather than reading early or underpowered results.",
+        "use_when": "Deciding whether a test result is actionable, especially on mid-volume stores",
+        "steps": [
+          "Treat statistical power as a design parameter: decide required sample size and duration up front so the test can detect the effect size you care about.",
+          "Do not stop a test on the basis of a bad day or two — the source explicitly warns that external events can make a test look like a loser while it is still a potential winner.",
+          "Combine the power requirement with the two-to-four-week duration guidance so you have both enough sessions and enough weekday coverage.",
+          "If volume is too low to power a small test at all, that is a signal to run a bigger structural swing instead of a micro-test."
+        ],
+        "caveats": [
+          "The source does not give a method for calculating or achieving statistical power, nor any significance threshold."
+        ],
+        "tags": [
+          "testing",
+          "statistical-power",
+          "experiment-design",
+          "sample-size",
+          "ab-testing",
+          "measurement"
+        ]
+      },
+      {
+        "title": "Map funnel drop-off through PDP, cart, checkout and post-purchase",
+        "summary": "Analyze where people drop off through the funnel — and analyze why — without necessarily running full analytics software.",
+        "use_when": "Diagnosing a store where traffic flows straight from ad to product page",
+        "steps": [
+          "Look at which funnel step people are dropping off at as a baseline practice; full Google Analytics or tracking-software analysis is not required below the low-traffic threshold, but the drop-off review is.",
+          "If traffic goes straight from ad to PDP, walk the sequence explicitly: product page, cart, checkout, thank-you page, and the post-purchase upsell step if your stack supports one.",
+          "For each drop-off point, follow the count with a cause analysis — this is where heatmaps and customer interviews take over from funnel numbers.",
+          "Allow roughly one to two weeks of data collection before making decisions at low volume, so the drop-off picture is stable enough to act on."
+        ],
+        "caveats": [
+          "The period for the traffic threshold is not stated in the excerpt; treat the threshold as approximate.",
+          "The source does not name specific analytics tools or metrics for the funnel review."
+        ],
+        "tags": [
+          "testing",
+          "funnel-analysis",
+          "drop-off",
+          "checkout",
+          "product-page",
+          "measurement"
+        ]
+      },
+      {
+        "title": "Prioritize research findings with the PXL framework",
+        "summary": "After completing research, score and sequence hypotheses using the PXL framework rather than intuition.",
+        "use_when": "Turning a pile of audit, survey and analytics findings into an ordered test backlog",
+        "steps": [
+          "Finish the research phase first — audit, quantitative analysis, user testing, surveys — before scoring anything.",
+          "Then build a prioritization framework using the PXL framework. The source is explicit that this framework is not theirs and does not claim to have invented it.",
+          "Use the framework to rank hypotheses so the highest-potential changes get built and run first, rather than testing in the order findings arrived.",
+          "Keep the framework applied consistently, since the compounding value of a CRO program depends on sequencing the right tests rather than running more of them."
+        ],
+        "caveats": [
+          "The source does not state what PXL stands for or provide the exact scoring structure or formula.",
+          "Reproducing the framework requires consulting its original source rather than guessing at the acronym."
+        ],
+        "tags": [
+          "testing",
+          "prioritization",
+          "pipeline",
+          "experiment-design",
+          "research",
+          "cro-strategy"
+        ]
+      },
+      {
+        "title": "Expect winning tests to compound, not just outweigh losers",
+        "summary": "Wins beat losses by a large margin and their revenue-per-visitor gains stack month over month and year over year.",
+        "use_when": "Justifying continued investment in a structured testing program",
+        "steps": [
+          "Frame the program around accumulated incremental revenue per visitor rather than a single test's headline result.",
+          "Recognize that a high win-to-loss ratio means implemented wins persist on the site while losing variants disappear, so gains stack on top of each other.",
+          "Plan for the compounding to show up month on month and year on year as more winners are implemented and left in place.",
+          "Use this framing when the immediate result of a program looks modest — comprehensive audits, isolated AB tests and incremental revenue-per-visitor gains are the building blocks, not the whole outcome."
+        ],
+        "caveats": [
+          "The claim that winners outweigh losers 'times 100' is rhetorical; the source does not quantify the compounding effect or provide a measured multiplier."
+        ],
+        "tags": [
+          "testing",
+          "revenue-per-visitor",
+          "compounding",
+          "cro-strategy",
+          "program-management",
+          "measurement"
+        ]
+      }
+    ]
+  },
+  "raw_content": "{\"cards\": [{\"title\": \"Choose CRO strategy by monthly session volume\", \"summary\": \"Split CRO approach: big swings under 300,000 monthly sessions, comprehensive AB testing above it.\", \"use_when\": \"Deciding how to allocate CRO effort for a store based on traffic and order volume\", \"steps\": [\"Pull monthly session volume from your analytics and compare it to the roughly 300,000 sessions/month line used as the decision point.\", \"Under that line, default to big swings rather than micro-tests: full landing page design concepts, PDP redesigns based on data, and offer/price tests. Comprehensive CRO (long audits, deep quantitative and qualitative research, isolated AB tests) is not worth the overhead at low volume.\", \"Above that line, with a decent conversion rate and enough orders to quantify results, run comprehensive full CRO: AB testing, data analysis, long audits and deep data work. At this level comprehensive CRO remains the most powerful lever for growing revenue per visitor.\", \"Treat the threshold as a moving internal benchmark rather than a fixed law — the source notes it changed within roughly the last six to twelve months — and re-check whether your data volume is actually sufficient before committing to an AB testing program.\"], \"caveats\": [\"The source does not define what counts as a 'good enough' conversion rate or 'enough orders' above the threshold.\", \"300,000 monthly sessions is a heuristic benchmark, not a validated industry constant.\"], \"tags\": [\"testing\", \"cro-strategy\", \"ab-testing\", \"traffic-volume\", \"experiment-design\", \"resource-allocation\"]}, {\"title\": \"Run big swings instead of micro-tests on small stores\", \"summary\": \"Low-traffic stores should redesign PDPs, test offers and build landing pages instead of testing button colors.\", \"use_when\": \"Planning the CRO roadmap for a store with limited traffic that cannot power small element tests\", \"steps\": [\"Stop allocating testing capacity to small PDP elements such as button color, above-fold image swaps or small copy snippets — at low volume these rarely reach significance and rarely move revenue.\", \"Instead do PDP redesigns driven by data, and treat the 'based on data' part as mandatory: the redesign should follow from funnel, survey, interview or heatmap findings rather than taste.\", \"Layer in landing page design concepts, since pre-sell pages carry the biggest uplift for stores under the volume threshold, and run offer/price experiments monthly.\", \"Expect the model to work differently when cost per click is high: scaling ad spend or refreshing creative may lift conversion little, whereas bigger on-site swings can produce a step change in conversion rate or revenue per session.\"], \"caveats\": [\"The source gives no specification for what a data-driven PDP redesign should change.\", \"'Can literally double conversion or revenue per session' is a rhetorical claim without baseline, sample size or test period.\"], \"tags\": [\"testing\", \"cro-strategy\", \"product-page\", \"landing-page\", \"offer-design\", \"low-traffic\"]}, {\"title\": \"Insert a landing page between ad click and money pages\", \"summary\": \"Put a pre-sell landing page between the ad and product or collection pages instead of sending traffic straight to the store.\", \"use_when\": \"Paid traffic is being routed directly to PDPs, homepages or collection pages and performance is flat\", \"steps\": [\"Stop sending paid clicks straight to product pages, homepages, or collection pages — the source treats that as leaving money on the table.\", \"Add an intermediate step: a dedicated landing page that visitors hit first and that pre-sells them before they continue to the product or collection ('money') pages.\", \"Design that page as a concept with a defined angle and offer, because landing page design concepts are counted among the big swings available to stores under the traffic threshold, and the source reports landing pages have the biggest uplift for those stores.\", \"Once the page is live, measure its contribution in revenue per visitor and use it as a lever to scale cold traffic rather than judging it purely on click-through.\"], \"caveats\": [\"The source does not specify landing page format, length, or offer structure.\", \"One reported example — about 20k per month on cold traffic with the ability to scale — is a case illustration, not a benchmark; the currency and period are not stated.\"], \"tags\": [\"testing\", \"landing-page\", \"paid-traffic\", \"pre-sell\", \"offer-design\", \"cro-strategy\"]}, {\"title\": \"Test offers and price points on a monthly cadence\", \"summary\": \"Run month-to-month offer experiments: BOGO, three-for-two, build-a-bundle pages, and different price points.\", \"use_when\": \"Looking for revenue-per-visitor gains that do not depend on design changes or page-level test traffic\", \"steps\": [\"Set a monthly cadence for offer experiments rather than treating offers as a permanent setting.\", \"Test structures such as buy one get one free, three for the price of two, and build-a-bundle pages.\", \"Test different price points directly — the source lists price testing alongside offer testing as something that moves the needle.\", \"Because offer changes can shift both conversion rate and average order value, evaluate them on revenue per visitor or revenue per session rather than conversion rate alone.\", \"Keep the offer tests distinct from layout tests so you can attribute the revenue effect, and note that offer work is typically easier to power than small page-element tests at low traffic.\"], \"caveats\": [\"The source does not state test duration, sample size, or a decision rule for declaring an offer winner.\", \"'Three for the power of two' appears in the source material and is likely a transcription artifact for three for the price of two.\"], \"tags\": [\"testing\", \"offer-design\", \"pricing\", \"bundles\", \"revenue-per-visitor\", \"experiment-design\"]}, {\"title\": \"Remove the discount code box when no promotion is active\", \"summary\": \"An empty discount field on the cart drives coupon-hunting abandonment; remove it unless discounts are live.\", \"use_when\": \"Auditing cart or coupon page design on a store with no active promotions\", \"steps\": [\"Check whether a discount or coupon code field is present on the cart or coupon page while no promotion is running.\", \"If nothing is active, remove the field. An empty box invites shoppers to leave the site to search for a code, which breaks the purchase flow and frequently ends in abandonment.\", \"Pair the removal with other cart-level trust elements such as a trust policy bar, which the source groups into the same cart optimization package.\", \"Measure the change on revenue per visitor, not conversion rate alone, and keep the field out until there is a real promotion to justify it.\"], \"caveats\": [\"Coupon-hunting abandonment is given as the rationale, not as a measured outcome in the source.\", \"A reported result of about $40,000 in monthly revenue is attributed to the combined cart optimization (discount box removal plus trust policy bar), not to either change alone; currency and period are not stated.\"], \"tags\": [\"testing\", \"checkout\", \"cart\", \"conversion-optimization\", \"trust-signals\", \"revenue-per-visitor\"]}, {\"title\": \"Use bestseller carousels in the mega-menu to create FOMO\", \"summary\": \"Surface bestsellers in the mega-menu so shoppers see what other people are buying.\", \"use_when\": \"Optimizing site navigation and category discovery for a store with a broad catalog\", \"steps\": [\"Add a bestseller carousel into the mega-menu so products other shoppers are buying are visible during navigation.\", \"The mechanism is social proof and scarcity of attention: the source reports more shoppers reacting with FOMO toward products flagged as popular once the carousel was added.\", \"Treat the carousel as one of the larger structural changes rather than a micro-test, since it changes how visitors are routed into the catalog.\", \"Evaluate the effect at the level of product and category entry, watching whether interest translates into purchases rather than only clicks.\"], \"caveats\": [\"The source does not specify selection criteria for bestsellers or rules for placing the carousel.\", \"It does not confirm that the observed FOMO translated into purchases versus interest or clicking only.\"], \"tags\": [\"testing\", \"navigation\", \"merchandising\", \"social-proof\", \"product-discovery\", \"mega-menu\"]}, {\"title\": \"Pair quantitative and qualitative data to form test hypotheses\", \"summary\": \"Use heatmaps and funnel drop-off to find what is broken, then surveys and interviews to find why.\", \"use_when\": \"Building a prioritized test hypothesis backlog instead of guessing at changes\", \"steps\": [\"Start with quantitative instruments — heatmaps and funnel drop-off analysis — to locate what is happening. A typical finding is that users never see a below-the-fold trust or guarantee section.\", \"Then run qualitative research — post-purchase surveys and customer interviews — to discover why. For example, ask what almost stopped someone from buying today.\", \"Combine both signals into hypotheses before designing tests, so the test is aimed at a mechanism rather than a surface element.\", \"Do not skip either half: numbers tell you where to look, customer language tells you what to change and how to phrase it.\"], \"caveats\": [\"No specific heatmap or funnel tooling is prescribed, and the 'users missing below-the-fold guarantees' case is illustrative rather than a completion criterion.\", \"No sample size or interview protocol is given.\"], \"tags\": [\"testing\", \"customer-research\", \"heatmaps\", \"funnel-analysis\", \"hypothesis\", \"measurement\"]}, {\"title\": \"Ask the two core post-purchase survey questions\", \"summary\": \"Set up post-purchase surveys and always ask what made them purchase and what almost stopped them.\", \"use_when\": \"Setting up or auditing survey instrumentation on any store\", \"steps\": [\"Ensure a post-purchase survey is live. The source treats this as non-negotiable and the single most effective optimization lever, so if it does not exist, set it up before other work.\", \"Ask at least two questions: 'What made you purchase today?' and 'What made you almost not purchase today?' (a close variant in the source wording is 'what almost stopped you from buying today?').\", \"Treat the first question as a source of purchase motivations — for example, a customer buying because they want to lose weight — and the second as a source of objections and friction.\", \"Review answers regularly and route them into copy, angle and layout decisions rather than filing them as reporting.\"], \"caveats\": [\"No survey timing or placement (page, email, widget) is specified.\", \"The tool named in the source material is transcription-ambiguous and should be verified against current options rather than treated as a fixed recommendation.\"], \"tags\": [\"testing\", \"customer-research\", \"post-purchase-survey\", \"voice-of-customer\", \"measurement\", \"conversion-optimization\"]}, {\"title\": \"Turn 'almost didn't buy' answers into front-end copy changes\", \"summary\": \"Use objections surfaced by post-purchase surveys to rewrite the copy or angle on the front end of the site.\", \"use_when\": \"Survey responses reveal recurring uncertainties that are not addressed on the page\", \"steps\": [\"Mine the second survey question for concrete objections. A recurring example: customers did not know how long it would take to see results.\", \"Convert the objection into an explicit claim on the front end — for instance, telling visitors they will see noticeable results in the first six weeks.\", \"Place that language where the objection arises: above the fold, near the add-to-cart, or in the PDP copy that frames the offer.\", \"Re-survey after the change to check whether the objection stops appearing, and treat the change as a big swing rather than a word-level test.\"], \"caveats\": [\"The source gives one worked example but no process for selecting which answers to act on or how to rank objections.\"], \"tags\": [\"testing\", \"customer-research\", \"copywriting\", \"objection-handling\", \"post-purchase-survey\", \"product-page\"]}, {\"title\": \"Run a one-time survey when no post-purchase survey exists\", \"summary\": \"Email VIPs and customers a one-time Typeform-style survey with a gift-card incentive to collect feedback fast.\", \"use_when\": \"You need customer insight but no post-purchase survey is instrumented yet\", \"steps\": [\"Stand up a one-time survey using a form tool such as Typeform, aimed at your list of VIPs and past customers.\", \"Ask the questions that matter for feedback on the product and store rather than generic satisfaction items.\", \"Offer a chance to win a $250 Amazon gift card as the participation incentive.\", \"Use the responses as input to hypotheses and copy changes while the permanent post-purchase survey is being set up.\"], \"caveats\": [\"The exact tool and incentive terms should be verified before use; they are not fixed requirements.\", \"Incentivized one-time surveys can bias responses toward incentive-motivated participants.\"], \"tags\": [\"testing\", \"customer-research\", \"survey-design\", \"email\", \"incentives\", \"voice-of-customer\"]}, {\"title\": \"Run user testing and phone interviews with customers\", \"summary\": \"Watch users on the site and call customers to ask why they bought and what was unclear.\", \"use_when\": \"You need qualitative depth beyond survey answers, especially on usability problems\", \"steps\": [\"Recruit people to go onto your site and survey them, then run proper usability tests and user interviews to surface friction.\", \"In parallel, call customers directly. The described practice is to phone customers and quiz them with questions like: why did you purchase, did you have a good purchasing experience, and was anything unclear?\", \"Record the language customers use about clarity and hesitation, and feed it back into hypotheses and copy.\", \"Treat this as an ongoing practice rather than a one-off project, since it produces the 'why' that heatmaps and funnels cannot.\"], \"caveats\": [\"No sample size, cadence or screening criteria are given for user tests or customer calls.\"], \"tags\": [\"testing\", \"user-testing\", \"customer-research\", \"usability\", \"interviews\", \"voice-of-customer\"]}, {\"title\": \"Make revenue per visitor the primary CRO metric\", \"summary\": \"Optimize revenue per visitor or per session rather than raw conversion rate, because it blends conversion rate and average order value.\", \"use_when\": \"Choosing the headline metric for a test program or reporting CRO results to stakeholders\", \"steps\": [\"Report and optimize revenue per visitor (or revenue per session) as the primary metric; the source recommends focusing on it roughly nine times out of ten.\", \"Use it because it combines conversion rate and average order value, so it prevents wins on one dimension from being paid for by losses on the other.\", \"Watch it expose false wins: slashing prices can lift conversion rate dramatically while the brand makes less per visitor, so a conversion-rate-only dashboard would celebrate a revenue-losing change.\", \"In comprehensive programs, look for isolated AB tests that produce incremental increases in revenue per visitor and treat those increments as the compounding output of the program.\"], \"caveats\": [\"The source describes revenue per visitor as a blend of conversion rate and average order value but gives no calculation formula and no target level.\", \"It does not specify what to do in the remaining one-out-of-ten cases where another metric may lead.\"], \"tags\": [\"testing\", \"measurement\", \"revenue-per-visitor\", \"average-order-value\", \"metrics\", \"conversion-optimization\"]}, {\"title\": \"Run tests long enough to survive external factors\", \"summary\": \"Test for two to four weeks and cover repeated weekdays so competitor sales and day effects don't kill winners.\", \"use_when\": \"Setting test duration and scheduling for anyone running AB tests\", \"steps\": [\"Plan around a two-to-four-week window rather than stopping early; external factors such as a competitor's sale on a single day can push a test down and trigger a rash decision to kill a potentially winning variant.\", \"For comprehensive tests on stores above the traffic threshold, run for at least two weeks so external factors do not distort the result.\", \"Use a repeated-weekday schedule — for example two Mondays, two Tuesdays, two Wednesdays and two Thursdays — so day-of-week effects are balanced across variants.\", \"When running concurrent tests, separate them by area: a homepage test and a cart test can run together because they are far apart, as can an above-fold test with a below-fold test.\"], \"caveats\": [\"The two-week minimum is stated for comprehensive tests above the traffic threshold; the source does not say whether it replaces the broader two-to-four-week guidance.\", \"The repeated-weekday schedule is given as an example, not as a mandatory rule, and the source does not define how 'far apart' concurrent tests must be.\"], \"tags\": [\"testing\", \"experiment-design\", \"test-duration\", \"ab-testing\", \"validity\", \"measurement\"]}, {\"title\": \"Ensure statistical power before trusting a test\", \"summary\": \"Design tests with adequate statistical power rather than reading early or underpowered results.\", \"use_when\": \"Deciding whether a test result is actionable, especially on mid-volume stores\", \"steps\": [\"Treat statistical power as a design parameter: decide required sample size and duration up front so the test can detect the effect size you care about.\", \"Do not stop a test on the basis of a bad day or two — the source explicitly warns that external events can make a test look like a loser while it is still a potential winner.\", \"Combine the power requirement with the two-to-four-week duration guidance so you have both enough sessions and enough weekday coverage.\", \"If volume is too low to power a small test at all, that is a signal to run a bigger structural swing instead of a micro-test.\"], \"caveats\": [\"The source does not give a method for calculating or achieving statistical power, nor any significance threshold.\"], \"tags\": [\"testing\", \"statistical-power\", \"experiment-design\", \"sample-size\", \"ab-testing\", \"measurement\"]}, {\"title\": \"Map funnel drop-off through PDP, cart, checkout and post-purchase\", \"summary\": \"Analyze where people drop off through the funnel — and analyze why — without necessarily running full analytics software.\", \"use_when\": \"Diagnosing a store where traffic flows straight from ad to product page\", \"steps\": [\"Look at which funnel step people are dropping off at as a baseline practice; full Google Analytics or tracking-software analysis is not required below the low-traffic threshold, but the drop-off review is.\", \"If traffic goes straight from ad to PDP, walk the sequence explicitly: product page, cart, checkout, thank-you page, and the post-purchase upsell step if your stack supports one.\", \"For each drop-off point, follow the count with a cause analysis — this is where heatmaps and customer interviews take over from funnel numbers.\", \"Allow roughly one to two weeks of data collection before making decisions at low volume, so the drop-off picture is stable enough to act on.\"], \"caveats\": [\"The period for the traffic threshold is not stated in the excerpt; treat the threshold as approximate.\", \"The source does not name specific analytics tools or metrics for the funnel review.\"], \"tags\": [\"testing\", \"funnel-analysis\", \"drop-off\", \"checkout\", \"product-page\", \"measurement\"]}, {\"title\": \"Prioritize research findings with the PXL framework\", \"summary\": \"After completing research, score and sequence hypotheses using the PXL framework rather than intuition.\", \"use_when\": \"Turning a pile of audit, survey and analytics findings into an ordered test backlog\", \"steps\": [\"Finish the research phase first — audit, quantitative analysis, user testing, surveys — before scoring anything.\", \"Then build a prioritization framework using the PXL framework. The source is explicit that this framework is not theirs and does not claim to have invented it.\", \"Use the framework to rank hypotheses so the highest-potential changes get built and run first, rather than testing in the order findings arrived.\", \"Keep the framework applied consistently, since the compounding value of a CRO program depends on sequencing the right tests rather than running more of them.\"], \"caveats\": [\"The source does not state what PXL stands for or provide the exact scoring structure or formula.\", \"Reproducing the framework requires consulting its original source rather than guessing at the acronym.\"], \"tags\": [\"testing\", \"prioritization\", \"pipeline\", \"experiment-design\", \"research\", \"cro-strategy\"]}, {\"title\": \"Expect winning tests to compound, not just outweigh losers\", \"summary\": \"Wins beat losses by a large margin and their revenue-per-visitor gains stack month over month and year over year.\", \"use_when\": \"Justifying continued investment in a structured testing program\", \"steps\": [\"Frame the program around accumulated incremental revenue per visitor rather than a single test's headline result.\", \"Recognize that a high win-to-loss ratio means implemented wins persist on the site while losing variants disappear, so gains stack on top of each other.\", \"Plan for the compounding to show up month on month and year on year as more winners are implemented and left in place.\", \"Use this framing when the immediate result of a program looks modest — comprehensive audits, isolated AB tests and incremental revenue-per-visitor gains are the building blocks, not the whole outcome.\"], \"caveats\": [\"The claim that winners outweigh losers 'times 100' is rhetorical; the source does not quantify the compounding effect or provide a measured multiplier.\"], \"tags\": [\"testing\", \"revenue-per-visitor\", \"compounding\", \"cro-strategy\", \"program-management\", \"measurement\"]}]}",
+  "input": {
+    "source_id": "1A1kUIcTa4OUFsdEjv-UkG0iqCuQCBg2v",
+    "source_sha256": "1cac622fd0463eeabf65125eb3c15c456b88ffc25fc184a5c0492bd92a757d01",
+    "source_name": "Conversion Rate Optimization Framework Revealed - Step By Step Breakdown.docx",
+    "folder": "/09-CRO-testing",
+    "domain": "testing",
+    "section": 0,
+    "section_count": 3,
+    "text": "06-MEA / measurement and analytics\n\nGoes here. Website and business analytics, measuring organic and paid traffic, Google Analytics, Shopify reporting, root cause analysis frameworks, multi-touch attribution (MTA), post-purchase surveys, marketing mix modeling (MMM), conversion rate optimization (CRO) methodologies, quiz funnel psychology, heatmaps, and general marketing/business performance dashboards.\n\nNot here.\n\nPaid advertising performance metrics, ROAS, scaling rules, bidding, or ad-platform specific attribution -> 11-ADC\n\nFinancial modeling or accounting -> 20-FIN\n\nHeader. url: rights: public_reference why: Details a comprehensive Conversion Rate Optimization (CRO) framework for e-commerce, outlining specific testing strategies based on traffic volume and breaking down winning A/B tests. modules: [MEA] topics: [conversion rate optimization, business and marketing analytics] tier: 2 scope_hint: core\n\nTopics. conversion rate optimization / Deconstructing Conversion Rate Optimization (CRO) strategies based on e-commerce traffic volume. Recommending \"big swing\" changes for stores under 300,000 monthly sessions—such as implementing advertorials, redesigning product pages (PDPs), and testing bundle offers—while reserving high-velocity, comprehensive A/B testing for high-traffic stores. Showcasing specific optimizations, such as removing empty discount boxes from the cart to prevent coupon-hunting abandonment, adding \"trust policy bars,\" and optimizing the mega-menu with bestseller carousels. business and marketing analytics / Combining quantitative and qualitative data to form high-probability A/B test hypotheses. Utilizing heatmaps and funnel drop-off analysis to identify what is happening (e.g., users missing below-the-fold guarantees), paired with post-purchase surveys and customer interviews to discover why (e.g., asking \"what almost stopped you from buying today?\"). Establishing strict A/B testing parameters, including prioritizing Revenue Per Visitor (RPV) over raw conversion rate, ensuring Statistical Power, and running tests for 2 to 4 weeks to account for external factors like competitor sales.\n\nLook for. The recommended strategy shift based on traffic volume: stores with under 300,000 monthly sessions should focus on \"big swings\" (e.g., full landing page redesigns or offer testing) rather than micro A/B tests. The two most important questions to ask in a post-purchase survey: \"What made you purchase today?\" and \"What made you almost not purchase today?\". The primary metric to optimize for instead of simple conversion rate: Revenue per Visitor (or Revenue per Session). The reason to remove discount code boxes from the cart if no promotions are active: it causes users to leave the site to hunt for coupons, often disrupting the purchase flow and causing abandonment.\n\nSkip. Promotional pitches to book a free CRO growth plan with Conversion Wise or mentions of Ezra Firestone's Zipify app.\n\nScope mix. Almost all core.\n\nVolume. 10 to 15.",
+    "prior_notes": [
+      {
+        "title": "Prioritize big swing changes for low-traffic stores",
+        "claim": "The source recommends stores with under 300,000 monthly sessions focus on big swings rather than micro A/B tests.",
+        "action": {
+          "text": "Focus on big swings rather than micro A/B tests when monthly sessions are under 300,000.",
+          "quote": "stores with under 300,000 monthly sessions should focus on \"big swings\" (e.g., full landing page redesigns or offer testing) rather than micro A/B tests."
+        },
+        "unknowns": [
+          "No definition of 'big swing' beyond examples is given.",
+          "The threshold for high-traffic stores is not defined."
+        ]
+      },
+      {
+        "title": "Reserve high-velocity A/B testing for high-traffic stores",
+        "claim": "The source states high-velocity, comprehensive A/B testing is reserved for high-traffic stores.",
+        "action": {
+          "text": "Reserve high-velocity, comprehensive A/B testing for high-traffic stores.",
+          "quote": "while reserving high-velocity, comprehensive A/B testing for high-traffic stores."
+        },
+        "unknowns": [
+          "The threshold for high-traffic is not defined.",
+          "What counts as high-velocity or comprehensive is not specified."
+        ]
+      },
+      {
+        "title": "Remove empty discount boxes from cart when no promotions are active",
+        "claim": "The source recommends removing empty discount boxes from the cart to prevent coupon-hunting abandonment.",
+        "action": {
+          "text": "Remove discount code boxes from the cart if no promotions are active.",
+          "quote": "remove discount code boxes from the cart if no promotions are active"
+        },
+        "unknowns": [
+          "No design specifics for the discount box removal are given.",
+          "Coupon-hunting abandonment is stated as a rationale, not a measured outcome."
+        ]
+      },
+      {
+        "title": "Optimize mega-menu with bestseller carousels",
+        "claim": "The source showcases optimizing the mega-menu with bestseller carousels.",
+        "action": {
+          "text": "Optimize the mega-menu with bestseller carousels.",
+          "quote": "optimizing the mega-menu with bestseller carousels"
+        },
+        "unknowns": [
+          "No criteria for selecting bestsellers or placing carousels are given."
+        ]
+      },
+      {
+        "title": "Combine quantitative and qualitative data for A/B test hypotheses",
+        "claim": "The source recommends combining quantitative and qualitative data to form high-probability A/B test hypotheses.",
+        "action": {
+          "text": "Combine quantitative and qualitative data to form high-probability A/B test hypotheses.",
+          "quote": "Combining quantitative and qualitative data to form high-probability A/B test hypotheses."
+        },
+        "unknowns": [
+          "No specific methods for combining data are given.",
+          "No threshold for 'high-probability' is defined."
+        ]
+      },
+      {
+        "title": "Use heatmaps and funnel drop-off analysis paired with surveys/interviews",
+        "claim": "The source recommends utilizing heatmaps and funnel drop-off analysis to identify what is happening, paired with post-purchase surveys and customer interviews to discover why.",
+        "action": {
+          "text": "Utilize heatmaps and funnel drop-off analysis to identify what is happening, paired with post-purchase surveys and customer interviews to discover why.",
+          "quote": "Utilizing heatmaps and funnel drop-off analysis to identify what is happening (e.g., users missing below-the-fold guarantees), paired with post-purchase surveys and customer interviews to discover why (e.g., asking \"what almost stopped you from buying today?\")."
+        },
+        "unknowns": [
+          "No tools or metrics for heatmaps/funnel analysis are specified.",
+          "The example 'users missing below-the-fold guarantees' is illustrative rather than a completion criterion.",
+          "No sample size or interview protocol is given."
+        ]
+      },
+      {
+        "title": "Ask two post-purchase survey questions",
+        "claim": "The source identifies the two most important post-purchase survey questions: 'What made you purchase today?' and 'What made you almost not purchase today?'.",
+        "action": {
+          "text": "Ask post-purchase survey respondents 'What made you purchase today?' and 'What made you almost not purchase today?'.",
+          "quote": "\"What made you purchase today?\" and \"What made you almost not purchase today?\""
+        },
+        "unknowns": [
+          "The source also gives a variant wording: 'what almost stopped you from buying today?'.",
+          "No survey timing or placement is specified."
+        ]
+      },
+      {
+        "title": "Prioritize Revenue Per Visitor over raw conversion rate",
+        "claim": "The source recommends prioritizing Revenue Per Visitor (RPV) over raw conversion rate.",
+        "action": {
+          "text": "Prioritize Revenue Per Visitor (RPV) over raw conversion rate.",
+          "quote": "prioritizing Revenue Per Visitor (RPV) over raw conversion rate"
+        },
+        "unknowns": [
+          "Revenue per Session is given as an alternative primary metric.",
+          "No calculation method for RPV is provided."
+        ]
+      },
+      {
+        "title": "Ensure Statistical Power in A/B tests",
+        "claim": "The source recommends ensuring Statistical Power.",
+        "action": {
+          "text": "Ensure Statistical Power in A/B tests.",
+          "quote": "ensuring Statistical Power"
+        },
+        "unknowns": [
+          "No method for calculating or achieving statistical power is given."
+        ]
+      },
+      {
+        "title": "Consider Revenue per Session as an alternative primary metric",
+        "claim": "The source presents Revenue per Session as an alternative primary optimization metric instead of simple conversion rate.",
+        "action": {
+          "text": "Consider Revenue per Session as an alternative primary metric to simple conversion rate.",
+          "quote": "Revenue per Visitor (or Revenue per Session)."
+        },
+        "unknowns": [
+          "No calculation method for Revenue per Session is provided."
+        ]
+      },
+      {
+        "title": "Focus on revenue per visitor or revenue per session",
+        "claim": "Ali recommends focusing on revenue per visitor or revenue per session nine times out of ten.",
+        "action": {
+          "text": "Focus on revenue per visitor or revenue per session nine times out of 10.",
+          "quote": "What you want to be focusing on nine times out of 10 is revenue per visitor or revenue per session."
+        },
+        "unknowns": [
+          "How to calculate revenue per visitor or revenue per session is not explained.",
+          "What to do in the remaining one out of ten cases is not specified.",
+          "Relationship to tracking a mix of two metrics is unclear."
+        ]
+      },
+      {
+        "title": "Conversion Wise bases optimization changes on customer research and data analysis",
+        "claim": "Ezra describes Conversion Wise as doing surveys, research, and data analysis, then basing messaging or layout changes on an understanding of customers and marketplace fit rather than guesswork.",
+        "action": null,
+        "unknowns": [
+          "Specific survey methods, research techniques, and data analysis procedures are not described.",
+          "How to determine marketplace fit is not detailed."
+        ]
+      },
+      {
+        "title": "Promised framework, data analysis, and test creation steps are missing",
+        "claim": "Ali promises to show the effective framework, how hypotheses were formed, how data is analyzed, and how tests are created, but this passage ends before delivering those steps.",
+        "action": null,
+        "unknowns": [
+          "The effective framework is not described.",
+          "The hypothesis formation process is not described.",
+          "The data analysis process is not described.",
+          "The test creation process is not described."
+        ]
+      },
+      {
+        "title": "Revenue per visitor/session sentence is cut off",
+        "claim": "The transcript ends mid-sentence after 'Revenue per visitor or revenue per', leaving the continuation unspecified.",
+        "action": null,
+        "unknowns": [
+          "The missing continuation likely completes 'revenue per session' or another metric, but this is not confirmed."
+        ]
+      },
+      {
+        "title": "Conversion Wise designs landing pages and runs split tests",
+        "claim": "Ezra describes Conversion Wise as able to design direct response landing pages and run split tests.",
+        "action": null,
+        "unknowns": [
+          "No details on the number of split tests or landing page performance are given."
+        ]
+      },
+      {
+        "title": "Prioritize revenue per visitor or session over conversion rate alone",
+        "claim": "The source says CRO should increase a specific metric and recommends tracking a mix of conversion rate and average order value, focusing nine times out of ten on revenue per visitor or revenue per session.",
+        "action": {
+          "text": "Focus on revenue per visitor or revenue per session as the primary metric, because it mixes conversion rate and average order value.",
+          "quote": "So, what you need to focus on is that revenue per visitor."
+        },
+        "unknowns": [
+          "The source does not give a measurement formula beyond describing revenue per visitor or session as a mix between conversion rates and average order value.",
+          "The source does not specify a target level for revenue per visitor or session."
+        ]
+      },
+      {
+        "title": "Take bigger swings under 300,000 monthly sessions",
+        "claim": "The source says in 2025, brands under 300,000 sessions per month are far better taking much bigger swings.",
+        "action": {
+          "text": "Take much bigger swings instead of comprehensive CRO when under 300,000 sessions per month.",
+          "quote": "then you are far better taking much bigger swings"
+        },
+        "unknowns": [
+          "The source says six to eight things and later refers to eight things; the count is inconsistent.",
+          "The 300,000 sessions per month threshold is described as an internal benchmark that changed in the last six to 12 months."
+        ]
+      },
+      {
+        "title": "Run comprehensive CRO over 300,000 monthly sessions",
+        "claim": "The source says brands over 300,000 sessions per month with good enough conversion rate and enough orders have enough data to quantify comprehensive full CRO.",
+        "action": {
+          "text": "Run comprehensive full CRO, including AB testing, data analysis, long audits, and deep data work.",
+          "quote": "what we would typically call conversion rate optimization, AB testing, data analysis, long audits, um, and and really diving into the data."
+        },
+        "unknowns": [
+          "The source does not define good enough conversion rate or enough orders.",
+          "The source does not give a precise threshold for enough data beyond the session benchmark."
+        ]
+      },
+      {
+        "title": "Insert a landing page between ad click and store money pages",
+        "claim": "The source says driving media straight to PDPs, product pages, homepages, or collection pages leaves money on the table.",
+        "action": {
+          "text": "Put a landing page as a step between postclick and store landing, pre-selling visitors before they reach product or collection pages.",
+          "quote": "You need to put a step in between postclick and store landing. And that is a landing page."
+        },
+        "unknowns": [
+          "The source does not specify landing page format, length, or offer."
+        ]
+      },
+      {
+        "title": "Take bigger PDP redesign swings based on data",
+        "claim": "The source says under 300,000 sessions, brands should no longer test small PDP elements like button color, above-fold image, or small text snippet, and should do PDP redesigns based on data.",
+        "action": {
+          "text": "Redesign PDPs based on data rather than running small element tests.",
+          "quote": "PDP redesigns based on data and the data bit is really important"
+        },
+        "unknowns": [
+          "The source does not specify what data should drive the redesign."
+        ]
+      },
+      {
+        "title": "Test offers and price points month to month",
+        "claim": "The source says offer testing and price testing are things that move the needle.",
+        "action": {
+          "text": "Test different offers on a month-to-month basis, including buy one get one free, three for the price of two, build a bundle pages, different price points, and price testing.",
+          "quote": "you need to be testing on a month-to-month basis different offers, buy one get one free, three for the power of two, build a bundle pages, different price points, test price testing as well."
+        },
+        "unknowns": [
+          "The source does not specify performance thresholds or test duration for offer tests.",
+          "The source says three for the power of two, likely a speech transcription artifact."
+        ]
+      },
+      {
+        "title": "Use post-purchase upsells and surveys with Zipify",
+        "claim": "The source recommends post-purchase upsells and surveys using Zipify and says it is a great way of doing these things.",
+        "action": {
+          "text": "Use Zipify for post-purchase upsells and surveys.",
+          "quote": "post-purchase upselles and surveys using Zipify."
+        },
+        "unknowns": [
+          "The source does not specify survey questions, upsell offers, or performance targets."
+        ]
+      },
+      {
+        "title": "Run comprehensive audits with qualitative and quantitative research",
+        "claim": "Comprehensive CRO includes comprehensive audits with deep qualitative and quantitative research.",
+        "action": {
+          "text": "Run comprehensive audits with deep qualitative and quantitative research.",
+          "quote": "comprehensive audits, so proper uh deep diving into qualitative and quantitative research."
+        },
+        "unknowns": [
+          "The source does not define the audit scope or deliverables."
+        ]
+      },
+      {
+        "title": "Run isolated AB tests for incremental revenue per visitor",
+        "claim": "Comprehensive CRO includes isolated AB tests with incremental increases in revenue per visitor.",
+        "action": {
+          "text": "Run isolated AB tests and look for incremental increases in revenue per visitor.",
+          "quote": "Isolated AB tests, so small AB test with incremental increases in in revenue per visitor."
+        },
+        "unknowns": [
+          "The source does not specify test duration, sample size, or significance threshold."
+        ]
+      },
+      {
+        "title": "Slashing prices can raise conversion rate while lowering revenue per visitor",
+        "claim": "The source says he could guarantee improving conversion rates in about two minutes by slashing prices, but if prices are halved, conversion rate shoots up while the brand makes less per visitor.",
+        "action": null,
+        "unknowns": [
+          "No magnitude or price elasticity is given beyond the hypothetical two-minute and halved-price example."
+        ]
+      },
+      {
+        "title": "Optimizing the site with bigger swings can double conversion or revenue per session when CPC is high",
+        "claim": "The source contrasts scaling ad spend or testing creative with focusing on optimizing the site when cost per click is high; it says conversion rate doesn't increase much, but optimizing with bigger swings can literally double conversion or revenue per session overnight.",
+        "action": null,
+        "unknowns": [
+          "The source contrasts scaling ad spend or testing creative with optimizing the site, but does not state that scaling creative stalls.",
+          "'Double' is a rhetorical claim without a stated test period, sample size, or baseline."
+        ]
+      },
+      {
+        "title": "Comprehensive CRO remains most powerful for revenue per visitor above 300,000 sessions",
+        "claim": "The source says comprehensive CRO still works and is still the most powerful thing a brand over 300,000 sessions can do to generate more revenue per visitor.",
+        "action": null,
+        "unknowns": [
+          "The quote begins 'If you are over comprehensive CRO', likely omitting '300,000 sessions per month' from the prior sentence.",
+          "It is a comparative opinion, not a measured threshold."
+        ]
+      },
+      {
+        "title": "Insert a landing page between ad click and product/collection pages",
+        "claim": "The source says a step should be put between post-click and the store landing, specifically a landing page where people are pre-sold before going to product or collection pages.",
+        "action": {
+          "text": "Put a landing page between post-click and the store's money pages so visitors are pre-sold before product or collection pages.",
+          "quote": "You need to put a step in between postclick and store landing. And that is a landing page. That is where people will click an ad. They'll go on a page. They'll be pre-sold. And then they will go through to what we call your money pages, your product pages, your collection pages."
+        },
+        "unknowns": [
+          "'postclick and store landing' is not further defined.",
+          "No design or testing requirements are stated in this passage."
+        ]
+      },
+      {
+        "title": "Test different offers monthly, including BOGO, three-for-two, bundles, and price points",
+        "claim": "The source says brands should test different offers on a month-to-month basis, including buy one get one free, three for the power of two, build-a-bundle pages, different price points, and price testing.",
+        "action": {
+          "text": "Test different offers monthly, including buy one get one free, three for the power of two, build-a-bundle pages, different price points, and price testing.",
+          "quote": "you need to be testing on a month-to-month basis different offers, buy one get one free, three for the power of two, build a bundle pages, different price points, test price testing as well."
+        },
+        "unknowns": [
+          "'three for the power of two' is unclear and may be a transcription error.",
+          "The source does not state test duration, sample size, or how to measure offer winners here."
+        ]
+      },
+      {
+        "title": "Use landing page design concepts as a big swing",
+        "claim": "The source lists landing page design concepts among the eight things and says landing pages work.",
+        "action": {
+          "text": "Use landing page design concepts as one of the bigger swings for brands under 300,000 sessions per month.",
+          "quote": "landing page design concepts. So landing pages work."
+        },
+        "unknowns": [
+          "The source does not specify what a landing page design concept should include.",
+          "The source says there are six to eight things but the count is inconsistent."
+        ]
+      },
+      {
+        "title": "Perform funnel and drop-off analysis",
+        "claim": "The source recommends funnel and drop-off analysis generally; full GA or tracking software analysis is not required if under 300,000 sessions, but you should look at where people drop off and why. If traffic goes straight from ad to PDP, the source specifically names analyzing PDP, cart, checkout, thank you page, and upsell if using OCU or Zipify.",
+        "action": {
+          "text": "Do funnel and drop-off analysis generally. Full GA or tracking software analysis is not required if under 300,000 sessions, but look at where people drop off. If traffic goes straight from ad to PDP, analyze PDP, cart, checkout, thank you page, and upsell if using OCU or Zipify, then analyze why they drop off.",
+          "quote": "You should be doing funnel and drop off analysis. You don't need to do full GA or tracking software analysis if you're under 300,000 sessions, but you should be looking at which point in your funnel are people dropping off. If you have straight from ad to PDP, then you need to analyze your PDP, your cart, your checkout, your your thank you page, your upsell, whatever, if you're using OCU or Zipify. Um, and look at where people are dropping off. Analyze why they're dropping off."
+        },
+        "unknowns": [
+          "The session period for the 300,000 threshold is not stated.",
+          "OCU and Zipify are not defined."
+        ]
+      },
+      {
+        "title": "Conduct user testing and customer interviews",
+        "claim": "The source recommends user testing and usability studies, including getting people onto the site, surveying them, doing proper user testing and user interviews, and calling customers to ask why they purchased, whether the experience was good, and what was unclear.",
+        "action": {
+          "text": "Do user testing and usability studies: get people onto your site, survey them, run user interviews, and call customers to ask why they purchased, whether the purchase experience was good, and what was unclear.",
+          "quote": "User testing and usability studies. So actually getting people to go onto your site and uh and and and surveying them and and doing proper user testing, user interviews as well. You should be calling your customers. My CRO's my team, we do this for airs. We will literally pick up the phone to your customers and we will quiz them. Why did you purchase? Uh you know, did you have a good experience purchasing on the store? Was there anything that wasn't clear?"
+        },
+        "unknowns": [
+          "No sample size or cadence stated for user testing or customer calls."
+        ]
+      },
+      {
+        "title": "Set up post-purchase surveys and ask two key questions",
+        "claim": "The source says post-purchase surveys are a non-negotiable and instructs setting them up and asking at least what made you purchase today and what made you almost not purchase today. The source's tool wording is transcription-ambiguous ('no commerce, Komerse').",
+        "action": {
+          "text": "Ensure post-purchase surveys are set up and ask at least what made you purchase today and what made you almost not purchase today; if you don't have them, do it now/after this workshop. Treat tool wording as transcription-ambiguous rather than two named alternatives.",
+          "quote": "Set up post purchase surveys. If you don't have them, do it. Do it now. Do it after this workshop. Go and do it. Use no commerce, Komerse. Set up post-purchase surveys. Ask at least these two questions. One, what made you purchase today? two, what made you almost not purchase today?"
+        },
+        "unknowns": [
+          "The source wording for the recommended tool is transcription-ambiguous; 'no commerce, Komerse' may be one tool or two."
+        ]
+      },
+      {
+        "title": "Use post-purchase survey answers to change front-end copy or angle",
+        "claim": "The source says answers to the second post-purchase survey question, such as not knowing how long results take, can be used to change front-end copy or angle, for example saying see noticeable results in the first six weeks.",
+        "action": {
+          "text": "Use post-purchase survey answers that reveal objections, such as not knowing how long results take, to change the front-end copy or angle, for example to say see noticeable results in the first six weeks.",
+          "quote": "we can take that that answer and then we can change the copy or the angle on the front end of your site to say see noticeable results in the first six weeks."
+        },
+        "unknowns": [
+          "The source provides one example but no process for selecting which answers to act on."
+        ]
+      },
+      {
+        "title": "Run a one-time survey if no post-purchase survey is set up",
+        "claim": "If there is no post-purchase survey but there is a list to survey, the source recommends setting up a one-time survey with a tool like Typeform, emailing VIPs and customers with important feedback questions, and offering a chance to win a $250 Amazon gift card.",
+        "action": {
+          "text": "If no post-purchase survey is set up but you have a list to survey, set up a one-time survey with a tool like Typeform, email VIPs and customers with important feedback questions, and offer a chance to win a $250 Amazon gift card.",
+          "quote": "if you don't have a post-purchase survey set up already, but you have a pool of um your list who you want to go and survey, just set up a one-time survey. Use something like Type Form, whatever it may be, and send out an email to your VIP and your customers. asking them the really important questions around um getting some feedback around your your product and your store and just offer them the chance to win a $250 Amazon gift card."
+        },
+        "unknowns": [
+          "Type Form and the exact incentive terms are not fully defined."
+        ]
+      },
+      {
+        "title": "Scale analysis rigor with session volume",
+        "claim": "The source says, in the qualitative-data discussion, that if you're over 300,000 sessions you should be doing all of this as a non-negotiable and will make drastically more money; if under, focus on the bolded ones. The source does not define 'all of this' in that sentence as both qualitative and quantitative.",
+        "action": null,
+        "unknowns": [
+          "The session period for the 300,000 threshold is not stated in the excerpt.",
+          "'all of this' is not clearly defined in the quoted sentence."
+        ]
+      },
+      {
+        "title": "Post-purchase surveys as top optimization lever",
+        "claim": "The source says setting up post-purchase surveys is probably single-handedly the most effective way to optimize a store.",
+        "action": null,
+        "unknowns": []
+      },
+      {
+        "title": "First post-purchase survey question reveals purchase motivations",
+        "claim": "The source says the first post-purchase survey question gives useful insights, such as a customer purchasing because they wanted to lose weight.",
+        "action": null,
+        "unknowns": [
+          "No guidance is given on categorizing or acting on insights from the first question beyond calling them nice insights."
+        ]
+      },
+      {
+        "title": "Have them perform a full comprehensive audit for stores over 300,000 sessions when working with them on the higher side",
+        "claim": "The source says whenever you work with us on the higher side, if you are over 300,000 sessions, we'll do a full comprehensive audit.",
+        "action": {
+          "text": "When working with us on the higher side and if the store is over 300,000 sessions, have us perform a full comprehensive audit.",
+          "quote": "whenever you work with us on the higher side, if you are over 300,000 sessions, we'll do a full comprehensive audit"
+        },
+        "unknowns": [
+          "The source does not enumerate the full audit contents beyond the listed findings categories."
+        ]
+      },
+      {
+        "title": "Do bolded non-negotiables for stores under 300,000 sessions",
+        "claim": "The source says for stores under 300,000 sessions, do the bolded non-negotiables.",
+        "action": {
+          "text": "For stores under 300,000 sessions, do the bolded non-negotiables.",
+          "quote": "under 300,000 sessions, do those ones that are bolded, non-negotiables"
+        },
+        "unknowns": [
+          "The bolded non-negotiables are not enumerated in the supplied passage."
+        ]
+      },
+      {
+        "title": "For comprehensive tests over 300,000 sessions, run at least two weeks",
+        "claim": "The source says it likes to run especially comprehensive tests over 300,000 sessions for at least two weeks because it does not want external factors to alter the test.",
+        "action": {
+          "text": "For comprehensive tests over 300,000 sessions, run for at least two weeks to avoid external factors altering the test; for example, schedule across two Mondays, Tuesdays, Wednesdays, and Thursdays.",
+          "quote": "We like to run especially on the comprehensive so over 300,000 sessions test for at least two weeks because we don't want external factors to alter the test. For example, run it two Mondays, two Tuesdays, two Wednesdays, two Thursdays."
+        },
+        "unknowns": [
+          "The source does not state whether this duration replaces the typical two-to-four-week duration.",
+          "The source gives the weekday schedule as an example, not as a stated mandatory criterion."
+        ]
+      },
+      {
+        "title": "Winning tests outweigh losing tests and compound",
+        "claim": "The source says winning tests outweigh losing tests times 100 and, when implemented, incremental revenue-per-visitor increases compound month and year on year.",
+        "action": null,
+        "unknowns": [
+          "The source does not quantify the compounding effect beyond the times 100 statement."
+        ]
+      },
+      {
+        "title": "Gather data for one to two weeks before making decisions under 300,000 sessions",
+        "claim": "The source says gathering data for about a week or two allows more informed decisions for stores under 300,000 sessions.",
+        "action": {
+          "text": "For stores under 300,000 sessions, allow about one to two weeks to gather data before making more informed decisions.",
+          "quote": "It's going to take you about a week or two to gather the data and then you can make more informed decisions."
+        },
+        "unknowns": [
+          "The source does not list which data must be gathered during the one-to-two-week period."
+        ]
+      },
+      {
+        "title": "After research, create a framework using the PXL framework and acknowledge it is not theirs",
+        "claim": "The source says after doing all the research, it will create a framework; it uses the PXL framework, which is not theirs and which they do not pretend to have invented.",
+        "action": {
+          "text": "After doing all the research, create a framework using the PXL framework, acknowledging it is not yours and not pretending to have invented it.",
+          "quote": "we will do all that research. We will then create uh a framework here. We use the PXL framework. It's not ours. We're not going to pretend we invented it."
+        },
+        "unknowns": [
+          "What PXL stands for is not stated.",
+          "The exact framework structure or scoring formula is not stated."
+        ]
+      },
+      {
+        "title": "External factors can distort test results and cause a rash stop",
+        "claim": "The source warns that a competitor sale on one day can make a test go down and cause a rash decision to kill a potentially winning test.",
+        "action": null,
+        "unknowns": [
+          "The source does not specify how to distinguish normal variation from an external event before deciding to stop a test."
+        ]
+      },
+      {
+        "title": "Separate concurrent tests by area and note internal focus on above-fold bigger swings",
+        "claim": "The source says you can run a homepage test and a cart test because they are far apart, or an above-fold test with a below-fold test; it also reports that 80% of their tests focus on bigger-swing above-the-fold tests because that drives revenue.",
+        "action": {
+          "text": "When running concurrent tests in the high-volume, small-AB-test context, separate them by area, such as homepage versus cart or above-fold versus below-fold; the source reports that 80% of their tests focus on bigger-swing above-fold tests.",
+          "quote": "you can still do like a homepage test and a cart test because they're far apart. You can do above the fold test with a below the fold test, but to be honest with you, 80% of our tests are focused on that bigger swing and above the test above the fold because that's really what's going to drive the drive the revenue increase."
+        },
+        "unknowns": [
+          "The source does not define far apart or whether the 80% internal focus is a recommended allocation for others."
+        ]
+      },
+      {
+        "title": "Remove discount box if no active discounts",
+        "claim": "The source recommends removing the discount box on cart or coupon page if there are no active discounts, because it creates a horrible buying experience.",
+        "action": {
+          "text": "Remove the discount box on the cart or coupon page when no active discounts are offered.",
+          "quote": "if you don't have active discounts on your site, get rid of the discount box on your cart or your coupon page."
+        },
+        "unknowns": []
+      },
+      {
+        "title": "Cart optimization test produced $40,000 monthly revenue",
+        "claim": "The source reports the cart optimization, which included removing the discount box and adding a trust policy bar, produced $40,000 in monthly revenue.",
+        "action": null,
+        "unknowns": [
+          "Currency and time period beyond monthly not stated.",
+          "The reported result is attributed to the combined cart optimization, not to the trust policy bar alone."
+        ]
+      },
+      {
+        "title": "Landing pages have biggest uplift for stores under 300,000 sessions",
+        "claim": "The source states anyone on the workshop under 300,000 sessions will have the biggest uplift in creating landing pages like the example.",
+        "action": null,
+        "unknowns": [
+          "No source basis or definition for the 300,000-session threshold; time period not stated."
+        ]
+      },
+      {
+        "title": "Landing page produced 20k per month on cold traffic",
+        "claim": "The source reports the landing page generated 20k per month on cold traffic and allowed them to scale.",
+        "action": null,
+        "unknowns": [
+          "Currency and exact monthly period not stated; cold traffic source not specified."
+        ]
+      },
+      {
+        "title": "Bestseller carousel prompted FOMO around products other people were buying",
+        "claim": "The source says more people were FOMOing into a product that they said other people were buying after the bestseller carousel was added.",
+        "action": null,
+        "unknowns": [
+          "The source does not specify whether the FOMO translated into purchases or only interest/clicking."
+        ]
+      }
+    ],
+    "id": "238dbd10ffe2a6f388c18fe3"
+  },
+  "system_prompt_sha256": "69f46e0282a3162695eb6297f7d6ea547a77b7375fead4b9bac68ff7c7d88569"
+}

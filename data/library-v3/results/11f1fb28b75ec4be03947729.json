@@ -1,0 +1,410 @@
+{
+  "cards": [
+    {
+      "title": "Browser API permission tiers for storefront feature planning",
+      "summary": "Browser APIs sit in tiers from unrestricted (DOM, downloads) through user-gesture-gated to permission-prompt and engagement-gated, and knowing the tier tells you what a storefront can do on page load versus after a user interaction.",
+      "use_when": "Deciding when a storefront can trigger clips, sound, fullscreen, vibration, clipboard or camera during PDP video, spin-to-win, or promotional widgets.",
+      "steps": [
+        "Treat level 0 APIs (DOM manipulation, moving windows, triggering file downloads, hiding the mouse cursor) as callable the moment a visitor lands — no interaction required. Level 0 downloads are the surprising one: a page can deposit a file in a visitor's downloads folder on load, though browsers prompt before a second simultaneous download.",
+        "Treat level 1 APIs (window.open pop-ups, clipboard write, picture-in-picture, vibration) as requiring a user gesture — a click, tap or key press. Scrolling does not count; the call must be made directly inside the event handler for the gesture.",
+        "Treat level 2 APIs (geolocation, camera, microphone, torch/flash) as requiring an explicit permission prompt; a visitor must click Allow before the storefront gets the capability.",
+        "Treat the engagement-gated tier (autoplay with sound) as browser-decided: sites a visitor engages with repeatedly may autoplay audio, others will not.",
+        "Design promotional and video features so their required capability maps to a tier you can realistically reach on first visit, not one that only long-term returning visitors get.",
+        "Verify the current tier assignments in the browsers you support before shipping — several capabilities have moved up a tier over time and the exact list changes."
+      ],
+      "caveats": [
+        "Tier assignments are not contractual and vary by browser and over time; the source's list is a snapshot.",
+        "Engagement-gated behavior is opaque and unpredictable for developers, so don't build critical functionality on it."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "product-page",
+        "landing-page",
+        "browser-apis",
+        "conversion-optimization"
+      ],
+      "id": "2f97eccd1bc38c66c328a324",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 10
+    },
+    {
+      "title": "UI denial-of-service patterns that can lock down a storefront session",
+      "summary": "A malicious or compromised page can override ordinary browser escape routes — back button, close-window shortcuts, context menus — and a commerce operator should know these exist as scareware and annoyance vectors, not as legitimate merchandising behavior.",
+      "use_when": "Auditing suspect third-party scripts, promo takeovers, or scareware landing pages that trap shoppers, and deciding what to add to a monitoring or content-review checklist.",
+      "steps": [
+        "Understand the mechanism set: intercepting keyboard events so Cmd/Ctrl-W does not close the tab (partly mitigated by triggering an alert/prompt between the Cmd and W keystrokes), pushing extra history entries so the back button cannot escape the page, spawning windows from every captured user event and refocusing them, hiding the cursor via a CSS property, and stacking dialogs on a timer.",
+        "Recognize the commerce-relevant abuse case: scareware pages that claim the device is infected and lock the visitor in to make a purchase pitch more convincing, especially to non-technical shoppers.",
+        "Defend by policy and process rather than by building the same tricks: restrict which third-party scripts run on your checkout and PDP, and screen any purchased traffic destinations for trapping behavior.",
+        "Note the modern mitigation: multi-process browsers can kill a tab stuck in an infinite loop without freezing the whole browser, and file-download prompts limit bulk silent downloads.",
+        "Do not use these techniques on your own storefront — the source frames them as attacks, and trapping visitors is a legal and trust risk, not a conversion tactic."
+      ],
+      "caveats": [
+        "The source describes these as attack patterns demonstrated in a classroom setting; the card converts them into vulnerability recognition and prevention, not reproduction instructions.",
+        "Some mitigations described are historical and browser-specific; verify current behavior."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "checkout",
+        "third-party-scripts",
+        "scareware",
+        "abuse-prevention"
+      ],
+      "id": "f0d45c067b29f018154d1d35",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 10
+    },
+    {
+      "title": "GET-request and CSRF exposure in storefront logout and account actions",
+      "summary": "State-changing actions reachable by a GET request can be triggered by any site embedding a matching image or link, so a storefront should keep logout, prefetch and account mutations behind POST plus SameSite cookies.",
+      "use_when": "Reviewing storefront endpoints for logout, cart mutation, wishlist, subscription pause, and account actions before launch or a security audit.",
+      "steps": [
+        "Inventory every endpoint that changes server state: log out, add/remove cart line, apply coupon, pause subscription, change email. Flag any that answer to GET.",
+        "Reason about exposure: because any page can cause a GET by embedding an image whose URL points at your endpoint, a visitor to a third-party site can be logged out of your store or have cart state altered without noticing.",
+        "Require POST (with CSRF token) for state-changing operations, and set SameSite on session cookies so a cross-site request cannot carry the shopper's authenticated cookie.",
+        "Check whether your platform already does this and whether legacy endpoints slipped through — the source notes even large providers have left logout-style GET endpoints working.",
+        "When evaluating a third-party integration, ask whether its callbacks to your store use POST with CSRF protection or whether they silently rely on GET.",
+        "Retest after any framework upgrade, since fetch/prefetch behavior and cookie defaults change between versions."
+      ],
+      "caveats": [
+        "The source's Gmail/Google logout example is a case observation, not a claim that any particular store is currently vulnerable; verify your own endpoints.",
+        "SameSite cookie support and defaults have changed over browser versions; confirm current browser handling."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "checkout",
+        "authentication",
+        "csrf",
+        "cookies",
+        "payment-security"
+      ],
+      "id": "638455ba94533852f78674de",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 10
+    },
+    {
+      "title": "Client-side fingerprinting surfaces to audit on a storefront",
+      "summary": "Audio, WebRTC, plugin and font surfaces can identify a visitor across sessions even without cookies, so a store owner should know which of these their analytics and anti-fraud vendors touch.",
+      "use_when": "Reviewing analytics, anti-fraud, or ad-fraud scripts on a PDP or checkout for covert device-based identification, and preparing a data-privacy disclosure.",
+      "steps": [
+        "Know the surface list: canvas rendering differences, audio via AudioContext capability probing or generated waveform hashing, WebRTC enumeration of device names or IDs (labels or IDs depending on granted permission), installed plugins or unusual Java versions, and font enumeration.",
+        "Expect these to be hard for a shopper to fake — the source notes several are effectively impossible for a normal user to spoof, so relying on them implies persistent identification.",
+        "When evaluating anti-fraud or attribution tools, ask whether they use any of these surfaces and whether that use is disclosed in your privacy notice.",
+        "Watch for the false-security trap: a browser extension that lies inconsistently across surfaces (for example reporting one region on one endpoint and a different preferred language on another) can make a visitor MORE identifiable, not less.",
+        "Plan disclosure and consent around this: aggressive fingerprint-based tracking is a compliance and trust exposure for a store, separate from its effectiveness."
+      ],
+      "caveats": [
+        "The source calls this a representative, not complete, list of fingerprinting methods.",
+        "Fingerprinting guidance from the lecture includes opinion about tools and is not a legal opinion about what your store must disclose."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "measurement",
+        "privacy",
+        "fingerprinting",
+        "analytics",
+        "anti-fraud"
+      ],
+      "id": "86012f608d657644edae0fe9",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 10
+    },
+    {
+      "title": "Choosing a client-side anti-tracking approach for a storefront's third parties",
+      "summary": "The source lays out five high-level counter-measures to fingerprinting and rates them, which is useful when deciding how aggressively a store blocks or degrades third-party scripts.",
+      "use_when": "Choosing how a store handles third-party analytics, tag managers and ad pixels — whether to strip capabilities, standardize, scope by origin, add noise, or adopt a privacy-budget style limiter.",
+      "steps": [
+        "Option 1 — remove the functionality (disable canvas reads, font enumeration, and similar). Works because benign uses are rarer than abusive ones, but it breaks legitimate use cases and is a losing long-term strategy for a product that wants broad site compatibility.",
+        "Option 2 — standardize the value across browsers so everyone reports the same thing. Conceptually different from removal but functionally close — you have effectively broken the functionality anyway.",
+        "Option 3 — scope access by origin, letting first-party code do more and third-party frames less. The source notes this is a useful primitive but you still need a concrete mechanism to block each specific endpoint, not just a policy about who may use it.",
+        "Option 4 — inject noise via steganography (subtly perturbing high-entropy values so readings are unusable for identification while remaining imperceptible). The speaker rates this as the most promising current approach, with the caveat that a determined fingerprinter can detect and discard the noised values.",
+        "Option 5 — privacy budgets (Google's proposal): enumerate endpoints, assign identifying bits, and stop granting access past a precision threshold. The speaker calls this a bad idea with unresolved scope, lifetime and third-party budget questions.",
+        "Apply to your store by asking which option each vendor actually implements before trusting it; a 'privacy-friendly' label does not tell you which approach is behind it."
+      ],
+      "caveats": [
+        "The ratings (option 4 promising, option 5 bad) are the speaker's opinions, not settled consensus; the privacy-budget proposal is described as an early proposal likely to change.",
+        "Permission-prompt strategies suffer from well-documented prompt fatigue — visitors reflexively accept, so don't treat prompts as reliable user consent for heavy device access.",
+        "Engagement-derived permission decisions are hard for developers to reason about and change unpredictably."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "third-party-scripts",
+        "privacy",
+        "fingerprinting",
+        "consent",
+        "consent-fatigue"
+      ],
+      "id": "71a101a6cbf754f2b70c45a3",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 10
+    },
+    {
+      "title": "Drawing the line between store conveniences and visitor harm",
+      "summary": "A concise framing for evaluating storefront growth mechanics: an anti-tracking approach that continuously degrades other sites is itself an abuse pattern, and privacy harms are a fail state, not a feature.",
+      "use_when": "Deciding whether a growth hack or upsell widget is acceptable — evaluating friction, dark patterns, or aggressive re-engagement tactics at checkout or exit.",
+      "steps": [
+        "Apply the source's test: is the project making powerful parties more powerful over weaker ones, or making weaker parties stronger against powerful ones?",
+        "Reject the framing that 'privacy is a feature' or a badge on the box; the speaker treats user harm as a failure state, something you owe the visitor, not a differentiator you market.",
+        "Recognize that tactics which make a site intolerable — fake downloads, forced dialogs, breakage on exit — are the same family as attacks, and visitors will leave or disable protection rather than endure them.",
+        "For exit-intent and abandonment flows, prefer a single clear browser-native confirm or a well-designed email capture over stacked or forced dialogs; the source describes stacked dialogs as attack behavior.",
+        "When a legal or technical protection conflicts with a short-term revenue tactic, prefer the protection where the harm is to the visitor, and document the trade-off."
+      ],
+      "caveats": [
+        "The speaker states this as a personal ethical position, not a measured business result.",
+        "The card applies the principle to ecommerce; the source's examples are attack demonstration sites, not storefronts."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "retention",
+        "conversion-optimization",
+        "ethics",
+        "dark-patterns",
+        "cart-abandonment"
+      ],
+      "id": "aa85e7db89d25d7f849e4e74",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 10
+    },
+    {
+      "title": "Legal-context limits when relying on existing privacy rules for a store",
+      "summary": "The source reviews regional privacy law as a partial, uneven fix, which is directly relevant to a store's data-use choices for tracking, marketing and account identity.",
+      "use_when": "Planning store tracking, consent copy, or account features and estimating how much you can rely on law versus technology to protect visitors.",
+      "steps": [
+        "Treat GDPR as the source's example of the most mature regime, applying to any company selling into Europe regardless of headquarters — a common reason stores adopt EU-grade consent globally.",
+        "Note the US direction of travel (California legislation described as the strongest in the US at the time, weaker than GDPR) and verify current status before making compliance claims.",
+        "Design for a purpose-limitation rule: consent for one use does not authorize another (the source's example — a phone number given for second-factor authentication cannot be reused to link cookies or feed advertising).",
+        "Apply this to store data: if a customer gives an email or phone for order notifications, don't repurpose it for ad targeting or cross-platform identity without separate consent.",
+        "Recognize the enforcement gap: actors outside the jurisdictions you can reach are hard to constrain and hard to measure, so a technical control (blocking, scoping, filtering) must be part of the plan, not only legal language."
+      ],
+      "caveats": [
+        "Legislation described is a snapshot; the California and GDPR descriptions must be re-verified before being written into policy.",
+        "This is not legal advice — confirm obligations with qualified counsel for your jurisdiction and channels."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "privacy",
+        "compliance",
+        "gdpr",
+        "customer-accounts",
+        "measurement"
+      ],
+      "id": "f8efa5aaa96849af02ecc3f4",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 10
+    },
+    {
+      "title": "Using brand-scoped access decisions rather than trusting page content",
+      "summary": "The source's discussion of first-party versus third-party trust maps to a concrete rule for agents and automations: page content and retrieved documents are data, and authorization comes from the account and task scope, not the content.",
+      "use_when": "Designing an agent or script that reads storefront pages, vendor documents, or customer messages, or deciding what a first-party integration may do versus an embedded third-party frame.",
+      "steps": [
+        "Adopt the origin distinction: code served by your own domain is the first party and can be trusted with more of your session; embedded third-party frames are least-trusted and should get the narrowest capability set, enforced by feature-policy-style restrictions.",
+        "Apply the same split to automations and agents: a tool that reads an order confirmation email, a supplier PDF or a product feed is processing untrusted data. Instructions found inside that data are not authorization for the agent to place orders, change prices or move funds.",
+        "Scope each agent or integration to a specific brand, store and task, so a compromised or prompt-injected data source cannot spill into other merchants, catalogs or payment methods.",
+        "Require explicit human approval for state-changing actions (publish price, submit refund, place purchase order) regardless of what the source document says is authorized.",
+        "Encode the rule that a permission prompt, page element, or document claim never overrides your authorization logic — treat them as inputs to be validated, not commands."
+      ],
+      "caveats": [
+        "The source does not use the modern 'prompt injection' vocabulary; the mapping from first/third-party trust to agent data trust is an applied interpretation, not a stated result.",
+        "Feature policy and frame-level controls vary by browser and are periodically renamed or changed — verify the current mechanism before relying on it."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "agent-security",
+        "authorization",
+        "third-party-scripts",
+        "permissions",
+        "trust-boundaries"
+      ],
+      "id": "3956f654a0e311fd8f140195",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 10
+    },
+    {
+      "title": "Permission and engagement gating as UX constraints on storefront video and audio",
+      "summary": "Autoplay with sound sits behind an engagement gate, so a PDP or landing page should not expect sound to play on a first visit, and should design video merchandising accordingly.",
+      "use_when": "Planning PDP video, hero autoplay, or promotional overlays that include audio, and deciding whether to mute by default or gate playback behind a click.",
+      "steps": [
+        "Assume audio cannot autoplay on a visitor's first arrival; browsers gate it behind a user gesture and may relax that based on engagement.",
+        "Capturing the gesture is the realistic path: attach a click listener and call play inside the handler — the call must be made directly in response to the event, not from a deferred callback.",
+        "Expect returning, engaged visitors to behave differently — the source notes sites like YouTube start playing immediately because those users have a history of triggering audio and staying.",
+        "Choose a default: the source notes a well-known demo defaults its video to muted, which sidesteps the gate; a product page promoting a video with sound should either mute by default or use a clear play button.",
+        "Do not build a core purchase path that depends on a capability you may not get on first visit; keep the fallback (poster image, muted loop) as the primary experience."
+      ],
+      "caveats": [
+        "Engagement gating is browser-specific, undocumented at the rule level, and changes over time.",
+        "The requirement that the call happen inside the gesture handler is a technical constraint that breaks subtle deferred implementations."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "product-page",
+        "landing-page",
+        "browser-apis",
+        "video",
+        "conversion-optimization"
+      ],
+      "id": "af72e0502a89fcf91ef7729b",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 10
+    },
+    {
+      "title": "When clipboard and download APIs are acceptable on a storefront",
+      "summary": "Clipboard read and multi-file download are gated or restricted for good reason, and a store can use clipboard write and single downloads in legitimate flows when triggered by a real user action.",
+      "use_when": "Implementing coupon copy buttons, share links, invoice or label downloads, or a 'your download is starting' page after purchase.",
+      "steps": [
+        "Keep clipboard writes tied to a user gesture; a write on any captured interaction can silently replace the visitor's clipboard, and the source describes the abuse of injecting promotional content.",
+        "Never expect clipboard reads without a permission prompt — the source lists this as intentionally gated so a site cannot read what the visitor has copied.",
+        "Use single-programmatic downloads freely: a post-purchase or thank-you page that starts a file download without an extra click is an accepted pattern, and the source identifies that pattern as the reason the capability stays ungated.",
+        "Plan for the multi-download prompt: a second simultaneous file download triggers a browser prompt, so bundle or multi-file downloads need a user click or a zip.",
+        "Consider the version gap: if you want a shopper to trigger actions in a privileged context (local tool, hardware button, permission prompt), note that this space was once Flash territory and verify the modern browser route before building."
+      ],
+      "caveats": [
+        "Browser gating for downloads and clipboard has changed repeatedly; verify current behavior on target browsers.",
+        "The source's examples are demonstrations, not measurements of storefront conversion effects."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "checkout",
+        "product-page",
+        "browser-apis",
+        "fulfillment",
+        "post-purchase"
+      ],
+      "id": "d1ee9c61779bcafbfb064b6f",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 10
+    },
+    {
+      "title": "Standardizing error and edge behavior to reduce identifying signal",
+      "summary": "Browsers respond differently to errors and edge cases, so a site's error behavior itself can reveal browser and version — relevant when you worry about bot detection or anti-fraud false positives.",
+      "use_when": "Diagnosing why anti-fraud or analytics flags certain customer segments, or when configuring a storefront so error responses don't become an identifying signal.",
+      "steps": [
+        "Understand the mechanism: if a visitor spoofs a user agent, a fingerprinter can break them out by making the browser throw and reading the subtly different error response across browsers and versions.",
+        "Expect the same idea applied to HTML parsing: the source cites a body of work enumerating malformed-HTML cases that both enable code execution and act as fingerprinting surfaces, with standardization of error conditions as the proposed remediation.",
+        "For a store: standardize your own error pages and API error responses so they don't reveal stack details, framework versions or platform identities to scanners and fraudsters.",
+        "Reduce reliance in anti-fraud scoring on browser-version tells that can be spoofed, since a determined actor can and does falsify them.",
+        "Test error behavior across the browsers your shoppers actually use before drawing conclusions from a bot score, since the same visitor may look different from different environments."
+      ],
+      "caveats": [
+        "The source presents this as an area of active research with no complete solution; the error-case work is cited as a paper reference, not a shipped product.",
+        "Do not treat error standardization as sufficient bot detection or blocking on its own."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "anti-fraud",
+        "measurement",
+        "fingerprinting",
+        "error-handling",
+        "bot-detection"
+      ],
+      "id": "dc87f09ad119aa15425e0cc5",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 10
+    },
+    {
+      "title": "Budgeting identifying bits across third parties before adding another script",
+      "summary": "Every tracking script and third-party tag adds identifying precision, and privacy-budget-style schemes raise unresolved scope and lifetime questions that a store owner should understand before adopting a vendor that claims to solve them.",
+      "use_when": "Prioritizing which analytics, chat, personalization and ad scripts to keep on a checkout or PDP, and evaluating a vendor's 'privacy budget' claim.",
+      "steps": [
+        "Start from the observation that fingerprinting endpoints vary widely in how much they identify — the source's illustrative attribution is roughly a bit for one endpoint up to about 13 bits for a strong one, and those add up.",
+        "Ask three questions of any budget-style or scoring scheme before trusting it: what happens when the budget is exhausted (do features break?), what is the lifetime of the budget (a fresh allowance per page view makes the scheme meaningless), and does the scope reset per third party?",
+        "Recognize the third-party problem: if each embedded third party gets its own budget, identifiers can be traded across parties; if the budget is shared page-wide, one third party can exhaust the first party's allowance — the source calls both outcomes a game-changer.",
+        "For your store, count the third-party scripts actually running on checkout and PDP and remove any whose marginal value does not justify the added identification.",
+        "Treat privacy-budget proposals as early-stage and likely to change; don't build contractual promises on them."
+      ],
+      "caveats": [
+        "The source states that this proposal likely will not ship in its stated form and calls it a bad idea; that is the speaker's prediction, not a settled outcome.",
+        "Bit-count attributions in the source are illustrative of the approach, not measured effectiveness for any actual deployment."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "third-party-scripts",
+        "privacy",
+        "analytics",
+        "checkout",
+        "measurement"
+      ],
+      "id": "5a732c914fd98add2d4be7c8",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 10
+    },
+    {
+      "title": "Privacy-preserving measurement for store analytics",
+      "summary": "Differential-privacy-style methods (the source's 'analyzed' approach, mixing survey-like results through secret-sharing and noise) can offer privacy guarantees for aggregate reporting, which is a realistic fit for store dashboards.",
+      "use_when": "Choosing a privacy-preserving analytics approach for store performance reporting, cohorts or vendor-shared benchmarks.",
+      "steps": [
+        "Understand the model at a high level: it treats a transaction as if it were a survey result and mixes data across a secret-sharing scheme with clustering and timing before reporting, producing privacy guarantees in aggregate.",
+        "Apply it where a store needs aggregate numbers (conversion by cohort, category performance) but does not need per-customer granularity to make the decision.",
+        "Do not expect it to replace operational data you need per-order — privacy-preserving aggregation is for reporting, not fulfillment or customer service.",
+        "Treat specific mechanism details as the source does: presented briefly, complex, and requiring separate study before adoption.",
+        "When a vendor claims differential privacy, ask for the guarantee's parameters and scope, since guarantees are only meaningful with their epsilon-style budget and the population they cover."
+      ],
+      "caveats": [
+        "The source explicitly declines to explain the mechanism in detail and calls it sophisticated and hard to summarize in the time available; don't over-claim what it does.",
+        "This is a research direction described by a speaker, not a documented storefront result."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "measurement",
+        "privacy",
+        "analytics",
+        "retention"
+      ],
+      "id": "1fe13b1cb55a1532a3fb2f16",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 10
+    }
+  ],
+  "request_id": "da438c095a237e4cbe821e20a7d80a9258b9b72ce0fef8e8aa7037a344d6e7f5",
+  "ecommerce_scope_version": 1
+}

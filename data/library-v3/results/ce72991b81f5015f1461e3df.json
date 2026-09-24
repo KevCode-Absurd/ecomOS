@@ -1,0 +1,237 @@
+{
+  "cards": [
+    {
+      "title": "Automate Instagram media to Google Business Profile",
+      "summary": "Trigger a no-code workflow so every Instagram business post is auto-published as Google Business Profile media, building local SEO signals without manual uploads.",
+      "use_when": "You manage a local store with an Instagram business account and a Google Business Profile, and want to keep local listings fresh without manually re-uploading images or videos.",
+      "steps": [
+        "Confirm you have admin access to the Google Business Profile and an Instagram business account linked to the same brand — these are non-negotiable prerequisites.",
+        "In Pabbly (or Make/Zapier), create a folder named after the client/store, then create a workflow named e.g. 'Instagram to Google Business'.",
+        "Set the trigger app to Instagram, trigger event 'new media updated to the account', and authenticate the Instagram business connection.",
+        "Add an action: Google Business Profile > upload media/photo (choose image or video to match the source). Authenticate the Google account and select the target location.",
+        "For the media URL field, map the 'media URL' attribute pulled from the Instagram post in the trigger test data. Optionally set a category.",
+        "Save and send a test. Verify on the Google Business Profile photos/videos tab that the asset appears, then toggle the workflow ON for autopilot."
+      ],
+      "caveats": [
+        "Automation tool interfaces and field names change — verify the current UI before building.",
+        "Pabbly free tier may be sufficient for a single store; scaling many locations likely needs a paid plan."
+      ],
+      "tags": [
+        "search",
+        "local-seo",
+        "automation",
+        "pabbly",
+        "google-business-profile",
+        "instagram",
+        "merchandising"
+      ],
+      "id": "41e2681a11a9995fd68be679",
+      "source_id": "1KVLb2L-e1WHOHAsJODZf4EGdXkOJFvTp",
+      "source_sha256": "9a3a493b8408eca6bcfaffae004d5297409bd180e4f866501777fa6434a6835b",
+      "source_name": "Complete SEO Course (3 Hours)_ Rank #1 AI Search _ Prompts Included.docx",
+      "folder": "/15-SEO-search",
+      "domain": "search",
+      "section": 4
+    },
+    {
+      "title": "Auto-convert blog posts into Google Business posts via RSS",
+      "summary": "Use an RSS-feed trigger plus an internet-enabled LLM to rewrite each new blog post into a sub-1,500-character Google Business post with a CTA link.",
+      "use_when": "You publish blog content and want an automated, ongoing stream of Google Business posts driving traffic back to those articles without manual rewriting.",
+      "steps": [
+        "Create a workflow triggered by an RSS feed ('new item in feed'). For most WordPress sites the feed URL is yoursite.com/feed — for other platforms, look up or generate a feed.",
+        "Add an Open Router 'chat completion' action and connect it using your API key.",
+        "Select a model with native internet access (e.g. Perplexity Sonar) so it can read the post URL directly instead of needing a separate scraper.",
+        "Set role to 'user' and paste a prompt instructing the model to visit the blog URL, read it, and rewrite it in the same tone of voice but under ~1,450–1,500 characters to fit Google Business limits. Map the RSS feed's URL field into the prompt.",
+        "Ask for a call-to-action line and, optionally, suppress hashtags if you don't want them.",
+        "Add a Google Business Profile action: create an action post. Map the message content to the model output, set action type to 'Learn more', and map the button URL to the blog post URL.",
+        "Test, confirm the post appears on the profile, then enable the workflow."
+      ],
+      "caveats": [
+        "The presenter could not explain why Open Router requires a sitemap/website field — treat it as a setup quirk to just satisfy.",
+        "Verify current character limits and field names; they may differ from the tutorial."
+      ],
+      "tags": [
+        "search",
+        "local-seo",
+        "automation",
+        "pabbly",
+        "open-router",
+        "rss",
+        "content-repurposing",
+        "google-business-profile"
+      ],
+      "id": "6ab4afca17efd77cfb87fc0b",
+      "source_id": "1KVLb2L-e1WHOHAsJODZf4EGdXkOJFvTp",
+      "source_sha256": "9a3a493b8408eca6bcfaffae004d5297409bd180e4f866501777fa6434a6835b",
+      "source_name": "Complete SEO Course (3 Hours)_ Rank #1 AI Search _ Prompts Included.docx",
+      "folder": "/15-SEO-search",
+      "domain": "search",
+      "section": 4
+    },
+    {
+      "title": "Auto-respond to positive Google reviews, gate negative ones",
+      "summary": "Filter reviews by star rating and let an LLM draft and post replies only to positive reviews, keeping negative ones for human handling.",
+      "use_when": "You want to maintain fast, consistent responses to positive local reviews at scale while keeping full human control over reputation-sensitive negative feedback.",
+      "steps": [
+        "Create a workflow triggered by Google Business Profile 'new review'. Authenticate and select the location.",
+        "Add a filter node using the star-rating label. The tutorial filters to star rating greater than 4 so only clearly positive reviews proceed automatically.",
+        "Add an Open Router chat-completion action using a cheap model (e.g. GPT-5 Mini). Free models work but hit rate/usage limits under volume.",
+        "Paste a review-responder prompt that includes: business type/context, instructions for the positive case, and fallback instructions if a below-threshold review slips through (thank, apologize, state one proactive step, give contact email/phone).",
+        "Map the review comment and star rating into the prompt, set role to 'user', and generate the reply. Consider routing the draft to a Google Sheet for human review before publishing.",
+        "Add a Google Business Profile 'create a reply' action (not the legacy version), map the account, and map the reply field to the model output; the latest review is picked automatically. Test and enable."
+      ],
+      "caveats": [
+        "The presenter advises replying with AI only to positive reviews — negative reviews need a human touch to avoid errors.",
+        "If filtering is used, the negative-review fallback prompt may never run; decide deliberately whether to keep the filter or let all reviews generate drafts for review.",
+        "Verify current action names in the automation tool and Google Business Profile."
+      ],
+      "tags": [
+        "search",
+        "local-seo",
+        "automation",
+        "reviews",
+        "retention",
+        "open-router",
+        "pabbly",
+        "google-business-profile"
+      ],
+      "id": "3707612ddae8e67144e67fb7",
+      "source_id": "1KVLb2L-e1WHOHAsJODZf4EGdXkOJFvTp",
+      "source_sha256": "9a3a493b8408eca6bcfaffae004d5297409bd180e4f866501777fa6434a6835b",
+      "source_name": "Complete SEO Course (3 Hours)_ Rank #1 AI Search _ Prompts Included.docx",
+      "folder": "/15-SEO-search",
+      "domain": "search",
+      "section": 4
+    },
+    {
+      "title": "Choose an automation platform by skill and scale",
+      "summary": "Match the no-code/self-host automation tool to your coding comfort and volume: Pabbly for lowest friction, Make for flexibility, n8n for scale and cost savings.",
+      "use_when": "You are deciding which automation tool to run your store's SEO/marketing workflows on, weighing ease of setup against cost and flexibility.",
+      "steps": [
+        "For lowest friction with no coding at all, use Pabbly — plug-and-play for straightforward Instagram-to-GBP or RSS-to-post workflows.",
+        "For flexibility and broadest app integrations via click-and-drag, use Make; the presenter uses it most but notes slightly more complexity than Pabbly.",
+        "For self-hosting and saving on subscription costs, use n8n — open-source, requires some coding comfort, and suited to offering automation services at scale.",
+        "Directory-check current pricing and integration coverage before committing; free tiers may cover single-store setups but not multi-location scale.",
+        "Reuse one automation platform across all your SEO workflows (media upload, blog repurposing, review replies) so connections and credentials stay consolidated."
+      ],
+      "caveats": [
+        "Tool pricing, free-tier limits and integration lists change frequently — verify before choosing.",
+        "Self-hosting n8n shifts maintenance and uptime responsibility to you."
+      ],
+      "tags": [
+        "search",
+        "automation",
+        "tool-selection",
+        "pabbly",
+        "make",
+        "n8n",
+        "workflow"
+      ],
+      "id": "de20df81f705074aab94541f",
+      "source_id": "1KVLb2L-e1WHOHAsJODZf4EGdXkOJFvTp",
+      "source_sha256": "9a3a493b8408eca6bcfaffae004d5297409bd180e4f866501777fa6434a6835b",
+      "source_name": "Complete SEO Course (3 Hours)_ Rank #1 AI Search _ Prompts Included.docx",
+      "folder": "/15-SEO-search",
+      "domain": "search",
+      "section": 4
+    },
+    {
+      "title": "Use one Open Router key to test and route LLM models",
+      "summary": "Adopt a single Open Router API key to access many LLMs, test model quality on a simple prompt, and route cheap models for high-volume automations.",
+      "use_when": "You need to pick and pay for LLMs for store automations (content rewriting, review replies) without managing multiple provider accounts or API keys.",
+      "steps": [
+        "Create an Open Router account and use the chat/side-by-side feature to send the same prompt to multiple flagship models (e.g. Gemini, Claude Sonnet, Grok, GPT) and compare outputs before committing.",
+        "Add credits — the presenter tops up only $5, which 'goes a very long way' with cheap models; avoid auto-top-up unless needed.",
+        "Create a dedicated API key per use case (e.g. 'family automation') so you can track credit spending by workflow.",
+        "Copy and securely save the key immediately — it is shown only once.",
+        "In your automation tool, connect Open Router using that key, and select a model matched to the task: an internet-enabled model (Perplexity Sonar) for reading/rewriting pages, and a cheap model (e.g. GPT-5 Mini) for simple review replies."
+      ],
+      "caveats": [
+        "Model names, availability and pricing change frequently — verify current options and costs.",
+        "Free/open-source models have usage limits that can block you at volume.",
+        "Never share or expose your API key; rotate if leaked."
+      ],
+      "tags": [
+        "search",
+        "automation",
+        "open-router",
+        "api",
+        "llm",
+        "tool-selection",
+        "measurement"
+      ],
+      "id": "027e9f07ef06c54405260a72",
+      "source_id": "1KVLb2L-e1WHOHAsJODZf4EGdXkOJFvTp",
+      "source_sha256": "9a3a493b8408eca6bcfaffae004d5297409bd180e4f866501777fa6434a6835b",
+      "source_name": "Complete SEO Course (3 Hours)_ Rank #1 AI Search _ Prompts Included.docx",
+      "folder": "/15-SEO-search",
+      "domain": "search",
+      "section": 4
+    },
+    {
+      "title": "Don't automate SEO before the fundamentals work",
+      "summary": "Resist automating everything at scale until your core SEO is sound, because premature automation causes costly 'horror case' failures.",
+      "use_when": "You are tempted to automate listing posts, review replies or content repurposing before your store's SEO basics (site structure, content quality, local profile setup) are in good shape.",
+      "steps": [
+        "Before wiring up any workflow, confirm the fundamentals the workflow depends on: a properly configured Google Business Profile, a working RSS/blog structure, and clean site data.",
+        "Prioritize automations that reinforce fundamentals (consistent local media, repurposed content, timely review replies) rather than ones that paper over gaps.",
+        "Roll out one workflow at a time and verify the output manually (e.g. check the GBP tab, inspect the generated post/reply) before enabling autopilot.",
+        "For anything that affects published, reputation-facing content (posts, review replies), keep a human review or draft step.",
+        "When output quality degrades even with good inputs, fix the underlying content/data rather than buying more automation or models."
+      ],
+      "caveats": [
+        "The presenter frames this as a warning from observed failures, not a strict rule with measured benchmarks.",
+        "Some low-risk, reversible automations (e.g. media upload) may be safely enabled earlier."
+      ],
+      "tags": [
+        "search",
+        "automation",
+        "experiment-design",
+        "local-seo",
+        "process",
+        "risk-management"
+      ],
+      "id": "39455049b596506d432ef63d",
+      "source_id": "1KVLb2L-e1WHOHAsJODZf4EGdXkOJFvTp",
+      "source_sha256": "9a3a493b8408eca6bcfaffae004d5297409bd180e4f866501777fa6434a6835b",
+      "source_name": "Complete SEO Course (3 Hours)_ Rank #1 AI Search _ Prompts Included.docx",
+      "folder": "/15-SEO-search",
+      "domain": "search",
+      "section": 4
+    },
+    {
+      "title": "Skip heavy dashboards: GSC + GA into an LLM for decisions",
+      "summary": "Use Google Search Console and Google Analytics data fed to an LLM instead of building elaborate reports, so you still make data-driven decisions quickly.",
+      "use_when": "You need recurring store SEO decisions (which pages/queries/locations to prioritize) but lack time or budget for polished reporting dashboards.",
+      "steps": [
+        "Ensure Google Search Console and Google Analytics are installed and collecting data — this is the essential baseline.",
+        "Pull the relevant data (queries, pages, locations, trends) from GSC and GA.",
+        "Feed that data into an LLM (the presenter references a custom GPT) and ask specific decision questions, e.g. which pages to refresh or where to push local content.",
+        "Act on the LLM's suggestions as hypotheses, then validate against GSC/GA movement after changes.",
+        "Repeat on a cadence instead of maintaining static reports."
+      ],
+      "caveats": [
+        "The presenter explicitly says to 'not complicate analytics' — this trades report polish for speed, so verify LLM-derived conclusions against raw GSC/GA numbers.",
+        "Custom-GPT links and interfaces change; verify current setup."
+      ],
+      "tags": [
+        "search",
+        "measurement",
+        "google-search-console",
+        "google-analytics",
+        "llm",
+        "reporting",
+        "decision-making"
+      ],
+      "id": "7a14782ab0f16e5089e56c96",
+      "source_id": "1KVLb2L-e1WHOHAsJODZf4EGdXkOJFvTp",
+      "source_sha256": "9a3a493b8408eca6bcfaffae004d5297409bd180e4f866501777fa6434a6835b",
+      "source_name": "Complete SEO Course (3 Hours)_ Rank #1 AI Search _ Prompts Included.docx",
+      "folder": "/15-SEO-search",
+      "domain": "search",
+      "section": 4
+    }
+  ],
+  "request_id": "25c7c45e69597daabd5a42e72a54d2570a61d78815ece9580d557d0ed7996c6e",
+  "ecommerce_scope_version": 1
+}

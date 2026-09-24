@@ -1,0 +1,482 @@
+{
+  "cards": [
+    {
+      "title": "Prioritize speed fixes by financial impact and conversion benchmarks",
+      "summary": "Maps ecommerce speed benchmarks and revenue math to help operators justify and sequence performance work.",
+      "use_when": "Deciding whether to invest engineering time in site speed, or building a business case for a performance sprint before a peak sales period.",
+      "steps": [
+        "Establish the source's benchmarks as reference points, not guarantees: Google recommends two seconds or less for ecommerce page load; Portent found sites loading within one second converted at roughly 2.5x the rate of sites loading within five seconds; Deloitte reported a 0.1 second speed improvement lifted retail conversions 8.4% and fast-session spend by nearly 10%; the source also cites conversion dropping about 0.3% per additional second and 70% of consumers saying slow loads affect willingness to buy.",
+        "Translate speed into your own money using the source's arithmetic: with a $60 average order value and 5,000 daily visitors, the article estimates a one-second delay could cost about $9,000 per day. Recompute with your real AOV and traffic rather than quoting the example.",
+        "Note the source's caveat that all speed-testing tools score differently and any single 'page load' figure picks one marker (e.g. time to first byte), so use scores to guide decisions rather than as absolute truth.",
+        "Balance speed against the user journey: the article explicitly says you must weigh speed against a UI that optimizes the customer journey, so don't strip elements that drive conversion just to win a score.",
+        "Sequence work by likely payoff: images are cited as 50-75% of page weight, so compression and resizing usually offers the largest early gain; then async/defer scripts, app removal, and Liquid deduplication.",
+        "If in-house skills are missing, the source suggests engaging a Shopify Plus Partner for theme-level work.",
+        "Verify current Core Web Vitals thresholds and tool interfaces before committing to targets, since Google's metrics and dashboards change."
+      ],
+      "caveats": [
+        "Conversion and financial figures are cited from third-party studies and vendor examples; they are illustrative, not guarantees for your store.",
+        "Some cited statistics appear contradictory (e.g. 'millisecond improvement' vs '0.1 second improvement' at 8.4%), so treat the direction of the effect as the takeaway, not the exact number.",
+        "Benchmark numbers should never be treated as a universal rule; measure your own baseline before and after changes."
+      ],
+      "tags": [
+        "speed",
+        "measurement",
+        "conversion-optimization",
+        "core-web-vitals",
+        "benchmarking",
+        "mobile",
+        "prioritization"
+      ],
+      "id": "b36e60f619f77cc137537723",
+      "source_id": "1XSgByl2dRVRm29K0fXOFIzVTwwHkPqYx",
+      "source_sha256": "707f892ef4025d41ce2e5a8cb1609c15f1760631442863d3666524cf3619e417",
+      "source_name": "Website Speed Optimization Tips for Shopify Stores.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 0
+    },
+    {
+      "title": "Use asset_url to force Shopify CDN cache refresh",
+      "summary": "Explains how Shopify's asset_url filter appends version numbers so the CDN serves updated CSS/JS instead of stale files.",
+      "use_when": "After editing theme CSS or JavaScript and finding browsers or the CDN still serve an old version of the asset.",
+      "steps": [
+        "Understand the mechanism: Shopify tells its Fastly-powered CDN when assets (images, JS, CSS) change by appending a version number to generated URLs, e.g. ?v=1384022871. That version tells the CDN to pull the correct version.",
+        "Use the asset_url filter (e.g. in Liquid: {{ 'theme.css' | asset_url | stylesheet_tag }}) for CSS and JS references so Shopify auto-appends the version number.",
+        "Watch out for hardcoded URLs inside your CSS: the article warns that content referenced directly in CSS is static, won't carry Shopify's asset version, and may not update automatically.",
+        "Convert CSS syntax to reference assets through the asset_url filter so updates propagate automatically rather than being pinned to stale URLs.",
+        "Double-check the Shopify Help Center's current list of URL filters, as filter names and behavior can change with platform updates."
+      ],
+      "caveats": [
+        "This applies specifically to Shopify's asset pipeline; other platforms use different cache-busting conventions.",
+        "Verify the current Liquid filter documentation, since Shopify's templating APIs can evolve."
+      ],
+      "tags": [
+        "speed",
+        "shopify",
+        "cdn",
+        "caching",
+        "liquid",
+        "resource-optimization"
+      ],
+      "id": "5748b07d6cda46c90f7bee54",
+      "source_id": "1XSgByl2dRVRm29K0fXOFIzVTwwHkPqYx",
+      "source_sha256": "707f892ef4025d41ce2e5a8cb1609c15f1760631442863d3666524cf3619e417",
+      "source_name": "Website Speed Optimization Tips for Shopify Stores.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 0
+    },
+    {
+      "title": "Deduplicate Liquid forloops to cut server execution time",
+      "summary": "Guides Shopify developers to find and remove repeated theme loops that crawl the same collection data multiple times.",
+      "use_when": "Auditing a Shopify theme's performance or after multiple developers have worked on the same theme and page rendering feels heavy.",
+      "steps": [
+        "Understand what forloop iteration means in Shopify's Liquid: the system loops (crawls or searches) all products in a collection to find a condition, such as a price or a tag.",
+        "Accept that loops are sometimes necessary and beneficial, for example outputting images or product variants, and are less costly on collections with few products. The problem is repetition, not loops in principle.",
+        "Review theme code to confirm you aren't running Liquid forloops multiple times looking for the same information, a common symptom when several developers work on one theme and duplicate or conflict with each other's code.",
+        "Remove the duplicate iterations so the same data isn't fetched repeatedly during a single render.",
+        "Where possible, replace heavy loops with a simpler loop such as product.options_with_values, which exposes option data without crawling the whole collection.",
+        "Consult current Shopify Liquid documentation before refactoring, since templating language behavior can change."
+      ],
+      "caveats": [
+        "Deduplicating loops requires code access and comfort with Liquid; otherwise delegate to a developer or Shopify Plus Partner.",
+        "The article does not specify measurable gains from this fix, so treat it as a structural improvement rather than a guaranteed result."
+      ],
+      "tags": [
+        "speed",
+        "shopify",
+        "liquid",
+        "resource-optimization",
+        "theme-development"
+      ],
+      "id": "11d911ca08689084f29078b4",
+      "source_id": "1XSgByl2dRVRm29K0fXOFIzVTwwHkPqYx",
+      "source_sha256": "707f892ef4025d41ce2e5a8cb1609c15f1760631442863d3666524cf3619e417",
+      "source_name": "Website Speed Optimization Tips for Shopify Stores.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 0
+    },
+    {
+      "title": "Audit and remove third-party apps slowing your Shopify store",
+      "summary": "Shows how app scripts enter the theme head via content_for_header and how to decide whether an app's value justifies its speed cost.",
+      "use_when": "Reviewing a bloated app stack or evaluating whether to install one more app on a Shopify store.",
+      "steps": [
+        "Recognize the mechanism: most script and CSS files for apps installed through Shopify Admin are injected into the <head> of theme.liquid through the {{ content_for_header }} object, and an app must be rendered before other code loads.",
+        "Note the source's threshold: if you have more than 20 plugins installed, you likely aren't using them all, yet they still run in the background and can hurt performance.",
+        "Enlist a developer to remove unnecessary apps, including forgotten trials.",
+        "Re-test after removals using PageSpeed Insights, GTmetrix, or Chrome DevTools' Network tab (reload the page with the tab open) to see the effect.",
+        "Before any new install, ask whether the app's added value outweighs the possible load-speed penalty.",
+        "Understand the async nuance from Shopify's Jason Bowman: scripts added via the Script Tag API are async-loaded so page load isn't halted, but scripts added directly into the <head> often impact performance immediately. Prefer the API path where available."
+      ],
+      "caveats": [
+        "The 20-plugin figure is a heuristic, not a cutoff; an app's weight matters more than its count.",
+        "Third-party app code isn't fully under your control, so removing apps may need developer support.",
+        "Shopify's app-injection and Script Tag behaviors may change; verify against current documentation."
+      ],
+      "tags": [
+        "speed",
+        "shopify",
+        "third-party-apps",
+        "resource-optimization",
+        "audit"
+      ],
+      "id": "efd7ec0cb6ce7d4da57c4f21",
+      "source_id": "1XSgByl2dRVRm29K0fXOFIzVTwwHkPqYx",
+      "source_sha256": "707f892ef4025d41ce2e5a8cb1609c15f1760631442863d3666524cf3619e417",
+      "source_name": "Website Speed Optimization Tips for Shopify Stores.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 0
+    },
+    {
+      "title": "Unblock HTML parsing with defer and async on script tags",
+      "summary": "Explains parser-blocking scripts and the specific defer/async fix, with a before-and-after code example.",
+      "use_when": "Diagnosing slow first render where the browser appears to stall before showing content on a Shopify or any site.",
+      "steps": [
+        "Learn the definition: parser-blocking scripts force the browser to halt HTML parsing until the script is fully downloaded and executed, so nothing else can continue.",
+        "Apply the specific fix: add defer or async to the script tag. Example from the source: parser blocking is <script src=\"jquery.js\"></script>; not parser blocking is <script src=\"jquery.js\" defer></script>.",
+        "Remember the clarifying principle: JavaScript itself doesn't block the browser, how JavaScript is loaded determines whether it blocks.",
+        "After changing attributes, retest to confirm the site still behaves as intended, since defer/async change execution order and timing assumptions.",
+        "Use defer when scripts must run in order after parsing; use async when a script is independent and can run whenever it finishes downloading (the article presents both as valid fixes without prescribing which for which case).",
+        "Re-run a speed test to verify the parser stall is resolved."
+      ],
+      "caveats": [
+        "Changing load behavior can break scripts that depend on execution order; the source explicitly advises checking the site still works.",
+        "The article notes that scripts added directly into the <head> still often impact performance even with async handling elsewhere."
+      ],
+      "tags": [
+        "speed",
+        "javascript",
+        "parser-blocking",
+        "resource-optimization",
+        "shopify"
+      ],
+      "id": "e42f2f04f259c73978781321",
+      "source_id": "1XSgByl2dRVRm29K0fXOFIzVTwwHkPqYx",
+      "source_sha256": "707f892ef4025d41ce2e5a8cb1609c15f1760631442863d3666524cf3619e417",
+      "source_name": "Website Speed Optimization Tips for Shopify Stores.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 0
+    },
+    {
+      "title": "Compress and resize images with correct Shopify size parameters",
+      "summary": "Covers image weight (50-75% of page), lossless compression tools, correct size requests, sprites, and empty image sources.",
+      "use_when": "Optimizing page weight across product, collection, or landing pages where images dominate load time.",
+      "steps": [
+        "Start with scale awareness: images account for roughly 50-75% of a web page's total weight, and each image creates its own HTTP request, so trimming them is high leverage.",
+        "Apply lossless compression with tools like TinyJPG or TinyPNG to cut file size without visible quality loss.",
+        "Use Shopify's built-in image size parameters to request the exact size displayed, which reduces the file downloaded from the CDN and cuts browser-side scaling work.",
+        "Hunt for empty image sources such as <img src=' '>, which still send an extra request to your servers; remove them.",
+        "Consolidate small UI images (icons) into CSS sprites to limit individual image requests.",
+        "For assets that shouldn't render immediately, defer them with lazy loading or srcset as a catch-all (the article pairs this with hero-slider guidance).",
+        "Set a review habit for stores publishing many products or blog posts, since images tend to be added without scrutiny over time; the source cites a client case where optimization cut image space by 60%."
+      ],
+      "caveats": [
+        "The 60% reduction is one agency's client example, not a benchmark.",
+        "Shopify's image size parameter syntax should be verified against current documentation."
+      ],
+      "tags": [
+        "speed",
+        "images",
+        "shopify",
+        "resource-optimization",
+        "core-web-vitals",
+        "lazy-loading"
+      ],
+      "id": "1c99225810ac6d8e314321dc",
+      "source_id": "1XSgByl2dRVRm29K0fXOFIzVTwwHkPqYx",
+      "source_sha256": "707f892ef4025d41ce2e5a8cb1609c15f1760631442863d3666524cf3619e417",
+      "source_name": "Website Speed Optimization Tips for Shopify Stores.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 0
+    },
+    {
+      "title": "Replace standard YouTube embeds with lite embeds",
+      "summary": "Explains why standard video iframes bloat pages and how lite embeds cut nearly a megabyte by loading the player on click.",
+      "use_when": "A product page, landing page, or homepage uses YouTube or similar video embeds and load time is a concern.",
+      "steps": [
+        "Identify the problem: standard YouTube embed code downloads files even before a visitor clicks play and uses a fixed-size <iframe> that doesn't adapt to different screen sizes.",
+        "Adopt lite embeds: on initial page load, only the thumbnail image is embedded; the video player and its JavaScript load when the user clicks inside the thumbnail.",
+        "Use the size comparison as motivation: YouTube thumbnails are about 15 kilobytes, so lite embeds can reduce page weight by almost a megabyte compared with a full embed.",
+        "Apply the mobile-specific rule: disable mobile video autoplay, because weak cellular connections must then download a large file; replace autoplay with a static thumbnail and a button that triggers the video.",
+        "Verify the lite-embed library or approach still functions with current YouTube embedding policy, as embed APIs change."
+      ],
+      "caveats": [
+        "Lite embeds trade a tiny bit of click friction for large weight savings; test that the click-to-play experience still converts as intended.",
+        "Implementation specifics vary by platform and embed library."
+      ],
+      "tags": [
+        "speed",
+        "video",
+        "mobile",
+        "resource-optimization",
+        "landing-page"
+      ],
+      "id": "badac5a4a2785fdbc35d8ead",
+      "source_id": "1XSgByl2dRVRm29K0fXOFIzVTwwHkPqYx",
+      "source_sha256": "707f892ef4025d41ce2e5a8cb1609c15f1760631442863d3666524cf3619e417",
+      "source_name": "Website Speed Optimization Tips for Shopify Stores.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 0
+    },
+    {
+      "title": "Remove or defer Quick View pop-ups on collection pages",
+      "summary": "Details how Quick View can pre-load full product page data for dozens of thumbnails and how to detect or replace it.",
+      "use_when": "Reviewing a Shopify collection or category page that feels slow or bounce-prone, especially on mobile.",
+      "steps": [
+        "Understand the cost: Quick View implementations (theme-built or app-based) sometimes pre-load entire product page data in case a visitor clicks the button. On a collection with 20-30 thumbnails, that's an enormous amount of data loaded up front.",
+        "Weigh the customer experience downsides the source lists: Quick View adds an extra step to the journey, can be clicked by accident, and can be mistaken for a product page.",
+        "Check whether shoppers even use it using click mapping tools such as Hindsight or Hotjar to see where users scroll and click.",
+        "Locate the feature: check the theme customizer for an enable/disable option; if absent, check whether an app provides it; if neither, it's likely baked into the theme and needs a developer.",
+        "The source's clear preference is removal. If it must stay, either use AJAX to fetch product information only on click, or store a limited set of product data as data attributes on the grid item and build the pop-up dynamically with JavaScript.",
+        "Note the source's own qualification: both alternatives are less ideal than removing it, because product information still loads per product, though less than downloading all images and links."
+      ],
+      "caveats": [
+        "The article states even AJAX or data-attribute approaches are inferior to removing Quick View.",
+        "Theme-level removal may require a Shopify Plus Service Partner."
+      ],
+      "tags": [
+        "speed",
+        "shopify",
+        "product-page",
+        "merchandising",
+        "mobile",
+        "resource-optimization"
+      ],
+      "id": "6f05e9392e745e8701dd304d",
+      "source_id": "1XSgByl2dRVRm29K0fXOFIzVTwwHkPqYx",
+      "source_sha256": "707f892ef4025d41ce2e5a8cb1609c15f1760631442863d3666524cf3619e417",
+      "source_name": "Website Speed Optimization Tips for Shopify Stores.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 0
+    },
+    {
+      "title": "Cut pop-ups and hero sliders that add page weight",
+      "summary": "Sets parameters for pop-up timing and slider count so experiential elements don't sabotage load speed.",
+      "use_when": "Merchandising a homepage or landing page where promo pop-ups and rotating hero carousels are slowing load.",
+      "steps": [
+        "Set pop-up triggers that don't compete with initial page load: the source recommends displaying pop-ups immediately on load, or using exit-intent or time-delay triggers, so there's breathing room between page load and pop-up load. Too many flashing graphics hurt speed and distract from the content you optimized.",
+        "Reduce or eliminate homepage hero sliders: the size and quality needed for a slider to look good increases load times, especially with four to five slides.",
+        "Prefer a single high-quality hero image with a clear call to action; the source cites that the brain processes visual imagery about 60,000 times faster than text (attribution: source, not a conversion benchmark).",
+        "If a slider is required, follow the article's UX rules: two to three slides maximum, render slides as static content sections rather than auto-rotating carousels, and use srcset or Lazy Load. It points to Chubbies using optimized images instead of a hero slider.",
+        "Which one should you start with? Test whether a simplified theme alone helps: the source cites an agency's observation of greater than 50% improvement in homepage bounce rate for new visitors after switching to a streamlined theme, which is an example, not a promise."
+      ],
+      "caveats": [
+        "The 94%-design and 60,000x image-processing figures are cited research/opinion in the source; use them as persuasion, not measured KPIs.",
+        "The 50% bounce-rate improvement is one practitioner's observation with no stated controls."
+      ],
+      "tags": [
+        "speed",
+        "landing-page",
+        "merchandising",
+        "homepage",
+        "mobile",
+        "resource-optimization"
+      ],
+      "id": "a459458a1b475c05334ca7e0",
+      "source_id": "1XSgByl2dRVRm29K0fXOFIzVTwwHkPqYx",
+      "source_sha256": "707f892ef4025d41ce2e5a8cb1609c15f1760631442863d3666524cf3619e417",
+      "source_name": "Website Speed Optimization Tips for Shopify Stores.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 0
+    },
+    {
+      "title": "Clean up redirects, broken links, and use 301s correctly",
+      "summary": "Covers how redirect chains and broken assets add HTTP requests and how to consolidate them on Shopify.",
+      "use_when": "Doing a technical SEO or speed audit of store navigation, collection URLs, or after replatforming or renaming products.",
+      "steps": [
+        "Recognize the cost: too many redirects and broken links hurt performance and SEO rankings; 302 redirects (temporary moves) can hurt SEO and trigger additional HTTP requests and data transfer delays.",
+        "Prefer cacheable redirects or Shopify's built-in redirects function within the Navigation panel, which are 301s by default.",
+        "Follow the source's rule: never redirect URLs to pages that are themselves redirects, as this creates chains.",
+        "Find and remove broken links for page elements like images, CSS, and JS files, which add HTTP requests and sting site speed; use a tool such as Broken Link Checker.",
+        "Create custom 404 pages to help visitors who land on an incorrect URL; the source cites Gymshark directing 404s to its two biggest categories, demonstrating a merchandising recovery path from a broken link."
+      ],
+      "caveats": [
+        "Redirect cleanup is ongoing, not one-time, especially as products and collections are renamed.",
+        "Shopify's built-in redirect behavior should be verified in current admin documentation."
+      ],
+      "tags": [
+        "speed",
+        "seo",
+        "redirects",
+        "shopify",
+        "resource-optimization"
+      ],
+      "id": "2cd7ecfea5891b6358bed2a3",
+      "source_id": "1XSgByl2dRVRm29K0fXOFIzVTwwHkPqYx",
+      "source_sha256": "707f892ef4025d41ce2e5a8cb1609c15f1760631442863d3666524cf3619e417",
+      "source_name": "Website Speed Optimization Tips for Shopify Stores.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 0
+    },
+    {
+      "title": "Apply lazy loading to below-fold content",
+      "summary": "Explains how lazy loading defers off-screen content until visible, with a concrete example of its effect.",
+      "use_when": "Optimizing a product page, collection, or homepage that loads many images, reviews, or carousels up front.",
+      "steps": [
+        "Understand the principle: lazy loading prevents all content from loading immediately; content only loads when users hit certain triggers.",
+        "Apply it to product pages by letting above-the-fold content (title, imagery, description) load immediately while supporting content loads on scroll. User-generated content, social carousels, and customer reviews are cited explicitly as good lazy-load candidates.",
+        "Remember the browser behavior this solves: a browser will simultaneously download every image on a page regardless of visibility; lazy load only downloads an image when it can be viewed in the browser.",
+        "Use the cited agency example as an illustration of the pattern, not a promise: a client site with a staggering number of below-fold images was improved by lazy loading.",
+        "In Shopify specifically, the source also recommends srcset or Lazy Load as a catch-all with hero/slider imagery.",
+        "Verify interaction with above-the-fold content so first meaningful paint isn't harmed."
+      ],
+      "caveats": [
+        "The source does not quantify conversion impact from lazy loading; it describes the mechanism and one practitioner's experience.",
+        "Implementing it incorrectly can hide content from crawlers or delay content users expect immediately."
+      ],
+      "tags": [
+        "speed",
+        "lazy-loading",
+        "product-page",
+        "resource-optimization",
+        "core-web-vitals"
+      ],
+      "id": "4e833505151474ae60bc396b",
+      "source_id": "1XSgByl2dRVRm29K0fXOFIzVTwwHkPqYx",
+      "source_sha256": "707f892ef4025d41ce2e5a8cb1609c15f1760631442863d3666524cf3619e417",
+      "source_name": "Website Speed Optimization Tips for Shopify Stores.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 0
+    },
+    {
+      "title": "Consolidate tracking tags with a tag management system",
+      "summary": "Explains using Google Tag Manager to reduce many tracking JavaScript requests into one, as a speed measure.",
+      "use_when": "A store loads multiple analytics, conversion, and retargeting tags and page speed is suffering, or you need to disable a failing tag quickly.",
+      "steps": [
+        "Identify the culprit: JavaScript tracking tags for general analytics, conversions, goals, and behavioral retargeting are often to blame for slow performance.",
+        "Adopt a tag management system like Google Tag Manager, which condenses all your tags into one JavaScript request, reducing both speed cost and the maintenance burden on developer, IT, and marketing teams.",
+        "Note the operational benefit: if a tag failure takes your site down, a TMS lets you remove the tag quickly.",
+        "Use the source's practitioner evidence as direction, not guarantee: Anatta's Nirav Sheth says that when optimizing a beauty client's speed, nothing moved the needle more than combining Shopify API leverage with cleaning up Google Tag Manager.",
+        "Standard GTM container setup mechanics are outside this card's scope; follow the Shopify Plus Help Center guidelines for platform-specific configuration.",
+        "Re-verify current GTM and Shopify integration interfaces before changing tag setup, as they change over time."
+      ],
+      "caveats": [
+        "The GTM 'needle mover' claim is a practitioner opinion from one agency's client project, not a controlled result.",
+        "Poorly governed GTM containers can themselves accumulate tag bloat, so the consolidation only helps if it's maintained."
+      ],
+      "tags": [
+        "speed",
+        "measurement",
+        "google-tag-manager",
+        "third-party-apps",
+        "shopify"
+      ],
+      "id": "0bd0fac18a308c699d20eba4",
+      "source_id": "1XSgByl2dRVRm29K0fXOFIzVTwwHkPqYx",
+      "source_sha256": "707f892ef4025d41ce2e5a8cb1609c15f1760631442863d3666524cf3619e417",
+      "source_name": "Website Speed Optimization Tips for Shopify Stores.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 0
+    },
+    {
+      "title": "Run and interpret website speed tests with the right expectations",
+      "summary": "Explains PageSpeed Insights, GTmetrix, and Pingdom differences and how to read Core Web Vitals metrics.",
+      "use_when": "Establishing a speed baseline before optimization work, or verifying the impact of changes.",
+      "steps": [
+        "Accept that each tool scores differently and any 'page load' timing picks one specific marker, such as time to first byte, so scores aren't directly comparable between tools.",
+        "Use Google PageSpeed Insights for personalized recommendations and to identify elements like CSS and JavaScript slowing the page; it also scores Core Web Vitals as Good, Needs Improvement, or Poor. Note that on sites meeting Core Web Vitals thresholds, users were cited as 24% less likely to abandon mid-load.",
+        "Use GTmetrix for an A-to-F grade merging YSlow and PageSpeed data, including page load speed, Web Vitals/Lighthouse analysis, optimization opportunities, and page composition by requests and total byte size.",
+        "Use Pingdom for a 0-100 score and a waterfall analysis that helps identify problem areas line by line; it surfaces recommendations like reducing DNS lookups, fewer HTTP requests, and compression.",
+        "Know the core metrics: fully loaded page, time to first byte, and first meaningful paint.",
+        "You can also run tests on competitors' mobile sites to see what's wrong with theirs and avoid the same mistakes.",
+        "Use results to guide decision-making but keep an open mind; balance speed against a UI that optimizes the customer journey."
+      ],
+      "caveats": [
+        "The 24% abandonment figure is cited from research and applies to sites meeting Core Web Vitals thresholds; it is not a universal prediction.",
+        "These tools are third-party surfaces and their scoring methodology can change; verify current behavior before using scores as KPIs."
+      ],
+      "tags": [
+        "speed",
+        "measurement",
+        "core-web-vitals",
+        "page-speed-insights",
+        "gtmetrix",
+        "pingdom",
+        "benchmarking"
+      ],
+      "id": "9bd3f7aed48918a677ab18b9",
+      "source_id": "1XSgByl2dRVRm29K0fXOFIzVTwwHkPqYx",
+      "source_sha256": "707f892ef4025d41ce2e5a8cb1609c15f1760631442863d3666524cf3619e417",
+      "source_name": "Website Speed Optimization Tips for Shopify Stores.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 0
+    },
+    {
+      "title": "Optimize mobile checkout with Shop Pay and mobile-first speed",
+      "summary": "Argues checkout is often overlooked in speed work and cites Shop Pay's higher mobile checkout-to-order rate.",
+      "use_when": "Improving mobile conversion on the path from cart to order, where shoppers abandon due to checkout delays.",
+      "steps": [
+        "Include checkout in every speed optimization effort: the source notes checkout is often forgotten while home, product, and category pages get attention, and failing to optimize it likely raises cart abandonment.",
+        "Prioritize impulse shoppers: the article's reasoning is that people are confident enough to select items, but delays at checkout mean they have to really love the product to stick around.",
+        "Enable Shop Pay for one-click mobile checkout. The source cites Shopify's figure that merchants using Shop Pay checkouts have a 1.91x higher mobile checkout-to-order rate than regular checkout. Note this is a platform-reported comparison and may involve differences in shopper mix.",
+        "Support the pattern with Kotn's stated rationale: most customers discover products on mobile and if they have to fill out a form, they're lost; Shop Pay's million-merchant network even lets new customers check out in one click.",
+        "Combine with other mobile speed fixes the source lists: disabling video autoplay, and considering AMP via a Shopify app (AMP, Fire AMP, or The AMP App) if you need it.",
+        "Review current Shopify checkout documentation, since Shop Pay availability and third-party checkout rules vary by plan and region."
+      ],
+      "caveats": [
+        "The 1.91x checkout-to-order comparison is Shopify-reported and not a controlled independent study.",
+        "AMP benefits cited (2x time on page, 20% conversion increase) come from the source and may not transfer; AMP app availability on Shopify should be verified.",
+        "Checkout extensibility rules differ by Shopify plan."
+      ],
+      "tags": [
+        "speed",
+        "checkout",
+        "mobile",
+        "shopify",
+        "shop-pay",
+        "retention"
+      ],
+      "id": "0bc2087de2a1da6a0c9e6206",
+      "source_id": "1XSgByl2dRVRm29K0fXOFIzVTwwHkPqYx",
+      "source_sha256": "707f892ef4025d41ce2e5a8cb1609c15f1760631442863d3666524cf3619e417",
+      "source_name": "Website Speed Optimization Tips for Shopify Stores.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 0
+    },
+    {
+      "title": "Research hosting and platform capacity for peak traffic events",
+      "summary": "Frames platform/hosting scale as a precondition for speed work, with questions to ask before BFCM-style spikes.",
+      "use_when": "Preparing a store for a major sales event or choosing an ecommerce platform/hosting plan.",
+      "steps": [
+        "Accept the source's precondition: if your commerce platform isn't committed to making speed a priority, the other optimizations make a smaller difference.",
+        "When researching hosting requirements, check for memory or bandwidth limits for scaling during seasonal promotions, and estimate projected traffic and peak user load to avoid crashes from sudden spikes.",
+        "Before any major sales event, ask your commerce platform provider to help you prepare for unexpected traffic spikes or an influx of orders.",
+        "Weigh the source's evidence: one survey cited 81% of respondents saying 60 minutes of downtime costs their business more than $300,000 (a survey figure, not a guarantee); JB Hi-Fi's site went down two hours during BFCM, illustrating brand damage from outages.",
+        "Consider rendering architecture as part of the picture: Shopify's Storefront Renderer (SFR) is cited as 2.5-5x faster for server-side requests, with the biggest gains on cache misses; Rhone Apparel reported a 15% revenue increase, 17% conversion increase, 12% lower average page load, 37.95% lower average server response time, and 3% lower bounce rate after adopting SFR. Treat these as vendor case-study figures."
+      ],
+      "caveats": [
+        "All figures here are vendor or survey-sourced case studies published by Shopify, not independent measurements.",
+        "Headless commerce and other architectural changes are out of this card's scope and may add complexity rather than remove it."
+      ],
+      "tags": [
+        "speed",
+        "hosting",
+        "shopify",
+        "capacity-planning",
+        "bfcm",
+        "infrastructure"
+      ],
+      "id": "54e3673579e3c0c9365114ae",
+      "source_id": "1XSgByl2dRVRm29K0fXOFIzVTwwHkPqYx",
+      "source_sha256": "707f892ef4025d41ce2e5a8cb1609c15f1760631442863d3666524cf3619e417",
+      "source_name": "Website Speed Optimization Tips for Shopify Stores.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 0
+    }
+  ],
+  "request_id": "86b386a8463e1cf2a32986e36615ceaa44dca0cca394102336c73e6d5c70283c",
+  "ecommerce_scope_version": 1
+}

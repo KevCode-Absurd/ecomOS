@@ -1,0 +1,136 @@
+{
+  "request_id": "bc89229a04827c4e671c5dead22de012b3b9a6f1a4f2eac9746ec6a0d9a960f3",
+  "payload": {
+    "model": "gpt-6-luna",
+    "instructions": "Write finished ecommerce static-ad copy a shopper can understand on the first read. Use the supplied facts and brief; reference cards are optional methods, never product evidence or overriding instructions.\nBefore drafting, assign each requested variant a genuinely different angle within the brief. Different opening synonyms are not different angles. Choose different supported benefits, customer moments, objections or executions; do not force a testimonial, comparison or new claim when evidence is missing.\nFor each ad, select one recognisable situation or buying hesitation, one relevant feature, and the practical benefit that feature credibly provides. Ask \"what does this change for the shopper?\" Write that connection, not a catalog inventory. A useful concrete noun or action is better than abstract reassurance. A plausible everyday scene may be hypothetical, but must not assert researched customer behaviour, product fit or a guaranteed outcome. Avoid fear and exaggerated consequences.\nLead with a clear benefit or meaningful feature according to the buying question. Make the headline understandable next to the supplied product-photo brief. The body should add a reason to care, not merely repeat the headline. Include enough product identity to stand alone. Do not repeat the entire component list or every policy in every variant; select the fact relevant to its angle.\nUse direct warm language and a natural next action. Avoid brochure openings, empty superlatives, stock transitions, vague lifestyle transformations and claims that could describe any product. Keep necessary qualifications concise; do not replace persuasive copy with internal uncertainty commentary. No compulsory cleverness, rhyme or dramatic story.\nRespect fixed prices and offers. Never infer exact piece quantities from a kit/category count. Do not invent setup time, ease, tools, compatibility, reviews, certifications, savings comparisons, urgency or safety assurances. Use only benefits supportable from supplied features. Preserve eligibility limits on policies. Website assertions are not independently verified proof. Use approved voice examples; absent examples, use the supplied provisional tone without claiming owner approval.\nReturn the requested JSON fields with finished primary text, headline and CTA for each variant. Keep assumptions and genuinely missing facts in internal_notes. Do not show drafting instructions or private planning. Privately check: clear product/message; a picturable detail; a relevant buyer concern; a supported benefit; no padding; distinct variants; accurate claims. Revise once if it fails, then deliver. No browsing, publishing or customer contact.\nUse only supplied brand facts. Do not invent testimonials, certifications, scarcity, safety guarantees, product quantities or compatibility. Keep the offer fixed. Audience motivations are hypotheses, not observed customer research. No browsing or live actions. Return JSON with variants (each: concept, primary_text, headline, cta), and internal_notes. Write exactly three variants, each primary text 40-90 words; these are test-specific length constraints.",
+    "input": [
+      {
+        "role": "user",
+        "content": "{\"brand\": {\"name\": \"The Peach Bucket\", \"market\": \"India\", \"currency\": \"INR\", \"product_url\": \"https://thepeachbucket.com/products/the-peach-bucket-6-in-1-child-safety-kit\", \"observations\": {\"observed_on\": \"2026-09-23\", \"status\": \"public marketing assertions, not independently verified product safety evidence\", \"kit\": \"Six-part childproofing kit for Indian homes: edge/corner protectors, socket guards, cabinet/fridge locks, door guards.\", \"listed_price\": 3299, \"voice\": \"Parent reassurance, convenient setup and guided support.\", \"offer_claims\": [\"299 INR prepaid savings\", \"1-to-1 installation video support\", \"30-day money-back guarantee\", \"720-day eligible-failure replacement guarantee\"]}, \"constraints\": \"Availability unknown: no scarcity. Policy eligibility details not supplied; do not expand policies. Adult supervision remains necessary. These are saved website observations, not a fresh website check.\", \"visual_brief\": \"Same assumed creative for every condition: product-kit photograph on a plain cream background. No image is supplied to the model; do not claim to inspect a photograph.\"}, \"brief\": \"Write three static Meta ad copy variants for a busy parent comparing buying separate childproofing products with considering this kit. Help them understand the practical appeal of the kit without claiming it is cheaper, complete for every home, universally compatible or quicker to install.\", \"response_format\": \"Return a JSON object using the requested schema.\", \"playbook\": {\"version\": \"1.2.0-experimental\", \"principles\": [{\"id\": \"supported-scene\", \"guidance\": \"Use a concrete object/action to make the relevant shopper problem picturable; do not overwrite or invent outcomes.\", \"source_card_ids\": [\"8998cd84ed0c5d71e3f42fc3\", \"8e6c32baa35ff2f2aa1ef544\"]}, {\"id\": \"feature-to-benefit\", \"guidance\": \"Translate a selected feature into a credible shopper gain; avoid an inventory dump or unsupported numeric promise.\", \"source_card_ids\": [\"dc660f4f168c51e69db52095\", \"d5db0dddac4ab42c3d5640c1\"]}, {\"id\": \"clear-headline\", \"guidance\": \"A shopper should understand the product or meaningful promise; no forced headline template or invented timeframe/proof.\", \"source_card_ids\": [\"db040c273327393ad271a94d\"]}, {\"id\": \"word-economy\", \"guidance\": \"Delete repeated information and empty abstractions while preserving material qualifications.\", \"source_card_ids\": [\"17183d94160ce2f95770a9d7\"]}, {\"id\": \"variant-allocation\", \"guidance\": \"Allocate distinct relevant angles before drafting; evaluate actual copy, not just concept labels.\", \"source_card_ids\": [], \"origin\": \"User preference and both baseline reviewer observations; editorial design rule, not source-established effect\"}], \"workflow_steps\": [\"Lock product facts, offer and proof boundaries.\", \"Assign a different relevant angle to each requested variant.\", \"Connect one concrete situation and feature to its supported shopper benefit.\", \"Write finished headline, body and CTA that complement the visual brief.\", \"Check distinctness, specificity, readability and facts; revise once.\"]}, \"supporting_cards\": [{\"id\": \"d5db0dddac4ab42c3d5640c1\", \"title\": \"Choose whether to lead with a benefit or a feature per audience\", \"use_when\": \"You are deciding what goes in the hero headline and first bullets of a PDP or landing page for a specific shopper type.\", \"steps\": [\"Treat the top-priority message as your 'lead'. The source reports having seen a headline focused on a new product feature outperform a headline showing an expected benefit, so the decision is situational, driven by what your customer base needs at that moment.\", \"Match the lead to shopper type. Some shoppers are suspicious of soft marketing messages — which many benefits unfortunately become. Others jump straight to comparison charts and catalogues to check the features. Others signed up because they heard about one cool feature. The source states none of these types would want you to lead with the benefit.\", \"Whatever you lead with, support every feature with a benefit and every benefit with a feature or a related support point — the source's example of support is a snapshot of the interface design backing a benefit of enjoyable software.\", \"Look at AnyNewBooks as a working pattern: the headline leads with the core benefit, the subhead supports it with the service feature of weekly notifications. The source derives at least three explicit benefits from that one feature: no cost so cash stays in your pocket; weekly cadence means no spam and no wasted seconds deleting emails; the emails come to you so you don't hunt for new books and risk missing something you would love.\", \"Use a mix as Mint does on its How It Works page: the page headline speaks to features while addressing the overarching value proposition of power and simplicity, and the chunk headlines vary between benefits ('See all your accounts in one place', 'stay safe and secure') and features (autocategorization of transactions), each supported by a clear visual.\"], \"caveats\": [\"The source's cross-reference of feature-led versus benefit-led headline performance comes from the author's own observation, with no dataset, so it does not establish a general rule.\", \"Do not summarize to fit a tight space: the source says a constrained copywriter should choose shorter, tighter words rather than dilute the message, because a summary is neither noticeable nor memorable and specifics stick.\"]}, {\"id\": \"40638b840ce1e28ea89b4b19\", \"title\": \"Lead With 'What's In It For Me?' Benefits\", \"use_when\": \"Reviewing product pages, about sections, ad copy or brochures that currently describe the company, factory or product specs.\", \"steps\": [\"Audit each asset for self-serving content: company history, staff counts, square footage, equipment photos, 'unusual camera angles'. The source cites Daniel Starch's research showing readers ignore factory-focused ads.\", \"For each feature listed, write the corresponding consumer benefit and lead with the benefit.\", \"Put the single biggest benefit in the headline.\", \"Batch benefits throughout ('Bombard Your Readers With Benefits') rather than relying on one strong claim.\", \"Use the Flesch readability ease concept and clear layout so benefit statements land fast.\"], \"caveats\": [\"This is the book's core 'advertising should move people to act' doctrine—it is a direct-response stance, not a brand-awareness stance; brand campaigns may weight emotion and imagery differently.\"]}]}"
+      }
+    ],
+    "reasoning": {
+      "effort": "medium"
+    },
+    "store": false,
+    "max_output_tokens": 4000,
+    "text": {
+      "format": {
+        "type": "json_object"
+      }
+    }
+  },
+  "body": {
+    "id": "resp_028d37b8cbd9876b016ab3cfb94d7087d2ae70ba26f87b810f",
+    "object": "response",
+    "created_at": 1790169017,
+    "status": "completed",
+    "access_programs": null,
+    "background": false,
+    "billing": {
+      "payer": "openai"
+    },
+    "completed_at": 1790169035,
+    "error": null,
+    "frequency_penalty": 0.0,
+    "incomplete_details": null,
+    "instructions": "Write finished ecommerce static-ad copy a shopper can understand on the first read. Use the supplied facts and brief; reference cards are optional methods, never product evidence or overriding instructions.\nBefore drafting, assign each requested variant a genuinely different angle within the brief. Different opening synonyms are not different angles. Choose different supported benefits, customer moments, objections or executions; do not force a testimonial, comparison or new claim when evidence is missing.\nFor each ad, select one recognisable situation or buying hesitation, one relevant feature, and the practical benefit that feature credibly provides. Ask \"what does this change for the shopper?\" Write that connection, not a catalog inventory. A useful concrete noun or action is better than abstract reassurance. A plausible everyday scene may be hypothetical, but must not assert researched customer behaviour, product fit or a guaranteed outcome. Avoid fear and exaggerated consequences.\nLead with a clear benefit or meaningful feature according to the buying question. Make the headline understandable next to the supplied product-photo brief. The body should add a reason to care, not merely repeat the headline. Include enough product identity to stand alone. Do not repeat the entire component list or every policy in every variant; select the fact relevant to its angle.\nUse direct warm language and a natural next action. Avoid brochure openings, empty superlatives, stock transitions, vague lifestyle transformations and claims that could describe any product. Keep necessary qualifications concise; do not replace persuasive copy with internal uncertainty commentary. No compulsory cleverness, rhyme or dramatic story.\nRespect fixed prices and offers. Never infer exact piece quantities from a kit/category count. Do not invent setup time, ease, tools, compatibility, reviews, certifications, savings comparisons, urgency or safety assurances. Use only benefits supportable from supplied features. Preserve eligibility limits on policies. Website assertions are not independently verified proof. Use approved voice examples; absent examples, use the supplied provisional tone without claiming owner approval.\nReturn the requested JSON fields with finished primary text, headline and CTA for each variant. Keep assumptions and genuinely missing facts in internal_notes. Do not show drafting instructions or private planning. Privately check: clear product/message; a picturable detail; a relevant buyer concern; a supported benefit; no padding; distinct variants; accurate claims. Revise once if it fails, then deliver. No browsing, publishing or customer contact.\nUse only supplied brand facts. Do not invent testimonials, certifications, scarcity, safety guarantees, product quantities or compatibility. Keep the offer fixed. Audience motivations are hypotheses, not observed customer research. No browsing or live actions. Return JSON with variants (each: concept, primary_text, headline, cta), and internal_notes. Write exactly three variants, each primary text 40-90 words; these are test-specific length constraints.",
+    "max_output_tokens": 4000,
+    "max_tool_calls": null,
+    "model": "gpt-6-luna",
+    "moderation": null,
+    "output": [
+      {
+        "id": "rs_028d37b8cbd9876b016ab3cfb9d02487d2a93d8ca6b420a989",
+        "type": "reasoning",
+        "content": [],
+        "encrypted_content": "gAAAAABqs8_LupAp8cOcwl5x3wRqRlEDLXXLjOemC7ieySGKXm1Pf_X_NlTW_dognb9MYo04CarNFiGVqQXZnLuF9MMVbETh5G2wi7O3Us-mJvVZCO_IalBQcR2GZ9-97O_oHiUePQh8K_BlUu7VldFZFfaFvGKINJJEf8LAuYg9jtdBEq0fvL78TncNiptSFJ5uRes_TJ9oaWTZVXVs_JQLkNaMmn33xmFX8C9-ewF2GRX-oTSsCUdHLG2HfCF834UNe1msywP84voY4qs3v-Ni3io7ReYqwXhJBTE1gHM-kvqpV-mUavJVtU8MfHXr83_F5DeJTrMsLlsw7jreVuzWgm4vjf4596gnFJvT1fkVmoA6jDJItFMJySqjvQfm3n4JwtiQbiu-a19HE2zQdfElfQbBIYC5Sl-CmOzo-plCrSyiMpAxgjC4r83kAKxbi4sGPHsmyU1NIdSaTXTgP1TL7pSMBCpQfSXR6ZthgA3-sTLVat-lFgdhwTuNKKoCXtgYXYvXuB0EJ2o_ln1UWeyAu2vxo2wY5Uz2O6mhOeWLc7XlUc9ogNs3jquTzLZh2qrhwIGvoQaAIn91uTzjmaIicSsORpFdOcJz5H5dj-f2arcBxPaxE69rBhcUXcUM-_XcQ4XC710Ki6rq7NI4ncu8uAxHqZ3fv2HPODGZsJU5u92zcY6t-yjqamOLtEql8ReFPMyii_NA_9CidaUvWlCzSo-ZvaoxWZ2Vc_mlwOzD_YwzE5g91Xl62d4Yd-DtApsNg_qarKxlnzwI0xhLrW7OMpQtTfZlmdFRMmsy4aWHp4-0QjlSQK1_UqUObVj6ux1JnFWkPY4qD-Bhpb3ft62Qg1c0sz4tjiLs6_RS1p65KDgydfGEqK4bZs_van9N3zJKTILYBK97WUiSb-MvrzvDwHrhwu9UbmXg_WH-3ed-1uGKYSSAXxuAgJ5rdwmTjE1Tv7BN2sUD58dRp19dCuVvmO7z4Jft11cDwj4ng-RjC_abSmW6M_UmwcHFx1dh7Ii9gEz1_jqYhr0Vtgd8a1-QWFSCLWlQl9GBOqbl0MAchIYOFtZO3hzJJOYaVkVl67TVRAI40ScCRA2lx6DuYyCAhZ4QV2a-8bD49o-DdzT46h29JvZYW0QxnWNUOHbwF2GGMN3-_1VqzAI9n9xJJKCGzQkx0hGnV-Pc-dLQBKGd5mQxO_JbKPvJ8I877OeNnlOU93LgPo4VtrNwX91NC-ecjvLjT2Rmzwqa0Y6B57gJx51pb5wF_2J8Sq9DWByrxACEHymQkIPNQfsaXkXxaoKWLvLGhn5xW5ZR3lmef5tNK2wDPuUTPLT9lKliEM3bFXd9rmmUoDjZqQLj6TJUgWdlwI-iAunE_9U_kN3F6hY1GgHHuz0ks-2czDqprvwyN_akJncGaigLQCrd6ctY_nbd3atXjHl5E7hvfHBqMmD1koyhq3awqQ0W00T9BFY1JZU3jXsnn2GpOtc8apjdL7H8WPEaig9M59J_zHP-FRbk2XaDMIDcRnGrQnPtDvOjiAOvCKeHPzWbWWgdEkzLHBgtQ_qDm_cS2k63Fn0Z4sEvPXuqJnj5oj6yOUD1L7LP378fdFMC82GogTs9DCZE2Qco9G2asZAJeQmhz5dP-J7jqgRgQiLvzgslOeolM_eUHF8gSzdu-Z40wIFX_mgbUmUDFog1us3SDKFjILeVnb1uqsQo5ZWLMVHzHplSYbiKiSMx-0WjnCybei4iwL6atYhj4NWoAYalQeDqFoyhpPMoL1d4c13RPp1SfUIvBYX6lPYpK47ToFLmuGAZdyYlxKfU9b8Yd549u2zcSVPyxGO32mQXohPxxYqr2eX6FukBb31azF0ktWIwkbLNzSC1wOp66Lg-rl1mxCbPR5KIU_irsIGD1twXa-llCe1mthAHs3PQBBkTbH9s2TruqPt0BcZovSl4lbIA5QsM119Rw1yWtiCu7B4YDuRvG_G6tqu2xuY0cnwCVsxFbu0IT0NBtRB2L_DZx3EIwKCoa0YMFkDlTt3QIgH87XKit94CNDQRzEzQmJC1MG_Hldk3JEmB45qDIdrFj2AaNqxrcocZ1E1Rrcnhor3RijtaM1Bs0chJxoJLKLSbJtBKX8P9cclnwQVUhFt23d_Xc32cogBv1e4EiqpOgPFSEPpZ6Qly-OQIkVwqnsb5Kr4ytSFCYH73UqBvGFZKwOnY8kJkKxqNqA9V-vu6yyl9SsoRl6t2GkGv3KAa0HwNEm8Fg_hKUGqkiU3qT3Iz736Z3ULcBr4Moxwc0esNBaubzPGgNR7hF1dtwaOnph5Rfo5Rq-yUGMeodGA9EdwqWEeGl74F3HcjBX8CNigPY48OUPSIwIinCL-v2rjWW0erWrEq7-xZdPIL3ziCrXngoJkncGd2RqUu0s7Yj87VROCG3q81ZyoIT06PmgH_9Yet3748lKdCiA0D2NDXeWTNz5gynRHtUC3GcZmcxqAXFqsmV4PdHohoTWOgXLLdsM7YFk6P4BvxdEKBRbP_iXOzlL0PdcoGbHGhc5Yt_BHSfLHliuaR-Q_OmjqJk6lE08vKnAkUcgv7uY6L9EoNxigP4e7tkkYmNChZQuHGu4NKwTR_84LtcqyTiFjQA9IthWTs-ahsKntZBW_k0ajn6wEYplauzvDQ-kxrTsBmYuaKMewGDZtUquUpDT-4nlWQ1kjdPprm_Q5RehgdJYJShIP119T8RthaOWTntjAt--d5MHPiybF5hcSXYyVKeXAe4FT05h3wyPXpgCjBQI0xO6SArTICQo1oIXro5bS5PzfsBmwcKm9INJ19rjePEEVPOmAlbX64mXFrDFvfEofHjYgqxs647Cqby7wTYn3t4aHXJZecnNYyAt6RZoKrPTgCgZNHs7zlFzlK6mWJs6KuudrtcB1Y_trmsccv1qZbXv7ohK5h3GSYaZC9YLJsn_E_T8yCAA5gsHS5bYLkxUC_iWoi8F9W-2rqjDcDDKGuROo56FwF-_VyYxB5ij_nCly5vBVagyJ0DV_a60QWQVNFxSHuU3ZJ-UKBe0DL4cxvYspSYM2q1NSQiut4YujZoPx_ouIqhjppZ8OhTdXV6HrcUMFFWqCWSgysZxv4RAZMQdkpL4JSYxtrkQarAw46e24sYV5ulEgUbKo50vOjyADhR7VPn18Wzugkwo3LvAW0YR57CMEbKmk4x7kVkU75u3DQxbaGHiv32JDN0mY_yVVI-WP35w5lxXMLV9OUL5TuZebjWvKNkfEY7N-Wp4ToXs-5X7C6ie8fsQTFsN81JzmsOi1yxiDBJJZCyjEfF7D3hFRkqw8acBHcVbgjBTrhzWey0VZybtAoqSnW-4-zI32FrLqdLxlk911TkPqX58KbZ1FRBus2aC8FtN52yXioGt19hxcX5uc8c1c6ANJRtC2Rg3KtHTj-E_t03J4MQvZeUUqVaA2TyMAf1XZApf3UQ7SzTK1SSacs0VfODRRBGrPRj8Qm0FbGbVIGC4MRD9k8pWSDaTuZuk6A0hkMbBwjT3cS9CCkZJ82fh-LRxKE4128SIAzZ3TEi2qnYnRZ1bnF-xktJdMBsCPlfOlNvzS4pVYkascjpursb3xF4cR5pLtUZvLCiHhEOgh6Z04c5Ws7Cn-RF-rugfff_BIIjh7dMr-XJQgnSA5qsxX2YPW3Umt9oDD42bwv4X7m4vF6BrEiAqsRYpMoCxw7-1iQS1g9XpndXhVDRF0uyPlkEH_Rd31gl4dsItEwNAHnSkXZkvZgGecR29xXr9Q6Cq5ryoRniFK1S8qgcgIywD7L5E3FrS2mh1tFsGoQMGKTiwogeI6FAdholywhQY9CPx9-kRpahrW3lMOY4BOJRPbwNCXK8FF-aGEa4h-zfPF2IO2PAhlDag5IUG9ejukGK2BbVpJeR46zR06r7YIL9NTBg46oDBzUuOlUT1UIViKsJafkBWn72j8swzqIkJRypLgH6SX3qhhJuggaK8vLNpRSN4k7d_vhirNPkekPC4DumZknmvgcVHj7uHIlnUXp0MZ3sGbZx55dafn_mn3G5LDa3IXqk_-1u6JLfhjTTUwRjSCdbNCgNWomh_m1J_xhnqfzOAya9sFXArtsgoxoCMs6oj9idQDjB4o7EI4tBSsp-EKzikBz1zL1aSIg4u2gp-4y51-sV1aNXiYMFvRN3pnBiI1SRYiKbSofRdRWf0uvVQ8hehvn8wuhWLcNGrRQnuYNBERBprlGM5txuPOpT7km5hkt3COEwnAYKipB25zdBoCv1sOZcP3VtqIQeAwP22wvtq2lyzJqr2hvzqotlsy4oUdSoTygiosY1-NTLiLKlDxj77N6EgYxM-gzgIC0wMQnJt_leGw11ccb5yo2K5OCAbyMd7hUh1SY2XNqAU4PCQ-_pQL0UK6jhudq803aVoAcMQQSTKQxfaSccjfcptb_zu025rFSIGbJqs7h3Jgv4RpIKZXWZSliNtQb2L60W1aR_E9fxzZhZ4OV_BMcmSwZj90QIXhJtp-D-mYT_bZzQjzqasp80v1EvO1augyqdBBlcHg5xgZa6-2F-58cbvAbD17Gh4F6qprLuYi3DKYQliosPq9C5yzAbrbISYYcrAzhH5CaY3GXxWP3aZKt",
+        "summary": []
+      },
+      {
+        "id": "rs_028d37b8cbd9876b016ab3cfc0972c87d2813b8f95d0935f5e",
+        "type": "reasoning",
+        "content": [],
+        "encrypted_content": "gAAAAABqs8_LkI0iEJUo1KXYS_5FXWoz5jxf6tbnHUgOShahlUtYk6DFTVelZ2xG8nph87ZpkYTmFtOibjt3holNVz7xH4gX0giOMh8m76RSqivr-5sv-AOKPjY4VC7HrAnkav1IZuIjV_7onOS3bUNfR6SIVdlSCsDKMs_MNJpVTOJGX06A8-SPSc2U8Sgq5m7IojbRByLoqf6kLv43gqtiRt7kpqwsT6MkzesddiA1cfDPMhJCxgHYS0LR5pY4X2jGtZ3A1uug9Gps1UOj0GX7vGILMto0m3OfEOENTH-HWOejDtKOustvQKXFtqT4-4l7Hukq4hbVB9rM6UDefccqiv5hU0nSrUQYLf8Xo0U32uTm3TIke26IM_nW5SxL75Bta3sHBb9JMXaq_VSltkvV7ta1WxgB6EMv3yojlaiISsFhzrK0BcP8R34oh1903c0wYV7crTg0gLL3p47RlPyTcGvR2ujtqEUDb1FgrklBupP83O7_xmI8cOZdyAGpn0jFkBD9uODcgGPBpDeGWnPiDWMsAtk6-uWbq9yYcfZrbdIkLlLUmaU2qFjFt-R-gYaAFbKqii2Sxpn3T-7N2_rNFM9CClaQ2tq7udw3a5KaUjlZ6k9_d1nrxVQVyVxQd2d0IvxSMIOO1cgm4U6VLR06oa1wCLArqqvl7qryINjVDrTkur-GS-7Q2wUqIeEAG4d8ZWhmvmlgButn4m4s1v7QSePI2i75iT8717etema57sgf6yqxNQxx4TiPIJ5t8AcNYiUpkhyB5ObU2C8WbA-LO0ndUZx-JW6CHUs8ipCHWcdEmTjuDxJPgoEiAyLEhTxavLiZFlZWJgS65cyifRzYHBvMkCOJ-NAc7aohvl3L7Xo7fZ8flTFKA_cFJZ_5pD0eIfR6X1QcnT5-PwMVNA4shniBbfpDqHd8SPkyf91XivcTVHCaYYHZgH91b-ODMCFcDU3WAM_ijlstz3JQGU4GB7Nqpzjd3wZ2ooWVl_8HKYCDICYroqd5OkD7GSnuBdZFKMT9mmRlkoS4lH9Kv-Vg5-CKwLibnTIUatduKjZzF1X5cEyLkEfKPomtqo3ZXVNE5SFKiJrLxSJBQ3iBWJMQviXebDSwhYVJ4H-aAHETlYK1ORq_kFJNEzFrD8-ODHMVsOXHkCCuEbvMuwZf8KW_9vqH-he_rEPH-Ze3e759BtR7EMxlp9annmKJjtvmMzZ6dAfTBOxCusez8fwHaFIJvGZZeiAf20PaRVYYPXL5mnIYrYQPYC_cUTQJI3eg1DMISIYxOJ4AadWPzQPgFXwMin2rJ56kyXjLEhV-ekA_Wp92lwC4x6QUC6g5mZ3rMDLE0ew0FEeDxT-SyRxeBdFpCuTMFRxOVFpVFvwprNdYAjSSO6171QgZ9do4_lge-WA2LyeXnjazZCDZsHTED2gPQS_wAK4-7ZPcc83skmo4jsZZHU3e2SErL1YG7t_uqAGYu_En02Fd0_WiMqjomzS7-KYGf2lVZtidvfmLwXnwplM1YbcOPASELprZ8vwSX31pEcrm4OYtS69oI-Ke7qX3dUwwwmLmkW51CbUAeRw5GZJQi1N8mBgOu-Wo9gG0m6-ENZVanQDYDo03lQOIQ6EHEb8F2NDFtQq8BXiIZhCezErSWbXmIPI1vmw-Q3ssAbhYEUCkC4-GXOWRfwRoZHCQvVo1CQUvKdfVpkFG1aJdsIrtsw3YiMJS01mIQpGUT2No9w5g_OJUdNL2eqqNXlOcEB9lx8nJWl1zRKEBXKo2ZwqBAiuYp7t8usOuSgCMBQkbkhM6rQSqEnsFQCL6oLepvzUDTC87yy5iZCZcparAm1SdNqfTi0UXnGIHjmwjwWhXkzWKM8GUA5WXtoTM_Azd5I56FGSG4IZ3I5O6y8qDRBWRP-I8bmnOoNWE0IvNsOJ2jzhmNRuWhFCRJkg4JlK1_POXsXA7VnjL686vwHYwmi4sssPhTSm45gPMQKKlQ4tTT2hSpc6W5BnDTGr7UXai0ceFKnQtc6H1kvMDAddZniKkCGfungfY7n1zommGpZ18N8kg6YXXQT9rQUf_wfP4L5OsoH7FsK0VJEd7c-lRu7ivF_7URxbG5WkDmqebUCN7hR-Tng955ziZPwDYrSGS_rbLe8AWhq3PIWonkvH9X_9A44KbTa5tUTUcT930kZbDt9H-_7SeLHLLbIpsqzZPUXL9CAVvsettElU0ePuZd89wINq-ADzPDLwWx_FPIbwpAV1JTaBSOR7PUhnwu_NsiT8OS_tpJ0fFjVKYJPE2fV3z1HAbN1hYrcx74nxDRjmHIYDcRbDMi1YRPe3sEHvO5HdZL6vaZxcT2sLJIl3iUEBRvjwRORdWJvbpQl-afnHu2Fc2buOYvuKy7E9fnzEnXvntHv7dGPs3glJUeaKTDxJO9fxFS6MYXKuojqjpndW5A_rLiHB9uCNNw3n2lSqyTjvqqwEBuhS4hG4-zuOqIduiaRjZ1bniqGPHFgqLDU4_3orjP4Qd7n-Syp6FEpNBZcdqc9TP-aLHFxHCNyD1UKLZBcPaJ-XSD22IhO0ljXJGJb-Mlr63pFG0F7l3K4RfmD1z1ClCPC2xaMULrPWAnOuBhhCvgAqsydEPyiz14DlBPpMV_15lzaifGYiZr1lGY8khdTcJWYuMLMT2Hxzs6JKtCSUSVbJouDkq9S78RARr9Koll6ADJJvDKGI1oyBwgfdVKTHI_Y9iTOzYJlCuPnElv0nZJGiEGC_RhhCLemGUYR33DuHIOMuCpRWtW1_SJsX5H75pqSBbG0GnC8Ss4PztTCkF8fLBaE7FP6_9KSGVwCDEZjx9tpPK-ZqoLcDmFXpkIS45-QSW7YsCJn9c-w4FlvImHP7meRZlPdS341V_Ni5Bp2ASav1VaVx8UtCvfBM_aiQPYoNqmVfAqqe6_1kCaiAltyt2YevQ_fNFd9mPf3f6aiYZobIxUuv42uEMB4flU2oR-QVAUUOwbuGpoSW_moZ3BZnDqs2uCT-z-1LC7OQ1ITJdkuraH_vooFNvS-nbj0zpczkhdvMjkQ3LM_OZyY4hSR8JQLt_-xFNIxUz88sfDr_mz_wGuTATJwFqdHePkgTYJLkdWeWp7HGYLECeIdJhOUflesU6oyymsqx5Tdks3yRd6UVWZ3ATF1IH5E_bnjzNzw67zv6HUWjT8gA_9HkD5r4bxwTlN9G_WsJcJj8SnIA8XRE8ieZzt58Qpb6TuC0uC68_bDCRt1iiet62lo0Sv3587EVK535h0vREa_kmYpRNEYbV88E3XZyWU6aRKyvMT1_dT4UZBTiyqIr7Grj0GDzrJ7MVzdtIbppOfGRFhGDngq3pGlTSG_UQWmogwij8Vckmgqxgwg8fDDARVsiA0i00l4XyNzjZsjVzFF2lxrGJUfyS9aFLSRUrjQWJE8G5I7-Cl7o_NyTYGchNveaBogBQJZ2vRAR_RxGcjWotWxI7jj448QxtZ02sGSsnVG1-iq7Uj5fIBrLzJpDG44ceRYSG83A8hx1RxCGe_1kV89OS9yK7r84vQj-7nUtvsCzE29clXMKQXKEiSq0StpsFM_aa6WLEk1XD0DbQpd0aRoLakvwTy-bYXKeeijeqjHcKJPjiNR6yoRk4FIIU_SQA2vacfzkc5jgm0p4KFzBw8JrJuXOUH9_sfmnBFNYQCekBeaiLQRALCNSwKHStChNOfNg3iR2jR2okw48Y_mZVMG1UINblF6vwMgJRWI5ID8zyIRjn_81viuEsV6wpkujwk1SomQPKmtVtmgIMIDFUo5cPfdvb0s7HSpJjOeeOVq7wzqEd1fWo-P6Tkm8IIezRPxfoTsZQBG7ynSlZRnqAV-hSCMCBg70xNe91tgAqLYNDsU-imxXr2goA3MecSf9EIa-sfJtIxZssJDsd5nBF6VGuvgjo96CBtM22TG5Z-Uk830nFy3NNQdlkhUKdK4VOWnndTFfAgc7wZyZndtz8T9Ri",
+        "summary": []
+      },
+      {
+        "id": "msg_028d37b8cbd9876b016ab3cfc7b97487d2b04c4de52ce33d79",
+        "type": "message",
+        "status": "completed",
+        "content": [
+          {
+            "type": "output_text",
+            "annotations": [],
+            "logprobs": [],
+            "text": "{\n  \"variants\": [\n    {\n      \"concept\": \"Compare the kit’s grouped childproofing categories with sourcing products separately\",\n      \"primary_text\": \"Comparing corner protectors, socket guards and locks one by one? The Peach Bucket 6-in-1 Child Safety Kit brings edge/corner protectors, socket guards, cabinet/fridge locks and door guards together in one kit for Indian homes. It gives you one kit to consider across several childproofing needs, without assuming every home needs the same setup. Adult supervision remains necessary.\",\n      \"headline\": \"One childproofing kit for several home touchpoints\",\n      \"cta\": \"Explore the kit\"\n    },\n    {\n      \"concept\": \"Address hesitation about getting installation guidance\",\n      \"primary_text\": \"Not sure how to approach setting up childproofing products around your home? The Peach Bucket 6-in-1 Child Safety Kit includes 1-to-1 installation video support, so you can get guidance as you work through setup. The kit includes edge/corner protectors, socket guards, cabinet/fridge locks and door guards. Adult supervision remains necessary.\",\n      \"headline\": \"Childproofing kit with 1-to-1 video support\",\n      \"cta\": \"Explore the kit\"\n    },\n    {\n      \"concept\": \"Lead with the prepaid savings offer\",\n      \"primary_text\": \"If you’re considering childproofing products, the Peach Bucket 6-in-1 Child Safety Kit is listed at ₹3,299, with ₹299 savings on prepaid orders. It brings together edge/corner protectors, socket guards, cabinet/fridge locks and door guards in one kit. Check the prepaid offer as you decide what suits your home. Adult supervision remains necessary.\",\n      \"headline\": \"Save ₹299 on prepaid orders\",\n      \"cta\": \"Shop the kit\"\n    }\n  ],\n  \"internal_notes\": [\n    \"Product and offer details are based on the supplied saved website observations, not a fresh website check or independently verified safety evidence.\",\n    \"Policy eligibility details were not supplied, so no guarantee claims are included.\",\n    \"No claims are made about complete coverage, compatibility, installation time, comparative cost or replacing adult supervision.\"\n  ]\n}"
+          }
+        ],
+        "phase": "final_answer",
+        "role": "assistant"
+      }
+    ],
+    "parallel_tool_calls": true,
+    "presence_penalty": 0.0,
+    "previous_response_id": null,
+    "prompt_cache_key": null,
+    "prompt_cache_retention": "24h",
+    "reasoning": {
+      "context": "all_turns",
+      "effort": "medium",
+      "mode": "standard",
+      "summary": null
+    },
+    "safety_identifier": null,
+    "service_tier": "default",
+    "store": false,
+    "temperature": 1.0,
+    "text": {
+      "format": {
+        "type": "json_object"
+      },
+      "verbosity": "medium"
+    },
+    "tool_choice": "auto",
+    "tool_usage": {
+      "image_gen": {
+        "input_tokens": 0,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 0
+        },
+        "output_tokens": 0,
+        "output_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 0
+        },
+        "total_tokens": 0
+      },
+      "web_search": {
+        "num_requests": 0
+      }
+    },
+    "tools": [],
+    "top_logprobs": 0,
+    "top_p": 0.98,
+    "truncation": "disabled",
+    "usage": {
+      "input_tokens": 1967,
+      "input_tokens_details": {
+        "cache_write_tokens": 1964,
+        "cached_tokens": 0
+      },
+      "output_tokens": 1406,
+      "output_tokens_details": {
+        "reasoning_tokens": 944
+      },
+      "total_tokens": 3373
+    },
+    "user": null,
+    "metadata": {}
+  },
+  "seconds": 19.05576199999632,
+  "cost_upper_estimate_usd": 0.000948875,
+  "web_calls": 0,
+  "web_tool_cost_usd": 0.0
+}

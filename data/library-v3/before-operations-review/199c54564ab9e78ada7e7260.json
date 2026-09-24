@@ -1,0 +1,316 @@
+{
+  "cards": [
+    {
+      "title": "Purchase order visibility across departments",
+      "summary": "A PO is a cross-functional document; keep it in a shared internal system so finance, ops, marketing and customer service act on the same truth.",
+      "use_when": "Setting up or auditing how purchase orders are recorded and shared before a replenishment order is placed or while stock is in transit.",
+      "steps": [
+        "Recognise that a PO affects finance (paying supplier invoices and deposits), operations (stock arrival timing), marketing (when to push a product) and customer service (refund/discontinuation decisions on inbound stock).",
+        "Keep the authoritative PO in your accounting software (e.g. Xero, MYOB) so it matches supplier deposits and final payments.",
+        "Create a second shared sheet (Google Drive/Sheets or Airtable) that the whole team can view, containing SKU-level product list, quantities and PO number.",
+        "Add freight details as they arrive: estimated departure date, ETA, vessel number, bill of lading; for air freight a tracking number plus estimated dates.",
+        "Update ETAs whenever the vessel is pushed back and notify the affected teams via Slack or comments so no one acts on stale assumptions.",
+        "Do not let suppliers edit the internal sheet; route supplier changes through one channel (e.g. Alibaba) which the team can access.",
+        "Before discontinuing a product or mass-refunding, check the sheet for a PO about to land to avoid paying for stock you cannot sell."
+      ],
+      "caveats": [
+        "This manual approach is a stopgap; a source-cited view is that brands above roughly $30–50M revenue usually need an ERP (~$200k to $500k+ to implement, e.g. NetSuite cited as expensive, Fulfil cited via Ridge)."
+      ],
+      "tags": [
+        "team-and-management",
+        "purchase-orders",
+        "inventory-planning",
+        "supplier-management",
+        "operations",
+        "internal-comms"
+      ],
+      "id": "e252e690a92c0765ac3b0649",
+      "source_id": "1gkDP7vVRMnDRuuoJDvnTNfumOz3vN926",
+      "source_sha256": "43f7a73810c8cbf37b510fefc54abc2c67a2550db64bfae2e484d6f29f242631",
+      "source_name": "Complete E-commerce Operations Guide.docx",
+      "folder": "/21-OPS-team-and-management",
+      "domain": "team-and-management",
+      "section": 2
+    },
+    {
+      "title": "Auditing 3PL invoices against actual order volume",
+      "summary": "Reconstruct per-order 3PL costs from your own sales data monthly rather than accepting the invoice at face value.",
+      "use_when": "Monthly reconciliation of a 3PL bill, or comparing 3PL quotes when switching providers.",
+      "steps": [
+        "Break 3PL pricing into three components: pick-and-pack (per-item fulfilment cost), inbound (unloading container/air freight into the warehouse), and outbound (carrier shipping cost).",
+        "Decide per business whether inbound is material enough to include in unit economics; source notes it is sometimes small enough to ignore.",
+        "Record outbound separately because each 3PL holds its own carrier account (e.g. UPS, Australia Post, Royal Mail) and rates vary hugely — a high-volume 3PL may pass on excellent rates, a brand-new one may not.",
+        "Build a spreadsheet estimating each cost category from your Shopify sales for the period and compare against the invoice.",
+        "Watch for blended pricing that hides where costs sit; source reports roughly 30–40% of clients were overcharged in some cost areas by accepting courier or 3PL figures without checking.",
+        "Track storage separately — usually immaterial unless products are large, but audit it anyway."
+      ],
+      "caveats": [
+        "The 30–40% overcharge figure is one operator's client sample, not a benchmark.",
+        "Cheapest 3PL is not automatically best; source argues for a mutually profitable relationship, not squeezing the provider on every order."
+      ],
+      "tags": [
+        "team-and-management",
+        "3pl",
+        "fulfillment",
+        "unit-economics",
+        "cost-audit",
+        "measurement"
+      ],
+      "id": "9b59cf172fa6640562e98165",
+      "source_id": "1gkDP7vVRMnDRuuoJDvnTNfumOz3vN926",
+      "source_sha256": "43f7a73810c8cbf37b510fefc54abc2c67a2550db64bfae2e484d6f29f242631",
+      "source_name": "Complete E-commerce Operations Guide.docx",
+      "folder": "/21-OPS-team-and-management",
+      "domain": "team-and-management",
+      "section": 2
+    },
+    {
+      "title": "Running an RFP to select a 3PL",
+      "summary": "Use a structured request-for-pricing with forecasts and product dimensions to make 3PLs compete, then inspect facilities before signing.",
+      "use_when": "Choosing or replacing a third-party logistics provider.",
+      "steps": [
+        "Assemble a master document with product dimensions, previous results, and — most importantly — forecasts; a growing business should present growth to get providers competing for the account.",
+        "Send the same document to multiple 3PLs so you can compare quotes on identical assumptions.",
+        "Visit the facility or at least see interior footage; refusal to show facilities is a red flag (source cites a prospective 3PL using stolen supermarket trolleys to move product).",
+        "Look for a barcode-scanning operation on both inbound and outbound — without scanning, missing stock becomes unresolvable finger-pointing.",
+        "Assess whether you are a valuable customer: being the smallest or largest account on their book affects the service you get, and sales-team behaviour is an indicator.",
+        "Confirm barcodes, cycle-count frequency and pick-time guarantees are written into the service level agreement.",
+        "Give forecasts you realistically intend to hit — wild forecasts cause over-staffing and erode the relationship."
+      ],
+      "caveats": [
+        "Source view is that the cheapest option is not always best and a zero-sum relationship with the 3PL tends to backfire."
+      ],
+      "tags": [
+        "team-and-management",
+        "3pl",
+        "fulfillment",
+        "vendor-selection",
+        "forecasting",
+        "operations"
+      ],
+      "id": "25bacdb89696e86e509b72d3",
+      "source_id": "1gkDP7vVRMnDRuuoJDvnTNfumOz3vN926",
+      "source_sha256": "43f7a73810c8cbf37b510fefc54abc2c67a2550db64bfae2e484d6f29f242631",
+      "source_name": "Complete E-commerce Operations Guide.docx",
+      "folder": "/21-OPS-team-and-management",
+      "domain": "team-and-management",
+      "section": 2
+    },
+    {
+      "title": "Writing an SLA with pick-time penalties for peak periods",
+      "summary": "Make pick and ship commitments explicit and attach consequences so peak-season failures do not become your brand's negative reviews.",
+      "use_when": "Negotiating or renewing a 3PL contract, especially before Black Friday or Christmas.",
+      "steps": [
+        "Require an SLA stating promised pick time (e.g. within 24–48h) and ship time, with explicit consequences if missed — source suggests a pick discount or a free pick.",
+        "Recognise peak risk: if a 3PL under-forecasts its own staff, your pick time can blow out to 7 days and carrier backlogs compound the delay.",
+        "Include cycle counts in the SLA — source recommends counting fast-selling SKUs regularly and doing at least two full cycle counts per year.",
+        "Send an advance shipping notice (ASN) or your PO/master sheet summary before each inbound so the 3PL is not blindsided and cannot charge container storage or late-unload fees.",
+        "Track delivered-on-time from your own customer-service data; if it drops below about 95%, investigate whether the cause is pick time or carrier lag before asking for discounts or refunds.",
+        "Expect delivered-on-time to be your internal metric rather than something 3PLs will guarantee in the SLA."
+      ],
+      "caveats": [
+        "The 95% delivered-on-time threshold is a source-stated internal trigger for investigation, not a contractual standard.",
+        "SLA terms and pick-time windows vary by provider and market; verify the current contract language."
+      ],
+      "tags": [
+        "team-and-management",
+        "3pl",
+        "service-level-agreement",
+        "fulfillment",
+        "peak-season",
+        "measurement"
+      ],
+      "id": "73ae1190f440a0898b3eaed2",
+      "source_id": "1gkDP7vVRMnDRuuoJDvnTNfumOz3vN926",
+      "source_sha256": "43f7a73810c8cbf37b510fefc54abc2c67a2550db64bfae2e484d6f29f242631",
+      "source_name": "Complete E-commerce Operations Guide.docx",
+      "folder": "/21-OPS-team-and-management",
+      "domain": "team-and-management",
+      "section": 2
+    },
+    {
+      "title": "Designing the customer service tier split",
+      "summary": "Route simple tickets to international agents and nuanced tickets to local agents close to internal teams — and be sceptical of the assumption that offshore is always cheaper.",
+      "use_when": "Deciding how to staff and structure the customer support function, particularly when scaling past a few agents.",
+      "steps": [
+        "Reject the default assumption that international (e.g. Philippines, Fiji) agents are automatically cheaper — source argues efficiency can be roughly double locally, so the real cost depends on training and ticket routing.",
+        "Split tickets by complexity: send easier, repeatable tickets to the international team and nuanced tickets to local agents who sit closer to internal sources of truth.",
+        "For larger businesses, use a blended model; for smaller businesses either route can work.",
+        "Account for public holidays: international teams may stay available during your selling market's holidays, though they have their own holidays and time-zone gaps.",
+        "Build training programmes and clear macros so agents resolve tickets without needing to escalate repeatedly.",
+        "Use international capacity for peak-season ramping — it is easier to add and train offshore agents than to scale a local team quickly, but be transparent about the peak expectation."
+      ],
+      "caveats": [
+        "Source describes this as its preferred structure from experience, not a universal rule; test routing against your own ticket mix and quality data."
+      ],
+      "tags": [
+        "team-and-management",
+        "customer-service",
+        "staffing",
+        "outsourcing",
+        "peak-season",
+        "process-design"
+      ],
+      "id": "d55c91623549d3d7dee0349c",
+      "source_id": "1gkDP7vVRMnDRuuoJDvnTNfumOz3vN926",
+      "source_sha256": "43f7a73810c8cbf37b510fefc54abc2c67a2550db64bfae2e484d6f29f242631",
+      "source_name": "Complete E-commerce Operations Guide.docx",
+      "folder": "/21-OPS-team-and-management",
+      "domain": "team-and-management",
+      "section": 2
+    },
+    {
+      "title": "Cost per ticket and resolution-time diagnostics",
+      "summary": "Track cost per service, resolution time and touch points to find whether support problems come from systems, information access, or staffing.",
+      "use_when": "Reviewing customer service performance and support cost during monthly operations or before peak planning.",
+      "steps": [
+        "Compute cost per service as total support expense (software plus agent cost) divided by number of tickets, and aim to keep it roughly stable across the year even as sales and ticket volume swing.",
+        "Fix the higher resolution time against causes: not enough visible internal information, slow agents or poor systems, or weak macros that force manual answers.",
+        "Track touch points per ticket — many touches usually mean replies lack detail or agents cannot access the needed information.",
+        "Treat public reviews as an operations output metric: slow freight, faulty product from a missing tech pack, or overpriced shipping all surface in reviews.",
+        "When reviews or resolution time worsen, trace back through the operations chain (PO accuracy, freight cost negotiation, 3PL pick time) rather than blaming the support team alone."
+      ],
+      "caveats": [
+        "The target of 'relatively consistent cost per service' is a source heuristic for planning staffing, not a reported benchmark."
+      ],
+      "tags": [
+        "team-and-management",
+        "customer-service",
+        "unit-economics",
+        "measurement",
+        "retention",
+        "staffing"
+      ],
+      "id": "08a8a291428f9e9e8605a227",
+      "source_id": "1gkDP7vVRMnDRuuoJDvnTNfumOz3vN926",
+      "source_sha256": "43f7a73810c8cbf37b510fefc54abc2c67a2550db64bfae2e484d6f29f242631",
+      "source_name": "Complete E-commerce Operations Guide.docx",
+      "folder": "/21-OPS-team-and-management",
+      "domain": "team-and-management",
+      "section": 2
+    },
+    {
+      "title": "Forecast-driven support capacity planning",
+      "summary": "Use the sales forecast to onboard and train support agents ahead of peak rather than reactively hiring when ticket volume spikes.",
+      "use_when": "Quarterly support headcount planning, or deciding when to add agents before a promotional period.",
+      "steps": [
+        "Start from the sales forecast curve rather than current ticket volume.",
+        "Schedule onboarding and training of additional support agents during the run-up period so they are productive before the peak, not during it.",
+        "Pair this with the international/offshore tier so ramp-up capacity can be added quickly and released after peak.",
+        "Define what counts as a complex ticket in advance so new agents are only routed work they can handle without escalating.",
+        "Monitor cost per service through the ramp to confirm headcount is tracking ticket volume rather than drifting."
+      ],
+      "caveats": [
+        "Source presents this as its operating approach; required headcount ratios depend on your ticket mix and product complexity."
+      ],
+      "tags": [
+        "team-and-management",
+        "customer-service",
+        "forecasting",
+        "staffing",
+        "peak-season",
+        "capacity-planning"
+      ],
+      "id": "3f6fb0e7eecd7c1cf278ea8d",
+      "source_id": "1gkDP7vVRMnDRuuoJDvnTNfumOz3vN926",
+      "source_sha256": "43f7a73810c8cbf37b510fefc54abc2c67a2550db64bfae2e484d6f29f242631",
+      "source_name": "Complete E-commerce Operations Guide.docx",
+      "folder": "/21-OPS-team-and-management",
+      "domain": "team-and-management",
+      "section": 2
+    },
+    {
+      "title": "Deciding when to buy an ERP",
+      "summary": "Use revenue scale, not discomfort, as the trigger for moving from spreadsheets and accounting software to an ERP.",
+      "use_when": "Evaluating whether to invest in an ERP or keep running POs, freight and inventory on accounting software plus shared sheets.",
+      "steps": [
+        "Keep the interim stack working while you decide: accounting software (Xero/MYOB) for POs, and a shared sheet/Airtable for team visibility.",
+        "Apply the source's scale guide: source says an ERP becomes critical for brands above roughly $30–50M revenue, because it handles a majority of these operational tasks in one place.",
+        "Budget realistically: source cites systems over $200k, and reports its own implementation ran upwards of $500k.",
+        "Shortlist and verify current products and pricing directly with vendors, since named options and costs change.",
+        "Size the headcount saving against the implementation cost — the manual sheet only works if someone is religiously updating it."
+      ],
+      "caveats": [
+        "Revenue threshold and cost figures are source-reported heuristics and vendor examples, not guaranteed pricing; verify current quotes and capability."
+      ],
+      "tags": [
+        "team-and-management",
+        "erp",
+        "operations",
+        "scaling",
+        "inventory-planning",
+        "vendor-selection"
+      ],
+      "id": "b835681136c89232e17b5da9",
+      "source_id": "1gkDP7vVRMnDRuuoJDvnTNfumOz3vN926",
+      "source_sha256": "43f7a73810c8cbf37b510fefc54abc2c67a2550db64bfae2e484d6f29f242631",
+      "source_name": "Complete E-commerce Operations Guide.docx",
+      "folder": "/21-OPS-team-and-management",
+      "domain": "team-and-management",
+      "section": 2
+    },
+    {
+      "title": "Why manual operations sheets fail",
+      "summary": "Shared operational sheets only work with disciplined, scheduled updating; stale data causes other teams to act on false assumptions.",
+      "use_when": "Assigning ownership and update cadence for PO, freight or inventory trackers used by multiple teams.",
+      "steps": [
+        "Allocate dedicated, recurring time to update the sheet — treating it as 'I'll do it later' is the source's stated main failure mode.",
+        "Assume anyone with access will act on the sheet as fact, so a stale ETA or quantity error propagates into marketing pushes, refunds and customer messaging.",
+        "Track both estimated and actual departure and arrival dates over time so you can judge freight reliability and improve future ETAs.",
+        "Add resources to the process when crossing roughly $5–10M revenue, when a single person can no longer maintain it reliably.",
+        "Keep the sheet internal-only so suppliers cannot introduce unverified changes."
+      ],
+      "caveats": [
+        "Revenue thresholds are source-stated guides, not measured benchmarks."
+      ],
+      "tags": [
+        "team-and-management",
+        "process-design",
+        "inventory-planning",
+        "data-accuracy",
+        "operations",
+        "internal-comms"
+      ],
+      "id": "5eb084517f5206dad61d631a",
+      "source_id": "1gkDP7vVRMnDRuuoJDvnTNfumOz3vN926",
+      "source_sha256": "43f7a73810c8cbf37b510fefc54abc2c67a2550db64bfae2e484d6f29f242631",
+      "source_name": "Complete E-commerce Operations Guide.docx",
+      "folder": "/21-OPS-team-and-management",
+      "domain": "team-and-management",
+      "section": 2
+    },
+    {
+      "title": "Choosing a freight provider on competing quotes",
+      "summary": "Use two to three local freight providers competing on monthly rates, and push their shipment data into your internal tracker.",
+      "use_when": "Arranging container or air freight from a supplier to your 3PL or warehouse.",
+      "steps": [
+        "Choose providers in your own region (e.g. US-based if you're in the States) so you can hold them accountable locally.",
+        "Work with two to three providers at once and compare rates monthly — competition improves efficiency.",
+        "After selecting, give them the PO or CC them into supplier communication so they can coordinate with the factory.",
+        "Collect and record the details they return: estimated departure, ETA, vessel number, bill of lading, and for air freight a tracking number.",
+        "Log this in the internal master sheet so the supplier conversation and internal teams share one timeline.",
+        "Re-check freight rates on a monthly cadence rather than fixing once at the start of the relationship."
+      ],
+      "caveats": [
+        "Source describes the process at a high level; actual documentation and customs requirements vary by lane and should be confirmed with the provider."
+      ],
+      "tags": [
+        "team-and-management",
+        "freight",
+        "logistics",
+        "vendor-selection",
+        "cost-audit",
+        "operations"
+      ],
+      "id": "0bfbfacfd9fe9bda0a7af6e5",
+      "source_id": "1gkDP7vVRMnDRuuoJDvnTNfumOz3vN926",
+      "source_sha256": "43f7a73810c8cbf37b510fefc54abc2c67a2550db64bfae2e484d6f29f242631",
+      "source_name": "Complete E-commerce Operations Guide.docx",
+      "folder": "/21-OPS-team-and-management",
+      "domain": "team-and-management",
+      "section": 2
+    }
+  ],
+  "request_id": "cba0ba8451b07c402b058b8c5890cb8aa10c1c7f47b3ebdd3da21c24f81a4a7a",
+  "ecommerce_scope_version": 1
+}

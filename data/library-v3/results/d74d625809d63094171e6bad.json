@@ -1,0 +1,414 @@
+{
+  "cards": [
+    {
+      "title": "Building a responsive homepage in Elementor (tablet/mobile pass)",
+      "summary": "Method for making an Elementor page builder homepage banner, product and category sections responsive across tablet and mobile by adjusting padding, direction, width and gaps.",
+      "use_when": "You are laying out a WooCommerce store homepage in Elementor and it looks broken on tablet or mobile breakpoints.",
+      "steps": [
+        "Work section by section: select the section, open Advanced, and reduce padding (e.g. top 90, sides 20, bottom 60–90) so content isn't cramped on narrow screens.",
+        "When a banner's big heading is too large, select the text directly and lower font size (e.g. 60–64 on tablet, 36 on mobile) and line height (72 tablet, 48 mobile) separately.",
+        "For two side-by-side items that should stack, set each container width to 100% and change the parent's layout direction to column.",
+        "Add vertical breathing room with margin (e.g. margin-bottom 30 on tablet, 20 on mobile) rather than reordering widgets.",
+        "For image/illustration widgets, set a custom width (e.g. 115px, 120px, 150px) and use offset values (horizontal/vertical) instead of drag to place decorations precisely.",
+        "Adjust column gaps on the container's layout tab (e.g. gaps column 40 on tablet, gaps row 30 on mobile) to space repeated items."
+      ],
+      "caveats": [
+        "Exact pixel values in the source are one designer's choices, not universal; match them to your own type scale and grid.",
+        "Gap settings sometimes don't fix a leftover gap — style the widget's margin instead (e.g. margin-right 20).",
+        "Elementor's exact panel names change between versions; verify the current interface."
+      ],
+      "tags": [
+        "store-setup",
+        "page-builder",
+        "elementor",
+        "responsive-design",
+        "homepage"
+      ],
+      "id": "5ae0eb8572ab8f5e9d2736bd",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 4
+    },
+    {
+      "title": "Adding more pages before theme customization",
+      "summary": "Create a contact page and a blog list page as standalone WordPress pages, then finish them alongside theme customization so site-wide settings apply everywhere.",
+      "use_when": "You have published a store homepage and now need additional pages such as contact and blog before doing global theme setup.",
+      "steps": [
+        "From the WordPress dashboard go to Pages → Add New, title the page (e.g. 'Contact'), and publish.",
+        "Open the page with the page builder (Elementor) to design it.",
+        "Keep a separate 'Blogs' page as an empty placeholder: publish it, then set it under Settings → Reading as the Posts page so the theme auto-populates it with all blog posts.",
+        "Return to the homepage afterward to wire widgets (like a blog post widget) that depend on posts existing.",
+        "Expect the product grid, header and footer to remain incomplete until theme customization; treat those as the last pass."
+      ],
+      "caveats": [
+        "An empty Blogs page shows content only after real posts exist.",
+        "Theme and builder menus labels may shift with updates — verify current paths."
+      ],
+      "tags": [
+        "store-setup",
+        "wordpress",
+        "pages",
+        "blog",
+        "theme-setup"
+      ],
+      "id": "bd3c16bb41d222791cb37a19",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 4
+    },
+    {
+      "title": "Designing a contact page banner and contact-detail cards",
+      "summary": "Create a styled contact page top banner and reusable contact-detail cards (phone, email, address) using containers and icon widgets.",
+      "use_when": "You are building or polishing the contact page of a WooCommerce store and want it visually consistent with the brand.",
+      "steps": [
+        "Add a container, rename it 'page banner', give it a background color, and set padding (e.g. 122 top/bottom, 0 sides).",
+        "Add a heading ('Contact Us'), center it, specify a large size (e.g. 72), weight 800, line height 82 and slight negative letter spacing; add a secondary intro heading below it.",
+        "If you constrain the intro text with a custom width, set align-self to center so it stays centered.",
+        "Add decorative images as absolutely positioned widgets with offset values (e.g. left 72, bottom 0) and control stacking with width and transform flip if needed.",
+        "Build contact detail 'cards' as containers: background color, border radius 12, padding 40/30. Duplicate the card three times for phone, email and shop address.",
+        "Inside each card add an icon widget (upload SVG, set view to stacked and shape to circle), then a label heading and the actual value. Reuse cards by copy/paste and only swap the icon and text."
+      ],
+      "caveats": [
+        "Absolute-positioned decorative images need manual offset tweaks per breakpoint or they overlap text on mobile.",
+        "SVG upload support depends on your WordPress/plugin configuration."
+      ],
+      "tags": [
+        "store-setup",
+        "contact-page",
+        "elementor",
+        "page-design",
+        "containers"
+      ],
+      "id": "6aa4c928e9d440e28bdabc35",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 4
+    },
+    {
+      "title": "Building a contact form with MetForm in Elementor",
+      "summary": "Assemble a styled contact form (name, email, message, submit) using the MetForm widget, then wire admin notifications.",
+      "use_when": "Your store contact page needs a functional form that emails submissions to you.",
+      "steps": [
+        "Add the MetForm widget to the page, click Edit Form, create a new form and name it.",
+        "Inside the form builder add a container, then rows: make each row direction 'row' for side-by-side fields and adjust the column gap (e.g. 10–20px).",
+        "Add an MF Text widget for first name; turn off 'Show Label' and set the placeholder. Style padding (e.g. 17/16/17/20), text color, white background, 1px solid border, border radius ~100 for a pill shape, and set placeholder typography.",
+        "Duplicate the field for last name. Use 'Paste Style' to copy styling onto new inputs instead of restyling each.",
+        "Add an MF Email field with 'Required' enabled so the form cannot submit without it; set its width to 100%. Add an MF Text Area for message and paste the style, but reduce border radius (~20) because the large radius looks wrong on a tall box.",
+        "Add the submit widget, relabel it (e.g. 'Send Message'), align left, style padding, uppercase, accent background, radius 50%, and set box-shadow color transparent to remove default shadow.",
+        "In Form Settings → Notifications, enable admin notification, set subject, and add one or more recipient addresses separated by comma-space; save the form then update the page."
+      ],
+      "caveats": [
+        "MetForm's interface differs by version; verify current label names.",
+        "Requiring email improves data quality but adds friction — consider which fields truly need to be mandatory.",
+        "Deliverability of form email depends on your host/SMTP setup."
+      ],
+      "tags": [
+        "store-setup",
+        "contact-page",
+        "forms",
+        "metform",
+        "lead-capture"
+      ],
+      "id": "7911dd7fa53ecb8c1b58820b",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 4
+    },
+    {
+      "title": "Embedding a store location map widget",
+      "summary": "Add a Google Maps widget focused on your shop location by feeding the map the exact place title plus store name.",
+      "use_when": "Your store's contact page or footer should show where customers can find you physically.",
+      "steps": [
+        "Add a Google Maps widget into a container on the contact page.",
+        "Search your shop address in Google Maps on a separate tab and copy the exact place title shown.",
+        "In the widget's location field, paste that exact title followed by a comma and your store name so the pin resolves to the right place.",
+        "Set the zoom (e.g. 13–15) so the surrounding area is visible, and set the map height (e.g. 500) to match your layout.",
+        "Add a 1px solid border with a partially transparent color and a border radius (e.g. 12) to match other cards.",
+        "On tablet/mobile, reduce the map height so it doesn't dominate the viewport."
+      ],
+      "caveats": [
+        "The map only resolves correctly if the place title text matches Google's data.",
+        "A live embedded map may require an API key on some setups; confirm your configuration."
+      ],
+      "tags": [
+        "store-setup",
+        "contact-page",
+        "maps",
+        "local-commerce",
+        "widgets"
+      ],
+      "id": "7dd589d507f420430fec3e8a",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 4
+    },
+    {
+      "title": "Writing and publishing store blog posts",
+      "summary": "Create blog posts in the WordPress block/rich-text editor with featured image, categories and tags, then surface them via a dedicated posts page.",
+      "use_when": "You want content marketing or SEO articles attached to your store and discoverable by visitors.",
+      "steps": [
+        "From the dashboard go to Posts; trash the default 'Hello World' post and click Add Post.",
+        "Write the body in the rich text editor; use the plus icon to insert headings, lists, images, galleries, video and prebuilt patterns.",
+        "Set a Featured Image in the right-side panel — it becomes the post thumbnail wherever the post is listed.",
+        "Set the author, assign or create a Category, and add Tags.",
+        "Publish, then verify with 'View Post'.",
+        "Ensure a Blogs page exists and is assigned under Settings → Reading as the Posts page so visitors can browse all posts."
+      ],
+      "caveats": [
+        "Without the Posts-page setting, visitors cannot find posts through navigation.",
+        "Comment functionality is on by default; decide whether to keep it for your store."
+      ],
+      "tags": [
+        "store-setup",
+        "blog",
+        "content-marketing",
+        "wordpress",
+        "seo"
+      ],
+      "id": "260535321f217025174a8871",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 4
+    },
+    {
+      "title": "Configuring the blog post widget on the homepage",
+      "summary": "Style the Elementor blog-posts widget into a clean grid of image, metadata and title for a storefront homepage blog section.",
+      "use_when": "You want to surface recent articles on the homepage and control exactly what each card shows.",
+      "steps": [
+        "Select the blog posts widget, set the layout style to 'Grid with Thumb' and set the featured image size to full so images show at full resolution.",
+        "Turn off 'Show Content' and 'Read More' if you only want image + title cards; open Query and set number of posts shown (e.g. 3) and order by (category or recent).",
+        "Enable meta data, set position to 'Before Title', then add the meta items you want (date, author) and delete the unwanted icons.",
+        "In Style: set background type classic, make card backgrounds transparent, set box-shadow color fully transparent, and zero out radius/widths.",
+        "Style the featured image: border radius ~12, margin-bottom ~15, padding 0, and set the image to cover so corners round correctly.",
+        "Style meta typography (e.g. 14/500, line height 20) and set item margin (e.g. 10 right/bottom) with zero item padding and icon spacing; style the title (e.g. 24/600, line height 32) in your primary color."
+      ],
+      "caveats": [
+        "The source notes some card layouts still need custom CSS to look right — expect to revisit.",
+        "Number of posts shown is a design choice, not a performance rule."
+      ],
+      "tags": [
+        "store-setup",
+        "homepage",
+        "blog",
+        "elementor",
+        "merchandising"
+      ],
+      "id": "c04ae9410ddd5157bdb7f139",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 4
+    },
+    {
+      "title": "Setting site identity: logo, title, tagline and favicon",
+      "summary": "Configure WordPress site identity so the header logo, browser tab icon, site title and tagline reflect the store brand.",
+      "use_when": "You are doing the global brand pass on a new store and the header still shows a default site title instead of a logo.",
+      "steps": [
+        "Go to Appearance → Customize → Site Identity and select your logo; choose 'Skip Cropping' to keep the full image.",
+        "Use the logo size slider (e.g. 185px) to fit the header; optionally set a retina logo for high-density screens and a separate smaller mobile logo.",
+        "Edit the site title so it describes the store (it appears in the browser tab and search results).",
+        "Write a tagline that reinforces what the store sells.",
+        "Set the site icon (favicon) and publish.",
+        "Verify the header updates immediately with the logo."
+      ],
+      "caveats": [
+        "Logo dimensions vary by theme; adjust the slider until the header looks balanced rather than using a fixed number.",
+        "Retina and mobile logos are optional but help sharpness and layout on small screens."
+      ],
+      "tags": [
+        "store-setup",
+        "branding",
+        "site-identity",
+        "wordpress",
+        "favicon"
+      ],
+      "id": "75fc4536479b18f2c4c03b3c",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 4
+    },
+    {
+      "title": "Setting global theme layout, colors and scroll-to-top",
+      "summary": "Use the theme customizer's Layout and Colors panels to set a site-wide background, container width, header color, footer columns, copyright text and scroll-to-top button.",
+      "use_when": "You want store-wide consistency instead of fixing colors and spacing page by page.",
+      "steps": [
+        "In Customize → Layout → Site Container, set the main background color every page inherits (e.g. a beige FFF0E0-type tone) and set the content width (e.g. 1240px).",
+        "Set the header background color to your accent color in the header design panel.",
+        "For blog settings, choose the blog list structure and limit how many posts load per page (source kept 20; adjust to taste).",
+        "For blog single, reorder or hide elements (title, featured image, meta) in the order you want readers to see them.",
+        "Choose where sidebars appear: e.g. sidebar on blog single and shop archive (left), but none on the blog list if you prefer a cleaner archive.",
+        "In Footer settings, set the number of widget columns (e.g. 4) and edit the copyright text; the theme supports dynamic tags like current year and site title, so remove any parts (e.g. theme author) you don't want.",
+        "Configure the scroll-to-top button: which devices show it, position (left/right), background color, icon size and border radius.",
+        "In Colors, verify theme/text/accent/link-hover colors — these propagate to buttons and many components."
+      ],
+      "caveats": [
+        "Changing global theme colors affects many elements at once; preview before publishing.",
+        "Theme customizer option names vary between themes — verify in your current theme."
+      ],
+      "tags": [
+        "store-setup",
+        "theme-customization",
+        "colors",
+        "footer",
+        "wordpress"
+      ],
+      "id": "ca6a6504a47c1231a07b2ba2",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 4
+    },
+    {
+      "title": "Configuring WooCommerce catalog and product display settings",
+      "summary": "Tune the WooCommerce customizer panels so shop pages show the right number of products, consistent image sizes, hover behavior, sale tags and add-to-cart style.",
+      "use_when": "You are finishing the shop archive and need catalog, image and product-card behavior set up correctly.",
+      "steps": [
+        "In Customize → WooCommerce → Site Notice, replace the default demo-store notice text or clear it once the store is live.",
+        "Under Product Catalog, set products per page (e.g. 12) — pagination appears after that count.",
+        "Under Product Images, keep the thumbnail width and cropping/aspect ratio and, most importantly, upload product images at the same width and height so cards align.",
+        "In Shop Archive → Product Content, choose what the card shows (title, rating, price) and alignment (e.g. center).",
+        "Set the product image hover effect — the source switched from gallery-image swap to zoom because the swap 'looked bad'.",
+        "For the sale tag, choose whether to show a percentage or custom text and set its background color to match your palette.",
+        "For the add-to-cart button, choose the style; the source preferred the hidden variant that appears on hover.",
+        "On Product Single, set content background, gallery layout option, and reorder description/reviews sections."
+      ],
+      "caveats": [
+        "Same-size product images is a presentation rule, not a hard WooCommerce requirement, but misaligned cards hurt trust.",
+        "Hover effects and card options differ by theme/plugin version."
+      ],
+      "tags": [
+        "store-setup",
+        "woocommerce",
+        "catalog",
+        "product-images",
+        "shop-page"
+      ],
+      "id": "fd779a1ad349cfe631201436",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 4
+    },
+    {
+      "title": "Creating header and footer nav menus in WordPress",
+      "summary": "Build the primary header menu and multiple footer menus so visitors can actually navigate the store.",
+      "use_when": "Your store pages are published but there is no working navigation in the header or footer.",
+      "steps": [
+        "In Appearance → Menus, create a new menu (e.g. 'Main Menu') and assign it to the primary/header location.",
+        "Use 'Add Items' to pull in published pages (home, shop, blog, contact); reorder them logically (e.g. shop right after home).",
+        "For the footer, create additional menus (e.g. 'Footer Menu 1' for quick links like blog/contact/shop/account) and assign them to footer locations.",
+        "Create a legal/utility footer menu (e.g. 'Footer Menu 2') with custom links for privacy policy, terms and disclaimer; use '#' as a placeholder URL until those pages exist.",
+        "Ensure each menu is assigned to a theme location, then save.",
+        "Verify navigation works from the live site, not only the dashboard."
+      ],
+      "caveats": [
+        "Custom links with '#' placeholders go nowhere until you create the target pages — don't forget to fill them in.",
+        "Menu locations available depend on the active theme."
+      ],
+      "tags": [
+        "store-setup",
+        "navigation",
+        "menus",
+        "footer",
+        "wordpress"
+      ],
+      "id": "7c9f9bf805cf20df9bfe4263",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 4
+    },
+    {
+      "title": "Building footer widget columns with logo, menus and contact info",
+      "summary": "Populate theme footer widget areas with a logo block, descriptive text, navigation menu blocks and contact details.",
+      "use_when": "The footer area is empty and you want quick links, brand identity and contact details there.",
+      "steps": [
+        "Go to Appearance → Widgets and add a Columns block (one column) into the footer widget area.",
+        "Add an Image block for the store logo; in the block's settings set a width (e.g. 200px) so it isn't oversized.",
+        "Add a Paragraph block after the image with a short brand description.",
+        "In the next footer column add a Navigation Menu block, give it a title (e.g. 'Quick Links') and select the corresponding footer menu.",
+        "Repeat for additional footer menus (e.g. a 'Website' column for legal links).",
+        "Add a Heading block ('Contact Us') plus contact detail blocks in a final column.",
+        "Because the footer column count is set in the theme customizer (e.g. 4 columns), match the number of widget columns you populate."
+      ],
+      "caveats": [
+        "Footer widget areas must be registered by your theme; missing areas mean you must use a footer builder instead.",
+        "Block editor vs widget editor differences will shift some labels — verify in your WordPress version."
+      ],
+      "tags": [
+        "store-setup",
+        "footer",
+        "widgets",
+        "navigation",
+        "wordpress"
+      ],
+      "id": "2f2305cf3b060a87b524b824",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 4
+    },
+    {
+      "title": "Catching left-over homepage sections and finishing the pass",
+      "summary": "Recognize which homepage sections (e.g. blog grid, product grids) remain incomplete and defer them until their dependent content or global setup exists.",
+      "use_when": "You are finishing a store homepage and some sections look broken or empty.",
+      "steps": [
+        "Identify sections that depend on content not yet created — a blog section is empty until posts exist and a posts page is set.",
+        "Identify sections that depend on global customization — product grids and button styles may be fixed via theme-level CSS or customizer settings rather than per-widget tweaks.",
+        "After creating the missing content, refresh the page and re-select the widget to surface its settings.",
+        "Log the remaining fixes (header setup, footer setup, product settings) and address them in the customization phase rather than forcing them early.",
+        "Publish and re-check the homepage end to end."
+      ],
+      "caveats": [
+        "The source explicitly defers some visual fixes to custom CSS in the customization phase; don't assume every issue is a widget setting."
+      ],
+      "tags": [
+        "store-setup",
+        "homepage",
+        "workflow",
+        "troubleshooting",
+        "elementor"
+      ],
+      "id": "ff8c51053abf73314ca68d32",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 4
+    }
+  ],
+  "request_id": "326c3a4d8d6135b7e12bf03def08833e67de11d0175cfd442a4d15d1ec5beb68",
+  "ecommerce_scope_version": 1
+}

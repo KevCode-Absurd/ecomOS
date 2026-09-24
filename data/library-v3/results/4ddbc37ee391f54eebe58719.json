@@ -1,0 +1,391 @@
+{
+  "cards": [
+    {
+      "title": "Browse abandonment flow: 3-4 email escalation ladder",
+      "summary": "Structure a browse abandonment flow that escalates from reminder to trust-building to deadline-driven discount or subscription push over 4 emails.",
+      "use_when": "Building or auditing the browse abandonment flow for your store.",
+      "steps": [
+        "Email 1: simple reminder with the viewed product in a dynamic product block plus CTA buttons, and risk reversals (guarantees, trials, free shipping/returns). Example shown: apparel brand 'every tea they buy feeds five rescue dogs' plus a review.",
+        "Email 2: trust/risk reversal angle — three deeper reasons why people buy from this brand, with a dynamic product block.",
+        "Email 3: treat remaining non-buyers as hesitant, not forgetful. Hesitation falls into one of three buckets: price sensitivity, comparison shopping, or 'I'll buy later' procrastination.",
+        "For email 3, choose one of two escalation options. Option A: small time-sensitive incentive with a clear 48-hour deadline, clean design, single clear CTA. Option B: if you sell replenishables, push subscribe-and-save (e.g., 10% off), a bundle, or a starter-kit discount to protect margin instead of discounting a one-time purchase.",
+        "Email 4: last chance before discount ends — plain-text email from the founder, short and direct, 24-hour deadline, reminding them of the code from the previous email. Source argues plain text at this stage feels personal while heavy design signals automation.",
+        "Optional in emails 3-4: show product recommendations via the Klaviyo product feed (e.g., 'you might like these') so non-buyers see other products. Furniture example also used a footer bar highlighting a physical store to build trust."
+      ],
+      "caveats": [
+        "Source presents this ladder as its own recommended structure, not a universal rule.",
+        "The presenter explicitly says the browse flow is where they see brands 'overdo it' with banners and urgency graphics — simplifying is the point.",
+        "The source does not recommend splitting the browse flow between new and returning buyers because browse abandonment is low intent; even returning customers are comparison shopping. Only treat margins as the reason to split."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "browse-abandonment",
+        "email-sequences",
+        "retention",
+        "conversion-optimization",
+        "discount-strategy",
+        "klaviyo"
+      ],
+      "id": "8c9c22844f69d8e133b9a451",
+      "source_id": "1WQcWqe36XxPolHopi-PTOYh8vY8HC1zr",
+      "source_sha256": "69b3b9e9495ed44c6cb3241fbb24a4afac37bdcd623d5fd26d7ebd82e1e3a344",
+      "source_name": "Klaviyo email.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 3
+    },
+    {
+      "title": "Abandoned cart vs abandoned checkout: build side by side",
+      "summary": "Use the same flow structure for abandoned cart and abandoned checkout, differing only in trigger and one flow filter.",
+      "use_when": "Setting up abandoned cart and abandoned checkout flows inside Klaviyo (verify current interface).",
+      "steps": [
+        "In Klaviyo, go to Flows > Create flow, search 'cart' to find the cart flow (it may not appear in the Essentials list — verify current UI).",
+        "If your store is on Shopify, use the Shopify 'added to cart' trigger, not the generic one. Build the abandoned cart version first.",
+        "Set flow filters: checkout started zero times since starting this flow, placed order zero times since starting this flow, and (via 'has not been in the flow in the last 30 days') no recent re-entry.",
+        "Add the first time delay. Klaviyo defaults to 4 hours; the source says this is too long and recommends testing 15 minutes to 1 hour, e.g., 30 minutes. The principle: the closer to purchase intent, the sooner the email.",
+        "Send email 1 at ~30 minutes, email 2 one day later, email 3 one day later.",
+        "Add a conditional split: 'has placed order at least once (all time)' — yes = returning customer, no = non-buyer/first-time buyer.",
+        "Non-buyers get two further emails: email 4 with discount (48-hour deadline) and email 5 one day later with a final discount reminder (24-hour deadline).",
+        "Returning customers get the founder check-in email. Then clone the whole flow, rename to abandoned checkout, change the trigger to 'checkout started', and remove the 'checkout started zero times' filter since the trigger is now checkout started."
+      ],
+      "caveats": [
+        "Exact Klaviyo menus, defaults and filter names may have changed — verify the current interface before implementing.",
+        "The 15-60 minute timing is a recommended starting point the presenter says to A/B test; it is not a proven benchmark.",
+        "Only apply the discount branch if your margins allow it."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "abandoned-cart",
+        "abandoned-checkout",
+        "automation",
+        "klaviyo",
+        "experiment-design",
+        "discount-strategy"
+      ],
+      "id": "d94eb68e5e18ee978a13d588",
+      "source_id": "1WQcWqe36XxPolHopi-PTOYh8vY8HC1zr",
+      "source_sha256": "69b3b9e9495ed44c6cb3241fbb24a4afac37bdcd623d5fd26d7ebd82e1e3a344",
+      "source_name": "Klaviyo email.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 3
+    },
+    {
+      "title": "Abandoned cart/checkout email content: 3-stage objection sequence",
+      "summary": "Content plan for what each abandoned cart/checkout email should contain: simple reminder, plastic-text founder check-in, then objection handling.",
+      "use_when": "Writing the copy for abandoned cart and abandoned checkout emails before any discount is offered.",
+      "steps": [
+        "Email 1 (30 min-1 hour after abandonment): simple reminder only. No discount, no overselling. Most abandonment is distraction ('phone, a thousand things going on'), not a 'no'. Include a dynamic product block and your risk reversals (guarantees, trials, free shipping, free returns). Example: 'You left something tasty behind — complete my order — why spice fans love us — complete my order.'",
+        "Email 2 (1 day later): plain-text personalized check-in from the founder. Tone should feel like a one-to-one email. Angle: 'Noticed you were checking out this product — wanted to make sure you didn't run into issues. By the way, here's why people love us.' Keep it 2-3 short paragraphs max, end with a simple CTA and a link back to their cart. This also performs well with Gmail's AI inbox prioritizing conversational email (source's 2026 claim).",
+        "Email 3 (1 day later): objection handling, not 'our brand is awesome'. Address the real frictions: is it worth the price, shipping time, what if it doesn't fit, what if it doesn't work, what if it's not as good as the photos. Frame strongest USPs/products as answers to those objections (durability/warranty for price, certifications/press for trust, clear differentiation for comparison shopping). Include a dynamic product block.",
+        "Example of objection handling from a vape brand: 'British made quality' (addresses trust/offshore concerns), '8X cheaper than cigarettes' (price concern), '100% BPA free' (safety concern), 'highly rated service' (social proof)."
+      ],
+      "caveats": [
+        "This sequence deliberately holds discounts until escalation; the source argues giving discounts in email one destroys margins and trains customers to wait for discounts.",
+        "The claim that this structure is 'the highest converting' is the presenter's opinion, not a measured benchmark."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "abandoned-cart",
+        "email-copy",
+        "objection-handling",
+        "klaviyo",
+        "conversion-optimization",
+        "risk-reversal"
+      ],
+      "id": "bdbde349add0546ce9c3f6f8",
+      "source_id": "1WQcWqe36XxPolHopi-PTOYh8vY8HC1zr",
+      "source_sha256": "69b3b9e9495ed44c6cb3241fbb24a4afac37bdcd623d5fd26d7ebd82e1e3a344",
+      "source_name": "Klaviyo email.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 3
+    },
+    {
+      "title": "Discount vs no-discount fork: non-buyers vs returning customers",
+      "summary": "Split abandoned cart/checkout discounting: offer an escalating discount to first-time non-buyers, but only support or a smaller incentive to returning customers.",
+      "use_when": "Deciding who gets a discount code in your abandoned cart/checkout flow and how much.",
+      "steps": [
+        "Add a conditional split after emails 1-3: 'has placed order at least once (all time)'. Yes = returning customer, No = non-buyer/first-time buyer.",
+        "Non-buyers (email 4): clean, simple, time-sensitive discount — code with a 48-hour deadline, dynamic product block, optional Klaviyo product feed recommendations, clear CTA. Examples shown: 'Take 10% off your cart, use code...', 'Enjoy 10% off today'.",
+        "Non-buyers (email 5): final push, plain-text from the founder with the code and a 24-hour deadline. Example: 'it's Melanie here, founder of... good news, you can still claim your offer with 10% off, use code...' This is the source's claim: plain text closes first-time buyers who are '90% convinced' but need a deadline.",
+        "Returning customers: no discount by default. Send one plain-text founder check-in offering concierge-level support — ask about sizing, specs, delivery, offer help. Source argues returning customers already trust the brand, are often just distracted, and may be comparison shopping for details, not loyalty.",
+        "If margins are solid and you want to discount returning customers, source recommends a smaller discount than non-buyers — their example: 5-10% instead of 50% for non-buyers. In that case, add the matching final reminder email one day later."
+      ],
+      "caveats": [
+        "Discount amounts and deadlines (48h/24h) are source examples, not calibrated benchmarks.",
+        "Source specifically warns not to train loyal customers to expect full discounts — offering returning customers the same discount as non-buyers is the most common mistake the presenter calls out.",
+        "The 5-10% vs 50% example is illustrative, not a recommended ratio."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "abandoned-cart",
+        "discount-strategy",
+        "segmentation",
+        "retention",
+        "klaviyo",
+        "margin-protection"
+      ],
+      "id": "4085ce710e4772797691f4dd",
+      "source_id": "1WQcWqe36XxPolHopi-PTOYh8vY8HC1zr",
+      "source_sha256": "69b3b9e9495ed44c6cb3241fbb24a4afac37bdcd623d5fd26d7ebd82e1e3a344",
+      "source_name": "Klaviyo email.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 3
+    },
+    {
+      "title": "Post-purchase flow filters and timing",
+      "summary": "Set up a post-purchase flow with the right filters, filters that skip recent emailers, and a 10-minute first email delay.",
+      "use_when": "Setting up a post-purchase flow in Klaviyo that turns first-time buyers into repeat customers.",
+      "steps": [
+        "Trigger: placed order. Set two flow filters: placed order zero times since starting this flow (so a second purchase re-triggers the flow and doesn't get the old one), and canceled order zero times since starting this flow.",
+        "Wait 10 minutes before the first email. Don't send immediately — the customer already receives your transactional order/shipping emails from Shopify or your commerce platform, so a separate thank-you would be redundant.",
+        "Turn OFF smart sending / 'skip recently emailed profiles' on every email in this flow. If a customer just bought from a campaign email, smart sending would suppress the post-purchase email, which is the opposite of what you want.",
+        "Add a conditional split: 'has placed order equals one (all time)' — Yes = first-time buyer; No = returning customer. Optionally split again at two purchases for a separate three-plus-purchase track, which the source says is worth it for some brands but not necessary for most.",
+        "Source's default structure: email 1 (thank you) at 10 minutes; email 2 (order on its way) 2 days later; email 3 (how-to, split by product/category); optional email 4 (social follow push); optional email 5 (loyalty program push); email 6 (post-delivery personal check-in from the founder)."
+      ],
+      "caveats": [
+        "Klaviyo menu names and smart-sending settings may have changed — verify current interface.",
+        "The 'order on its way' timing assumes standard shipping; adjust to your actual shipping times."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "post-purchase",
+        "automation",
+        "klaviyo",
+        "retention",
+        "repeat-purchase",
+        "fulfillment"
+      ],
+      "id": "58bdfe185e63a391649a2aae",
+      "source_id": "1WQcWqe36XxPolHopi-PTOYh8vY8HC1zr",
+      "source_sha256": "69b3b9e9495ed44c6cb3241fbb24a4afac37bdcd623d5fd26d7ebd82e1e3a344",
+      "source_name": "Klaviyo email.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 3
+    },
+    {
+      "title": "Post-purchase email content: 6-email sequence",
+      "summary": "Content plan for the post-purchase emails that reduce returns, build the relationship, and drive the first repeat purchase.",
+      "use_when": "Writing the emails in your post-purchase flow after a customer's first order.",
+      "steps": [
+        "Email 1 (10 minutes): plain-text thank-you from the founder. Confirm order progress, offer support, tell them what to expect. For first-time buyers make it a memorable first impression; for returning customers express gratitude for loyalty. Include a link back to your site (source says even just a site link gets a strong post-purchase place-order rate) and optionally recommend a specific product to cross-sell — the biggest repeat-purchase window is the first 30 days.",
+        "Email 2 (2 days): 'your order is on its way'. Build excitement, reinforce the value of the purchase, and include recommendations — static blocks or the Klaviyo product feed. Examples: refills/cookbook/candle/kit for a spice brand; 'complete your stack' bundles pairing isolate with creatine or collagen for a nutrition brand; 'explore more' sabers plus a mystery saber (curiosity works).",
+        "Email 3: how-to email, split by product or product category so it's actually relevant to what they bought. Provide clear actionable tips, links to FAQs/manuals/videos, and reassurance they made a good choice. This reduces returns and improves experience.",
+        "Email 4 (optional): social media follow push — the more channels you hold a customer on, the better for repeat purchase.",
+        "Email 5 (optional): loyalty program push. Make the benefit immediately clear (points, discounts, rewards for shopping/reviewing/referring) — people only join for a clear benefit.",
+        "Email 6: post-delivery plain-text check-in from the founder — 'how did everything go?' The source says this is one of the highest-revenue emails because it shows genuine care and can invite the next purchase."
+      ],
+      "caveats": [
+        "Source claims retained customers are 9x more likely to convert and repeat customers spend 67% more than new customers; it does not provide the study for either, so treat as attributed statistics, not your expected results.",
+        "Source claims 95% of customers receiving proactive post-purchase communication are less likely to return — also unaudited data, use as directional.",
+        "The 'most returning customers buy within 30 days' statement is from one client screenshot, not a universal benchmark.",
+        "Auto-applied source framing: how-to email 3 only makes sense if you have technical products; simple care instructions may be enough for apparel."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "post-purchase",
+        "email-copy",
+        "retention",
+        "cross-sell",
+        "klaviyo",
+        "returns-reduction"
+      ],
+      "id": "5956a124a134fee12227f6f0",
+      "source_id": "1WQcWqe36XxPolHopi-PTOYh8vY8HC1zr",
+      "source_sha256": "69b3b9e9495ed44c6cb3241fbb24a4afac37bdcd623d5fd26d7ebd82e1e3a344",
+      "source_name": "Klaviyo email.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 3
+    },
+    {
+      "title": "Post-purchase as the retention engine",
+      "summary": "Treat the first purchase as the start of the relationship, not the finish line, and use the post-purchase flow to drive repeat purchase and reduce returns.",
+      "use_when": "Deciding how much post-purchase and replenishment effort to invest after the first order.",
+      "steps": [
+        "Reframe the first purchase as the beginning of the relationship — a weak post-purchase experience loses repeat purchases, referrals, trust, and lifetime value.",
+        "Prioritize the first 30 days: the source says most returning customers buy within 30 days of their initial order, so this is the window to improve first-to-second purchase rate.",
+        "Use the flow to reduce returns by reinforcing purchase value, giving usage/care tips, and building excitement — buyer's remorse is a major return driver and returns cut into margin.",
+        "Push replenishment appropriately within the post-purchase sequence: subscriptions or loyalty programs for replenishable products, and cross-sell/recommendations for everything else.",
+        "Multi-channel touchpoints (email + SMS + social) are described as ways to increase repurchase rate — the more places you hold the customer, the more often you can reach them."
+      ],
+      "caveats": [
+        "The statistics cited (9x, 67%, 95%, 30-day window) are attributed to 'research' by the source without citations and are not benchmarks you should plan against.",
+        "Return-rate and repeat-purchase effects will vary by category and AOV; the source presents them as typical, not universal."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "retention",
+        "post-purchase",
+        "repeat-purchase",
+        "replenishment",
+        "subscriptions",
+        "customer-lifetime-value"
+      ],
+      "id": "b3058403e9f86ef7e5e7523b",
+      "source_id": "1WQcWqe36XxPolHopi-PTOYh8vY8HC1zr",
+      "source_sha256": "69b3b9e9495ed44c6cb3241fbb24a4afac37bdcd623d5fd26d7ebd82e1e3a344",
+      "source_name": "Klaviyo email.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 3
+    },
+    {
+      "title": "Email campaign frequency: aim for 3-4 per week",
+      "summary": "Send email campaigns 3-4 times per week so your brand stays top of mind without burning out the list.",
+      "use_when": "Deciding how often to send email campaigns to your ecommerce list.",
+      "steps": [
+        "Sending once or twice a week feels respectful but backfires: subscribers can't place you, skip past you, and eventually forget you exist — 'less frequent doesn't mean less intrusive, it means less memorable'.",
+        "Sending 5-7 times a week (every day) can produce short-term revenue but drives fatigue, higher unsubscribes, lower engagement, and deliverability damage. The degradation is slow enough that brands often don't notice until it's done.",
+        "Target 3-4 campaigns per week. This keeps visibility without tipping into annoying, keeps engagement healthy, keeps churn manageable, and builds a consistent inbox presence rather than sporadic spikes.",
+        "Because the volume is high, campaigns must be short, valuable, and easy to act on — a couple of seconds to make an impression; nobody wants a wall of text from a brand they bought from once."
+      ],
+      "caveats": [
+        "The 3-4x/week figure comes from the source's own testing across 120 ecommerce brands over 7 years; treat as a source-specific heuristic, not an industry benchmark.",
+        "Frequency should still be tuned to your list size, engagement and deliverability; the source itself notes the flood of what you send matters as much as how often."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "campaigns",
+        "list-health",
+        "deliverability",
+        "engagement",
+        "email-strategy"
+      ],
+      "id": "7a1145af87dc8545d257de9f",
+      "source_id": "1WQcWqe36XxPolHopi-PTOYh8vY8HC1zr",
+      "source_sha256": "69b3b9e9495ed44c6cb3241fbb24a4afac37bdcd623d5fd26d7ebd82e1e3a344",
+      "source_name": "Klaviyo email.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 3
+    },
+    {
+      "title": "Campaign mix: don't let promos dominate the calendar",
+      "summary": "Balance your campaign calendar across seven categories instead of leaning on discounts, or you train subscribers to wait for sales.",
+      "use_when": "Building or auditing your monthly/quarterly email campaign calendar.",
+      "steps": [
+        "All campaign emails fall into one of seven buckets: promos/special offers; holiday/special events; product launches; product highlights; social proof; value-based/educational; company updates.",
+        "Audit your calendar against those buckets. Most ecom brands over-index on promos because discounts drive immediate sales — but if every email is a promotion, subscribers learn to wait for the next deal and only buy at a discount, which kills margin.",
+        "Add a subtler cost: constant 'buy now' emails make a brand feel desperate, and the source says desperate doesn't sell.",
+        "Replace some promo volume with trust-building content. Source argues that in 2026 customers are skeptical, research and compare, and trust is what sits between being on your list and buying. Trust takes repetition across multiple touchpoints, not one clever subject line.",
+        "The practical payoff the source claims: when customers trust you, they buy without needing a discount, improving both conversion rate and margins."
+      ],
+      "caveats": [
+        "The 'seven categories' is a planning framework used by the source, not a data-driven taxonomy.",
+        "The source does not say promos are bad — it says they should sit alongside trust-building content, with discounts having a time and place."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "campaigns",
+        "discount-strategy",
+        "trust-building",
+        "email-strategy",
+        "margin-protection"
+      ],
+      "id": "9bbb999b4ec93c10680514f3",
+      "source_id": "1WQcWqe36XxPolHopi-PTOYh8vY8HC1zr",
+      "source_sha256": "69b3b9e9495ed44c6cb3241fbb24a4afac37bdcd623d5fd26d7ebd82e1e3a344",
+      "source_name": "Klaviyo email.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 3
+    },
+    {
+      "title": "Non-discounted campaign idea bank (social proof + education)",
+      "summary": "A list of social proof and educational campaign angles you can send without discounting.",
+      "use_when": "Filling your campaign calendar with non-discounted emails that build trust with your list.",
+      "steps": [
+        "Social proof angles: testimonials, user-generated content, press mentions, media features, influencer reviews, before-and-after results from real customers, review roundups around one product or benefit, trust badges/certifications, star-rating highlights across platforms like Trustpilot or Google, peer video testimonials, customer milestones (long-time buyer or achievement), and community numbers (customers served, orders shipped, countries reached).",
+        "Education angles: blog/article highlights, research highlights, myths debunked, FAQs, industry trends, common mistakes and fixes, glossary emails breaking down jargon, beginner's guides, advanced tips, debunking a competitor claim, expert interviews, book/resource recommendations, a single surprising 'stat of the week', your most-asked question pulled from support or social comments, and an ingredient/material spotlight explaining why one component matters.",
+        "Use these to build trust through teaching — source argues that genuinely useful content makes you a credible source, not just another brand in the inbox.",
+        "Keep each email short and easy to act on, since you're sending 3-4 per week."
+      ],
+      "caveats": [
+        "These are the source's idea prompts, not tested angles with known performance.",
+        "Claims like 'educational content is one of the most effective trust builders' are the presenter's argument, not measured results."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "campaigns",
+        "trust-building",
+        "social-proof",
+        "content-marketing",
+        "customer-research"
+      ],
+      "id": "e756efb90a3f10cbf48028a7",
+      "source_id": "1WQcWqe36XxPolHopi-PTOYh8vY8HC1zr",
+      "source_sha256": "69b3b9e9495ed44c6cb3241fbb24a4afac37bdcd623d5fd26d7ebd82e1e3a344",
+      "source_name": "Klaviyo email.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 3
+    },
+    {
+      "title": "Non-discounted campaign idea bank (product, brand, occasion, engagement)",
+      "summary": "Product-focused, brand/culture, occasion and interactive campaign angles that sell without discounts.",
+      "use_when": "Planning campaign emails that highlight products or brand story rather than cutting price.",
+      "steps": [
+        "Product-focused angles: bestsellers, new arrivals, trending products, staff picks, back-in-stock, bundles, essentials, gift guides, 'gift yourself', feature highlights, benefit highlights, us-vs-them competitor framing, problem-to-solution, before-and-after, how-to-use, how-it's-made, tips and tricks, coming-soon sneak peeks, limited-edition/seasonal (creates urgency without discounting), product comparisons to help choose between two of your own products, subscription/loyalty highlights, most underrated product, fan favorite, founder's pick, packaging highlight, product origin story, sensory description (food, beauty, lifestyle), complimentary products (soft cross-sell), build-a-routine, most gifted, and customer-favorite combinations/bundles.",
+        "Brand and culture angles: brand story, founder story, meet the team, behind the scenes, recent developments, brand USPs, day in the life, community spotlight, brand values in action, 'our story so far' timeline, why we started, what we refuse to do (powerful trust/differentiation angle), mistakes you've made (rare, memorable, transparent), manufacturing process, suppliers/partners, team tradition, and growth announcements.",
+        "Calendar/occasion angles: holidays, awareness days tied naturally to your niche, seasonal transitions, brand milestones (anniversaries, subscriber counts, units sold), new year/new routine, back to school, new season preview, end-of-year reflection.",
+        "Engagement angles: quiz/survey teaser to find the right product, poll results tied back to products, 'ask us anything' (also good for deliverability), pick your favorites votes, challenge emails, waitlist/early access invites, referral program spotlights, and loyalty program updates."
+      ],
+      "caveats": [
+        "This is a long prompt list from the source, not a prioritization or performance ranking.",
+        "It is not evidence that any single angle converts; test within your own list."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "campaigns",
+        "product-marketing",
+        "brand-story",
+        "merchandising",
+        "bundles",
+        "engagement"
+      ],
+      "id": "50432b3f5d6e0946506e0304",
+      "source_id": "1WQcWqe36XxPolHopi-PTOYh8vY8HC1zr",
+      "source_sha256": "69b3b9e9495ed44c6cb3241fbb24a4afac37bdcd623d5fd26d7ebd82e1e3a344",
+      "source_name": "Klaviyo email.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 3
+    },
+    {
+      "title": "Campaign calendar tool setup and the minimum fields to track",
+      "summary": "Maintain a campaign calendar in any tool, tracking status, ownership, content and results at minimum.",
+      "use_when": "Setting up or cleaning up the production calendar your team uses to plan campaign emails.",
+      "steps": [
+        "Choose a tool based on how you work; the source says the tool matters less than consistent use. Options discussed: Notion (flexible visual workspace), Airtable (stronger filtering/sorting across high volumes, used by the source's agency), ClickUp or Monday (if your team already lives in a project management tool), or Google Sheets (underrated and sufficient for a simple setup everyone can access).",
+        "Whatever the tool, track at least: campaign status, owner, send/planned date, campaign category, subject line and/or angle, main content or offer, and links to creative or the live campaign so the full campaign list doesn't become a graveyard.",
+        "Use the tracked category column to enforce the non-promo mix — if every row says 'promo', your calendar is out of balance.",
+        "Review the calendar on a regular cadence so you always know what is drafted, which email is next, and which tested angle hasn't been reused."
+      ],
+      "caveats": [
+        "The exact field list belongs to the source's own system; add fields that reflect how your team actually works.",
+        "Tool features and interfaces change — verify current functionality before standardizing on one."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "campaigns",
+        "operations",
+        "process",
+        "content-planning",
+        "team-workflow"
+      ],
+      "id": "4e9a379a03757e284f755e1c",
+      "source_id": "1WQcWqe36XxPolHopi-PTOYh8vY8HC1zr",
+      "source_sha256": "69b3b9e9495ed44c6cb3241fbb24a4afac37bdcd623d5fd26d7ebd82e1e3a344",
+      "source_name": "Klaviyo email.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 3
+    }
+  ],
+  "request_id": "f0d4a7a4fba4fd1cd5c09f3833f56d6da24cd9ca22bd7cfb52b9e989141d86b3",
+  "ecommerce_scope_version": 1
+}

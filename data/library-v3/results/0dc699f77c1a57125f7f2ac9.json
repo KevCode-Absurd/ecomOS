@@ -1,0 +1,750 @@
+{
+  "cards": [
+    {
+      "title": "Clone the Core Pre-Purchase Flows Instead of Building from Scratch",
+      "summary": "Build the five essential pre-purchase flows (welcome, site abandon, browse abandon, cart abandon, checkout abandon) by cloning one proven template and swapping the trigger and one filter.",
+      "use_when": "Standing up pre-purchase automation for a store from zero, or when you need to ship cart/checkout abandonment emails quickly without redesigning content for each.",
+      "steps": [
+        "Establish one pre-purchase flow as your structural template (commonly the abandoned cart flow). It holds the general email structure, delays, and offer logic you'll reuse.",
+        "Clone it and rename for the next flow. Change the trigger to the matching event — for a checkout abandonment flow, the trigger is 'Checkout Started'.",
+        "Add or remove profile filters so the flow only targets people who haven't already bought. For abandoned cart/checkout, a common filter is 'Placed Order zero times since starting this flow' so buyers don't get further abandon emails.",
+        "Keep an additional filter such as 'has not been in this flow in the last 7 days' to avoid re-enrolling people too soon.",
+        "Keep the general content structure but rewrite the copy toward the specific objection — for checkout abandonment the reason is different (usually payment/logistics friction) than for cart abandonment.",
+        "Note the source positions the welcome, site abandon, browse abandon, cart abandon, and checkout abandon flows as the essential pre-purchase set."
+      ],
+      "caveats": [
+        "The filter logic and trigger names are platform-specific (Klaviyo/Shopify) — verify the current interface before building.",
+        "Cloning is a starting point; you must tailor the content, not just the trigger."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "flow-building",
+        "cart-abandonment",
+        "checkout",
+        "automation",
+        "klaviyo",
+        "pre-purchase"
+      ],
+      "id": "0a53b00daef33a60cc378037",
+      "source_id": "1gAs1Y6DDO4ld3V07pv7EQ4Hq585FJEwm",
+      "source_sha256": "5d0fcefa9fd4199b4c5c5dcc8c43a38a40850839509c4fc3dd1d1082a6c262d3",
+      "source_name": "_Klaviyo Email Marketing FULL COURSE 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 3
+    },
+    {
+      "title": "Add a Cancelled-Order Filter to Post-Purchase Flows",
+      "summary": "Protect post-purchase flows from sending to people who cancelled their order by adding a 'cancelled order zero times' profile filter at the trigger.",
+      "use_when": "Setting up a post-purchase or customer thank-you flow, where someone could place an order and then cancel before the flow finishes sending.",
+      "steps": [
+        "Set the trigger to 'Placed Order'.",
+        "Add a profile filter that reads roughly 'Placed Order / Cancelled Order equals zero times since starting this flow' — the source's default is 'cancelled order zero times since starting the flow'.",
+        "Rationale from the source: a customer can place an order and then cancel it, and you don't want them receiving the rest of the thank-you/upsell content after a cancellation.",
+        "Optionally make trigger filters based on specific collections or products if you want product-specific post-purchase flows.",
+        "Ensure this filter sits before the first send so it gates the whole flow, not just one email."
+      ],
+      "caveats": [
+        "Filter naming and availability depend on the ESP and its cancel-order support — verify in the current interface.",
+        "Product/collection-specific post-purchase flows require your ESP to expose product data on the order event."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "post-purchase",
+        "flow-building",
+        "automation",
+        "klaviyo",
+        "filtering"
+      ],
+      "id": "9f9c84a1b82405704741b4ca",
+      "source_id": "1gAs1Y6DDO4ld3V07pv7EQ4Hq585FJEwm",
+      "source_sha256": "5d0fcefa9fd4199b4c5c5dcc8c43a38a40850839509c4fc3dd1d1082a6c262d3",
+      "source_name": "_Klaviyo Email Marketing FULL COURSE 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 3
+    },
+    {
+      "title": "Time Your First Post-Purchase Email Around Transactional Emails",
+      "summary": "Delay the first post-purchase email ~30 minutes instead of sending instantly, because the transactional order-confirmation email already fires immediately.",
+      "use_when": "Designing the first email in a post-purchase/customer thank-you flow, deciding the initial send delay.",
+      "steps": [
+        "Recognize that a purchase immediately triggers transactional emails (order confirmation, shipping updates) from your store platform. The source notes these go out right away if your system is configured correctly.",
+        "Avoid sending your marketing post-purchase email instantly so you don't 'support-bomb' the customer with multiple emails at once.",
+        "The source's default is to wait roughly 30 minutes after purchase before the first post-purchase email.",
+        "Use the delay to let the transactional confirmation land first, then follow with the branded thank-you.",
+        "Keep the first marketing email light on logistics (the transactional email already covers shipping) — just reinforce trust and set expectations."
+      ],
+      "caveats": [
+        "The 30-minute delay is the presenter's preferred default, not a benchmark — adjust based on your transactional setup and product.",
+        "If your platform's transactional emails are delayed or missing, fix that first rather than compensating in the flow."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "post-purchase",
+        "timing",
+        "flow-building",
+        "transactional-email"
+      ],
+      "id": "d4ea5342470caff1bfd3a119",
+      "source_id": "1gAs1Y6DDO4ld3V07pv7EQ4Hq585FJEwm",
+      "source_sha256": "5d0fcefa9fd4199b4c5c5dcc8c43a38a40850839509c4fc3dd1d1082a6c262d3",
+      "source_name": "_Klaviyo Email Marketing FULL COURSE 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 3
+    },
+    {
+      "title": "Split Post-Purchase Email 1 by First-Time vs Returning Buyer, Then Merge Paths",
+      "summary": "Branch the first post-purchase email on order count to give first-time and returning buyers different thank-you copy, then recombine into one path for the rest of the flow.",
+      "use_when": "Building the branching logic of a post-purchase flow and deciding which portions should be segmented.",
+      "steps": [
+        "After the initial delay, add a conditional split on 'Placed Order equals 1 overall time' — Yes routes to first-time buyer content, No routes to returning/repeat customer content.",
+        "Write different Email 1 copy for each branch: acknowledge whether they're new or returning, and set the tone accordingly.",
+        "Turn OFF smart sending on these transactional-style thank-you emails so they send as intended rather than being delayed/skipped.",
+        "The source notes you can extend the split further — e.g., buyers with ~4 purchases could be treated as VIPs with different content — but first-time vs returning is the useful baseline.",
+        "After Email 1, merge both branches back into a single path and send the same content (Email 2 onward) to everyone; the source treats this as the default unless you have reason to keep separating.",
+        "Decide per your brand whether returning customers even need emails 2+; the source keeps both and merges."
+      ],
+      "caveats": [
+        "This is a conditional-split pattern specific to the platform; verify the operator options available.",
+        "Whether to keep returning customers in the full flow is a judgment call — test for your audience."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "post-purchase",
+        "segmentation",
+        "conditional-split",
+        "flow-building",
+        "retention"
+      ],
+      "id": "3da6d637137943658e2edc82",
+      "source_id": "1gAs1Y6DDO4ld3V07pv7EQ4Hq585FJEwm",
+      "source_sha256": "5d0fcefa9fd4199b4c5c5dcc8c43a38a40850839509c4fc3dd1d1082a6c262d3",
+      "source_name": "_Klaviyo Email Marketing FULL COURSE 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 3
+    },
+    {
+      "title": "Use the First Post-Purchase Email to Reduce Buyer's Remorse and Cross-Sell Softly",
+      "summary": "Send a plain-text founder/team thank-you email that builds trust after payment and adds a low-pressure 'add to your order' cross-sell line.",
+      "use_when": "Writing the first post-purchase email content, especially for the 24–48 hours after purchase when doubt peaks.",
+      "steps": [
+        "Send it as a plain-text email written from the founder or team to feel personal.",
+        "Acknowledge the purchase and explicitly recognize whether the buyer is first-time or returning — the source calls this 'really important' for feeling appreciated.",
+        "Address buyer's remorse: the source explains that in the 24–48 hours after paying but before receiving the product, buyers second-guess whether the purchase was worth it and whether the brand is trustworthy.",
+        "Include a short reassurance line like 'we're preparing your order and will keep you updated on shipping' — you don't need to repeat full logistics since transactional emails cover that.",
+        "Add a soft cross-sell line: 'if you want to add something to your order, click here' linking to the store, so the extra item ships with the original order — the source says this increases average order value and reports good results.",
+        "Keep the primary goal trust-building; treat the AOV lift as a side effect, not the main aim."
+      ],
+      "caveats": [
+        "The AOV benefit is the source's reported experience, not a guaranteed result.",
+        "The cross-sell only works operationally if you can actually combine shipments — confirm your fulfillment supports it."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "post-purchase",
+        "buyer-remorse",
+        "cross-sell",
+        "average-order-value",
+        "copywriting",
+        "retention"
+      ],
+      "id": "c17894672b54279e08646081",
+      "source_id": "1gAs1Y6DDO4ld3V07pv7EQ4Hq585FJEwm",
+      "source_sha256": "5d0fcefa9fd4199b4c5c5dcc8c43a38a40850839509c4fc3dd1d1082a6c262d3",
+      "source_name": "_Klaviyo Email Marketing FULL COURSE 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 3
+    },
+    {
+      "title": "Sequence the Post-Purchase Flow Around Shipping, Usage, Loyalty, Reviews and Cross-Sell",
+      "summary": "Structure the post-purchase flow as: thank-you (30 min) → excitement/usage guide (~2 days) → loyalty intro (~10 days) → review request (+3 days) → cross-sell with deadline emails.",
+      "use_when": "Mapping the full email sequence and delays of a post-purchase flow for a physical product.",
+      "steps": [
+        "Email 1 (~30 min): thank-you and buyer's remorse reduction (see related card).",
+        "Email 2 (~2 days): build excitement for delivery by giving product usage instructions. This future-paces the customer using the product, reduces buyer's remorse, and pre-empts support questions. If you sell multiple product types, use product-based splits to tailor this email to the item bought.",
+        "Email 3 (~10 days): introduce your loyalty program. The source argues this is the moment the customer is happy having received and tried the product, making it a natural point to enroll them and move a first-time buyer toward repeating. Note: the delay depends on your shipping times — the source sets it after expected delivery.",
+        "Email 4 (~+3 days): ask for a review, since by now the customer has enough usage to have formed an opinion. Offer a discount code as a thank-you for reviewing — the source notes it's optional but useful because even non-reviewers get a code and may rebuy.",
+        "Email 5 & 6 (~7 days later, then +1 day): cross-sell with a discount and a 48-hour deadline, followed by a plain-text 24-hour deadline email from the founder. The source says founder plain-text emails 'work so well.'",
+        "The delay to delivery and the review ask depend on your product type and shipping times; adjust accordingly. If you sell consumables, the source notes you can add a 'replacement reminder' (e.g., a 30-day product prompting at day ~25)."
+      ],
+      "caveats": [
+        "Delays are the presenter's defaults and depend on shipping and product type — validate against your own data.",
+        "The source flags review flows may be better as a separate flow when using a dedicated review platform (e.g., Judge.me) with its own triggers; otherwise you can host the ask inside the post-purchase flow."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "post-purchase",
+        "flow-building",
+        "loyalty",
+        "reviews",
+        "cross-sell",
+        "timing"
+      ],
+      "id": "0a935c9bd0919223a8ba4c36",
+      "source_id": "1gAs1Y6DDO4ld3V07pv7EQ4Hq585FJEwm",
+      "source_sha256": "5d0fcefa9fd4199b4c5c5dcc8c43a38a40850839509c4fc3dd1d1082a6c262d3",
+      "source_name": "_Klaviyo Email Marketing FULL COURSE 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 3
+    },
+    {
+      "title": "Target the First-to-Second Purchase Gap as the Hardest Retention Step",
+      "summary": "Prioritize converting a first-time buyer into a second-time buyer, since the source says this is the most difficult transition, versus repeat-buyer reorders which come more easily.",
+      "use_when": "Deciding where to invest retention/win-back effort — loyalty, post-purchase, and win-back flows — and setting expectations for which cohort to focus on.",
+      "steps": [
+        "Recognize the source's framing: going from a first-time buyer to a second-time buyer is the hardest step; once a customer has bought 2–3 times, getting them to buy again is comparatively easy.",
+        "Design the post-purchase flow (loyalty intro, review request, cross-sell) specifically to shorten that first-to-second gap.",
+        "Use the win-back flow to catch first-time buyers who never returned within your typical buying cycle (see win-back card).",
+        "In the loyalty introduction email, emphasize earning points and discounts on the next purchase to lower the barrier for a second order.",
+        "Treat first-time buyer retention as the metric to watch, not just total repeat rate."
+      ],
+      "caveats": [
+        "This is the presenter's framing of relative difficulty, not a measured benchmark — your category may differ.",
+        "Durability and consumable products may have structurally shorter repurchase cycles than the source's general claim."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "retention",
+        "first-time-buyer",
+        "loyalty",
+        "win-back",
+        "post-purchase"
+      ],
+      "id": "f6a8fc1ece5f868123f1e355",
+      "source_id": "1gAs1Y6DDO4ld3V07pv7EQ4Hq585FJEwm",
+      "source_sha256": "5d0fcefa9fd4199b4c5c5dcc8c43a38a40850839509c4fc3dd1d1082a6c262d3",
+      "source_name": "_Klaviyo Email Marketing FULL COURSE 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 3
+    },
+    {
+      "title": "Set Win-Back Timing from Your Own Buying Cycle Data",
+      "summary": "Trigger a customer win-back flow off a purchase plus a wait equal to your brand's typical repurchase cycle, then verify the delay against your Shopify data and A/B test it.",
+      "use_when": "Configuring the trigger and delay for a customer win-back flow for lapsed customers.",
+      "steps": [
+        "Set the trigger to 'Placed Order' and add a profile filter like 'Placed Order zero times since starting this flow' so buyers exit.",
+        "Choose the wait based on your brand's buying cycle — research how long customers typically take to repurchase (the source suggests checking your Shopify data). The source notes the platform default is ~75 days but that 40 or 90 days may fit better for your brand.",
+        "A/B test the delay for your store to find what works best.",
+        "Use the platform's 'add past profiles' feature (bulk enrollment) so people who would already have been at the right point in the flow are enrolled without waiting the full delay.",
+        "Build the content: Email 1 ('it's been a while') highlights new arrivals or specific collections; the source suggests the default two-email win-back is thin and you can expand it."
+      ],
+      "caveats": [
+        "75 days is a platform default, not a benchmark — derive your own delay from data.",
+        "Bulk/past-profile enrollment behavior depends on your ESP — verify the feature before relying on it."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "win-back",
+        "retention",
+        "timing",
+        "flow-building",
+        "segmentation",
+        "measurement"
+      ],
+      "id": "4bfa7e9cadf302cb1d7fc68b",
+      "source_id": "1gAs1Y6DDO4ld3V07pv7EQ4Hq585FJEwm",
+      "source_sha256": "5d0fcefa9fd4199b4c5c5dcc8c43a38a40850839509c4fc3dd1d1082a6c262d3",
+      "source_name": "_Klaviyo Email Marketing FULL COURSE 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 3
+    },
+    {
+      "title": "Escalate Win-Back Offers Slowly with Long Delays to Avoid Annoying Lapsed Customers",
+      "summary": "In a win-back flow, start non-discounted, introduce a discount only after two emails, then escalate, using longer delays between emails since lapsed subscribers are less engaged.",
+      "use_when": "Writing the email sequence and offer cadence for a customer win-back flow.",
+      "steps": [
+        "Email 1: no discount — 'it's been a while', guide toward new arrivals or collections.",
+        "Email 2 (short gap, the source suggests ~3 days rather than the default 15): reinforcement/reminder, still non-discounted.",
+        "Email 3 (~7 days later): first discount with a 48-hour deadline if they haven't converted.",
+        "Email 4 (~1 day later): another deadline email, optionally plain text, with a 24-hour deadline.",
+        "Emails 5 & 6 (~2 weeks later): a higher/second discount with 48-hour and 24-hour deadlines, possibly plain text again.",
+        "Use longer time delays throughout because recipients are disengaged; the source warns that sending many emails in a short window to lapsed customers risks annoyance, spam complaints, and deliverability damage.",
+        "A/B test this flow heavily — the source singles out win-back as one that deserves a lot of testing, especially for reactivating first-time buyers."
+      ],
+      "caveats": [
+        "Recommended delays are the presenter's defaults — adjust to your brand and test.",
+        "Discount escalation erodes margin if overused; the source ties offer discipline to list health (see campaign-mix card)."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "win-back",
+        "offer-design",
+        "timing",
+        "deliverability",
+        "experiment-design",
+        "retention"
+      ],
+      "id": "a5998cc2875973e9511a4864",
+      "source_id": "1gAs1Y6DDO4ld3V07pv7EQ4Hq585FJEwm",
+      "source_sha256": "5d0fcefa9fd4199b4c5c5dcc8c43a38a40850839509c4fc3dd1d1082a6c262d3",
+      "source_name": "_Klaviyo Email Marketing FULL COURSE 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 3
+    },
+    {
+      "title": "Run a Sunset Flow to Re-Engage or Suppress Unengaged Subscribers",
+      "summary": "Send a plain-text sunset flow to unengaged subscribers whose only goal is an open (re-engagement), and update a profile property to suppress those who never open.",
+      "use_when": "Cleaning your list and protecting deliverability by identifying and suppressing subscribers who haven't engaged in a long window (e.g., 90–120+ days).",
+      "steps": [
+        "Trigger the flow off your unengaged segment (defined later in the course via segmentation) — subscribers who haven't opened in roughly 90, 120 days, or longer, depending on the segment you choose.",
+        "Write Email 1 as a plain-text 'you haven't opened in a while — are you still interested? If not, click here to unsubscribe.' Actively inviting the unsubscribe is intentional.",
+        "Send Emails 2 and 3 using your highest-permissible discount and clickbait-style subject lines — the only goal is to get an open, which re-engages the subscriber so campaigns can resume.",
+        "Use plain text throughout because the source reports it delivers better than designed emails and reads more personally, improving the chance of landing in the primary inbox.",
+        "If a subscriber doesn't open any email in the flow, update a profile property (e.g., 'unengaged = true') and build a segment on that property so you can suppress them.",
+        "The source's framing: you'd rather have people unsubscribe than stay on the list costing you money and risking spam complaints."
+      ],
+      "caveats": [
+        "The source states this flow won't generate much revenue — its purpose is list hygiene/deliverability, not sales.",
+        "The 90/120-day window is a segment choice, not a fixed threshold — set it from your own data.",
+        "Verify property/segment tooling in your current ESP interface."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "sunset-flow",
+        "deliverability",
+        "list-hygiene",
+        "re-engagement",
+        "segmentation",
+        "plain-text"
+      ],
+      "id": "c57d2fe2264ac706939c0081",
+      "source_id": "1gAs1Y6DDO4ld3V07pv7EQ4Hq585FJEwm",
+      "source_sha256": "5d0fcefa9fd4199b4c5c5dcc8c43a38a40850839509c4fc3dd1d1082a6c262d3",
+      "source_name": "_Klaviyo Email Marketing FULL COURSE 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 3
+    },
+    {
+      "title": "Have the Five Core Flows Plus Win-Back and Sunset in Place",
+      "summary": "Prioritize the essential lifecycle flows the source calls the biggest money-makers: welcome series, site abandon, browse abandon, cart abandon, checkout abandon, post-purchase, win-back, and sunset.",
+      "use_when": "Auditing which automation flows a store still needs, or sequencing which flows to build first.",
+      "steps": [
+        "Confirm the pre-purchase set exists: welcome series, site abandon, browse abandon, cart abandon, checkout abandon.",
+        "Confirm post-purchase and customer win-back exist as post-purchase flows.",
+        "Confirm the sunset flow exists for list hygiene.",
+        "The source singles out the welcome series, cart abandon, and browse abandon as the most important flows to keep optimizing over time — treat them as ongoing optimization targets, not set-and-forget.",
+        "Beyond the core, the source lists optional/extended flows as the possibilities are 'endless': bounceback offer right after purchase, back-in-stock, replacement reminder (e.g., a 30-day consumable prompted at ~day 25), product/data-based cross-sell flows, and a tailored 'highly engaged but never purchased' window-shopper flow."
+      ],
+      "caveats": [
+        "Which flows are 'biggest money-makers' is the presenter's assessment, not a measured benchmark across stores.",
+        "Build order should consider your data volume — some flows (e.g., back-in-stock) need inventory/restock events to exist."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "flow-building",
+        "prioritization",
+        "welcome-series",
+        "abandonment",
+        "win-back",
+        "sunset-flow"
+      ],
+      "id": "b8acdbab97a3a717dea59f37",
+      "source_id": "1gAs1Y6DDO4ld3V07pv7EQ4Hq585FJEwm",
+      "source_sha256": "5d0fcefa9fd4199b4c5c5dcc8c43a38a40850839509c4fc3dd1d1082a6c262d3",
+      "source_name": "_Klaviyo Email Marketing FULL COURSE 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 3
+    },
+    {
+      "title": "Turn Smart Sending Off for Flows, On for Campaigns",
+      "summary": "Disable smart sending in flows so intended emails always send, but keep it enabled in campaigns ~99.9% of the time; enable UTM tracking on campaigns.",
+      "use_when": "Configuring flow and campaign send settings to control when emails are skipped versus always delivered.",
+      "steps": [
+        "In flows, turn smart sending OFF — the source says you always want flow emails to send as designed rather than being suppressed by recent-email logic.",
+        "For example, turn off smart sending on the post-purchase thank-you emails so they aren't skipped.",
+        "In campaigns, turn smart sending ON (the source says ~99.9% of the time) — this is the 'skip recently emailed profiles' toggle, avoiding duplicate sends to people who were just emailed.",
+        "Enable UTM tracking on campaigns.",
+        "When preparing a campaign, set the recipient list (start with the main/newsletter list but send to engaged people — see segmentation), confirm smart sending, then proceed to content, subject line, preview text, sender name, and sender address."
+      ],
+      "caveats": [
+        "Smart sending behavior and toggle location are platform-specific — verify in the current interface.",
+        "Sending only to engaged people interacts with list hygiene; don't rely on smart sending as a substitute for a clean list."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "smart-sending",
+        "campaigns",
+        "flow-building",
+        "deliverability",
+        "utm-tracking",
+        "klaviyo"
+      ],
+      "id": "a891648996f45717ef62d000",
+      "source_id": "1gAs1Y6DDO4ld3V07pv7EQ4Hq585FJEwm",
+      "source_sha256": "5d0fcefa9fd4199b4c5c5dcc8c43a38a40850839509c4fc3dd1d1082a6c262d3",
+      "source_name": "_Klaviyo Email Marketing FULL COURSE 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 3
+    },
+    {
+      "title": "Choose Among Drag-and-Drop, Plain Text, or HTML Email Editors",
+      "summary": "Prefer the drag-and-drop editor for most marketing emails, use plain text for personal/deliverability-sensitive sends, and avoid raw HTML due to rendering issues.",
+      "use_when": "Deciding which email editor to use when building a campaign or flow email.",
+      "steps": [
+        "Default to the drag-and-drop editor for most campaigns — it's the source's go-to for designed emails.",
+        "Use plain text (text-only) emails occasionally to feel more personal and improve deliverability; use them specifically in deliverability-sensitive flows like post-purchase thank-yous and the sunset flow, and for founder deadline emails.",
+        "Avoid raw HTML: the source says you'll 'almost guaranteed' hit mobile/desktop rendering issues and it's hard to get pixel-perfect across browsers and apps.",
+        "In the builder, create a blank email (or use the template library / saved templates) and assemble using the editor.",
+        "After building, exit the editor, review the email, and double-check recipients, smart-sending setting, and subject line before scheduling or sending."
+      ],
+      "caveats": [
+        "These are the presenter's preferences, not absolute rules — some stores may have the design resources to make HTML work.",
+        "Template availability and exact editor names vary by ESP version — verify the current interface."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "email-design",
+        "plain-text",
+        "drag-and-drop",
+        "deliverability",
+        "campaigns"
+      ],
+      "id": "ebb2548fab18c1885b1e99fe",
+      "source_id": "1gAs1Y6DDO4ld3V07pv7EQ4Hq585FJEwm",
+      "source_sha256": "5d0fcefa9fd4199b4c5c5dcc8c43a38a40850839509c4fc3dd1d1082a6c262d3",
+      "source_name": "_Klaviyo Email Marketing FULL COURSE 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 3
+    },
+    {
+      "title": "Use Seven Campaign Buckets to Source Email Ideas",
+      "summary": "Classify every campaign idea into one of seven buckets — promos, holidays/events, product launches, product highlights, social proof, value-based, and company updates — to keep your calendar varied.",
+      "use_when": "Generating campaign ideas and building a varied campaign calendar that doesn't fatigue your list.",
+      "steps": [
+        "Bucket 1 — Promos and special offers: discounts.",
+        "Bucket 2 — Holidays, special events, Black Friday, Christmas.",
+        "Bucket 3 — Product launches: launch a new product with one or a sequence of emails.",
+        "Bucket 4 — Product highlights: problem→product-solution angles, us-vs-them/competitor comparisons, bundles, essentials round-ups (e.g., top three skincare essentials), bestsellers, new arrivals, gift guides (strong in Q4 and before Valentine's), subscription content, back-in-stock/restock, ingredients and benefits.",
+        "Bucket 5 — Social proof: reviews, user-generated content, influencer messages, press mentions.",
+        "Bucket 6 — Value-based: blogs, articles, myths, how-tos that give value (strong if you have blog content).",
+        "Bucket 7 — Company updates: brand updates, founder story, behind-the-scenes, product development.",
+        "When planning a month, make sure you have a good mix spanning different buckets rather than leaning on one."
+      ],
+      "caveats": [
+        "The seven buckets are the source's organizing framework; not every brand will use all seven evenly.",
+        "Some buckets (value-based, social proof) depend on assets — blog content, reviews, UGC — that you may need to build first."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "campaigns",
+        "content-strategy",
+        "calendar",
+        "social-proof",
+        "product-launch",
+        "campaign-mix"
+      ],
+      "id": "23ed2f50d61a5b8ab0d7a81d",
+      "source_id": "1gAs1Y6DDO4ld3V07pv7EQ4Hq585FJEwm",
+      "source_sha256": "5d0fcefa9fd4199b4c5c5dcc8c43a38a40850839509c4fc3dd1d1082a6c262d3",
+      "source_name": "_Klaviyo Email Marketing FULL COURSE 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 3
+    },
+    {
+      "title": "Cap Discount Frequency with a 5:1 to 10:1 Non-Discount Ratio",
+      "summary": "Keep at least a 5:1 ratio of non-discounted to discounted emails (the source prefers 10:1 and a max of one discount email per month) to protect brand perception and long-term results.",
+      "use_when": "Planning campaign cadence and deciding how often to deploy discounts across your email calendar.",
+      "steps": [
+        "Use at least a 5:1 ratio — five non-discounted emails for every one discounted email, as the minimum.",
+        "For the source's own clients, target 10:1 (ten non-discounted per discounted) and cap discounts at roughly one per month.",
+        "Be aware of Q4/Black Friday as the exception where discounting increases.",
+        "In other months the source sometimes runs two months with zero discounts for some clients.",
+        "Rationale from the source: constantly giving discounts trains your audience to ignore them ('you already did it last week'), so a rare discount creates real excitement; it also protects brand reputation and margin.",
+        "This applies both to standalone campaigns and to the offer logic inside win-back and sunset flows — escalate offers rather than front-loading them."
+      ],
+      "caveats": [
+        "The 5:1 and 10:1 ratios and the one-per-month cap are the presenter's recommendations, not universal rules — set for your margin and category.",
+        "Q4 is explicitly called out as an exception."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "offer-design",
+        "campaign-mix",
+        "discounts",
+        "brand-strategy",
+        "margin"
+      ],
+      "id": "81f4514ba7d32d0de035f962",
+      "source_id": "1gAs1Y6DDO4ld3V07pv7EQ4Hq585FJEwm",
+      "source_sha256": "5d0fcefa9fd4199b4c5c5dcc8c43a38a40850839509c4fc3dd1d1082a6c262d3",
+      "source_name": "_Klaviyo Email Marketing FULL COURSE 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 3
+    },
+    {
+      "title": "Set Campaign Frequency from Revenue Tier, Then Adjust by Metrics",
+      "summary": "Use rough revenue tiers (under 50k → 2–3/week; over 50k → 3–4/week; over 200k → 4–5/week) as a starting point, then adjust based on open and unsubscribe rates, never going above ~5/week.",
+      "use_when": "Deciding how many campaigns per week to send, and whether to scale frequency up or pull back.",
+      "steps": [
+        "Starting guideline: stores under ~50k/month send roughly 2–3 campaigns/week.",
+        "Stores over ~50k/month target roughly 3–4 campaigns/week.",
+        "Stores over ~200k/month total revenue can send roughly 4–5 campaigns/week.",
+        "The source's sweet spot for most clients is ~3–4 campaigns/week; it would 'almost never' go above 5/week, since that reads as spammy — unless you segment so each person only receives ~3/week.",
+        "Adjust by data: if you currently send 1/week and open rate is above ~30% with low unsubscribes, you can increase to 2/week. If already at 2/week with open rate above ~30%, increase to 3/week.",
+        "Pull back: if you send 4/week with open rate below ~30% and high unsubscribes, don't increase even if revenue is high — instead clean your list and possibly drop back to 3/week.",
+        "Never decide frequency on gut feel — always look at the brand's data."
+      ],
+      "caveats": [
+        "The revenue tiers, 3–4/week sweet spot, ~5/week ceiling, and 30% open-rate threshold are the source's rough heuristics, not measured industry benchmarks.",
+        "Higher frequency is only safe with solid segmentation so individual subscribers receive fewer messages."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "campaign-cadence",
+        "measurement",
+        "open-rate",
+        "segmentation",
+        "deliverability",
+        "list-hygiene"
+      ],
+      "id": "a6116076fc6e5df8669c03ef",
+      "source_id": "1gAs1Y6DDO4ld3V07pv7EQ4Hq585FJEwm",
+      "source_sha256": "5d0fcefa9fd4199b4c5c5dcc8c43a38a40850839509c4fc3dd1d1082a6c262d3",
+      "source_name": "_Klaviyo Email Marketing FULL COURSE 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 3
+    },
+    {
+      "title": "Plan the Campaign Calendar by Layering Events, Value Content, and Company News",
+      "summary": "Build a monthly campaign calendar in four steps: list relevant holidays/events, pick value-based content, add company events, then fill gaps with the remaining buckets — keeping a varied mix.",
+      "use_when": "Building out a month's campaign schedule and filling empty send slots with a non-repetitive mix.",
+      "steps": [
+        "Step 1 — List key holidays and events, not just generalized ones. Consider days crucial to your brand and audience. Use a resource like nationaltoday.com, pick the target month, and list events that fit your brand (e.g., 'Sunscreen/Sun Safety Month' for a sunscreen seller). Don't leverage everything — pick what's relevant.",
+        "Step 2 — Choose value-based content for the time of year — for instance, a 'top five skincare tips for fall' blog works in October but not May. YouTube content and existing blogs can be reused. Two routes: (a) summarize the blog and link to the full blog as the main CTA, or (b) summarize the blog and link to the products mentioned as the main CTA. The source says test both; if you have no blog, use Google to research valuable content and write an email around it.",
+        "Step 3 — Add company events: back-in-stock, product launches (or a full sequence), upcoming holidays → gift guide, etc.",
+        "Step 4 — Fill remaining blank slots with the other buckets: share user-generated content, reviews, address a common audience problem and tie it to your product, bust a myth in your niche and link a product.",
+        "Layer the mix — e.g., in an August example the source set a product highlight every Sunday, value-based email Tuesdays, a VIP flash sale, a review email, and a company update, with sends on Tuesday/Thursday/Sunday."
+      ],
+      "caveats": [
+        "nationaltoday.com and calendar image tools are external tools — verify current availability; the specific holidays shown are examples, not endorsements of any holiday as universally relevant.",
+        "The route that yields better results (link to blog vs link to products) differs by audience — the source insists you split-test rather than assume.",
+        "Don't over-complicate or over-use holidays, and don't attach a discount to every event."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "calendar",
+        "campaign-mix",
+        "content-strategy",
+        "campaigns",
+        "seasonality",
+        "experiment-design"
+      ],
+      "id": "85157d54ac6efd3536325023",
+      "source_id": "1gAs1Y6DDO4ld3V07pv7EQ4Hq585FJEwm",
+      "source_sha256": "5d0fcefa9fd4199b4c5c5dcc8c43a38a40850839509c4fc3dd1d1082a6c262d3",
+      "source_name": "_Klaviyo Email Marketing FULL COURSE 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 3
+    },
+    {
+      "title": "Run Campaign Calendar Planning in a Shared Planning Tool",
+      "summary": "Track your email calendar consistently in a shared tool (Airtable, Notion, ClickUp, Monday, or a Google Sheet) so everyone involved sees the same plan.",
+      "use_when": "Setting up the operational workflow and documentation for planning and shipping campaigns.",
+      "steps": [
+        "Choose a planning tool — the source has used Notion and now uses Airtable, but notes ClickUp, Monday, and even a Google Sheet work fine.",
+        "The tool choice doesn't matter; the source stresses the only requirements are consistency, logging everything, and clarity for everyone involved in the process.",
+        "Optionally sketch the month visually first — e.g., a blank calendar page image imported into a whiteboard tool — then transfer the plan into your tracker.",
+        "Once the rough calendar exists, build it out in whichever tool you selected.",
+        "Keep it maintained as you produce and send, so the calendar reflects reality (not just the plan)."
+      ],
+      "caveats": [
+        "Tool names are examples; the operative point is consistent, shared logging, not the specific software.",
+        "This is a process/workflow recommendation, not a performance claim."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "calendar",
+        "operations",
+        "workflow",
+        "airtable",
+        "documentation"
+      ],
+      "id": "bdb13d54947ea90502df406e",
+      "source_id": "1gAs1Y6DDO4ld3V07pv7EQ4Hq585FJEwm",
+      "source_sha256": "5d0fcefa9fd4199b4c5c5dcc8c43a38a40850839509c4fc3dd1d1082a6c262d3",
+      "source_name": "_Klaviyo Email Marketing FULL COURSE 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 3
+    },
+    {
+      "title": "Design Emails for Conversion, Not Just Aesthetics — Favor Simplicity",
+      "summary": "Treat email design as a conversion mechanism: use simple, digestible layouts with a clear value proposition, no blobs of text, and no excessive colors or callouts.",
+      "use_when": "Designing campaign and flow emails, especially deciding how much copy and visual decoration to include.",
+      "steps": [
+        "Adopt the 'clean, tidy room vs messy room' framing: long paragraphs of text and too many colors are uninviting; a clear, uncluttered layout invites reading.",
+        "Keep the email simple and to the point: one clear value proposition and a unique mechanism toward the end state — no blobs of text, no excessive callouts, nothing over the top.",
+        "The source notes email design has shifted away from long-form copy toward simplicity because subscribers either lack the time or already expect persuasive fluff and tune it out.",
+        "Remember the core principle: more friction → less conversion; less friction → more conversion. Aim to reduce friction in layout and copy.",
+        "The source's example: a clearance email needs only two lines of copy plus a designed CTA button — not a wall of text to say '40% off clearance.'",
+        "Ensure the email visually matches your website branding, since the source treats brand consistency as a primary reason design matters."
+      ],
+      "caveats": [
+        "This reflects a shift the source observed over recent years in e-commerce email — it's directional advice, not a hard rule for every brand or audience.",
+        "Simpler design still needs a strong offer/copy — design alone won't convert."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "email-design",
+        "conversion-optimization",
+        "copywriting",
+        "branding",
+        "campaigns"
+      ],
+      "id": "6e550d63490afa11a5c3ed82",
+      "source_id": "1gAs1Y6DDO4ld3V07pv7EQ4Hq585FJEwm",
+      "source_sha256": "5d0fcefa9fd4199b4c5c5dcc8c43a38a40850839509c4fc3dd1d1082a6c262d3",
+      "source_name": "_Klaviyo Email Marketing FULL COURSE 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 3
+    },
+    {
+      "title": "Use Visual Hierarchies (Z, Inverted Triangle, F Patterns) to Guide the Eye to the CTA",
+      "summary": "Arrange email elements along familiar eye-movement patterns — zigzag/Z, inverted triangle, or F — so the reader flows naturally toward the main CTA button.",
+      "use_when": "Laying out an email's sections and deciding where to place headlines, body copy, images, and the CTA button.",
+      "steps": [
+        "Z/zigzag pattern: alternate elements left-right following natural eye movement, with lines or imagery guiding the eye toward the different elements. The source cites Magic Spoon as a strong example, using generous whitespace and little copy.",
+        "Inverted triangle: place an attention-grabbing headline at the wide top, then narrow the focus down through body copy to the primary CTA button at the point. The source cites Dr. Squatch as an example.",
+        "F pattern: headline, then body copy, then CTA — simple and familiar. The source cites a lollipop brand example and says you 'can't go wrong' with it, but also warns to vary patterns so it doesn't get monotonous.",
+        "Keep the goal clear: focus the reader toward the CTA button, which takes them to your site where a purchase can happen.",
+        "Use visual hierarchies to reduce the bouncing between ideas; the more the reader has to jump around, the higher the friction and the more likely they close the email."
+      ],
+      "caveats": [
+        "These patterns are the source's framework, not tested performance guarantees — apply them in your brand's style and test.",
+        "The source notes the F pattern is simple and safe but can get boring, so alternate patterns over time."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "email-design",
+        "visual-hierarchy",
+        "conversion-optimization",
+        "call-to-action",
+        "campaigns"
+      ],
+      "id": "73c535d638e2efd32115c468",
+      "source_id": "1gAs1Y6DDO4ld3V07pv7EQ4Hq585FJEwm",
+      "source_sha256": "5d0fcefa9fd4199b4c5c5dcc8c43a38a40850839509c4fc3dd1d1082a6c262d3",
+      "source_name": "_Klaviyo Email Marketing FULL COURSE 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 3
+    },
+    {
+      "title": "Replace Long Paragraphs with Visual Formats (Checklists, Tables, Comparisons)",
+      "summary": "Swap text-heavy explanations for visuals like checklists, comparison tables, and graphs, which are easier to digest and reduce friction.",
+      "use_when": "Writing email body copy that would otherwise become a long paragraph, especially product comparisons or multi-point explanations.",
+      "steps": [
+        "Replace long paragraphs with visuals — the source names checklists, comparison tables, and graphs as examples that are 'way easier to digest.'",
+        "Example from Magic Spoon: use a visual sequence ('Rise. Spoon. Shuffle to your kitchen. Pour Magic Spoon into the bowl.') leading to another CTA, communicating the promise visually rather than in prose.",
+        "Example from Magic Mind: instead of explaining each hormone in a paragraph, present the information as a checklist of a few checkpoints — the source says readers are far more likely to read the checklist than the paragraph.",
+        "Example from a bar brand: instead of a paragraph comparing bars, use a comparison table so benefits and differences are immediately clear.",
+        "Keep emails short and snappy rather than one big wall of text.",
+        "Note the source's framing that copy and design 'integrate with each other' — you're not writing copy and then decorating it, you're designing as you write."
+      ],
+      "caveats": [
+        "Visual formats still need accurate content — the presentation changes, not the substance.",
+        "Very simple products or single-idea emails may not need a comparison/checklist; don't force a visual where two lines suffice."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "email-design",
+        "copywriting",
+        "visual-hierarchy",
+        "conversion-optimization",
+        "campaigns"
+      ],
+      "id": "aea3035bb04a8118ef4cc019",
+      "source_id": "1gAs1Y6DDO4ld3V07pv7EQ4Hq585FJEwm",
+      "source_sha256": "5d0fcefa9fd4199b4c5c5dcc8c43a38a40850839509c4fc3dd1d1082a6c262d3",
+      "source_name": "_Klaviyo Email Marketing FULL COURSE 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 3
+    },
+    {
+      "title": "Treat the Above-the-Fold Section as Decisive — Include Headline, Support, and CTA",
+      "summary": "Optimize the visible-without-scrolling section with an attention-grabbing headline, supporting image/text, and a call to action button, since most readers decide whether to continue from it.",
+      "use_when": "Designing the top of any email — campaign or flow — where you choose what appears before the reader scrolls.",
+      "steps": [
+        "Define the above-the-fold section as the viewable area of the email before scrolling on desktop or mobile (the term comes from newspapers optimizing their most visible part).",
+        "The source readopts the 'people just bounce' assumption and argues, based on its own client data, that above-the-fold optimization still matters — including on mobile — because most viewing and clicking happens there.",
+        "Include an attention-grabbing headline: readers decide in a few seconds whether to continue.",
+        "Include supporting brand image and/or text that clarifies what the email is about.",
+        "Include an interesting call to action button within this section so readers can act immediately.",
+        "Example from Ritual: 'Enjoy 30% off for Memorial Day — shop now' with an aesthetic image and a CTA button makes the email's purpose instantly clear on mobile. Another example (Dr. Squatch) uses an arrow to guide the eye toward the CTA."
+      ],
+      "caveats": [
+        "The source explicitly notes there's ongoing debate about whether above-the-fold optimization still matters; its position is that it does, backed by its own data — but this is the presenter's view, not a universal law.",
+        "The specific brand examples are illustrations, not endorsements or guarantees."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "email-design",
+        "above-the-fold",
+        "conversion-optimization",
+        "call-to-action",
+        "campaigns"
+      ],
+      "id": "d1327991a91c9a9fb54701d9",
+      "source_id": "1gAs1Y6DDO4ld3V07pv7EQ4Hq585FJEwm",
+      "source_sha256": "5d0fcefa9fd4199b4c5c5dcc8c43a38a40850839509c4fc3dd1d1082a6c262d3",
+      "source_name": "_Klaviyo Email Marketing FULL COURSE 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 3
+    },
+    {
+      "title": "Build a Modular Figma Email Template Library for Fast, Varied Design",
+      "summary": "Maintain a Figma library of interchangeable section templates (headers, product sections, body sections, review blocks) so email design starts from building blocks rather than a blank canvas.",
+      "use_when": "Setting up an email design system, especially when producing many emails or serving multiple brands and needing variation.",
+      "steps": [
+        "Use a cloud design tool like Figma so designers and clients can collaborate on email designs.",
+        "Build basic template blocks: multiple header sections, product sections, body sections, and review blocks — the source's agency made roughly 25 header section variations alone.",
+        "For each block type, create many variations (e.g., header with logo + title + text + CTA + image; header with logo + title + CTA; centered vs with/without supporting text; 2×2 product grids; zigzag product layouts; multiple review display styles).",
+        "Assemble a full email by picking and matching sections, then layer your brand's fonts, colors, and styling on top — every brand's final design differs by its own branding.",
+        "Include body-section visuals like checklists and other data visualizations, not just body copy.",
+        "The source says this is especially helpful when producing many emails across clients where appearing original and varied is otherwise difficult."
+      ],
+      "caveats": [
+        "The specific template counts and section types are the source agency's setup — build what fits your brand and volume.",
+        "Figma is the source's tool of choice for agency/client collaboration; other design tools can serve the same modular purpose.",
+        "Templates are a starting point — you must apply branding to avoid generic-looking emails."
+      ],
+      "tags": [
+        "email-lifecycle",
+        "email-design",
+        "templates",
+        "figma",
+        "workflow",
+        "design-system",
+        "productivity"
+      ],
+      "id": "f20df437e0c5f55e0cafd179",
+      "source_id": "1gAs1Y6DDO4ld3V07pv7EQ4Hq585FJEwm",
+      "source_sha256": "5d0fcefa9fd4199b4c5c5dcc8c43a38a40850839509c4fc3dd1d1082a6c262d3",
+      "source_name": "_Klaviyo Email Marketing FULL COURSE 2025.docx",
+      "folder": "/14-EML-email-lifecycle",
+      "domain": "email-lifecycle",
+      "section": 3
+    }
+  ],
+  "request_id": "effc651bf2d4b61418a575603ef0dbddd7027e012c002ad6135664e67d0f84e2",
+  "ecommerce_scope_version": 1
+}

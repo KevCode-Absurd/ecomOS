@@ -1,0 +1,571 @@
+{
+  "cards": [
+    {
+      "title": "Speed Fix Priority Ladder: Images, Scripts, Hosting",
+      "summary": "A prioritized three-step order for ecommerce speed work: compress images to WebP, cut unused third-party apps/scripts, then upgrade hosting and add a CDN.",
+      "use_when": "You are deciding where to spend limited dev or app budget on store speed and need the highest-impact fixes first.",
+      "steps": [
+        "Start with images: compress and convert product photos, category banners and promo graphics to WebP. The source claims this single change often cuts page weight by 40-60% with minimal technical effort, so it is the best return before touching code.",
+        "Second, audit third-party scripts: review every installed app, plugin, chat widget, review tool and analytics tag and remove ones not actively used. Each script runs on every page load and competes for browser resources.",
+        "Third, address infrastructure: if you are on shared hosting with meaningful traffic, move to a VPS or cloud hosting, and add a CDN if you serve customers across multiple regions.",
+        "Only after these three foundations are handled should you spend effort on JavaScript minification, code splitting or fine-tuning cache headers — the source treats those as later-order work.",
+        "Note that the source ties the whole ladder to conversion: a 0.1-second load-time improvement can increase retail conversions by up to 8.4% (Google/NitroPack), so frame speed work as revenue work, not just a technical score."
+      ],
+      "caveats": [
+        "The 40-60% page-weight reduction and 8.4% conversion lift are source-cited research figures, not guarantees for your store; measure your own before/after.",
+        "Hosting upgrade thresholds and budget tradeoffs depend on order volume — see the hosting-by-store-size card."
+      ],
+      "tags": [
+        "speed",
+        "performance",
+        "image-optimization",
+        "third-party-scripts",
+        "hosting",
+        "cdn",
+        "conversion-optimization"
+      ],
+      "id": "c35b62b838606057963903bf",
+      "source_id": "1jotScp6YXxT1RXu1mdtsy3UrfcNnjUCu",
+      "source_sha256": "5a6f72814e3686c3bc78cc71e3e6928d0cf2d8358d9a36487a76da5628136483",
+      "source_name": "Ecommerce Site Speed Optimization_ Complete Guide for 2026.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 0
+    },
+    {
+      "title": "Core Web Vitals Thresholds and What Each Metric Means for Your Store",
+      "summary": "Plain definitions and target thresholds for LCP, INP and CLS, mapped to the specific ecommerce elements (hero images, add-to-cart clicks, cookie banners) that drive each metric.",
+      "use_when": "You are diagnosing why a product, category or homepage scores poorly and need to know which CWV metric each page element is hurting.",
+      "steps": [
+        "LCP (Largest Contentful Paint) measures how fast the largest visible element loads — usually the main product image on a PDP or the hero banner/first product grid on a category page. Target is under 2.5 seconds; over 4 seconds is rated 'poor'. Fix via image optimization and faster server response.",
+        "INP (Interaction to Next Paint) replaced First Input Delay and measures responsiveness to clicks, taps and filters. Target is under 200 milliseconds. Ecommerce sites fail INP because of heavy JavaScript from apps, plugins and tracking scripts — the classic symptom is a customer clicking Add to Cart and nothing happening for half a second.",
+        "CLS (Cumulative Layout Shift) measures visual stability; target is under 0.1. Common ecommerce causes are late-loading images without defined dimensions, dynamically injected content like cookie banners, and font loading that reflows text. Reserve space and set explicit dimensions.",
+        "Diagnose per page type: PDP main image drives LCP, review/variant/BNPL JavaScript drives INP, and the hero image or rotating carousel drives homepage LCP.",
+        "Prioritize fixes on the pages with the most traffic times the most revenue impact — a smaller gain on a high-traffic page beats a bigger gain on a rarely visited page."
+      ],
+      "caveats": [
+        "Google uses Core Web Vitals as a ranking tie-breaker; content relevance remains the primary factor, so speed alone will not outrank better content.",
+        "Approximately 50% of mobile sites fail the CWV assessment per HTTP Archive cited in the source — passing is a competitive advantage, not the norm."
+      ],
+      "tags": [
+        "speed",
+        "performance",
+        "core-web-vitals",
+        "lcp",
+        "inp",
+        "cls",
+        "product-page",
+        "landing-page"
+      ],
+      "id": "2969a152a99dbaea19ffbc71",
+      "source_id": "1jotScp6YXxT1RXu1mdtsy3UrfcNnjUCu",
+      "source_sha256": "5a6f72814e3686c3bc78cc71e3e6928d0cf2d8358d9a36487a76da5628136483",
+      "source_name": "Ecommerce Site Speed Optimization_ Complete Guide for 2026.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 0
+    },
+    {
+      "title": "Lighthouse vs PageSpeed Insights: Which Lab Test to Trust",
+      "summary": "The two tools use the same engine but differ in data source — Lighthouse is a simulated lab test, PageSpeed Insights layers in 28 days of real Chrome user data (CrUX).",
+      "use_when": "You are interpreting a speed report and need to know whether a score reflects simulated conditions or actual customer experience.",
+      "steps": [
+        "Know the shared engine: both Lighthouse (Chrome DevTools or CLI) and PageSpeed Insights run the same Lighthouse engine with throttled CPU and network, so the underlying test methodology is identical.",
+        "The difference is data source: Lighthouse is simulated only, while PageSpeed Insights adds real-user metrics from the Chrome User Experience Report (CrUX) covering the past 28 days.",
+        "For store decisions, prefer PageSpeed Insights because it shows how actual visitors experienced the site, not how a controlled test machine did — use it as your baseline for both mobile and desktop.",
+        "Use raw Lighthouse (or Lighthouse CI in your deploy pipeline) when you need a repeatable lab measurement to compare before/after a specific code change.",
+        "Interpret PageSpeed Insights scores with the source's rough bands: 90+ is good, 50-89 needs improvement, below 50 signals serious problems. Pay most attention to the Core Web Vitals metrics and the priority-ordered recommendations section."
+      ],
+      "caveats": [
+        "CrUX data is a 28-day rolling window, so recent fixes take weeks to show up in the real-user portion of the report.",
+        "Neither tool captures the full checkout experience — test checkout flows separately."
+      ],
+      "tags": [
+        "speed",
+        "performance",
+        "measurement",
+        "page-speed-insights",
+        "lighthouse",
+        "core-web-vitals",
+        "testing"
+      ],
+      "id": "95c02555626f3a3dc99bc7fc",
+      "source_id": "1jotScp6YXxT1RXu1mdtsy3UrfcNnjUCu",
+      "source_sha256": "5a6f72814e3686c3bc78cc71e3e6928d0cf2d8358d9a36487a76da5628136483",
+      "source_name": "Ecommerce Site Speed Optimization_ Complete Guide for 2026.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 0
+    },
+    {
+      "title": "Image Optimization That Actually Moves LCP",
+      "summary": "Format, compression and lazy-loading rules for product photos and hero banners, including the specific threshold and the above-the-fold exception that trips stores up.",
+      "use_when": "You are preparing product imagery, category banners or a homepage hero and need file-size, format and loading rules that protect LCP.",
+      "steps": [
+        "Convert to WebP: it is roughly 25-35% smaller than JPEG at equivalent quality and is supported by all modern browsers, so make it the default web format. AVIF compresses even better but has narrower browser support — keep it as an optional enhancement.",
+        "Keep originals in JPEG or PNG and let build tools or a CDN (Cloudflare, Imgix, Cloudinary) auto-convert and serve the modern format with fallbacks for older browsers.",
+        "Hit size targets: under 100KB for product images and under 200KB for hero banners. For product photography, 80% JPEG quality typically balances file size and appearance.",
+        "Never compress the same image multiple times — quality degrades each pass. Compress once from the original.",
+        "Lazy-load below-the-fold images (native loading=\"lazy\"), but never lazy-load above-the-fold assets — lazy-loading the hero image or first visible products artificially inflates LCP. Shopify and WooCommerce usually handle product-grid lazy loading automatically.",
+        "For stores with thousands of SKUs, use CDN-based image optimization to auto-resize by device and convert formats rather than doing it manually — the source argues the small monthly cost typically pays for itself in improved conversions.",
+        "Watch the common mistake: uploading a 4000x3000 camera image at full quality can exceed 5MB. Resize to actual display dimensions before upload."
+      ],
+      "caveats": [
+        "CDN auto-optimization is a paid feature on most providers (often bundled with free tiers); verify current plan terms.",
+        "The 25-35% WebP savings is a source-cited average — exact savings vary by image content."
+      ],
+      "tags": [
+        "speed",
+        "performance",
+        "image-optimization",
+        "webp",
+        "lazy-loading",
+        "cdp",
+        "cdp",
+        "lcp",
+        "product-page"
+      ],
+      "id": "8883db1cfb1d9150386e7796",
+      "source_id": "1jotScp6YXxT1RXu1mdtsy3UrfcNnjUCu",
+      "source_sha256": "5a6f72814e3686c3bc78cc71e3e6928d0cf2d8358d9a36487a76da5628136483",
+      "source_name": "Ecommerce Site Speed Optimization_ Complete Guide for 2026.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 0
+    },
+    {
+      "title": "Cut Third-Party App and Script Bloat Without Losing Functionality",
+      "summary": "How to audit installed apps/plugins, understand their performance cost, and decide which to remove, defer or async-load — the source calls script count the strongest predictor of mobile speed.",
+      "use_when": "You are reviewing your installed apps and plugins, or deciding whether to install a new one, and need a repeatable audit that protects mobile performance.",
+      "steps": [
+        "Quantify the problem: in the source's Shopify Speed Benchmark (1,533 stores), correlation between third-party service count and performance score was r = -0.66, the dataset's strongest signal. Stores with 0-5 services scored a median 74 on mobile; stores with 21-30 dropped to 44.",
+        "Audit regularly: list every app, plugin, chat widget, review tool, upsell popup and analytics tag, then remove tools you no longer actively use. Each adds JavaScript running on every page load.",
+        "Before installing anything new: check reviews for speed complaints. After installing: run a speed test to measure impact. Remove apps that degrade performance without delivering proportional value.",
+        "For scripts you must keep, defer or async-load those that don't affect initial rendering so they download after main content — this improves INP by reducing JS execution during page load.",
+        "Account for industry stack weight when setting expectations: source cites beauty stores loading a median 31 third-party services per page (worst of 9 Shopify industries for mobile speed) and automotive parts stores a median of 15 (best), with fashion/apparel in between due to sizing charts and shipping insurance.",
+        "Guard against gradual degradation: performance declines silently as products, apps and tracking scripts accumulate, so schedule the audit rather than waiting for complaints or a conversion drop."
+      ],
+      "caveats": [
+        "The median-score and correlation figures come from the source's own benchmark dataset of Shopify stores; treat them as directional, not as targets your store must match.",
+        "Removing apps can drop functionality customers expect — weight each removal against its feature value, not just its byte cost."
+      ],
+      "tags": [
+        "speed",
+        "performance",
+        "third-party-scripts",
+        "app-audit",
+        "shopify",
+        "mobile",
+        "inp"
+      ],
+      "id": "c09e2fd0f0d7a8b54189a05f",
+      "source_id": "1jotScp6YXxT1RXu1mdtsy3UrfcNnjUCu",
+      "source_sha256": "5a6f72814e3686c3bc78cc71e3e6928d0cf2d8358d9a36487a76da5628136483",
+      "source_name": "Ecommerce Site Speed Optimization_ Complete Guide for 2026.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 0
+    },
+    {
+      "title": "Caching Layers: What to Cache, What Never to Cache",
+      "summary": "Browser, CDN edge and server-side caching for ecommerce, plus the hard rule that cart, checkout and account pages must never be cached.",
+      "use_when": "You are configuring cache headers or a CDN and need to set safe durations and exclusion rules for user-specific ecommerce pages.",
+      "steps": [
+        "Browser caching: instruct visitor browsers to store static assets (CSS, JS, images) locally. Set long expiration dates — the source suggests up to a year for static assets since filenames change when content updates. HTML pages need shorter durations so visitors see current content.",
+        "CDN edge caching: store content on globally distributed servers so a visitor in Tokyo is served from an Asian edge instead of a US origin. The source cites 200-800ms latency reduction for geographically distant visitors.",
+        "Server-side caching: store generated HTML or database query results so the server doesn't rebuild pages per visitor. WooCommerce options include WP Rocket, W3 Total Cache and Redis Object Cache; Shopify manages this automatically with limited control.",
+        "Never cache cart pages, checkout flows or account pages — they contain visitor-specific data and caching them causes serious errors.",
+        "Handle session cookies carefully: the source cites Salesforce guidance to defer session creation until the visitor actually needs it (first add-to-cart or login), which keeps anonymous browsing cacheable.",
+        "Handle volatile data like prices and stock status: either cache the page and update those elements dynamically via JavaScript, or use short cache durations with rapid invalidation when data changes.",
+        "Audit cache headers after changes to confirm updated content appears correctly while static assets stay cached — misconfiguration causes either stale prices or missed optimization."
+      ],
+      "caveats": [
+        "Shopify gives limited control over server-side caching, so some layers may not apply on that platform.",
+        "Aggressive asset caching requires a cache-busting filename strategy (e.g., hashed filenames) or visitors will see stale CSS/JS."
+      ],
+      "tags": [
+        "speed",
+        "performance",
+        "caching",
+        "cdn",
+        "checkout",
+        "woocommerce",
+        "shopify"
+      ],
+      "id": "9490c0550ad41c01bd37791a",
+      "source_id": "1jotScp6YXxT1RXu1mdtsy3UrfcNnjUCu",
+      "source_sha256": "5a6f72814e3686c3bc78cc71e3e6928d0cf2d8358d9a36487a76da5628136483",
+      "source_name": "Ecommerce Site Speed Optimization_ Complete Guide for 2026.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 0
+    },
+    {
+      "title": "CDN Setup and Configuration for Ecommerce",
+      "summary": "How CDNs work for stores and how to configure cache keys, invalidation and hit-rate monitoring so the CDN actually delivers speed.",
+      "use_when": "You are selecting or configuring a CDN for your store and need concrete setup choices that avoid cache fragmentation and stale content.",
+      "steps": [
+        "Understand the mechanism: a visitor request routes to the nearest edge server, which returns cached content instantly or fetches from origin. The first visitor from each region sees normal load time; subsequent visitors get cached content with much lower latency.",
+        "Start caching static assets — images, CSS, JavaScript and fonts — since these change infrequently and benefit most. Configure aggressive caching for static assets and shorter TTLs for pages with dynamic content like prices or stock levels.",
+        "Choose a provider based on traffic geography: single-region stores get by with a basic CDN; global stores benefit from extensive edge networks. Options cited include Cloudflare (DDoS protection, image optimization), Fastly (edge computing), Akamai, AWS CloudFront and BunnyCDN (competitive pricing for high-bandwidth stores). Most offer free tiers or affordable entry plans.",
+        "Configure cache keys carefully: include query parameters that affect content (like page numbers) but exclude tracking parameters, which create unnecessary cache fragmentation.",
+        "Set up automatic cache invalidation so updated product images or new code clear immediately — most CDNs offer API-based purging or URL-based invalidation.",
+        "Monitor cache hit rate: a well-configured CDN should serve 80%+ of requests from cache. Low hit rates indicate misconfiguration or excessive dynamic content."
+      ],
+      "caveats": [
+        "The 80%+ hit-rate figure is the source's target, not a guaranteed baseline — what's achievable depends on how dynamic your storefront is.",
+        "Provider features and plan terms change; verify current offerings before committing."
+      ],
+      "tags": [
+        "speed",
+        "performance",
+        "cdn",
+        "caching",
+        "infrastructure",
+        "measurement"
+      ],
+      "id": "46127ea01ca723da298227ec",
+      "source_id": "1jotScp6YXxT1RXu1mdtsy3UrfcNnjUCu",
+      "source_sha256": "5a6f72814e3686c3bc78cc71e3e6928d0cf2d8358d9a36487a76da5628136483",
+      "source_name": "Ecommerce Site Speed Optimization_ Complete Guide for 2026.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 0
+    },
+    {
+      "title": "Hosting Architecture: Shared vs VPS vs Cloud by Order Volume",
+      "summary": "How hosting tiers affect store speed and availability, with the source's rough order-volume guidance for when to upgrade.",
+      "use_when": "You are deciding whether your store needs to move off shared hosting or add a VPS/cloud plan, often triggered by traffic spikes or slow pages.",
+      "steps": [
+        "Know the shared-hosting limit: shared hosting places multiple sites on one server sharing CPU, memory and bandwidth, so a neighbor's traffic spike slows your store. It costs roughly $1-15/month and suits brand-new stores only — the source cites BlueHost noting resource limits make it unsuitable for meaningful traffic.",
+        "VPS as middle ground: a Virtual Private Server guarantees CPU and memory within a shared physical server, starting around $20-50/month for managed options. It fits growing stores that outgrew shared hosting but don't need dedicated hardware. Managed VPS handles administration; unmanaged requires technical skill.",
+        "Cloud hosting for scale: distributes the site across multiple servers with automatic scaling, absorbing traffic spikes without manual upgrades. Options include AWS, Google Cloud, DigitalOcean, Shopify's infrastructure and managed WooCommerce hosts like Kinsta.",
+        "Use the source's rough threshold: stores processing 100+ orders monthly should use VPS or cloud hosting, since improved reliability and speed pay for themselves in reduced cart abandonment.",
+        "For high-volume stores, choose auto-scaling cloud infrastructure so peak traffic during sales and promotions is handled without pre-provisioning extra capacity.",
+        "If you serve international customers, combine the hosting upgrade with a CDN rather than relying on the origin server alone."
+      ],
+      "caveats": [
+        "The 100+ monthly orders threshold is a source heuristic, not a calculated break-even — model your own cart abandonment rate and average order value to judge ROI.",
+        "Managed hosting prices and feature sets change frequently; verify current plans."
+      ],
+      "tags": [
+        "speed",
+        "performance",
+        "hosting",
+        "infrastructure",
+        "vps",
+        "cloud-hosting",
+        "shopify",
+        "woocommerce"
+      ],
+      "id": "a063ce8579160505a3872e4d",
+      "source_id": "1jotScp6YXxT1RXu1mdtsy3UrfcNnjUCu",
+      "source_sha256": "5a6f72814e3686c3bc78cc71e3e6928d0cf2d8358d9a36487a76da5628136483",
+      "source_name": "Ecommerce Site Speed Optimization_ Complete Guide for 2026.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 0
+    },
+    {
+      "title": "Speed Testing Toolchain: From Quick Score to Root Cause",
+      "summary": "A tiered set of testing tools — PageSpeed Insights, GTmetrix, WebPageTest and Ecomhint — each suited to a different depth of diagnosis.",
+      "use_when": "You are investigating store speed problems and need to pick the right tool for a quick check versus deep root-cause analysis.",
+      "steps": [
+        "Start with PageSpeed Insights for mobile and desktop scores plus real-user CrUX metrics and priority-ordered recommendations — the source's default starting point for most store owners.",
+        "Use GTmetrix for a deeper dive than PSI: its waterfall chart shows exactly which resources load when and how long each takes. Create a free account to test from different locations and connection speeds, useful for seeing how international or mobile customers experience the site. Check the 'Top Issues' section first for highest-impact changes.",
+        "Use WebPageTest when you need the most detailed diagnosis: run from specific locations, device types and connection speeds. The filmstrip view shows visual progress at each load stage; the connection view reveals server response times and resource sequences. It requires more interpretation and suits diagnosing specific issues rather than routine monitoring.",
+        "Test mobile separately from desktop, and on real devices rather than only browser emulation — what feels fine on a dev machine frustrates customers on mid-range phones.",
+        "Don't rely on one test: performance varies with server load, network conditions and cached state. One test is a snapshot, not a trend."
+      ],
+      "caveats": [
+        "PageSpeed Insights' real-user data lags 28 days, so fresh fixes won't appear immediately.",
+        "Ecomhint's paid audit is a promotional context in the source; the free Google tools cover the core diagnostics."
+      ],
+      "tags": [
+        "speed",
+        "performance",
+        "measurement",
+        "testing",
+        "page-speed-insights",
+        "gtmetrix",
+        "webpagetest",
+        "mobile"
+      ],
+      "id": "a4ded81551ca3839aa060ad1",
+      "source_id": "1jotScp6YXxT1RXu1mdtsy3UrfcNnjUCu",
+      "source_sha256": "5a6f72814e3686c3bc78cc71e3e6928d0cf2d8358d9a36487a76da5628136483",
+      "source_name": "Ecommerce Site Speed Optimization_ Complete Guide for 2026.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 0
+    },
+    {
+      "title": "Continuous Performance Monitoring and Budgets",
+      "summary": "Set up recurring speed monitoring and a performance budget so stores don't degrade silently as apps, products and tracking scripts accumulate.",
+      "use_when": "You are setting store speed governance — deciding test cadence, alerting and limits on page weight or third-party scripts.",
+      "steps": [
+        "Adopt a monitoring cadence: test at minimum monthly to catch gradual degradation, and test immediately after installing apps, changing themes or making site-wide updates.",
+        "Before major sales events, run speed audits to confirm the site can handle increased traffic smoothly.",
+        "Set up automated monitoring rather than manual tests: free options include PageSpeed Insights API with scheduled runs, GTmetrix monitoring (with account) and Lighthouse CI for automated testing during deployments. Paid services like DebugBear, SpeedCurve and Calibre add tracking, alerting and historical analysis.",
+        "Define a performance budget as a guardrail: maximum page weight, minimum speed scores and maximum third-party script count. Review any change that exceeds the limits before approving it — without defined limits, performance degrades gradually.",
+        "Run targeted tests after app installs specifically, since each app runs code on every page and cumulative additions are the main cause of silent slowdown."
+      ],
+      "caveats": [
+        "Paid monitoring tools are a cost that the source argues pays off for revenue-critical stores, but ROI depends on store scale.",
+        "Performance budgets are only useful if enforcement is built into the release or approval process, not just documented."
+      ],
+      "tags": [
+        "speed",
+        "performance",
+        "measurement",
+        "monitoring",
+        "performance-budget",
+        "testing",
+        "process"
+      ],
+      "id": "9ffe9f981c5709c0f243cd4c",
+      "source_id": "1jotScp6YXxT1RXu1mdtsy3UrfcNnjUCu",
+      "source_sha256": "5a6f72814e3686c3bc78cc71e3e6928d0cf2d8358d9a36487a76da5628136483",
+      "source_name": "Ecommerce Site Speed Optimization_ Complete Guide for 2026.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 0
+    },
+    {
+      "title": "Prioritizing Speed Work by Page Type and Traffic",
+      "summary": "Different store pages carry different speed risks and conversion stakes — home, product, category and checkout each need distinct optimization priorities.",
+      "use_when": "You are allocating limited speed-optimization effort across homepage, PDPs, category pages and checkout and need to know what matters on each.",
+      "steps": [
+        "Homepage: LCP is critical because it's often the entry point for brand and direct traffic. Watch large hero images, rotating carousels and promo banners. A slow homepage loses customers before they see a product.",
+        "Product pages: the main product image drives LCP, while review widgets, related products and variant selectors add JavaScript that hurts INP. Keep the PDP lean by loading secondary content only after the primary image and buy button render. PDPs are especially affected on Shopify because they load variant selectors, review widgets and BNPL calculators that other page types don't need.",
+        "Category pages: many thumbnails load at once, filters must respond fast and pagination must be smooth. Lazy-load below-the-fold product images and serve responsive thumbnails rather than full-resolution photos. Filter responsiveness is an INP concern.",
+        "Checkout: slow checkout directly causes abandoned carts. Payment gateway integrations, address verification and fraud detection scripts add load time, and cart calculations must feel instant. Test checkout flows separately because overall site speed scores don't capture the full checkout experience.",
+        "Allocate by impact: prioritize the highest-traffic pages first — the source notes a 0.5-second improvement on a page with 10,000 monthly visitors matters more than a 2-second improvement on a page with 100 visitors."
+      ],
+      "caveats": [
+        "The source's page-priority framing assumes overall site speed scores are inadequate for checkout; validate checkout timing with dedicated testing.",
+        "The traffic-weighting heuristic is directional; weight by revenue per page, not visits alone, where data allows."
+      ],
+      "tags": [
+        "speed",
+        "performance",
+        "product-page",
+        "landing-page",
+        "checkout",
+        "prioritization",
+        "measurement"
+      ],
+      "id": "4b59118db903a48291c19ea4",
+      "source_id": "1jotScp6YXxT1RXu1mdtsy3UrfcNnjUCu",
+      "source_sha256": "5a6f72814e3686c3bc78cc71e3e6928d0cf2d8358d9a36487a76da5628136483",
+      "source_name": "Ecommerce Site Speed Optimization_ Complete Guide for 2026.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 0
+    },
+    {
+      "title": "JavaScript and CSS Optimization: Minify, Split, Inline Critical",
+      "summary": "A practical sequence for reducing code weight and eliminating render-blocking styles on stores with heavy themes, page builders and customizations.",
+      "use_when": "You have already optimized images and trimmed apps, and now need to reduce JS/CSS blocking so LCP and INP improve.",
+      "steps": [
+        "Minify first: strip whitespace, comments and long variable names. The source cites up to 80% JavaScript file-size reduction via minification. Use Terser for JS and CSSNano for CSS; most modern build tools (Webpack, Vite, Parcel) minify automatically in production. On Shopify, minification typically needs an app like Hyperspeed or TinyIMG; WooCommerce stores can use Autoptimize or WP Rocket.",
+        "Then code-split by page type: break bundles into chunks that load on demand so visitors only download what they need. Product page code shouldn't load on category pages, and category pages don't need product zoom functionality. Modern frameworks (Next.js, Nuxt, Gatsby) handle this automatically; traditional themes need manual Webpack dynamic imports.",
+        "Finally, implement Critical CSS: extract the styles needed for above-the-fold content and inline them directly in the HTML, eliminating the render-blocking external stylesheet request. Load the rest of the CSS asynchronously after initial render. Tools like Critical and PurgeCSS automate this; WP Rocket and similar WordPress caching plugins can generate critical CSS.",
+        "Apply these after the priority ladder — the source places code work behind image optimization, script auditing and hosting/CDN changes.",
+        "Verify with before/after measurements using a consistent lab test (Lighthouse or Lighthouse CI) so you can attribute the improvement to the code change."
+      ],
+      "caveats": [
+        "The 80% minification figure is a source-cited maximum for JS file size, not a typical result across all assets.",
+        "Code splitting and Critical CSS require build tooling or platform-specific apps; hand-rolled implementations can break themes, so test thoroughly."
+      ],
+      "tags": [
+        "speed",
+        "performance",
+        "javascript",
+        "css",
+        "critical-css",
+        "code-splitting",
+        "minification",
+        "shopify",
+        "woocommerce"
+      ],
+      "id": "c067983b290ad9f41430f97b",
+      "source_id": "1jotScp6YXxT1RXu1mdtsy3UrfcNnjUCu",
+      "source_sha256": "5a6f72814e3686c3bc78cc71e3e6928d0cf2d8358d9a36487a76da5628136483",
+      "source_name": "Ecommerce Site Speed Optimization_ Complete Guide for 2026.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 0
+    },
+    {
+      "title": "Common Speed Mistakes and How to Prevent Them",
+      "summary": "A prevention checklist of the recurring ecommerce speed errors — unoptimized uploads, unaudited apps, ignored mobile, misconfigured caching, neglected fonts and databases.",
+      "use_when": "You are auditing store speed hygiene or building a process to stop new speed regressions from being introduced.",
+      "steps": [
+        "Never upload unoptimized images: resize to actual display dimensions and compress before upload. A 4000x3000 photo at full quality can exceed 5MB, longer than some customers will wait.",
+        "Never install an app without a speed check: check reviews for speed complaints before installing, and test page speed after to measure impact. Remove apps that degrade performance without proportional value.",
+        "Never assume desktop tests reflect mobile: mobile devices have less processing power and often slower connections. Test mobile specifically and prioritize mobile optimizations — the majority of ecommerce visits are mobile.",
+        "Avoid caching misconfiguration: too-aggressive caching serves stale prices or stock status; too-conservative caching forfeits the benefit. Audit cache headers after changes.",
+        "Optimize fonts: host fonts locally or use font-display: swap to show fallback text while custom fonts load, and subset fonts to include only the characters you use.",
+        "Clean the database on database-driven platforms: old revisions, expired transients and orphaned metadata bloat WooCommerce and similar platforms. Schedule regular cleanup with plugins like WP-Optimize.",
+        "Test more than once: performance varies by server load, network and cache state, so a single test is a snapshot, not a trend."
+      ],
+      "caveats": [
+        "This is a prevention checklist, not a diagnostic ranking — the priority ladder (images, scripts, hosting) still governs fix order.",
+        "Database cleanup tools differ by platform; Shopify stores have far less database access than WooCommerce, so this step applies mainly to self-hosted platforms."
+      ],
+      "tags": [
+        "speed",
+        "performance",
+        "image-optimization",
+        "app-audit",
+        "mobile",
+        "caching",
+        "fonts",
+        "woocommerce"
+      ],
+      "id": "74fc1378fc6aca7a8e1a5745",
+      "source_id": "1jotScp6YXxT1RXu1mdtsy3UrfcNnjUCu",
+      "source_sha256": "5a6f72814e3686c3bc78cc71e3e6928d0cf2d8358d9a36487a76da5628136483",
+      "source_name": "Ecommerce Site Speed Optimization_ Complete Guide for 2026.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 0
+    },
+    {
+      "title": "Quantifying the Conversion Cost of Slow Load Times",
+      "summary": "Source-cited figures tying load time to bounce, abandonment and conversion, and how to translate them into a revenue case for speed work.",
+      "use_when": "You need to justify speed optimization investment to a store owner or stakeholder using conversion and abandonment impact.",
+      "steps": [
+        "Use the headline figure carefully: a 0.1-second improvement in load time can increase retail conversions by up to 8.4% (Google/NitroPack). Frame this as directional evidence, since it's an upper-bound claim from cited research.",
+        "Use the delay figures: a one-second delay is associated with roughly 7% fewer conversions (Cloudflare), and stores can lose around 4% of conversions for every 2 seconds of load time (Cloudflare). A one-second site converts roughly 5x more visitors than a ten-second site (Queue-it).",
+        "Use the abandonment threshold: approximately 53% of mobile visitors abandon sites taking longer than three seconds (Google/NitroPack). On mobile, with the majority of ecommerce traffic, the three-second threshold becomes even more critical.",
+        "Use the four-second cliff: around 63% of shoppers leave if an ecommerce site takes more than four seconds to load (Queue-it), and these visitors rarely return — they find a faster competitor.",
+        "Bring in case evidence cautiously: Vodafone's A/B test found 31% LCP improvement led to 15% better lead-to-visit rate and 8% more sales; Rakuten 24 reported 33% higher conversion rate and 53% more revenue per visitor after CWV optimization. Present these as examples, not promises.",
+        "Also cite the demand-side stat: roughly 70% of consumers say page speed affects their decision to buy (Unbounce)."
+      ],
+      "caveats": [
+        "These figures are source-cited research averages and case-study results, not guarantees — treat them as directional. Case study results are examples, not promises.",
+        "Lead-to-visit rate (Vodafone) is a lead metric, not a purchase conversion metric; don't conflate it with sales conversion figures like Rakuten's."
+      ],
+      "tags": [
+        "speed",
+        "performance",
+        "benchmarks",
+        "conversion-optimization",
+        "mobile",
+        "abandonment",
+        "business-case"
+      ],
+      "id": "41ce06260ce9df42c3e38edb",
+      "source_id": "1jotScp6YXxT1RXu1mdtsy3UrfcNnjUCu",
+      "source_sha256": "5a6f72814e3686c3bc78cc71e3e6928d0cf2d8358d9a36487a76da5628136483",
+      "source_name": "Ecommerce Site Speed Optimization_ Complete Guide for 2026.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 0
+    },
+    {
+      "title": "Speed as an SEO Tie-Breaker Under Mobile-First Indexing",
+      "summary": "How Core Web Vitals function as a ranking signal, why mobile performance determines ranking potential, and where speed sits relative to content.",
+      "use_when": "You are deciding whether to invest in speed partly for organic search, and setting expectations on how much ranking lift it can produce.",
+      "steps": [
+        "Position speed correctly: content relevance remains the primary ranking factor, and Core Web Vitals serve as a tie-breaker between pages with similar quality — so speed optimization is a genuine advantage for competitive keywords where content quality is comparable.",
+        "Prioritize mobile: Google uses mobile-first indexing, so your mobile speed determines ranking potential. Approximately 50% of mobile sites fail the Core Web Vitals assessment (HTTP Archive cited in source), meaning passing is a differentiator.",
+        "Diagnose mobile separately with PageSpeed Insights' real-user mobile data, and test on actual devices rather than only browser emulation.",
+        "Pair speed work with on-page SEO checks — the source treats speed as one ranking signal and suggests reviewing indexability, meta tags and structured data alongside Core Web Vitals.",
+        "Expect the biggest SEO effect on competitive, content-comparable keyword sets rather than as a universal ranking fix."
+      ],
+      "caveats": [
+        "The 50% pass rate and tie-breaker framing are source-cited; actual ranking impact varies by query competitiveness and content quality.",
+        "Speed cannot compensate for thin or irrelevant content."
+      ],
+      "tags": [
+        "speed",
+        "performance",
+        "seo",
+        "core-web-vitals",
+        "mobile",
+        "measurement"
+      ],
+      "id": "04439b080448de718969100e",
+      "source_id": "1jotScp6YXxT1RXu1mdtsy3UrfcNnjUCu",
+      "source_sha256": "5a6f72814e3686c3bc78cc71e3e6928d0cf2d8358d9a36487a76da5628136483",
+      "source_name": "Ecommerce Site Speed Optimization_ Complete Guide for 2026.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 0
+    },
+    {
+      "title": "Setting Speed Targets by Page and Store Type",
+      "summary": "Practical performance targets for ecommerce pages, combining load-time goals, PageSpeed scores and Core Web Vitals thresholds.",
+      "use_when": "You are defining acceptance criteria for a store build, theme change or app install and need concrete speed targets to test against.",
+      "steps": [
+        "Set the headline load target: aim for pages loading under three seconds, with two seconds or less as the competitive-performance target for stores competing on experience.",
+        "Set Core Web Vitals thresholds as pass/fail gates: LCP under 2.5 seconds, INP under 200 milliseconds, CLS under 0.1.",
+        "Use PageSpeed Insights scores as a coarse health check: 90+ is good, 50-89 needs improvement, below 50 signals serious problems requiring immediate attention.",
+        "Apply page-specific expectations: PDP main image drives LCP; PDP secondary content should load after the primary image and buy button render; category thumbnails should be lazy-loaded below the fold with responsive sizing; checkout needs separate testing since overall scores miss it.",
+        "Tailor targets to platform: on Shopify the main controllable levers are app count and images, since the platform handles hosting and basic optimization; on WooCommerce, hosting, caching, database bloat and plugin count dominate, so set tighter infrastructure requirements.",
+        "Define a performance budget as a guardrail — maximum page weight, minimum score, maximum third-party scripts — and review changes that exceed it before approval."
+      ],
+      "caveats": [
+        "The three-second and two-second load targets and 90+ score band are source heuristics; 'two seconds or less' is described as a competitive-performance aspiration rather than a threshold with measured lift.",
+        "PageSpeed scores fluctuate with lab conditions, so use CWV metrics as the more stable signal."
+      ],
+      "tags": [
+        "speed",
+        "performance",
+        "benchmarks",
+        "core-web-vitals",
+        "performance-budget",
+        "product-page",
+        "checkout",
+        "shopify",
+        "woocommerce"
+      ],
+      "id": "b147e14a22ec3685cbfc7fe3",
+      "source_id": "1jotScp6YXxT1RXu1mdtsy3UrfcNnjUCu",
+      "source_sha256": "5a6f72814e3686c3bc78cc71e3e6928d0cf2d8358d9a36487a76da5628136483",
+      "source_name": "Ecommerce Site Speed Optimization_ Complete Guide for 2026.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 0
+    },
+    {
+      "title": "Diagnosing 'Why Is My Store Slow?' by Category",
+      "summary": "A cause-category framework for the most common ecommerce slowdowns — unoptimized images, app/plugin overload, weak hosting, unminified code and database bloat.",
+      "use_when": "You are starting a speed investigation and need to map symptoms to likely causes before testing.",
+      "steps": [
+        "Suspect images first: unoptimized images cause more speed problems than anything else — product photos, category banners and promo graphics uploaded at full resolution. A single uncompressed hero image can exceed 2MB.",
+        "Suspect app/plugin accumulation second: a store with 30 apps may have 30 separate scripts competing for resources. Review upsell popups, analytics tools and other add-ons, since each adds JavaScript running on every page load.",
+        "Suspect code bloat third: themes, page builders and customizations leave unminified JS/CSS full of comments, whitespace and formatting the browser doesn't need.",
+        "Check platform-specific patterns: Shopify stores slow from app overload and PDP-specific functionality (variant selectors, review widgets, BNPL calculators); WooCommerce sites face shared hosting, unoptimized databases and plugin conflicts where every feature requires another plugin.",
+        "Recognize that problems appear gradually, not suddenly — more products, apps and tracking scripts accumulate without monitoring until customers complain or conversions drop.",
+        "Diagnose with PageSpeed Insights before fixing: often a single problem (a 3MB hero image or a dozen unused apps) causes most of the slowdown, so fix the biggest issue first rather than optimizing everything at once."
+      ],
+      "caveats": [
+        "This is a likely-cause ordering, not a substitute for measurement — confirm with PageSpeed Insights, GTmetrix or WebPageTest before major changes.",
+        "Platform-specific causes differ enough that generic advice can mislead; diagnose within your platform's context."
+      ],
+      "tags": [
+        "speed",
+        "performance",
+        "diagnostics",
+        "image-optimization",
+        "app-audit",
+        "hosting",
+        "shopify",
+        "woocommerce"
+      ],
+      "id": "b4cb9fdf5db6c685dde0e5f1",
+      "source_id": "1jotScp6YXxT1RXu1mdtsy3UrfcNnjUCu",
+      "source_sha256": "5a6f72814e3686c3bc78cc71e3e6928d0cf2d8358d9a36487a76da5628136483",
+      "source_name": "Ecommerce Site Speed Optimization_ Complete Guide for 2026.docx",
+      "folder": "/08-SPD-speed",
+      "domain": "speed",
+      "section": 0
+    }
+  ],
+  "request_id": "1f34ca1c3fb2023f8cc9c1d3400b9d928798e3910ca92cfd50b15996e3ce5273",
+  "ecommerce_scope_version": 1
+}

@@ -1,0 +1,180 @@
+{
+  "status": "complete",
+  "mapping": {
+    "A": "frontier_with",
+    "B": "cheap_without",
+    "C": "frontier_without",
+    "D": "cheap_with"
+  },
+  "judge_model": "deepseek-flash",
+  "output": {
+    "reviews": [
+      {
+        "label": "A",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 4,
+          "prioritization": 4
+        },
+        "strengths": [
+          "Correctly frames opens and $14k attributed revenue as recorded association, not incremental proof.",
+          "Quantifies Klaviyo share (31.1%) and platform overlap ($84.4k vs $45k Shopify) accurately.",
+          "Uses TrailFold-specific facts: 13-inch sleeve, water-resistant not waterproof, 4–7 day delivery, and Daypack stock gap.",
+          "Prioritizes attribution reconciliation, deliverability/flow audit, customer-journey diagnosis, and a holdout with appropriate caution."
+        ],
+        "issues": [
+          "No material factual or task errors; minor opportunity to tie the $3,000 test budget more explicitly to the proposed holdout, but not necessary."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Do not use opens or attributed revenue as conclusive incremental performance.",
+            "met": true,
+            "reason": "Explicitly says opens can be inflated and $14k is an attribution share, not causal/incremental sales."
+          },
+          {
+            "criterion": "Use click/order rates, deliverability, overlap and holdout/cohort evidence.",
+            "met": true,
+            "reason": "References 1.1% click, 0.18% order, deliverability/flow audit, $84.4k overlap, and a randomized campaign holdout."
+          },
+          {
+            "criterion": "Ask for missing facts without pretending the audit has been performed.",
+            "met": true,
+            "reason": "Requests campaign/flow exports, denominator definitions, sender/complaint data, and order IDs; assumptions state audits/tests are proposed."
+          }
+        ]
+      },
+      {
+        "label": "B",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 4,
+          "prioritization": 4
+        },
+        "strengths": [
+          "Strong arithmetic: checks conversion, AOV, mobile/desktop changes, ATC/checkout rates, and platform overlap.",
+          "Identifies the Klaviyo denominator inconsistency usefully ($14k implies ~156 orders; 12k profiles × ~13 sends at 0.18% implies ~279 orders).",
+          "Uses brand-specific execution: 13-inch sleeve, water-resistant not waterproof, support-ticket themes, Daypack stock risk, and no unapproved discount.",
+          "Proposes concrete reconciliation, deliverability audit, flow fixes, and a holdout using the test budget appropriately."
+        ],
+        "issues": [
+          "Some recommendations go beyond supplied data (e.g., 10% holdout, 2–6 hour cart flow) but are framed as proposals rather than facts."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Do not use opens or attributed revenue as conclusive incremental performance.",
+            "met": true,
+            "reason": "Clearly states opens are unreliable and $14k is not proven incremental because attribution overlaps and no holdout exists."
+          },
+          {
+            "criterion": "Use click/order rates, deliverability, overlap and holdout/cohort evidence.",
+            "met": true,
+            "reason": "Uses 1.1% click, 0.18% order, bounce/complaint/provider checks, platform overlap, and a proposed randomized holdout."
+          },
+          {
+            "criterion": "Ask for missing facts without pretending the audit has been performed.",
+            "met": true,
+            "reason": "Asks for denominators, order-level attribution exports, flow/campaign splits, and holdout willingness without claiming audits are complete."
+          }
+        ]
+      },
+      {
+        "label": "C",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 4,
+          "prioritization": 4
+        },
+        "strengths": [
+          "Correctly says opens and attributed revenue are not proof of incremental performance.",
+          "Quantifies 31.1% attribution share and $84.4k combined platform value against $45k Shopify revenue.",
+          "Orders next steps: reconcile measurement, audit deliverability/flow filters, test practical email content, then run a holdout.",
+          "Uses TrailFold-specific details: 13-inch sleeve, water-resistant not waterproof, 4–7 day delivery, and Daypack stock gap."
+        ],
+        "issues": [
+          "Does not quantify the Klaviyo denominator inconsistency as sharply as B, but its audit plan remains complete and well-caveated."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Do not use opens or attributed revenue as conclusive incremental performance.",
+            "met": true,
+            "reason": "States 52% opens are weak due to privacy/machine opens and $14k is attribution share, not proven contribution."
+          },
+          {
+            "criterion": "Use click/order rates, deliverability, overlap and holdout/cohort evidence.",
+            "met": true,
+            "reason": "References 1.1% click, 0.18% order, deliverability/authentication, attribution overlap, and a randomized campaign holdout."
+          },
+          {
+            "criterion": "Ask for missing facts without pretending the audit has been performed.",
+            "met": true,
+            "reason": "Requests campaign/flow exports, metric definitions, attributed order IDs, filters, and consent rules; audits are explicitly proposed."
+          }
+        ]
+      },
+      {
+        "label": "D",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 2,
+          "task_completion": 3,
+          "actionability": 3,
+          "uncertainty_and_questions": 4,
+          "prioritization": 3
+        },
+        "strengths": [
+          "Correctly rejects opens and attributed revenue as conclusive evidence.",
+          "Computes Shopify conversion/AOV and platform overlap accurately.",
+          "Identifies denominator ambiguity with useful arithmetic scenarios for Klaviyo order rate.",
+          "Recommends attribution reconciliation, holdout testing, flow review, and deliverability checks."
+        ],
+        "issues": [
+          "Mostly generic and misses TrailFold-specific next steps: 13-inch vs 15-inch laptop question, water-resistant not waterproof, delivery-date support tickets, no-discount policy, Daypack stock/replenishment risk, and the $3k test budget.",
+          "'Leaking intent' language is plausible but not proven from the supplied data."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Do not use opens or attributed revenue as conclusive incremental performance.",
+            "met": true,
+            "reason": "States $14k is platform-attributed, not proof of impact, and notes opens are unreliable due to machine/privacy effects."
+          },
+          {
+            "criterion": "Use click/order rates, deliverability, overlap and holdout/cohort evidence.",
+            "met": true,
+            "reason": "Uses click/order rates, deliverability/list-health checks, platform overlap, and a proposed holdout, though without brand-specific linkage."
+          },
+          {
+            "criterion": "Ask for missing facts without pretending the audit has been performed.",
+            "met": true,
+            "reason": "Asks for denominator definitions, attribution model, and order-level reconciliation data without claiming audits were performed."
+          }
+        ]
+      }
+    ],
+    "ranking": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "summary": "A and B are the strongest: both correctly reject opens/attributed revenue as incremental proof, quantify overlap, and give prioritized, brand-aware next steps; B adds a sharper denominator-inconsistency check. C is also strong and brand-aware. D reaches the right verdict but remains largely generic and misses TrailFold-specific claim, support-theme, stock, and budget implications."
+  },
+  "request_id": "15d56998aee01af909223bbc8450c2647cb39f86c79e441da734750861b89c45",
+  "cost_upper_estimate_usd": 0.023620499999999996
+}

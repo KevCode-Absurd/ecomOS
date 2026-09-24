@@ -1,0 +1,504 @@
+{
+  "cards": [
+    {
+      "title": "CAPTCHA strength is weaker than it looks — treat it as a speed bump",
+      "summary": "Published attack research showed solver accuracy against major CAPTCHA schemes ran far above the 1% 'broken' threshold, so CAPTCHA alone cannot be your bot defense.",
+      "use_when": "Deciding how much to rely on CAPTCHA/reCAPTCHA to protect storefront login, account creation, checkout, or admin actions.",
+      "steps": [
+        "Assume automated solvers can pass a meaningful share of any given CAPTCHA scheme; treat it as one layer, not the gate.",
+        "Because a single widely-used scraper or solver can be pointed at many stores, do not assume your low profile protects you.",
+        "Layer CAPTCHA with server-side controls that do not depend on the puzzle being unsolvable: rate limits, device/IP reputation checks, behavioral signals, and step-up re-authentication for sensitive actions.",
+        "Log how often CAPTCHA is served and how often it fails. Treat spikes in challenge volume as attack traffic, not just as user friction.",
+        "Set your own tolerance: the source used, as an illustrative example, a 1% solver-success threshold for calling a CAPTCHA 'broken'. Do not copy that as a target — use it only to illustrate that low-looking success rates still matter."
+      ],
+      "caveats": [
+        "Solver success rates quoted in the lecture are examples from a specific set of schemes and years, not current benchmarks for any vendor. Verify current vendor and third-party assessments before choosing a scheme.",
+        "CAPTCHA does not stop credential stuffing once an attacker holds a valid password; pair it with the login-side controls below."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "bot-defense",
+        "captcha",
+        "account-security",
+        "checkout",
+        "fraud-prevention"
+      ],
+      "id": "b6026850aadfd2803617fc1c",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 17
+    },
+    {
+      "title": "Reputation scoring and invisible challenges (modern reCAPTCHA-style)",
+      "summary": "Modern bot defense scores trust from behavior, session and IP reputation across many sites rather than from a visible puzzle, and increasingly runs with no UI at all.",
+      "use_when": "Choosing or configuring a bot-mitigation service for login, account creation, checkout, or coupon/inventory abuse on your storefront.",
+      "steps": [
+        "Understand the model before you deploy: the vendor collects behavioral signals (mouse, scroll), session characteristics, and IP reputation across its whole customer network, then returns a trust score your site uses to allow, challenge, or block.",
+        "Feed the score into a decision, not just a boolean: define separate thresholds for low-risk (allow silently), medium-risk (challenge or step up), and high-risk (block or require re-auth) actions.",
+        "Apply the score to the specific action rather than the whole session — for example, allow browsing and cart edits but challenge at login, address change, and high-value coupon redemption.",
+        "Watch for false positives on privacy-preserving users. The source notes Tor and VPN-heavy traffic tends to look untrustworthy and gets challenged constantly; if you serve such users, expect and measure the friction.",
+        "Keep a fallback path so a vendor outage or an unscoreable client does not silently lock out legitimate customers. Verify current vendor APIs and consoles, which change.",
+        "Do not treat a trust score as proof of identity or as authorization for privileged actions; it is a risk signal only."
+      ],
+      "caveats": [
+        "The lecture describes the general mechanism, not any specific current product. The exact signals, APIs, and no-UI behavior must be verified against the vendor's current documentation.",
+        "Cross-site reputation inherently penalizes some legitimate users and introduces dependence on a third party seeing your traffic."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "bot-defense",
+        "captcha",
+        "fraud-prevention",
+        "account-security",
+        "measurement"
+      ],
+      "id": "00647bf08fc4765bf8cf8a72",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 17
+    },
+    {
+      "title": "Step-up re-authentication for sensitive ecommerce actions (sudo mode)",
+      "summary": "Require the user to re-enter their password before a small set of high-impact account, payment, or address changes, as a defense-in-depth measure analogous to GitHub's sudo mode.",
+      "use_when": "Designing the admin/customer account flows where you allow changes to saved payment methods, shipping addresses, email/password, or payout/account details.",
+      "steps": [
+        "Define a short, explicit list of 'sensitive actions' for your store: change password, change email, add/edit shipping address, add/remove a stored card, change payout/bank details, delete account, add an admin collaborator, generate API keys. Treat anything that redirects goods, money, or account recovery as sensitive.",
+        "Require the user to re-enter their password (or complete MFA) immediately before the sensitive action, then put the session into an elevated 'sudo' state.",
+        "Bound the elevation in time — expire the sudo state after a short window so a later request must re-enter. The source describes GitHub dropping the user back out after a while; set a window matching how long a real change takes, not hours.",
+        "Apply this on the server side per action, not just as a client-side modal, since the point is to require the secret even if an attacker already has session access.",
+        "Log every sensitive-action re-auth (who, when, from where) so you can review anomalies.",
+        "Note the secondary benefit documented in the source: this also protects against brief physical access to an unlocked device — someone who grabs a laptop cannot delete the account or change the payout bank without the password."
+      ],
+      "caveats": [
+        "The source is explicit that this is 'not perfect' and does not cover every action — it is defense-in-depth, not a replacement for fixing XSS/CSRF or for MFA.",
+        "Adding re-auth adds friction; scope it narrowly to actions whose compromise is genuinely costly."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "account-security",
+        "checkout",
+        "fraud-prevention",
+        "mfa",
+        "admin"
+      ],
+      "id": "930806e85a10566c5dfa27e4",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 17
+    },
+    {
+      "title": "Generic error messages to stop account enumeration on login, signup, and reset",
+      "summary": "Response discrepancies in login, password-reset, and signup flows let attackers learn which emails/accounts exist, so respond identically regardless of the underlying state.",
+      "use_when": "Writing the copy, logic, and status codes for storefront login, signup, guest-checkout account detection, and password-reset forms.",
+      "steps": [
+        "Identify every place your store discloses account state: login ('no such user' vs 'wrong password' vs 'account disabled'), signup ('that email is already in use'), and reset ('no account with that email' vs 'we sent a link').",
+        "Return one generic message for all failure states: for login use something like a single 'we couldn't log you in' regardless of whether the user does not exist, the password is wrong, or the account is locked/disabled. For reset, use 'if this email exists, we'll send a link.'",
+        "Make sure the HTTP status code and any machine-readable response fields are also identical; the source calls out that differing status codes leak state even if the visible message is the same.",
+        "Apply the same genericization across all entry points — a common mistake is fixing login but leaving signup or reset revealing state, which lets an attacker bounce between them.",
+        "Consider who would benefit from enumerating your customer list. The source's example is a bank where confirmed customers make phishing far more effective; a specialty retailer's customer list can be similarly valuable.",
+        "Measure the trade-off: legendarily, generic messages confuse users who are unsure which email they registered with, so decide based on how sensitive your customer list is.",
+        "If you want the friendlier specific messages, use rate limiting as the primary control instead (see rate-limiting card) so attackers can't enumerate at scale."
+      ],
+      "caveats": [
+        "The source presents this as a trade-off, not a rule: generic messages are worse UX, and some sites deliberately choose specific messages plus rate limiting.",
+        "Generic messages must be applied to every related flow or the fix is incomplete."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "account-security",
+        "credential-stuffing",
+        "checkout",
+        "authorization"
+      ],
+      "id": "83bd8b5f52f4104b9a8e394c",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 17
+    },
+    {
+      "title": "Avoid timing side channels in authentication code paths",
+      "summary": "Early returns and skipped work in login handlers create measurable timing differences that reveal whether a user exists, so make both paths do equal work.",
+      "use_when": "Reviewing or writing login/password-check code where a database or service call only happens when the user exists.",
+      "steps": [
+        "Watch for the anti-pattern: if the user lookup fails you return immediately, but if it succeeds you do extra work (hashing the submitted password and querying a slow remote service), the two responses take visibly different time.",
+        "Rewrite so both the 'user exists' and 'user does not exist' paths perform the same operations — hash the submitted password and run the lookup regardless, then decide validity only at the end.",
+        "Do not rely on thinking alone; the source recommends empirically testing your own system because you cannot assume the database takes identical time. If you measure a gap, add mitigation or eliminate the branch.",
+        "Treat this as a defense-in-depth detail alongside generic messages and rate limits, not as a substitute for them.",
+        "While addressing this, remember the broader point from the source: mitigation has trade-offs, so prioritize where enumeration actually matters (e.g., account recovery or payment flows) rather than over-engineering low-value paths."
+      ],
+      "caveats": [
+        "The source itself admits it does not know how to guarantee a remote database takes identical time; treat timing mitigation as best-effort and validate.",
+        "Timing differences are only one of several enumeration channels (messages and status codes leak state more easily)."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "account-security",
+        "credential-stuffing",
+        "measurement",
+        "appsec"
+      ],
+      "id": "d3e7e7ef57eb65fb90b4ec5c",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 17
+    },
+    {
+      "title": "Rate limiting authentication attempts — and the shared-IP caveat",
+      "summary": "Rate limit login and account-recovery attempts so credential stuffing and account enumeration can't be done at scale, while setting limits high enough for shared corporate/NAT IPs.",
+      "use_when": "Setting thresholds and locking policies for storefront login, password reset, and signup endpoints.",
+      "steps": [
+        "Understand the trade-off: rate limiting lets you keep friendlier, more specific error messages while still preventing an attacker from enumerating thousands of accounts, because each attempt costs them time.",
+        "Set thresholds as a rule of thumb an order of magnitude above what you think the most extreme legitimate user would do — not a tight, theoretical limit. This protects users behind shared NAT, corporate networks, and households sharing one IP.",
+        "Account for IP sharing: too-low per-IP limits can block a hundred legitimate users behind one office IP. Prefer limits keyed on account/IP combinations or add per-account limits alongside per-IP ones.",
+        "Monitor for blocks that hit real customers and raise limits when you see them; the source recommends starting generously and adjusting based on observed friction.",
+        "Layer this with reputation and step-up controls so that a single successful credential-stuffing attempt still faces another checkpoint.",
+        "Verify current framework/library capabilities for layered rate keys (account, IP, device) in your storefront platform."
+      ],
+      "caveats": [
+        "The 'order of magnitude above the extreme user' guidance is the source's personal rule of thumb, not a calibrated benchmark; you must test against your own traffic.",
+        "Rate limiting alone does not stop low-and-slow stuffing from many IPs; combine with reputation scoring and MFA."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "account-security",
+        "credential-stuffing",
+        "fraud-prevention",
+        "measurement"
+      ],
+      "id": "a84a0c3caf46c6aeb24826a2",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 17
+    },
+    {
+      "title": "Check signup passwords against breach lists (Have I Been Pwned)",
+      "summary": "Because leaked-password corpora are public, reject/flag passwords your customers choose that appear in known breaches, and alert users whose credentials later surface.",
+      "use_when": "Choosing and enforcing password policy at account creation and password change on your storefront.",
+      "steps": [
+        "Integrate a breached-password check into signup and password-change flows (the source names Have I Been Pwned as a service that aggregates leaked passwords; GitHub is cited as one site that refuses such passwords).",
+        "Decide the response: hard-reject the password and ask for another, or allow-with-warning. The source leans toward blocking because attackers already have the list.",
+        "Because leaked-password lists are large and attackers can try them against all accounts at once, treat 'is this password in a known breach' as a stronger signal than a simplistic strength meter.",
+        "Consider breach-alert monitoring for your own admin/staff emails so you know when a password they reused elsewhere is exposed.",
+        "Communicate the policy to users so rejected passwords don't feel arbitrary, and offer a password manager or generated passphrase guidance.",
+        "Verify the current API terms, rate limits, and privacy (k-anonymity) options of any breach-checking service before integrating."
+      ],
+      "caveats": [
+        "This doesn't stop an attacker who already has a valid password; pair with MFA and rate limiting.",
+        "Breach coverage is imperfect — absence from a list is not proof the password is safe."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "account-security",
+        "credential-stuffing",
+        "customer-research",
+        "signup"
+      ],
+      "id": "e67276b1419526dda886eade",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 17
+    },
+    {
+      "title": "Proactively lock or flag accounts after a breach you're tangentially involved with",
+      "summary": "If you learn a customer's credential is in a breach (yours or another service's), proactively force a reset or lock rather than waiting for stuffing to succeed.",
+      "use_when": "Incident response and ongoing account hygiene for a storefront whose customers reuse passwords across sites.",
+      "steps": [
+        "Assume a large fraction of any customer base is already in someone's breach corpus; the source's framing is that 'probably yes' most users are affected by breaches somewhere.",
+        "When you discover credentials belonging to your users in a breach, identify impacted accounts and force a password reset or temporarily lock the account with a notification.",
+        "Make password reuse visible in your security stance: encourage unique credentials and make MFA easy to add, not just available.",
+        "Keep a documented process for the 'we got a breach dump' scenario so response is fast rather than improvised.",
+        "For customers calling about suspicious activity, have a recovery path that requires step-up verification (email + a second factor) rather than knowledge-based questions like 'first pet's name,' which the source ranks as weak, guessable factors."
+      ],
+      "caveats": [
+        "Proactive locking creates friction and support load; scope it to accounts actually confirmed in a breach rather than guessing.",
+        "You will not have visibility into all breaches affecting your customers."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "account-security",
+        "incident-response",
+        "retention",
+        "fraud-prevention"
+      ],
+      "id": "fe3628d7cc6565a71f6c10a9",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 17
+    },
+    {
+      "title": "Never store plaintext passwords — hash, salt, or use bcrypt",
+      "summary": "Passwords must be salted and hashed with a slow hashing function; bcrypt (or equivalent) handles salting and cost automatically and should be preferred over hand-rolled SHA-256.",
+      "use_when": "Designing or auditing how your storefront stores customer and admin credentials.",
+      "steps": [
+        "Never store plaintext passwords. A breach then hands attackers a plaintext dump usable against your customers' other accounts, and it is highly damaging reputationally.",
+        "Do not store a bare fast hash (e.g., plain SHA-256). The source demonstrates two failures: identical passwords produce identical hashes (visible to anyone reading the table), and precomputed lookup tables can reverse common passwords across all users at once.",
+        "Use a per-user random salt (roughly 16–32 bytes is the source's illustrative range) concatenated with the password before hashing, and store the salt alongside the hash — the salt need not be secret, it just needs to be unique per user.",
+        "Prefer a library that does this for you — the source recommends bcrypt, which generates the salt automatically, embeds it (with cost parameters) in the output string, and is intentionally slow.",
+        "Choose a cost/rounds value that makes hashing slow enough to raise attacker cost; the source mentions bcrypt's default of 10 rounds embedded in the hash.",
+        "To verify a login, pass the stored hash and submitted plaintext to the library's compare function rather than parsing the hash yourself.",
+        "Treat algorithm choice as something to re-evaluate over time: the source notes bcrypt is old but has held up, and recommends 'current devices use bcrypt' as a rule of thumb — verify what your framework currently offers."
+      ],
+      "caveats": [
+        "The source is clear that even a strong hash does not save users if they reuse passwords — hashing protects the dump, not the reused credential. Pair with MFA.",
+        "The specific byte counts and round numbers cited are the source's illustrative examples; follow your library's current defaults and benchmarks."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "account-security",
+        "encryption",
+        "appsec",
+        "signup"
+      ],
+      "id": "57ec4d704770ce644d13d3c4",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 17
+    },
+    {
+      "title": "Why strong passwords alone fail — and what they actually protect",
+      "summary": "A strong password only blocks guessing and brute force; it does nothing against credential stuffing, phishing, MITM, or a malware-logged keystroke, so treat the password as one layer among several.",
+      "use_when": "Deciding whether to require MFA on your storefront and explaining the value to stakeholders.",
+      "steps": [
+        "Be precise about coverage: the source states a strong password protects against two things — password spraying/guessing and brute force. Everything else is out of its reach.",
+        "List what it does not stop: credential stuffing (password reused and already breached), phishing, man-in-the-middle, malware keylogging, extortion, and a physical post-it note.",
+        "Because attacker databases are cheap and lucrative — the source cites a paste claiming 32 million accounts for half a Bitcoin — assume leaked credentials will be tried against your store.",
+        "Therefore treat 'require MFA' as the primary control for accounts, and give users frictionless ways to enroll (TOTP, hardware keys, and WebAuthn-style device authentication where supported).",
+        "If requiring MFA for every login is too costly in UX, use the risk-based approach (next cards): require the second factor only for new devices, new locations, or suspicious behavior."
+      ],
+      "caveats": [
+        "The source's framing ('passwords are broken', choose anything) is deliberately stark and comes from the cited Microsoft blog post — treat it as an argument for MFA, not a claim that password hygiene is pointless if MFA isn't available.",
+        "SMS-based codes are weaker than TOTP/hardware keys; the source uses TOTP as its worked example."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "account-security",
+        "mfa",
+        "credential-stuffing",
+        "customer-research"
+      ],
+      "id": "385b678a734e6f03b9276d0f",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 17
+    },
+    {
+      "title": "Risk-based MFA: only challenge when behavior looks new or suspicious",
+      "summary": "Require the second factor conditionally — on new devices, new locations/countries, or suspicious IPs — instead of every login, to preserve checkout and login conversion.",
+      "use_when": "Designing when to add an MFA prompt in storefront login and account flows without hurting conversion.",
+      "steps": [
+        "Maintain a 'recognized device' cookie so returning customers on a known browser log in normally, and force the second factor when the cookie is absent (a new device).",
+        "Track the IPs/locations a customer has logged in from and require the second factor on the first login from a new country or a new location class.",
+        "Compare the login IP against community-maintained suspicious-IP lists and require a factor if it matches.",
+        "Add behavior rules for automation: the source cites as an example one client attempting logins to around ten different accounts within a minute as a strong sign of a script — force the factor or block when you see it.",
+        "Expect legitimate users who use privacy tools to be caught by IP-based rules — the source notes Tor and VPN traffic gets challenged constantly. Measure the challenge rate for these users and provide a usable recovery path.",
+        "Use additional script signals (user agent, behavioral patterns) as inputs, not as sole determinants, and log decisions so you can tune thresholds."
+      ],
+      "caveats": [
+        "All thresholds here are illustration, not calibration — set per your own traffic and test for false positives.",
+        "Conditional MFA is a compromise: it forgoes protection on logins that match a known device/IP, so pair it with breach checks and rate limiting."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "mfa",
+        "account-security",
+        "conversion-optimization",
+        "fraud-prevention"
+      ],
+      "id": "1d520e05f0f44c13432f8ec0",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 17
+    },
+    {
+      "title": "TOTP: implementing a two-factor second factor without SMS",
+      "summary": "Time-based one-time passwords authenticate a user by having the server and the user's authenticator app derive the same six-digit code from a shared secret and the current time, without any network call from the app.",
+      "use_when": "Choosing and implementing a second factor (TOTP/hardware key) for storefront customer and admin accounts.",
+      "steps": [
+        "On account enrollment, generate a user-specific, cryptographically random secret on the server and store it in a column for that user.",
+        "Deliver the secret to the user's authenticator app — conventionally as a QR code the user scans with an app like Google Authenticator — so both sides share the same secret.",
+        "Code generation: derive a counter from the current time (the source's example uses current time divided by the 30-second interval), run the secret and counter through an HMAC-style function, then reduce the resulting hash to six digits (the source's approach takes a few bytes and mods by 10^6).",
+        "Rotation: the code changes roughly every 30 seconds as the counter increments; the app does this completely offline and never contacts the server.",
+        "Server verification: perform the same derivation using the counter corresponding to the current time and compare with the submitted code; allow a small clock-drift window in practice (verify current guidance from your library, which may differ from the source's raw description).",
+        "Combine with a password so the login requires something the user knows plus something the user has."
+      ],
+      "caveats": [
+        "The shared secret stored on the phone and server is sensitive; losing the device means losing the factor, so provide recovery codes or a second enrolled factor.",
+        "The exact byte-extraction and drift-window details are implementation specifics — use a maintained TOTP library rather than hand-rolling.",
+        "TOTP is a second factor, not a replacement for a password, unless you deliberately architect it as a standalone mobile-app-based login (a different design)."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "mfa",
+        "account-security",
+        "checkout",
+        "appsec"
+      ],
+      "id": "1ce56e83712a4b2a98a8176b",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 17
+    },
+    {
+      "title": "WebAuthn and passkeys: replacing passwords with device-based authentication",
+      "summary": "WebAuthn lets users authenticate with a device-bound key or biometric (something you have/are) instead of a phishable password, using public-key cryptography so the site never receives a reusable secret.",
+      "use_when": "Planning a passwordless or hardware-second-factor login option for customer and admin accounts on your storefront.",
+      "steps": [
+        "Reduce the phishing problem: the source's core motivation is that passwords are 'terribly fishable' — anyone who convinces you to say your password can replay it exactly. A cryptographic device credential is not replayable this way.",
+        "Model it around a public key: the site holds a public key for the user, and authentication uses a private key that stays on the physical security key or in the device's secure hardware. If the security key is removed, the computer can no longer authenticate on the user's behalf.",
+        "Offer a hardware security key option for high-value/admin accounts, and passkey/biometric options for general customers where the platform supports it.",
+        "Explain to users that the security of 'something you have' rests on the key's hardware protections; a well-engineered hardware key resists even disassembly-style extraction for most threat models.",
+        "Support enrollment and a recovery path for lost keys, and keep a fallback factor so a lost device doesn't permanently lock a paying customer out.",
+        "Verify current browser/platform support and the WebAuthn/passkey implementation details against current documentation — the standard and vendor support have moved on since the source's August launch."
+      ],
+      "caveats": [
+        "WebAuthn shifts trust to the device vendor and platform; it does not eliminate all account-recovery risk.",
+        "Passwordless isn't a universal fit — many users lack a suitable device or password manager, so the source treats it as an alternative rather than a replacement for everyone.",
+        "The source's discussion of factor categories is explicitly framed as a design abstraction, noting that not all authentication mechanisms fit neatly into know/have/are."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "mfa",
+        "passkeys",
+        "webauthn",
+        "account-security",
+        "checkout"
+      ],
+      "id": "cb2bba93c89db68e9c998706",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 17
+    },
+    {
+      "title": "Use modern, non-guessable factors instead of knowledge-based questions",
+      "summary": "Classic 'something you know' factors like security questions are guessable or publicly knowable, so prefer cryptographic device factors over knowledge-based verification for recovery and sensitive actions.",
+      "use_when": "Designing account recovery and verification for storefront customer accounts, billing support, and admin access.",
+      "steps": [
+        "Recognize the weakness: the source notes that something you know traditionally includes security questions like a first pet's name, which are not tied to anything private and are often externally discoverable.",
+        "Replace knowledge-based recovery challenges with cryptographic factors: registered hardware keys, TOTP apps, or device-bound passkeys.",
+        "For the occasional case where a factor must be something you are — fingerprints, face unlock — recognize that these are device-bound and constrained; use them as the second factor inside WebAuthn rather than raw biometric data.",
+        "Think about threat models broadly: the source raises domestic-abuse scenarios where an attacker technically has the device but the trust boundary should still hold, which matters for recovery and access to sensitive account areas.",
+        "Design recovery so that resetting a factor requires the strongest available proof, not the weakest question, and log the recovery event for review."
+      ],
+      "caveats": [
+        "The source's factor framework is presented as an abstraction that shouldn't be rigidly applied — you ultimately care about keeping the attacker out, not whether a mechanism matches a category.",
+        "Some users will not have modern device factors; provide a fallback path that is still stronger than a security question."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "account-security",
+        "mfa",
+        "customer-research",
+        "retention"
+      ],
+      "id": "c7048790c8bc922cc41bb2c4",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 17
+    },
+    {
+      "title": "Prevent data-breach exposure from common cloud misconfigurations",
+      "summary": "Breaches frequently stem from simple mistakes — publicly readable object storage, SQL injection, command injection, misconfigured servers — so audit these on your own storefront infra.",
+      "use_when": "Reviewing your store's storage buckets, servers, and database access for accidental public exposure.",
+      "steps": [
+        "Treat public object storage as your first check: the source notes a common cause of large breaches is simply leaving an S3-style bucket accessible to anyone — anyone with the URL can download everything.",
+        "Assume that once an attacker reaches one application server, they can pivot to databases and other servers reachable from it, so limit network reachability from app servers to data stores.",
+        "Audit for injection classes named by the source (command injection, SQL injection) as entry points that lead to full data exfiltration.",
+        "Include breach response in your operational plan: assume you will be breached eventually, and design so the blast radius is small and detection is possible.",
+        "Because the source's lesson is 'even many well-known companies get breached', do not treat your own competence or obscurity as a reason to skip the audits."
+      ],
+      "caveats": [
+        "This is a general reminder, not a complete audit checklist — many breach causes are out of scope of the source.",
+        "Assume your customers reuse passwords elsewhere, so even a non-financial breach on your store can enable attacks on other services."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "appsec",
+        "incident-response",
+        "fraud-prevention",
+        "admin"
+      ],
+      "id": "a92370ed045d706ca33078d4",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 17
+    },
+    {
+      "title": "Audit your authentication implementation with HIBP and breach-awareness",
+      "summary": "Use Have I Been Pwned and similar resources to verify your own team's exposure, alert customers, and feed account-security decisions at signup and login.",
+      "use_when": "Standing up account-security review processes for a storefront, and checking your team's admin/ops accounts for exposure.",
+      "steps": [
+        "Check admin and support staff emails against the Have I Been Pwned service to discover exposed credentials before attackers do (the source's lecturer demonstrates posting his own email publicly for illustration).",
+        "Subscribe to breach alerts for these emails so you learn about new exposure rather than finding out during an incident.",
+        "Incorporate the same service into your product at password-set time: reject or warn on passwords that appear in known breaches, as discussed elsewhere in these notes.",
+        "Be honest about coverage: the service can only know about breaches that have surfaced publicly, so absence from the list is not a clean bill of health.",
+        "Treat the customer-facing version of this as a way to protect users even when you cannot control their password habits; the source's closing advice is 'protect the user even when the attacker has their password'.",
+        "Encourage password managers so users can generate memorable, unique long passphrases (the source suggests four random words as a memorable, sufficiently random approach)."
+      ],
+      "caveats": [
+        "Do not expose or log checked passwords; use a k-anonymity/bulk-check approach and verify the current API's privacy model.",
+        "The source's 'four random words' advice is offered as an approach, not a formal benchmark."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "account-security",
+        "incident-response",
+        "credential-stuffing",
+        "customer-research"
+      ],
+      "id": "d6e5ce45fe0b0398b10efb14",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 17
+    }
+  ],
+  "request_id": "536199e2ccd6f7d27ed48bc0991243c567523dee957ed320de8645aaf642f008",
+  "ecommerce_scope_version": 1
+}

@@ -1,0 +1,37 @@
+{
+  "case": "cro-traffic/low-volume",
+  "mode": "raw",
+  "request_id": "8a4e7971adeb78cc5a7f72951177bbb0db912bb0e332ac85544d6816ad9fe7da",
+  "complete": true,
+  "cost": 0.012819,
+  "prompt_tokens": 2478,
+  "completion_tokens": 552,
+  "checks": [],
+  "output": {
+    "decision": "Do not launch a multivariate hero/offer/checkout test this month. With 3,000 monthly sessions and a 2% baseline conversion rate (about 60 purchases/month), splitting traffic across multiple combinations is unlikely to produce a decision-quality result. Run one prioritized, isolated A/B test instead after forming an evidence-backed hypothesis.",
+    "next_steps": [
+      "Choose one high-impact area—preferably hero or offer—and define one primary metric: revenue per session, with conversion rate and average order value as guardrails.",
+      "Review qualitative and funnel evidence (session recordings, surveys, support tickets, analytics) to identify the largest customer objection or drop-off before selecting the change.",
+      "Write a hypothesis with the proposed change, expected outcome, rationale, audience, and stopping/sample-size rules.",
+      "QA tracking, checkout behavior, mobile rendering, offer logic, and experiment allocation before launch.",
+      "Run the single test across a representative period; defer multivariate testing until traffic and expected effect size support adequate sample sizes per variant."
+    ],
+    "missing_inputs": [
+      "Minimum detectable revenue-per-session or conversion-rate lift and required confidence/power threshold.",
+      "Number and exact content of proposed hero, offer, and checkout variants.",
+      "Current funnel metrics by device and step, including checkout-start and purchase completion rates.",
+      "Research evidence supporting each proposed change, such as survey responses, recordings, and customer-service themes."
+    ],
+    "evidence_used": [
+      {
+        "id": "source-8",
+        "supports": "The supplied source advises that multivariate testing is for high volume, emphasizes sufficient statistical power, recommends clear data-backed hypotheses, avoiding conflicting tests, QA, and prioritizing revenue per visitor/session over conversion rate."
+      }
+    ],
+    "assumptions": [
+      "General quantitative basis: 3,000 monthly sessions at 2% conversion implies roughly 60 monthly purchases before any traffic split.",
+      "A multivariate test of hero, offer, and checkout would create multiple combinations and materially reduce observations per combination.",
+      "The source is unverified guidance; its stated 50,000–100,000-session range should not be treated as a universal requirement without a formal sample-size calculation."
+    ]
+  }
+}

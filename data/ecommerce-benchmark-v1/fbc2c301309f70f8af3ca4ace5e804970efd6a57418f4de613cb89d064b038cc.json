@@ -1,0 +1,398 @@
+{
+  "request_id": "fbc2c301309f70f8af3ca4ace5e804970efd6a57418f4de613cb89d064b038cc",
+  "provider": "openai",
+  "model": "gpt-5.6-terra",
+  "effort": "low",
+  "completion_limit": 8192,
+  "usage": {
+    "prompt_tokens": 12041,
+    "completion_tokens": 2240,
+    "total_tokens": 14281,
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 12038,
+      "audio_tokens": 0
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 494,
+      "audio_tokens": 0,
+      "accepted_prediction_tokens": 0,
+      "rejected_prediction_tokens": 0
+    }
+  },
+  "booked_cost_usd": 0.064508125,
+  "seconds": 35.28,
+  "finish_reason": "stop",
+  "output": {
+    "reviews": [
+      {
+        "label": "A",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 4,
+          "prioritization": 4
+        },
+        "strengths": [
+          "All required calculations are correct: full-price pre-ad contribution is $39.60, after-ad contribution is $9.60, and break-even ROAS is 2.02x.",
+          "Discount calculations are correct: $64 selling price, $24.08 pre-ad contribution, -$5.92 after-ad contribution, and 2.66x break-even ROAS.",
+          "Clearly recommends against the offer at the stated $30 CAC and correctly notes that a conversion/CAC improvement is not established evidence.",
+          "Uses only stipulated costs and explicitly excludes unlisted costs, other products, and lifetime value.",
+          "The CAC thresholds are correctly derived and useful: $24.08 to break even and $14.48 to preserve the full-price contribution."
+        ],
+        "issues": [],
+        "critical_errors": [],
+        "questions_useful": false,
+        "criterion_results": [
+          {
+            "criterion": "Full price pre-ad 39.60, after-ad 9.60, break-even ROAS about 2.02.",
+            "met": true,
+            "reason": "The table and arithmetic show $39.60, $9.60, and 2.02x."
+          },
+          {
+            "criterion": "Discount price 64, pre-ad 24.08, after-ad -5.92, break-even ROAS about 2.66.",
+            "met": true,
+            "reason": "The discounted-price waterfall correctly produces $64, $24.08, -$5.92, and 2.66x."
+          },
+          {
+            "criterion": "Do not treat a discount as automatically profitable or rely on unknown LTV.",
+            "met": true,
+            "reason": "It rejects the offer at unchanged CAC and explicitly does not include or assume LTV."
+          }
+        ]
+      },
+      {
+        "label": "B",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 3,
+          "prioritization": 3
+        },
+        "strengths": [
+          "The full-price and discounted unit-economics waterfalls are correct and use the permitted cost inputs.",
+          "It correctly distinguishes break-even CAC from break-even ROAS and correctly compares actual ROAS at a $30 CAC with the required ROAS.",
+          "The $70.10 break-even price and approximately 12.4% maximum break-even discount at $30 CAC are mathematically correct under the stated assumptions.",
+          "It appropriately frames any conversion lift, CAC reduction, bundle effect, and LTV rationale as unproven hypotheses rather than facts.",
+          "It notes the owner-approval constraint for discounts and the replenishment-cash constraint."
+        ],
+        "issues": [
+          "The response is substantially broader than the narrowly requested calculation, including several unrelated strategic alternatives and operational discussion.",
+          "The three follow-up questions are not needed to answer the supplied scenario; the task already stipulates a $30 CAC for the comparison.",
+          "Suggesting a cable-pouch or bottle offer is only a hypothesis because combined shipping, pick/pack, payment-fee treatment, demand, and conversion effects are not supplied."
+        ],
+        "critical_errors": [],
+        "questions_useful": false,
+        "criterion_results": [
+          {
+            "criterion": "Full price pre-ad 39.60, after-ad 9.60, break-even ROAS about 2.02.",
+            "met": true,
+            "reason": "It reports $39.60 pre-ad, $9.60 after ad, and 2.02 break-even ROAS."
+          },
+          {
+            "criterion": "Discount price 64, pre-ad 24.08, after-ad -5.92, break-even ROAS about 2.66.",
+            "met": true,
+            "reason": "It reports $64 revenue, $24.08 pre-ad contribution, -$5.92 after ad, and 2.66 break-even ROAS."
+          },
+          {
+            "criterion": "Do not treat a discount as automatically profitable or rely on unknown LTV.",
+            "met": true,
+            "reason": "It rejects the offer at the given CAC and labels LTV, conversion, and CAC improvements as unvalidated."
+          }
+        ]
+      },
+      {
+        "label": "C",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 4,
+          "prioritization": 4
+        },
+        "strengths": [
+          "The requested calculations are fully correct and transparently shown in both the table and calculation method.",
+          "It correctly treats free customer shipping as TrailFold's $8 merchant shipping cost rather than omitting it.",
+          "It gives a direct, brand-policy-aware recommendation not to run the 20% offer at $30 CAC.",
+          "It clearly distinguishes required CAC thresholds from evidence that the discount will actually achieve those thresholds.",
+          "It respects the scope by excluding lifetime value, other products, and unlisted costs rather than using them to rescue a loss-making offer."
+        ],
+        "issues": [],
+        "critical_errors": [],
+        "questions_useful": false,
+        "criterion_results": [
+          {
+            "criterion": "Full price pre-ad 39.60, after-ad 9.60, break-even ROAS about 2.02.",
+            "met": true,
+            "reason": "The full-price waterfall correctly calculates $39.60, $9.60, and 2.02x."
+          },
+          {
+            "criterion": "Discount price 64, pre-ad 24.08, after-ad -5.92, break-even ROAS about 2.66.",
+            "met": true,
+            "reason": "The discount waterfall correctly calculates $64, $24.08, -$5.92, and 2.66x."
+          },
+          {
+            "criterion": "Do not treat a discount as automatically profitable or rely on unknown LTV.",
+            "met": true,
+            "reason": "It calls conversion improvement a hypothesis and expressly excludes LTV from the decision."
+          }
+        ]
+      },
+      {
+        "label": "D",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 3,
+          "uncertainty_and_questions": 3,
+          "prioritization": 3
+        },
+        "strengths": [
+          "The required economics are correct, including all pre-ad, post-ad, break-even CAC, and ROAS figures.",
+          "The conclusion not to use the offer at $30 CAC is correct and clearly tied to first-order contribution.",
+          "The inventory-cover calculation is arithmetically correct: 210 units at 8 per day covers 26.25 days versus a 35-day replenishment arrival.",
+          "It appropriately notes discount approval is required and does not invoke unsupported LTV."
+        ],
+        "issues": [
+          "Inventory timing is a relevant caution but goes beyond the requested one-order unit-economics task and should not displace the core decision, which already fails on contribution at the stipulated CAC.",
+          "The claim that the proposed PDP/email changes are “cheaper tests than a 20% margin giveaway” is unsupported: no implementation costs, expected conversion impact, or test economics are supplied.",
+          "Calling the PDP friction “repeated” overstates the evidence somewhat. The packet shows customer questions and placement issues, but no session recordings, behavioral evidence, or repeated PDP test results.",
+          "The questions about CAC and approval are reasonable operationally but unnecessary for answering the stipulated scenario; the return-fee question is outside the instruction to use only the listed costs."
+        ],
+        "critical_errors": [],
+        "questions_useful": false,
+        "criterion_results": [
+          {
+            "criterion": "Full price pre-ad 39.60, after-ad 9.60, break-even ROAS about 2.02.",
+            "met": true,
+            "reason": "It correctly reports $39.60 pre-ad contribution, $9.60 after CAC, and 2.02 break-even ROAS."
+          },
+          {
+            "criterion": "Discount price 64, pre-ad 24.08, after-ad -5.92, break-even ROAS about 2.66.",
+            "met": true,
+            "reason": "It correctly reports $64 discounted revenue, $24.08 pre-ad contribution, -$5.92 after CAC, and 2.66 break-even ROAS."
+          },
+          {
+            "criterion": "Do not treat a discount as automatically profitable or rely on unknown LTV.",
+            "met": true,
+            "reason": "It states that conversion lift is only a hypothesis and excludes LTV and other-product revenue."
+          }
+        ]
+      }
+    ],
+    "ranking": [
+      "A",
+      "C",
+      "B",
+      "D"
+    ],
+    "summary": "All four answers correctly complete the required unit-economics calculation and reject the 20% offer at a $30 CAC without relying on LTV. A and C are the strongest because they are precise, complete, and tightly scoped. B is mathematically excellent but unnecessarily expansive and asks questions not needed for the scenario. D is also correct, but its additional operational recommendations include an unsupported cost comparison and slightly overstate the available PDP-friction evidence."
+  },
+  "raw_content": "{\"reviews\":[{\"label\":\"A\",\"scores\":{\"factual_accuracy\":4,\"brand_fit\":4,\"task_completion\":4,\"actionability\":4,\"uncertainty_and_questions\":4,\"prioritization\":4},\"strengths\":[\"All required calculations are correct: full-price pre-ad contribution is $39.60, after-ad contribution is $9.60, and break-even ROAS is 2.02x.\",\"Discount calculations are correct: $64 selling price, $24.08 pre-ad contribution, -$5.92 after-ad contribution, and 2.66x break-even ROAS.\",\"Clearly recommends against the offer at the stated $30 CAC and correctly notes that a conversion/CAC improvement is not established evidence.\",\"Uses only stipulated costs and explicitly excludes unlisted costs, other products, and lifetime value.\",\"The CAC thresholds are correctly derived and useful: $24.08 to break even and $14.48 to preserve the full-price contribution.\"],\"issues\":[],\"critical_errors\":[],\"questions_useful\":false,\"criterion_results\":[{\"criterion\":\"Full price pre-ad 39.60, after-ad 9.60, break-even ROAS about 2.02.\",\"met\":true,\"reason\":\"The table and arithmetic show $39.60, $9.60, and 2.02x.\"},{\"criterion\":\"Discount price 64, pre-ad 24.08, after-ad -5.92, break-even ROAS about 2.66.\",\"met\":true,\"reason\":\"The discounted-price waterfall correctly produces $64, $24.08, -$5.92, and 2.66x.\"},{\"criterion\":\"Do not treat a discount as automatically profitable or rely on unknown LTV.\",\"met\":true,\"reason\":\"It rejects the offer at unchanged CAC and explicitly does not include or assume LTV.\"}]},{\"label\":\"B\",\"scores\":{\"factual_accuracy\":4,\"brand_fit\":4,\"task_completion\":4,\"actionability\":4,\"uncertainty_and_questions\":3,\"prioritization\":3},\"strengths\":[\"The full-price and discounted unit-economics waterfalls are correct and use the permitted cost inputs.\",\"It correctly distinguishes break-even CAC from break-even ROAS and correctly compares actual ROAS at a $30 CAC with the required ROAS.\",\"The $70.10 break-even price and approximately 12.4% maximum break-even discount at $30 CAC are mathematically correct under the stated assumptions.\",\"It appropriately frames any conversion lift, CAC reduction, bundle effect, and LTV rationale as unproven hypotheses rather than facts.\",\"It notes the owner-approval constraint for discounts and the replenishment-cash constraint.\"],\"issues\":[\"The response is substantially broader than the narrowly requested calculation, including several unrelated strategic alternatives and operational discussion.\",\"The three follow-up questions are not needed to answer the supplied scenario; the task already stipulates a $30 CAC for the comparison.\",\"Suggesting a cable-pouch or bottle offer is only a hypothesis because combined shipping, pick/pack, payment-fee treatment, demand, and conversion effects are not supplied.\"],\"critical_errors\":[],\"questions_useful\":false,\"criterion_results\":[{\"criterion\":\"Full price pre-ad 39.60, after-ad 9.60, break-even ROAS about 2.02.\",\"met\":true,\"reason\":\"It reports $39.60 pre-ad, $9.60 after ad, and 2.02 break-even ROAS.\"},{\"criterion\":\"Discount price 64, pre-ad 24.08, after-ad -5.92, break-even ROAS about 2.66.\",\"met\":true,\"reason\":\"It reports $64 revenue, $24.08 pre-ad contribution, -$5.92 after ad, and 2.66 break-even ROAS.\"},{\"criterion\":\"Do not treat a discount as automatically profitable or rely on unknown LTV.\",\"met\":true,\"reason\":\"It rejects the offer at the given CAC and labels LTV, conversion, and CAC improvements as unvalidated.\"}]},{\"label\":\"C\",\"scores\":{\"factual_accuracy\":4,\"brand_fit\":4,\"task_completion\":4,\"actionability\":4,\"uncertainty_and_questions\":4,\"prioritization\":4},\"strengths\":[\"The requested calculations are fully correct and transparently shown in both the table and calculation method.\",\"It correctly treats free customer shipping as TrailFold's $8 merchant shipping cost rather than omitting it.\",\"It gives a direct, brand-policy-aware recommendation not to run the 20% offer at $30 CAC.\",\"It clearly distinguishes required CAC thresholds from evidence that the discount will actually achieve those thresholds.\",\"It respects the scope by excluding lifetime value, other products, and unlisted costs rather than using them to rescue a loss-making offer.\"],\"issues\":[],\"critical_errors\":[],\"questions_useful\":false,\"criterion_results\":[{\"criterion\":\"Full price pre-ad 39.60, after-ad 9.60, break-even ROAS about 2.02.\",\"met\":true,\"reason\":\"The full-price waterfall correctly calculates $39.60, $9.60, and 2.02x.\"},{\"criterion\":\"Discount price 64, pre-ad 24.08, after-ad -5.92, break-even ROAS about 2.66.\",\"met\":true,\"reason\":\"The discount waterfall correctly calculates $64, $24.08, -$5.92, and 2.66x.\"},{\"criterion\":\"Do not treat a discount as automatically profitable or rely on unknown LTV.\",\"met\":true,\"reason\":\"It calls conversion improvement a hypothesis and expressly excludes LTV from the decision.\"}]},{\"label\":\"D\",\"scores\":{\"factual_accuracy\":4,\"brand_fit\":4,\"task_completion\":4,\"actionability\":3,\"uncertainty_and_questions\":3,\"prioritization\":3},\"strengths\":[\"The required economics are correct, including all pre-ad, post-ad, break-even CAC, and ROAS figures.\",\"The conclusion not to use the offer at $30 CAC is correct and clearly tied to first-order contribution.\",\"The inventory-cover calculation is arithmetically correct: 210 units at 8 per day covers 26.25 days versus a 35-day replenishment arrival.\",\"It appropriately notes discount approval is required and does not invoke unsupported LTV.\"],\"issues\":[\"Inventory timing is a relevant caution but goes beyond the requested one-order unit-economics task and should not displace the core decision, which already fails on contribution at the stipulated CAC.\",\"The claim that the proposed PDP/email changes are “cheaper tests than a 20% margin giveaway” is unsupported: no implementation costs, expected conversion impact, or test economics are supplied.\",\"Calling the PDP friction “repeated” overstates the evidence somewhat. The packet shows customer questions and placement issues, but no session recordings, behavioral evidence, or repeated PDP test results.\",\"The questions about CAC and approval are reasonable operationally but unnecessary for answering the stipulated scenario; the return-fee question is outside the instruction to use only the listed costs.\"],\"critical_errors\":[],\"questions_useful\":false,\"criterion_results\":[{\"criterion\":\"Full price pre-ad 39.60, after-ad 9.60, break-even ROAS about 2.02.\",\"met\":true,\"reason\":\"It correctly reports $39.60 pre-ad contribution, $9.60 after CAC, and 2.02 break-even ROAS.\"},{\"criterion\":\"Discount price 64, pre-ad 24.08, after-ad -5.92, break-even ROAS about 2.66.\",\"met\":true,\"reason\":\"It correctly reports $64 discounted revenue, $24.08 pre-ad contribution, -$5.92 after CAC, and 2.66 break-even ROAS.\"},{\"criterion\":\"Do not treat a discount as automatically profitable or rely on unknown LTV.\",\"met\":true,\"reason\":\"It states that conversion lift is only a hypothesis and excludes LTV and other-product revenue.\"}]}],\"ranking\":[\"A\",\"C\",\"B\",\"D\"],\"summary\":\"All four answers correctly complete the required unit-economics calculation and reject the 20% offer at a $30 CAC without relying on LTV. A and C are the strongest because they are precise, complete, and tightly scoped. B is mathematically excellent but unnecessarily expansive and asks questions not needed for the scenario. D is also correct, but its additional operational recommendations include an unsupported cost comparison and slightly overstate the available PDP-friction evidence.\"}",
+  "input": {
+    "brand": {
+      "fictional": true,
+      "name": "TrailFold",
+      "market": "US",
+      "currency": "USD",
+      "platforms": [
+        "Shopify",
+        "Meta Ads",
+        "Klaviyo"
+      ],
+      "positioning": "Practical lightweight bags for commuters who take short weekend trips; restrained, useful, plain-spoken voice.",
+      "products": [
+        {
+          "sku": "DAY18",
+          "name": "Daypack 18L",
+          "price": 80,
+          "landed_cogs": 28,
+          "pick_pack": 2,
+          "merchant_shipping_cost": 8,
+          "payment_fee_percent": 3,
+          "features": [
+            "18L capacity",
+            "padded 13-inch laptop sleeve",
+            "water-resistant fabric, not waterproof",
+            "external bottle pocket"
+          ],
+          "stock": 210,
+          "daily_units_sold": 8,
+          "confirmed_replenishment_units": 500,
+          "replenishment_arrival_days": 35
+        },
+        {
+          "sku": "POUCH",
+          "name": "Cable pouch",
+          "price": 20,
+          "landed_cogs": 5,
+          "stock": 800
+        },
+        {
+          "sku": "BOTTLE",
+          "name": "Steel bottle",
+          "price": 32,
+          "landed_cogs": 9,
+          "stock": 600
+        }
+      ],
+      "policies": {
+        "shipping": "Free US shipping; delivery estimate 4-7 business days",
+        "returns": "30-day returns for unused products; return shipping paid by customer",
+        "discounts": "No current discount. Any new discount needs owner approval."
+      },
+      "claim_constraints": [
+        "No evidence for waterproof, medical, sustainability or lifetime-durability claims.",
+        "No verified competitor performance data.",
+        "No clinical or controlled product test results."
+      ],
+      "customer_themes": {
+        "simulated_review_count": 120,
+        "themes": [
+          "fits daily commute",
+          "customers ask whether a 15-inch laptop fits",
+          "customers ask whether rain protection means waterproof"
+        ],
+        "support_tickets_last_30_days": {
+          "delivery_date_questions": 42,
+          "15_inch_laptop_fit": 28,
+          "waterproof_questions": 18
+        },
+        "note": "Themes, not verbatim licensed testimonials; no fabricated quotes or endorsements."
+      },
+      "website_snapshot": {
+        "pdp_headline": "Adventure starts here",
+        "first_image": "product on plain background",
+        "pdp_details": "Laptop sizing and delivery window are below reviews; CTA says Buy now. No field speed or session-recording data."
+      },
+      "shopify": {
+        "previous_30_days": {
+          "sessions": 20000,
+          "orders": 600,
+          "net_product_revenue": 54000,
+          "mobile_sessions": 15000,
+          "mobile_orders": 400,
+          "desktop_sessions": 5000,
+          "desktop_orders": 200,
+          "add_to_cart_sessions": 2000,
+          "checkout_started_sessions": 1200
+        },
+        "current_30_days": {
+          "sessions": 25000,
+          "orders": 500,
+          "net_product_revenue": 45000,
+          "mobile_sessions": 20000,
+          "mobile_orders": 300,
+          "desktop_sessions": 5000,
+          "desktop_orders": 200,
+          "add_to_cart_sessions": 2000,
+          "checkout_started_sessions": 1000
+        },
+        "definitions": "Revenue excludes tax/shipping; periods equal length. Funnel counts are session-based and internally consistent, but no controlled attribution experiment.",
+        "new_customer_share_current": 0.72,
+        "cohort_90_day_repeat_rate": 0.14
+      },
+      "meta": {
+        "previous_30_days": {
+          "spend": 18000,
+          "reported_purchase_value": 54000,
+          "cpm": 12,
+          "link_ctr_percent": 1.5
+        },
+        "current_30_days": {
+          "spend": 22000,
+          "reported_purchase_value": 70400,
+          "cpm": 15,
+          "link_ctr_percent": 1.2
+        },
+        "settings": "7-day click plus 1-day view; no incremental lift study. Meta reported value not reconciled to Shopify orders.",
+        "creative_history": [
+          {
+            "name": "Desk-to-trail demonstration",
+            "spend_share": 0.55,
+            "observed_result": "Largest spend recipient; mature creative. No asset-level contribution data."
+          },
+          {
+            "name": "Laptop-fit comparison",
+            "spend_share": 0.25,
+            "observed_result": "Higher CTR in small test; conversion sample not supplied."
+          },
+          {
+            "name": "Minimal product still",
+            "spend_share": 0.2,
+            "observed_result": "No reliable lift estimate."
+          }
+        ]
+      },
+      "klaviyo": {
+        "marketable_profiles": 12000,
+        "reported_attributed_revenue_current": 14000,
+        "attribution_window": "5-day click plus 5-day open",
+        "flows": [
+          {
+            "name": "welcome",
+            "messages": 1,
+            "offer": "none"
+          },
+          {
+            "name": "checkout abandonment",
+            "trigger": "Started Checkout",
+            "messages": 1,
+            "delay_hours": 24,
+            "observed_gap": "No Added to Cart flow; filters not audited."
+          }
+        ],
+        "campaigns_per_week": 3,
+        "reported_open_rate_percent": 52,
+        "click_rate_percent": 1.1,
+        "order_rate_percent": 0.18,
+        "note": "Revenue attribution overlaps other systems; no holdout or recent deliverability audit."
+      },
+      "resources": {
+        "weekly_designer_hours": 8,
+        "weekly_developer_hours": 4,
+        "owner_hours": 4,
+        "next_14_day_test_budget": 3000,
+        "cash_constraint": "Protect replenishment payments; no additional inventory purchase approved."
+      },
+      "unavailable": [
+        "GA4 breakdowns",
+        "Clarity/Hotjar recordings",
+        "field Core Web Vitals",
+        "SKU-level ad acquisition cost",
+        "cohort contribution LTV",
+        "creative-level conversion sample sizes",
+        "channel incrementality",
+        "email holdout data"
+      ]
+    },
+    "task": "For one Daypack order, compare full price with a proposed 20% discount at $30 CAC. Use only the listed item costs, shipping and fees; no other products or lifetime value. Calculate pre-ad contribution, after-ad contribution and break-even ROAS. Should we use this offer?",
+    "criteria": [
+      "Full price pre-ad 39.60, after-ad 9.60, break-even ROAS about 2.02.",
+      "Discount price 64, pre-ad 24.08, after-ad -5.92, break-even ROAS about 2.66.",
+      "Do not treat a discount as automatically profitable or rely on unknown LTV."
+    ],
+    "weights": {
+      "factual_accuracy": 30,
+      "brand_fit": 15,
+      "task_completion": 20,
+      "actionability": 15,
+      "uncertainty_and_questions": 10,
+      "prioritization": 10
+    },
+    "answers": {
+      "A": "{\"answer_markdown\": \"## Recommendation: do not use the 20% offer at $30 CAC\\n\\nFor one Daypack 18L order, full price leaves **$9.60 after advertising**. The proposed discount produces a **$5.92 loss after advertising**, using only the listed costs. Any new discount also requires owner approval.\\n\\n### Per-order comparison\\n\\n| Item | Full price | 20% discount |\\n|---|---:|---:|\\n| Product revenue | $80.00 | $64.00 |\\n| Landed COGS | −$28.00 | −$28.00 |\\n| Pick/pack | −$2.00 | −$2.00 |\\n| Merchant shipping cost | −$8.00 | −$8.00 |\\n| Payment fee: 3% of revenue | −$2.40 | −$1.92 |\\n| **Pre-ad contribution** | **$39.60** | **$24.08** |\\n| Customer acquisition cost | −$30.00 | −$30.00 |\\n| **After-ad contribution** | **$9.60** | **−$5.92** |\\n| Pre-ad contribution margin | 49.50% | 37.63% |\\n| **Break-even ROAS** | **2.02×** | **2.66×** |\\n| Revenue ÷ $30 CAC | 2.67× | 2.13× |\\n\\n### Arithmetic\\n\\n**Discounted price:** $80 × 80% = **$64.00**.\\n\\n**Pre-ad contribution** = revenue − COGS − pick/pack − merchant shipping − payment fee.\\n\\n- Full price: $80 − $28 − $2 − $8 − ($80 × 3%) = **$39.60**.\\n- Discounted: $64 − $28 − $2 − $8 − ($64 × 3%) = **$24.08**.\\n\\n**After-ad contribution** = pre-ad contribution − CAC:\\n\\n- Full price: $39.60 − $30 = **$9.60**.\\n- Discounted: $24.08 − $30 = **−$5.92**.\\n\\n**Break-even ROAS** = revenue ÷ pre-ad contribution. This is the revenue-to-ad-spend ratio at which advertising consumes all available contribution:\\n\\n- Full price: $80 ÷ $39.60 = **2.02×**.\\n- Discounted: $64 ÷ $24.08 = **2.66×**.\\n\\n### Decision boundary\\n\\nThe discount removes $16.00 of revenue while saving only $0.48 in payment fees, reducing contribution by **$15.52 per order**.\\n\\nTo merely break even, the discounted order needs CAC of **$24.08 or less**—a reduction of $5.92, or **19.7%**, from $30. To preserve the full-price order’s $9.60 contribution, discounted CAC must fall to **$14.48**.\\n\\nA discount might improve conversion, but there is no evidence here that it would lower CAC enough. **Keep full price at the stated CAC.** More discounted orders at unchanged CAC would increase total losses, not fix the economics. These figures are contribution, not net profit; no unlisted costs, other products or lifetime value are included.\", \"questions\": [], \"assumptions\": [\"Each order contains exactly one Daypack 18L, with no other products or future purchases included.\", \"The 3% payment fee applies to the actual product selling price, and no additional fixed payment fee is included.\", \"Landed COGS, pick/pack and merchant shipping costs remain unchanged under the discount.\", \"CAC is $30 per acquired order in both scenarios; no discount-driven CAC improvement is assumed.\"]}",
+      "B": "{\"answer_markdown\": \"**TrailFold Daypack 18L (DAY18) — discount unit economics**\\n\\n**Scope and definitions.** I model one Daypack order at US list price, then with a proposed 20% discount. Variable costs used: landed COGS $28, pick/pack $2, merchant shipping $8, and payment fee at 3% of net product revenue after any discount. I exclude returns, tax, overhead, lifetime value, other SKUs, and any UPT/basket change because no rate or data was supplied. The $30 CAC is treated as a given acquisition cost, not a verified incremental CAC. Break-even ROAS is defined here as net revenue divided by pre-ad contribution.\\n\\n**Full-price unit economics**\\n\\n| Line | Amount |\\n|---|---:|\\n| Net revenue | $80.00 |\\n| Landed COGS | $28.00 |\\n| Pick/pack | $2.00 |\\n| Merchant shipping | $8.00 |\\n| Payment fee (3% × $80) | $2.40 |\\n| Total variable cost | $40.40 |\\n| **Pre-ad contribution** | **$39.60** |\\n| Break-even CAC | $39.60 |\\n| Break-even ROAS | 80 / 39.60 = **2.02** |\\n| CAC | $30.00 |\\n| **After-ad contribution** | 39.60 − 30.00 = **$9.60** |\\n| Actual ROAS at $30 CAC | 80 / 30 = 2.67 |\\n\\nAt full price, $30 CAC is profitable on a first-order basis: contribution is $9.60 per order, and actual ROAS of 2.67 is above the 2.02 break-even.\\n\\n**20%-discount unit economics**\\n\\n| Line | Amount |\\n|---|---:|\\n| Discount | 20% × $80 = $16.00 |\\n| Net revenue | $64.00 |\\n| Landed COGS | $28.00 |\\n| Pick/pack | $2.00 |\\n| Merchant shipping | $8.00 |\\n| Payment fee (3% × $64) | $1.92 |\\n| Total variable cost | $39.92 |\\n| **Pre-ad contribution** | 64.00 − 39.92 = **$24.08** |\\n| Break-even CAC | $24.08 |\\n| Break-even ROAS | 64 / 24.08 = **2.66** |\\n| CAC | $30.00 |\\n| **After-ad contribution** | 24.08 − 30.00 = **−$5.92** |\\n| Actual ROAS at $30 CAC | 64 / 30 = 2.13 |\\n\\nThe discount saves only $0.48 in payment fees ($2.40 − $1.92), so the $16 price cut reduces pre-ad contribution by $15.52. At the same $30 CAC, after-ad contribution swings from +$9.60 to −$5.92 per order. Discounted actual ROAS of 2.13 is below the required 2.66 break-even.\\n\\n**Should we use this offer?**\\n\\nNo, not as a straight 20%-off acquisition offer at $30 CAC. On the supplied first-order costs, it loses $5.92 per Daypack order. It only breaks even if CAC falls to $24.08 or below — a 19.7% reduction from $30. If the goal is to hold the same $9.60 after-ad contribution as full price, CAC would need to fall to $14.48, a 51.7% reduction. Put another way, at $30 CAC the maximum supportable discount is about 12.4% off: 0.97P − $38 = $30, so P = $70.10, or $9.90 off $80.\\n\\nThis does not mean no discount can ever be used. A 20% offer could become rational if measured conversion lift lowers blended CAC below $24.08, or if the discount is attached to a bundle/loyalty on-ramp that produces validated incremental contribution. But those are hypotheses, not evidence in the supplied data. The brand’s own policy says any new discount needs owner approval. Returns are excluded here because no return rate or return-processing cost was supplied; including them would make the discount case worse, not better. The cash constraint also argues against a contribution-negative promotion while replenishment payments need protection.\\n\\n**Practical next step.** Do not launch this offer as proposed. Either test a shallower discount at or below the 12.4% supportable level, keep full price and fund the $30 CAC, or build a non-discount offer around the cable pouch or bottle. If the owner wants to test 20% anyway, bound it and require a measured CAC/conversion result before scaling.\\n\\n**Missing facts.** Actual incremental CAC for this SKU, conversion lift from the discount, return rate, and any UPT or bundle effect are not supplied. Meta reported value is also not reconciled to Shopify orders, so the real CAC should be verified before treating $30 as settled.\", \"questions\": [\"Is $30 CAC a verified incremental acquisition cost for this Daypack offer, or an assumption? What channel mix and attribution window does it use?\", \"What measured conversion or UPT lift should we expect from the 20% discount, and can it reduce CAC to $24.08 or below in a bounded test?\", \"Does the owner want a non-discount alternative tested instead — for example a Daypack + cable pouch bundle or loyalty on-ramp — given that any new discount needs owner approval?\"], \"assumptions\": [\"$30 CAC is given, treated as fully incremental to the Daypack order, and is not verified by platform reconciliation.\", \"Payment fee is 3% of net product revenue after discount; no fee is applied to shipping or tax.\", \"No returns, tax, overhead, lifetime value, other SKU revenue, or basket/UPT change is modeled.\", \"One Daypack per order; pick/pack is $2 and merchant shipping is $8 per order.\", \"Break-even ROAS = net revenue / pre-ad contribution; break-even CAC = pre-ad contribution.\", \"The proposed offer is a flat 20% discount off the $80 list price.\"]}",
+      "C": "{\"answer_markdown\": \"# Daypack 18L: full price versus 20% off\\n\\n**Recommendation: do not use the 20% discount at a $30 CAC.** A full-price, single-Daypack order leaves **$9.60 after advertising**. The discounted order loses **$5.92**, using only the costs specified. Keep full price under this scenario; any new discount also requires owner approval.\\n\\n## 1. Per-order economics\\n\\nThe proposed discount is $80 × 20% = **$16**, making the selling price **$64**. Landed product cost, pick/pack and merchant shipping remain unchanged. The 3% payment fee falls with the amount charged.\\n\\n| Per-order line item | Full price | 20% discount |\\n|---|---:|---:|\\n| Listed price | $80.00 | $80.00 |\\n| Discount | $0.00 | −$16.00 |\\n| **Revenue after discount** | **$80.00** | **$64.00** |\\n| Landed product cost | −$28.00 | −$28.00 |\\n| Pick/pack | −$2.00 | −$2.00 |\\n| Merchant shipping cost | −$8.00 | −$8.00 |\\n| Payment fee: 3% of selling price | −$2.40 | −$1.92 |\\n| **Total listed costs before advertising** | **$40.40** | **$39.92** |\\n| **Pre-ad contribution** | **$39.60** | **$24.08** |\\n| Pre-ad contribution margin | 49.50% | 37.625% |\\n| Customer acquisition cost | −$30.00 | −$30.00 |\\n| **After-ad contribution** | **$9.60** | **−$5.92** |\\n| **Break-even revenue ROAS** | **2.02×** | **2.66×** |\\n| Revenue ROAS at $30 CAC | 2.67× | 2.13× |\\n\\nFree shipping means the customer pays no shipping charge; TrailFold still incurs the listed **$8 shipping cost**.\\n\\n## 2. Calculation method\\n\\nHere, **pre-ad contribution** means revenue after discount minus landed product cost, pick/pack, merchant shipping and payment fees. **After-ad contribution** subtracts CAC from that amount.\\n\\n**Full price**\\n\\n- Payment fee = $80 × 3% = **$2.40**.\\n- Pre-ad contribution = $80 − $28 − $2 − $8 − $2.40 = **$39.60**.\\n- After-ad contribution = $39.60 − $30 = **$9.60**.\\n- Break-even ROAS = revenue ÷ pre-ad contribution = $80 ÷ $39.60 = **2.02×**.\\n\\n**20% discount**\\n\\n- Payment fee = $64 × 3% = **$1.92**.\\n- Pre-ad contribution = $64 − $28 − $2 − $8 − $1.92 = **$24.08**.\\n- After-ad contribution = $24.08 − $30 = **−$5.92**.\\n- Break-even ROAS = $64 ÷ $24.08 = **2.66×**.\\n\\nROAS uses the actual selling price after discount, not the original $80 price. At $30 CAC, the discounted order delivers $64 ÷ $30 = **2.13×**, below its own break-even requirement.\\n\\n## 3. What would need to change?\\n\\nThe discount gives away $16 of revenue but saves only $0.48 in payment fees. Consequently, it reduces contribution by **$15.52 per order**. Product cost does not fall just because the selling price falls.\\n\\nTwo CAC thresholds help frame any reconsideration:\\n\\n| Objective for the discounted order | Required CAC |\\n|---|---:|\\n| Just break even after advertising | **$24.08 or less** |\\n| Preserve the full-price $9.60 after-ad contribution | **$14.48 or less** |\\n\\nTo reach break-even, CAC must fall by $30 − $24.08 = **$5.92**, or **19.7%**. To preserve the full-price contribution, CAC must fall by $30 − $14.48 = **$15.52**, or **51.7%**.\\n\\nA discount improving conversion enough to reduce CAC is a **hypothesis**, not an established result for TrailFold. No measured CAC response to this offer is supplied. These thresholds therefore describe what would be required, not what the offer will achieve.\\n\\n## Decision\\n\\n**Reject this offer at the stated $30 CAC.** More discounted orders at that same CAC would multiply the loss rather than solve it. Reconsider only with owner approval and credible evidence supporting sufficiently lower CAC, with room above break-even for the owner's required contribution.\\n\\nThis is a first-order contribution comparison, **not net profit**. As requested, it excludes other products, lifetime value and all costs beyond those listed; no additional cost estimates or repeat-purchase benefits are assumed.\", \"questions\": [], \"assumptions\": [\"Each scenario contains exactly one Daypack 18L and uses the stipulated $30 CAC; this is a scenario input, not an observed SKU-level acquisition cost.\", \"The 3% payment fee applies to the actual product selling price after discount, with no additional fixed fee.\", \"Landed cost, pick/pack and merchant shipping remain $28, $2 and $8 respectively in both scenarios.\", \"Break-even ROAS uses revenue after discount divided by pre-ad contribution and excludes overhead, returns and any other unlisted costs.\"]}",
+      "D": "{\"answer_markdown\": \"**Scope.** One DAY18 Daypack order, US, free shipping, no other SKUs, no LTV or repeat revenue, no fixed-cost allocation, no returns/refunds in the base calculation. Payment fee is treated as 3% of net product price after any discount. The $30 CAC is treated as ad spend to acquire one order.\\n\\n**Observations used**\\n- Price: $80; landed COGS: $28; pick/pack: $2; merchant shipping: $8; payment fee: 3%.\\n- Policy: free US shipping; 30-day returns; no current discount and any new discount needs owner approval.\\n- Inventory: 210 units on hand, 8/day current sell-through, 500 units confirmed in 35 days.\\n\\n**Full-price order**\\n\\n| Line | Amount |\\n|---|---:|\\n| Revenue | $80.00 |\\n| Less landed COGS | -$28.00 |\\n| Less pick/pack | -$2.00 |\\n| Less merchant shipping | -$8.00 |\\n| Less payment fee (3% × $80) | -$2.40 |\\n| **Total variable cost** | **$40.40** |\\n| **Pre-ad contribution** | **$39.60** |\\n| After $30 CAC | $9.60 |\\n| Break-even CAC | $39.60 |\\n| Break-even ROAS | $80 / $39.60 = **2.02** |\\n| Actual ROAS at $30 CAC | $80 / $30 = **2.67** |\\n\\n**Proposed 20% discount**\\n\\n| Line | Amount |\\n|---|---:|\\n| Discounted price (80 × 0.80) | $64.00 |\\n| Less landed COGS | -$28.00 |\\n| Less pick/pack | -$2.00 |\\n| Less merchant shipping | -$8.00 |\\n| Less payment fee (3% × $64) | -$1.92 |\\n| **Total variable cost** | **$39.92** |\\n| **Pre-ad contribution** | **$24.08** |\\n| After $30 CAC | **-$5.92** |\\n| Break-even CAC | $24.08 |\\n| Break-even ROAS | $64 / $24.08 = **2.66** |\\n| Actual ROAS at $30 CAC | $64 / $30 = **2.13** |\\n\\n**Comparison and decision math.** The 20% discount cuts pre-ad contribution by $15.52 per order ($39.60 to $24.08), a 39.2% drop. At the stated $30 CAC, full price still contributes $9.60 per order, while the discounted order loses $5.92. The discount needs CAC of $24.08 or lower just to break even; $30 CAC is $5.92 above that. Put differently, at $30 CAC the maximum price that breaks even is: 0.97P - $38 = $30 → P = $70.10. That allows only about a **$9.90 discount, or ~12.4%**, not 20%.\\n\\n**Inventory constraint.** Current stock cover is 210 / 8 = 26.25 days. Replenishment arrives in 35 days. At current velocity, there is already an approximately 8.75-day gap before the next confirmed replenishment. A discount that increases Daypack demand would widen that gap. Given the cash constraint says to protect replenishment payments and no additional inventory purchase is approved, a demand-stimulating discount is poorly timed even before ad economics.\\n\\n**Recommendation.** No: do not use the 20% discount at $30 CAC as a first-order acquisition offer. It is contribution-negative on the Daypack alone. If the $30 CAC holds, keep the Daypack at full price or use a non-discount conversion fix. If the owner approves a discount test, cap it near the break-even depth (~12% or less), protect inventory, define a holdout, and judge it on incremental orders—not platform-attributed revenue. Also fix the repeated PDP friction first: customers ask about 15-inch laptop fit and delivery window, and there is no added-to-cart email flow. Those are cheaper tests than a 20% margin giveaway. No LTV or other-product revenue is included by instruction.\\n\\n**Hypotheses vs missing facts.** Hypothesis: the discount might lift conversion, but no lift estimate was supplied. Missing: return/refund rate for DAY18, whether $30 CAC is incremental and fully loaded, owner discount approval, and SKU-level inventory lift. Those could change the recommendation only if they materially improve the discounted contribution or protect stock; on the listed numbers, the offer fails.\", \"questions\": [\"Is the $30 CAC fully loaded, incremental acquisition cost for this specific offer, and is it expected to remain at $30 when the discount changes?\", \"Has the owner approved any discount, and if so what maximum depth and inventory guardrails apply?\", \"What return/refund rate and payment-fee treatment should be used for DAY18 returns, since returns are not included in the listed item costs?\"], \"assumptions\": [\"Payment fee is 3% of net product price after discount.\", \"Free shipping means the merchant absorbs the $8 merchant shipping cost; pick/pack applies per order.\", \"The $30 CAC is ad spend to acquire one Daypack order, with no LTV, other products, returns, fixed costs, or refunds included.\", \"This is a single-unit Daypack order; multi-unit orders would change shipping, pick/pack, and payment-fee treatment.\", \"No discount is approved yet, consistent with the stated policy.\"]}"
+    },
+    "available_reference_material": "[0b43c974ae3c75ed9722b8c7] Model a discount's true economics before running it\nApplies when: Pressure-testing a proposed percentage-off sale or any price-architecture change against profit rather than top-line revenue.\n- Baseline the full-price unit: at $100 AOV and $40 all-in COGS (including shipping, fulfilment and transaction fees), gross margin is $60 (60%), break-even ROAS = 1 / 0.60 = 1.67, and at 6x target ROAS the target CPA = 100 / 6 = $16.67, leaving $43.33 contribution profit per order. Do this for every product.\n- Model the discount per unit, not per order: a 25% discount drops price per unit to $75.\n- Account for UPT rising during sales — in the worked example UPT went from 1.0 to 1.63, so AOV actually rose to about $122.\n- Compute COGS against the pre-discount retail value, not the discounted AOV: $162 retail × 40% = $65 COGS, leaving $57 gross margin (22% lower than baseline).\n- Recalculate: break-even ROAS rises to 2.22, and holding the same contribution profit requires a CAC of about $13.67 (roughly 8.97x ROAS) — about a 50% efficiency improvement over the 6x baseline.\n- Ask whether that efficiency lift is realistic before launching. The source has seen luxury brands that never discount model 70–80% efficiency lifts, and saturated always-discounting brands model only about 5%.\nCondition: The example assumes COGS covers all variable costs and is a simplified illustration, not a benchmark.\nCondition: Efficiency lift during a sale is brand-specific; it depends on how rarely the brand discounts and how saturated the market already is with its discounting.\n\n[c92a82747e36f65df9735d39] Calculate break-even ROAS and break-even CAC before any discount\nApplies when: Pricing, promotions and paid media planning: deciding whether a campaign, ad set or promotion is actually profitable.\n- Net revenue less product, fulfillment, fees and expected returns gives pre-ad contribution.\n- At $100 net revenue and $40 contribution, break-even revenue ROAS is 100/40 = 2.5 and break-even CAC is $40.\n- This break-even excludes remaining overhead and desired profit; set an appropriate lower operating CAC target.\n- Recalculate all affected costs after discounting rather than treating the old margin percentage as fixed.\n- Model any repeat-purchase allowance separately with a cash payback limit.\nCondition: Accounting gross profit and internal contribution may include different costs; state the definition.\n\n[9ea687d35127e4a7e51a1677] Model discount economics through the full waterfall before running a sale\nApplies when: Deciding whether to run a flat percentage-off promotion or how deep to discount in a store.\n- Start from the full-price waterfall: AOV $100, COGS $40 (assume all variable costs for modelling), gross margin $60, breakeven ROAS = 1 / 0.60 = 1.67, target CPA at 6x ROAS = 100/6 = $16.67, contribution profit per order = $43.33.\n- Now model the discount properly: price per unit falls to $75 on a 25% sale, but units per transaction rises (the source's example goes from 1.00 to 1.63), so AOV becomes $122.\n- Calculate COGS on the undiscounted retail value, not the discounted AOV: $162 retail × 40% = $65, so gross margin falls to $57 and breakeven ROAS rises to 2.22.\n- Work out the CAC needed to hold the same contribution profit: $57 - $43.33 = $13.67, which at $122 AOV equals a required ROAS of about 9x — a ~50% improvement over the 6x at full price.\n- Decide whether that efficiency lift is realistic for your brand using historical sale-period data, then proceed or redesign the offer.\nCondition: All figures are the source's illustrative example; the UPT lift of 1.63 and the resulting 9x requirement will not hold for every brand.\nCondition: The source reports some clients modelling 70-80% efficiency improvements when a rarely-discounting luxury brand goes on sale, and others modelling only ~5% because their audience is already trained to expect discounts.\n\n[c8b36a7d028ee03d06b6855a] Gate Offer Changes With Contribution Margin\nApplies when: Reviewing a proposed ecommerce offer change before it reaches paid traffic, email subscribers, or the storefront.\n- Establish the current unit economics for the affected product or bundle: realized selling price, discounts, product cost, packaging, pick-pack, outbound shipping subsidy, payment fees, support cost, returns, and contribution margin.\n- Model the proposed change. A bundle may lift average order value but add shipping weight; a bonus may improve conversion but consume inventory; a guarantee may add reverse-logistics exposure.\n- Estimate the conversion and order-mix change as hypotheses, then calculate the sales volume needed for the change to improve total contribution rather than only gross revenue.\n- Set up reporting before launch for purchase conversion, average order value, units per order, contribution per order, refund or return rate, fulfillment cost, and repeat purchase where relevant.\n- Run a bounded test when possible and compare against a valid baseline. Keep traffic-source mix, stock status, and seasonal demand in view.\n- Reject or revise a change that produces more orders but lower total contribution, unless the store has an explicit, tested retention or lifetime-value rationale.\nCondition: Some acquisition offers intentionally accept lower first-order margin; that is a strategic decision that requires evidence rather than an accidental outcome.\nCondition: Lifetime-value assumptions do not justify indefinite losses unless cohort behavior validates them.\n\n[b539f0c8f5a4e5cd67bf07e0] Recalculate contribution and break-even acquisition cost before discounting\nApplies when: Promotions and offer design: pressure-testing a discount before running it publicly or on paid acquisition.\n- Calculate pre-ad contribution per order as net revenue less landed product cost, fulfillment, payment fees and expected return costs, without double-counting discounts or refunds.\n- With $100 net revenue and $60 variable costs, contribution is $40; break-even CAC is $40 and revenue ROAS is 100/40 = 2.5.\n- At $70 discounted net revenue and unchanged $60 costs, contribution is $10: break-even CAC is $10 and ROAS is 70/10 = 7.\n- Compare a bundle or gift-with-purchase using actual basket costs and measured incremental conversion; a $4 gift does not guarantee another $100 sale.\n- Check clearance cash recovery separately from profitable ongoing acquisition.\nCondition: Break-even here excludes fixed overhead and target profit; set a lower operating CAC ceiling.\nCondition: Shipping, fees and returns can change with the offer; use store-specific assumptions.\n\n[2105cc48bb5d4a063d281923] Build an evergreen offer stack that lowers required efficiency\nApplies when: Designing a non-discount-led acquisition offer a store can run year-round instead of rotating promos.\n- Stack components rather than discounting: buy a 90-day supply, get 25% off; free app access with daily meal plans; a free mystery gift; and a 25% discount for life while the customer stays on subscription (double the usual 10%).\n- Tie the offer to a required action — the buyer only gets the deal if they tick the subscription box — and put urgency behind the lifetime rate.\n- Model the margin: COGS at 40% of the $253 retail value is $101, but multi-unit shipping costs less than the unit cost baked into price ($36 charged vs $17 actual for three units), pulling true delivery cost to about $82 and gross margin to $108.\n- Compare to the full-price baseline: holding the same contribution profit per order needs a CAC of about $65, so 190 / 65 ≈ 2.9x ROAS instead of 6x.\n- Keep the mystery gift out of the COGS model if it is $0–3 (sample packs, cheap drink bottles on large POs, or another brand's product supplied for co-marketing).\n- Note the retention upside: subscription-locked offers should drive materially more repeat purchase, which can justify more aggressive acquisition spend — the source suggests roughly double the repeat purchasing versus a plain discount, though that is his expectation, not a guarantee.\nCondition: The claim that this offer doubles repeat purchase is the presenter's projection for that hypothetical brand, not a measured result.\nCondition: Do not stack value indefinitely — the source warns that 'simple scales' when it comes to offers.\n\n[8723bc22dfe2e2d276d26691] Model discounts and CAC as one combined acquisition cost\nApplies when: You are choosing between a deeper discount and more ad spend to drive first purchases and want to compare them on equal footing.\n- Define the unit economics of one customer: net AOV (after discount) − COGS = contribution margin; then subtract CAC = contribution margin post-marketing.\n- Run a scenario table with identical ad spend across scenarios (source example: $100,000 each, $1.50 per click, 66,667 sessions, $200 list price, $75 COGS).\n- Vary the discount (0%, $30, $60) and set an assumed conversion-rate lift for each (source's illustrative assumptions: 1.5% → 2.2% → 3.8%).\n- Compute purchases, CAC (= ad spend ÷ purchases) and contribution margin post-marketing for each scenario.\n- In the source's example all three scenarios land at exactly $25 contribution margin post-marketing per customer because discount + CAC totalled $100 in each — the discount is not automatically worse than the ad spend.\n- Use this to decide allocation: the discount and the ad budget are two ways to spend the same acquisition dollar, and the split is a choice, not a fixed rule.\nCondition: The conversion lifts and $100 discount+CAC equality are the presenter's constructed example, not a universal result — real conversion lift depends on your price point, audience and offer.\nCondition: Discount depth can damage brand perception and reference prices over time; the source cautions against discounting indiscriminately.\n\n[8db0ffa978758999f01191a3] Test whether incremental repeat-order contribution pays for delight costs\nApplies when: Pitching premium packaging, inserts, or handwritten notes to leadership or deciding how much per order you can afford.\n- Frame the baseline: source reports average e-commerce retention around 30–40%, meaning most new customers never return, while acquisition costs keep rising.\n- Compute the CAC payback period — the time to recover acquisition cost. If you spend $20 to acquire on a $10 first-order net margin, you start at a $10 loss and profitability depends entirely on later orders.\n- Model packaging, notes, gifts and fulfillment costs against incremental repeat-order contribution. Repeat orders can still incur remarketing, incentives and service costs; do not assume zero acquisition or retention cost.\n- Compare matched or randomized cohorts over the same mature observation window, including program costs and refunds.\n- Set a per-order delight budget from payback math rather than from a packaging aesthetic preference.\nCondition: The $20/$10/$3 illustration is the source's worked example, not a validated benchmark; the retention lift it assumes is the variable to test.\nCondition: A 50% retention improvement cited in the example is hypothetical framing, not a promise.\nCondition: The source's claim that fully engaged customers spend ~23% more than transaction-focused buyers is a cited longitudinal finding, not a calculation for your store.\n\n[0afa90fbaa08a4b6aa97947e] Gift-with-purchase: nearly double contribution margin at lower break-even ROAS\nApplies when: You have a cheap secondary SKU or accessory that pairs naturally and want to push UPT without discounting price.\n- Model the base case (one $50 beach towel, $15 COGS, $8.50 shipping/3PL) at $26.50 contribution margin and a 1.89 break-even ROAS.\n- Model the offer (buy two for $100, free $4 bag, $12.50 shipping/3PL) at $53.50 contribution margin and a 1.87 break-even ROAS — margin more than doubles and required efficiency actually drops, letting you operate at worse ROAS at double the money.\n- Raise perceived gift value by selling the gift item standalone — list the bag at $60 and present the offer as $160 discounted to $100, a 40% saving rather than 'free bag'.\n- Layer the biggest customer objection into the higher-AOV tier, not the base: if research says buyers fear low towel quality, add a lifetime guarantee on the two-towel offer so the extra spend earns the reassurance.\nCondition: The mechanic collapses if nobody wants the gift — the source stresses the offer must be convincing and grounded in real customer research, not just cheap to produce.\nCondition: Add-ons like prize pools or unrelated freebies fail when the target demographic does not care; a lifetime guarantee is worthless in categories like creatine gummies where the product is simply consumed.\n\n[1247e2cd031ef943cce6d131] Treat discount and CAC as one acquisition cost pool\nApplies when: Planning next quarter's promotional calendar and ad budget, or deciding whether a deeper discount or more ad spend will grow profit for the whole store.\n- Build the scenario grid with the same ad spend in every column, then vary the discount. Source case: $100,000 spend, $1.50 per click blended, ~66,667 sessions in all scenarios, undiscounted price $200, COGS $75 ($50 product + $25 fulfillment).\n- Convert discount into a conversion-rate assumption. Source assumptions: 0% discount → 1.5% website conversion → 1,000 purchases → $100 CAC; $30 discount → 2.2% → 1,433 purchases → $70 CAC; $60 discount → 3.8% → 2,500 purchases → $40 CAC.\n- Compute contribution margin post-CAC per customer for each scenario. In the source, all three land at $25 per customer, because discount plus CAC totals $100 in every scenario: 0% + $100, $30 + $70, $60 + $40.\n- Now total it up across the whole business. Source results: scenario A $200,000 sales, $125,000 pre-marketing contribution, $25,000 post-marketing; scenario B $243,000, $136,000, $36,000; scenario C $350,000, $162,000, $63,000. The deepest-discount scenario produced the most total profit in this particular case.\n- Do not assume the deepest discount always wins. The source states it can go both ways: some brands make more money by shrinking revenue with spectacular unit economics on a smaller base of customers.\n- Reframe your planning as one pool: 'we will spend $X this year on demand creation — how do we split it between discounts and ad platforms to maximize sales and profit?' Treat the discount line and the marketing line as two forms of the same cost of acquisition.\n- Prefer attaching your best discounts to a loyalty or subscription on-ramp rather than a flash sale. The source argues flash-sale converters often will not buy without a big discount, while customers who join a loyalty or subscription program have self-selected into higher lifetime value.\n- Run this as a future-strategy split test with identical spend before committing to the deeper discount calendar.\nCondition: The 1.5%/2.2%/3.8% conversion lifts and the $1.50 CPC are assumptions illustrating the method, not measured benchmarks.\nCondition: Deep discounting can damage brand — the source explicitly says it is not advocating discounting 'like crazy'.\nCondition: The result is highly sensitive to whether the assumed conversion lift from discounting actually materializes; if it does not, the deeper-discount scenario loses money.\n\n[471fc0881800ba3b8799ea5e] Model Fixed Costs Across Bundle Tiers Before Discounting\nApplies when: Designing multi-pack or bundle tiers and deciding how deep a discount the economics can support.\n- List per tier: unit cost, total shipping and fulfilment cost, pick/pack labour, processing fees, price and resulting margin.\n- Model shipping as a fixed cost per order rather than per unit — a lightweight item such as skincare that costs about $5 to ship is roughly $5 per unit at one unit but about $1.25 per unit at four units.\n- Let that per-unit compression plus savings in pick/pack labour and processing fees set your break-even, then size the bundle discount from the operational saving rather than from an arbitrary percentage.\n- Recompute break-even CPA and target ROAS for the new offer, since a deeper bundle changes both margin and cost structure.\n- Round costs up and understate revenue conservatively when modelling, so the offer isn't validated on optimistic inputs.\nCondition: The source stresses that this requires knowing real costs in and out and recommends involving an accountant for actual P&L; the spreadsheet exercise is a quick planning tool, not bookkeeping.\nCondition: Results shown in the source (e.g. AOV moving from $93 to $135) are examples from other stores, not benchmarks for any given brand.\n\n[993ecc7a19f08496eb4203ec] Choose the discount/CAC mix that maximises total contribution margin\nApplies when: You are setting a promotional calendar or ad budget and deciding whether a bigger discount can be offset by higher volume.\n- For each scenario multiply purchases × net AOV to get net sales, and purchases × COGS for total COGS.\n- Subtract total COGS and total ad spend from net sales to get total post-marketing contribution margin.\n- In the source's worked example: no discount returns $25,000; $30 off returns $36,000; $60 off returns $63,000 on the same $100,000 ad spend.\n- Compare this against the opposite strategy: shrinking revenue on a smaller set of customers can also maximise profit if per-customer unit economics are exceptional. There is no universal winner.\n- Choose the scenario with the highest total contribution margin subject to your brand and capacity constraints.\nCondition: Source-specific example numbers; your conversion elasticity to discount depth may be much flatter or steeper.\nCondition: Deeper discounts that attract discount-only buyers can raise future churn and erode base-price demand.\n\n[6f9b8a8a1348f9e0becda6ff] Calculate lifetime gross profit before setting acquisition and offer spend\nApplies when: Setting CAC guardrails, evaluating paid-media scale, choosing bundle discounts, or deciding whether a subscription or replenishment offer can support its incentives.\n- Calculate gross profit for each product or order as revenue minus the direct incremental costs of fulfilling it. For a $10 lotion with a $2 product cost, the source’s simple illustration yields $8 gross profit before indirect overhead; in a store, include direct pick-pack, packaging, payment processing, shipping subsidy, and other variable costs when they are truly incremental and material to the order.\n- Keep gross profit separate from net profit. Net profit also absorbs indirect operating costs such as general payroll, software, rent, and other overhead.\n- Estimate lifetime gross profit by multiplying average gross profit per purchase by the average number of purchases in the customer lifespan. If average gross profit is $8 and a customer typically buys five times, estimated lifetime gross profit is $40.\n- Use the estimate to pressure-test offers: compare the proposed CAC, first-order promotion cost, free-gift cost, and retention cost with expected gross profit and the time required to receive repeat orders.\n- Maintain one documented definition across dashboards. The source calls this lifetime gross profit, whereas some teams call revenue-based figures LTV; label the metric clearly so a revenue figure is not mistakenly used as spendable margin.\nCondition: Do not assume repeat orders will occur merely because a product has replenishment potential; calculate from actual cohorts where possible.\nCondition: Lifetime gross profit is not cash available today: payment timing, inventory purchases, fulfillment timing, returns, and overhead can still constrain scale.\n\n[d5a74f7edaddf9e1113337fb] Fund bundle value from fulfillment economics\nApplies when: Pricing a multi-product routine or kit to raise first-order value without relying on a broad product-level discount.\n- Choose complementary products that form a coherent routine or solve a broader customer problem together.\n- Calculate the difference between fulfilling and shipping the products separately versus together, including packaging, pick-and-pack, shipping, and gift costs.\n- Use part or all of that operational saving to create a visible bundle advantage while protecting contribution margin.\n- Present the bundle as the better-value route relative to buying products individually, rather than discounting the hero product without context.\n- Track bundle mix, gross margin, contribution margin, inventory effects, and returns after launch.\nCondition: Savings vary substantially by product dimensions, warehouse terms, carrier pricing, and packaging. The source provides the principle but no calculation formula.\nCondition: Do not assume a bundle discount is margin-neutral until actual unit economics confirm it.\n\n[aa80d087ca61d7cd3b4c263c] Discounts vs CAC: when a discount is mathematically neutral\nApplies when: Deciding whether to run a discount or promo on a PDP, landing page or email flow, and whether the discount is actually cheaper than buying the same customers through paid ads.\n- Work out your current paid CAC per new customer (total paid marketing / new customer orders).\n- Estimate how much the discount lifts first-order conversion, and translate that lift into the implied reduction in cost per acquired customer — a discount effectively subsidises acquisition.\n- Compare the discount's dollar cost per incremental new order against the CAC you would otherwise pay for that order.\n- If the discount reduces effective acquisition cost by roughly the same dollar amount it gives away, the post-marketing contribution per order is identical — choose on the basis of which produces the volume and quality of customers you want.\n- When discounting deeply, attach the discount explicitly to an on-ramp into a loyalty or subscription program so the acquired customer has a path to recurring contribution rather than being a one-off transaction.\n- Model several discount scenarios in your financial model and pick the one that maximises total company profit at your fixed ad budget, not the one with the highest conversion.\nCondition: The neutrality claim only holds when the discount changes acquisition cost by the same dollar amount; larger discounts still reduce margin.\nCondition: The source explicitly warns against using deep discounts for standard one-off flash sales — they should be tied to a loyalty/subscription on-ramp.\nCondition: Conversion lift estimates are assumptions until tested.\n\n[4478e71195a63b87c08bb505] Run 30/60/90/180/365-day contribution math before deciding how much to pay per customer\nApplies when: Setting target CPA, deciding whether to accept near break-even or loss-making first orders to win market share in a repeat-purchase category.\n- Calculate contribution margin per order: price minus COGS minus shipping minus payment fees minus any variable fulfillment cost.\n- Build cohort windows at 30, 60, 90, 180 and 365 days and compute cumulative contribution per customer across each window, including repeat purchases, subscription revenue and upsells.\n- Define break-even CPA as the point where cumulative contribution equals acquisition cost over your chosen window.\n- If acquisition cost stays at or below break-even across the window, you can scale spend aggressively; if it exceeds it, the customer is not worth enough yet.\n- Treat the customer's worth as something you can increase: raise AOV, add upsells, improve repurchase and subscription rates rather than only cutting acquisition cost.\n- Recheck the model after any pricing, COGS or AOV change before using it to justify a bigger budget.\nCondition: Long-window models assume retention and repurchase rates hold; new competitors or product changes can break that assumption.\nCondition: The source's 'never went below break even' outcome is a case result for one brand, not a guarantee for your category."
+  },
+  "system_prompt_sha256": "037bf431e47512102454c9f08e72091bf1161db527b580244042113b2bbdff32"
+}

@@ -1,0 +1,333 @@
+{
+  "request_id": "be4ad77783dcf5329f104c8d2ebfb581a0bb4f26c786abc3056385cbc683b6f6",
+  "provider": "deepseek",
+  "model": "deepseek-flash",
+  "effort": "none",
+  "completion_limit": 16384,
+  "usage": {
+    "prompt_tokens": 4422,
+    "completion_tokens": 3885,
+    "total_tokens": 8307,
+    "prompt_tokens_details": {
+      "cached_tokens": 512
+    },
+    "prompt_cache_hit_tokens": 512,
+    "prompt_cache_miss_tokens": 3910
+  },
+  "booked_cost_usd": 0.0059886,
+  "seconds": 19.8,
+  "finish_reason": "stop",
+  "output": {
+    "cards": [
+      {
+        "title": "Welcome Email Series with Unique Per-Subscriber Coupon Codes",
+        "summary": "Build a multi-email welcome automation where each subscriber receives a personally generated single-use discount code.",
+        "use_when": "You are setting up the opt-in to first-purchase email flow and want a personal, trackable discount instead of one shared public code.",
+        "steps": [
+          "Create the opt-in form on the site (name + email) and connect it to an email platform automation workflow.",
+          "In the workflow builder, add an email step and insert the 'unique discount code' element so the platform generates a one-code-per-contact coupon, not a static code.",
+          "Set the coupon expiry once in the workflow settings; it is calculated automatically per recipient, so you should NOT adjust the expiry date per individual email.",
+          "Personalize the copy with the subscriber's first name, and include a redeemable copy button plus a link that applies the code at cart/checkout.",
+          "Add a second email with a different angle or urgency, then a third, so the sequence continues beyond the first message (e.g., day 1, then day 4).",
+          "Remove any leftover block or element not needed in the follow-up emails before publishing.",
+          "Publish and finish the workflow, then test the full path: sign up with a real or test email, receive the code, add a product, apply the coupon at cart, and check out.",
+          "Verify in the store's coupon list that a unique coupon was created and is restricted to a single use for that contact."
+        ],
+        "caveats": [
+          "The unique discount code feature is platform-specific; verify the current element name and location in your email tool's interface.",
+          "Confirm that coupon usage limits and expiry are actually enforced by your store coupon settings after the code is generated."
+        ],
+        "tags": [
+          "store-setup",
+          "email-marketing",
+          "automation",
+          "retention",
+          "discounting",
+          "customer-research"
+        ]
+      },
+      {
+        "title": "Split Testing Email Subject Lines and Content to Lift Revenue",
+        "summary": "Use drag-and-drop A/B split testing on emails to find subject lines and content that increase opens and sales.",
+        "use_when": "You have an established email flow or campaign and want to improve open rates or revenue per send.",
+        "steps": [
+          "In your email platform's workflow or campaign builder, locate the split/A-B testing element and drag it into the flow.",
+          "Duplicate the email into two branches and change one variable at a time, e.g., change only the subject line to 'last chance' vs. the original.",
+          "Assign a portion of the list to each variant so results are comparable rather than sending different messages sequentially.",
+          "Publish and let the test run long enough to collect meaningful data before declaring a winner (two-day tests are too short for strong conclusions).",
+          "Compare open rate first, then clicks and sales, and keep the winning version as the standard for that send.",
+          "Repeat tests on other emails in the sequence so improvements accumulate across the whole flow."
+        ],
+        "caveats": [
+          "The presenter claims A/B testing can 'increase revenue big time' — treat that as a general argument for testing, not a guaranteed result.",
+          "Short tests (e.g., a day) give unreliable winners; avoid acting on tiny sample sizes."
+        ],
+        "tags": [
+          "store-setup",
+          "email-marketing",
+          "experiment-design",
+          "conversion-optimization",
+          "retention"
+        ]
+      },
+      {
+        "title": "Abandoned Cart Email Triggered by Cart Inactivity",
+        "summary": "Set up an automation that emails shoppers who add an item to cart but do not purchase within a defined inactivity window.",
+        "use_when": "You want to recover checkout/cart abandonment without manual outreach.",
+        "steps": [
+          "Create a new workflow in your email platform and select the abandoned cart trigger.",
+          "Set the trigger to fire on cart inactivity after a realistic window (the tutorial uses one hour in production; one minute was used only for demo purposes).",
+          "Build the email with a subject line that creates urgency (e.g., 'items in your cart are selling out fast').",
+          "Dynamically insert the actual cart contents so the recipient sees the specific product(s) and a link back to buy.",
+          "Activate the workflow so it runs automatically as soon as shoppers opt in and leave items in the cart.",
+          "Test end-to-end: add a product, stop activity, confirm the email arrives and the product link resolves correctly."
+        ],
+        "caveats": [
+          "The one-minute delay was only for demonstration — production delays should reflect real shopping behavior, typically at least one hour.",
+          "This flow depends on the visitor being identifiable (e.g., opted in or logged in) for the email address to be captured."
+        ],
+        "tags": [
+          "store-setup",
+          "retention",
+          "email-marketing",
+          "automation",
+          "cart",
+          "checkout"
+        ]
+      },
+      {
+        "title": "Behavioral and Value-Based Subscriber Segments Feeding Targeted Automations",
+        "summary": "Create segments from email engagement, purchase behavior, region, and value, then trigger tailored workflows when contacts enter a segment.",
+        "use_when": "You want to send different offers to different customer groups automatically rather than one list-wide campaign.",
+        "steps": [
+          "Go to the audience segments area and use AI creation or the pre-built segment templates to define groups.",
+          "Build segments such as: active email subscribers, birthdays, inactive subscribers (no opens or purchases across recent weeks/months or last ~20 emails), geographically grouped (e.g., Europe), recent buyers, and high-value subscribers (active openers who purchase).",
+          "Create a new workflow from scratch and select 'entered a segment' as the trigger, then choose the specific segment.",
+          "Add an appropriate delay (e.g., 10 days for a high-value segment) before sending.",
+          "Send a segment-specific message, e.g., a 15% extra discount for three days to customers who spent over $1,000, or a 'we miss you' offer (e.g., 50% off for two days) to inactive subscribers.",
+          "Activate each workflow so offers fire automatically as contacts qualify for or move between segments.",
+          "Review segment membership periodically to ensure the criteria still match your intent."
+        ],
+        "caveats": [
+          "The 'bought more than $1,000' and discount levels (15%, 50%) are illustrative examples from the tutorial, not recommended thresholds.",
+          "Confirm the actual segment criteria options in your email platform's interface before building, as names and logic may change."
+        ],
+        "tags": [
+          "store-setup",
+          "retention",
+          "email-marketing",
+          "automation",
+          "segmentation",
+          "customer-research",
+          "discounting"
+        ]
+      },
+      {
+        "title": "Custom Branded Order Confirmation Email Replacing the Default",
+        "summary": "Create a styled order confirmation workflow so customers receive a better-looking confirmation than the default store email.",
+        "use_when": "Your default WooCommerce order confirmation looks generic and you want a branded post-purchase touchpoint.",
+        "steps": [
+          "In your email platform, create a new workflow and select the order confirmation trigger (search 'confirmation' if needed).",
+          "Edit the email content and maintain consistent styling, including button settings (e.g., primary button color/style) to match your brand.",
+          "Finish editing and start the workflow.",
+          "Test by placing a real or test order through checkout, and confirm that the customer receives the branded email (you as the shop owner will still see the WooCommerce order notification).",
+          "Decide whether to use the platform's version instead of the default store confirmation going forward."
+        ],
+        "caveats": [
+          "The default WooCommerce confirmation still fires by default; manage messaging to avoid customers receiving confusing duplicates if both are active.",
+          "Verify current trigger names and settings in the email platform, as interfaces change."
+        ],
+        "tags": [
+          "store-setup",
+          "email-marketing",
+          "automation",
+          "retention",
+          "fulfillment",
+          "checkout"
+        ]
+      },
+      {
+        "title": "Revenue Attribution: Separating Platform-Driven Sales from Total Store Revenue",
+        "summary": "Use your email/automation platform's tracking to see how much revenue is directly driven by automations versus the store as a whole.",
+        "use_when": "You want to judge whether your email automations and opt-in offers are actually driving revenue before investing further.",
+        "steps": [
+          "Connect your email platform to your store so it can track sales originating from its automations (the tutorial shows the platform distinguishing WooCommerce-driven vs. platform-driven sales).",
+          "In the platform dashboard, compare total store revenue against the revenue attributed to automations.",
+          "Use campaign-level reporting to see how many sales came from a specific broadcast to the whole list.",
+          "Use this split to decide where to invest: more automation, better flows, or list-building campaigns.",
+          "Re-measure after each significant change to see whether attributed revenue moves."
+        ],
+        "caveats": [
+          "Attribution logic is platform-dependent and can overlap; treat platform-attributed revenue as directional, not exact.",
+          "The tutorial's figures ($1,991 total, $900 from automations) are one example, not a benchmark."
+        ],
+        "tags": [
+          "store-setup",
+          "measurement",
+          "email-marketing",
+          "automation",
+          "analytics"
+        ]
+      },
+      {
+        "title": "Swap Shared Discount Codes for Unique, Single-Use, Time-Limited Codes",
+        "summary": "Use per-contact, expiry-limited, single-use coupon codes so discounts can be tracked to individuals and cannot be reused.",
+        "use_when": "You are designing an opt-in incentive and want protection against code sharing and clearer attribution.",
+        "steps": [
+          "Use an automation element that generates a unique coupon code per subscriber rather than publishing one universal discount code.",
+          "Set an expiry window (the tutorial used seven days) so urgency is created and liability is limited.",
+          "Enforce single use so the code cannot be redeemed again once used.",
+          "Confirm in your store's coupon list that the code appears, is limited to one use, and carries the intended expiry date.",
+          "Deliver the code so the shopper can copy it and apply it at cart.",
+          "Test applying the code yourself, then verify that it is marked used and cannot be reused."
+        ],
+        "caveats": [
+          "Confirm your store's coupon settings actually enforce single-use and expiry after the platform generates the code.",
+          "Manage the operational burden of many coupon records as your list grows."
+        ],
+        "tags": [
+          "store-setup",
+          "discounting",
+          "email-marketing",
+          "automation",
+          "measurement"
+        ]
+      },
+      {
+        "title": "Editing Homepage Content, Product Blocks and Prices in the Site Editor",
+        "summary": "Directly edit homepage text, images, product references, prices and styling in the WordPress block editor by clicking and adjusting right-side settings.",
+        "use_when": "You need to update your store homepage hero, featured product blocks, or promotional text without a developer.",
+        "steps": [
+          "Open the page for editing and triple-click (or click into) a text block to change copy directly.",
+          "For a button: open the style tab to set hover behavior (e.g., darken or scale) and the borders/shadows settings to adjust border radius; in the details panel, set the link and type the target product/page name so the editor auto-suggests matching products, pages and posts.",
+          "For a featured product image: select the image block, choose select image, and replace it with the product photo.",
+          "Update the price text manually to the new value (e.g., $90.99); if the text is too large, adjust size under typography.",
+          "Repeat for a second featured product block the same way.",
+          "For icons, click the icon block and search for a replacement icon.",
+          "Dynamic sections like 'Arrivals' are auto-fetched from the store, so verify they reflect the intended products rather than editing them by hand.",
+          "For background images: open style > background and choose a new image; for text color, open style > typography and set the color (e.g., white) per text block.",
+          "To add new page areas, click and add a block (or type '/' to pick a block type)."
+        ],
+        "caveats": [
+          "Manually edited prices can drift out of sync with actual product prices — update both when you change pricing.",
+          "Exact block names and panels vary by theme/editor version; verify against your current WordPress editor."
+        ],
+        "tags": [
+          "store-setup",
+          "product-page",
+          "merchandising",
+          "landing-page",
+          "wordpress",
+          "content"
+        ]
+      },
+      {
+        "title": "Making the Header, Menu and Off-Canvas Mobile View Responsive",
+        "summary": "Use the editor's tablet/mobile preview to fix header, menu, logo and icon styling so the site works on all devices.",
+        "use_when": "Your site looks broken on tablet or mobile and you need to correct layout and styling for smaller screens.",
+        "steps": [
+          "Open the header/footer builder and switch to the tablet/mobile view.",
+          "Check how elements render on the smaller breakpoint and identify what looks wrong or misaligned.",
+          "In the design settings, set the background (e.g., light), swap the logo for the appropriate version, and confirm it updates.",
+          "Select the main menu, go to design, set text color (e.g., dark) and the hover color (e.g., orange); adjust fonts as needed.",
+          "Add or adjust the location/HTML block with matching dark-text and orange-hover styling.",
+          "Switch to mobile view, open the off-canvas menu area, and under design set the icon color (e.g., dark) so the X/close control is visible.",
+          "Publish and re-check both tablet and mobile to confirm the header, menu and off-canvas behavior are correct."
+        ],
+        "caveats": [
+          "The specific settings paths depend on your builder/theme; verify the current options in your editor.",
+          "Always preview on desktop, tablet and mobile after changes before publishing."
+        ],
+        "tags": [
+          "store-setup",
+          "landing-page",
+          "conversion-optimization",
+          "wordpress",
+          "mobile"
+        ]
+      },
+      {
+        "title": "Optional Channels: Texts and Push Notifications Alongside Email",
+        "summary": "Extend your automation workflows to SMS and push notifications when you have the subscriber's contact details.",
+        "use_when": "Your list includes phone numbers or app/device access and you want to reach people beyond the inbox.",
+        "steps": [
+          "If you collect phone numbers, add an SMS step in the workflow (additional to the email steps).",
+          "If push notifications are available, add a push step so subscribers see the message on their device.",
+          "Use timing/delay controls so channels do not fire simultaneously and overwhelm the contact.",
+          "Use tags for context so a step only sends when a contact has a specific tag (e.g., only send this offer to a particular group).",
+          "Test each channel separately to confirm delivery before activating."
+        ],
+        "caveats": [
+          "SMS requires collecting phone numbers and appropriate consent; only send where you have permission.",
+          "Channel availability depends on your platform and integrations — verify current support."
+        ],
+        "tags": [
+          "store-setup",
+          "retention",
+          "email-marketing",
+          "automation",
+          "sms"
+        ]
+      },
+      {
+        "title": "Using Tags to Conditionally Gate Automation Emails",
+        "summary": "Apply tags to contacts and use them as conditions so emails only send to appropriately grouped people.",
+        "use_when": "You want certain workflow emails to fire only for a subsection of subscribers (e.g., a specific offer or cohort).",
+        "steps": [
+          "Assign meaningful tags to contacts based on behavior or source (e.g., a tag identifying a specific interest or purchase context).",
+          "In the workflow, add a condition/tag step that checks whether the contact has the required tag.",
+          "Place the conditional email after the tag check so only tagged contacts proceed.",
+          "Use delays before or after the tag condition to control timing.",
+          "Test with a tagged and an untagged contact to confirm the email only reaches the intended group."
+        ],
+        "caveats": [
+          "Tag hygiene matters — a bloated or inconsistent tag scheme causes misfires.",
+          "Conditional logic naming and placement differ by platform; verify the current interface."
+        ],
+        "tags": [
+          "store-setup",
+          "email-marketing",
+          "automation",
+          "segmentation",
+          "retention"
+        ]
+      },
+      {
+        "title": "Prioritizing Your Next Store Improvements: SEO and Email First",
+        "summary": "The presenter ranks learning SEO (via a rank-tracking plugin) and email marketing as the highest-value follow-on skills for a WooCommerce store.",
+        "use_when": "You have a functioning store and are deciding which growth skill or project to invest in next.",
+        "steps": [
+          "If your store lacks organic discovery, prioritize learning search optimization and using a rank-tracking plugin to be found in search results.",
+          "If you already have traffic but weak repeat revenue, prioritize deepening your email list and automation setup.",
+          "Treat affiliate marketing as an optional, separate monetization path (promoting other people's products) rather than a core store requirement.",
+          "Pick one priority at a time and implement it fully before moving on."
+        ],
+        "caveats": [
+          "This is the presenter's stated opinion on prioritization, not a proven universal rule; your store's bottleneck should drive the choice.",
+          "The presenter's affiliate earnings figure is a personal example, not a promise of results."
+        ],
+        "tags": [
+          "store-setup",
+          "retention",
+          "acquisition",
+          "seo",
+          "email-marketing"
+        ]
+      }
+    ]
+  },
+  "raw_content": "{\n  \"cards\": [\n    {\n      \"title\": \"Welcome Email Series with Unique Per-Subscriber Coupon Codes\",\n      \"summary\": \"Build a multi-email welcome automation where each subscriber receives a personally generated single-use discount code.\",\n      \"use_when\": \"You are setting up the opt-in to first-purchase email flow and want a personal, trackable discount instead of one shared public code.\",\n      \"steps\": [\n        \"Create the opt-in form on the site (name + email) and connect it to an email platform automation workflow.\",\n        \"In the workflow builder, add an email step and insert the 'unique discount code' element so the platform generates a one-code-per-contact coupon, not a static code.\",\n        \"Set the coupon expiry once in the workflow settings; it is calculated automatically per recipient, so you should NOT adjust the expiry date per individual email.\",\n        \"Personalize the copy with the subscriber's first name, and include a redeemable copy button plus a link that applies the code at cart/checkout.\",\n        \"Add a second email with a different angle or urgency, then a third, so the sequence continues beyond the first message (e.g., day 1, then day 4).\",\n        \"Remove any leftover block or element not needed in the follow-up emails before publishing.\",\n        \"Publish and finish the workflow, then test the full path: sign up with a real or test email, receive the code, add a product, apply the coupon at cart, and check out.\",\n        \"Verify in the store's coupon list that a unique coupon was created and is restricted to a single use for that contact.\"\n      ],\n      \"caveats\": [\n        \"The unique discount code feature is platform-specific; verify the current element name and location in your email tool's interface.\",\n        \"Confirm that coupon usage limits and expiry are actually enforced by your store coupon settings after the code is generated.\"\n      ],\n      \"tags\": [\"store-setup\", \"email-marketing\", \"automation\", \"retention\", \"discounting\", \"customer-research\"]\n    },\n    {\n      \"title\": \"Split Testing Email Subject Lines and Content to Lift Revenue\",\n      \"summary\": \"Use drag-and-drop A/B split testing on emails to find subject lines and content that increase opens and sales.\",\n      \"use_when\": \"You have an established email flow or campaign and want to improve open rates or revenue per send.\",\n      \"steps\": [\n        \"In your email platform's workflow or campaign builder, locate the split/A-B testing element and drag it into the flow.\",\n        \"Duplicate the email into two branches and change one variable at a time, e.g., change only the subject line to 'last chance' vs. the original.\",\n        \"Assign a portion of the list to each variant so results are comparable rather than sending different messages sequentially.\",\n        \"Publish and let the test run long enough to collect meaningful data before declaring a winner (two-day tests are too short for strong conclusions).\",\n        \"Compare open rate first, then clicks and sales, and keep the winning version as the standard for that send.\",\n        \"Repeat tests on other emails in the sequence so improvements accumulate across the whole flow.\"\n      ],\n      \"caveats\": [\n        \"The presenter claims A/B testing can 'increase revenue big time' — treat that as a general argument for testing, not a guaranteed result.\",\n        \"Short tests (e.g., a day) give unreliable winners; avoid acting on tiny sample sizes.\"\n      ],\n      \"tags\": [\"store-setup\", \"email-marketing\", \"experiment-design\", \"conversion-optimization\", \"retention\"]\n    },\n    {\n      \"title\": \"Abandoned Cart Email Triggered by Cart Inactivity\",\n      \"summary\": \"Set up an automation that emails shoppers who add an item to cart but do not purchase within a defined inactivity window.\",\n      \"use_when\": \"You want to recover checkout/cart abandonment without manual outreach.\",\n      \"steps\": [\n        \"Create a new workflow in your email platform and select the abandoned cart trigger.\",\n        \"Set the trigger to fire on cart inactivity after a realistic window (the tutorial uses one hour in production; one minute was used only for demo purposes).\",\n        \"Build the email with a subject line that creates urgency (e.g., 'items in your cart are selling out fast').\",\n        \"Dynamically insert the actual cart contents so the recipient sees the specific product(s) and a link back to buy.\",\n        \"Activate the workflow so it runs automatically as soon as shoppers opt in and leave items in the cart.\",\n        \"Test end-to-end: add a product, stop activity, confirm the email arrives and the product link resolves correctly.\"\n      ],\n      \"caveats\": [\n        \"The one-minute delay was only for demonstration — production delays should reflect real shopping behavior, typically at least one hour.\",\n        \"This flow depends on the visitor being identifiable (e.g., opted in or logged in) for the email address to be captured.\"\n      ],\n      \"tags\": [\"store-setup\", \"retention\", \"email-marketing\", \"automation\", \"cart\", \"checkout\"]\n    },\n    {\n      \"title\": \"Behavioral and Value-Based Subscriber Segments Feeding Targeted Automations\",\n      \"summary\": \"Create segments from email engagement, purchase behavior, region, and value, then trigger tailored workflows when contacts enter a segment.\",\n      \"use_when\": \"You want to send different offers to different customer groups automatically rather than one list-wide campaign.\",\n      \"steps\": [\n        \"Go to the audience segments area and use AI creation or the pre-built segment templates to define groups.\",\n        \"Build segments such as: active email subscribers, birthdays, inactive subscribers (no opens or purchases across recent weeks/months or last ~20 emails), geographically grouped (e.g., Europe), recent buyers, and high-value subscribers (active openers who purchase).\",\n        \"Create a new workflow from scratch and select 'entered a segment' as the trigger, then choose the specific segment.\",\n        \"Add an appropriate delay (e.g., 10 days for a high-value segment) before sending.\",\n        \"Send a segment-specific message, e.g., a 15% extra discount for three days to customers who spent over $1,000, or a 'we miss you' offer (e.g., 50% off for two days) to inactive subscribers.\",\n        \"Activate each workflow so offers fire automatically as contacts qualify for or move between segments.\",\n        \"Review segment membership periodically to ensure the criteria still match your intent.\"\n      ],\n      \"caveats\": [\n        \"The 'bought more than $1,000' and discount levels (15%, 50%) are illustrative examples from the tutorial, not recommended thresholds.\",\n        \"Confirm the actual segment criteria options in your email platform's interface before building, as names and logic may change.\"\n      ],\n      \"tags\": [\"store-setup\", \"retention\", \"email-marketing\", \"automation\", \"segmentation\", \"customer-research\", \"discounting\"]\n    },\n    {\n      \"title\": \"Custom Branded Order Confirmation Email Replacing the Default\",\n      \"summary\": \"Create a styled order confirmation workflow so customers receive a better-looking confirmation than the default store email.\",\n      \"use_when\": \"Your default WooCommerce order confirmation looks generic and you want a branded post-purchase touchpoint.\",\n      \"steps\": [\n        \"In your email platform, create a new workflow and select the order confirmation trigger (search 'confirmation' if needed).\",\n        \"Edit the email content and maintain consistent styling, including button settings (e.g., primary button color/style) to match your brand.\",\n        \"Finish editing and start the workflow.\",\n        \"Test by placing a real or test order through checkout, and confirm that the customer receives the branded email (you as the shop owner will still see the WooCommerce order notification).\",\n        \"Decide whether to use the platform's version instead of the default store confirmation going forward.\"\n      ],\n      \"caveats\": [\n        \"The default WooCommerce confirmation still fires by default; manage messaging to avoid customers receiving confusing duplicates if both are active.\",\n        \"Verify current trigger names and settings in the email platform, as interfaces change.\"\n      ],\n      \"tags\": [\"store-setup\", \"email-marketing\", \"automation\", \"retention\", \"fulfillment\", \"checkout\"]\n    },\n    {\n      \"title\": \"Revenue Attribution: Separating Platform-Driven Sales from Total Store Revenue\",\n      \"summary\": \"Use your email/automation platform's tracking to see how much revenue is directly driven by automations versus the store as a whole.\",\n      \"use_when\": \"You want to judge whether your email automations and opt-in offers are actually driving revenue before investing further.\",\n      \"steps\": [\n        \"Connect your email platform to your store so it can track sales originating from its automations (the tutorial shows the platform distinguishing WooCommerce-driven vs. platform-driven sales).\",\n        \"In the platform dashboard, compare total store revenue against the revenue attributed to automations.\",\n        \"Use campaign-level reporting to see how many sales came from a specific broadcast to the whole list.\",\n        \"Use this split to decide where to invest: more automation, better flows, or list-building campaigns.\",\n        \"Re-measure after each significant change to see whether attributed revenue moves.\"\n      ],\n      \"caveats\": [\n        \"Attribution logic is platform-dependent and can overlap; treat platform-attributed revenue as directional, not exact.\",\n        \"The tutorial's figures ($1,991 total, $900 from automations) are one example, not a benchmark.\"\n      ],\n      \"tags\": [\"store-setup\", \"measurement\", \"email-marketing\", \"automation\", \"analytics\"]\n    },\n    {\n      \"title\": \"Swap Shared Discount Codes for Unique, Single-Use, Time-Limited Codes\",\n      \"summary\": \"Use per-contact, expiry-limited, single-use coupon codes so discounts can be tracked to individuals and cannot be reused.\",\n      \"use_when\": \"You are designing an opt-in incentive and want protection against code sharing and clearer attribution.\",\n      \"steps\": [\n        \"Use an automation element that generates a unique coupon code per subscriber rather than publishing one universal discount code.\",\n        \"Set an expiry window (the tutorial used seven days) so urgency is created and liability is limited.\",\n        \"Enforce single use so the code cannot be redeemed again once used.\",\n        \"Confirm in your store's coupon list that the code appears, is limited to one use, and carries the intended expiry date.\",\n        \"Deliver the code so the shopper can copy it and apply it at cart.\",\n        \"Test applying the code yourself, then verify that it is marked used and cannot be reused.\"\n      ],\n      \"caveats\": [\n        \"Confirm your store's coupon settings actually enforce single-use and expiry after the platform generates the code.\",\n        \"Manage the operational burden of many coupon records as your list grows.\"\n      ],\n      \"tags\": [\"store-setup\", \"discounting\", \"email-marketing\", \"automation\", \"measurement\"]\n    },\n    {\n      \"title\": \"Editing Homepage Content, Product Blocks and Prices in the Site Editor\",\n      \"summary\": \"Directly edit homepage text, images, product references, prices and styling in the WordPress block editor by clicking and adjusting right-side settings.\",\n      \"use_when\": \"You need to update your store homepage hero, featured product blocks, or promotional text without a developer.\",\n      \"steps\": [\n        \"Open the page for editing and triple-click (or click into) a text block to change copy directly.\",\n        \"For a button: open the style tab to set hover behavior (e.g., darken or scale) and the borders/shadows settings to adjust border radius; in the details panel, set the link and type the target product/page name so the editor auto-suggests matching products, pages and posts.\",\n        \"For a featured product image: select the image block, choose select image, and replace it with the product photo.\",\n        \"Update the price text manually to the new value (e.g., $90.99); if the text is too large, adjust size under typography.\",\n        \"Repeat for a second featured product block the same way.\",\n        \"For icons, click the icon block and search for a replacement icon.\",\n        \"Dynamic sections like 'Arrivals' are auto-fetched from the store, so verify they reflect the intended products rather than editing them by hand.\",\n        \"For background images: open style > background and choose a new image; for text color, open style > typography and set the color (e.g., white) per text block.\",\n        \"To add new page areas, click and add a block (or type '/' to pick a block type).\"\n      ],\n      \"caveats\": [\n        \"Manually edited prices can drift out of sync with actual product prices — update both when you change pricing.\",\n        \"Exact block names and panels vary by theme/editor version; verify against your current WordPress editor.\"\n      ],\n      \"tags\": [\"store-setup\", \"product-page\", \"merchandising\", \"landing-page\", \"wordpress\", \"content\"]\n    },\n    {\n      \"title\": \"Making the Header, Menu and Off-Canvas Mobile View Responsive\",\n      \"summary\": \"Use the editor's tablet/mobile preview to fix header, menu, logo and icon styling so the site works on all devices.\",\n      \"use_when\": \"Your site looks broken on tablet or mobile and you need to correct layout and styling for smaller screens.\",\n      \"steps\": [\n        \"Open the header/footer builder and switch to the tablet/mobile view.\",\n        \"Check how elements render on the smaller breakpoint and identify what looks wrong or misaligned.\",\n        \"In the design settings, set the background (e.g., light), swap the logo for the appropriate version, and confirm it updates.\",\n        \"Select the main menu, go to design, set text color (e.g., dark) and the hover color (e.g., orange); adjust fonts as needed.\",\n        \"Add or adjust the location/HTML block with matching dark-text and orange-hover styling.\",\n        \"Switch to mobile view, open the off-canvas menu area, and under design set the icon color (e.g., dark) so the X/close control is visible.\",\n        \"Publish and re-check both tablet and mobile to confirm the header, menu and off-canvas behavior are correct.\"\n      ],\n      \"caveats\": [\n        \"The specific settings paths depend on your builder/theme; verify the current options in your editor.\",\n        \"Always preview on desktop, tablet and mobile after changes before publishing.\"\n      ],\n      \"tags\": [\"store-setup\", \"landing-page\", \"conversion-optimization\", \"wordpress\", \"mobile\"]\n    },\n    {\n      \"title\": \"Optional Channels: Texts and Push Notifications Alongside Email\",\n      \"summary\": \"Extend your automation workflows to SMS and push notifications when you have the subscriber's contact details.\",\n      \"use_when\": \"Your list includes phone numbers or app/device access and you want to reach people beyond the inbox.\",\n      \"steps\": [\n        \"If you collect phone numbers, add an SMS step in the workflow (additional to the email steps).\",\n        \"If push notifications are available, add a push step so subscribers see the message on their device.\",\n        \"Use timing/delay controls so channels do not fire simultaneously and overwhelm the contact.\",\n        \"Use tags for context so a step only sends when a contact has a specific tag (e.g., only send this offer to a particular group).\",\n        \"Test each channel separately to confirm delivery before activating.\"\n      ],\n      \"caveats\": [\n        \"SMS requires collecting phone numbers and appropriate consent; only send where you have permission.\",\n        \"Channel availability depends on your platform and integrations — verify current support.\"\n      ],\n      \"tags\": [\"store-setup\", \"retention\", \"email-marketing\", \"automation\", \"sms\"]\n    },\n    {\n      \"title\": \"Using Tags to Conditionally Gate Automation Emails\",\n      \"summary\": \"Apply tags to contacts and use them as conditions so emails only send to appropriately grouped people.\",\n      \"use_when\": \"You want certain workflow emails to fire only for a subsection of subscribers (e.g., a specific offer or cohort).\",\n      \"steps\": [\n        \"Assign meaningful tags to contacts based on behavior or source (e.g., a tag identifying a specific interest or purchase context).\",\n        \"In the workflow, add a condition/tag step that checks whether the contact has the required tag.\",\n        \"Place the conditional email after the tag check so only tagged contacts proceed.\",\n        \"Use delays before or after the tag condition to control timing.\",\n        \"Test with a tagged and an untagged contact to confirm the email only reaches the intended group.\"\n      ],\n      \"caveats\": [\n        \"Tag hygiene matters — a bloated or inconsistent tag scheme causes misfires.\",\n        \"Conditional logic naming and placement differ by platform; verify the current interface.\"\n      ],\n      \"tags\": [\"store-setup\", \"email-marketing\", \"automation\", \"segmentation\", \"retention\"]\n    },\n    {\n      \"title\": \"Prioritizing Your Next Store Improvements: SEO and Email First\",\n      \"summary\": \"The presenter ranks learning SEO (via a rank-tracking plugin) and email marketing as the highest-value follow-on skills for a WooCommerce store.\",\n      \"use_when\": \"You have a functioning store and are deciding which growth skill or project to invest in next.\",\n      \"steps\": [\n        \"If your store lacks organic discovery, prioritize learning search optimization and using a rank-tracking plugin to be found in search results.\",\n        \"If you already have traffic but weak repeat revenue, prioritize deepening your email list and automation setup.\",\n        \"Treat affiliate marketing as an optional, separate monetization path (promoting other people's products) rather than a core store requirement.\",\n        \"Pick one priority at a time and implement it fully before moving on.\"\n      ],\n      \"caveats\": [\n        \"This is the presenter's stated opinion on prioritization, not a proven universal rule; your store's bottleneck should drive the choice.\",\n        \"The presenter's affiliate earnings figure is a personal example, not a promise of results.\"\n      ],\n      \"tags\": [\"store-setup\", \"retention\", \"acquisition\", \"seo\", \"email-marketing\"]\n    }\n  ]\n}",
+  "input": {
+    "source_id": "1Eo73m6KopdFsRGjBWkSbOtUGiM8oYMA0",
+    "source_sha256": "977b03cc5e612499e6fa8d18ac723cb19a7d181c37441e883347893daf2e3aee",
+    "source_name": "How To Start an Online Store That Runs on Autopilot (WooCommerce Tutorial).docx",
+    "folder": "/05-SET-store-setup",
+    "domain": "store-setup",
+    "section": 3,
+    "section_count": 4,
+    "text": " need to save everything, finish the workflow. And now I get rid of this again. I go to add elements and I go for this unique discount code. Don't take a look at this date because let me go back or click over here again. If I go to expiry date, we have set it once already. We don't have to adjust this because automatically this will be calculated the right way. So don't take a look at this date. This will all be perfectly fine and I'll show you in a minute that we don't have to adjust this per email. We have to set it up once. I've done that. So right now I leave it for what it is. Again, I can end with shopping, kind, regards, 30. Also here, let's take a look at the button, finish editing, close it, awesome. Now we have the second email that's created. So after one day, and then look at this, after four days. So over here, one more time, I edit the content. Of course, I should get rid of this in the second email, get rid of this area, add element, and go for this one again, button, finish editing, super powerful. What you also can do, If you want to, you can send text messages. If you get the phone number from people, you can add push notifications so people will see it over here.\n\n You can have a delay, we use that. Then we can have tags for context, so we can say only when people have this certain tag, then this email will be sent. Super powerful. Split testing and A -B testing. This can increase your revenue big time. The great thing is you can always do split tests and always do A -B testings. What is it? You drag it over here, you drag one email over here, you duplicate it. the other one over here, and then you can change the content and then you can see which one is performing better. How many emails are open? So over here, I can give it a different title. So I can say, say last chance and see if that's opening, helping people to open more emails. If you want to know more about split testing and A -B testing, go to ferdy . com, search for OmniSend, click over here and then watch this tutorial. And if you go to the website itself or to YouTube itself, you can click over here and then you can go directly to A -B testing and split testing. So I bring this back on top, remove. Everything is normal again. Let me publish the changes, finish the workflow. So now ladies and gentlemen, when I go to the website, so far, I fill in my name, George, with this email address. I click on get 10 % off. Thanks for signing up. I go to my Gmail account and it says Ferdy from SofaSupa. Here's your discount, George. So it's personal. Welcome aboard. Welcome abroad, George. And here, discount is for me. I can copy. And here, this unique discount is for me. I can redeem the discount. When I go to the store for this one, I add it to the cart. I view the cart. Look at this. Let me get rid of this one. If I paste this code, It's working. I get 10 % off and if I go to the backend, to WooCommerce, coupons, what I see, there's a unique coupon code created by OmniSend. You can use it one time for this specific person and the extra date is March the 13th, which is in seven days. So this is working. When I use this, it will be used and it cannot be used again. So for every person that signs up on my email list, a personal discount code will be created. So that's how it works with automations. So if I go to my dashboard, to the overview, what I see that so far I made more than a thousand dollars, not from OmniSend, so just by WooCommerce itself. Because the great thing is that OmniSend can track if sales are made through WooCommerce or through OmniSend. So now I have my discount code over here. I copy it. I redeem the discounts and I go to products. I go for this product, add it to the cart, view the cart. I apply the coupon. There you go. 10 % discount. I proceed to the checkout. So I fill in my details over here. I want to be able to credit card, test mode, and I decide to read and agree with everything and place the order. Awesome. My order has been received, so if I go to OmniSend and I refresh this page, you see now I made $900 through OmniSend because people signed up, they got the 10%, I redeemed the coupon code, I placed my order. So now OmniSend sees that $900 is through automations from OmniSend. So over here, I see automations. If I send a campaign that's sending an email to my whole email list, I can also see how many sales I got from that. So the total store revenue is $1 ,991 and $900 from that is true Omniscent. This is so cool. As soon as people opt in, we can do something else. We can go to automation, create a new workflow and I can go to abandoned cart. It means if people are on my website, they go to products, they place something in their cart, but they do not buy it. After an hour, they get an email. So over here, let me see, trigger inactivity time, one hour. Let me change it to one minute so I can show you what will happen. I update it and I start the workflow. So when people put something in their cart, as to this one, view the cart, and they do nothing for a minute, they get an email, which is this one. items in your cart are selling out fast. And the great thing is you see which products are in the cart. So that's super cool. So after a minute, an email from SofaSupa, items in your cart are selling out fast. So I click on it. Now I also see the product which I can still buy. So that's also super powerful from OmniSend. Let me close this abandoned cart. So this is automatically activated as soon as people opt into my email list. Let me show you another workflow. I click on create a workflow. I search for confirmation. Here is the order confirmation. By default, you get one from WooCommerce, but this one looks better. You can adjust it of course, edit the content, I click over here to maintain the style, button settings, primary button, that. So look at that. Okay. I click on finish editing, start a workflow. There you go. So now if I go to the website and I buy something, I go to the checkout, fill in my details, I pay, scroll down, I agree and I place the order. I, as the webshop owner, get this message from WooCommerce. So there it is. Thank you for your order and this is how it looks. Really nice. So if you want to use this instead of WooCommerce, that's what you can do. with the order confirmation workflow. So this is already super powerful. We have a workflow now. So when people opt in, they automatically get an email or a text message or a push notification. And then later on, they get more messages. We can do split testing, A B testing, super powerful, but we can take it to the next level. Let me show you how it works. Besides automations, you also have segments. So if you go to audience segments, this is so powerful. I can create a segment, I create segments with AI, I can also take a look at all the pre -built segments. What I can say over here, if email subscribers are active, they should be placed into a certain segment. If it's people of birthday, they should be placed in a certain segment. People that have not opened or answered any email or did not buy anything in the latest months or weeks or in the last 20 emails, they become inactive subscribers, those can be placed in a segment. People from Europe can be placed in a segment. recent buyers, high value subscribers. So people, subscribers that are really active, they open a lot of emails, they buy things and when people are entered into a segment, look at this, you can go back, you can go to automation, create a new workflow, create one from scratch and then over here I can say segment. They entered a segment, The segment is, I don't have any segment yet, but the segment is high value subscriber, they can be placed into this workflow, and then as soon as people become a high value subscriber, let's say they buy for more than $1 ,000 in your store, I can have a delay of a few days. So let's say for 10 days, and after 10 days they get an email, hey Ferdy because you bought for more than $1 ,000. on my website, here is 15 % extra discount only available for the next three days, specially for you. Or if people are not active on your list, you can select the segment inactive subscriber and then send an email, hey Ferdy we have missed you, we want to give you something, we give you 50 % discount for the next two days. And those segments and those automation workflows can help you to make so much more sales because everything is an automatic pilot. If you want to learn more about that, you can go to ferdy . com, search for OmniSense, go for this tutorial, and then over here, we'll talk about segments. Super powerful. So that's it about email marketing. Now let's talk about how we can adjust the content of our website. In order to change the content of our website, I edit this page, the homepage. So let me show you how it works. You click somewhere, triple click, long sleeve sweater, and you can change it. You can click over here, triple click, change the content. Over here, I click on this button. First, I want to change the look and feel. So here at style, I can change how this is displayed. So if I hover over it, it becomes darker. I can also say, make it scale. Then I want to go to the button borders and shadows and at the border or the border radius, I say, make it increase like this. Then I go to details and I'm still at the same place over here. Increase. I click here, I scroll up, here at style, link, I say long and then automatically it finds a product or a page or anything, blog post with long in it. So a long sleeve sweater, that's the product I want to focus on or I want to refer people to. Also over here, long sleeve, some people prefer to click here, some people prefer to click here. Then I click on this image, select image and I change it to this one. There you go. I change the price to $90 .99 and if it's too big, over here at typography, I can decrease the size. Awesome. I can click over here and do it with a second product. So change the information, I scroll down, if I want to change something over here, triple click, I can change the text, I can change the text, I can click over here and then change the icon to something else. I can also search for an icon. Let's scroll down. If I want to change this image, I click over here, select the image and choose something else. Click over here to change this text. Arrivals is automatically fetched from WooCommerce. If I want to change this background image, click over here, go to style, background, I can change the background. So if I would say this one, I can change There you go. Then I can click over here, the style, typography. You can scroll down, change the text color to white. Also here, change the text to white. Click over here, increase the radius. That's how it works. Change this image to another product and select the lamp. There you go. Let me open this in a new tab. go to products, search for the lamp, pay the text, triple click, paste it and change the price. It's $25. So I changed this to 25. I can adjust this review and it's a matter of clicking and adjusting all the information that you see here at the right. Latest news, we can talk about blog posts. If you want to learn how to create blog posts, go to ferdy . com, search for blog, scroll down, go to write a converting blog post, click over here, watch this tutorial. So that's how we can change content of our website. You can go to a different page, edit the page, triple click on content, change it, change the background, go to the style, background. I can change the color too. This one over here, I can change everything, change images, click over here, increase the radius. That's how easy it is. And in that way, you can adjust your website. If you want to add new areas, you can do that. So if I want to have a new area over here, I can click and add something after it. It can be a paragraph. but it can be anything else. If I say forward slash, I can choose something. If you want to learn more about that, go to YouTube and then search for WordPress editor tutorial. You can learn how to build using the WordPress editor. I go for the tablet. Look at this. That looks weird. So in order to fix that, I go over here to the header and over here, I select tablet slash mobile. I can also do that over here. And then over here, if I click on it, this is how it is displayed here. We can adjust everything. So I go to design. I want the background to be light. Then I want to change the logo to this one. It will change eventually. I go to the menu, select our main menu, go to design, Make the text dark, when people hover over it, orange. Like that. You can change the font, you can do anything. Over here you can add your location. So I go to HTML, design, make the text dark, when you hover over it, orange. Awesome. So if I go to the mobile, it looks like this. There's the X. Let's take a look at that. I click over here on the off -canvas area. I go to design, I scroll down, the icon should be dark. So you can click on the X. With a beautiful animation, publish it. Now your website is also fully optimized. for all devices. So we're coming to a close of this tutorial. Thank you for watching up until this point. I want to really thank you for that. And if you like this video, please like it, feel free to follow me for more upcoming tutorials, subscribe. And now let me show you a few tutorials, a few follow -up tutorials you could follow in order to make your website even better. So in order to be found better in the search results, we go to ferdy . com, search over here for Shure Red complete sure rank tutorial, how to found better in the search results of Google. If If you want to learn more about affiliate marketing, search over here for affiliate marketing, that's promoting other people's products. I have made a lot of money with this. This is only by the way, $411 ,000 with advertisements on advertisements like these and on YouTube advertisements, you can watch this video. And if you want to learn more about email marketing, I already covered a lot, but if you want to learn more about that, OmniSend, and then you can learn step by step how to create an email list and increase your sales. So those are the three tutorials I highly recommend. Well, to be honest, highly recommend is optimizing your website for the search results. So using Shurank and the other one is learning more about email marketing tool. And if you want to start with affiliate marketing, then I suggest that tutorial, but just for the, for your WooCommerce website, I would suggest to use Learn more about email marketing and about Shurank. So ladies and gentlemen, that's it. Thank you for watching this tutorial. I hope it was really helpful. Feel free to like the video, subscribe for more upcoming tutorials, leave a question or a comment. If you have any questions, I do my best to answer those. And then I wish you an amazing day and good luck with your business. God bless you and bye bye.",
+    "prior_notes": [],
+    "id": "780869873f8637e2f08dfeb4"
+  },
+  "system_prompt_sha256": "f2341d28186a0dbaee868d37ce33c173f631088eb1754997556740d4905c0f2b"
+}

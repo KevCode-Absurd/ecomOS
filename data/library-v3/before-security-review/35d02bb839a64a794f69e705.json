@@ -1,0 +1,349 @@
+{
+  "cards": [
+    {
+      "title": "Prevent Clickjacking with Frame-Ancestors Header",
+      "summary": "Use the Content-Security-Policy frame-ancestors directive (or legacy X-Frame-Options) to stop competitors and attackers embedding your storefront in a frame and overlaying invisible buttons.",
+      "use_when": "Hardening your storefront or admin dashboard against clickjacking, e.g. when a third party could overlay a hidden add-to-cart or account action over an enticing button.",
+      "steps": [
+        "Understand the attack: if your site allows framing, an attacker page can embed your site in a full-page iframe and transform/zoom it so a click lands on your real button (e.g. a social like button or an authenticated account action) while the user thinks they clicked something else.",
+        "Serverside, send the frame-ancestors directive in the response: 'none' to forbid all framing, or \"'self'\" to allow only your own origin to frame you. This is the reliable defense the source recommends over JS frame-busting.",
+        "Set the policy on every page or at the site-wide header level; do not assume you can detect at request time that a request is a framing attempt, since the server often cannot see it.",
+        "Verify on your own staging site by embedding your page in a test iframe and confirming the browser refuses to load it.",
+        "If you must support very old browsers, note the source says this header is long-supported and pervasive, but for other defensive headers check current browser support before relying on them."
+      ],
+      "caveats": [
+        "Legacy X-Frame-Options with ALLOW-FROM is inconsistently supported; prefer frame-ancestors.",
+        "Frame-busting JavaScript is not a reliable defense per the cited Stanford research on busting frame busting.",
+        "Recently, browsers correctly require the entire embed chain to be same-origin; older behavior allowed an A->B->A chain. Verify with current browser behavior before relying on edge cases."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "clickjacking",
+        "http-headers",
+        "checkout",
+        "account-security",
+        "storefront-hardening"
+      ],
+      "id": "c3411ca931e17ca3a1fe5da0",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 7
+    },
+    {
+      "title": "Reject Cross-Site Form Submissions Using Origin Header",
+      "summary": "Check the Origin header against an allow list to block form POSTs from other sites; this does not stop request forgery but prevents the request from being accepted.",
+      "use_when": "Protecting storefront or checkout endpoints that accept form POSTs, such as changing an account email, applying a promo code, or placing an order, from being forged by a third-party page.",
+      "steps": [
+        "Recognize that SameSite cookies only strip cookies from cross-site requests; they do not prevent the form submission itself, so the POST still arrives.",
+        "Serverside, read the Origin header on incoming POST requests and compare it against an allow list of origins you expect (e.g. your own storefront domain).",
+        "Reject requests whose Origin is missing or not on the allow list.",
+        "Note that GET requests are treated as CORS-simple and may not carry an Origin header for image/script/style loads; rely on the POST check for state-changing actions rather than expecting Origin everywhere.",
+        "Do not rely on the Referer header as a primary control; the source says it can be manipulated and is not reliable."
+      ],
+      "caveats": [
+        "The browser sets and protects the Origin header; a site making the request cannot forge it, which is why it is trustworthy for this check.",
+        "You cannot truly stop a determined client (e.g. a script) from sending a request; the goal is to make your server reject requests it did not originate."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "csrf",
+        "http-headers",
+        "checkout",
+        "account-security",
+        "origin-header"
+      ],
+      "id": "d0eca305c2e69bd1c25ab544",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 7
+    },
+    {
+      "title": "Use Unpredictable URLs to Protect Private Media from Hotlinking",
+      "summary": "Stop bandwidth theft and leaked private assets by serving them from unguessable URLs instead of relying on Referer checks.",
+      "use_when": "Serving images such as user avatars, customer-uploaded photos, downloadable receipts, or paid content where hotlinking or leaking would cost bandwidth or expose private data.",
+      "steps": [
+        "Identify assets where another site could embed the URL directly, causing you to pay for their traffic (hotlinking) or exposing logged-in-only content (e.g. an avatar that only appears when logged in).",
+        "Instead of exposing a predictable path, serve the asset from a URL that is difficult to guess (long random token) so only someone who knows the URL can load it.",
+        "Recognize that SameSite cookies will strip the login cookie on a third-party page, so an authenticated-only avatar will resolve to the logged-out image there, but this does not prevent the request itself.",
+        "Do not rely solely on the Referer header to block hotlinking; the source calls this not foolproof because the attacker can manipulate it."
+      ],
+      "caveats": [
+        "An unguessable URL is a secrecy control, not authentication; anyone the URL is shared with can still use it.",
+        "This does not prevent the request from being made, only makes it unprofitable or unlinking to guess."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "hotlinking",
+        "image-security",
+        "bandwidth",
+        "signed-urls",
+        "asset-delivery"
+      ],
+      "id": "e77220381d4c87fb34533c95",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 7
+    },
+    {
+      "title": "Choose the Right Tool for Each Cross-Site Boundary Question",
+      "summary": "A decision framework mapping the same-origin questions (can A link to B, embed B, read B's data, submit forms, steal images/scripts) to reliable vs unreliable defenses.",
+      "use_when": "Architecting storefront integrations, embedded widgets, third-party scripts, or any cross-origin data sharing and needing to know which control actually holds.",
+      "steps": [
+        "Can site A link to or embed site B? By default yes; block it with the frame-ancestors header if you don't want to be embedded, and the source says this works reliably.",
+        "Can site A embed B and modify B's DOM? No; the same-origin policy is strong here and there is no way to relax it, so this stays a safe default.",
+        "Can a site submit a form to you? You can reject cross-origin submissions by checking the Origin header, which the source says works quite reliably.",
+        "Do you want forms allowed but without cookies attached? Use SameSite cookies for that middle ground.",
+        "Can another site read the bytes of your response? No; strengthening this is not foolproof, and the source treats 'images and scripts' defenses as best-effort only.",
+        "When you need to intentionally allow cross-origin reads (e.g. collaborating with a partner API), plan to relax the policy explicitly rather than weakening defaults."
+      ],
+      "caveats": [
+        "Only the frame-ancestors and Origin-allow-list controls are described as reliable; Referer-based and similar tricks are explicitly not foolproof.",
+        "Verify current browser behavior for any relaxation mechanism before shipping, since these details change."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "same-origin-policy",
+        "cors",
+        "http-headers",
+        "integrations",
+        "security-architecture"
+      ],
+      "id": "6353d3bf7b0bcbe486e53bd2",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 7
+    },
+    {
+      "title": "Kill Cross-Site Scripting by Escaping User Data at Output",
+      "summary": "Treat all user-supplied strings as data by HTML-escaping them before inserting them into your page, and consider the limits of blacklists.",
+      "use_when": "Building any storefront page that reflects user input, such as a search results page, a personalized welcome based on a URL parameter, or a product review display.",
+      "steps": [
+        "Identify the pattern that causes the bug: server code concatenating a hard-coded HTML template with untrusted user input, so the browser cannot tell the user's string from your markup.",
+        "Understand the impact: an attacker who gets their text parsed as code can run script in your origin's context, taking actions as your logged-in customer (e.g. reading document.cookie and exfiltrating it, or submitting requests).",
+        "Fix it by escaping the untrusted value so angle brackets and other significant characters become inert HTML entities (e.g. < becomes &lt;), so the browser displays the text instead of executing it.",
+        "Escape only the specific values that are user-supplied, not the entire page; escaping everything would turn your own tags into visible text.",
+        "Prefer your web framework's built-in output-escaping for inserting data over hand-rolled functions where possible.",
+        "Do not rely on a blocklist of 'bad words' (like banning usernames containing 'script' or 'select') as your primary defense; per the source, missing a single entry defeats it."
+      ],
+      "caveats": [
+        "The source's example demonstrates this all with a same-tab self-test (alerting your own cookie); a real attack requires the victim to be logged in and to click a link, which is why 'don't click suspicious links' is not sufficient protection.",
+        "Note the distinction between escaping for HTML text context versus other contexts; the source only demonstrates HTML escaping."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "xss",
+        "input-sanitization",
+        "output-escaping",
+        "product-page",
+        "search",
+        "account-security"
+      ],
+      "id": "2df9b830a02ef86171c6cdb5",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 7
+    },
+    {
+      "title": "Why Cross-Site Scripting Is Worse Than Clickjacking for Your Store",
+      "summary": "Understand the attacker's goal — running code in your origin so they act as a logged-in customer — before choosing defenses.",
+      "use_when": "Prioritizing remediation when you discover a stored or reflected input vulnerability on a customer-facing page like a profile, review, or search results page.",
+      "steps": [
+        "Recognize that the same-origin policy blocks an attacker from framing your site and reaching into the login form to read a password; XSS is the workaround that gets their code into your page.",
+        "Trace what an attacker can then do: take any action as the customer (submit requests with the victim's cookies), or read document.cookie and send it to an attacker server to hijack the session.",
+        "Treat any page that mixes attacker-controlled text with your code as a potential injection point, whether it is reflected (in a URL parameter) or stored (saved to your database and shown to other users).",
+        "Prioritize fixes for stored injection on pages other customers view, since that enables self-propagating worms (the source's MySpace example added the attacker as a friend and copied the payload into victims' profiles, causing exponential growth and an outage).",
+        "When reviewing your store, test your own pages with a harmless proof payload (e.g. alerting the current document cookie) so you confirm the vulnerability without attacking anyone else."
+      ],
+      "caveats": [
+        "The source stresses that clients cannot be trusted at all; server-side defenses must hold even if a client is a hacked browser or script.",
+        "Worm-style exponential spread is a described historical case study, not a prediction of outcomes for any specific store."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "xss",
+        "session-hijacking",
+        "threat-model",
+        "stored-xss",
+        "account-security"
+      ],
+      "id": "41e69cb8ace417e4553e4401",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 7
+    },
+    {
+      "title": "Avoid JSONP for Partner Data; Prefer Headers or Proxy",
+      "summary": "JSONP lets a cooperating server hand you cross-origin data wrapped in a callback, but it grants that origin execution context on your page — consider safer alternatives.",
+      "use_when": "Deciding how a storefront should read JSON from a partner or internal API that lives on a different origin, especially when the data varies per logged-in user.",
+      "steps": [
+        "Understand the trick: a script tag bypasses the same-origin policy, and JSONP asks the server to wrap its JSON in a caller-specified function name (callback parameter) so the returned script calls your function with the data.",
+        "Recognize the dangers: the server must write extra code to support it, some valid JSON is not valid JavaScript (whitespace issues), and the caller controls the callback name, which opens a reflected-file-download / injection class of bug if not sanitized.",
+        "From the consuming site's view, including a script from another origin gives that origin remote execution in your page if their response is ever compromised.",
+        "Consider alternatives before adopting JSONP: a serverside proxy on your own domain (which also lets you keep the request authenticated to your own session), or a proper CORS-style header that the other server sends to permit your origin to read the response.",
+        "If you must relax the boundary intentionally, restrict it narrowly rather than granting full script execution."
+      ],
+      "caveats": [
+        "The source describes JSONP as a 'clever hack' that works but is a bad idea for untrusted or unstable partners.",
+        "A serverside proxy changes where the request originates and won't reflect per-user logged-in responses the way a browser-side call would."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "jsonp",
+        "cors",
+        "integrations",
+        "script-tags",
+        "api-security"
+      ],
+      "id": "4b7cd675a290a92feac0cbf0",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 7
+    },
+    {
+      "title": "Stop Destructive Request Forgery with SameSite Cookies",
+      "summary": "SameSite cookies strip the session cookie from cross-site requests so a forged action arrives logged-out and harmless, without blocking the request itself.",
+      "use_when": "Configuring session cookie attributes for a storefront so cross-site pages can't trigger authenticated actions like account changes or a placed order against a logged-in customer.",
+      "steps": [
+        "Set the SameSite attribute on your session cookies so they are not attached to requests originating from another site.",
+        "Use this as your middle-ground control when you want legitimate cross-site form traffic to still reach your server but without acting as the logged-in user.",
+        "Combine it with an Origin-header allow list for state-changing POST endpoints, since SameSite alone leaves the request itself arriving (just unauthenticated).",
+        "Remember the same mechanism that strips cookies in frames can make an embedded authenticated avatar resolve to the logged-out image on a third-party page."
+      ],
+      "caveats": [
+        "SameSite does not prevent the request; it prevents the request from carrying credentials.",
+        "The source's lecture describes the mechanism generally; verify the current browser's exact SameSite values and defaults before relying on specific behavior."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "samesite-cookies",
+        "csrf",
+        "checkout",
+        "account-security",
+        "session-management"
+      ],
+      "id": "28c8b9603829fcba743749f3",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 7
+    },
+    {
+      "title": "Treat Script and Image Inclusion as Best-Effort, Not Secure",
+      "summary": "Blocking hotlinked scripts and images is about bandwidth, not confidentiality, and Referer-based blocking is explicitly unreliable.",
+      "use_when": "Deciding whether and how to stop other sites embedding your images, stylesheets or JavaScript (e.g. a signature animation or theme asset they are stealing).",
+      "steps": [
+        "Clarify the goal: for a static image, script or CSS asset, the concern is bandwidth theft (hotlinking), not data leakage, because the asset holds no private data.",
+        "Recognize that a hotlinked script runs in the embedding site's page, not yours, so it does not threaten your origin directly.",
+        "Use Referer-based checks to reduce casual hotlinking, but accept that the source calls this not foolproof because the header can be manipulated.",
+        "For private or per-user assets, prefer unguessable URLs or SameSite-gated responses rather than Referer rules.",
+        "Use a CDN (the source cites Google's CDN serving the d3 graphics library) as normal practice for serving such libraries, separate from the hotlinking question."
+      ],
+      "caveats": [
+        "The source explicitly lists image/script protection as best-effort; do not treat it as a security boundary.",
+        "Origin headers are not sent for simple image/script/style loads, so an Origin allow list won't cover this case."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "hotlinking",
+        "cdn",
+        "referer",
+        "bandwidth",
+        "asset-delivery"
+      ],
+      "id": "4edcbf1b81e0c44b95013289",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 7
+    },
+    {
+      "title": "Make Store Input Fields Untrusted by Default",
+      "summary": "The root condition for both XSS and SQL injection is mixing untrusted customer input with code, so treat every input field as a potential injection vector.",
+      "use_when": "Reviewing storefront and back-office features that accept customer text — signup fields, search boxes, review forms, support messages, profile/bio fields — before launch.",
+      "steps": [
+        "For every place customer data is combined with code, name the code context: HTML output, a SQL command, a URL, or JavaScript.",
+        "Apply the correct neutralization for that context (HTML escaping for HTML, parameterized queries for SQL) rather than one generic sanitizer.",
+        "Prefer frameworks and ORMs that parameterize queries and escape output by default, and confirm they are actually enabled rather than bypassed for convenience.",
+        "When the user's data modifies a SQL command, the risk is reading different data or running a second command — the same class of bug as XSS applied to the database.",
+        "Include stored fields (bios, reviews, display names) in your review, since stored injection can spread to every visitor's page."
+      ],
+      "caveats": [
+        "The source notes the SQL-injection parallel briefly; the detailed lecture focus is XSS.",
+        "Blacklisting programmer-sounding usernames is called out as an inadequate defense on its own."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "input-sanitization",
+        "xss",
+        "sql-injection",
+        "account-security",
+        "launch-readiness"
+      ],
+      "id": "06b20dff7e555cb3d375eec6",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 7
+    },
+    {
+      "title": "Automate Defensive Controls Across All Store Pages",
+      "summary": "Anti-framing and output-escaping controls should be applied consistently at the site or framework level, not page-by-page where gaps appear.",
+      "use_when": "Rolling out security headers and escaping after an audit reveals inconsistent coverage across your storefront's templates.",
+      "steps": [
+        "Set frame-ancestors (or the legacy X-Frame-Options header) as a site-wide response header so every page — product, cart, account, admin — refuses untrusted framing.",
+        "Enable your web framework's automatic output escaping by default and audit for places where developers disabled or bypassed it.",
+        "For each reflected input (URL parameters driving page text), confirm the untrusted value is escaped before it reaches the HTML string.",
+        "Add the Origin allow list to your shared POST-handling middleware so new endpoints inherit the check.",
+        "Re-test after rollout with self-directed proof payloads on staging to confirm controls fire on every template."
+      ],
+      "caveats": [
+        "Retrofitting a site-wide header is easy; retrofitting escaping may require touching many templates and finding old bypasses.",
+        "Verify header and attribute support in the browsers your customers actually use before assuming blanket protection."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "http-headers",
+        "output-escaping",
+        "clickjacking",
+        "storefront-hardening",
+        "framework-security"
+      ],
+      "id": "16821b77d44ef09c50fcc9a4",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 7
+    }
+  ],
+  "request_id": "bc03971c4492ec1d62ddbeaf969a44d39647a208e645c81428d661763a501bac",
+  "ecommerce_scope_version": 1
+}

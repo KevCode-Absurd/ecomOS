@@ -1,0 +1,224 @@
+{
+  "request_id": "02200ed445ace7b22264b6896c992b98164f50ab7bcc1caca96b2abfe6fbdb1b",
+  "provider": "openai",
+  "model": "gpt-6-astra",
+  "effort": "medium",
+  "completion_limit": 8192,
+  "usage": {
+    "prompt_tokens": 5983,
+    "completion_tokens": 1277,
+    "total_tokens": 7260,
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 5980,
+      "audio_tokens": 0
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 62,
+      "audio_tokens": 0,
+      "accepted_prediction_tokens": 0,
+      "rejected_prediction_tokens": 0
+    }
+  },
+  "booked_cost_usd": 0.1386375,
+  "seconds": 48.22,
+  "finish_reason": "stop",
+  "output": {
+    "answer_markdown": "## Verdict: encouraging activity, not proof email is working well\n\n**The 52% open rate and $14,000 attributed revenue show recorded engagement and purchase associations—not reliable evidence of incremental, profitable sales.** Email may be helping, but the current evidence cannot establish how much.\n\n### What the numbers actually tell us\n\n- **Opens:** Privacy features and machine opens can inflate the 52%. It does not prove strong subject lines, healthy inbox placement or purchase intent.\n- **Attributed revenue:** $14,000 ÷ $45,000 Shopify revenue = **31.1%**. Describe this as “Klaviyo-attributed revenue equivalent to 31.1% of store revenue,” not “email generated 31.1% of sales.” Its five-day click plus five-day open window can credit purchases that would have happened anyway.\n- **Overlapping credit:** Meta reports $70,400 and Klaviyo $14,000: together **$84,400 against $45,000 in Shopify revenue**. These figures are not additive. Overlap and unreconciled reporting prevent a causal interpretation.\n- **Business context:** Shopify revenue fell from $54,000 to $45,000, or **16.7%**, while AOV stayed at **$90** ($54,000/600 and $45,000/500). Email could be cushioning that decline—or receiving credit for existing demand. We lack prior-period email data to distinguish these possibilities.\n- **Clicks and orders:** The reported 1.1% click rate and 0.18% order rate deserve more attention than opens, but their denominators and campaign/flow coverage need confirming. They are not automatically good or bad against a universal benchmark.\n\n## What to examine next, in order\n\n### 1. Reconcile measurement and separate campaigns from flows\n\nRequest current and previous 30-day reporting for each campaign and flow: delivered messages, unique clickers, placed orders, attributed revenue, revenue per delivered message, unsubscribes, complaints and bounces. Include audience, send frequency and attribution definitions.\n\nSeparate **more sending** from **better performance**. Compare delivery volume, click rate, order rate and revenue per delivery; also count distinct people reached across the month. The 12,000 marketable profiles are not necessarily 12,000 recipients per campaign.\n\nMatch attributed orders to Shopify order IDs where available. Compare the current attribution view with click-only reporting, if available, as a sensitivity check—not an incrementality estimate.\n\n### 2. Audit delivery health and lifecycle plumbing\n\nCheck sender authentication, bounce and complaint trends, provider-level differences, suppression practices and engagement based on clicks/purchases rather than opens alone. Review new subscribers, losses and signup sources before blaming acquisition forms.\n\nThen audit the existing welcome and checkout-abandonment flows: eligible entrants, actual deliveries, timing, purchase-exclusion filters, consent and campaign overlap. **Fix incorrect filters before adding messages.**\n\nThe missing Added to Cart flow is an opportunity hypothesis, not proven lost revenue. Shopify shows 2,000 add-to-cart sessions and 1,000 checkout-start sessions; the gap is not 1,000 identifiable, consented email recipients. Validate event capture and reachable volume first, then design cart-to-checkout handoff exclusions.\n\n### 3. Investigate the click-to-purchase experience\n\nOverall mobile conversion fell from **400/15,000 = 2.67% to 300/20,000 = 1.50%**; desktop remained **4%**. This is not email-specific evidence, but it makes mobile landing-page checks worthwhile.\n\nTest one useful, plain-spoken email angle: “A closer look at the Daypack 18L.” Clarify the padded **13-inch** laptop sleeve, water-resistant—not waterproof—fabric, and free US delivery estimated at 4–7 business days. Bring those details nearer the PDP purchase controls too. Treat reduced uncertainty as a hypothesis; do not promise 15-inch fit or invent testimonials.\n\n## Decision and test guardrails\n\nDo not increase the current three-campaign weekly cadence yet. Daypack stock covers **210/8 = 26.25 days**, versus replenishment in 35 days: approximately a **nine-day gap** at unchanged demand.\n\nAfter the audit, design one randomized campaign-send versus no-campaign holdout, with flows unchanged. Measure Shopify orders, revenue and estimated contribution per assigned profile, plus complaints/unsubscribes. At a 0.18% order rate, even 12,000 comparable deliveries imply only **21.6 attributed orders**; a 14-day test may remain inconclusive.\n\nUse clicks diagnostically, opens directionally, and incremental contribution as the eventual decision metric. Reserve the $3,000 budget rather than spending it to manufacture more opens.",
+    "questions": [
+      "Can you provide current and previous 30-day campaign-versus-flow reports, including deliveries, unique clicks, orders, revenue and the definitions behind the reported rates?",
+      "Are sender authentication, complaint/bounce trends and flow purchase-exclusion filters documented, and is consented Added to Cart tracking available?",
+      "What are the monthly email platform and production costs, and can attributed order IDs be matched to Shopify?"
+    ],
+    "assumptions": [
+      "The $14,000 Klaviyo figure covers the same current 30-day period as Shopify; revenue definitions still need reconciliation.",
+      "The click and order rates have not been assumed to use identical denominators or to cover all flows and campaigns.",
+      "All audits and tests are proposed, not performed. No discount, additional inventory purchase or budget expenditure is assumed approved."
+    ]
+  },
+  "raw_content": "{\n  \"answer_markdown\": \"## Verdict: encouraging activity, not proof email is working well\\n\\n**The 52% open rate and $14,000 attributed revenue show recorded engagement and purchase associations—not reliable evidence of incremental, profitable sales.** Email may be helping, but the current evidence cannot establish how much.\\n\\n### What the numbers actually tell us\\n\\n- **Opens:** Privacy features and machine opens can inflate the 52%. It does not prove strong subject lines, healthy inbox placement or purchase intent.\\n- **Attributed revenue:** $14,000 ÷ $45,000 Shopify revenue = **31.1%**. Describe this as “Klaviyo-attributed revenue equivalent to 31.1% of store revenue,” not “email generated 31.1% of sales.” Its five-day click plus five-day open window can credit purchases that would have happened anyway.\\n- **Overlapping credit:** Meta reports $70,400 and Klaviyo $14,000: together **$84,400 against $45,000 in Shopify revenue**. These figures are not additive. Overlap and unreconciled reporting prevent a causal interpretation.\\n- **Business context:** Shopify revenue fell from $54,000 to $45,000, or **16.7%**, while AOV stayed at **$90** ($54,000/600 and $45,000/500). Email could be cushioning that decline—or receiving credit for existing demand. We lack prior-period email data to distinguish these possibilities.\\n- **Clicks and orders:** The reported 1.1% click rate and 0.18% order rate deserve more attention than opens, but their denominators and campaign/flow coverage need confirming. They are not automatically good or bad against a universal benchmark.\\n\\n## What to examine next, in order\\n\\n### 1. Reconcile measurement and separate campaigns from flows\\n\\nRequest current and previous 30-day reporting for each campaign and flow: delivered messages, unique clickers, placed orders, attributed revenue, revenue per delivered message, unsubscribes, complaints and bounces. Include audience, send frequency and attribution definitions.\\n\\nSeparate **more sending** from **better performance**. Compare delivery volume, click rate, order rate and revenue per delivery; also count distinct people reached across the month. The 12,000 marketable profiles are not necessarily 12,000 recipients per campaign.\\n\\nMatch attributed orders to Shopify order IDs where available. Compare the current attribution view with click-only reporting, if available, as a sensitivity check—not an incrementality estimate.\\n\\n### 2. Audit delivery health and lifecycle plumbing\\n\\nCheck sender authentication, bounce and complaint trends, provider-level differences, suppression practices and engagement based on clicks/purchases rather than opens alone. Review new subscribers, losses and signup sources before blaming acquisition forms.\\n\\nThen audit the existing welcome and checkout-abandonment flows: eligible entrants, actual deliveries, timing, purchase-exclusion filters, consent and campaign overlap. **Fix incorrect filters before adding messages.**\\n\\nThe missing Added to Cart flow is an opportunity hypothesis, not proven lost revenue. Shopify shows 2,000 add-to-cart sessions and 1,000 checkout-start sessions; the gap is not 1,000 identifiable, consented email recipients. Validate event capture and reachable volume first, then design cart-to-checkout handoff exclusions.\\n\\n### 3. Investigate the click-to-purchase experience\\n\\nOverall mobile conversion fell from **400/15,000 = 2.67% to 300/20,000 = 1.50%**; desktop remained **4%**. This is not email-specific evidence, but it makes mobile landing-page checks worthwhile.\\n\\nTest one useful, plain-spoken email angle: “A closer look at the Daypack 18L.” Clarify the padded **13-inch** laptop sleeve, water-resistant—not waterproof—fabric, and free US delivery estimated at 4–7 business days. Bring those details nearer the PDP purchase controls too. Treat reduced uncertainty as a hypothesis; do not promise 15-inch fit or invent testimonials.\\n\\n## Decision and test guardrails\\n\\nDo not increase the current three-campaign weekly cadence yet. Daypack stock covers **210/8 = 26.25 days**, versus replenishment in 35 days: approximately a **nine-day gap** at unchanged demand.\\n\\nAfter the audit, design one randomized campaign-send versus no-campaign holdout, with flows unchanged. Measure Shopify orders, revenue and estimated contribution per assigned profile, plus complaints/unsubscribes. At a 0.18% order rate, even 12,000 comparable deliveries imply only **21.6 attributed orders**; a 14-day test may remain inconclusive.\\n\\nUse clicks diagnostically, opens directionally, and incremental contribution as the eventual decision metric. Reserve the $3,000 budget rather than spending it to manufacture more opens.\",\n  \"questions\": [\n    \"Can you provide current and previous 30-day campaign-versus-flow reports, including deliveries, unique clicks, orders, revenue and the definitions behind the reported rates?\",\n    \"Are sender authentication, complaint/bounce trends and flow purchase-exclusion filters documented, and is consented Added to Cart tracking available?\",\n    \"What are the monthly email platform and production costs, and can attributed order IDs be matched to Shopify?\"\n  ],\n  \"assumptions\": [\n    \"The $14,000 Klaviyo figure covers the same current 30-day period as Shopify; revenue definitions still need reconciliation.\",\n    \"The click and order rates have not been assumed to use identical denominators or to cover all flows and campaigns.\",\n    \"All audits and tests are proposed, not performed. No discount, additional inventory purchase or budget expenditure is assumed approved.\"\n  ]\n}",
+  "input": {
+    "brand": {
+      "fictional": true,
+      "name": "TrailFold",
+      "market": "US",
+      "currency": "USD",
+      "platforms": [
+        "Shopify",
+        "Meta Ads",
+        "Klaviyo"
+      ],
+      "positioning": "Practical lightweight bags for commuters who take short weekend trips; restrained, useful, plain-spoken voice.",
+      "products": [
+        {
+          "sku": "DAY18",
+          "name": "Daypack 18L",
+          "price": 80,
+          "landed_cogs": 28,
+          "pick_pack": 2,
+          "merchant_shipping_cost": 8,
+          "payment_fee_percent": 3,
+          "features": [
+            "18L capacity",
+            "padded 13-inch laptop sleeve",
+            "water-resistant fabric, not waterproof",
+            "external bottle pocket"
+          ],
+          "stock": 210,
+          "daily_units_sold": 8,
+          "confirmed_replenishment_units": 500,
+          "replenishment_arrival_days": 35
+        },
+        {
+          "sku": "POUCH",
+          "name": "Cable pouch",
+          "price": 20,
+          "landed_cogs": 5,
+          "stock": 800
+        },
+        {
+          "sku": "BOTTLE",
+          "name": "Steel bottle",
+          "price": 32,
+          "landed_cogs": 9,
+          "stock": 600
+        }
+      ],
+      "policies": {
+        "shipping": "Free US shipping; delivery estimate 4-7 business days",
+        "returns": "30-day returns for unused products; return shipping paid by customer",
+        "discounts": "No current discount. Any new discount needs owner approval."
+      },
+      "claim_constraints": [
+        "No evidence for waterproof, medical, sustainability or lifetime-durability claims.",
+        "No verified competitor performance data.",
+        "No clinical or controlled product test results."
+      ],
+      "customer_themes": {
+        "simulated_review_count": 120,
+        "themes": [
+          "fits daily commute",
+          "customers ask whether a 15-inch laptop fits",
+          "customers ask whether rain protection means waterproof"
+        ],
+        "support_tickets_last_30_days": {
+          "delivery_date_questions": 42,
+          "15_inch_laptop_fit": 28,
+          "waterproof_questions": 18
+        },
+        "note": "Themes, not verbatim licensed testimonials; no fabricated quotes or endorsements."
+      },
+      "website_snapshot": {
+        "pdp_headline": "Adventure starts here",
+        "first_image": "product on plain background",
+        "pdp_details": "Laptop sizing and delivery window are below reviews; CTA says Buy now. No field speed or session-recording data."
+      },
+      "shopify": {
+        "previous_30_days": {
+          "sessions": 20000,
+          "orders": 600,
+          "net_product_revenue": 54000,
+          "mobile_sessions": 15000,
+          "mobile_orders": 400,
+          "desktop_sessions": 5000,
+          "desktop_orders": 200,
+          "add_to_cart_sessions": 2000,
+          "checkout_started_sessions": 1200
+        },
+        "current_30_days": {
+          "sessions": 25000,
+          "orders": 500,
+          "net_product_revenue": 45000,
+          "mobile_sessions": 20000,
+          "mobile_orders": 300,
+          "desktop_sessions": 5000,
+          "desktop_orders": 200,
+          "add_to_cart_sessions": 2000,
+          "checkout_started_sessions": 1000
+        },
+        "definitions": "Revenue excludes tax/shipping; periods equal length. Funnel counts are session-based and internally consistent, but no controlled attribution experiment.",
+        "new_customer_share_current": 0.72,
+        "cohort_90_day_repeat_rate": 0.14
+      },
+      "meta": {
+        "previous_30_days": {
+          "spend": 18000,
+          "reported_purchase_value": 54000,
+          "cpm": 12,
+          "link_ctr_percent": 1.5
+        },
+        "current_30_days": {
+          "spend": 22000,
+          "reported_purchase_value": 70400,
+          "cpm": 15,
+          "link_ctr_percent": 1.2
+        },
+        "settings": "7-day click plus 1-day view; no incremental lift study. Meta reported value not reconciled to Shopify orders.",
+        "creative_history": [
+          {
+            "name": "Desk-to-trail demonstration",
+            "spend_share": 0.55,
+            "observed_result": "Largest spend recipient; mature creative. No asset-level contribution data."
+          },
+          {
+            "name": "Laptop-fit comparison",
+            "spend_share": 0.25,
+            "observed_result": "Higher CTR in small test; conversion sample not supplied."
+          },
+          {
+            "name": "Minimal product still",
+            "spend_share": 0.2,
+            "observed_result": "No reliable lift estimate."
+          }
+        ]
+      },
+      "klaviyo": {
+        "marketable_profiles": 12000,
+        "reported_attributed_revenue_current": 14000,
+        "attribution_window": "5-day click plus 5-day open",
+        "flows": [
+          {
+            "name": "welcome",
+            "messages": 1,
+            "offer": "none"
+          },
+          {
+            "name": "checkout abandonment",
+            "trigger": "Started Checkout",
+            "messages": 1,
+            "delay_hours": 24,
+            "observed_gap": "No Added to Cart flow; filters not audited."
+          }
+        ],
+        "campaigns_per_week": 3,
+        "reported_open_rate_percent": 52,
+        "click_rate_percent": 1.1,
+        "order_rate_percent": 0.18,
+        "note": "Revenue attribution overlaps other systems; no holdout or recent deliverability audit."
+      },
+      "resources": {
+        "weekly_designer_hours": 8,
+        "weekly_developer_hours": 4,
+        "owner_hours": 4,
+        "next_14_day_test_budget": 3000,
+        "cash_constraint": "Protect replenishment payments; no additional inventory purchase approved."
+      },
+      "unavailable": [
+        "GA4 breakdowns",
+        "Clarity/Hotjar recordings",
+        "field Core Web Vitals",
+        "SKU-level ad acquisition cost",
+        "cohort contribution LTV",
+        "creative-level conversion sample sizes",
+        "channel incrementality",
+        "email holdout data"
+      ]
+    },
+    "task": {
+      "title": "Assess email performance",
+      "request": "Is our 52% email open rate and $14k attributed revenue evidence that email is working well? What should we examine next?"
+    },
+    "reference_guidance": "[bd8384e14e344d5928a90a85] Run a 20–30 minute monthly performance review\nApplies when: End-of-month review before planning the next month's email calendar.\n- Spend 20–30 minutes at month end reviewing what went out and how it performed.\n- Identify campaigns with the highest open rates; identify campaigns that drove the most clicks and revenue; identify underperformers and reason about why they underperformed.\n- Keep the analysis shallow enough to be sustainable — the goal is spotting patterns, not a deep statistical study.\n- Feed the patterns back into next month's calendar: repeat the formats, angles and timings that worked and drop the ones that consistently underperformed.\n- Repeat monthly so the calendar sharpens over time.\nCondition: The presenter calls this super important, but the 20–30 minute figure is his own cadence, not a measured optimum.\nCondition: Small lists may not produce statistically meaningful monthly patterns.\n\n[41d10e199bc49840ff077b62] Read top-level business review to attribute email revenue and understand month-over-month shifts\nApplies when: Reporting monthly email performance to the store owner and deciding whether growth came from campaigns or flows.\n- Open dashboards > business review, set your time period and choose the comparison: previous period, or previous year if the brand is very seasonal.\n- Note total store Shopify revenue and its month-over-month movement.\n- Note attributed revenue and the percentage of total revenue coming from email — in the walkthrough example, just under 40% and up 9% month over month.\n- Open the message type breakdown to separate campaign revenue from flow revenue and their respective trends (example: campaign revenue $43K, up 54% month over month; flow revenue down 16%).\n- When a number moves sharply, dig underneath it — see the campaign revenue overview with conversion value, revenue and total recipients to understand what drove the shift, rather than reporting the headline alone.\nCondition: The revenue figures and percentages are from one client walkthrough and are not universal benchmarks.\nCondition: Attributed revenue depends on the attribution model in use; verify the model before presenting numbers as email's true contribution.\n\n[8183b1fcc7d0dc5f640ac819] Monthly email business review: campaign revenue decomposition\nApplies when: Running a monthly email/retention performance review and you need to explain a revenue change rather than just report it.\n- Pull total store revenue (e.g. Shopify), attributed email revenue, and email's share of total revenue; note month-over-month change in the email share.\n- Break attributed revenue into campaign revenue vs flow revenue and note each one's month-over-month change separately — they move for different reasons.\n- Under campaign revenue, look at conversion value, revenue and total recipients, then the metric rows beneath.\n- Test the 'we just sent more' hypothesis first: if total recipients only rose a few percent (e.g. ~3.5%) while revenue rose 54%, volume is not the explanation.\n- Then read the chain: unique opens, open rate, unique clicks, click rate. In the source's example unique opens +13.6%, open rate +9.8%, unique clicks +15.6%, click rate +11%.\n- Find the outlier — in that example unique conversions +40% and order conversion rate from email +37% — and ask what merchandising or offer caused it (a sale, a launch, or just education content).\n- Close the loop by checking top-performing campaigns this month vs last month to see which specific sends drove the outlier.\n- Ladder the metrics back up: revenue per recipient and AOV should explain the remaining gap between click growth and revenue growth (source example: RPR +49%, AOV +17%).\nCondition: The source's numbers are one client's first month with an agency, not a benchmark; treat them as an example of the diagnostic logic.\nCondition: The source recommends building a custom dashboard tool for this at scale; Klaviyo's native reporting gives similar insight with more manual work. Verify the current Klaviyo interface.\nCondition: Numeric stage bands here are heuristics, not calculations.\n\n[ea472261103e29e91055a833] Read open rate, click rate and placed orders as a diagnostic layer stack\nApplies when: Diagnosing why a specific campaign over- or under-performed and deciding what to change next time.\n- Read open rate as a signal of subject line strength, targeting quality and send timing.\n- Read click rate as the metric for whether subscribers cared about the content and the offer — this is the metric to judge content/offer fit.\n- Read placed order rate (and revenue) as the indicator of what actually drove the purchase decision.\n- Expect divergence: a campaign can drive more clicks but fewer purchases (content is engaging but the reason to buy is weaker), and less-clicked campaigns can drive more revenue when the offer is a strong purchase moment (e.g., Father's Day gifting).\n- Use this reading to decide whether to fix subject line/targeting (low open), content/offer interest (low click), or offer strength (low orders), and check whether you're treating a high-engagement, low-revenue send (like a newsletter) as a failure when it's actually an audience-interest signal.\nCondition: The presenter asserts benchmarks that you should at minimum see open rates above 30% and click rates above 0.5%, calling anything lower a likely deliverability problem; they also warn that universal benchmark numbers are not reliable without a deep account audit.\nCondition: Machine opens can inflate open rates. Include click and purchase behavior in diagnosis; do not infer deliverability solely from opens. https://help.klaviyo.com/hc/en-us/articles/4416803987739\n\n[489a0deaff01f400fc058ee8] Optimize for unique opens and unique clicks, not open rate and click rate\nApplies when: Deciding whether to add campaign sends or widen a segment, and deciding which metrics to report on and optimize.\n- Translate every metric change into people counts: an open rate falling 10% while unique opens rise 40% means 40% more humans opened, all of whom are eligible to click.\n- Accept that sending three campaigns a week instead of one can mechanically lower open rate and click rate while raising unique clicks; do not treat the rate drop as failure.\n- Use unique opens as the leading indicator for how many people can act, and unique clicks as the leading indicator of real engagement and (per the source) inbox placement.\n- Watch for the source's stated pattern: unique conversions can rise far more than unique clicks (example: +15% clicks, +40% purchases) because of what happens on site — a sale or product launch, not the email alone.\n- Report unique metrics in your monthly review so volume decisions aren't punished by rate declines.\nCondition: This is an attributed agency opinion ('at Dispatch we optimize for unique clicks'), not a universal law; it makes most sense for accounts deliberately scaling send volume.\nCondition: Attributed revenue and unique conversions depend on your attribution window and platform tracking, so verify before treating a 40% swing as causal.\n\n[d66d62f1a9cdc4a86b06b397] Diagnose a subscriber drop by separating traffic from form performance\nApplies when: Monthly growth review shows a drop in new email subscribers and you need to decide whether to act on the form.\n- Open opt-in sources and compare Shopify checkout subscribers and pop-up subscribers against Shopify purchase and checkout-started trends — a proportional drop suggests the integration and channel are fine.\n- For pop-up forms, open the form's reporting and compare form views and submit rate across the last 30 days and the prior 30 days.\n- If views dropped roughly 20% but submit rate rose from 2.19% to 2.28%, the subscriber decline was traffic-driven, not a broken form; the presenter treats this as no cause for concern.\n- Check whether the submit rate dropped dramatically, since form conversion is what you can control in Klaviyo — optimize here if it did.\n- Where form conversion is the issue, run or review an AB test on the form (the walkthrough shows an example test improving submit rate from 3.11% to 4.29%).\nCondition: Submit-rate figures and the 20% view drop come from the walkthrough example, not a general benchmark; traffic attribution to paid/organic varies by brand.\n\n[5d7c84dc41cec326c4c78553] Track place order rate as the primary email KPI hierarchy\nApplies when: Choosing the winning metric for any email A/B test or deciding which send-time or content variant to adopt in your store.\n- Set revenue and place order rate as the top-level KPIs for email decisions.\n- Rank click rate second and open rate last, since higher opens do not reliably translate to more orders.\n- When comparing send times or content variants, prefer the option producing more placed orders even if its open rate is lower.\n- Where a platform does not allow place order rate as the winner metric (the source notes this limitation for subject-line tests in Klaviyo), fall back to click rate rather than open rate.\n- Check the platform's current metric options before configuring, since available selections can change.\nCondition: The source reports that the best open-rate time often differs from the best place-order time, but this is agency observation rather than a universal law.\nCondition: Metric availability in Klaviyo varies by test type.\n\n[5d6743fc3f40736cbf60fa12] Monthly Klaviyo analytics audit: list growth, campaigns, flows\nApplies when: The recurring monthly review of email channel performance and technical health.\n- Check list growth: in Profiles, view subscriber growth over 30 days; note total subscribers, net change, new vs lost subscribers and month-over-month trend.\n- Drill into opt-in sources to see where subscribers came from (Shopify checkout and pop-up forms typically dominate) and their trends.\n- Diagnose a drop: a checkout-subscriber drop that matches a proportional drop in purchases/checkouts on Shopify is not a concern; a big gap between the two suggests the integration may be broken.\n- For a pop-up drop, open the form and compare views and submit rate across periods — if views fell but submit rate held or rose, the drop is traffic-driven, not form-driven.\n- Review campaign performance sorted by revenue for the last 30 days; then look at click rate (interest in content/offer) and placed order rate (what drove purchases).\n- Find the lowest performers and decide whether to cut, or — as with high-engagement newsletters — change the format to convert the engagement that already exists.\n- Review AB tests in the experiments section, and if needed end tests manually, keeping the highest converter.\nCondition: The 27% month-over-month figure and other numbers are walkthrough examples, not benchmarks.\nCondition: Sorting by revenue is the presenter's top-KPI recommendation, not the only valid view — open rate and click rate explain why revenue changed.\n\n[c5f48c89de687c6c16de74a4] Make CTR the primary email metric, not open rate\nApplies when: Choosing the KPI for a store email program and reviewing send-to-send performance.\n- Decide on the definition first: CTR can mean clicks as a share of all recipients, or of those who opened — the two produce very different numbers.\n- Use clicks-as-share-of-sent as the metric tied to action, since it is independent of open-tracking accuracy.\n- Report both so you can tell an open-rate problem from a click-rate problem.\n- Evaluate over a rolling period rather than per email, balancing 'deposit' sends against harder 'withdraw' asks.\n- Use the source's own figures only as orientation: roughly 35.7% open rate and 8.5% CTR across three months on his list, which he treats as a strong CTR.\n- Accept that open-rate accuracy is degraded by privacy changes and treat it as directional.\nCondition: The 35.7% / 8.5% figures are one sender's list — not a benchmark to hold yourself to.\nCondition: The source states he is confident in CTR but not in the open-rate reporting.\n\n[af644216425f8395c3bae68c] Spot under-monetized flows and channel gaps\nApplies when: Reviewing browse abandonment, cart abandonment and cross-channel follow-up performance.\n- For each flow, compare open rate, click rate and order rate; the source's example flagged a browse flow with 42% opens but only ~2.3% clicks and a 6% order rate.\n- Where clicks are weak relative to opens, add dynamic product blocks and a single hero call to action to rebuild intent.\n- For non-clickers, consider an SMS follow-up if your SMS flow shows strong revenue per recipient — in the source's case the SMS browse flow showed €1.70 per recipient while the email version underperformed.\n- Check for channel-specific gaps: the source's analysis flagged checkout abandonment traffic as small, SMS checkout as a hidden gem, post-purchase leaving money on the table and win-back flows barely converting.\n- Prioritize the fixes with the highest combination of traffic volume and revenue impact.\nCondition: The specific rates and €1.70 per-recipient figure are one client's data used as an illustration, not a benchmark.\nCondition: SMS follow-up requires separate consent collection and compliance, which the source does not detail here.\n\n[dccf91db3e0a02ad9444c772] Diagnose falling email metrics by which metric moved\nApplies when: A monthly review shows email revenue or engagement dropping and you need to decide where to investigate first.\n- If open rates and unique opens are falling dramatically, investigate deliverability and list health first (sending to unengaged cohorts, list growth quality, sender reputation).\n- If unique clicks or click rate are falling, treat it as a content/engagement problem — the emails or subject matter aren't landing with that audience.\n- If unique conversions and order conversion rate are falling while clicks hold, treat it as a merchandising and offer problem: the products, offers, and CTAs in the campaigns aren't compelling enough to make people buy.\n- Ignore small month-to-month noise — the source treats sub-5% moves as normal fluctuation and looks for jumps over ~10%.\n- Check overlap and volume before blaming content: too many sends to the same people depresses rates without any content problem.\nCondition: Apple Mail privacy protection inflates/unreliably measures opens, which is why the source distrusts open rate as a deliverability signal and prefers clicks.\nCondition: These are diagnostic heuristics from the source, not statistically derived thresholds.\n\n[91d6fd433f58386ce8c70f4a] 2026 deliverability KPI targets for ecommerce email\nApplies when: Reviewing Klaviyo campaign health or setting reporting thresholds for an email program.\n- Open rate: target at least 45% minimum, ideally 50% or higher, on engaged segments.\n- Click rate: target 5% or higher; the source explicitly argues against Klaviyo's suggested 1–1.2% benchmark because it forces overly tight segments.\n- Spam complaint rate: keep at 0.01% or lower and actively monitor it.\n- Unsubscribe rate: aim for 0.3% or lower, but treat it as less critical than in the past because one-click unsubscribe in Gmail has raised unsubscribe rates and unsubscribes don't directly hurt deliverability.\n- Still minimize unsubscribes because a shrinking list costs long-term revenue.\n- Track provider- and country-level breakdowns in addition to overall numbers, since averages can mask local problems.\nCondition: These thresholds are the source's recommendations for its own client work, not industry standards; they depend heavily on list source and offer strength.\nCondition: The source's disagreement with Klaviyo's click-rate guidance is an opinion — test against your own conversion economics rather than adopting either figure blindly.\n\n[c4cf02ddd2339a5c75d2305d] Judge subject-line tests on placed orders, not opens\nApplies when: Running subject-line tests on campaigns or abandonment emails, and deciding which subject line to roll out.\n- Run the subject-line test as a proper split on the same email body.\n- Read the open rate as a check but make the decision on placed order rate and order value — the source's abandonment example had nearly identical opens (the higher-open variant was slightly ahead) yet 11.6% vs 3.8% placed order rate.\n- Test emotional framing: the source contrasts something lower-barrier like 'your order is ready to go / packed and ready, just click' against something like 'your order's waiting for you', and reports lower barrier-to-entry language driving the higher placed order rate.\n- Test an exclusivity angle too, since the source says subject lines can affect whether and how someone buys.\n- Repeat subject-line tests frequently (the source frames these as weekly tests), not once a month, and log placed order rate as the primary metric.\nCondition: The specific 11.6% vs 3.8% figures come from one anonymized brand test and are not benchmarks.\nCondition: Attribution on open rate can be noisy; the source itself notes open-rate differences may be variability.\n\n[0944381047ee9b09f5592ddd] Reap the main email lifecycle payoff: LTV and AOV, not only last-click revenue\nApplies when: Planning the email channel's role in the store's overall acquisition and retention mix, and justifying budget and effort.\n- Define objectives clearly: grow the list rapidly, and convert first-time buyers into returning customers.\n- Position email next to, not instead of, paid ads: the source argues a store should not rely solely on paid traffic and treats email as an essential complementary channel.\n- Use email to build a relationship that makes a customer more valuable than a one-time ad-driven buyer.\n- Measure email's effect on LTV and AOV in addition to attributed revenue, since those are the outcomes the source attributes to the channel.\n- Run standalone campaigns roughly a couple of times per week to nurture traffic into first purchase and first buyers into repeats.\n- Use the offered campaign-calendar template as a planning artifact for the quarter.\nCondition: The dollar results cited in the source (e.g. 34–52% of revenue, revenue uplifts versus prior periods) come from that agency's clients — treat as illustrative examples, not benchmarks.\nCondition: Attribution of total revenue growth to email is questionable when paid spend, seasonality or product launches also changed.\n\n[5a08594d02a9657405dbc578] Audit your email program against the six-layer dependency model\nApplies when: When email revenue has plateaued and you need to diagnose which stage of the ecommerce email program to invest in next.\n- List the six layers: list growth/signup forms, core triggered flows, campaigns, A/B testing, segmentation and deliverability.\n- For each layer, record whether it exists, how it is performing and whether the layer above it depends on it.\n- Look for breaks in the chain: signup forms feeding flows, flows capturing intent, campaigns creating momentum, tests sharpening winners, segmentation keeping messages relevant and deliverability getting mail to the inbox.\n- Prioritise the earliest broken link, because later layers inherit problems from earlier ones; a great campaign calendar wastes effort if subscribers are not being captured or mail is not landing.\n- Implement fixes sequentially rather than simultaneously so you can tell what changed outcomes.\n- Expect the payoff to be a cleaner system with better timing and more relevant messaging, not simply a higher volume of sends.\nCondition: This is the presenter's diagnostic framing from an email course, not a validated scoring model; treat layer priority as a judgement call for your store.\nCondition: If you sell agency services or build systems for clients, this audit works the same way for a client account, but the source's own pitch to book a buildout call is not a required step.\n\n[6d3a34466c8608794dc8eaca] Split Testing Email Subject Lines and Content to Lift Revenue\nApplies when: You have an established email flow or campaign and want to improve open rates or revenue per send.\n- In your email platform's workflow or campaign builder, locate the split/A-B testing element and drag it into the flow.\n- Duplicate the email into two branches and change one variable at a time, e.g., change only the subject line to 'last chance' vs. the original.\n- Assign a portion of the list to each variant so results are comparable rather than sending different messages sequentially.\n- Publish and let the test run long enough to collect meaningful data before declaring a winner (two-day tests are too short for strong conclusions).\n- Compare open rate first, then clicks and sales, and keep the winning version as the standard for that send.\n- Repeat tests on other emails in the sequence so improvements accumulate across the whole flow.\nCondition: The presenter claims A/B testing can 'increase revenue big time' — treat that as a general argument for testing, not a guaranteed result.\nCondition: Short tests (e.g., a day) give unreliable winners; avoid acting on tiny sample sizes."
+  },
+  "system_prompt_sha256": "b5b18ab514fe53d15702daf16979d3d02f2501c3c36cc602c3042f750540c6a3"
+}

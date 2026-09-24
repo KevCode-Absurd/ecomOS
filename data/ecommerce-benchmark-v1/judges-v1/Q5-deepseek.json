@@ -1,0 +1,189 @@
+{
+  "status": "complete",
+  "mapping": {
+    "A": "frontier_with",
+    "B": "cheap_without",
+    "C": "frontier_without",
+    "D": "cheap_with"
+  },
+  "judge_model": "deepseek-flash",
+  "output": {
+    "reviews": [
+      {
+        "label": "A",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 4,
+          "prioritization": 4
+        },
+        "strengths": [
+          "Correctly treats opens and attributed revenue as non-incremental and explains platform overlap.",
+          "Uses accurate Shopify, Meta, Klaviyo and stock arithmetic.",
+          "Gives a clear, prioritized audit/test plan with deliverability, campaign/flow reconciliation and a holdout.",
+          "Uses brand facts well: Daypack 18L, 13-inch sleeve, water-resistant not waterproof, 4–7 day delivery, and stock gap.",
+          "Questions request missing facts without pretending the audit was done."
+        ],
+        "issues": [
+          "Does not explicitly use or request the 90-day repeat cohort rate.",
+          "Some flow/test recommendations will still need owner/resource validation, though the answer notes no discount or inventory approval is assumed."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Do not use opens or attributed revenue as conclusive incremental performance.",
+            "met": true,
+            "reason": "Verdict calls it recorded engagement/associations, not reliable incremental proof; explains overlap and non-additivity."
+          },
+          {
+            "criterion": "Use click/order rates, deliverability, overlap and holdout/cohort evidence.",
+            "met": true,
+            "reason": "Prioritizes clicks/order rates, deliverability audit, platform-overlap reconciliation and randomized holdout; does not use cohort rate."
+          },
+          {
+            "criterion": "Ask for missing facts without pretending the audit has been performed.",
+            "met": true,
+            "reason": "Questions ask for campaign/flow definitions, deliverability data and order IDs; assumptions state audits/tests are proposed."
+          }
+        ]
+      },
+      {
+        "label": "B",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 4,
+          "prioritization": 4
+        },
+        "strengths": [
+          "Correctly rejects opens and attributed revenue as clean incremental proof.",
+          "Excellent arithmetic: 31.1% attribution share, overlap with Meta, denominator inconsistency in Klaviyo order rate.",
+          "Uses brand-specific support themes and Daypack stock risk.",
+          "Proposes reconciliation, deliverability audit, flow fixes, holdout and budget use.",
+          "Questions ask for missing denominators, order IDs and flow/campaign splits."
+        ],
+        "issues": [
+          "Quite long; some additional arithmetic is useful but not all is necessary.",
+          "Recommends specific flow timing and seed tests that would require owner/resource validation."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Do not use opens or attributed revenue as conclusive incremental performance.",
+            "met": true,
+            "reason": "Explicitly says the figures are not clean evidence and treats platform revenue as non-incremental."
+          },
+          {
+            "criterion": "Use click/order rates, deliverability, overlap and holdout/cohort evidence.",
+            "met": true,
+            "reason": "Uses clicks/orders, deliverability audit, overlap matrix and holdout; no cohort repeat-rate use."
+          },
+          {
+            "criterion": "Ask for missing facts without pretending the audit has been performed.",
+            "met": true,
+            "reason": "Asks for denominators, flow/campaign exports and order IDs; assumptions mark audits/tests as proposed."
+          }
+        ]
+      },
+      {
+        "label": "C",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 3,
+          "uncertainty_and_questions": 4,
+          "prioritization": 4
+        },
+        "strengths": [
+          "Accurate, concise rejection of opens and attributed revenue as conclusive.",
+          "Correct overlap calculation and non-additivity warning.",
+          "Brand-specific product-content fixes: 13-inch sleeve, water-resistant not waterproof, 4–7 day delivery.",
+          "Proposes reconciliation, deliverability audit and randomized holdout.",
+          "Clear prioritization and good questions."
+        ],
+        "issues": [
+          "Less actionable detail than A or B; omits budget/resource specifics.",
+          "Does not use the 90-day repeat cohort rate.",
+          "Holdout sizing is left general rather than estimated."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Do not use opens or attributed revenue as conclusive incremental performance.",
+            "met": true,
+            "reason": "States 52% opens and $14k are reported engagement/attribution, not proof of incremental profit."
+          },
+          {
+            "criterion": "Use click/order rates, deliverability, overlap and holdout/cohort evidence.",
+            "met": true,
+            "reason": "Uses click/order rates, deliverability as hypothesis, overlap reconciliation and randomized holdout; no cohort rate."
+          },
+          {
+            "criterion": "Ask for missing facts without pretending the audit has been performed.",
+            "met": true,
+            "reason": "Requests exports, order IDs, filters and consent details; assumptions say the audit is proposed."
+          }
+        ]
+      },
+      {
+        "label": "D",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 2,
+          "task_completion": 3,
+          "actionability": 3,
+          "uncertainty_and_questions": 4,
+          "prioritization": 3
+        },
+        "strengths": [
+          "Correctly rejects opens/attributed revenue as conclusive incremental evidence.",
+          "Strong arithmetic: overlap with Meta and denominator inconsistency in Klaviyo rates.",
+          "Identifies useful hypotheses about attribution, flow gaps and list fatigue.",
+          "Asks for previous-period data, denominator definitions and Shopify order exports."
+        ],
+        "issues": [
+          "Generic and barely uses TrailFold brand/product facts.",
+          "No concrete holdout plan despite noting the lack of incrementality evidence.",
+          "Omits Daypack stock/replenishment, budget and resource constraints.",
+          "Next steps are useful but less brand-specific and less complete than A/B/C."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Do not use opens or attributed revenue as conclusive incremental performance.",
+            "met": true,
+            "reason": "Explicitly says $14k platform-attributed revenue is not proof of incremental impact."
+          },
+          {
+            "criterion": "Use click/order rates, deliverability, overlap and holdout/cohort evidence.",
+            "met": false,
+            "reason": "Uses click/order, deliverability and overlap, but does not propose or use holdout/cohort evidence in next steps."
+          },
+          {
+            "criterion": "Ask for missing facts without pretending the audit has been performed.",
+            "met": true,
+            "reason": "Asks for prior metrics, denominator definitions and order exports; assumptions flag missing tests."
+          }
+        ]
+      }
+    ],
+    "ranking": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "summary": "A and B are both excellent and factually accurate; A is slightly more concise and brand-tailored, while B adds deeper denominator arithmetic. C is accurate and well-prioritized but a bit less actionable. D has strong arithmetic but is generic, omits a concrete holdout/brand-specific next steps, and does not use TrailFold product/stock facts."
+  },
+  "request_id": "ed3f3b58198ef3c14f54734d76d29183e15a9190f0b8546bf4a1f36f5799cbcc",
+  "cost_upper_estimate_usd": 0.0219642
+}

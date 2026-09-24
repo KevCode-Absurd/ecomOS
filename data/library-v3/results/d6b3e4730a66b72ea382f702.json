@@ -1,0 +1,162 @@
+{
+  "cards": [
+    {
+      "title": "Optimize WordPress permalinks and strip default plugins after install",
+      "summary": "Configure clean post-name URLs and deactivate bundled plugins before building a WooCommerce store, so product URLs stay readable and the site isn't bloated.",
+      "use_when": "You've just installed WordPress and WooCommerce on your host and need to lock down URL structure and plugin bloat before adding products.",
+      "steps": [
+        "Go to Settings > Permalinks and select 'Post name' so product and page URLs read as /product-name/ rather than /?p=123. This matters for SEO and for customers sharing product links.",
+        "Go to the Plugins screen and use bulk actions to deactivate and delete default plugins that ship with the host's WordPress install and aren't needed (e.g., sample/hello-world plugins, bundled marketing or AI plugins you won't use).",
+        "After permalink changes, verify a product page and a category page load correctly, because some hosts need a .htaccess or server rewrite refresh.",
+        "Confirm your SSL is active before launching checkout, since permalink and rewrites interact with HTTPS redirects on most hosts."
+      ],
+      "caveats": [
+        "The exact plugin names bundled by a host vary; verify which plugins are truly safe to delete before bulk-deleting.",
+        "Some managed hosts force a permalink structure or manage rewrites themselves."
+      ],
+      "tags": [
+        "store-setup",
+        "wordpress",
+        "woocommerce",
+        "permalinks",
+        "plugins",
+        "hosting"
+      ],
+      "id": "95ada3c416021f88ed23fe1b",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 0
+    },
+    {
+      "title": "Set origin-based vs destination-based tax correctly per state",
+      "summary": "Cross-reference TaxJar to determine whether each state taxes by shop base address or customer shipping address, then enter rates with four decimal places in WooCommerce.",
+      "use_when": "You're configuring WooCommerce tax rates and need to decide which address WooCommerce should use as the tax basis for each state you sell into.",
+      "steps": [
+        "Use TaxJar (or a similar reference) to look up each state's tax rule and confirm whether the state is origin-based or destination-based.",
+        "In WooCommerce, go to WooCommerce > Settings > Tax and choose the 'Calculate tax based on' option. For origin-based states, select 'Shop base address' so tax is computed from where your business is. For destination-based states, select 'Customer shipping address' so tax follows the buyer's location.",
+        "Add tax rates with four decimal places (e.g., 7.2500), matching how WooCommerce expects rate entry.",
+        "Test a cart with a shipping address in each type of state to confirm the tax line matches your expectation.",
+        "For multi-state selling, use tax tables/rates per state rather than a single blanket rate."
+      ],
+      "caveats": [
+        "WooCommerce's setting is global; if you ship to both origin- and destination-based states, you need per-state rate tables plus rules, not just one setting.",
+        "TaxJar data and state rules change; re-verify rates periodically or use an automated tax service for accuracy."
+      ],
+      "tags": [
+        "store-setup",
+        "tax",
+        "woocommerce",
+        "compliance",
+        "pricing",
+        "checkout"
+      ],
+      "id": "8e81d2277f7767bd13f0a306",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 0
+    },
+    {
+      "title": "Charge flat-rate shipping per item instead of per order",
+      "summary": "Use the [qty] shortcode in WooCommerce's flat-rate cost field to multiply a dollar amount by the number of items in the cart.",
+      "use_when": "You want shipping priced per unit (e.g., heavy or bulky goods) rather than a flat charge for the whole order.",
+      "steps": [
+        "In WooCommerce, go to Settings > Shipping, create or edit a shipping zone, and add a Flat Rate method.",
+        "In the Flat Rate cost field, enter a formula such as [qty] * 10 where 10 is your per-item dollar amount, so each item adds $10 to shipping.",
+        "Save and test with a two-item and three-item cart to confirm the shipping line scales as expected.",
+        "Combine with shipping classes if different product types need different per-item amounts."
+      ],
+      "caveats": [
+        "[qty] counts total cart quantity; if you need per-weight or per-dimension pricing, use weight/dimension-based rules instead.",
+        "Free-shipping thresholds or coupons can interact with flat-rate formulas; test combinations."
+      ],
+      "tags": [
+        "store-setup",
+        "shipping",
+        "woocommerce",
+        "flat-rate",
+        "cart",
+        "fulfillment"
+      ],
+      "id": "d3912129e9a75d2606476bf1",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 0
+    },
+    {
+      "title": "Install Stripe and PayPal via dedicated third-party plugins, not defaults",
+      "summary": "The source recommends skipping WooCommerce's bundled payment plugins and installing 'Payment Plugins for Stripe WooCommerce' and 'Payment Plugins for PayPal WooCommerce' for API-key setup.",
+      "use_when": "You're connecting card and PayPal payments and deciding which gateway plugin to install and how to enter API credentials.",
+      "steps": [
+        "In WordPress, go to Plugins > Add New and search for 'Payment Plugins for Stripe WooCommerce'; install and activate it. Repeat for 'Payment Plugins for PayPal WooCommerce'.",
+        "For Stripe: obtain your Publishable Key and Secret Key from your Stripe dashboard, then in the plugin go to Stripe API Settings, paste the Publishable Key, paste the Secret Key, and run the provided Connection Test.",
+        "Confirm the connection test passes before going live; a failed test usually means a wrong key or a test/live key mismatch.",
+        "Repeat the analogous API-key flow in the PayPal plugin, using your PayPal app credentials.",
+        "Place a live test transaction (small amount) and refund it to confirm the full capture and refund path works before launch."
+      ],
+      "caveats": [
+        "This is the presenter's recommendation; default WooCommerce gateway plugins also exist and may suit simpler setups.",
+        "Plugin interfaces and menu names change — verify the current settings paths in your installed version.",
+        "Never paste live secret keys into a shared or test environment you don't control."
+      ],
+      "tags": [
+        "store-setup",
+        "payments",
+        "stripe",
+        "paypal",
+        "woocommerce",
+        "plugins",
+        "checkout"
+      ],
+      "id": "b0fd0a5facf8368ee86133e4",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 0
+    },
+    {
+      "title": "Create global product attributes before building variable products",
+      "summary": "For variable products, define attributes globally first, then attach them to the product and generate variations with individual SKUs, images, prices and stock.",
+      "use_when": "You're creating a variable product (e.g., apparel with sizes and colors) and need a repeatable, correctly ordered workflow.",
+      "steps": [
+        "Go to Products > Attributes and create global attributes (e.g., Weight, Toy Option, Size, Color) with their terms. Do this globally rather than only at the product level so attributes can be reused across the catalog.",
+        "Open the product and set Product data to 'Variable product'.",
+        "Add the existing global attributes on the Attributes tab and check 'Used for variations' for each one you want to generate combinations from.",
+        "Click 'Generate variations' to create the full combination set, then assign each variation its own SKU, image, price and stock.",
+        "Ensure every variation has a price, because a variation with no price is not purchasable.",
+        "Save and check the product page to confirm all desired variations appear and are selectable."
+      ],
+      "caveats": [
+        "Generating all combinations can create many variations for multi-attribute products; prune unused combinations.",
+        "Global attributes are the recommended pattern, but product-level (custom) attributes still exist and may be fine for one-off products."
+      ],
+      "tags": [
+        "store-setup",
+        "products",
+        "woocommerce",
+        "variable-products",
+        "attributes",
+        "catalog"
+      ],
+      "id": "13e3297ba233d424c335d6b7",
+      "source_id": "1L4m4We7PTUdjH3Mk7VxqSxAc_U4D-yFT",
+      "source_sha256": "643d65bc5d577d99b2fb9eeedd26d8f520121976d6ce4384ec2340474387afe1",
+      "source_name": "WooCommerce Tutorial 2026_ Complete MasterClass for Beginners.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 0
+    }
+  ],
+  "request_id": "0afa545f9a4ba6f846c6e0180611dbd7345fe4c8b2001ccc887648d3d268c30f",
+  "ecommerce_scope_version": 1
+}

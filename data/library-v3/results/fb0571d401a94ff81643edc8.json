@@ -1,0 +1,165 @@
+{
+  "cards": [
+    {
+      "title": "What the Meta Conversions API Gateway actually is",
+      "summary": "A hybrid setup where the client-side pixel fires as usual and also relays the same event to a first-party subdomain gateway that forwards it to Meta's Conversions API.",
+      "use_when": "Deciding how to add server-side conversion tracking to an ecommerce store when you have no developer resources and are considering the Meta CAPI Gateway instead of a full server-side tag manager.",
+      "steps": [
+        "Understand the topology: the existing browser pixel continues sending events directly to Meta, and simultaneously sends a copy of each event to a custom subdomain (e.g. cpg.yourdomain.com) that runs only a forwarding server for Meta events.",
+        "Recognize this is a 'gateway', not a general-purpose server container: it accepts Meta events and passes them on; it is not a GTM server-side environment you can extend with other tags.",
+        "Know the intended audience: merchants who lack the skills/resources for true server-side tagging, want a low-effort accuracy bump, and are not already on a plugin that auto-installs both the pixel and Conversions API.",
+        "Decide deliberately: choose the gateway only as a quick stopgap; treat full server-side tagging as the target state if deduplication and cookie control matter.",
+        "If you proceed, verify on a live page in DevTools Network tab that both the direct Meta request and a request to your gateway subdomain carry the same event ID."
+      ],
+      "caveats": [
+        "The vendor claims (e.g. average cost-per-result improvements up to 13% and ~7% more conversions) are vendor-reported figures, not guarantees; the source argues real-world results are lower because of the architecture.",
+        "This is one practitioner's opinion (Analytics Mania); treat the recommendation against the gateway as a situational judgment, not a universal rule."
+      ],
+      "tags": [
+        "measurement",
+        "meta-capi",
+        "server-side-tagging",
+        "tracking-setup",
+        "conversion-tracking",
+        "ecommerce-analytics"
+      ],
+      "id": "94681676110e5db4248c1ecd",
+      "source_id": "14YD5_w7q2arGSgAKL3QQHM8sZTotO82M",
+      "source_sha256": "cf62b47f178faf3c0bef0314bca3be2ba2618edc841eb83464afec6dbd834f6f",
+      "source_name": "Facebook Conversions API gateway tutorial (FB CAPI Gateway a.k.a. Meta CAPI gateway).docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 0
+    },
+    {
+      "title": "Why the CAPI Gateway fails against ad blockers",
+      "summary": "Because the gateway call is triggered by the client-side pixel, anything that blocks the pixel also blocks the server-side relay, defeating the main reason to adopt server-side tracking.",
+      "use_when": "Evaluating whether the Meta CAPI Gateway will recover conversions lost to ad blockers and browser privacy extensions on your storefront before you invest in it.",
+      "steps": [
+        "Accept the dependency: the request to the gateway subdomain is initiated by the browser pixel, so the gateway is not an independent, server-originated data path.",
+        "Test it yourself: install an aggressive blocker (the source used Ghostery) in a clean browser, reload a product or checkout page, and filter the Network tab for 'facebook'.",
+        "Expected observation: with the blocker active, the pixel request never loads, and therefore no request to the gateway subdomain is made either.",
+        "Conclude that 'bypassing ad blockers' — the primary value proposition of server-side tracking — is largely unachieved here; the source estimates the realistic improvement from this gateway at best 1–2%, versus the vendor's promotional numbers.",
+        "If blocker resilience is your actual goal, plan for a genuinely independent server-side setup instead of a client-triggered gateway."
+      ],
+      "caveats": [
+        "The 1–2% figure is the presenter's estimate, not a measured benchmark.",
+        "Blocker behavior changes over time; retest rather than relying on any fixed number."
+      ],
+      "tags": [
+        "measurement",
+        "meta-capi",
+        "ad-blockers",
+        "server-side-tagging",
+        "tracking-accuracy",
+        "testing"
+      ],
+      "id": "bab947623e260b1907a2fc0b",
+      "source_id": "14YD5_w7q2arGSgAKL3QQHM8sZTotO82M",
+      "source_sha256": "cf62b47f178faf3c0bef0314bca3be2ba2618edc841eb83464afec6dbd834f6f",
+      "source_name": "Facebook Conversions API gateway tutorial (FB CAPI Gateway a.k.a. Meta CAPI gateway).docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 0
+    },
+    {
+      "title": "Deduplicating pixel and Conversions API events with matching IDs",
+      "summary": "The gateway auto-attaches the same event ID to both the browser pixel event and the server-side event so Meta can deduplicate the pair.",
+      "use_when": "Verifying your conversion tracking after installing the CAPI Gateway, or diagnosing double-counted purchases and inflated conversion counts.",
+      "steps": [
+        "After connecting your pixel to the gateway, open the Meta Pixel Helper on a live page and confirm an event ID is now present on the pixel event.",
+        "Open DevTools Network, filter for 'facebook', and locate the request going to your gateway subdomain.",
+        "Inspect that request's payload and confirm the same event ID appears that you saw in the Pixel Helper.",
+        "Confirm the event IDs match for each event type (page view, AddToCart, Purchase, etc.); mismatched or missing IDs mean deduplication will fail and conversions may be double counted.",
+        "Monitor Events Manager after a few days for duplicate-event warnings or unexpected conversion volume jumps from dedup failures."
+      ],
+      "caveats": [
+        "Deduplication ID handling is automatic with the gateway; if you build custom server-side tagging you must manage event IDs yourself.",
+        "Meta's interface and deduplication diagnostics change over time — verify current behavior in Events Manager."
+      ],
+      "tags": [
+        "measurement",
+        "meta-capi",
+        "deduplication",
+        "event-tracking",
+        "conversion-tracking",
+        "pixel"
+      ],
+      "id": "90f2da80bf6715aa1b7c163c",
+      "source_id": "14YD5_w7q2arGSgAKL3QQHM8sZTotO82M",
+      "source_sha256": "cf62b47f178faf3c0bef0314bca3be2ba2618edc841eb83464afec6dbd834f6f",
+      "source_name": "Facebook Conversions API gateway tutorial (FB CAPI Gateway a.k.a. Meta CAPI gateway).docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 0
+    },
+    {
+      "title": "Setting up the gateway via Stape: pricing and subdomain mapping",
+      "summary": "A cheaper third-party host (Stape) provisions the Meta CAPI gateway, but the real setup step is mapping a dedicated CNAME subdomain so the pixel has a first-party endpoint.",
+      "use_when": "Provisioning the Meta CAPI Gateway for a store and mapping a first-party subdomain as a low-cost alternative to Meta's own gateway hosting.",
+      "steps": [
+        "Create the gateway with a third-party host: the source used Stape, where a Meta CAPI gateway costs about $10/month per pixel (price per pixel drops as you add more); Meta's own Events Manager-hosted option starts around $30 because it uses Amazon servers. Verify current pricing before buying.",
+        "Sign up (7-day trial available in the source's example), name the gateway after the store, choose a location, confirm email, and set a password.",
+        "In the gateway interface, click 'add data source', select Facebook login, confirm identity, choose the business account, then select the pixel installed on the site.",
+        "Configure DNS: pick a subdomain used by nothing else (e.g. cpg for cpg.yourdomain.com) — if the site is www.example.com, enter the root domain and the subdomain separately.",
+        "Create a CNAME record at your DNS provider: type CNAME, name = your subdomain, target = the host-provided domain, and disable proxying.",
+        "Wait for propagation — the source saw 5–10 minutes with Cloudflare, but it can take up to an hour — then confirm the setup shows 'optimized' with a green check.",
+        "Note that the subdomain change does not take effect immediately; allow time before re-checking Network requests."
+      ],
+      "caveats": [
+        "DNS propagation time depends on your DNS vendor and is outside your control.",
+        "Interface steps and pricing change; verify in the current Stape and Meta UIs.",
+        "Disabling proxy at the DNS layer matters for the CNAME to resolve correctly."
+      ],
+      "tags": [
+        "measurement",
+        "meta-capi",
+        "stape",
+        "dns",
+        "subdomain",
+        "tracking-setup",
+        "server-side-tagging"
+      ],
+      "id": "530daade4029ac698f0f1ad8",
+      "source_id": "14YD5_w7q2arGSgAKL3QQHM8sZTotO82M",
+      "source_sha256": "cf62b47f178faf3c0bef0314bca3be2ba2618edc841eb83464afec6dbd834f6f",
+      "source_name": "Facebook Conversions API gateway tutorial (FB CAPI Gateway a.k.a. Meta CAPI gateway).docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 0
+    },
+    {
+      "title": "What true server-side tagging buys over the gateway",
+      "summary": "A full server-side setup can rewrite request URLs via a custom loader for higher delivery rates and can extend cookie lifetime, which the gateway does not do.",
+      "use_when": "Choosing between the Meta CAPI Gateway and a full server-side (e.g. GTM server container) setup for a store that needs durable attribution and cookie longevity.",
+      "steps": [
+        "Assess the gateway's gaps: it does not let you modify the request URL sent to your server, and it does not extend cookie lifetime.",
+        "Consider a custom loader approach (the source cites Stape's) that rewrites the entire request URL to your server, which raises the odds the data reaches the server before being forwarded to Meta.",
+        "If longer attribution windows matter — e.g. considered purchases with multi-day research before checkout — evaluate server-side cookie lifetime extension, which the gateway cannot do.",
+        "Weigh effort against gain: proper server-side tagging takes more configuration, but the source argues the results are meaningfully better than the gateway.",
+        "Plan the migration path: start on the gateway to get Conversions API going quickly, then move to a server container when you have developer capacity."
+      ],
+      "caveats": [
+        "The source's claim that server-side 'results are much better' is a practitioner opinion; the gain varies by site, traffic mix, and blocker exposure.",
+        "Custom loader and cookie-extension features depend on the host platform and must be verified as currently available."
+      ],
+      "tags": [
+        "measurement",
+        "server-side-tagging",
+        "meta-capi",
+        "cookie-lifetime",
+        "attribution",
+        "tracking-setup"
+      ],
+      "id": "21d5b62f2a73d9453cbc41b9",
+      "source_id": "14YD5_w7q2arGSgAKL3QQHM8sZTotO82M",
+      "source_sha256": "cf62b47f178faf3c0bef0314bca3be2ba2618edc841eb83464afec6dbd834f6f",
+      "source_name": "Facebook Conversions API gateway tutorial (FB CAPI Gateway a.k.a. Meta CAPI gateway).docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 0
+    }
+  ],
+  "request_id": "a474d2d646318de717e0af79d066dc01bae258ce942c9257dbe7492ad3b7ea27",
+  "ecommerce_scope_version": 1
+}

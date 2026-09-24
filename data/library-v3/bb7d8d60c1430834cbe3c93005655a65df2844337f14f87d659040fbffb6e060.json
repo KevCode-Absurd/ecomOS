@@ -1,0 +1,208 @@
+{
+  "request_id": "bb7d8d60c1430834cbe3c93005655a65df2844337f14f87d659040fbffb6e060",
+  "provider": "deepseek",
+  "model": "deepseek-flash",
+  "effort": "none",
+  "completion_limit": 16384,
+  "usage": {
+    "prompt_tokens": 2637,
+    "completion_tokens": 2535,
+    "total_tokens": 5172,
+    "prompt_tokens_details": {
+      "cached_tokens": 384
+    },
+    "prompt_cache_hit_tokens": 384,
+    "prompt_cache_miss_tokens": 2253
+  },
+  "booked_cost_usd": 0.0038331,
+  "seconds": 14.3,
+  "finish_reason": "stop",
+  "output": {
+    "cards": [
+      {
+        "title": "Kalodata baseline filter settings for early-breakout products",
+        "summary": "Configuring the Kalodata/Shop Plus product screen (timeframe, revenue band, video-only attribution, ascending sort) to surface untapped TikTok Shop winners instead of saturated giants.",
+        "use_when": "Starting a product hunt in Kalodata or Shop Plus (accessed via Spy Crew) and needing a repeatable first-pass filter before graph analysis.",
+        "steps": [
+          "Set the timeframe to Last 30 Days so you are reading current momentum, not lifetime totals.",
+          "Set the revenue range to $33,000–$97,000 per month. The upper bound exists to filter out $300k+/month products that already attract heavy competitor attention; the lower bound keeps enough baseline demand to prove the product sells.",
+          "Restrict revenue source to Video only and exclude Live stream revenue. Live revenue is not replicable with paid static/UGC video ads, so it distorts what you can actually copy.",
+          "Restrict categories to: Health, Beauty & Personal Care, Women's Wear/Underwear, Men's Wear/Underwear, Home Improvement. (These are the source's chosen hunting grounds; the mechanics apply to other categories if you prefer.)",
+          "Sort revenue from Lowest to Highest within the filtered range. The products near the bottom of the band are the earliest breakouts — higher in the band means more competition already in.",
+          "Open each candidate and proceed to 30-day and 180-day graph analysis rather than trusting the list number alone."
+        ],
+        "caveats": [
+          "Spy-tool interfaces, revenue bands and category menus change frequently — verify the current Kalodata/Shop Plus UI before acting.",
+          "The $33k–$97k band is a heuristic from one operator, not a validated benchmark; adjust to your own capital and margin profile."
+        ],
+        "tags": [
+          "product-research",
+          "kalodata",
+          "tiktok-shop",
+          "filtering",
+          "acquisition",
+          "trend-validation"
+        ]
+      },
+      {
+        "title": "Validate a product's growth curve with 30-day and 180-day graphs",
+        "summary": "Reading the 30-day upward tilt, then immediately checking the 180-day view to reject products that peaked months ago and are now dying.",
+        "use_when": "After a Kalodata/Shop Plus candidate passes the revenue-band filter, to decide whether it is genuinely climbing or a dead product attempting a revival.",
+        "steps": [
+          "Open the 30-day revenue graph and look for a clear upward tilt at the end of the window — ideally stabilization followed by an upward turn, not a spike-and-drop or a flat line.",
+          "Immediately switch to the 180-day view. This is the step that separates early breakouts from zombies.",
+          "Discard the product if the 180-day graph shows it peaked months ago and is currently flatlining or trending down. A product whose best days were months back has already been mined by other sellers.",
+          "Discard flatlines outright — no trajectory, no reason to expect your ad spend will change the curve.",
+          "Discard any product trending straight down, even if the last few days tick up; one small bump inside a downtrend is not a trend.",
+          "Only advance products that show a rising trajectory across both windows, meaning the recent uptick sits on a still-living, non-faded base."
+        ],
+        "caveats": [
+          "Graph reads are subjective; a short-lived spike can look like an uptrend in the 30-day view, which is why the 180-day check is mandatory rather than optional.",
+          "Trend-tool data lags and can be revised, so treat the graph as one signal, not proof."
+        ],
+        "tags": [
+          "product-research",
+          "kalodata",
+          "graph-analysis",
+          "trend-validation",
+          "tiktok-shop",
+          "experiment-design"
+        ]
+      },
+      {
+        "title": "Check revenue distribution across recent videos, not one old viral hit",
+        "summary": "Inspecting a product's top videos to confirm revenue comes from multiple recent creatives rather than a single aged anomaly that will not repeat.",
+        "use_when": "When a Kalodata/Shop Plus product looks promising on the graph and you need to verify the revenue is repeatable with new creative.",
+        "steps": [
+          "Click into the product's video list and look at the top-performing videos and their posting dates.",
+          "Confirm the highest-revenue video was posted within the last 7 to 14 days. An old top video means the momentum has passed.",
+          "Discard the product if roughly 90–95% of revenue is carried by a single old video — for example a six-month-old viral hit. That is an anomaly, not a repeatable demand signal.",
+          "Require a healthy spread: revenue distributed across at least 3 to 5 recent videos. Multiple recent sellers succeeding suggests the product's demand is broad enough for a new entrant.",
+          "Sanity-check the count of creators running ads on the product in Facebook Ad Library (search the product name) to gauge how crowded the space already is."
+        ],
+        "caveats": [
+          "A product with strongly distributed recent revenue is also a product others have noticed; distribution and competition rise together.",
+          "Before sourcing, also discard ~$9.99 TikTok Shop products — the source treats that price point as lacking the margin to survive Meta ad acquisition costs."
+        ],
+        "tags": [
+          "product-research",
+          "kalodata",
+          "creative-strategy",
+          "revenue-distribution",
+          "tiktok-shop",
+          "ad-library"
+        ]
+      },
+      {
+        "title": "Cross-reference TikTok demand with Google Trends and Meta Ad Library",
+        "summary": "Validating a TikTok Shop candidate off-platform by searching the exact sub-niche in Google Trends and counting competitors running Meta ads.",
+        "use_when": "Before committing to sourcing or a paid test, to confirm demand is not confined to TikTok's algorithmic bubble.",
+        "steps": [
+          "Open Google Trends and search the exact product variation, not the broad parent category. The source's example: search \"GLP-1 patches\" rather than just \"GLP-1\".",
+          "Read the 12-month graph and require an active, current upward trajectory. A sub-niche already declining or spiking-and-fading on search interest is a weaker bet even if TikTok revenue looks fine.",
+          "Go to Facebook Ad Library and search the product name to see how many advertisers are currently running ads on it. Zero to few advertisers on a validated product can indicate an open lane; a crowded library means the window is closing.",
+          "Treat the two checks as tension tests: rising search interest plus a thin advertiser pool is the most attractive combination; rising interest plus dozens of advertisers means you are late.",
+          "If the product also shows a renewable/subscription angle (e.g. patches, refills), weigh that favorably — the source prefers repeat-purchase products for MRR, though it is optional."
+        ],
+        "caveats": [
+          "Google Trends is relative, not absolute volume, and can be skewed by news spikes; match the term precisely or the read is meaningless.",
+          "Ad Library coverage and search behavior change often; verify current tool behavior."
+        ],
+        "tags": [
+          "product-research",
+          "google-trends",
+          "ad-library",
+          "trend-validation",
+          "tiktok-shop",
+          "competitor-research"
+        ]
+      },
+      {
+        "title": "The sourcing criteria stack: problem-solving, English ads, renewable demand",
+        "summary": "The qualitative screen applied alongside Kalodata's numeric filters — problem/insecurity angle, English-language creative, repeat-purchase potential, and margin-friendly pricing.",
+        "use_when": "Choosing between several candidates that already pass the revenue, graph and video-distribution filters.",
+        "steps": [
+          "Prefer products that solve a problem or address an insecurity. Problem-driven and insecurity-driven products give you a clear hook and a reason for the viewer to stop scrolling.",
+          "Restrict to English-speaking ads only (exclude Spanish-language creative in the source's filter). You want to be able to read and adapt the winning angles yourself.",
+          "Favor a renewable product if possible — something customers rebuy or subscribe to — because it supports subscription MRR rather than one-off purchases. The source marks this as optional but preferred, so do not discard a strong one-off solely for failing it.",
+          "Reject products priced around $9.99 on TikTok Shop. At that price the sale is a cheap impulse buy and there is no margin left for Meta acquisition costs.",
+          "Score candidates on all criteria together rather than letting any single metric dominate; the numeric filters prove demand, the qualitative criteria predict whether you can profitably acquire buyers."
+        ],
+        "caveats": [
+          "The renewable-product preference is an operator's stated preference, not a rule; some winners are purely one-off purchases.",
+          "Price thresholds are illustrative — run your own margin math against your expected CPA rather than copying a number."
+        ],
+        "tags": [
+          "product-research",
+          "offer-design",
+          "positioning",
+          "pricing",
+          "retention",
+          "tiktok-shop"
+        ]
+      },
+      {
+        "title": "Mix-and-match sourcing: borrow a viral TikTok hook, attach your own UGC body",
+        "summary": "A testing setup that takes a proven native TikTok hook from a top video and stitches it to a longer convincing UGC body for Meta ads.",
+        "use_when": "Once a product has passed sourcing validation and you are preparing the first Meta test creative.",
+        "steps": [
+          "From the product's validated top videos, identify the hook — the opening seconds that clearly drove the native TikTok performance. Treat it as a controllable variable separate from the rest of the ad.",
+          "Take that proven hook and stitch it onto a longer, convincing UGC video body of your own. The hypothesis is that the borrowed hook carries attention and the UGC body carries persuasion.",
+          "Keep the creative work in your ad-creative process, not your sourcing process — sourcing ends at product selection; the splice is a creative decision.",
+          "Check on-platform validation first: if the hook came from a video posted within the last 7–14 days on a product with distributed revenue, it is the most defensible piece to reuse.",
+          "Use the resulting mix as the test asset in a short paid-media validation phase; do not let testing mechanics crowd out the product-selection decision."
+        ],
+        "caveats": [
+          "Do not reproduce competitors' creative wholesale; adapt hooks rather than copying full videos.",
+          "The source presents stitching as its standard testing setup, not a guarantee of Meta performance — test it against your own controls."
+        ],
+        "tags": [
+          "creative-strategy",
+          "product-research",
+          "tiktok-shop",
+          "ugc",
+          "experiment-design",
+          "ad-creative"
+        ]
+      },
+      {
+        "title": "Keep sourcing, creative, media buying and storefront as separate decisions",
+        "summary": "Drawing scope boundaries so the product-research phase stays about trend and demand validation rather than drifting into ad editing, campaign setup or store design.",
+        "use_when": "Running or delegating a TikTok Shop product hunt and needing to know where the sourcing job ends.",
+        "steps": [
+          "Scope the hunt to active sourcing using TikTok Shop intelligence tools (Kalodata / Shop Plus): filtering mechanics, graph analysis, video-age verification and cross-platform trend validation.",
+          "Stop sourcing work at a validated product and validated demand signals. Do not fold in the editing of spliced hook-plus-UGC creatives — that is a creative-strategy task.",
+          "Do not fold in launching the two-to-three-day Meta ads testing phase or any media-buying execution — that is paid-media work.",
+          "Do not fold in designing the branded storefront — that is a storefront-architecture task.",
+          "Practically: keep one document or kanban column for candidate products with their graph/video/trend evidence, and hand off the product with the evidence attached so downstream creative and media decisions start from validated demand."
+        ],
+        "caveats": [
+          "The boundary mapping is a workflow convention from the source's system, not an industry standard; adapt it to your team's real handoffs.",
+          "Sourcing tools and validation signals are fast-decaying, so re-verify mechanics before each hunt."
+        ],
+        "tags": [
+          "product-research",
+          "workflow",
+          "kalodata",
+          "tiktok-shop",
+          "conversion-optimization",
+          "measurement"
+        ]
+      }
+    ]
+  },
+  "raw_content": "{\"cards\": [{\"title\": \"Kalodata baseline filter settings for early-breakout products\", \"summary\": \"Configuring the Kalodata/Shop Plus product screen (timeframe, revenue band, video-only attribution, ascending sort) to surface untapped TikTok Shop winners instead of saturated giants.\", \"use_when\": \"Starting a product hunt in Kalodata or Shop Plus (accessed via Spy Crew) and needing a repeatable first-pass filter before graph analysis.\", \"steps\": [\"Set the timeframe to Last 30 Days so you are reading current momentum, not lifetime totals.\", \"Set the revenue range to $33,000–$97,000 per month. The upper bound exists to filter out $300k+/month products that already attract heavy competitor attention; the lower bound keeps enough baseline demand to prove the product sells.\", \"Restrict revenue source to Video only and exclude Live stream revenue. Live revenue is not replicable with paid static/UGC video ads, so it distorts what you can actually copy.\", \"Restrict categories to: Health, Beauty & Personal Care, Women's Wear/Underwear, Men's Wear/Underwear, Home Improvement. (These are the source's chosen hunting grounds; the mechanics apply to other categories if you prefer.)\", \"Sort revenue from Lowest to Highest within the filtered range. The products near the bottom of the band are the earliest breakouts — higher in the band means more competition already in.\", \"Open each candidate and proceed to 30-day and 180-day graph analysis rather than trusting the list number alone.\"], \"caveats\": [\"Spy-tool interfaces, revenue bands and category menus change frequently — verify the current Kalodata/Shop Plus UI before acting.\", \"The $33k–$97k band is a heuristic from one operator, not a validated benchmark; adjust to your own capital and margin profile.\"], \"tags\": [\"product-research\", \"kalodata\", \"tiktok-shop\", \"filtering\", \"acquisition\", \"trend-validation\"]}, {\"title\": \"Validate a product's growth curve with 30-day and 180-day graphs\", \"summary\": \"Reading the 30-day upward tilt, then immediately checking the 180-day view to reject products that peaked months ago and are now dying.\", \"use_when\": \"After a Kalodata/Shop Plus candidate passes the revenue-band filter, to decide whether it is genuinely climbing or a dead product attempting a revival.\", \"steps\": [\"Open the 30-day revenue graph and look for a clear upward tilt at the end of the window — ideally stabilization followed by an upward turn, not a spike-and-drop or a flat line.\", \"Immediately switch to the 180-day view. This is the step that separates early breakouts from zombies.\", \"Discard the product if the 180-day graph shows it peaked months ago and is currently flatlining or trending down. A product whose best days were months back has already been mined by other sellers.\", \"Discard flatlines outright — no trajectory, no reason to expect your ad spend will change the curve.\", \"Discard any product trending straight down, even if the last few days tick up; one small bump inside a downtrend is not a trend.\", \"Only advance products that show a rising trajectory across both windows, meaning the recent uptick sits on a still-living, non-faded base.\"], \"caveats\": [\"Graph reads are subjective; a short-lived spike can look like an uptrend in the 30-day view, which is why the 180-day check is mandatory rather than optional.\", \"Trend-tool data lags and can be revised, so treat the graph as one signal, not proof.\"], \"tags\": [\"product-research\", \"kalodata\", \"graph-analysis\", \"trend-validation\", \"tiktok-shop\", \"experiment-design\"]}, {\"title\": \"Check revenue distribution across recent videos, not one old viral hit\", \"summary\": \"Inspecting a product's top videos to confirm revenue comes from multiple recent creatives rather than a single aged anomaly that will not repeat.\", \"use_when\": \"When a Kalodata/Shop Plus product looks promising on the graph and you need to verify the revenue is repeatable with new creative.\", \"steps\": [\"Click into the product's video list and look at the top-performing videos and their posting dates.\", \"Confirm the highest-revenue video was posted within the last 7 to 14 days. An old top video means the momentum has passed.\", \"Discard the product if roughly 90–95% of revenue is carried by a single old video — for example a six-month-old viral hit. That is an anomaly, not a repeatable demand signal.\", \"Require a healthy spread: revenue distributed across at least 3 to 5 recent videos. Multiple recent sellers succeeding suggests the product's demand is broad enough for a new entrant.\", \"Sanity-check the count of creators running ads on the product in Facebook Ad Library (search the product name) to gauge how crowded the space already is.\"], \"caveats\": [\"A product with strongly distributed recent revenue is also a product others have noticed; distribution and competition rise together.\", \"Before sourcing, also discard ~$9.99 TikTok Shop products — the source treats that price point as lacking the margin to survive Meta ad acquisition costs.\"], \"tags\": [\"product-research\", \"kalodata\", \"creative-strategy\", \"revenue-distribution\", \"tiktok-shop\", \"ad-library\"]}, {\"title\": \"Cross-reference TikTok demand with Google Trends and Meta Ad Library\", \"summary\": \"Validating a TikTok Shop candidate off-platform by searching the exact sub-niche in Google Trends and counting competitors running Meta ads.\", \"use_when\": \"Before committing to sourcing or a paid test, to confirm demand is not confined to TikTok's algorithmic bubble.\", \"steps\": [\"Open Google Trends and search the exact product variation, not the broad parent category. The source's example: search \\\"GLP-1 patches\\\" rather than just \\\"GLP-1\\\".\", \"Read the 12-month graph and require an active, current upward trajectory. A sub-niche already declining or spiking-and-fading on search interest is a weaker bet even if TikTok revenue looks fine.\", \"Go to Facebook Ad Library and search the product name to see how many advertisers are currently running ads on it. Zero to few advertisers on a validated product can indicate an open lane; a crowded library means the window is closing.\", \"Treat the two checks as tension tests: rising search interest plus a thin advertiser pool is the most attractive combination; rising interest plus dozens of advertisers means you are late.\", \"If the product also shows a renewable/subscription angle (e.g. patches, refills), weigh that favorably — the source prefers repeat-purchase products for MRR, though it is optional.\"], \"caveats\": [\"Google Trends is relative, not absolute volume, and can be skewed by news spikes; match the term precisely or the read is meaningless.\", \"Ad Library coverage and search behavior change often; verify current tool behavior.\"], \"tags\": [\"product-research\", \"google-trends\", \"ad-library\", \"trend-validation\", \"tiktok-shop\", \"competitor-research\"]}, {\"title\": \"The sourcing criteria stack: problem-solving, English ads, renewable demand\", \"summary\": \"The qualitative screen applied alongside Kalodata's numeric filters — problem/insecurity angle, English-language creative, repeat-purchase potential, and margin-friendly pricing.\", \"use_when\": \"Choosing between several candidates that already pass the revenue, graph and video-distribution filters.\", \"steps\": [\"Prefer products that solve a problem or address an insecurity. Problem-driven and insecurity-driven products give you a clear hook and a reason for the viewer to stop scrolling.\", \"Restrict to English-speaking ads only (exclude Spanish-language creative in the source's filter). You want to be able to read and adapt the winning angles yourself.\", \"Favor a renewable product if possible — something customers rebuy or subscribe to — because it supports subscription MRR rather than one-off purchases. The source marks this as optional but preferred, so do not discard a strong one-off solely for failing it.\", \"Reject products priced around $9.99 on TikTok Shop. At that price the sale is a cheap impulse buy and there is no margin left for Meta acquisition costs.\", \"Score candidates on all criteria together rather than letting any single metric dominate; the numeric filters prove demand, the qualitative criteria predict whether you can profitably acquire buyers.\"], \"caveats\": [\"The renewable-product preference is an operator's stated preference, not a rule; some winners are purely one-off purchases.\", \"Price thresholds are illustrative — run your own margin math against your expected CPA rather than copying a number.\"], \"tags\": [\"product-research\", \"offer-design\", \"positioning\", \"pricing\", \"retention\", \"tiktok-shop\"]}, {\"title\": \"Mix-and-match sourcing: borrow a viral TikTok hook, attach your own UGC body\", \"summary\": \"A testing setup that takes a proven native TikTok hook from a top video and stitches it to a longer convincing UGC body for Meta ads.\", \"use_when\": \"Once a product has passed sourcing validation and you are preparing the first Meta test creative.\", \"steps\": [\"From the product's validated top videos, identify the hook — the opening seconds that clearly drove the native TikTok performance. Treat it as a controllable variable separate from the rest of the ad.\", \"Take that proven hook and stitch it onto a longer, convincing UGC video body of your own. The hypothesis is that the borrowed hook carries attention and the UGC body carries persuasion.\", \"Keep the creative work in your ad-creative process, not your sourcing process — sourcing ends at product selection; the splice is a creative decision.\", \"Check on-platform validation first: if the hook came from a video posted within the last 7–14 days on a product with distributed revenue, it is the most defensible piece to reuse.\", \"Use the resulting mix as the test asset in a short paid-media validation phase; do not let testing mechanics crowd out the product-selection decision.\"], \"caveats\": [\"Do not reproduce competitors' creative wholesale; adapt hooks rather than copying full videos.\", \"The source presents stitching as its standard testing setup, not a guarantee of Meta performance — test it against your own controls.\"], \"tags\": [\"creative-strategy\", \"product-research\", \"tiktok-shop\", \"ugc\", \"experiment-design\", \"ad-creative\"]}, {\"title\": \"Keep sourcing, creative, media buying and storefront as separate decisions\", \"summary\": \"Drawing scope boundaries so the product-research phase stays about trend and demand validation rather than drifting into ad editing, campaign setup or store design.\", \"use_when\": \"Running or delegating a TikTok Shop product hunt and needing to know where the sourcing job ends.\", \"steps\": [\"Scope the hunt to active sourcing using TikTok Shop intelligence tools (Kalodata / Shop Plus): filtering mechanics, graph analysis, video-age verification and cross-platform trend validation.\", \"Stop sourcing work at a validated product and validated demand signals. Do not fold in the editing of spliced hook-plus-UGC creatives — that is a creative-strategy task.\", \"Do not fold in launching the two-to-three-day Meta ads testing phase or any media-buying execution — that is paid-media work.\", \"Do not fold in designing the branded storefront — that is a storefront-architecture task.\", \"Practically: keep one document or kanban column for candidate products with their graph/video/trend evidence, and hand off the product with the evidence attached so downstream creative and media decisions start from validated demand.\"], \"caveats\": [\"The boundary mapping is a workflow convention from the source's system, not an industry standard; adapt it to your team's real handoffs.\", \"Sourcing tools and validation signals are fast-decaying, so re-verify mechanics before each hunt.\"], \"tags\": [\"product-research\", \"workflow\", \"kalodata\", \"tiktok-shop\", \"conversion-optimization\", \"measurement\"]}]}",
+  "input": {
+    "source_id": "1QvRAfUQ6OUSwiF_M4V15SrlUtPUAIROU",
+    "source_sha256": "be0b4d82534d103c15bac22a9f592b74d765b9eb7f108dd21fada44ba4bf5340",
+    "source_name": "This Product Research Method Made Me $2.3M Dropshipping (LIVE HUNTING).docx",
+    "folder": "/01-PRD-product-research",
+    "domain": "product-research",
+    "section": 0,
+    "section_count": 3,
+    "text": "Process and Classify Information:\n\nTopic: Product Research using Kalodata/Shop Plus (via Spy Crew) to find winning dropshipping products.\n\nCore Concepts:\n\nTool: Kalodata (or Shop Plus via Spy Crew).\n\nCriteria: Renewable product (optional but preferred for subscription MRR), solves a problem/insecurity, new ads (recent video posting dates), strong revenue trend upwards (graph analysis), revenue range 33k-97k/mo (not too high to avoid extreme competition), English-speaking ads only (no Spanish).\n\nFiltering execution:\n\nLast 30 days.\n\nRevenue source: Video (not live streams).\n\nCategories: Health, Beauty & Personal Care, Women's Wear/Underwear, Men's Wear/Underwear, Home Improvement.\n\nSort: Lowest to highest (within the 33k-97k range) to find untapped products.\n\nGraph Analysis: Look for stabilization with an upward tilt at the end. Discard products trending straight down. Switch to 180-day view to check history (avoid products that peaked months ago and are now dead).\n\nVideo Analysis: Ensure revenue is distributed across multiple videos, not carried by a single 6-month-old video. Check posting dates of top videos (must be within the last week).\n\nCross-referencing: Check Google Trends (e.g., \"GLP-1 patches\" climbing). Check Facebook Ad Library for competitors (search product name to see how many people are running ads).\n\nTesting Setup: Take hook from a highly viral native TikTok ad and stitch it to a longer, convincing UGC video for Meta ads.\n\nModule fit: This is exactly [02-PRD] / Active Ad Spy Sourcing (Kalodata mechanics).\n\nBoundaries:\n\nCreating the \"Mix Match\" ad creative -> [03-CRE].\n\nDesigning the store -> [05-WEB].\n\nRunning the Meta Ads -> [04-MED].\n\nFormat into Taxonomy:\n\nScope definition: Active product sourcing frameworks using TikTok Shop spy tools (Kalodata/Shop Plus) to identify untapped, upward-trending products. Focuses on graph analysis, revenue distribution across videos, and validating trend velocity.\n\nBoundaries: Map to [03-CRE] (Ad creative splicing), [04-MED] (Media buying tests).\n\nHeader details:\n\nurl: https://www.youtube.com/watch?v=sCUEN4htx-0\n\nsource_date: 2025-06\n\nverified_at: 2026-09-19 (current date)\n\nrights: public_reference\n\nwhy: Explains how to read Kalodata revenue graphs across 30-day and 180-day windows to avoid \"dead\" products, and how to verify revenue distribution across multiple recent videos.\n\nmodules: [[02-PRD]]\n\ntopics: [[Kalodata Mechanics, Graph Analysis, Revenue Distribution, Trend Validation, TikTok Shop Sourcing]]\n\ntier: 2\n\nscope_hint: growth\n\ndecay_risk: high (Spy tool UI and product examples change).\n\nTopics:\n\nCore Filtering Mechanics (Kalodata)\n\nGraph Trend Analysis (30-day vs. 180-day)\n\nCreative Revenue Distribution\n\nCross-Platform Validation (Google Trends & Meta)\n\nLook for:\n\nKalodata Setup: Timeframe = Last 30 Days. Revenue Range = $33k to $97k (to avoid hyper-competitive $300k+ products). Revenue Source = Video only (exclude Live stream revenue). Sort = Lowest to Highest (within the filtered range to find early breakouts).\n\nGraph Analysis mechanics: Look at the 30-day graph for a clear upward tilt. Immediately switch to the 180-day view. Discard the product if the 180-day graph shows it peaked months ago and is currently dying. Discard if the graph is a flatline.\n\nVideo Validation mechanics: The top-performing video must have been posted within the last 7 to 14 days. Discard products where 95% of the revenue is carried by a single 6-month-old video. Look for a healthy revenue distribution across at least 3-5 recent videos.\n\nPricing Red Flag: Discard products selling for $9.99 on TikTok Shop, as they rely purely on cheap impulse buys and lack the margin required for Meta ads.\n\nTrend Validation: Search the exact product sub-niche (e.g., \"GLP-1 patches\" instead of just \"GLP-1\") on Google Trends. The 12-month graph must show an active upward trajectory.\n\nSkip:\n\nDo not capture pitches for \"Value University\" mentorship, Spy Crew browser subscriptions, or personal income flexes ($1.5M cases, 360k profit). Ignore advice on splicing TikTok hooks to Facebook bodies (belongs in CRE).\n\nScope mix: 10% baseline (trend fundamentals), 90% growth (Kalodata tool execution).\n\nVolume: ~250 words.\n\nReview against Constraints:\n\nFlat formatting, no Markdown wrappers for the whole block.\n\nGoes here. and Not here. clearly defined.\n\nBoundary mapping uses exact module codes.\n\nHeader block correct (source_date, verified_at, decay_risk).\n\nTopics, Look for, Skip, Scope mix, Volume included.\n\nEverything strictly matches the requested format.02-PRD / TikTok Shop Graph & Trend Sourcing\n\nGoes here. Active product sourcing frameworks using TikTok Shop intelligence tools (Kalodata / Shop Plus) to identify early-breakout e-commerce products. Focuses on revenue graph analysis, video age verification, and cross-platform trend validation to avoid hyper-competitive or dying products.\n\nNot here. • Splicing TikTok hooks to UGC bodies for ad testing -> [03-CRE] / Performance Ad Creative • Launching the 2-3 day Meta ads testing phase -> [04-MED] / Paid Media Execution • Designing the branded Shopify storefront -> [05-WEB] / Storefront Architecture\n\nHeader. url: https://www.youtube.com/watch?v=sCUEN4htx-0 source_date: 2025-06 verified_at: 2026-09-19 rights: public_reference why: Explains how to read Kalodata revenue graphs across 180-day windows to avoid dead products, and strictly requires revenue distribution across multiple recent creatives. modules: [[02-PRD]] topics: [[Kalodata Mechanics, Graph Analysis, Revenue Distribution, Trend Validation, TikTok Shop Sourcing]] tier: 2 scope_hint: growth decay_risk: high\n\nTopics. • Core Filtering Mechanics (Kalodata)\n\nSetting revenue bounds to filter out mega-competitors while ensuring baseline demand.\n\nEnsuring revenue attribution comes strictly from replicable video ads, not live streams. • Graph Trend Analysis\n\nCross-referencing 30-day upward tilts against 180-day historical data to avoid dead products attempting a revival. • Creative Revenue Distribution\n\nVerifying that recent ad creatives are driving the revenue, rather than a single 6-month-old viral anomaly. • Cross-Platform Validation\n\nUtilizing Google Trends and Meta Ad Library to confirm off-platform viability.\n\nLook for. • Kalodata filtering mechanics: Set Timeframe = Last 30 Days. Set Revenue Range = $33,000 to $97,000 (avoids $300k+ hyper-competitive products). Set Revenue Source = Video only (exclude Live). Sort results from Lowest to Highest to catch early breakouts. • Graph verification: Identify a 30-day graph with an upward tilt. Immediately switch to the 180-day view. Discard the product if the historical data shows it peaked months ago and is currently flatlining or dying. • Video age mechanics: Click into the product's top videos. The highest-revenue video MUST have been posted within the last 7 to 14 days. • Revenue distribution: Discard products where 90%+ of the revenue is carried by a single old video. Require a healthy distribution of revenue across at least 3 to 5 recent videos. • Pricing red flag: Discard TikTok Shop products selling for ~$9.99. These rely on cheap impulse buys and lack the margin to survive Meta ad acquisition costs. • Sub-niche trend validation: Search the exact product variation (e.g., \"GLP-1 patches\", not just \"GLP-1\") on Google Trends. The 12-month graph must show an active, current upward trajectory.\n\nSkip. Do not capture pitches for \"Value University\" mentorship, Spy Crew browser subscriptions, or dashboard income screenshots. Ignore instructions on editing mix-match creatives.\n\nScope mix. 10% baseline (trend fundamentals), 90% growth (Kalodata tool execution).\n\nVolume. ~250 words.",
+    "prior_notes": [],
+    "id": "5cc64e896e654e35f270672b"
+  },
+  "system_prompt_sha256": "458942624a5ba73364ec3f25288651f604b915c91776cbe18915311c9c3637ed"
+}

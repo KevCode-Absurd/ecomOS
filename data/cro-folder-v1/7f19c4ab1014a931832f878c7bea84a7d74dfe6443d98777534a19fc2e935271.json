@@ -1,0 +1,507 @@
+{
+  "request_id": "7f19c4ab1014a931832f878c7bea84a7d74dfe6443d98777534a19fc2e935271",
+  "provider": "deepseek",
+  "model": "deepseek-flash",
+  "effort": "high",
+  "completion_limit": 65536,
+  "usage": {
+    "prompt_tokens": 2011,
+    "completion_tokens": 18270,
+    "total_tokens": 20281,
+    "prompt_tokens_details": {
+      "cached_tokens": 1024
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 15350
+    },
+    "prompt_cache_hit_tokens": 1024,
+    "prompt_cache_miss_tokens": 987
+  },
+  "booked_cost_usd": 0.0225273,
+  "seconds": 65.42,
+  "finish_reason": "stop",
+  "output": {
+    "units": [
+      {
+        "id": "u1",
+        "kind": "action",
+        "title": "Gather behavioral data to formulate test hypotheses",
+        "claim": {
+          "text": "The CRO module covers gathering qualitative and quantitative behavioral data to formulate test hypotheses, using heatmaps, session recordings, area maps, user testing platforms, and on-site surveys.",
+          "quote": "Gathering qualitative and quantitative behavioral data to formulate test hypotheses. Heatmaps, session recordings, area maps, user testing platforms, and on-site surveys."
+        },
+        "action": {
+          "text": "Gather qualitative and quantitative behavioral data to formulate test hypotheses.",
+          "quote": "Gathering qualitative and quantitative behavioral data to formulate test hypotheses."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "Source does not specify how to choose among the listed data-gathering tools.",
+          "Source does not define how to convert behavioral data into hypotheses."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u2",
+        "kind": "action",
+        "title": "Use Area Maps to quantify click diversion",
+        "claim": {
+          "text": "Area Maps show the exact percentage of clicks diverted to different page elements.",
+          "quote": "using Area Maps to see the exact percentage of clicks diverted to different page elements (e.g., specific navigation items, sticky filters, or non-clickable images)."
+        },
+        "action": {
+          "text": "Use Area Maps to see the exact percentage of clicks diverted to different page elements.",
+          "quote": "using Area Maps to see the exact percentage of clicks diverted to different page elements"
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "Source does not state what click-diversion percentage is problematic."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u1"
+          }
+        ]
+      },
+      {
+        "id": "u3",
+        "kind": "action",
+        "title": "Analyze scroll depth checkpoints to find drop-offs",
+        "claim": {
+          "text": "Scroll depth checkpoints at 75%, 50%, and 25% can identify massive drop-offs caused by large text blocks or misplaced CTAs.",
+          "quote": "Analyzing scroll depth checkpoints (75%, 50%, 25%) to identify massive drop-offs caused by large text blocks or misplaced CTAs."
+        },
+        "action": {
+          "text": "Analyze scroll depth checkpoints (75%, 50%, 25%) to identify massive drop-offs caused by large text blocks or misplaced CTAs.",
+          "quote": "Analyzing scroll depth checkpoints (75%, 50%, 25%) to identify massive drop-offs caused by large text blocks or misplaced CTAs."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "Source does not state what drop-off magnitude is considered massive."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u1"
+          }
+        ]
+      },
+      {
+        "id": "u4",
+        "kind": "action",
+        "title": "Differentiate cold and warm traffic behavior",
+        "claim": {
+          "text": "Cold traffic needs social proof above the fold; warm traffic behaves differently.",
+          "quote": "Differentiating between the behaviors of cold traffic (needing social proof above the fold) and warm traffic."
+        },
+        "action": {
+          "text": "Differentiate between the behaviors of cold traffic and warm traffic.",
+          "quote": "Differentiating between the behaviors of cold traffic (needing social proof above the fold) and warm traffic."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "Source does not define how to identify cold vs. warm traffic.",
+          "Source does not state what warm traffic needs."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u1"
+          }
+        ]
+      },
+      {
+        "id": "u5",
+        "kind": "action",
+        "title": "Filter session recordings for frustration signals",
+        "claim": {
+          "text": "Filtering session recordings for rage clicks, dead clicks, excessive scrolling, and quick backs isolates user frustration; the source defines each pattern.",
+          "quote": "isolating user frustration by filtering recordings for \"rage clicks\" (repeatedly clicking a non-clickable element or trying to close an immediate popup), \"dead clicks\" (clicking elements that look like links but aren't, such as \"As Seen On\" logos), \"excessive scrolling\" (skimming past long text blocks or frantically searching for a missing CTA), and \"quick backs\" (bouncing immediately from a product page because expected information is missing)."
+        },
+        "action": {
+          "text": "Filter session recordings for rage clicks, dead clicks, excessive scrolling, and quick backs to isolate user frustration.",
+          "quote": "isolating user frustration by filtering recordings for \"rage clicks\" (repeatedly clicking a non-clickable element or trying to close an immediate popup), \"dead clicks\" (clicking elements that look like links but aren't, such as \"As Seen On\" logos), \"excessive scrolling\" (skimming past long text blocks or frantically searching for a missing CTA), and \"quick backs\" (bouncing immediately from a product page because expected information is missing)."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "Source does not specify thresholds for how many occurrences define a pattern."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u1"
+          }
+        ]
+      },
+      {
+        "id": "u6",
+        "kind": "action",
+        "title": "Sort recordings by clicks high-to-low and low-to-high",
+        "claim": {
+          "text": "Sorting recordings by highest clicks to lowest and lowest clicks to highest compares highly engaged users against unengaged users.",
+          "quote": "Sort filtering by highest clicks to lowest, and lowest clicks to highest, to compare highly engaged users against unengaged users."
+        },
+        "action": {
+          "text": "Sort recordings by Clicks High-to-Low and Pages High-to-Low, then compare against the inverse (Low-to-High) to understand engaged vs. unengaged behavior.",
+          "quote": "The specific filtering method for recordings: sorting by Clicks High-to-Low and Pages High-to-Low, then comparing against the inverse (Low-to-High) to understand engaged vs. unengaged behavior."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "Source lists Clicks and Pages sorts in Look for but only clicks in Topics; unclear if both are required."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u5"
+          }
+        ]
+      },
+      {
+        "id": "u7",
+        "kind": "action",
+        "title": "Stop recording review once pattern is identified",
+        "claim": {
+          "text": "Stop watching recordings once the main pattern of friction is identified, whether that takes 100 or 400 recordings.",
+          "quote": "stop watching once the main pattern of friction is identified, whether that takes 100 or 400 recordings."
+        },
+        "action": {
+          "text": "Stop watching once the main pattern of friction is identified, whether that takes 100 or 400 recordings.",
+          "quote": "stop watching once the main pattern of friction is identified, whether that takes 100 or 400 recordings."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [
+          {
+            "text": "Main pattern of friction is identified.",
+            "quote": "the main pattern of friction is identified"
+          }
+        ],
+        "unknowns": [
+          "Source gives 100 or 400 as examples, not a fixed threshold."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u5"
+          }
+        ]
+      },
+      {
+        "id": "u8",
+        "kind": "principle",
+        "title": "60% rule for hero section scroll",
+        "claim": {
+          "text": "Statistically, 60% of people will never scroll past the hero section, so value props and social proof must be established in the first 5 seconds.",
+          "quote": "The 60% rule: acknowledging that statistically, 60% of people will never scroll past the hero section, meaning value props and social proof must be established in the first 5 seconds."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "Source does not state the population, sample, or context for the 60% statistic."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u9",
+        "kind": "action",
+        "title": "Form hypotheses from behavioral data",
+        "claim": {
+          "text": "Test design involves forming hypotheses based on behavioral data.",
+          "quote": "forming hypotheses based on behavioral data."
+        },
+        "action": {
+          "text": "Form hypotheses based on behavioral data.",
+          "quote": "forming hypotheses based on behavioral data."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "Source does not specify a hypothesis template or validation criteria."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u1"
+          }
+        ]
+      },
+      {
+        "id": "u10",
+        "kind": "example",
+        "title": "Contact Us header real estate test",
+        "claim": {
+          "text": "The source gives an example of identifying that a 'Contact Us' header takes up too much real estate, causing 25% of B2B users to drop off before seeing the actual form below the fold, and testing a layout where the form is moved up.",
+          "quote": "identifying that a \"Contact Us\" header takes up too much real estate, causing 25% of B2B users to drop off before seeing the actual form below the fold, and testing a layout where the form is moved up."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "A 'Contact Us' header takes up too much real estate, causing 25% of B2B users to drop off before seeing the actual form below the fold.",
+              "quote": "identifying that a \"Contact Us\" header takes up too much real estate, causing 25% of B2B users to drop off before seeing the actual form below the fold"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "Source does not state the outcome of moving the form up."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u9"
+          }
+        ]
+      },
+      {
+        "id": "u11",
+        "kind": "warning",
+        "title": "Skip agency promotion and basic e-commerce/B2B definitions",
+        "claim": {
+          "text": "The source says to skip general promotion for the agency's audit services and basic definitions of what e-commerce or B2B means.",
+          "quote": "General promotion for the agency's audit services. Basic definitions of what e-commerce or B2B means."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": []
+      },
+      {
+        "id": "u12",
+        "kind": "warning",
+        "title": "CRO module boundaries",
+        "claim": {
+          "text": "The CRO module does not include setting up custom event funnels and path explorations in Google Analytics 4 (-> 06-MEA) or redesigning the landing page UI or changing copywriting based on the data (-> 07-LPG).",
+          "quote": "Not here.\n\nSetting up custom event funnels and path explorations in Google Analytics 4 -> 06-MEA\n\nRedesigning the landing page UI or changing copywriting based on the data -> 07-LPG"
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "Source uses arrows to indicate other modules but does not explain them."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u13",
+        "kind": "principle",
+        "title": "Definition of rage clicks",
+        "claim": {
+          "text": "Rage clicks are defined as rapidly clicking an element to exit an experience, such as a 5-second popup.",
+          "quote": "The definition of \"rage clicks\": rapidly clicking an element to exit an experience, such as a 5-second popup."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "Source also gives a different definition in the session recordings section: repeatedly clicking a non-clickable element or trying to close an immediate popup."
+        ],
+        "relations": [
+          {
+            "kind": "conflicts_with",
+            "target": "u5"
+          }
+        ]
+      },
+      {
+        "id": "u14",
+        "kind": "principle",
+        "title": "Definition of quick backs",
+        "claim": {
+          "text": "Quick backs are defined as navigating to a page and immediately returning, indicating the expected information was missing.",
+          "quote": "The definition of \"quick backs\": navigating to a page and immediately returning, indicating the expected information was missing."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "Source also defines quick backs in the session recordings section as bouncing immediately from a product page because expected information is missing."
+        ],
+        "relations": [
+          {
+            "kind": "conflicts_with",
+            "target": "u5"
+          }
+        ]
+      }
+    ],
+    "more_units": false,
+    "unresolved": [
+      "Metadata fields (modules, topics, tier, scope_hint, volume) and the Header editorial summary were not extracted as source recommendations.",
+      "No continuation needed for the provided passage."
+    ]
+  },
+  "raw_content": "{\"units\":[{\"id\":\"u1\",\"kind\":\"action\",\"title\":\"Gather behavioral data to formulate test hypotheses\",\"claim\":{\"text\":\"The CRO module covers gathering qualitative and quantitative behavioral data to formulate test hypotheses, using heatmaps, session recordings, area maps, user testing platforms, and on-site surveys.\",\"quote\":\"Gathering qualitative and quantitative behavioral data to formulate test hypotheses. Heatmaps, session recordings, area maps, user testing platforms, and on-site surveys.\"},\"action\":{\"text\":\"Gather qualitative and quantitative behavioral data to formulate test hypotheses.\",\"quote\":\"Gathering qualitative and quantitative behavioral data to formulate test hypotheses.\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"Source does not specify how to choose among the listed data-gathering tools.\",\"Source does not define how to convert behavioral data into hypotheses.\"],\"relations\":[]},{\"id\":\"u2\",\"kind\":\"action\",\"title\":\"Use Area Maps to quantify click diversion\",\"claim\":{\"text\":\"Area Maps show the exact percentage of clicks diverted to different page elements.\",\"quote\":\"using Area Maps to see the exact percentage of clicks diverted to different page elements (e.g., specific navigation items, sticky filters, or non-clickable images).\"},\"action\":{\"text\":\"Use Area Maps to see the exact percentage of clicks diverted to different page elements.\",\"quote\":\"using Area Maps to see the exact percentage of clicks diverted to different page elements\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"Source does not state what click-diversion percentage is problematic.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u1\"}]},{\"id\":\"u3\",\"kind\":\"action\",\"title\":\"Analyze scroll depth checkpoints to find drop-offs\",\"claim\":{\"text\":\"Scroll depth checkpoints at 75%, 50%, and 25% can identify massive drop-offs caused by large text blocks or misplaced CTAs.\",\"quote\":\"Analyzing scroll depth checkpoints (75%, 50%, 25%) to identify massive drop-offs caused by large text blocks or misplaced CTAs.\"},\"action\":{\"text\":\"Analyze scroll depth checkpoints (75%, 50%, 25%) to identify massive drop-offs caused by large text blocks or misplaced CTAs.\",\"quote\":\"Analyzing scroll depth checkpoints (75%, 50%, 25%) to identify massive drop-offs caused by large text blocks or misplaced CTAs.\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"Source does not state what drop-off magnitude is considered massive.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u1\"}]},{\"id\":\"u4\",\"kind\":\"action\",\"title\":\"Differentiate cold and warm traffic behavior\",\"claim\":{\"text\":\"Cold traffic needs social proof above the fold; warm traffic behaves differently.\",\"quote\":\"Differentiating between the behaviors of cold traffic (needing social proof above the fold) and warm traffic.\"},\"action\":{\"text\":\"Differentiate between the behaviors of cold traffic and warm traffic.\",\"quote\":\"Differentiating between the behaviors of cold traffic (needing social proof above the fold) and warm traffic.\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"Source does not define how to identify cold vs. warm traffic.\",\"Source does not state what warm traffic needs.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u1\"}]},{\"id\":\"u5\",\"kind\":\"action\",\"title\":\"Filter session recordings for frustration signals\",\"claim\":{\"text\":\"Filtering session recordings for rage clicks, dead clicks, excessive scrolling, and quick backs isolates user frustration; the source defines each pattern.\",\"quote\":\"isolating user frustration by filtering recordings for \\\"rage clicks\\\" (repeatedly clicking a non-clickable element or trying to close an immediate popup), \\\"dead clicks\\\" (clicking elements that look like links but aren't, such as \\\"As Seen On\\\" logos), \\\"excessive scrolling\\\" (skimming past long text blocks or frantically searching for a missing CTA), and \\\"quick backs\\\" (bouncing immediately from a product page because expected information is missing).\"},\"action\":{\"text\":\"Filter session recordings for rage clicks, dead clicks, excessive scrolling, and quick backs to isolate user frustration.\",\"quote\":\"isolating user frustration by filtering recordings for \\\"rage clicks\\\" (repeatedly clicking a non-clickable element or trying to close an immediate popup), \\\"dead clicks\\\" (clicking elements that look like links but aren't, such as \\\"As Seen On\\\" logos), \\\"excessive scrolling\\\" (skimming past long text blocks or frantically searching for a missing CTA), and \\\"quick backs\\\" (bouncing immediately from a product page because expected information is missing).\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"Source does not specify thresholds for how many occurrences define a pattern.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u1\"}]},{\"id\":\"u6\",\"kind\":\"action\",\"title\":\"Sort recordings by clicks high-to-low and low-to-high\",\"claim\":{\"text\":\"Sorting recordings by highest clicks to lowest and lowest clicks to highest compares highly engaged users against unengaged users.\",\"quote\":\"Sort filtering by highest clicks to lowest, and lowest clicks to highest, to compare highly engaged users against unengaged users.\"},\"action\":{\"text\":\"Sort recordings by Clicks High-to-Low and Pages High-to-Low, then compare against the inverse (Low-to-High) to understand engaged vs. unengaged behavior.\",\"quote\":\"The specific filtering method for recordings: sorting by Clicks High-to-Low and Pages High-to-Low, then comparing against the inverse (Low-to-High) to understand engaged vs. unengaged behavior.\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"Source lists Clicks and Pages sorts in Look for but only clicks in Topics; unclear if both are required.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u5\"}]},{\"id\":\"u7\",\"kind\":\"action\",\"title\":\"Stop recording review once pattern is identified\",\"claim\":{\"text\":\"Stop watching recordings once the main pattern of friction is identified, whether that takes 100 or 400 recordings.\",\"quote\":\"stop watching once the main pattern of friction is identified, whether that takes 100 or 400 recordings.\"},\"action\":{\"text\":\"Stop watching once the main pattern of friction is identified, whether that takes 100 or 400 recordings.\",\"quote\":\"stop watching once the main pattern of friction is identified, whether that takes 100 or 400 recordings.\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[{\"text\":\"Main pattern of friction is identified.\",\"quote\":\"the main pattern of friction is identified\"}],\"unknowns\":[\"Source gives 100 or 400 as examples, not a fixed threshold.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u5\"}]},{\"id\":\"u8\",\"kind\":\"principle\",\"title\":\"60% rule for hero section scroll\",\"claim\":{\"text\":\"Statistically, 60% of people will never scroll past the hero section, so value props and social proof must be established in the first 5 seconds.\",\"quote\":\"The 60% rule: acknowledging that statistically, 60% of people will never scroll past the hero section, meaning value props and social proof must be established in the first 5 seconds.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"Source does not state the population, sample, or context for the 60% statistic.\"],\"relations\":[]},{\"id\":\"u9\",\"kind\":\"action\",\"title\":\"Form hypotheses from behavioral data\",\"claim\":{\"text\":\"Test design involves forming hypotheses based on behavioral data.\",\"quote\":\"forming hypotheses based on behavioral data.\"},\"action\":{\"text\":\"Form hypotheses based on behavioral data.\",\"quote\":\"forming hypotheses based on behavioral data.\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"Source does not specify a hypothesis template or validation criteria.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u1\"}]},{\"id\":\"u10\",\"kind\":\"example\",\"title\":\"Contact Us header real estate test\",\"claim\":{\"text\":\"The source gives an example of identifying that a 'Contact Us' header takes up too much real estate, causing 25% of B2B users to drop off before seeing the actual form below the fold, and testing a layout where the form is moved up.\",\"quote\":\"identifying that a \\\"Contact Us\\\" header takes up too much real estate, causing 25% of B2B users to drop off before seeing the actual form below the fold, and testing a layout where the form is moved up.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"A 'Contact Us' header takes up too much real estate, causing 25% of B2B users to drop off before seeing the actual form below the fold.\",\"quote\":\"identifying that a \\\"Contact Us\\\" header takes up too much real estate, causing 25% of B2B users to drop off before seeing the actual form below the fold\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"Source does not state the outcome of moving the form up.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u9\"}]},{\"id\":\"u11\",\"kind\":\"warning\",\"title\":\"Skip agency promotion and basic e-commerce/B2B definitions\",\"claim\":{\"text\":\"The source says to skip general promotion for the agency's audit services and basic definitions of what e-commerce or B2B means.\",\"quote\":\"General promotion for the agency's audit services. Basic definitions of what e-commerce or B2B means.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[],\"relations\":[]},{\"id\":\"u12\",\"kind\":\"warning\",\"title\":\"CRO module boundaries\",\"claim\":{\"text\":\"The CRO module does not include setting up custom event funnels and path explorations in Google Analytics 4 (-> 06-MEA) or redesigning the landing page UI or changing copywriting based on the data (-> 07-LPG).\",\"quote\":\"Not here.\\n\\nSetting up custom event funnels and path explorations in Google Analytics 4 -> 06-MEA\\n\\nRedesigning the landing page UI or changing copywriting based on the data -> 07-LPG\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"Source uses arrows to indicate other modules but does not explain them.\"],\"relations\":[]},{\"id\":\"u13\",\"kind\":\"principle\",\"title\":\"Definition of rage clicks\",\"claim\":{\"text\":\"Rage clicks are defined as rapidly clicking an element to exit an experience, such as a 5-second popup.\",\"quote\":\"The definition of \\\"rage clicks\\\": rapidly clicking an element to exit an experience, such as a 5-second popup.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"Source also gives a different definition in the session recordings section: repeatedly clicking a non-clickable element or trying to close an immediate popup.\"],\"relations\":[{\"kind\":\"conflicts_with\",\"target\":\"u5\"}]},{\"id\":\"u14\",\"kind\":\"principle\",\"title\":\"Definition of quick backs\",\"claim\":{\"text\":\"Quick backs are defined as navigating to a page and immediately returning, indicating the expected information was missing.\",\"quote\":\"The definition of \\\"quick backs\\\": navigating to a page and immediately returning, indicating the expected information was missing.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"Source also defines quick backs in the session recordings section as bouncing immediately from a product page because expected information is missing.\"],\"relations\":[{\"kind\":\"conflicts_with\",\"target\":\"u5\"}]}],\"more_units\":false,\"unresolved\":[\"Metadata fields (modules, topics, tier, scope_hint, volume) and the Header editorial summary were not extracted as source recommendations.\",\"No continuation needed for the provided passage.\"]}",
+  "input": {
+    "source": {
+      "source_id": "1codPdK-qaL_2SoPf_nmftxOcUIzNczWB",
+      "source_sha256": "e90e771f91c35367be3e31ee5a6d6c7d4137d599fdc8b78c4865c1d6673569bb",
+      "locator": "batch",
+      "start": 0,
+      "text": "09-CRO / testing and experiments\n\nGoes here. Gathering qualitative and quantitative behavioral data to formulate test hypotheses. Heatmaps, session recordings, area maps, user testing platforms, and on-site surveys.\n\nNot here.\n\nSetting up custom event funnels and path explorations in Google Analytics 4 -> 06-MEA\n\nRedesigning the landing page UI or changing copywriting based on the data -> 07-LPG\n\nHeader. url: rights: public_reference why: Details the exact mechanics of Microsoft Clarity, explaining how to interpret rage clicks, dead clicks, excessive scrolling, and quick backs, and how to use Area Maps to design conversion rate tests. modules: [CRO] topics: [test design, session recordings, heatmaps] tier: 3 scope_hint: baseline\n\nTopics. heatmaps / using Area Maps to see the exact percentage of clicks diverted to different page elements (e.g., specific navigation items, sticky filters, or non-clickable images). Analyzing scroll depth checkpoints (75%, 50%, 25%) to identify massive drop-offs caused by large text blocks or misplaced CTAs. Differentiating between the behaviors of cold traffic (needing social proof above the fold) and warm traffic. session recordings / isolating user frustration by filtering recordings for \"rage clicks\" (repeatedly clicking a non-clickable element or trying to close an immediate popup), \"dead clicks\" (clicking elements that look like links but aren't, such as \"As Seen On\" logos), \"excessive scrolling\" (skimming past long text blocks or frantically searching for a missing CTA), and \"quick backs\" (bouncing immediately from a product page because expected information is missing). Sort filtering by highest clicks to lowest, and lowest clicks to highest, to compare highly engaged users against unengaged users. test design / forming hypotheses based on behavioral data. For example, identifying that a \"Contact Us\" header takes up too much real estate, causing 25% of B2B users to drop off before seeing the actual form below the fold, and testing a layout where the form is moved up.\n\nLook for. The definition of \"rage clicks\": rapidly clicking an element to exit an experience, such as a 5-second popup. The definition of \"quick backs\": navigating to a page and immediately returning, indicating the expected information was missing. The specific filtering method for recordings: sorting by Clicks High-to-Low and Pages High-to-Low, then comparing against the inverse (Low-to-High) to understand engaged vs. unengaged behavior. The rule for stopping recording review: stop watching once the main pattern of friction is identified, whether that takes 100 or 400 recordings. The 60% rule: acknowledging that statistically, 60% of people will never scroll past the hero section, meaning value props and social proof must be established in the first 5 seconds.\n\nSkip. General promotion for the agency's audit services. Basic definitions of what e-commerce or B2B means.\n\nScope mix. Almost all baseline.\n\nVolume. 10 to 15."
+    },
+    "already_extracted_claims": [],
+    "instruction": "Extract remaining distinct task-sized units. Do not repeat already extracted claims."
+  },
+  "system_prompt_sha256": "f23d9572f5bf1b93a5822a96b30f4ea85c0469c454d5ce80d227418df3d2e25e"
+}

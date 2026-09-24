@@ -1,0 +1,428 @@
+{
+  "cards": [
+    {
+      "title": "Four Pillars of Ecommerce Security: Privacy, Integrity, Authentication, Non-Repudiation",
+      "summary": "Frame a storefront's security posture around four named pillars so controls map to distinct failure modes rather than a vague 'be secure' goal.",
+      "use_when": "Auditing overall storefront security coverage, or deciding which control category a proposed security project belongs to.",
+      "steps": [
+        "Assess coverage against four distinct pillars: Privacy (preventing unauthorized internal and external access to customer data — encryption, firewalls, antivirus), Integrity (accuracy of customer datasets — phone, address, purchase history), Authentication (proving the business is legitimate and customers are who they claim — 2FA or magic links), and Non-repudiation (neither company nor customer can deny a transaction, typically enforced via digital signatures).",
+        "Map each existing control to a pillar; note gaps — for example, encryption addresses Privacy but does nothing for Authentication or Non-repudiation.",
+        "For Authentication on the customer side, treat it as two-sided: credibility signals (customer quotes, case studies per the source) plus identity verification at transaction time.",
+        "For Non-repudiation, plan how transactions are digitally signed so chargeback disputes and order denials have a verifiable record.",
+        "Record which pillar each new security investment serves so overlapping projects are consolidated and uncovered pillars get funded."
+      ],
+      "caveats": [
+        "Non-repudiation is a concept the source explains generally; implementing digital signatures is a platform/payment-processor capability that should be verified for your stack.",
+        "The source's suggestion to use customer quotes and case studies as 'authentication' evidence is a credibility measure, not a technical control — do not treat it as a substitute for account security."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "platform-security",
+        "customer-accounts",
+        "checkout",
+        "compliance"
+      ],
+      "id": "0781a90c7b85972de87fd271",
+      "source_id": "1A75zRNTfobhpqLb5BrFFiiPhrCLEnERS",
+      "source_sha256": "dd90fc2e0737817d2af2da7e0f281aa48221c7eb0e6a7add50a90060f89cbb8e",
+      "source_name": "Ecommerce security — what it means, common threats, and modern best practices.docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 0
+    },
+    {
+      "title": "Multilayer Security: CDN Plus MFA as Defense in Depth",
+      "summary": "Stack independent security layers (notably a machine-learning CDN and multifactor authentication) so compromising one control still leaves others to penetrate.",
+      "use_when": "Designing or reviewing storefront defense architecture, especially before high-traffic launches or sales events.",
+      "steps": [
+        "Adopt the source's multilayer principle: add secondary and tertiary controls so an attacker who defeats one layer must still penetrate at least one more before reaching data.",
+        "Layer 1 recommended by the source: a Content Delivery Network; favor CDNs that use machine learning to block threats and infectious traffic.",
+        "Layer 2: multifactor authentication for employees logging into company systems and for customers logging into loyalty accounts — requiring a second code sent via text, email, or authenticator app.",
+        "Add firewalls as a further layer: firewall software and plugins allow trusted traffic while keeping untrusted connections off the site, which the source notes also makes anomaly detection easier and helps block XSS, spam, and SQL injection.",
+        "Note that no single layer is sufficient; the value comes from combining controls so failures in one do not expose everything."
+      ],
+      "caveats": [
+        "The source does not claim any layer — CDN, firewall, or MFA — is individually sufficient; each can be bypassed.",
+        "Verify current CDN threat-blocking capabilities and MFA mechanics against the vendor's current documentation, as these change over time."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "platform-security",
+        "cdn",
+        "mfa",
+        "defense-in-depth"
+      ],
+      "id": "a05a60edfab09412ca03afce",
+      "source_id": "1A75zRNTfobhpqLb5BrFFiiPhrCLEnERS",
+      "source_sha256": "dd90fc2e0737817d2af2da7e0f281aa48221c7eb0e6a7add50a90060f89cbb8e",
+      "source_name": "Ecommerce security — what it means, common threats, and modern best practices.docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 0
+    },
+    {
+      "title": "Preventing E-Skimming at Checkout",
+      "summary": "Reduce digital skimming risk by keeping web servers patched, vetting ad server code, and updating third-party APIs — and know the shutdown response if skimming is detected.",
+      "use_when": "Hardening the checkout page and payment flow against payment-data theft, or responding to a suspected checkout compromise.",
+      "steps": [
+        "Understand the threat: e-skimming is stealing credit card and personal data from payment processors by gaining access to checkout pages and capturing payment information as customers type it in real time.",
+        "Apply the source's three preventive measures: regularly push patches to your web server, vet your ad server code (injected ad scripts are a common skimming vector), and keep third-party APIs updated.",
+        "Recognize that e-skimming can result from XSS, phishing, or brute force attacks, so closing those upstream vectors also reduces skimming exposure.",
+        "If already impacted, the source advises checking whether cyber insurance covers losses and shutting down the shopping cart page while investigating and eliminating the source of the compromise.",
+        "Treat checkout JavaScript and any third-party scripts loaded on the payment page as the highest-risk surface and inventory them regularly."
+      ],
+      "caveats": [
+        "The source's insurance and cart-shutdown guidance is a response outline, not an incident-response plan; consult qualified security and legal resources for a real breach.",
+        "HTTPS/SSL alone does not stop e-skimming, since skimmers capture data before encryption in many cases — do not rely on SSL as the control."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "checkout",
+        "payment-security",
+        "third-party-scripts",
+        "incident-response"
+      ],
+      "id": "6c168f8c74d5c0755bd704bb",
+      "source_id": "1A75zRNTfobhpqLb5BrFFiiPhrCLEnERS",
+      "source_sha256": "dd90fc2e0737817d2af2da7e0f281aa48221c7eb0e6a7add50a90060f89cbb8e",
+      "source_name": "Ecommerce security — what it means, common threats, and modern best practices.docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 0
+    },
+    {
+      "title": "Reducing XSS and SQL Injection Risk Through Untrusted-Data Discipline",
+      "summary": "Hinder XSS and SQLi by treating every data-table edit and API integration as untrusted and scanning for vulnerabilities before deployment.",
+      "use_when": "Reviewing custom storefront, theme, plugin, or API integration code for injection vulnerabilities.",
+      "steps": [
+        "Train developers on the source's core rule: treat all edits to data tables as untrusted — SQL servers store data in tables retrieved by queries, and unprotected servers let attackers inject their own queries to view or change any data.",
+        "Adopt modern web development technologies and frameworks that reduce raw query construction and unsafe output rendering.",
+        "For XSS — where an attacker inserts malicious code into a page that exposes that page's visitors to phishing or malware — scan regularly for vulnerabilities in your website code and API integrations, and patch quickly.",
+        "Vet every third-party API and theme/plugin integration as a potential injection path rather than trusting vendor code by default.",
+        "Combine with firewalls, which the source notes help protect against XSS and malicious SQL injections by regulating traffic flow."
+      ],
+      "caveats": [
+        "Input validation and output encoding are the general defensive principle; the source only outlines this at a high level, so treat framework-specific implementation guidance as outside this note.",
+        "No scanning tool guarantees complete coverage — regular scanning reduces, not eliminates, risk."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "platform-security",
+        "xss",
+        "sql-injection",
+        "api-integrations"
+      ],
+      "id": "3a100f8d7140aa8e0b215124",
+      "source_id": "1A75zRNTfobhpqLb5BrFFiiPhrCLEnERS",
+      "source_sha256": "dd90fc2e0737817d2af2da7e0f281aa48221c7eb0e6a7add50a90060f89cbb8e",
+      "source_name": "Ecommerce security — what it means, common threats, and modern best practices.docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 0
+    },
+    {
+      "title": "Defending the Storefront Against Pricing and Inventory Scraping Bots",
+      "summary": "Combat bots that scrape pricing and inventory or hoard popular items by combining reCAPTCHA, API checks, old-browser blocking, and alerting.",
+      "use_when": "Protecting product pages, pricing data, and limited-inventory drops from scraping and cart-hoarding bots.",
+      "steps": [
+        "Identify the business harm the source describes: bots scrape sites for pricing and inventory data, and attackers use that to hike prices or add the most popular inventory to their own carts, leaving customers unable to buy — leading to sales declines, negative reviews, and bad press.",
+        "Deploy reCAPTCHA tools on the site, particularly on forms and entry points.",
+        "Check and monitor your API connections, since bots often access inventory and pricing through APIs rather than rendered pages.",
+        "Block older browser versions, which the source recommends as a bot countermeasure.",
+        "Set up alerts for the three signals the source flags as bot indicators: unusually high web traffic, failed gift card validations, and repeated failed login attempts.",
+        "Review whether your product feed or pricing API exposes full inventory levels to unauthenticated callers."
+      ],
+      "caveats": [
+        "CAPTCHA systems generate friction and change over time; verify current reCAPTCHA capabilities and consider accessibility impact before deploying broadly.",
+        "The source's alert signals are indicators, not proof of bot activity — corroborate before taking blocking action that could affect real customers."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "bot-mitigation",
+        "product-page",
+        "inventory",
+        "captcha"
+      ],
+      "id": "edbeaf87d1ad909c58dc44d8",
+      "source_id": "1A75zRNTfobhpqLb5BrFFiiPhrCLEnERS",
+      "source_sha256": "dd90fc2e0737817d2af2da7e0f281aa48221c7eb0e6a7add50a90060f89cbb8e",
+      "source_name": "Ecommerce security — what it means, common threats, and modern best practices.docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 0
+    },
+    {
+      "title": "Brute Force Protection for Admin Console and Customer Accounts",
+      "summary": "Protect the storefront admin panel and loyalty accounts from automated password guessing with strong passwords, rotation, and access limits.",
+      "use_when": "Securing the admin console, staff logins, or customer loyalty accounts against credential-guessing attacks.",
+      "steps": [
+        "Understand the attack pattern: brute force attacks target an online store's administrator console, using automated scripts to guess every combination of letters, numbers, and characters that could form the password once a connection is established.",
+        "Choose a complex, strong password for the admin panel and change it regularly.",
+        "Ask customers to use complex, strong passwords for any loyalty accounts they create.",
+        "Set up alerts for repeated failed login attempts, which the source lists as a sign of brute force attempts.",
+        "Combine with multifactor authentication for employee system logins and customer loyalty logins so a guessed password alone is insufficient.",
+        "Note the link the source draws: brute force is one of the upstream causes of e-skimming, so hardening login also reduces payment-data exposure."
+      ],
+      "caveats": [
+        "Password rotation intervals are a policy choice; verify current guidance, as forced frequent rotation can also encourage weaker passwords.",
+        "Alerts only help if monitored and acted on — pair with lockout or rate-limiting controls."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "authentication",
+        "admin-security",
+        "customer-accounts",
+        "brute-force"
+      ],
+      "id": "aef2c2727587ed6a7ad4b476",
+      "source_id": "1A75zRNTfobhpqLb5BrFFiiPhrCLEnERS",
+      "source_sha256": "dd90fc2e0737817d2af2da7e0f281aa48221c7eb0e6a7add50a90060f89cbb8e",
+      "source_name": "Ecommerce security — what it means, common threats, and modern best practices.docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 0
+    },
+    {
+      "title": "Controlling Spam via Comment Cleanup, CAPTCHA, and Root-Cause Analysis",
+      "summary": "Reduce spam that injects malicious links through blog comments, social posts, or contact forms by combining CAPTCHA, pruning, and tracing its origin.",
+      "use_when": "Cleaning up spam on storefront blogs, comment sections, contact forms, or review channels that could carry malicious links.",
+      "steps": [
+        "Recognize spam's dual harm per the source: it prompts users to click malicious links and also slows browsing speeds on the site.",
+        "Enable reCAPTCHA on forms — the source notes reCAPTCHAs require users to enter a slightly distorted series of characters that spambots cannot read.",
+        "Delete spam comments that get through, keeping form response reports clean.",
+        "Perform root cause analysis on spam that gets through to determine where it came from, which informs a durable fix rather than repeated cleanup.",
+        "Note the source's observation that spam spreads via email as well as infected links left in blog comments, social media posts, and contact forms."
+      ],
+      "caveats": [
+        "CAPTCHA alone does not stop all spam, and the source treats deletion and root-cause analysis as complementary, not optional.",
+        "Blog comment and review spam affects SEO and trust as well as security — evaluate both impacts."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "spam",
+        "captcha",
+        "root-cause-analysis",
+        "forms"
+      ],
+      "id": "c8d642fd92537e21654b602b",
+      "source_id": "1A75zRNTfobhpqLb5BrFFiiPhrCLEnERS",
+      "source_sha256": "dd90fc2e0737817d2af2da7e0f281aa48221c7eb0e6a7add50a90060f89cbb8e",
+      "source_name": "Ecommerce security — what it means, common threats, and modern best practices.docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 0
+    },
+    {
+      "title": "SSL Certificates: What They Do and Do Not Protect",
+      "summary": "Use SSL certificates to verify site identity and encrypt connections, while recognizing they do not substitute for checkout-specific skimming controls.",
+      "use_when": "Establishing or reviewing baseline transport security on a storefront, or explaining to stakeholders what SSL does and does not cover.",
+      "steps": [
+        "Deploy an SSL (secure sockets layer) certificate, which per the source verifies a website's identity and serves as an encrypted connection.",
+        "Rely on it to protect credit card details and other sensitive transaction data in transit, and to prevent attackers from using your site as part of a phishing attack.",
+        "Treat SSL as one layer rather than the whole program — the source positions it alongside CDNs, firewalls, and antivirus/antimalware as separate best practices.",
+        "Combine with checkout-page controls (patching, ad-code vetting, API updates) because SSL does not stop code injected into the checkout page from capturing data before transmission.",
+        "On hosted platforms, confirm who provisions and renews the certificate under the platform's shared responsibility model."
+      ],
+      "caveats": [
+        "The source does not claim SSL alone secures a storefront; treating it as sufficient would leave skimming and account risks unaddressed.",
+        "Certificate provisioning, renewal, and configuration specifics differ by host and change over time — verify against your platform's current documentation."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "platform-security",
+        "ssl-tls",
+        "checkout",
+        "compliance"
+      ],
+      "id": "c8a995754b003d5ec0933bed",
+      "source_id": "1A75zRNTfobhpqLb5BrFFiiPhrCLEnERS",
+      "source_sha256": "dd90fc2e0737817d2af2da7e0f281aa48221c7eb0e6a7add50a90060f89cbb8e",
+      "source_name": "Ecommerce security — what it means, common threats, and modern best practices.docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 0
+    },
+    {
+      "title": "Firewalls as Traffic Regulation for Anomaly Detection",
+      "summary": "Deploy firewall software or plugins to admit trusted traffic, block untrusted connections, and make anomalies easier to detect before they enter the network.",
+      "use_when": "Selecting or configuring perimeter controls for a self-hosted or platform storefront.",
+      "steps": [
+        "Install firewall software or plugins that allow trusted traffic while keeping untrusted connections off the ecommerce site.",
+        "Use the firewall to regulate traffic flow, which the source notes makes detecting anomalies easier and stops them before they enter the network.",
+        "Rely on it particularly against the threats the source names: XSS, spam, and malicious SQL injections.",
+        "Pair with a CDN layer and antivirus/antimalware scanning so the firewall is one layer in a multilayer approach rather than a standalone defense.",
+        "On hosted platforms, check which firewall functions the platform provides versus what you must add — the source frames this under the shared responsibility model."
+      ],
+      "caveats": [
+        "Firewalls do not stop e-skimming injected via third-party scripts loaded in the browser, nor phishing aimed at customers.",
+        "Misconfigured rules can block legitimate traffic and affect conversion — monitor for false positives after changes."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "platform-security",
+        "firewall",
+        "traffic-analysis",
+        "defense-in-depth"
+      ],
+      "id": "f11d81c3b513b4353ab59f4b",
+      "source_id": "1A75zRNTfobhpqLb5BrFFiiPhrCLEnERS",
+      "source_sha256": "dd90fc2e0737817d2af2da7e0f281aa48221c7eb0e6a7add50a90060f89cbb8e",
+      "source_name": "Ecommerce security — what it means, common threats, and modern best practices.docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 0
+    },
+    {
+      "title": "Inventory of Common Storefront Threat Types and Their Countermeasures",
+      "summary": "Use a threat-to-countermeasure map covering phishing, malware/ransomware, SQLi, XSS, brute force, e-skimming, spam, bots, and Trojan horses to prioritize storefront defenses.",
+      "use_when": "Building or reviewing a storefront security threat model and assigning owners to each countermeasure.",
+      "steps": [
+        "Phishing — attacks that trick victims into providing confidential information via email, text, or phone, conveying urgency and mimicking trusted companies. Countermeasure the source highlights for merchants: inform customers you will never email or text to ask for personal information.",
+        "Malware/ransomware — malicious software that disrupts or gains unauthorized access; ransomware encrypts files until payment. Counter with antivirus and antispyware, updated systems, and secure authentication.",
+        "SQL injection and XSS — address through developer training, treating data-table edits as untrusted, vulnerability scanning, and quick patching.",
+        "Brute force, e-skimming, and spam — apply strong admin passwords, checkout patching and ad-code vetting, and CAPTCHA plus comment cleanup respectively.",
+        "Trojan horses — malware disguised as useful programs; counter with robust antivirus, firewalls, and reminding staff and customers to be wary of email attachments and unapproved third-party downloads.",
+        "Ask staff and customers to avoid unapproved third-party downloads, since the source notes team members or customers may install Trojans themselves."
+      ],
+      "caveats": [
+        "The source explicitly relegates generic dictionary definitions of phishing, malware, ransomware, and Trojans to background rather than core material; the actionable part is the countermeasure mapping, not the definitions.",
+        "Threat tactics evolve; treat this map as a starting inventory, not a current threat-intelligence feed."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "threat-modeling",
+        "phishing",
+        "malware",
+        "training"
+      ],
+      "id": "9b7ba160ace156325072f50c",
+      "source_id": "1A75zRNTfobhpqLb5BrFFiiPhrCLEnERS",
+      "source_sha256": "dd90fc2e0737817d2af2da7e0f281aa48221c7eb0e6a7add50a90060f89cbb8e",
+      "source_name": "Ecommerce security — what it means, common threats, and modern best practices.docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 0
+    },
+    {
+      "title": "Separate malware detection from checkout fraud scoring",
+      "summary": "Use endpoint and site protection for malicious code, and payment/order risk tools for suspicious transactions.",
+      "use_when": "Reviewing order-review and fraud-screening controls for a storefront.",
+      "steps": [
+        "Inventory storefront scripts, integrations and administrative devices exposed to malicious code.",
+        "Use appropriate malware detection and patching on systems the merchant controls; a hosted storefront may restrict direct scanning or installation.",
+        "Use payment-provider or fraud-platform risk signals to triage suspicious orders; antivirus software is not generally an order-fraud scoring system.",
+        "Route uncertain high-risk orders for review and track false positives alongside fraud loss.",
+        "Investigate both compromised checkout code and transaction abuse as distinct problems."
+      ],
+      "caveats": [
+        "Risk scores and malware scans have different scopes and neither proves an order is legitimate."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "fraud-prevention",
+        "order-review",
+        "payment-security",
+        "risk-scoring"
+      ],
+      "id": "94327bd6f9f0ba0cb95a9e52",
+      "source_id": "1A75zRNTfobhpqLb5BrFFiiPhrCLEnERS",
+      "source_sha256": "dd90fc2e0737817d2af2da7e0f281aa48221c7eb0e6a7add50a90060f89cbb8e",
+      "source_name": "Ecommerce security — what it means, common threats, and modern best practices.docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 0
+    },
+    {
+      "title": "Staff Security Training, Least Access, and Offboarding",
+      "summary": "Lower insider and account risk by training employees, limiting sensitive-data access, enforcing password updates, and revoking system access on departure.",
+      "use_when": "Setting internal security policy for store staff, admin users, and departing employees.",
+      "steps": [
+        "Ensure all employees are aware of the regulations that protect customer information.",
+        "Enforce password updates and require employee cybersecurity and privacy training to decrease liability.",
+        "Limit access to sensitive information so only staff who need customer data can reach it.",
+        "Revoke access to all systems when employees leave — the source frames this as preventing ex-employees from selling data to attackers or committing cybercrimes themselves.",
+        "Cover contractor and agency accounts that touch the admin panel, not just direct employees."
+      ],
+      "caveats": [
+        "The source does not set specific password-update intervals or training frequencies; treat these as policy decisions to verify against your compliance obligations.",
+        "Offboarding is easy to overlook on hosted platforms where accounts proliferate — audit admin user lists periodically."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "access-control",
+        "employee-offboarding",
+        "training",
+        "compliance"
+      ],
+      "id": "4caff12c108203731a2dccd0",
+      "source_id": "1A75zRNTfobhpqLb5BrFFiiPhrCLEnERS",
+      "source_sha256": "dd90fc2e0737817d2af2da7e0f281aa48221c7eb0e6a7add50a90060f89cbb8e",
+      "source_name": "Ecommerce security — what it means, common threats, and modern best practices.docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 0
+    },
+    {
+      "title": "Educating Customers on Password Hygiene and Phishing Risk",
+      "summary": "Reduce account-takeover exposure by requiring strong credentials and teaching customers that your store will never ask for personal information by email or text.",
+      "use_when": "Setting customer account and loyalty login policy, or writing security-related customer communications.",
+      "steps": [
+        "Acknowledge the source's premise: some security lapses come from customer behavior, particularly password reuse across many sites.",
+        "Require long, complex passwords for customer accounts and loyalty programs.",
+        "Remind customers about the risks of phishing attacks, and state plainly that you will never email or text to ask for personal information — the source's recommended countermeasure to phishing.",
+        "Use multifactor authentication or magic links for customer logins so a reused password alone does not grant access.",
+        "Set alerts for repeated failed login attempts against customer accounts as a detection backstop."
+      ],
+      "caveats": [
+        "Password-complexity requirements create checkout and account-creation friction; balance security against conversion impact for your store.",
+        "Customer education reduces but does not eliminate phishing success — customers must still be protected by technical controls."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "customer-accounts",
+        "authentication",
+        "phishing",
+        "retention"
+      ],
+      "id": "fd7e875cf07aab72f9397831",
+      "source_id": "1A75zRNTfobhpqLb5BrFFiiPhrCLEnERS",
+      "source_sha256": "dd90fc2e0737817d2af2da7e0f281aa48221c7eb0e6a7add50a90060f89cbb8e",
+      "source_name": "Ecommerce security — what it means, common threats, and modern best practices.docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 0
+    },
+    {
+      "title": "Why Ecommerce Security Is a Business Priority, Not Just IT",
+      "summary": "Position storefront security as protecting reputation, customer trust, and the operational ability to deliver goods as promised.",
+      "use_when": "Justifying security investment to store owners or stakeholders, or prioritizing security work against growth initiatives.",
+      "steps": [
+        "Frame the stakes the source identifies: protecting customers' credit card and personal information is critical to building and maintaining your reputation as a trustworthy brand.",
+        "Note the operational dimension: safeguarding your site ensures you have the financial and operational capabilities to deliver goods and services as promised.",
+        "Make the customer-experience case: the source notes customers appreciate the extra steps taken to protect them, which can strengthen brand affinity.",
+        "Acknowledge that baseline measures are common but insufficient, since attackers constantly change methods — merely hoping the right solutions are in place is not enough.",
+        "Treat security as an ongoing program (patch cadence, scanning, training, monitoring) rather than a one-time implementation, and recognize that some ecommerce tools have built-in security features that adapt as practices emerge."
+      ],
+      "caveats": [
+        "Breach statistics cited in the source (such as hacker infiltration times and global breach volumes from Trustwave, DataProt, and Juniper Research) are illustrative context, not forecasts for any individual store.",
+        "Building customer trust through security is a reasonable argument but the source provides no measured conversion or retention impact."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "business-case",
+        "trust",
+        "platform-security",
+        "compliance"
+      ],
+      "id": "35712f1fb89fee4b3f967987",
+      "source_id": "1A75zRNTfobhpqLb5BrFFiiPhrCLEnERS",
+      "source_sha256": "dd90fc2e0737817d2af2da7e0f281aa48221c7eb0e6a7add50a90060f89cbb8e",
+      "source_name": "Ecommerce security — what it means, common threats, and modern best practices.docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 0
+    }
+  ],
+  "request_id": "f4d438b36abb6686e88c3d8f833622d3472947a35e32c98f46ae451f7bf15f27",
+  "ecommerce_scope_version": 1
+}

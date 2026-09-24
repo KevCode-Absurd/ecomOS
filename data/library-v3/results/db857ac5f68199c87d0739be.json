@@ -1,0 +1,423 @@
+{
+  "cards": [
+    {
+      "title": "Unit economics first: profit per order before anything else",
+      "summary": "Break down a single order's price, costs and gross margin before evaluating growth or marketing spend.",
+      "use_when": "You are launching or auditing a subscription box or physical product and need to know whether the business can make money per order before scaling ads.",
+      "steps": [
+        "Write down the average order value (AOV). In the source case study, the subscription box was priced at $39/month with shipping baked in because customers expect free shipping — you mark up the price to absorb shipping rather than charging for it separately.",
+        "List every cost for one order: product cost (source example: $8.64), fulfillment/pick-and-pack at a third-party warehouse ($4.50), and shipping ($0.30) — total COGS $20.39.",
+        "Subtract COGS from AOV to get gross profit per order ($18.61 in the example).",
+        "Divide gross profit by AOV to get gross profit margin — 48% in the example.",
+        "The source is emphatic: if you don't know how much you make on one order, stop everything and figure it out first.",
+        "Keep this margin figure with you — you will multiply every lifetime revenue number by it to convert revenue into profit-based LTV."
+      ],
+      "caveats": [
+        "Costs are illustrative, not benchmarks; substitute your own quotes for fulfillment and shipping.",
+        "Fulfillment and shipping are separate vendors in the source's example — do not conflate them."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "unit-economics",
+        "pricing",
+        "product-selection",
+        "cost-of-goods-sold",
+        "gross-margin"
+      ],
+      "id": "31dce846c93cb7b9ee70c16e",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 6
+    },
+    {
+      "title": "Use churn-rate lifetime as a fast fallback, not the real answer",
+      "summary": "A quick LTV approximation from churn rate and gross profit per order, useful only when you have no cohort data.",
+      "use_when": "You have a new subscription store with almost no retention history and need a rough LTV for early ad spend decisions.",
+      "steps": [
+        "Estimate monthly churn rate: the percent of subscribers who cancel each month. Source case: 27%.",
+        "Compute average customer lifetime as 1 / churn rate. At 27% churn that is 3.7 months.",
+        "Multiply gross profit per order by the average lifetime to get LTV. $18.61 × 3.7 = $69 of gross profit per customer.",
+        "Use this number as a ceiling on marketing spend to acquire one new customer.",
+        "Treat it as a placeholder: the source says churn rate doesn't capture customer lifetime well because cancellation is front-loaded (see Dollar Shave Club: roughly 25% took off in the first month, but only about 10% churned across the entire second year).",
+        "Switch to cohort retention as soon as you have enough data — the source says once a company has more than a couple of people, retention cohorts are the way to think about it."
+      ],
+      "caveats": [
+        "Assumes a roughly constant churn rate; real retention varies by how long the customer has been subscribed.",
+        "Source calls this a 'lazy' calculation to use only when you have nothing better."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "ltv",
+        "churn",
+        "retention",
+        "subscriptions",
+        "measurement"
+      ],
+      "id": "136827bb25c77ac6690a0b92",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 6
+    },
+    {
+      "title": "Read a retention cohort table to calculate lifetime revenue",
+      "summary": "Organize repeat purchases by signup month to see true retention, cumulative revenue and profit-based LTV over time.",
+      "use_when": "You have several months of subscription or repeat-purchase data and need a defensible customer lifetime value for ad budget decisions.",
+      "steps": [
+        "Sort customers into cohorts by their first purchase month; label that month zero and each subsequent month 1, 2, 3…",
+        "Populate each cohort row with the number (or percentage) of that original group who purchase in each later month. Example: 100 bought in January, 81 came back in month one, 75 in month two, 45 in month three.",
+        "Divide each month's count by the starting month's count to express retention as a percentage.",
+        "Add a cumulative revenue row: sum each month's revenue from that cohort. The January cohort generated $3,750 in month zero and nearly $12,000 cumulatively by month three.",
+        "Divide cumulative revenue by the original cohort size to get lifetime revenue per customer ($116 in the example).",
+        "Multiply lifetime revenue by the gross profit margin (48%) to convert it into profit-based LTV — source example showed LTV building from about $18 in month one to $33, $47 and $55 over the next months.",
+        "Repeat each month as new data arrives; the curve tells you when LTV stops meaningfully increasing."
+      ],
+      "caveats": [
+        "Works for non-subscription stores too — just read repeat purchases of the same cohort over time, as the source notes for gift-buying businesses.",
+        "Churn rate and cohort churn will disagree; the cohort view is more accurate because cancellation varies across the customer lifecycle."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "retention",
+        "ltv",
+        "cohort-analysis",
+        "measurement",
+        "subscriptions",
+        "repeat-purchase"
+      ],
+      "id": "f272a137245d0f681f2c6b93",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 6
+    },
+    {
+      "title": "Blended vs paid CAC: calculate both and know why",
+      "summary": "Split acquisition cost into blended (all spend / all new customers) and paid-only (ad spend / paid-attributed new customers) to judge whether growth is scalable.",
+      "use_when": "You run paid ads plus organic channels and need to decide whether you can profitably increase ad budget.",
+      "steps": [
+        "Collect monthly ad spend, total new customers, and the split of new customers attributed to paid vs non-paid channels using Google Analytics, Google Ads and Facebook Ads Manager.",
+        "Compute blended CAC: total ad spend ÷ total new customers. Source example: $6,500 ÷ 134 = $48.51 per new customer.",
+        "Compute paid CAC: ad spend ÷ paid-attributed new customers. Source example: $6,500 ÷ 101 = $64.",
+        "Always exclude returning customers from the denominator — including them produces a meaningless CAC, since CAC is about acquiring the first purchase.",
+        "Compare paid CAC to LTV ($69 in the example — yes, profitable, but 'barely').",
+        "Ask whether organic traffic is scalable; the source notes paid channels can scale from $500/day to $20,000/day quickly, while organic often cannot — so paid CAC is the number that constrains growth."
+      ],
+      "caveats": [
+        "Channel splits require tracking setup; not every store will have it.",
+        "Blended CAC flatters performance when a large share of new customers come from non-scalable organic sources such as friends and family."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "cac",
+        "acquisition",
+        "paid-media",
+        "measurement",
+        "attribution",
+        "ltv"
+      ],
+      "id": "8cab64f326b983ac9a3bb1ce",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 6
+    },
+    {
+      "title": "Interpret the LTV:CAC ratio with the source's heuristics",
+      "summary": "Ratio of lifetime gross profit to acquisition cost signals whether the store can self-fund growth or needs outside capital.",
+      "use_when": "You are deciding whether to raise ad spend aggressively, seek investment, or fix retention/COGS first.",
+      "steps": [
+        "Divide LTV by CAC. Source example: $69 LTV ÷ $48.50 blended CAC = 1.4.",
+        "Read the ratio against the source's stated bands: 1.0 is the bare minimum (you make no money before operating expenses); 2–3 is the target for growing profitably; mature SaaS businesses can see up to 6 because their lifetimes span many years.",
+        "If the ratio is low, the source's framing is that you will lose money on the early orders of each customer and need investment to bridge until customers become profitable.",
+        "If LTV is much higher than CAC, the source says the business can raise venture capital comparatively easily — investors are judging product stickiness and whether marketing scales without CAC rising.",
+        "Remember the ratio is based on gross profit only; payroll, fixed costs and other opex come out afterward."
+      ],
+      "caveats": [
+        "The 2–3 and 'SaaS up to 6' figures are the presenter's heuristics, not universal benchmarks.",
+        "Ratio depends on which CAC you use (blended was 1.4 vs paid 1.4/1.4 — recalculate with paid CAC for a stricter view)."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "ltv-cac-ratio",
+        "acquisition",
+        "fundraising",
+        "measurement",
+        "unit-economics"
+      ],
+      "id": "79a98ff8e61827a36ae9161c",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 6
+    },
+    {
+      "title": "Lever 1: Raise LTV by cutting churn and adding pause options",
+      "summary": "Small reductions in monthly churn have the largest single effect on lifetime value for subscription stores.",
+      "use_when": "Your LTV:CAC ratio is thin and you are looking for the highest-leverage place to improve subscription economics.",
+      "steps": [
+        "Quantify the effect first using the churn shortcut: reducing churn from 27% to 20% raised LTV from $69 to $93 — a 35% increase in the source model.",
+        "Before cancellation, offer to pause or switch cadence: customers often cancel because they haven't finished the current box; letting them skip a month or take the box every other month keeps them subscribed.",
+        "Build email marketing that reminds, delights and drives repeat purchases, and invest in unusually responsive customer service to catch cancellations in the moment.",
+        "Requires automation — the source stresses you must respond fast enough to intercept the cancel intent.",
+        "Track retention at cohort level so you can see whether a pause option improves months 2–3 rather than just delaying churn."
+      ],
+      "caveats": [
+        "The 27%→20% figures are from the source's illustrative model, not a predicted result for your store.",
+        "Pause options can mask churn rather than prevent it; watch whether customers resume or drift away."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "retention",
+        "churn",
+        "ltv",
+        "subscriptions",
+        "email-marketing",
+        "customer-service"
+      ],
+      "id": "86fcb40129315002a09e2520",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 6
+    },
+    {
+      "title": "Lever 2: Raise AOV without competing on price",
+      "summary": "Upsells, tiers and value-based branding raise revenue per order and improve LTV.",
+      "use_when": "You want to raise LTV per subscriber without finding entirely new customers.",
+      "steps": [
+        "Introduce tiers or upsells — e.g., a basic box at $39 and a premium box at $49 with more items. Higher revenue per order flows straight into lifetime value.",
+        "Build brand loyalty deliberately: the source argues customers who love the brand become less price-sensitive, which gives you pricing power.",
+        "Avoid competing on price — customers who buy because you are cheap focus on price, and the source notes they may keep buying a product they dislike for the price alone.",
+        "Combine with retention work: the same loyalty that supports price increases also reduces churn, compounding LTV from both directions.",
+        "Recalculate LTV after any tier change, since the mix shift alters both AOV and retention."
+      ],
+      "caveats": [
+        "The source's tier prices are examples, not targets for your catalogue.",
+        "Price increases can damage retention if the perceived value does not justify them."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "ltv",
+        "pricing",
+        "upsells",
+        "merchandising",
+        "retention",
+        "positioning"
+      ],
+      "id": "ed010f896be716f0d6bf6d19",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 6
+    },
+    {
+      "title": "Lever 3: Renegotiate COGS as volume grows",
+      "summary": "Product, fulfillment and shipping costs all fall with scale, increasing LTV without changing price or retention.",
+      "use_when": "You have grown order volume and want to convert scale into higher lifetime value and contribution margin.",
+      "steps": [
+        "Decompose COGS into product cost, fulfillment and shipping, as in the source's $8.64 / $4.50 / $0.30 breakdown.",
+        "At low volume (source example: ~50 orders/month) you get the worst pricing — small production batches and small-volume fulfillment contracts.",
+        "At thousands of orders per month, buy product in larger wholesale quantities (the source models product cost dropping to about $7) and renegotiate the fulfillment contract (to about $4 per order).",
+        "Negotiate shipping rates as well — the source models shipping falling to about $6.50 in that line item, and notes every COGS line can be negotiated down.",
+        "Rerun your LTV model after renegotiation: in the source's illustration the combined reductions lifted LTV from $69 to about $80.",
+        "Attack LTV from every front simultaneously — retention, AOV and COGS — and keep re-checking it."
+      ],
+      "caveats": [
+        "The renegotiated figures are illustrative model inputs, not quotes you should expect.",
+        "Some volume thresholds may be needed before suppliers or 3PLs will reprice."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "cogs",
+        "ltv",
+        "gross-margin",
+        "fulfillment",
+        "negotiation",
+        "scaling"
+      ],
+      "id": "482dba787e59505be418196c",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 6
+    },
+    {
+      "title": "Decide how long a window to use for LTV",
+      "summary": "Choose an observation window by finding the point where cumulative cohort revenue stops meaningfully increasing.",
+      "use_when": "You need to fix a defensible LTV horizon for budgeting or investor conversations, especially for non-subscription or seasonal stores.",
+      "steps": [
+        "Build a simple model: start with a cohort (e.g., 1,000 customers), apply a monthly churn rate (e.g., 25%), and track remaining customers month by month.",
+        "Multiply monthly remaining customers by AOV and accumulate into a running cumulative revenue total.",
+        "Extend the model month by month and watch where additional months add negligible revenue — the source's example stopped around month 12.",
+        "Use the cumulative total at that plateau as your customer lifetime revenue, then multiply by gross profit margin for LTV.",
+        "For non-subscription stores, build the same view as a cohort: how many people bought in a given month, and how their repeat purchases accumulate over time; the source still recommends a longer window than a first-purchase-only view.",
+        "For seasonal gift-buying stores (Mother's Day, Christmas), the source warns LTV is not limited to the first 60–90 days — a customer acquired once may return across holidays for years, so model a multi-year window."
+      ],
+      "caveats": [
+        "A 60–90 day LTV view understates businesses with long repurchase cycles; the source explicitly calls this out for gift products.",
+        "The plateau month depends entirely on your retention curve — there is no universal window."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "ltv",
+        "cohort-analysis",
+        "measurement",
+        "retention",
+        "seasonality"
+      ],
+      "id": "8fcbcb2cd9bae8bae66c5773",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 6
+    },
+    {
+      "title": "Model paid Amazon launch orders and uncertain organic follow-on sales",
+      "summary": "Assess launch advertising against contribution and a conservative organic-sales scenario.",
+      "use_when": "You are launching a physical product on Amazon and deciding how much to lose on early ad-driven sales.",
+      "steps": [
+        "Forecast paid orders using realistic ad cost and order contribution after marketplace fees and fulfillment.",
+        "Model organic sales separately rather than assuming paid orders guarantee ranking or reviews.",
+        "Request authentic feedback only through permitted marketplace processes; do not buy or incentivize reviews.",
+        "Compare a no-organic-uplift downside with the source's growth scenario before funding the launch."
+      ],
+      "caveats": [
+        "Source review counts and launch economics are illustrative, not universal thresholds or current marketplace rules."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "amazon",
+        "fba",
+        "paid-media",
+        "product-launch",
+        "conversion-optimization",
+        "reviews"
+      ],
+      "id": "14761dd09c81a9126d42f768",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 6
+    },
+    {
+      "title": "Model lifetime orders per customer before committing ad budget",
+      "summary": "Estimate how many times a customer repurchases to convert first-order profit into true lifetime value.",
+      "use_when": "You sell a consumable product and need to justify acquisition spend above first-order margin.",
+      "steps": [
+        "Estimate average repurchase count from your own data — the source suggests looking across emails or an existing sales platform; the example used 2.2 lifetime purchases for a consumable like protein powder.",
+        "Multiply gross profit per order by lifetime orders: $43 × 2.2 ≈ $95 of lifetime profit in the example.",
+        "Deduct acquisition cost incurred only on the first order (about $40 in the example) to see the net profit per acquired customer.",
+        "Compare lifetime profit to CAC to sanity-check: source ratio came to 2.3, indicating paid acquisition still makes money over the customer's life.",
+        "Be conservative where you have no data — the source treats this as an assumption to revisit, not a fixed truth."
+      ],
+      "caveats": [
+        "The 2.2× multiple is an example assumption, not a category benchmark.",
+        "Applies best to consumables; one-time-purchase products need a different LTV basis."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "ltv",
+        "repeat-purchase",
+        "acquisition",
+        "unit-economics",
+        "consumables"
+      ],
+      "id": "ab551552b79e79b401578595",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 6
+    },
+    {
+      "title": "Sequence the forecast from marketing spend forward",
+      "summary": "Forecast ecommerce financials by starting with marketing budget, converting it to orders via CAC, then deriving inventory and cash needs.",
+      "use_when": "You are building a financial model for a new ecommerce or Amazon FBA business and need to know how much inventory and cash to line up.",
+      "steps": [
+        "Start with the marketing budget line by month — the source's example began at $1,000, rose to $1,500, then increased $1,000/month out to month 16.",
+        "Apply CAC to convert spend into expected new orders (source example CAC: $41 per order).",
+        "Translate orders into units of inventory needed, remembering you must purchase inventory well in advance — the source notes checks of $10,000–$50,000 for stock before any revenue.",
+        "Model cash timing explicitly: inventory is paid for before Amazon or customers pay you, so the model must show when cash goes out versus comes in.",
+        "Add a cohort/LTV layer to show when paid orders turn profitable through organic sales and repeat purchases.",
+        "Use Excel hygiene as the source does: freeze panes on months and cost categories so assumptions stay visible as you build across months."
+      ],
+      "caveats": [
+        "The marketing budget trajectory and $41 CAC are source examples, not projections.",
+        "Cash timing is the main risk in FBA businesses — the source highlights large upfront inventory payments as the core challenge."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "financial-modeling",
+        "cash-flow",
+        "inventory",
+        "amazon",
+        "fba",
+        "forecasting"
+      ],
+      "id": "939b20dbac4b991bdc9f34bd",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 6
+    },
+    {
+      "title": "Subscription retention benchmarking lesson from Dollar Shave Club",
+      "summary": "High long-tail retention, not high first-month retention, made a low-AOV subscription valuable.",
+      "use_when": "You are evaluating or building a low-price subscription and need to understand what makes the model worth investing in.",
+      "steps": [
+        "Look beyond first-month churn: in the Dollar Shave Club cohort cited, roughly 25% of a monthly cohort cancelled within the first month, but retention recovered — about 76% remained one month after signup and around 82% the following month, possibly reflecting pause-and-reactivate features.",
+        "Track the long tail: about 51% remained after 10 months, and the second year lost only about 10 percentage points (roughly 51% to 41%), with about 37% still subscribed at 24 months.",
+        "Translate retention into revenue: at $5/month, 10 months is $50 and 24 months is $120 per retained customer — the source argues this long tail, not the monthly price, is what produced the valuation.",
+        "Apply the lesson to your own subscriber model: small AOV subscriptions can work if the retention curve flattens, which justifies higher acquisition spend.",
+        "Also note the source's counterweight: the company grew through low-cost organic/guerrilla marketing because it could not afford ~$50 per paid conversion — a retention story alone did not carry the acquisition."
+      ],
+      "caveats": [
+        "The source explicitly warns that very few subscription box businesses see this kind of retention — it is a success story, not a typical outcome.",
+        "Cohort data came from a third-party site that scrapes transaction data; treat the exact percentages as estimates."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "subscriptions",
+        "retention",
+        "ltv",
+        "cohort-analysis",
+        "acquisition",
+        "organic-marketing"
+      ],
+      "id": "1fafdae1c561b869fdaa1559",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 6
+    }
+  ],
+  "request_id": "6d5ef1fe6936926456ac33bfbbe7f06b2e002d6a7575c769ddb8dcbd6d1d32df",
+  "ecommerce_scope_version": 1
+}

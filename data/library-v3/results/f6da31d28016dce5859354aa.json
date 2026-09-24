@@ -1,0 +1,407 @@
+{
+  "cards": [
+    {
+      "title": "Treat memory disclosure and uninitialized buffers as a storefront data-leak risk",
+      "summary": "A no-op server can leak past-request memory if it serializes buffers naively, so bound and clear any response that echoes user data.",
+      "use_when": "Building or reviewing any storefront endpoint, agent tool, or middleware that returns request data, error dumps, or templated responses back to a browser.",
+      "steps": [
+        "Classify any handler whose response body includes data assembled from request input, logs, or a shared pool as a potential disclosure path; do not assume a benign handler is safe because its logic looks read-only.",
+        "Require that every response that echoes input is constructed only from fields you explicitly select; never stringify a raw network buffer, a pooled allocation, or a whole error object into the body.",
+        "Verify buffers used for customer data are allocated zeroed or overwritten before use, and that serialization reads only the declared length rather than the backing allocation.",
+        "Test on systems you own: send requests with canary strings in unused fields, then confirm the canary never appears in any other customer's response or in an error page.",
+        "Apply the same rule to agent tool output and retrieved documents: treat them as untrusted data that can be surfaced to a user, not as content safe to paste back verbatim.",
+        "Add a log/response review step: grep response bodies for long opaque strings and for values that resemble API keys, session tokens, or payment fields before go-live."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "data-exposure",
+        "api-hardening",
+        "input-validation",
+        "logging",
+        "testing",
+        "pci-scope"
+      ],
+      "caveats": [],
+      "id": "4b80b29f09b698b345f22249",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 24
+    },
+    {
+      "title": "User interaction before a sensitive local or remote action",
+      "summary": "Requiring an explicit click before performing a state-changing action neutralizes most drive-by request attacks, even when the endpoint accepts them.",
+      "use_when": "Designing storefront or admin features that a browser could trigger without the customer's intent, such as store locators, device pairing, card-on-file actions, or integration callbacks.",
+      "steps": [
+        "Identify every endpoint or integration action that changes state — firing an order, saving a payment method, pairing a device, running a refund — and ask whether a website could trigger it via a simple GET or form POST.",
+        "Insert an explicit confirmation step (button, modal, or re-authentication) in the UI before the action executes; the source presents this as an acceptable mitigation for an over-permissive server.",
+        "Keep the confirmation server-side meaningful: the confirmation must be tied to the authenticated session and to the specific action parameters, not a static token any page can reuse.",
+        "For agent-driven flows, require a human approval step before the agent can invoke state-changing tools (refunds, price changes, publishing) unless the tool is read-only and scoped to the brand.",
+        "Log the approval event with who approved, what parameters, and when, so disputed changes can be reconstructed."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "approval-workflow",
+        "csrf",
+        "checkout",
+        "admin",
+        "audit-logging",
+        "agent-tools"
+      ],
+      "caveats": [],
+      "id": "b4c4297cd2c3a0699814671b",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 24
+    },
+    {
+      "title": "Use non-simple requests as a defense in depth, not as the fix",
+      "summary": "Requiring a preflighted method or custom header stops cross-site simple requests, but DNS rebinding and non-browser clients bypass it.",
+      "use_when": "Hardening a local or internal HTTP endpoint (device gateway, integration listener, admin service) that currently accepts simple GET/POST requests.",
+      "steps": [
+        "Determine whether the endpoint currently accepts simple requests: methods GET/HEAD/POST with form content types, which any page can trigger without a preflight.",
+        "Move sensitive state-changing actions to a method that requires a preflight (e.g., PUT/DELETE) or require a custom header, so the browser asks permission before sending.",
+        "On the server, validate the request's origin against an allowlist in the preflight response; missing or non-matching origin should be denied rather than defaulted to allow.",
+        "Do not treat a framework default that permits all HTTP methods as your control — the source shows Express-appeared-to-allow PUT while the browser still blocked the request because no explicit allow-origin was returned.",
+        "Recognize the limits: non-browser clients (scripts, other apps) ignore preflight rules entirely, and DNS rebinding makes the request same-origin in the browser's view.",
+        "Verify current CORS/preflight behavior for your framework and browser versions, since defaults and error messages change between releases."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "cors",
+        "preflight",
+        "api-hardening",
+        "csrf",
+        "agent-tools",
+        "verification"
+      ],
+      "caveats": [],
+      "id": "40f9a5454ce6c953349bc4f9",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 24
+    },
+    {
+      "title": "Scope local-network and integration endpoints so a browser cannot reach them",
+      "summary": "A privileged listener that accepts requests from any page reachable by the customer's browser is a cross-site path into the local network or the store's internal services; bind it to the required origin or protocol instead.",
+      "use_when": "Deploying device gateways, print/label services, POS bridges, or any ecommerce integration listener that runs on a store machine or local network.",
+      "steps": [
+        "Inventory services that listen on localhost, RFC1918 addresses, or internal hostnames and are reachable from the browser — printers, label makers, scanners, POS bridges, dev servers, admin consoles.",
+        "Prefer a protocol-handler / OS-registered deep link over a local HTTP server when the goal is only to launch a native app; this removes the attack surface entirely.",
+        "If a local server is required, bind it to a specific interface and origin allowlist rather than all interfaces, and require authentication tokens the page cannot obtain cross-origin.",
+        "Assume any device on the local network is untrusted and applies weak authentication: firmware is often frozen at factory state with no update path, so treat firewall placement as your primary control.",
+        "Keep internal services off the customer's network segment or behind a tunnel/gateway so the browser cannot act as a proxy to them; use per-token scoping rather than network trust."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "iot",
+        "network-segmentation",
+        "integrations",
+        "access-control",
+        "firewall",
+        "store-ops"
+      ],
+      "caveats": [],
+      "id": "8b445aa6c28be948e9ad8261",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 24
+    },
+    {
+      "title": "Capabilities of a same-origin rebinding-style attack on storefronts",
+      "summary": "A page that appears same-origin can bypass cross-origin restrictions and firewalls to reach local and internal services, which matters for IOT devices, printers, and admin tooling around ecommerce operations.",
+      "use_when": "Assessing risk when store systems, fulfillment hardware, or admin consoles share a network with the customer's or staff's browsing environment.",
+      "steps": [
+        "Map what a same-origin request from your own domain could reach: printers, label printers, scanners, smart speakers, routers, access points, POS bridges, dev servers, and admin panels.",
+        "Prioritize routers, switches, and access points, since compromise there lets an attacker change DNS settings or proxy traffic for every device on the store network.",
+        "Note that the browser enforces same-origin by scheme+hostname+port only; it does not bind the origin to a particular IP, so hostname-to-IP reassociation is the crux of the trick.",
+        "Because simple GET/form-POST requests can still be sent, assume any local device accepting unauthenticated GETs is reachable by any page that loads on your network.",
+        "Confirm that firewall rules block inbound connections from the internet; the browser acting as an internal proxy is what gets past that default."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "threat-model",
+        "network-segmentation",
+        "iot",
+        "store-ops",
+        "firewall",
+        "risk-assessment"
+      ],
+      "caveats": [],
+      "id": "c32f629c3361719207aa29b8",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 24
+    },
+    {
+      "title": "Keep access-control headers off endpoints that never meant to share data",
+      "summary": "An overly permissive Access-Control-Allow-Origin on a local or internal endpoint lets any site read the response even when it cannot be prevented from sending the request.",
+      "use_when": "Reviewing CORS configuration on local services, internal tooling, or storefront APIs that return customer, order, or token data.",
+      "steps": [
+        "Remove wildcard Access-Control-Allow-Origin from endpoints whose responses are not meant for third-party pages; the source shows deleting the wildcard header stopped a page from reading a response while the request itself still went through.",
+        "Understand the asymmetry: for a non-preflighted request, the browser sends the request first and only then decides whether the page may read the response, so blocking reads does not block the action.",
+        "Therefore do not rely on read-blocking for state-changing endpoints — combine with method/origin restrictions, authentication, and an explicit approval step for sensitive actions.",
+        "For endpoints that must be shared, return an explicit origin allowlist and only the methods and headers needed, and cache the preflight response with an appropriate max-age to limit overhead.",
+        "Re-test after changes: source notes a fix can appear to work while remaining vulnerable, so validate with an owned test page rather than assuming the patch holds."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "cors",
+        "api-hardening",
+        "data-exposure",
+        "verification",
+        "checkout"
+      ],
+      "caveats": [],
+      "id": "8764cd07524b998029c71190",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 24
+    },
+    {
+      "title": "Use allowlist identity keys and reject unauthenticated state changes",
+      "summary": "The source's thermostat example shows the core failure mode: a device or endpoint accepting unauthenticated GETs from anywhere on the network, which any page or integration can exploit.",
+      "use_when": "Reviewing connected device integrations, IoT hardware, or admin endpoints that control physical or financial state in a store or customer environment.",
+      "steps": [
+        "For every connected device or service, ask what happens if a fully untrusted caller sends the same request; if it changes temperature, prints, unlocks, or restarts, it is unsafe by default.",
+        "Require authenticated, origin-bound requests for state changes rather than trusting that anyone on the network is friendly — the source notes many such devices assume local network equals trusted.",
+        "Apply the same to non-browser callers: scripts and native apps ignore browser preflight rules, so browser-enforced controls can never be the sole defense for an endpoint with real-world effects.",
+        "Include non-technical risk in the assessment: unauthenticated control of thermostats or similar devices can be dangerous to occupants and costly when the store or customer is away.",
+        "Record which devices on the store network accept unauthenticated commands and prioritize replacing or isolating those that do."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "iot",
+        "access-control",
+        "threat-model",
+        "store-ops",
+        "risk-assessment"
+      ],
+      "caveats": [],
+      "id": "bd043182fa5a6c2b516bdb8b",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 24
+    },
+    {
+      "title": "Simple vs preflighted requests: which cross-site calls a page can make",
+      "summary": "Only requests expressible in plain HTML (GET, form POST with limited content types, no custom headers) can be sent cross-origin without a permission check; everything else triggers a preflight that the server can refuse.",
+      "use_when": "Deciding which storefront or integration endpoint methods a hostile page could reach, and designing the method/content-type/header profile accordingly.",
+      "steps": [
+        "Classify each endpoint: if it can be invoked by an img tag or a basic form (GET, or POST with form-encoded/multipart/text-plain), treat it as reachable by any page.",
+        "For endpoints that must not be reachable cross-site, require a method or header that is not simple (e.g., PUT/DELETE or a custom header), so the browser must preflight.",
+        "On the server, handle the preflight by returning an explicit allow-origin, allow-methods, and allow-headers; treat a server that doesn't support preflight as deny by default.",
+        "Remember that even a refused preflight means the browser blocked the request, so an endpoint relying on this should also send a correct allow-origin rather than a permissive one.",
+        "Recognize that this defense fails for non-browser clients and, as the source discusses, does not address DNS-rebinding-class attacks where the request appears same-origin."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "cors",
+        "preflight",
+        "api-hardening",
+        "csrf"
+      ],
+      "caveats": [],
+      "id": "f844ddaf929484dd697579c9",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 24
+    },
+    {
+      "title": "Treat agent- and browser-initiated requests as untrusted input, not authorization",
+      "summary": "A retrieved page, document, or tool response is data: it can carry instructions that look authoritative, so it must never by itself authorize an agent or page to perform store actions.",
+      "use_when": "Building checkout helpers, admin copilots, or automation that reads pages, emails, tickets, or vendor docs and can act on the store's systems.",
+      "steps": [
+        "Separate the data channel from the action channel: retrieved content informs the agent, but only a scoped credential plus an approved action mapping can execute a refund, order, price change, or export.",
+        "Scope every agent credential to the brand and to the minimum tool set needed for the current task; drop access to payment, pricing, or customer data unless the task explicitly requires it.",
+        "Require an explicit, human-confirmed action record before any agent-initiated state change, with the request parameters and tool invocation logged.",
+        "Do not let a fetched document or tool response name its own permissions, scope, or destination URL; validate those against your allowlist in code, not in the model prompt.",
+        "For storefront pages, keep the same discipline the browser already enforces cross-site: pages cannot make complex cross-origin requests without the server's explicit consent, and that consent must not be delegated to content."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "agent-tools",
+        "prompt-injection",
+        "access-control",
+        "approval-workflow",
+        "audit-logging"
+      ],
+      "caveats": [],
+      "id": "27dfeb1d3d4e41cc251bb7ee",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 24
+    },
+    {
+      "title": "Give each listener its own port and verify the actual request on the wire",
+      "summary": "Demo and production setups often break because two services share a port or because the browser sends a preflight instead of the intended method; check the network tab rather than the page's apparent behavior.",
+      "use_when": "Debugging or reviewing an integration listener, local gateway, or webhook receiver that appears to accept requests but behaves unexpectedly.",
+      "steps": [
+        "Ensure each listener binds a unique, intended port and hostname alias; mixing local and remote services on the same port causes requests to go to the wrong place, as seen when a local server and an attacker-side server both wanted 8080.",
+        "When testing, open developer tools and confirm the actual method sent — found was OPTIONS instead of the intended PUT, meaning a preflight occurred and the real request never went out.",
+        "Read response headers, not just status codes, and check the console message; error text such as a failed preflight makes it explicit the browser refused because no allow-origin was returned.",
+        "When a fix appears to work, re-run the exact hostile case on owned systems; the source reports a fix that looked correct but left the service exploitable for months.",
+        "Do not rely on framework defaults for method policy — verify current behavior against your framework version and the browser you are targeting."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "cors",
+        "preflight",
+        "testing",
+        "verification",
+        "troubleshooting",
+        "api-hardening"
+      ],
+      "caveats": [],
+      "id": "2cadaaa9061407b985112ec7",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 24
+    },
+    {
+      "title": "Hostname-to-IP reassociation is the mechanism to explain in store risk reviews",
+      "summary": "An origin is scheme+hostname+port, with no binding to the underlying IP, so a hostname that controls its own DNS answers can shift to point at a local or internal address without changing origin.",
+      "use_when": "Briefing engineers or vendors on why origin checks and allowlists alone do not protect local services, integrations, or connected devices in a store environment.",
+      "steps": [
+        "Explain the mechanism as: the page is served under the attacker's hostname, then the DNS answer for that hostname is changed to a private address, so the browser believes the request never left that origin.",
+        "Because the browser sees a same-origin request, it sends no preflight and applies no cross-origin read restriction regardless of method, headers, or payload complexity.",
+        "Use this to justify defense at the target service (authentication, origin-independent validation, local binding) rather than relying only on browser-side checks.",
+        "Note the practical scope from the source's survey: many commonly deployed device classes have been found vulnerable at some point, so assume unknowns rather than relying on device reputation.",
+        "Keep DNS/hosts pinning and split-horizon DNS in the review, and confirm enterprise DNS settings rather than assuming caching alone prevents reassociation."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "threat-model",
+        "dns",
+        "cors",
+        "integrations",
+        "iot",
+        "awareness"
+      ],
+      "caveats": [],
+      "id": "5f3f955eca81ccf53d35bdb4",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 24
+    },
+    {
+      "title": "Validate the mitigation against non-browser callers too",
+      "summary": "Browser-enforced controls (preflight, same-origin, read restrictions) are executed by the browser only, so any native script or service on the machine bypasses them entirely.",
+      "use_when": "Deciding whether an endpoint is actually safe when the threat model includes admin tooling, scripts, mobile apps, third-party integrations, or local automation.",
+      "steps": [
+        "For each protected endpoint, ask what happens if a native script or another installed app sends the request directly; if it could succeed, the endpoint's protection is incomplete.",
+        "Move the control to the server: require authentication, authorization-scoped tokens, and validation of the action itself, rather than relying on the browser to refuse the request.",
+        "Apply least privilege to local integrations — a print bridge or label service should need only the permission to print, not general network access.",
+        "Consider firewalling or isolating services on the store machine so a compromised local process has a narrow blast radius.",
+        "Document residual risk explicitly: the source's stated position is that browser-side enforcement is real but not sufficient for endpoints with meaningful capabilities."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "threat-model",
+        "access-control",
+        "api-hardening",
+        "least-privilege",
+        "store-ops"
+      ],
+      "caveats": [],
+      "id": "b09187c3abe4d8c8bd7fa0e8",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 24
+    },
+    {
+      "title": "Prioritize router and network-device exposure in the store environment",
+      "summary": "Routers, switches, and access points were the most commonly vulnerable class in the source's cited survey, and their compromise enables traffic interception or proxying for the whole store.",
+      "use_when": "Planning network security for a store or warehouse, or deciding what to harden first when local devices are in scope.",
+      "steps": [
+        "Inventory the store's network gear by model and firmware version, including the customer-facing Wi-Fi and any shared hotspot; these devices are often the highest-impact target.",
+        "Check for default or shared admin credentials and disable remote management on any interface reachable from the internet.",
+        "Segment the network so store devices (POS, printers, label makers) sit apart from guest Wi-Fi and from browsing devices, limiting lateral movement after a device is compromised.",
+        "Treat access to a compromised network device as sufficient to intercept or manipulate store traffic; plan monitoring and out-of-band alerting for configuration changes.",
+        "Apply vendor firmware updates on a schedule and re-check after updates, since the source's stated experience is that fixes can be incomplete or silently ineffective."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "network-segmentation",
+        "iot",
+        "firewall",
+        "store-ops",
+        "risk-assessment"
+      ],
+      "caveats": [],
+      "id": "94f2b6b91c876288807a8d6d",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 24
+    },
+    {
+      "title": "Monitor inbound reachability and device updateability on the store local network",
+      "summary": "Most local devices assume that anything reaching them is trusted and rarely receive updates, so the firewall is often the only working control; verify what it actually blocks.",
+      "use_when": "Reviewing store or warehouse network policy, onboarding new IoT hardware (printers, cameras, displays), or responding to a suspected local-device compromise.",
+      "steps": [
+        "Confirm the firewall defaults deny unsolicited inbound connections from the internet to every listening device, printer, camera, or service on the store LAN.",
+        "Verify outbound-initiated connections are still allowed, since some mitigation approaches (tunnels, push-based integrations) rely on the device initiating outbound rather than accepting inbound.",
+        "Track which devices have a supported update path and which are effectively frozen; for the latter, isolate them and remove unneeded capabilities.",
+        "Recognize that a printer or camera compromise alone may not be the objective — it is a pivot point for moving through the network, so segmentation and egress rules matter.",
+        "Re-test after network changes; the source reports bugs and incomplete fixes persisting even after people believed the device was corrected."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "iot",
+        "firewall",
+        "network-segmentation",
+        "risk-assessment",
+        "testing"
+      ],
+      "caveats": [],
+      "id": "9ff2f352f40f41df418904fd",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 24
+    }
+  ],
+  "request_id": "a3c5ec5c381812b86a3597bff900aeb44f18fd890d24306f3ec240f93df38166",
+  "ecommerce_scope_version": 1,
+  "format_repair": "Normalized null optional caveats to empty lists; original API result retained."
+}

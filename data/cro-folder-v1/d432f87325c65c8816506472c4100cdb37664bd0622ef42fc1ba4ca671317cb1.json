@@ -1,0 +1,573 @@
+{
+  "request_id": "d432f87325c65c8816506472c4100cdb37664bd0622ef42fc1ba4ca671317cb1",
+  "provider": "deepseek",
+  "model": "deepseek-flash",
+  "effort": "high",
+  "completion_limit": 65536,
+  "usage": {
+    "prompt_tokens": 3547,
+    "completion_tokens": 24671,
+    "total_tokens": 28218,
+    "prompt_tokens_details": {
+      "cached_tokens": 1152
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 20186
+    },
+    "prompt_cache_hit_tokens": 1152,
+    "prompt_cache_miss_tokens": 2395
+  },
+  "booked_cost_usd": 0.030669299999999997,
+  "seconds": 87.61,
+  "finish_reason": "stop",
+  "output": {
+    "units": [
+      {
+        "id": "u1",
+        "kind": "action",
+        "title": "Use the four-step sales process for service companies",
+        "claim": {
+          "text": "The source presents a four-step sales process for service companies.",
+          "quote": "fourstep sales process that you can use if you're a service company"
+        },
+        "action": {
+          "text": "Use a four-step sales process: marketing review, phone call check-in, marketing plan, and call after.",
+          "quote": "first step is the marketing review. We then have a phone call after that to check through with the client to find out what they thought of the review, any questions that they had, was it meeting their expectations, were they expecting anything else? We then send over a marketing plan and then we have a call after that."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Service company.",
+              "quote": "if you're a service company"
+            }
+          ]
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": [
+          {
+            "kind": "alternative_to",
+            "target": "u2"
+          }
+        ]
+      },
+      {
+        "id": "u2",
+        "kind": "action",
+        "title": "Combine assessment and check-in when the lead already knows what you do",
+        "claim": {
+          "text": "The source says a three-step process can be made by combining the first assessment and check-in if the lead already knows what you do.",
+          "quote": "if they know that they need what you do, you can turn this into a three-step process by combining the first assessment and checkin"
+        },
+        "action": {
+          "text": "Combine the first assessment and check-in into a three-step process when the lead already knows they need what you do.",
+          "quote": "if they know that they need what you do, you can turn this into a three-step process by combining the first assessment and checkin"
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Lead already knows what you do.",
+              "quote": "if they know that they need what you do"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": [
+          {
+            "kind": "alternative_to",
+            "target": "u1"
+          }
+        ]
+      },
+      {
+        "id": "u3",
+        "kind": "example",
+        "title": "Exhibition stand company sales process example",
+        "claim": {
+          "text": "The source gives an exhibition stand company as an example: the initial phone call covers assessment and check-in, then they build a stand design mockup and send a price as the proposal, then a call or follow-up email checks in and goes ahead.",
+          "quote": "their assessment and the check-in is covered in an initial phone call. So they will call the lead and they'll talk through exactly what they need and based on that they will then put together the stand design mockup and they'll send over a price. This is their proposal stage and then they'll have a call or follow-up email to check in after that and to go ahead."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u1"
+          }
+        ]
+      },
+      {
+        "id": "u4",
+        "kind": "example",
+        "title": "Holiday business sales process example",
+        "claim": {
+          "text": "The source gives a holiday business example: website captures the holiday type; assessment and check-in are both on the same phone call; assessment is fact-finding; proposal has price and plan; check-in after proposal is by phone or email depending on ticket size.",
+          "quote": "first step would be that people type in on the website the sort of holiday that they're after. They then have an assessment and a check-in and those are both covered on the same phone call. So, the assessment is a factf finding piece. What sort of holiday are you looking for? Um, how does that sound? Great. So, what have you thought about this particular area here? Blah blah blah. Basically, just collecting information. Then there's a proposal which has the price and the plan for the holiday. And then there's a check-in after that. What did you think of the proposal? How did you find it? And that can either be done through phone or email depending on the ticket size."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u1"
+          }
+        ]
+      },
+      {
+        "id": "u5",
+        "kind": "example",
+        "title": "PPI claims company sales process example",
+        "claim": {
+          "text": "The source gives a PPI claims company example: it processed about 400 leads a day towards the end; assessment is an information pack; check-in and proposal are in the notification of PPI; an order form is the check-in; there is no human interaction and it is automated through letters and emails because of volume.",
+          "quote": "So they were processing about 400 leads a day towards the end. Um the assessment is an information pack sent out to the lead. The check-in and the proposal are actually covered in the notification of PPI. So you fill in the info pack, you send it back, then they send you this notification thing which tells you how much PPI claim you've got. And there's also an order form in there which is the check-in. So they're going through that process, but there's notice here that there's no human interaction at all. It's all done manually. Sorry, it's all done automatically through letters and emails because of with that volume. They can't deal with each person on a one by one basis."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u1"
+          }
+        ]
+      },
+      {
+        "id": "u6",
+        "kind": "action",
+        "title": "Map your own sales steps using the four-step structure",
+        "claim": {
+          "text": "The source sets an exercise to map the steps in your sale using the structure, covering assessment, check-in, proposal, check-in after, and closing on the last check-in.",
+          "quote": "the exercise here is what are the steps in your sale? You can use this structure. So how do you cover your assessment? What form does the next check-in take? How do you present your proposal? What form does the check-in take after that? And on that last check-in, that will also be when you close the sale."
+        },
+        "action": {
+          "text": "Map your own sales steps using the four-step structure: how you cover assessment, what form the next check-in takes, how you present your proposal, what form the check-in after takes, and close on the last check-in.",
+          "quote": "the exercise here is what are the steps in your sale? You can use this structure. So how do you cover your assessment? What form does the next check-in take? How do you present your proposal? What form does the check-in take after that? And on that last check-in, that will also be when you close the sale."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u1"
+          }
+        ]
+      },
+      {
+        "id": "u7",
+        "kind": "warning",
+        "title": "The sales process is scoped to service companies",
+        "claim": {
+          "text": "The source says the sales process is relevant only for service companies; e-commerce businesses are treated with later examples.",
+          "quote": "this is obviously relevant only for service companies. For e-commerce businesses, we're going to be looking at some examples."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": [
+            {
+              "text": "E-commerce businesses are directed to later examples rather than this sales process.",
+              "quote": "For e-commerce businesses, we're going to be looking at some examples."
+            }
+          ]
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": []
+      },
+      {
+        "id": "u8",
+        "kind": "principle",
+        "title": "Choose conversion tools based on business, team, and conversion pathway",
+        "claim": {
+          "text": "The source says the conversion tools you use depend on your business, team, and conversion pathway.",
+          "quote": "the ones that you use obviously will depend on your business and the team that you've got and also your conversion pathway"
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": []
+      },
+      {
+        "id": "u9",
+        "kind": "action",
+        "title": "Use Response Tap for call tracking when phone calls are a primary CTA",
+        "claim": {
+          "text": "The source recommends Response Tap when generating phone calls through the website is a primary call to action.",
+          "quote": "Response tap is a fantastic tool if you're generating phone calls through your website and that is a primary call to action for you."
+        },
+        "action": {
+          "text": "Use Response Tap for call tracking: place its code on the website so it switches out the phone number and tracks the session that created the call.",
+          "quote": "Response Tap is awesome because what it does is it basically gives you a piece of code that you put on your website and that code when a visitor lands on your website, it switches out the phone number for another phone number using the same, you know, phone number code."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Generating phone calls through the website is a primary call to action.",
+              "quote": "if you're generating phone calls through your website and that is a primary call to action for you"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": []
+      },
+      {
+        "id": "u10",
+        "kind": "action",
+        "title": "Integrate Response Tap with Google Analytics for call conversions",
+        "claim": {
+          "text": "The source says Response Tap can be integrated with Google Analytics so calls show as conversions in Google Analytics and Google Ads.",
+          "quote": "You can integrate it with Google Analytics. So when someone calls a number, it shows us a conversion in Google Analytics and therefore in Google Ads."
+        },
+        "action": {
+          "text": "Integrate Response Tap with Google Analytics so that calls show as conversions in Google Analytics and Google Ads.",
+          "quote": "You can integrate it with Google Analytics. So when someone calls a number, it shows us a conversion in Google Analytics and therefore in Google Ads."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u9"
+          }
+        ]
+      },
+      {
+        "id": "u11",
+        "kind": "action",
+        "title": "Use Response Tap call recording to review sales performance and lead quality",
+        "claim": {
+          "text": "The source says Response Tap can record calls so you can listen to sales team performance and quality of leads by marketing channel.",
+          "quote": "The other things it can also do is it can record the calls. So if you've got a sales team that are taking those calls, then you can go through and listen and make sure that they're all doing a good job of uh of doing that. And you can also listen to see what sort of quality leads are coming through each marketing channel."
+        },
+        "action": {
+          "text": "Use Response Tap call recording to review sales team performance and the quality of leads coming through each marketing channel.",
+          "quote": "The other things it can also do is it can record the calls. So if you've got a sales team that are taking those calls, then you can go through and listen and make sure that they're all doing a good job of uh of doing that. And you can also listen to see what sort of quality leads are coming through each marketing channel."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": [
+            {
+              "text": "A sales team is taking calls.",
+              "quote": "if you've got a sales team that are taking those calls"
+            }
+          ]
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u9"
+          }
+        ]
+      },
+      {
+        "id": "u12",
+        "kind": "warning",
+        "title": "Response Tap cost and fit conditions",
+        "claim": {
+          "text": "The source warns Response Tap costs about £250 a month, is not exactly cheap, and is only worth doing if you generate enough leads to need to know where they come from and are spending money on PPC or similar.",
+          "quote": "It does cost money and um for many people the monthly cost I think we've got it for a whole bunch of different clients and it depends on how much they're um on how much they're using but I think it's about £250 a month so it's not exactly cheap and it's only worth doing if you're generating enough leads that you need to know where they're coming from. You're spending a bunch of money on PPC or whatever and that makes sense for you."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Generating enough leads that you need to know where they're coming from.",
+              "quote": "if you're generating enough leads that you need to know where they're coming from"
+            },
+            {
+              "text": "Spending a bunch of money on PPC or whatever.",
+              "quote": "You're spending a bunch of money on PPC or whatever and that makes sense for you."
+            }
+          ]
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": []
+      },
+      {
+        "id": "u13",
+        "kind": "action",
+        "title": "Use free call-tracking alternatives when Response Tap is not needed",
+        "claim": {
+          "text": "The source says another way to track conversions is to track clicks on the phone number or use a Google forwarding number; neither is as scientific as Response Tap but both are free.",
+          "quote": "The other way of tracking conversions will be just to track when someone clicks on the phone number um or use a Google forwarding number. Neither of those are as scientific as Response Tap, but then both of them are free."
+        },
+        "action": {
+          "text": "Use click tracking on the phone number or a Google forwarding number as free, less scientific alternatives to Response Tap.",
+          "quote": "The other way of tracking conversions will be just to track when someone clicks on the phone number um or use a Google forwarding number. Neither of those are as scientific as Response Tap, but then both of them are free."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": [
+          {
+            "kind": "alternative_to",
+            "target": "u9"
+          }
+        ]
+      },
+      {
+        "id": "u14",
+        "kind": "action",
+        "title": "Use Live Call to connect website visitors with the sales team",
+        "claim": {
+          "text": "The source recommends Live Call as a customizable call widget that triggers after time on site or scrolling, during office hours, lets visitors enter phone number and click call me now, calls you first and whispers, then calls them back and connects your sales team through a number that looks like yours.",
+          "quote": "live call is this little thing down there that you can see bouncing every so often. It's a call widget that you can customize. So this is actually a pretty poor implementation of it because you can have a little speech bubble that comes out. Um, and what happens is when when an uh when something is triggered, so for example, when someone's been on a site for a particular amount of time or here it looks like when you scroll down the page, it bounces. Um, you can click on it and then you get this little thing. So, when we're out of hours now, I'm filming this video at half five, but during office hours or during whatever hours you set to be your opening time, um people can basically fill in their in fact, you can see it on the screen here. So, they just put in their phone number and click call me now. And then it what it does is it calls you first, whispers to tell you that this is, you know, someone so and so has called from the website and then it calls them back. So, the person gets a phone call from a phone number that looks like yours and it connects your sales team with that person."
+        },
+        "action": {
+          "text": "Use Live Call as a customizable call widget that triggers after time on site or scroll, during office hours, lets visitors enter their phone number and click call me now, calls you first with a whisper, then calls them back, and connects your sales team through a number that looks like yours.",
+          "quote": "live call is this little thing down there that you can see bouncing every so often. It's a call widget that you can customize. So this is actually a pretty poor implementation of it because you can have a little speech bubble that comes out. Um, and what happens is when when an uh when something is triggered, so for example, when someone's been on a site for a particular amount of time or here it looks like when you scroll down the page, it bounces. Um, you can click on it and then you get this little thing. So, when we're out of hours now, I'm filming this video at half five, but during office hours or during whatever hours you set to be your opening time, um people can basically fill in their in fact, you can see it on the screen here. So, they just put in their phone number and click call me now. And then it what it does is it calls you first, whispers to tell you that this is, you know, someone so and so has called from the website and then it calls them back. So, the person gets a phone call from a phone number that looks like yours and it connects your sales team with that person."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Visitor has been on site for a particular amount of time or scrolls down the page.",
+              "quote": "when someone's been on a site for a particular amount of time or here it looks like when you scroll down the page, it bounces"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": [
+            {
+              "text": "During office hours or hours set as opening time.",
+              "quote": "during office hours or during whatever hours you set to be your opening time"
+            }
+          ]
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source says Live Call only works if you've got people on the phones, but the sentence is cut off."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u15",
+        "kind": "unresolved_claim",
+        "title": "Live Call phone staffing condition is cut off",
+        "claim": {
+          "text": "The source states Live Call only works if you have people on the phones, but the sentence is cut off.",
+          "quote": "Obviously, this only works if you've got people on the phones that are, you"
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The continuation of the Live Call staffing condition is missing.",
+          "It is unknown what phone coverage or roles are required."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u14"
+          }
+        ]
+      },
+      {
+        "id": "u16",
+        "kind": "unresolved_claim",
+        "title": "Conversion tool category count is inconsistent",
+        "claim": {
+          "text": "The source says it will look at four different tools or categories but lists call tracking, call pop-up widgets, live chat, and alert bars and landing pages.",
+          "quote": "we're going to look at four different tools, and these are really different categories of tools, but rather than showing you all of the different call tracking options, for example, I'm just going to show you the call tracking uh provider that we found to be the best. The same with um call pop-up widgets, live chat, and also alert bars and uh and landing pages. So these are four different categories of conversion booster if you like"
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "Whether alert bars and landing pages are one category or two is unclear.",
+          "The list appears to include five items although the source says four."
+        ],
+        "relations": []
+      }
+    ],
+    "more_units": true,
+    "unresolved": [
+      "Live Call staffing condition is cut off.",
+      "Tool category count is inconsistent: four stated versus listed items.",
+      "Live chat, alert bars, and landing pages are mentioned but not extracted as detailed units.",
+      "The source ends mid-sentence, so continuation is needed."
+    ]
+  },
+  "raw_content": "{\"units\":[{\"id\":\"u1\",\"kind\":\"action\",\"title\":\"Use the four-step sales process for service companies\",\"claim\":{\"text\":\"The source presents a four-step sales process for service companies.\",\"quote\":\"fourstep sales process that you can use if you're a service company\"},\"action\":{\"text\":\"Use a four-step sales process: marketing review, phone call check-in, marketing plan, and call after.\",\"quote\":\"first step is the marketing review. We then have a phone call after that to check through with the client to find out what they thought of the review, any questions that they had, was it meeting their expectations, were they expecting anything else? We then send over a marketing plan and then we have a call after that.\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[{\"text\":\"Service company.\",\"quote\":\"if you're a service company\"}]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[],\"relations\":[{\"kind\":\"alternative_to\",\"target\":\"u2\"}]},{\"id\":\"u2\",\"kind\":\"action\",\"title\":\"Combine assessment and check-in when the lead already knows what you do\",\"claim\":{\"text\":\"The source says a three-step process can be made by combining the first assessment and check-in if the lead already knows what you do.\",\"quote\":\"if they know that they need what you do, you can turn this into a three-step process by combining the first assessment and checkin\"},\"action\":{\"text\":\"Combine the first assessment and check-in into a three-step process when the lead already knows they need what you do.\",\"quote\":\"if they know that they need what you do, you can turn this into a three-step process by combining the first assessment and checkin\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Lead already knows what you do.\",\"quote\":\"if they know that they need what you do\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[],\"relations\":[{\"kind\":\"alternative_to\",\"target\":\"u1\"}]},{\"id\":\"u3\",\"kind\":\"example\",\"title\":\"Exhibition stand company sales process example\",\"claim\":{\"text\":\"The source gives an exhibition stand company as an example: the initial phone call covers assessment and check-in, then they build a stand design mockup and send a price as the proposal, then a call or follow-up email checks in and goes ahead.\",\"quote\":\"their assessment and the check-in is covered in an initial phone call. So they will call the lead and they'll talk through exactly what they need and based on that they will then put together the stand design mockup and they'll send over a price. This is their proposal stage and then they'll have a call or follow-up email to check in after that and to go ahead.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u1\"}]},{\"id\":\"u4\",\"kind\":\"example\",\"title\":\"Holiday business sales process example\",\"claim\":{\"text\":\"The source gives a holiday business example: website captures the holiday type; assessment and check-in are both on the same phone call; assessment is fact-finding; proposal has price and plan; check-in after proposal is by phone or email depending on ticket size.\",\"quote\":\"first step would be that people type in on the website the sort of holiday that they're after. They then have an assessment and a check-in and those are both covered on the same phone call. So, the assessment is a factf finding piece. What sort of holiday are you looking for? Um, how does that sound? Great. So, what have you thought about this particular area here? Blah blah blah. Basically, just collecting information. Then there's a proposal which has the price and the plan for the holiday. And then there's a check-in after that. What did you think of the proposal? How did you find it? And that can either be done through phone or email depending on the ticket size.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u1\"}]},{\"id\":\"u5\",\"kind\":\"example\",\"title\":\"PPI claims company sales process example\",\"claim\":{\"text\":\"The source gives a PPI claims company example: it processed about 400 leads a day towards the end; assessment is an information pack; check-in and proposal are in the notification of PPI; an order form is the check-in; there is no human interaction and it is automated through letters and emails because of volume.\",\"quote\":\"So they were processing about 400 leads a day towards the end. Um the assessment is an information pack sent out to the lead. The check-in and the proposal are actually covered in the notification of PPI. So you fill in the info pack, you send it back, then they send you this notification thing which tells you how much PPI claim you've got. And there's also an order form in there which is the check-in. So they're going through that process, but there's notice here that there's no human interaction at all. It's all done manually. Sorry, it's all done automatically through letters and emails because of with that volume. They can't deal with each person on a one by one basis.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u1\"}]},{\"id\":\"u6\",\"kind\":\"action\",\"title\":\"Map your own sales steps using the four-step structure\",\"claim\":{\"text\":\"The source sets an exercise to map the steps in your sale using the structure, covering assessment, check-in, proposal, check-in after, and closing on the last check-in.\",\"quote\":\"the exercise here is what are the steps in your sale? You can use this structure. So how do you cover your assessment? What form does the next check-in take? How do you present your proposal? What form does the check-in take after that? And on that last check-in, that will also be when you close the sale.\"},\"action\":{\"text\":\"Map your own sales steps using the four-step structure: how you cover assessment, what form the next check-in takes, how you present your proposal, what form the check-in after takes, and close on the last check-in.\",\"quote\":\"the exercise here is what are the steps in your sale? You can use this structure. So how do you cover your assessment? What form does the next check-in take? How do you present your proposal? What form does the check-in take after that? And on that last check-in, that will also be when you close the sale.\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u1\"}]},{\"id\":\"u7\",\"kind\":\"warning\",\"title\":\"The sales process is scoped to service companies\",\"claim\":{\"text\":\"The source says the sales process is relevant only for service companies; e-commerce businesses are treated with later examples.\",\"quote\":\"this is obviously relevant only for service companies. For e-commerce businesses, we're going to be looking at some examples.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[{\"text\":\"E-commerce businesses are directed to later examples rather than this sales process.\",\"quote\":\"For e-commerce businesses, we're going to be looking at some examples.\"}]},\"completion\":[],\"unknowns\":[],\"relations\":[]},{\"id\":\"u8\",\"kind\":\"principle\",\"title\":\"Choose conversion tools based on business, team, and conversion pathway\",\"claim\":{\"text\":\"The source says the conversion tools you use depend on your business, team, and conversion pathway.\",\"quote\":\"the ones that you use obviously will depend on your business and the team that you've got and also your conversion pathway\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[],\"relations\":[]},{\"id\":\"u9\",\"kind\":\"action\",\"title\":\"Use Response Tap for call tracking when phone calls are a primary CTA\",\"claim\":{\"text\":\"The source recommends Response Tap when generating phone calls through the website is a primary call to action.\",\"quote\":\"Response tap is a fantastic tool if you're generating phone calls through your website and that is a primary call to action for you.\"},\"action\":{\"text\":\"Use Response Tap for call tracking: place its code on the website so it switches out the phone number and tracks the session that created the call.\",\"quote\":\"Response Tap is awesome because what it does is it basically gives you a piece of code that you put on your website and that code when a visitor lands on your website, it switches out the phone number for another phone number using the same, you know, phone number code.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Generating phone calls through the website is a primary call to action.\",\"quote\":\"if you're generating phone calls through your website and that is a primary call to action for you\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[],\"relations\":[]},{\"id\":\"u10\",\"kind\":\"action\",\"title\":\"Integrate Response Tap with Google Analytics for call conversions\",\"claim\":{\"text\":\"The source says Response Tap can be integrated with Google Analytics so calls show as conversions in Google Analytics and Google Ads.\",\"quote\":\"You can integrate it with Google Analytics. So when someone calls a number, it shows us a conversion in Google Analytics and therefore in Google Ads.\"},\"action\":{\"text\":\"Integrate Response Tap with Google Analytics so that calls show as conversions in Google Analytics and Google Ads.\",\"quote\":\"You can integrate it with Google Analytics. So when someone calls a number, it shows us a conversion in Google Analytics and therefore in Google Ads.\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u9\"}]},{\"id\":\"u11\",\"kind\":\"action\",\"title\":\"Use Response Tap call recording to review sales performance and lead quality\",\"claim\":{\"text\":\"The source says Response Tap can record calls so you can listen to sales team performance and quality of leads by marketing channel.\",\"quote\":\"The other things it can also do is it can record the calls. So if you've got a sales team that are taking those calls, then you can go through and listen and make sure that they're all doing a good job of uh of doing that. And you can also listen to see what sort of quality leads are coming through each marketing channel.\"},\"action\":{\"text\":\"Use Response Tap call recording to review sales team performance and the quality of leads coming through each marketing channel.\",\"quote\":\"The other things it can also do is it can record the calls. So if you've got a sales team that are taking those calls, then you can go through and listen and make sure that they're all doing a good job of uh of doing that. And you can also listen to see what sort of quality leads are coming through each marketing channel.\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[{\"text\":\"A sales team is taking calls.\",\"quote\":\"if you've got a sales team that are taking those calls\"}]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u9\"}]},{\"id\":\"u12\",\"kind\":\"warning\",\"title\":\"Response Tap cost and fit conditions\",\"claim\":{\"text\":\"The source warns Response Tap costs about £250 a month, is not exactly cheap, and is only worth doing if you generate enough leads to need to know where they come from and are spending money on PPC or similar.\",\"quote\":\"It does cost money and um for many people the monthly cost I think we've got it for a whole bunch of different clients and it depends on how much they're um on how much they're using but I think it's about £250 a month so it's not exactly cheap and it's only worth doing if you're generating enough leads that you need to know where they're coming from. You're spending a bunch of money on PPC or whatever and that makes sense for you.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[{\"text\":\"Generating enough leads that you need to know where they're coming from.\",\"quote\":\"if you're generating enough leads that you need to know where they're coming from\"},{\"text\":\"Spending a bunch of money on PPC or whatever.\",\"quote\":\"You're spending a bunch of money on PPC or whatever and that makes sense for you.\"}]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[],\"relations\":[]},{\"id\":\"u13\",\"kind\":\"action\",\"title\":\"Use free call-tracking alternatives when Response Tap is not needed\",\"claim\":{\"text\":\"The source says another way to track conversions is to track clicks on the phone number or use a Google forwarding number; neither is as scientific as Response Tap but both are free.\",\"quote\":\"The other way of tracking conversions will be just to track when someone clicks on the phone number um or use a Google forwarding number. Neither of those are as scientific as Response Tap, but then both of them are free.\"},\"action\":{\"text\":\"Use click tracking on the phone number or a Google forwarding number as free, less scientific alternatives to Response Tap.\",\"quote\":\"The other way of tracking conversions will be just to track when someone clicks on the phone number um or use a Google forwarding number. Neither of those are as scientific as Response Tap, but then both of them are free.\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[],\"relations\":[{\"kind\":\"alternative_to\",\"target\":\"u9\"}]},{\"id\":\"u14\",\"kind\":\"action\",\"title\":\"Use Live Call to connect website visitors with the sales team\",\"claim\":{\"text\":\"The source recommends Live Call as a customizable call widget that triggers after time on site or scrolling, during office hours, lets visitors enter phone number and click call me now, calls you first and whispers, then calls them back and connects your sales team through a number that looks like yours.\",\"quote\":\"live call is this little thing down there that you can see bouncing every so often. It's a call widget that you can customize. So this is actually a pretty poor implementation of it because you can have a little speech bubble that comes out. Um, and what happens is when when an uh when something is triggered, so for example, when someone's been on a site for a particular amount of time or here it looks like when you scroll down the page, it bounces. Um, you can click on it and then you get this little thing. So, when we're out of hours now, I'm filming this video at half five, but during office hours or during whatever hours you set to be your opening time, um people can basically fill in their in fact, you can see it on the screen here. So, they just put in their phone number and click call me now. And then it what it does is it calls you first, whispers to tell you that this is, you know, someone so and so has called from the website and then it calls them back. So, the person gets a phone call from a phone number that looks like yours and it connects your sales team with that person.\"},\"action\":{\"text\":\"Use Live Call as a customizable call widget that triggers after time on site or scroll, during office hours, lets visitors enter their phone number and click call me now, calls you first with a whisper, then calls them back, and connects your sales team through a number that looks like yours.\",\"quote\":\"live call is this little thing down there that you can see bouncing every so often. It's a call widget that you can customize. So this is actually a pretty poor implementation of it because you can have a little speech bubble that comes out. Um, and what happens is when when an uh when something is triggered, so for example, when someone's been on a site for a particular amount of time or here it looks like when you scroll down the page, it bounces. Um, you can click on it and then you get this little thing. So, when we're out of hours now, I'm filming this video at half five, but during office hours or during whatever hours you set to be your opening time, um people can basically fill in their in fact, you can see it on the screen here. So, they just put in their phone number and click call me now. And then it what it does is it calls you first, whispers to tell you that this is, you know, someone so and so has called from the website and then it calls them back. So, the person gets a phone call from a phone number that looks like yours and it connects your sales team with that person.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Visitor has been on site for a particular amount of time or scrolls down the page.\",\"quote\":\"when someone's been on a site for a particular amount of time or here it looks like when you scroll down the page, it bounces\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[{\"text\":\"During office hours or hours set as opening time.\",\"quote\":\"during office hours or during whatever hours you set to be your opening time\"}]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source says Live Call only works if you've got people on the phones, but the sentence is cut off.\"],\"relations\":[]},{\"id\":\"u15\",\"kind\":\"unresolved_claim\",\"title\":\"Live Call phone staffing condition is cut off\",\"claim\":{\"text\":\"The source states Live Call only works if you have people on the phones, but the sentence is cut off.\",\"quote\":\"Obviously, this only works if you've got people on the phones that are, you\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The continuation of the Live Call staffing condition is missing.\",\"It is unknown what phone coverage or roles are required.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u14\"}]},{\"id\":\"u16\",\"kind\":\"unresolved_claim\",\"title\":\"Conversion tool category count is inconsistent\",\"claim\":{\"text\":\"The source says it will look at four different tools or categories but lists call tracking, call pop-up widgets, live chat, and alert bars and landing pages.\",\"quote\":\"we're going to look at four different tools, and these are really different categories of tools, but rather than showing you all of the different call tracking options, for example, I'm just going to show you the call tracking uh provider that we found to be the best. The same with um call pop-up widgets, live chat, and also alert bars and uh and landing pages. So these are four different categories of conversion booster if you like\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"Whether alert bars and landing pages are one category or two is unclear.\",\"The list appears to include five items although the source says four.\"],\"relations\":[]}],\"more_units\":true,\"unresolved\":[\"Live Call staffing condition is cut off.\",\"Tool category count is inconsistent: four stated versus listed items.\",\"Live chat, alert bars, and landing pages are mentioned but not extracted as detailed units.\",\"The source ends mid-sentence, so continuation is needed.\"]}",
+  "input": {
+    "source": {
+      "source_id": "1Rhe979-e16InGIMPR6o6U6pkj2AGimCM",
+      "source_sha256": "c232e6ea18e30f6a87acb9437114264b7f9e7f18c9a1de8a60a9bb6ccee060b0",
+      "locator": "batch",
+      "start": 0,
+      "text": "at their solution might look like. You then have a check-in with them. So getting some feedback on how they found the assessment, any questions that they had, did it match their expectations, and starting to identify what their objections further down the line might be. The next step will be some kind of proposal. So you're making a suggestion of um something that they can do with you. So this is the kind of pitch if you like, although pitch is a horrendous word. uh some kind of plan and then a following check-in after that. So, what did you think of the plan? Let's get going. So, that's a kind of fourstep sales process that you can use if you're a service company. It's exactly the process that we use at Exposure Ninja. So, first step is the marketing review. We then have a phone call after that to check through with the client to find out what they thought of the review, any questions that they had, was it meeting their expectations, were they expecting anything else? We then send over a marketing plan and then we have a call after that. So that is our sales process. It's a four-step process. Once someone has filled in that form, um here's another business. Uh this is the exhibition stand company. We've worked with a few, but this is their sales process. So first step, their assessment and the check-in is covered in an initial phone call. So they will call the lead and they'll talk through exactly what they need and based on that they will then put together the stand design mockup and they'll send over a price. This is their proposal stage and then they'll have a call or follow-up email to check in after that and to go ahead. Okay. So if they know that they need what you do, you can turn this into a three-step process by combining the first assessment and checkin. Okay. Um, another example, holiday business. So, we've got a client that's in uh travel and creating bespoke holidays. They use this process as well. So, the first step would be that people type in on the website the sort of holiday that they're after. They then have an assessment and a check-in and those are both covered on the same phone call. So, the assessment is a factf finding piece. What sort of holiday are you looking for? Um, how does that sound? Great. So, what have you thought about this particular area here? Blah blah blah. Basically, just collecting information. Then there's a proposal which has the price and the plan for the holiday. And then there's a check-in after that. What did you think of the proposal? How did you find it? And that can either be done through phone or email depending on the ticket size. Okay. Uh, the PPI claims company that we looked at earlier. So they were processing about 400 leads a day towards the end. Um the assessment is an information pack sent out to the lead. The check-in and the proposal are actually covered in the notification of PPI. So you fill in the info pack, you send it back, then they send you this notification thing which tells you how much PPI claim you've got. And there's also an order form in there which is the check-in. So they're going through that process, but there's notice here that there's no human interaction at all. It's all done manually. Sorry, it's all done automatically through letters and emails because of with that volume. They can't deal with each person on a one by one basis. Uh and here's the travel example I mentioned. So you've got the holiday assessment call, then you've got a price, and then you've got a call or email to close up. So the exercise here is what are the steps in your sale? You can use this structure. So how do you cover your assessment? What form does the next check-in take? How do you present your proposal? What form does the check-in take after that? And on that last check-in, that will also be when you close the sale. So, this is obviously relevant only for service companies. For e-commerce businesses, we're going to be looking at some examples. And in the next video, I'm going to be taking you through some examples of different websites as we do some um kind of live tearowns. So, we can talk through these principles in action and we can look at some different ways of implementing this. We're also going to talk about the tools that you can use as well. So, see you in the next video. In this video, I'm going to show you some tools that you can use to improve your conversion rate. So, we're going to look at four different tools, and these are really different categories of tools, but rather than showing you all of the different call tracking options, for example, I'm just going to show you the call tracking uh provider that we found to be the best. The same with um call pop-up widgets, live chat, and also alert bars and uh and landing pages. So these are four different categories of conversion booster if you like and the ones that you use obviously will depend on your business and the team that you've got and also your conversion pathway. So the first thing that we're looking at on the screen now is something called response tap. Response tap is a fantastic tool if you're generating phone calls through your website and that is a primary call to action for you. So, if you're inviting people to give you a call and you need to track those calls, Response Tap is awesome because what it does is it basically gives you a piece of code that you put on your website and that code when a visitor lands on your website, it switches out the phone number for another phone number using the same, you know, phone number code. So, let's say that you call Exposure Ninja, we are 0115, that's the Nottingham Nottingham. So 01159. Well, if we were using response tap when you came onto the site, you might see a different 01159 number because response tap would have switched that number out for another one. And the reason it does that is because it's unable to track the session that created that phone call. If you went on our site and you saw that 01159 number that's specific to you, Response Tap would then know, okay, this visitor is the one who made that call. There's no other way of tracking. So, say someone lands on your website and they type in their they type in your phone number into their phone and they give you a call. There's no other way of tracking that. So the only way to do it is by giving you a virtual number temporarily so that when someone makes that call response tap can say ah right that was Allison she was on a Mac computer she just clicked on a Google ad that said uh Silista's firm in Edinburgh right so it gives you all of that data and response tap is a fantastic way of doing this so how it works and the stuff it gives you it can tell you the page that someone entered your website through it tells you the page that they converted on. So the page that they were looking at when they gave you a call. It tells you the source of the traffic. So whether they came through Google ads, organic uh referral, whatever. If they came through Google Ads, it also tells you the keyword that they search for and the campaign um in your ad platform that they search for. You can integrate it with Google Analytics. So when someone calls a number, it shows us a conversion in Google Analytics and therefore in Google Ads. So it can all pull through and give you all the metrics. It's really really powerful. The other things it can also do is it can record the calls. So if you've got a sales team that are taking those calls, then you can go through and listen and make sure that they're all doing a good job of uh of doing that. And you can also listen to see what sort of quality leads are coming through each marketing channel. So that's response tab. Absolutely fantastic. It's the most powerful option that we've found. It does cost money and um for many people the monthly cost I think we've got it for a whole bunch of different clients and it depends on how much they're um on how much they're using but I think it's about £250 a month so it's not exactly cheap and it's only worth doing if you're generating enough leads that you need to know where they're coming from. You're spending a bunch of money on PPC or whatever and that makes sense for you. The other way of tracking conversions will be just to track when someone clicks on the phone number um or use a Google forwarding number. Neither of those are as scientific as Response Tap, but then both of them are free. So there is that. But Response Tap, fantastic call tracking software and it's the one that we recommend most often. Now the next one that we're going to talk about is something called Live Call. And Live Call doesn't really have that many um competitors or not that I know of. So we found Live Call um a few years ago and have been uh recommending it steadily. Basically live call is this little thing down there that you can see bouncing every so often. It's a call widget that you can customize. So this is actually a pretty poor implementation of it because you can have a little speech bubble that comes out. Um, and what happens is when when an uh when something is triggered, so for example, when someone's been on a site for a particular amount of time or here it looks like when you scroll down the page, it bounces. Um, you can click on it and then you get this little thing. So, when we're out of hours now, I'm filming this video at half five, but during office hours or during whatever hours you set to be your opening time, um people can basically fill in their in fact, you can see it on the screen here. So, they just put in their phone number and click call me now. And then it what it does is it calls you first, whispers to tell you that this is, you know, someone so and so has called from the website and then it calls them back. So, the person gets a phone call from a phone number that looks like yours and it connects your sales team with that person. Obviously, this only works if you've got people on the phones that are, you "
+    },
+    "already_extracted_claims": [],
+    "instruction": "Extract remaining distinct task-sized units. Do not repeat already extracted claims."
+  },
+  "system_prompt_sha256": "f23d9572f5bf1b93a5822a96b30f4ea85c0469c454d5ce80d227418df3d2e25e"
+}

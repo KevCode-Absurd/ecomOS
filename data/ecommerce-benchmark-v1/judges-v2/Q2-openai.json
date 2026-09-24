@@ -1,0 +1,198 @@
+{
+  "status": "complete",
+  "mapping": {
+    "A": "cheap_with",
+    "B": "cheap_without",
+    "C": "frontier_without",
+    "D": "frontier_with"
+  },
+  "judge_model": "gpt-5.6-terra",
+  "output": {
+    "reviews": [
+      {
+        "label": "A",
+        "scores": {
+          "factual_accuracy": 3,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 4,
+          "prioritization": 4
+        },
+        "strengths": [
+          "Correctly calculates Meta reported ROAS (3.00x to 3.20x), Shopify revenue divided by Meta spend (3.00x to about 2.05x), store conversion, mobile/desktop conversion, funnel rates, and DAY18 contribution economics.",
+          "Directly satisfies the core decision: do not raise spend based on platform ROAS alone.",
+          "Clearly distinguishes observations from hypotheses and explicitly says Meta and Klaviyo attributed revenue cannot be added or treated as incremental.",
+          "Useful diagnosis of the mobile decline and appropriately cautious linkage to buried laptop-fit, water-resistance, and delivery information.",
+          "Gives a practical sequence: attribution breakdown, customer/audience review, Shopify-side SKU and new-customer readout, flow audit, then a capped causal test."
+        ],
+        "issues": [
+          "Calls Shopify net product revenue divided by Meta spend a “blended Meta-attributed MER.” It is better described as a store-revenue-to-Meta-spend directional ratio: the numerator includes all channels, while the denominator is only Meta spend.",
+          "The recommendation to use “7-day click / 1-day engaged” relies on external platform guidance, while the supplied Meta settings only confirm 7-day click plus 1-day view. It should explicitly say to verify current available Meta reporting definitions/UI before requesting that exact view.",
+          "“If much of the scaling spend is on existing customers, do not scale” is somewhat categorical. Existing-customer exposure is a warning flag, but the scale decision should still rest on contribution, inventory, and incremental evidence."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Meta ROAS 3 to 3.2 while Shopify revenue/spend falls 3 to about 2.045.",
+            "met": true,
+            "reason": "Shows Meta ROAS 3.00x to 3.20x and Shopify revenue divided by Meta spend 3.00x to 2.05x."
+          },
+          {
+            "criterion": "Do not add Meta and email attributed revenue or call either incremental.",
+            "met": true,
+            "reason": "Explicitly states that Meta and Klaviyo revenue are not additive and neither proves incrementality."
+          },
+          {
+            "criterion": "Require order/window reconciliation and contribution before scaling.",
+            "met": true,
+            "reason": "Requests audience/window reporting, Shopify-side checks, a controlled test, and evaluates DAY18 contribution and breakeven."
+          }
+        ]
+      },
+      {
+        "label": "B",
+        "scores": {
+          "factual_accuracy": 2,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 3,
+          "uncertainty_and_questions": 3,
+          "prioritization": 3
+        },
+        "strengths": [
+          "The primary conclusion is sound: platform-reported Meta ROAS is not sufficient evidence to increase spend while Shopify orders, revenue, and conversion have declined.",
+          "Accurately calculates the major Shopify, Meta, mobile, and funnel changes.",
+          "Correctly notes that Meta and Klaviyo attribution windows overlap and that their revenues must not be added as sales.",
+          "The DAY18 contribution and stock-cover calculations are correct and relevant to a scale decision.",
+          "The recommendation to surface laptop-fit, delivery, and water-resistance limitations is well aligned with TrailFold’s plain-spoken constraints and the known support themes."
+        ],
+        "issues": [
+          "It overstates the reconciliation finding: Meta being $25,400 above Shopify does not mean that amount has “no matching Shopify product revenue.” The answer itself later lists possible date, value-definition, refund, and event differences; those must be reconciled before characterizing the overage as unmatched credit.",
+          "It states that the excess is “overlapping or non-incremental attribution” too definitively. Overlap is plausible, but Meta alone exceeding Shopify total may also reflect reporting-date, event duplication, tax/shipping, refund, or purchase-value-definition differences. Non-incrementality cannot be inferred from this comparison.",
+          "“The simplest reading is attribution inflation or overlap” is stronger than the supplied evidence supports. It should remain a hypothesis pending order/event reconciliation.",
+          "Recommending a budget shift toward the laptop-fit creative is weakly supported: it only had higher CTR in a small test, and no conversion sample or incrementality evidence was provided.",
+          "A 14-day geo holdout is presented as the next test without discussing whether TrailFold’s volume and $3,000 test budget can support a readable geo result. The reference material specifically cautions that geo tests need sufficient volume."
+        ],
+        "critical_errors": [
+          "Treats the Meta-over-Shopify gap as if it proves a defined amount of unmatched, overlapping, or non-incremental sales before reconciling windows, event values, dates, and refunds."
+        ],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Meta ROAS 3 to 3.2 while Shopify revenue/spend falls 3 to about 2.045.",
+            "met": true,
+            "reason": "Correctly reports Meta ROAS rising 3.00x to 3.20x and Shopify revenue divided by Meta spend declining to 2.05x."
+          },
+          {
+            "criterion": "Do not add Meta and email attributed revenue or call either incremental.",
+            "met": true,
+            "reason": "States the figures are overlapping and not additive; says neither channel’s attributed revenue proves incrementality."
+          },
+          {
+            "criterion": "Require order/window reconciliation and contribution before scaling.",
+            "met": true,
+            "reason": "Calls for a holdout, contribution threshold, and checks of SKU mix and Meta value definitions, though parts of the reconciliation interpretation are overconfident."
+          }
+        ]
+      },
+      {
+        "label": "C",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 3,
+          "uncertainty_and_questions": 4,
+          "prioritization": 4
+        },
+        "strengths": [
+          "Accurately computes every material comparison: Meta ROAS, spend and attributed-value changes, Shopify revenue/spend ratio, conversion, AOV, mobile versus desktop conversion, funnel rates, contribution margin, and inventory gap.",
+          "Uses precise terminology by calling Shopify revenue divided by Meta spend a store-wide efficiency indicator rather than Meta ROAS.",
+          "Handles the Meta-over-Shopify discrepancy especially well: it identifies it as a material flag, lists plausible reconciliation causes, and does not assert a confirmed cause.",
+          "Explicitly explains why Meta and Klaviyo reported revenue cannot be added and why neither establishes incremental revenue.",
+          "Appropriately distinguishes aggregate funnel deterioration from proof of causation, and labels PDP/support-theme explanations as plausible rather than proven.",
+          "The inventory and contribution constraints are correctly framed as separate reasons not to scale."
+        ],
+        "issues": [
+          "The next-step plan is directionally good but less operationally specific than the strongest response: it does not assign the limited owner/developer time, define the exact pre-scale gate, or specify what test design is realistically feasible under the $3,000 budget.",
+          "It recommends a controlled holdout or spend test but does not note that a short, low-budget geo/holdout test may be underpowered; feasibility should be assessed before relying on it.",
+          "It could more directly prioritize an immediate spend decision—such as hold at current spend or reduce DAY18-promoting spend due to the stock gap—rather than only saying not to raise spending."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Meta ROAS 3 to 3.2 while Shopify revenue/spend falls 3 to about 2.045.",
+            "met": true,
+            "reason": "Table correctly shows Meta ROAS 3.00x to 3.20x and Shopify revenue divided by Meta spend 3.00x to 2.05x."
+          },
+          {
+            "criterion": "Do not add Meta and email attributed revenue or call either incremental.",
+            "met": true,
+            "reason": "Explains window overlap and says email attribution is neither additional nor proven incremental revenue."
+          },
+          {
+            "criterion": "Require order/window reconciliation and contribution before scaling.",
+            "met": true,
+            "reason": "Requests matching order/event exports and evaluates contribution and inventory before reconsidering scale."
+          }
+        ]
+      },
+      {
+        "label": "D",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 4,
+          "prioritization": 4
+        },
+        "strengths": [
+          "Provides the most careful and complete reconciliation without treating any attribution system as ground truth.",
+          "All key arithmetic is correct, including Meta ROAS, Shopify revenue divided by Meta spend, conversion and AOV, mobile and funnel rates, DAY18 contribution, break-even ratio, and the 70-unit inventory shortfall.",
+          "Correctly labels the 2.05x figure as a store-revenue-to-Meta-spend measure rather than Meta ROAS, true blended MER, or acquisition MER.",
+          "The conditional new-customer-order calculation is responsibly qualified and avoids assuming new and repeat customers have the same AOV.",
+          "Explicitly says the Meta-over-Shopify gap is a reconciliation flag rather than proof of a precise quantity of false attribution, and gives appropriate possible explanations.",
+          "Does not add Meta and Klaviyo reported revenue, does not call either incremental, and clearly explains window overlap and privacy-related limitations of email opens.",
+          "Prioritizes a feasible operating sequence around the stated owner and developer constraints, protects replenishment cash, and treats the $3,000 test budget as optional rather than mandatory.",
+          "Appropriately cautions that a 14-day test is not automatically conclusive and that controlled-test feasibility and power must be assessed."
+        ],
+        "issues": [
+          "The proposed daily ledger includes “estimated contribution,” but complete store contribution cannot be calculated from the supplied information because SKU mix and accessory fulfillment costs are missing. It should explicitly constrain that ledger to known DAY18 economics or mark store-level contribution as unresolved.",
+          "The recommendation to set an inventory-safe spending ceiling is sound, but no actual ceiling can be computed from the supplied evidence because the relationship between Meta spend and DAY18 demand is not available."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Meta ROAS 3 to 3.2 while Shopify revenue/spend falls 3 to about 2.045.",
+            "met": true,
+            "reason": "Correctly reports Meta ROAS moving from 3.00x to 3.20x and store revenue divided by Meta spend moving from 3.00x to 2.05x."
+          },
+          {
+            "criterion": "Do not add Meta and email attributed revenue or call either incremental.",
+            "met": true,
+            "reason": "Explicitly says not to add or subtract Meta and Klaviyo attributed revenue and explains that neither proves incrementality."
+          },
+          {
+            "criterion": "Require order/window reconciliation and contribution before scaling.",
+            "met": true,
+            "reason": "Sets concrete reconciliation work, a contribution/cash gate, inventory gate, and controlled-test feasibility check before any capped increase."
+          }
+        ]
+      }
+    ],
+    "ranking": [
+      "D",
+      "C",
+      "A",
+      "B"
+    ],
+    "summary": "All four answers reach the correct no-scale conclusion and perform the key arithmetic. D is strongest for terminology, reconciliation discipline, operational sequencing, and uncertainty management. C is nearly as rigorous but less specific on implementation. A is strong and useful but has minor terminology and attribution-setting caveats. B is useful but loses ground by treating the attribution gap as more conclusive than the supplied data permits and by recommending a creative shift without conversion evidence."
+  },
+  "request_id": "a7ccecd9b7dabf1b2f596dcfdbafe41c68871fae8b31971db8f85df75cd01334",
+  "cost_upper_estimate_usd": 0.073311375
+}

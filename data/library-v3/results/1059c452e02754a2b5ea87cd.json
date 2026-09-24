@@ -1,0 +1,506 @@
+{
+  "cards": [
+    {
+      "title": "Set Up Google Search Console for a Store Property",
+      "summary": "Install and verify Search Console using the exact HTTPS URL-prefix property, and place the verification tag in the site head.",
+      "use_when": "Onboarding a new store domain or taking over a Shopify/WooCommerce/custom site and you need crawling, indexing and query data before diagnosing traffic.",
+      "steps": [
+        "Log into Google Search Console with the Google account you'll keep managing the store with, open the property dropdown and click Add property.",
+        "Choose the URL prefix option rather than the Domain option: the source instructs preferring the exact version with https (and the www/non-www version as it is served) because Search Console is sensitive to URL mismatch, unlike Analytics.",
+        "Enter the exact website URL and click continue. If a Google Analytics property already exists for the site, verification may be automatic.",
+        "If verification is needed, copy the HTML tag shown under Settings > verification, paste it into the site's homepage head section (before the first body section), save, then return and click Verify.",
+        "After verification, the Overview shows the performance graph and Indexing (how many pages are indexed vs not indexed); treat this as the entry point to the audit workflow below."
+      ],
+      "caveats": [
+        "The source considers URL-prefix/https the safer choice for Search Console; other guides prefer domain properties. Either way, the property must match the canonical host your store actually serves.",
+        "Requires developer or CMS theme-access to edit the head section if the theme does not expose a verification field."
+      ],
+      "tags": [
+        "search",
+        "google-search-console",
+        "analytics-setup",
+        "technical-seo",
+        "indexing",
+        "site-audit"
+      ],
+      "id": "c0017f6a1d90cb04e1f3fd47",
+      "source_id": "1IWFC4QSSWOZNNwhdkHBK2d6krCryMQml",
+      "source_sha256": "964901ff3e4b67f55f5a1525e0523002d6c849ce6de8bde90f290970adc0453b",
+      "source_name": "SEO Full Course 2026 _ SEO Tutorial For Beginners _ Search Engine Optimization Course _ Simplilearn.docx",
+      "folder": "/15-SEO-search",
+      "domain": "search",
+      "section": 6
+    },
+    {
+      "title": "Find High-Impression Low-Click Queries in Search Console",
+      "summary": "Sort Search Console queries by impressions to surface ranking pages that fail to earn clicks, then diagnose relevance, position and load time.",
+      "use_when": "Monthly SEO triage for a store: deciding which category, collection or blog pages need new titles, content or speed work.",
+      "steps": [
+        "Open Search Console > Search results and switch between the Queries and Pages tabs; use the Country tab for market-level splits.",
+        "Sort by impressions descending to find terms with heavy impression volume but few clicks (the source's example: a clarifying shampoo query with strong impressions but only six clicks).",
+        "Work through the source's three explanations: (1) page content is not relevant enough to win the click, (2) the page ranks outside the top 20 so it rarely receives clicks, (3) the page loads slowly, which raises bounce rate and can cause Google to demote it.",
+        "For each candidate, check the average position in the table: if the query sits on pages 2-3, prioritize content and internal links; if it sits on page 1 with low CTR, prioritize title/meta and page-speed work.",
+        "Track fixes over the following reporting windows rather than judging impact immediately."
+      ],
+      "caveats": [
+        "The three causes are the presenter's explanations, not a ranked diagnostic model; several can apply at once.",
+        "High impressions with low clicks is not automatically a problem for brand or navigational queries."
+      ],
+      "tags": [
+        "search",
+        "google-search-console",
+        "keyword-research",
+        "click-through-rate",
+        "product-page",
+        "site-audit"
+      ],
+      "id": "b243bdf156ec9715efd95ace",
+      "source_id": "1IWFC4QSSWOZNNwhdkHBK2d6krCryMQml",
+      "source_sha256": "964901ff3e4b67f55f5a1525e0523002d6c849ce6de8bde90f290970adc0453b",
+      "source_name": "SEO Full Course 2026 _ SEO Tutorial For Beginners _ Search Engine Optimization Course _ Simplilearn.docx",
+      "folder": "/15-SEO-search",
+      "domain": "search",
+      "section": 6
+    },
+    {
+      "title": "Compare Two Periods to Isolate Which Pages Lost Clicks",
+      "summary": "Use Search Console period comparison plus an exported Google Sheet with a difference formula to rank pages by click and impression decline.",
+      "use_when": "When store traffic drops after a site change, season shift or algorithm update and you need to name the specific pages that lost the most visibility.",
+      "steps": [
+        "In Search Console > Search results, open the date comparison option and set it to compare, for example, the last 3 months against the previous period; the source also shows comparing a period to the previous year.",
+        "Read the headline numbers first: totals for impressions, clicks and average position across both periods (the source's example showed impressions down from 3.39M to 3M, clicks down from 19.2K to 15.4K, but average position improved from 17.8 to 12.7).",
+        "Export to Google Sheets. The export contains one tab for queries and another for pages, each with clicks and impressions for both periods.",
+        "In the sheet, compute a difference column (the source describes 'A1 minus A2') and sort in decreasing order of decline to surface the biggest losers.",
+        "Repeat the pass one metric at a time - clicks first, then impressions, then average CTR - to avoid conflating metrics; the source's example flagged a homepage down 96 clicks while a blog gained 19."
+      ],
+      "caveats": [
+        "Improved average position alongside falling clicks means visibility breadth changed, not necessarily ranking quality - interpret the pair together.",
+        "The comparison windows are illustrative, not a recommended reporting cadence."
+      ],
+      "tags": [
+        "search",
+        "google-search-console",
+        "measurement",
+        "site-audit",
+        "reporting",
+        "content-strategy"
+      ],
+      "id": "5895232c1ead149732101382",
+      "source_id": "1IWFC4QSSWOZNNwhdkHBK2d6krCryMQml",
+      "source_sha256": "964901ff3e4b67f55f5a1525e0523002d6c849ce6de8bde90f290970adc0453b",
+      "source_name": "SEO Full Course 2026 _ SEO Tutorial For Beginners _ Search Engine Optimization Course _ Simplilearn.docx",
+      "folder": "/15-SEO-search",
+      "domain": "search",
+      "section": 6
+    },
+    {
+      "title": "Audit Indexing Coverage and Fix 404s and No-Indexed Pages",
+      "summary": "Use Search Console Indexing to separate intentionally excluded dynamic URLs from genuine broken product and collection URLs, then repair only the meaningful ones.",
+      "use_when": "Cleaning up a store's crawl budget and recovering link equity after category, product or URL-structure changes.",
+      "steps": [
+        "Open Search Console > Indexing and review indexed vs not-indexed counts (the source's example: 18.4K not indexed vs 163 indexed).",
+        "In the not-indexed reasons, read 'Excluded by noindex tag' and 'Page with redirect' entries: dynamic URLs containing question marks and equals signs are typically irrelevant filter/facet URLs that the source says can be ignored.",
+        "Click into the 404 (not found) group and open sample URLs to confirm they genuinely return a not-found page when a shopper would click them.",
+        "Export the 404 list and hand it to a developer; redirect each removed URL to the nearest relevant collection or product page, or to the homepage when no relevant page exists.",
+        "Re-crawl later to confirm the 404 count falls and the important templates remain indexed."
+      ],
+      "caveats": [
+        "Do not blanket-redirect every 404: the source explicitly says to ignore dynamic URLs with query parameters and irrelevant characters.",
+        "Redirect execution requires site back-end access or developer support."
+      ],
+      "tags": [
+        "search",
+        "google-search-console",
+        "indexing",
+        "technical-seo",
+        "site-audit",
+        "redirects"
+      ],
+      "id": "38ede763059698b980e669fc",
+      "source_id": "1IWFC4QSSWOZNNwhdkHBK2d6krCryMQml",
+      "source_sha256": "964901ff3e4b67f55f5a1525e0523002d6c849ce6de8bde90f290970adc0453b",
+      "source_name": "SEO Full Course 2026 _ SEO Tutorial For Beginners _ Search Engine Optimization Course _ Simplilearn.docx",
+      "folder": "/15-SEO-search",
+      "domain": "search",
+      "section": 6
+    },
+    {
+      "title": "Install Google Tag Manager and Deploy Analytics Through It",
+      "summary": "Set up a GTM web container, fire GA4 through a constant variable so code lives outside the theme, and verify the tag with Preview mode.",
+      "use_when": "When a store wants to add or change tracking tags (analytics, pixels, schema, event tracking) without editing theme code for every change.",
+      "steps": [
+        "Create the GTM account (account name, country) and a container using the bare domain, selecting Web as the target platform; accept the terms.",
+        "Paste the head snippet in the head section and the body snippet immediately after the opening body tag. The source hit a CMS glitch where an ampersand had to be written as '&amp;' - if your platform throws a similar error, fix the escaping.",
+        "Create a user-defined variable of type Constant holding the GA4 measurement ID.",
+        "Create a GA4/Google tag, set its tag ID to reference that constant, and set its trigger to All Pages - Page View.",
+        "Publish the container (the source names each version, e.g. 'Google Analytics firing'), then use Preview to confirm the tag fires on a connected page; also confirm in GA4 realtime that only the GTM-delivered code is present if you removed the direct GA snippet.",
+        "Google Search Console is still installed separately with its own HTML tag - GTM does not replace it."
+      ],
+      "caveats": [
+        "The source found the Tag Assistant Chrome extension unreliable during the demo; source-code search (view-source and Ctrl+F for the GTM ID) is the fallback verification.",
+        "GTM interface labels shift over time - verify current menu names before following step-by-step naming."
+      ],
+      "tags": [
+        "search",
+        "google-tag-manager",
+        "analytics-setup",
+        "tracking",
+        "event-tracking",
+        "technical-seo"
+      ],
+      "id": "d0575f65e6d3a2bed32bd0f3",
+      "source_id": "1IWFC4QSSWOZNNwhdkHBK2d6krCryMQml",
+      "source_sha256": "964901ff3e4b67f55f5a1525e0523002d6c849ce6de8bde90f290970adc0453b",
+      "source_name": "SEO Full Course 2026 _ SEO Tutorial For Beginners _ Search Engine Optimization Course _ Simplilearn.docx",
+      "folder": "/15-SEO-search",
+      "domain": "search",
+      "section": 6
+    },
+    {
+      "title": "Create and Validate Articles/Blog Schema for Rich Snippets",
+      "summary": "Generate article-type schema from a template tool, fix validation warnings (typically date format), and never deploy unchecked code.",
+      "use_when": "Preparing blog or buying-guide content for rich results, or planning product-page schema such as star ratings and FAQ blocks.",
+      "steps": [
+        "Use a schema generator template (the source used technicalseo.com) and pick the matching type - Article for a blog post, FAQPage for question blocks; product pages should carry star-rating schema.",
+        "Fill fields from the live page: type (Blog), URL, headline, image URL, short description, author type/name (author URL optional), publisher and logo URL, date published and date modified.",
+        "Paste the generated code into a rich-results/rich-snippet testing tool and run it; the source's code passed but warned on the date.",
+        "Correct warnings using an AI assistant by pasting the code and asking it to fix the flagged field to ISO standard, then re-test until all results are green.",
+        "Only then install the code, ideally through Google Tag Manager rather than the theme (see the GTM schema card)."
+      ],
+      "caveats": [
+        "Validation tools may show an old result after you unpublish a schema tag because the crawl is cached - the source observed a paused tag still appearing in test results.",
+        "Schema types and required fields change; check the current validator's requirements rather than copying an old code block verbatim.",
+        "Use store FAQs to answer shopper questions. Do not promise Google FAQ rich results or treat FAQ markup as a ranking requirement; verify current search feature support."
+      ],
+      "tags": [
+        "search",
+        "schema-markup",
+        "rich-snippets",
+        "content-strategy",
+        "product-page",
+        "technical-seo"
+      ],
+      "id": "c88b20d0718784404b35eae3",
+      "source_id": "1IWFC4QSSWOZNNwhdkHBK2d6krCryMQml",
+      "source_sha256": "964901ff3e4b67f55f5a1525e0523002d6c849ce6de8bde90f290970adc0453b",
+      "source_name": "SEO Full Course 2026 _ SEO Tutorial For Beginners _ Search Engine Optimization Course _ Simplilearn.docx",
+      "folder": "/15-SEO-search",
+      "domain": "search",
+      "section": 6
+    },
+    {
+      "title": "Fire Page-Specific Schema from Google Tag Manager",
+      "summary": "Deploy schema per URL via GTM with a page-path trigger so each blog post or FAQ page carries its own markup without theme edits.",
+      "use_when": "When content teams cannot touch the CMS templates but need structured data on specific blog, FAQ or product pages.",
+      "steps": [
+        "In GTM, create a variable enabling the needed click/element variables if the configuration is not already set.",
+        "Create a new Custom HTML tag and paste the validated schema code.",
+        "Create a trigger of type Page View and narrow it with Page Path equals the specific page path (the portion after .com, e.g. the brand-perception post URL) - the source stresses per-page triggers because blog and FAQ pages differ.",
+        "Name the tag clearly (e.g. 'schema code for blog'), save, then publish the container with a naming convention you will recognise later.",
+        "Verify with GTM Preview that the tag fires on the correct URL, then confirm with a rich-results URL tester against the live page."
+      ],
+      "caveats": [
+        "GTM triggers and variable configuration screens change over time - confirm the current labels.",
+        "Tag Assistant/preview behaviour can be inconsistent, as the source shows; use both preview and source-code/URL-test confirmation.",
+        "Use store FAQs to answer shopper questions. Do not promise Google FAQ rich results or treat FAQ markup as a ranking requirement; verify current search feature support."
+      ],
+      "tags": [
+        "search",
+        "google-tag-manager",
+        "schema-markup",
+        "rich-snippets",
+        "technical-seo",
+        "content-strategy"
+      ],
+      "id": "639b2b41168f7b49a066c64a",
+      "source_id": "1IWFC4QSSWOZNNwhdkHBK2d6krCryMQml",
+      "source_sha256": "964901ff3e4b67f55f5a1525e0523002d6c849ce6de8bde90f290970adc0453b",
+      "source_name": "SEO Full Course 2026 _ SEO Tutorial For Beginners _ Search Engine Optimization Course _ Simplilearn.docx",
+      "folder": "/15-SEO-search",
+      "domain": "search",
+      "section": 6
+    },
+    {
+      "title": "Read an Ahrefs-Style Domain Rating and Backlink Profile",
+      "summary": "Interpret DR, UR, backlinks, referring domains, organic keywords and traffic as a comparative profile rather than a target score.",
+      "use_when": "Benchmarking a store against competitors before deciding whether link building, content or on-page work deserves the next sprint.",
+      "steps": [
+        "Read the dashboard in the source's order: DR (out of 100, driven by backlink profile), UR for the specific URL, total backlinks, and unique referring domains.",
+        "Understand the ratio: 17.7K backlinks from 2.5K referring domains means many domains produce multiple links - the source treats unique referring domains as the more meaningful count.",
+        "Combine with organic keywords and estimated organic traffic, and ignore paid keyword counts unless you are also running ads.",
+        "Filter organic keywords by position to isolate top-10 rankings, and check the intent labels (informational, commercial, transactional, branded) to see whether the rankings sit on pages that can sell.",
+        "Note new tools in the source also report AI visibility metrics (e.g. presence in AI overviews) - treat these as emerging, separately-tracked indicators, not substitutes for organic data."
+      ],
+      "caveats": [
+        "The source shows that different tools produce different traffic estimates for the same site (Ahrefs ~4-5K vs Semrush ~9.8K) and different authority scores (44 vs 35) - never compare scores across tools.",
+        "DR/UR are third-party relative metrics, not Google positioning signals."
+      ],
+      "tags": [
+        "search",
+        "ahrefs",
+        "backlinks",
+        "measurement",
+        "competitive-analysis",
+        "link-building"
+      ],
+      "id": "b6d9e2525ff1b5666dcd0608",
+      "source_id": "1IWFC4QSSWOZNNwhdkHBK2d6krCryMQml",
+      "source_sha256": "964901ff3e4b67f55f5a1525e0523002d6c849ce6de8bde90f290970adc0453b",
+      "source_name": "SEO Full Course 2026 _ SEO Tutorial For Beginners _ Search Engine Optimization Course _ Simplilearn.docx",
+      "folder": "/15-SEO-search",
+      "domain": "search",
+      "section": 6
+    },
+    {
+      "title": "Compare Ranking Position Over Time to Find Lost and Declined Keywords",
+      "summary": "Export the keyword table, split it into top-3/4-10/11-20 buckets and compare periods to build a fix list of declined and lost terms.",
+      "use_when": "Quarterly keyword triage: identifying product or category searches the store used to rank for and has slipped away from.",
+      "steps": [
+        "Open the Organic Keywords report for the target country and click the Position column to select top-10 (or top-3) results, then show results to see first-page rankings.",
+        "Move the date comparison to the previous month or previous 3 months; the source's example showed a keyword slipping from position 3 to 6.",
+        "Apply the lost/improved/declined filters and focus on declined and lost entries - the source states explicitly that these deserve the main effort.",
+        "Cross-check period-level totals: the source's example showed a peak around 14,000 keywords in March 2024 versus roughly 3,390 later, with many lost terms visible in the prior-period view.",
+        "For each lost or declined keyword, decide between content modification, new supporting content or link building, informed by what competitors now use that you do not."
+      ],
+      "caveats": [
+        "Not every lost keyword is worth recovering - the source pairs this with the requirement that keywords must match real services the store provides.",
+        "Keyword counts and position history are tool estimates, not Google's internal data."
+      ],
+      "tags": [
+        "search",
+        "ahrefs",
+        "keyword-research",
+        "content-strategy",
+        "competitive-analysis",
+        "measurement"
+      ],
+      "id": "e3495a592539c94390d23b66",
+      "source_id": "1IWFC4QSSWOZNNwhdkHBK2d6krCryMQml",
+      "source_sha256": "964901ff3e4b67f55f5a1525e0523002d6c849ce6de8bde90f290970adc0453b",
+      "source_name": "SEO Full Course 2026 _ SEO Tutorial For Beginners _ Search Engine Optimization Course _ Simplilearn.docx",
+      "folder": "/15-SEO-search",
+      "domain": "search",
+      "section": 6
+    },
+    {
+      "title": "Attribute Traffic Loss to Specific Pages Using Peak-Period Comparison",
+      "summary": "Compare today's traffic and top pages against a known good month to name the pages responsible for a decline, including zero-traffic pages that still load.",
+      "use_when": "When total organic traffic is falling and you need to separate pages that lost rankings from pages that merely lost clicks.",
+      "steps": [
+        "In the traffic report, view six months to a year to locate the peak and the start of the decline (the source's example: October 10,344, November 8,692 and still falling).",
+        "Open the Top Pages section and set the comparison date to your best month.",
+        "Read the loss column per page: the source's example showed one page falling from 2,261 visits in March to 174 by November.",
+        "Flag pages showing traffic in the peak period but zero now, and check whether they still load. The source found a page that opened fine but received no traffic, indicating it is no longer ranking ('N/A' position) rather than broken.",
+        "Translate findings into a fix list: lost keywords and their source pages define the content and link priorities."
+      ],
+      "caveats": [
+        "A page loading normally with zero traffic points to loss of ranking, not a technical outage - diagnose accordingly.",
+        "Peak-month selection is judgemental; traffic seasonality in retail can make a peak month a poor baseline."
+      ],
+      "tags": [
+        "search",
+        "ahrefs",
+        "measurement",
+        "site-audit",
+        "content-strategy",
+        "product-page"
+      ],
+      "id": "b36fc4bc173f7b3647bf1285",
+      "source_id": "1IWFC4QSSWOZNNwhdkHBK2d6krCryMQml",
+      "source_sha256": "964901ff3e4b67f55f5a1525e0523002d6c849ce6de8bde90f290970adc0453b",
+      "source_name": "SEO Full Course 2026 _ SEO Tutorial For Beginners _ Search Engine Optimization Course _ Simplilearn.docx",
+      "folder": "/15-SEO-search",
+      "domain": "search",
+      "section": 6
+    },
+    {
+      "title": "Judge Backlink Quality with Referring Domains, DR and Spam Score",
+      "summary": "Sort backlinks by domain rating, inspect self-created zero-authority and nofollow links, and screen domains for spam before deciding to disavow.",
+      "use_when": "Reviewing a store's inbound link profile after outreach or a link-building campaign, and cleaning up toxic links.",
+      "steps": [
+        "Sort the backlink report by DR ascending and descending: the source notes zero-DR referring domains contribute nothing, while high-DR links (the example cited DR 78) carry more weight.",
+        "For each suspicious domain, check its spam score with a free spam-score checker; the source's threshold is under 5 being fine, above roughly 10 risky, and 10-30 requiring removal or disavowal.",
+        "Note the follow/nofollow distinction: the source treats dofollow as the link type that passes ranking value and nofollow as delivering no SEO benefit.",
+        "Inspect the anchor-placement style: an example showed a third-party article linking a brand name to an About page, which the source uses as a legitimate quality example.",
+        "Compile spam links into a notepad list of domains and upload it to the Google Search Console disavow tool (which requires Search Console to be installed and uses the same Google login)."
+      ],
+      "caveats": [
+        "The numeric spam-score bands are the source's heuristic, not a Google-published standard.",
+        "The source also notes that a relevant but low-authority or new site can be left in place - relevance and age can offset a weak score."
+      ],
+      "tags": [
+        "search",
+        "ahrefs",
+        "backlinks",
+        "link-building",
+        "disavow",
+        "google-search-console"
+      ],
+      "id": "e592af67a06c484f72a822db",
+      "source_id": "1IWFC4QSSWOZNNwhdkHBK2d6krCryMQml",
+      "source_sha256": "964901ff3e4b67f55f5a1525e0523002d6c849ce6de8bde90f290970adc0453b",
+      "source_name": "SEO Full Course 2026 _ SEO Tutorial For Beginners _ Search Engine Optimization Course _ Simplilearn.docx",
+      "folder": "/15-SEO-search",
+      "domain": "search",
+      "section": 6
+    },
+    {
+      "title": "Run an Ahrefs Site Audit and Prioritise Errors by Colour",
+      "summary": "Crawl the store and work red errors before yellow warnings, fixing 404s, canonical mismatches, orphan pages, http links and oversized images with developer support.",
+      "use_when": "Setting up a recurring technical audit for a store, particularly before or after a replatform or URL restructure.",
+      "steps": [
+        "From the dashboard use Create Project, either importing from Search Console or adding the domain manually (a manual project continues without analytics verification and updates weekly).",
+        "Add target keywords and competitor domains if you have them, then run the crawl and open the health score (the source's example scored 96 - excellent - yet still had errors worth fixing).",
+        "Treat red errors as priority: 404 pages (redirect to the nearest relevant page or homepage), canonical pointing to redirect (copy the correct canonical URL into the tag so it matches the page rather than a redirected variant), orphan pages with no internal links (link them from a menu, blog or article), https pages containing http internal links, and oversized image files.",
+        "Treat the source's explicit rule for canonical mismatches: first check whether the link works; if not, the redirect explains the gap; if it works, align the canonical tag with the page's own URL.",
+        "Hand the exported error list to a developer, since most fixes require back-end access."
+      ],
+      "caveats": [
+        "A high health score does not mean the site is clean - the source's example flagged errors at a 96 score.",
+        "The source notes developers can resolve most red errors but the auditor cannot change them directly without back-end skills."
+      ],
+      "tags": [
+        "search",
+        "ahrefs",
+        "site-audit",
+        "technical-seo",
+        "redirects",
+        "canonicalisation"
+      ],
+      "id": "86975c6c2e81ee808bcd83e9",
+      "source_id": "1IWFC4QSSWOZNNwhdkHBK2d6krCryMQml",
+      "source_sha256": "964901ff3e4b67f55f5a1525e0523002d6c849ce6de8bde90f290970adc0453b",
+      "source_name": "SEO Full Course 2026 _ SEO Tutorial For Beginners _ Search Engine Optimization Course _ Simplilearn.docx",
+      "folder": "/15-SEO-search",
+      "domain": "search",
+      "section": 6
+    },
+    {
+      "title": "Write Meta Titles and Descriptions Inside the CMS Within Length Limits",
+      "summary": "Fix title and description length warnings by editing the CMS record, targeting roughly 60 characters for titles and 140-160 for descriptions.",
+      "use_when": "Clearing yellow audit warnings on product, collection and blog pages, and improving click-through from search results.",
+      "steps": [
+        "From the audit warning list, open the URL whose title or description is flagged, and use a browser SEO extension or source view to read the current character counts (the source's example: a 73-character title and a 167-character description).",
+        "Determine the page type first (collection, product, blog) because the editing location differs in each CMS.",
+        "For a Shopify-style store: admin > Products > Collections to find the collection by its existing title, or Content > Blog posts to find the post by its web page title.",
+        "Rewrite within limits: title maximum 60 characters (the source reduced 73 to 54), meta description 140-160 with 160 as the hard maximum (167 reduced to 155-158). Count characters, not words - the source explicitly notes this.",
+        "Save, then re-check: the audit tool will drop the warning on its next crawl once the length is compliant."
+      ],
+      "caveats": [
+        "The source notes default titles may omit brand terms because the team or agency is unaware - check the title actually reflects the store.",
+        "Character limits are guidelines for display truncation, not ranking factors."
+      ],
+      "tags": [
+        "search",
+        "on-page-seo",
+        "meta-description",
+        "title-tags",
+        "shopify",
+        "site-audit"
+      ],
+      "id": "786a486134927ace4d72cad2",
+      "source_id": "1IWFC4QSSWOZNNwhdkHBK2d6krCryMQml",
+      "source_sha256": "964901ff3e4b67f55f5a1525e0523002d6c849ce6de8bde90f290970adc0453b",
+      "source_name": "SEO Full Course 2026 _ SEO Tutorial For Beginners _ Search Engine Optimization Course _ Simplilearn.docx",
+      "folder": "/15-SEO-search",
+      "domain": "search",
+      "section": 6
+    },
+    {
+      "title": "Write and Place Alt Text for Store Images",
+      "summary": "Add concise, descriptive alt text (3-4 words) to product, blog and template images so Google can interpret them, using the CMS or a developer for template-level images.",
+      "use_when": "Clearing missing/empty alt text warnings on product images, blog imagery and shared footer icons.",
+      "steps": [
+        "Open the flagged page and inspect the missing image to see what it actually shows before writing anything (the source opens the image file directly).",
+        "Search the page source for the image tag to confirm whether alt is empty or missing, which tells you whether you can fix it from the page or need a developer.",
+        "Write the alt text as the image's subject in 3-4 words maximum; the source's examples are 'fast free shipping' for a shipping badge and 'brand trust 81%' for a data graphic, and rewriting a consumer-needs image around brand trust.",
+        "In WordPress-style editors, add images via the editor's image block and use Edit Alt Text (the source found that simply dragging an image into the editor did not expose the alt option).",
+        "For images living in shared template areas such as footers and headers, send the alt text to a developer - it applies site-wide rather than to one page."
+      ],
+      "caveats": [
+        "Each CMS exposes alt text differently - the source explicitly warns the option location varies.",
+        "Do not stuff long keyword phrases into alt text; the source caps it at three to four words."
+      ],
+      "tags": [
+        "search",
+        "on-page-seo",
+        "alt-text",
+        "technical-seo",
+        "product-page",
+        "content-strategy"
+      ],
+      "id": "6cd7c100722adc0299122cc8",
+      "source_id": "1IWFC4QSSWOZNNwhdkHBK2d6krCryMQml",
+      "source_sha256": "964901ff3e4b67f55f5a1525e0523002d6c849ce6de8bde90f290970adc0453b",
+      "source_name": "SEO Full Course 2026 _ SEO Tutorial For Beginners _ Search Engine Optimization Course _ Simplilearn.docx",
+      "folder": "/15-SEO-search",
+      "domain": "search",
+      "section": 6
+    },
+    {
+      "title": "Use Semrush Keyword Gap to Find Competitor Terms You Are Missing",
+      "summary": "Compare your ranking keyword set with a competitor's and subtract the common terms to size the untapped opportunity before adding anything.",
+      "use_when": "Planning content or category expansion and deciding which competitor-driven keywords are safe and relevant to pursue.",
+      "steps": [
+        "In Semrush's domain overview, note that traffic estimates and authority scores differ from other tools (the source saw 9.8K vs Ahrefs' 4-5K, and authority 35 vs DR 44) - assume tool-relative numbers only.",
+        "Open organic competitors, pick a rival and read the two figures: common keywords (e.g. 931) and the competitor's total keywords (e.g. 2,953). Subtract the common set - roughly 2,000 terms here - to approximate keywords you do not target.",
+        "Drill into specific missing terms (the source's example: a red light therapy mask keyword the competitor ranks for and the client does not) and inspect what the competitor's page does.",
+        "Apply the source's hard filter: only pursue keywords that describe services or products you genuinely offer - never target a keyword for something you do not sell.",
+        "Compare the keyword distribution buckets (top 3, 4-10, 11-20) across tools to see whether your gap is depth or breadth."
+      ],
+      "caveats": [
+        "Keyword gap counts are tool estimates of ranking overlap, not guaranteed traffic.",
+        "The source shows Semrush details can require an upgrade - free tiers limit depth if you are not a paying user."
+      ],
+      "tags": [
+        "search",
+        "semrush",
+        "keyword-research",
+        "competitive-analysis",
+        "content-strategy",
+        "product-selection"
+      ],
+      "id": "cf900456ba0ea9b77046260a",
+      "source_id": "1IWFC4QSSWOZNNwhdkHBK2d6krCryMQml",
+      "source_sha256": "964901ff3e4b67f55f5a1525e0523002d6c849ce6de8bde90f290970adc0453b",
+      "source_name": "SEO Full Course 2026 _ SEO Tutorial For Beginners _ Search Engine Optimization Course _ Simplilearn.docx",
+      "folder": "/15-SEO-search",
+      "domain": "search",
+      "section": 6
+    },
+    {
+      "title": "Track Add-to-Cart and Button Click Events Without Back-End Code",
+      "summary": "Use Google Tag Manager event tracking to count clicks on submit and add-to-cart buttons instead of requesting developer instrumentation.",
+      "use_when": "Store analytics phase where you need button-level engagement data for PDPs, forms or checkout-adjacent CTAs.",
+      "steps": [
+        "Identify the button to track (the source's example starts with a submit button, then extends to add-to-cart, checkout and transaction clicks) and confirm it is a real interactive element on the live page.",
+        "Create a GTM trigger for clicks on that element, using the element variables enabled in configuration (the source shows enabling click elements before writing triggers).",
+        "Create a tag that fires on that trigger - a GA4 event tag in modern setups - and give it a name you can trace back to the button.",
+        "Publish the container and verify with GTM Preview that the event fires on click in a real session.",
+        "Keep GTM as the maintenance layer: when a button changes, update the trigger rather than reopening the theme code."
+      ],
+      "caveats": [
+        "The source mentions this can also be done with a developer, so treat GTM as the lower-dependency option rather than the only route.",
+        "GTM's click trigger and variable interfaces change; confirm current naming before building."
+      ],
+      "tags": [
+        "search",
+        "google-tag-manager",
+        "event-tracking",
+        "measurement",
+        "cart",
+        "conversion-optimization"
+      ],
+      "id": "7234716f3e229afd265a4517",
+      "source_id": "1IWFC4QSSWOZNNwhdkHBK2d6krCryMQml",
+      "source_sha256": "964901ff3e4b67f55f5a1525e0523002d6c849ce6de8bde90f290970adc0453b",
+      "source_name": "SEO Full Course 2026 _ SEO Tutorial For Beginners _ Search Engine Optimization Course _ Simplilearn.docx",
+      "folder": "/15-SEO-search",
+      "domain": "search",
+      "section": 6
+    }
+  ],
+  "request_id": "d6b5db4e5e1406e1674de5dd8c2aa194396f6565706b11b857fbe70d48c195c2",
+  "ecommerce_scope_version": 1,
+  "local_review": "Ecommerce scope, thin content and selected technical claim review; not exhaustive fact checking."
+}

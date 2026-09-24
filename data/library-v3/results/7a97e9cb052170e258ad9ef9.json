@@ -1,0 +1,289 @@
+{
+  "cards": [
+    {
+      "title": "CSRF defense for storefront authenticated actions",
+      "summary": "How ambient cookie authority lets a third-party page trigger authenticated store actions, and how SameSite cookies or synchronizer tokens prevent it.",
+      "use_when": "Designing or auditing protection for authenticated ecommerce actions that change state: placing an order on a saved card, editing addresses, changing subscription billing, adding admin products, or any log-in-with-X flow.",
+      "steps": [
+        "Understand the vulnerability condition: once a shopper logs in, the browser attaches their session cookie to every request to your domain automatically (ambient authority). Any page on any site that can cause your domain to receive a request gets that cookie attached for free.",
+        "So an attacker page can fire a request at your store's sensitive endpoint (e.g., change shipping address, redeem stored value, approve an OAuth grant) and your server, seeing a valid cookie, treats it as the logged-in shopper.",
+        "Prefer SameSite cookies as the primary control: set the session cookie SameSite=Lax or Strict plus Secure and HttpOnly, so cookies are not attached to cross-site requests. Lax still allows top-level navigations (needed for OAuth redirects and login), Strict is more restrictive.",
+        "If you must support very old browsers or legacy code, layer a synchronizer CSRF token: server issues a secret nonce embedded in the page as a hidden field; the client must echo it on submissions and the server rejects requests missing or mismatching it.",
+        "Make tokens stateless and scalable: derive the expected token by HMAC-ing the session ID with a server-only secret, so you do not have to store every token you ever issued (the source notes users can hold many tabs, so storing only the last token fails).",
+        "Apply the control on every state-changing endpoint, not just checkout. The source's caution is that forgetting one endpoint leaves the whole app exposed."
+      ],
+      "caveats": [
+        "SameSite tokens and CSRF tokens are both effective; the source calls SameSite simpler and less error-prone, and CSRF tokens largely legacy but still common in real codebases.",
+        "CSRF tokens still appear in frameworks such as Ruby on Rails and via Express packages like csurf; when inspecting or inheriting code, expect them and verify current framework defaults.",
+        "HMAC-based stateless tokens reuse one token per session, which the source accepts because the token is unguessable and never shared."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "checkout",
+        "account-security",
+        "csrf",
+        "cookies",
+        "authentication",
+        "web-framework"
+      ],
+      "id": "925578938d71929331e96844",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 22
+    },
+    {
+      "title": "CSRF token bypass via HTTP HEAD and framework magic",
+      "summary": "The GitHub OAuth bug: a route accepting GET and POST in one handler let HEAD requests skip the framework's POST-only CSRF check and auto-authorize an app.",
+      "use_when": "Reviewing route handlers, OAuth/SSO callbacks, or any endpoint that mixes HTTP methods, especially where an external integration can be auto-approved for a shopper or merchant account.",
+      "steps": [
+        "Vulnerability condition: a single controller/handler serves both GET (render a consent page with a CSRF token) and POST (validate token, then grant access), branching on the request method.",
+        "A common framework (Ruby on Rails; Express also does this for HEAD) routes HEAD requests to the GET handler automatically and strips the response body, because HEAD is semantically like GET and assumed side-effect-free.",
+        "But in the handler, the developer's method check (e.g., request.get?) returns false for HEAD, so control falls into the else branch intended for POST. Meanwhile the framework's POST-only CSRF pre-check never runs for HEAD.",
+        "Result: a HEAD request to the authorize endpoint, with the victim's cookies attached, granting an attacker-controlled app access without any CSRF token and without user interaction. Exercised in the source's case by merely visiting a page.",
+        "Prevent it by not merging methods: use separate routes/handlers for GET (render) and POST (mutate), or branch with explicit else-if on the POST method and an else that throws, so an unexpected method aborts rather than falling through into sensitive logic.",
+        "Prefer validation attached directly to the sensitive grant (the source presenter favors explicit, less 'magical' checks over relying on framework-level POST-only CSRF middleware) rather than assuming an upstream layer already validated."
+      ],
+      "caveats": [
+        "The GitHub case study is a historical, now-fixed incident (reported via HackerOne, acknowledged in minutes, fixed in hours per the source); it is an example, not a current claim about GitHub.",
+        "Framework routing behavior for HEAD is version- and framework-dependent; verify the current behavior of your own framework rather than assuming.",
+        "Forcing a CSRF token onto HEAD requests is possible but changes HEAD semantics for legitimate public resources, so it is not a clean universal fix."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "oauth",
+        "authentication",
+        "api-security",
+        "web-framework",
+        "routing",
+        "integration-security"
+      ],
+      "id": "21e9f01540df35d6e368a6c9",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 22
+    },
+    {
+      "title": "Defensively whitelist HTTP methods in store endpoints",
+      "summary": "Treat unexpected HTTP methods as catastrophic: explicit else-if branches and hard aborts stop fall-through into sensitive store logic.",
+      "use_when": "Writing or reviewing route handlers for cart, checkout, subscription, account, or admin endpoints where method confusion could trigger an action a shopper did not intend.",
+      "steps": [
+        "When a handler branches on method, never write a two-way if/else that assumes only the two methods you expect. Write if (GET) {...} else if (POST) {...} else { throw/abort }.",
+        "Rationale from the source: a crash on an unexpected method is far better than silently running sensitive code. Crashes surface as production exceptions and alerts, letting you discover and fix the violated assumption quickly.",
+        "Mechanism preference: in frameworks like Express, register per-method routes (app.get, app.post) rather than a catch-all (app.use) that receives every method and forces you to handle them all.",
+        "Ordering advice from the source: do not rely on upstream framework middleware to enforce a security check for a sensitive action; place the relevant validation explicitly on the sensitive path so a new developer or a new route cannot silently skip it.",
+        "Reject the source's leaky-abstraction trap: if your framework auto-routes one method to another's handler (HEAD to GET), make sure your internal method checks still match reality, or avoid framework-level assumptions entirely."
+      ],
+      "caveats": [
+        "The source presents this as a trade-off: explicit checks are less magical but easier for a developer to forget in one place; framework magic is convenient but can hide the exact failure that occurred here.",
+        "An attacker who discovers a crash path can affect availability (crash one or many instances), which the source accepts as the lesser evil versus an authorization bypass."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "checkout",
+        "api-security",
+        "routing",
+        "input-validation",
+        "web-framework"
+      ],
+      "id": "9b062a4c9cbf96cadb22cc34",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 22
+    },
+    {
+      "title": "SameSite strict vs lax: don't break OAuth login on your storefront",
+      "summary": "Choosing SameSite Strict can break third-party OAuth/SSO logins and top-level redirects, so Lax is often required for storefront login flows.",
+      "use_when": "Configuring session cookie attributes for a store that uses 'Log in with Google/Twitter/X' or any third-party identity provider redirecting back into checkout.",
+      "steps": [
+        "Understand the trade-off: Strict never attaches the cookie on cross-site requests, which maximizes CSRF safety but blocks legitimate flows where the browser is navigated from an external site (or app) into your domain.",
+        "Lax permits the cookie on top-level navigations (the whole browser going to GitHub/Google/your domain) while still blocking most cross-site sub-requests, so OAuth-style login redirects keep working.",
+        "For OAuth specifically, the provider typically forces a top-level page where the user clicks Authorize; the source notes providers use this interactive step partly because the session cookie would not otherwise be sent. Plan your flow around a real user click, not a silent request.",
+        "If your store uses OAuth for merchant or admin apps (app-store-style integrations), test the full redirect chain with your chosen mode before rollout: verify the callback receives cookies and the token exchange succeeds.",
+        "Do not set Strict as a blanket default on cookies that must traverse cross-site navigation chains; verify each cookie's required behavior individually."
+      ],
+      "caveats": [
+        "SameSite modes and browser default treatment have changed over time; verify current browser and framework defaults rather than assuming historical behavior.",
+        "This is a design trade-off, not a universal rule: pick Strict or Lax per cookie based on which cross-site navigations that cookie must survive."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "authentication",
+        "oauth",
+        "cookies",
+        "checkout",
+        "account-security"
+      ],
+      "id": "0d2a5b6f2851e489fdf77233",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 22
+    },
+    {
+      "title": "Leaky abstractions in frameworks cause security bugs",
+      "summary": "When a framework hides complexity imperfectly (like auto-handling HEAD as GET), developer assumptions break and security checks can be skipped.",
+      "use_when": "Evaluating framework conveniences when building storefront features, especially anything the framework implements 'for you' that touches method dispatch, auth, or CSRF.",
+      "steps": [
+        "Identify leaky abstractions: conveniences that mostly work but expose an edge case the developer never sees. The source's example is Ruby on Rails (and Express) routing HEAD to the GET handler and stripping the body.",
+        "For each framework convenience in your stack, ask what states or methods can reach your code that you did not explicitly account for.",
+        "Mitigate by not building sensitive logic on top of assumptions the framework conceals: use explicit method branches, separate routes, or direct validation rather than trusting an upstream layer to have handled a case.",
+        "The source's fix options, in its words, include: have the framework lie and report HEAD as GET so the abstraction is not leaky; or stop auto-handling and force developers to handle HEAD explicitly (losing the convenience).",
+        "Present this as a genuine trade-off: explicit less-magical code reduces hidden failure modes but is easier to forget in one place; magical code is convenient but can bite exactly as it did here."
+      ],
+      "caveats": [
+        "This is the presenter's framing and opinion on a trade-off, not a universal rule; weigh convenience against exposure for each feature.",
+        "Framework behavior differs by version and framework; validate against your actual stack configuration."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "web-framework",
+        "routing",
+        "api-security",
+        "risk-management"
+      ],
+      "id": "ba7be98c2678f99c0c80417d",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 22
+    },
+    {
+      "title": "Defensive coding: assert assumptions and fail closed on sensitive actions",
+      "summary": "For high-value grants, validate the security check explicitly at the point of action and abort rather than recovering from violated assumptions.",
+      "use_when": "Implementing any endpoint that grants access or changes something valuable: linking a payment provider, adding an admin integration, approving an app, or changing payout/bank details on a merchant account.",
+      "steps": [
+        "For a sensitive action, do not assume an upstream layer validated it. Place the validation directly before the grant, so any new code path or developer cannot silently skip it.",
+        "Example from the source: an OAuth authorize endpoint granted app access inside the else branch, assuming Rails had already validated the CSRF token for POSTs. A HEAD request reached that branch without the check ever running.",
+        "Replace 'else' with 'else if method matches' plus an 'else { throw }', so unexpected methods abort catastrophically instead of falling through into the grant.",
+        "For high-value flows, prefer explicit checks tied to the sensitive operation over reliance on framework-wide middleware, even though middleware is less repetitive.",
+        "On abort, fail closed: throw, log, and alert so the violated assumption surfaces immediately, then fix the root cause rather than attempting recovery."
+      ],
+      "caveats": [
+        "The source frames this as a trade-off between explicitness and framework convenience, not an absolute rule.",
+        "A deliberate crash means an attacker can cause availability impact; the source accepts this as preferable to a silent authorization bypass."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "authentication",
+        "api-security",
+        "integration-security",
+        "risk-management",
+        "logging"
+      ],
+      "id": "76589f02571278fe770785fe",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 22
+    },
+    {
+      "title": "Split storefront routes by HTTP method and purpose",
+      "summary": "One URL handling both a read page and a state-changing submission is the structural factor that made the bypass possible; separate routes prevent it.",
+      "use_when": "Designing URL and route structure for storefront consent pages, integration authorization, subscription management, or any page that both renders a form and processes its submission.",
+      "steps": [
+        "Avoid a single route/controller that both renders a page and mutates state based on method. The source identifies this merged handling as the enabling condition of the GitHub bypass.",
+        "Instead, split into two routes or two handlers: one GET that renders the consent form (with a token), one POST that validates and mutates. The source notes the URLs could still be the same if the framework allows separate controllers per method.",
+        "Benefit: the POST handler carries its validation directly, and unexpected methods cannot fall from a GET path into mutation logic via a shared else branch.",
+        "Apply this pattern to storefront operations like saving a payment method, approving an installed app, or changing subscription terms, where one URL currently does double duty.",
+        "Separate URLs are one of the recommended fixes the source lists, alongside explicit method branching and enforcing the validation on the grant itself."
+      ],
+      "caveats": [
+        "Using the same URL with separate per-method controllers is also acceptable; the key is that method-specific logic and its security check are not conflated in one branch.",
+        "This is a design recommendation from the source, not a framework requirement."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "routing",
+        "api-security",
+        "checkout",
+        "integration-security",
+        "web-framework"
+      ],
+      "id": "bc21e3deb98d58b887c1e733",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 22
+    },
+    {
+      "title": "Governing agent and integration access with OAuth scopes",
+      "summary": "OAuth grant flows hand an app a token as powerful as the user's account, so scope minimization and consent scrutiny matter for store integrations.",
+      "use_when": "Authorizing third-party apps, marketing tools, or agents to act on a store (read orders, edit products, access customer data), or onboarding any OAuth-based integration into checkout/admin.",
+      "steps": [
+        "Recognize what the grant is: after a user clicks Authorize, the provider returns a token the app uses out-of-band to access that account's data; the source describes this token as effectively the password to the account for that app.",
+        "For store integrations, treat granted scopes as standing permission: an app with broad scope can read private data and take actions even when the user is absent.",
+        "Minimize scope at authorization time and prefer tokens that expire or can be revoked, since a leaked or over-scoped token gives broad account access.",
+        "Review the consent flow for silent vs explicit approval: the source's vulnerability let an attacker-controlled app be granted with no user interaction and no CSRF token. Verify your own integration flow cannot be auto-approved by a crafted request.",
+        "Keep the human consent step genuinely interactive (the source notes providers rely on a real top-level page and click), and validate the approval endpoint defensively as in the related method-bypass card."
+      ],
+      "caveats": [
+        "The GitHub vulnerability specifics are historical and fixed (per the source: acknowledged quickly via HackerOne, fix out in hours); do not treat them as current behavior of any provider.",
+        "OAuth scope names, token lifetimes, and consent UX are provider-specific and change over time; verify against the current provider documentation."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "oauth",
+        "integration-security",
+        "authentication",
+        "permissions",
+        "account-security"
+      ],
+      "id": "43566cfc761f4b2c3e13c0d7",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 22
+    },
+    {
+      "title": "Responding to reported vulnerabilities on your store",
+      "summary": "A clear report-to-fix loop and severity-based responsiveness limit damage from storefront and integration vulnerabilities.",
+      "use_when": "Setting up or triaging a vulnerability reporting process for a store, theme, app, or integration, especially for sites running your code or processing shopper data.",
+      "steps": [
+        "Establish a low-friction report channel (the source references a bug bounty program and third-party disclosure platforms like HackerOne), and scope it to systems you actually own and are willing to reward for.",
+        "Expect reports to include high-impact issues like cross-site scripting that can change scores or leak data; the source recounts XSS findings that could alter assignment scores and a design flaw that exposed hidden test cases, showing even 'internal' pages matter.",
+        "Triage by impact and act fast on severe, easily reproduced issues: the source notes GitHub acknowledged a critical OAuth bypass almost immediately and shipped a fix within hours because severity was high and reproduction was trivial.",
+        "Reproduce and confirm before paying or closing; the source notes some findings received no reward because the affected site was outside the bounty scope, so publish explicit scope to avoid disputes.",
+        "Feed confirmed findings back into defensive coding practices (method whitelisting, validation on sensitive paths) rather than patching only the one symptom."
+      ],
+      "caveats": [
+        "The source's case study timings (minutes to acknowledge, hours to fix) are a specific example, not a benchmark or promise.",
+        "Bug bounty coverage and reward amounts are program-specific; students in the source got $100 for one XSS and nothing for out-of-scope findings."
+      ],
+      "tags": [
+        "bot-and-agent-security",
+        "vulnerability-management",
+        "incident-response",
+        "customer-data",
+        "risk-management"
+      ],
+      "id": "e9b59700a79f4fbf2687730f",
+      "source_id": "1NR2jtUMB0KkTlV_QTIGSmWVT-je-24Pt",
+      "source_sha256": "2f5af4e888f7e6016ecf1b9cac67de312c2975e1749229b49db90812afd809b9",
+      "source_name": "Site Security (1).docx",
+      "folder": "/23-SEC-bot-and-agent-security",
+      "domain": "bot-and-agent-security",
+      "section": 22
+    }
+  ],
+  "request_id": "bfe1f9a94f93e5118fe885ff6c7f1785bb5e78beb4412db95b323f591283ce49",
+  "ecommerce_scope_version": 1
+}

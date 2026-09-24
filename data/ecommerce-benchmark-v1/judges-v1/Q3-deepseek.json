@@ -1,0 +1,184 @@
+{
+  "status": "complete",
+  "mapping": {
+    "A": "cheap_without",
+    "B": "frontier_with",
+    "C": "cheap_with",
+    "D": "frontier_without"
+  },
+  "judge_model": "deepseek-flash",
+  "output": {
+    "reviews": [
+      {
+        "label": "A",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 4,
+          "prioritization": 4
+        },
+        "strengths": [
+          "Correct full-price and discounted unit economics, including break-even ROAS.",
+          "Clear recommendation against the 20% offer at $30 CAC.",
+          "Strong prioritization: fixes PDP/support friction before a discount and flags inventory timing risk.",
+          "Good uncertainty handling with useful questions and explicit scope exclusions."
+        ],
+        "issues": [
+          "Adds extra inventory analysis beyond the narrow per-order ask, though it is relevant and correctly calculated.",
+          "One question about return/refund rate is somewhat outside the instructed cost scope, though useful for real decision-making."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Full price pre-ad 39.60, after-ad 9.60, break-even ROAS about 2.02.",
+            "met": true,
+            "reason": "Reports $39.60 pre-ad, $9.60 after-ad, and $80/$39.60 = 2.02."
+          },
+          {
+            "criterion": "Discount price 64, pre-ad 24.08, after-ad -5.92, break-even ROAS about 2.66.",
+            "met": true,
+            "reason": "Reports $64 price, $24.08 pre-ad, -$5.92 after-ad, and $64/$24.08 = 2.66."
+          },
+          {
+            "criterion": "Do not treat a discount as automatically profitable or rely on unknown LTV.",
+            "met": true,
+            "reason": "Explicitly rejects the offer at $30 CAC and excludes LTV/other-product revenue."
+          }
+        ]
+      },
+      {
+        "label": "B",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 3,
+          "uncertainty_and_questions": 3,
+          "prioritization": 2
+        },
+        "strengths": [
+          "Correct full-price and discounted unit economics.",
+          "Clear, concise recommendation and decision thresholds.",
+          "Explicitly treats discount conversion improvement as a hypothesis, not an established result.",
+          "Does not rely on LTV or other products."
+        ],
+        "issues": [
+          "No questions supplied.",
+          "Limited next-step prioritization beyond rejecting the offer.",
+          "Does not use available brand-specific operational context such as PDP/laptop-fit friction or inventory timing."
+        ],
+        "critical_errors": [],
+        "questions_useful": false,
+        "criterion_results": [
+          {
+            "criterion": "Full price pre-ad 39.60, after-ad 9.60, break-even ROAS about 2.02.",
+            "met": true,
+            "reason": "Reports $39.60 pre-ad, $9.60 after-ad, and 2.02 break-even ROAS."
+          },
+          {
+            "criterion": "Discount price 64, pre-ad 24.08, after-ad -5.92, break-even ROAS about 2.66.",
+            "met": true,
+            "reason": "Reports $64 price, $24.08 pre-ad, -$5.92 after-ad, and 2.66 break-even ROAS."
+          },
+          {
+            "criterion": "Do not treat a discount as automatically profitable or rely on unknown LTV.",
+            "met": true,
+            "reason": "States the discount is a hypothesis and excludes LTV/repeat purchase value."
+          }
+        ]
+      },
+      {
+        "label": "C",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 3,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 4,
+          "prioritization": 3
+        },
+        "strengths": [
+          "Correct full-price and discounted unit economics.",
+          "Clear recommendation against the 20% offer at $30 CAC.",
+          "Strong uncertainty handling with useful questions and explicit missing-fact discussion.",
+          "Includes max supportable discount and owner-approval/cash-inventory context."
+        ],
+        "issues": [
+          "Mentions bundle/loyalty on-ramp and UPT ideas, which are outside the instructed no-other-products/no-LTV calculation scope, though labeled as hypotheses.",
+          "Uses some marketing jargon and provides several options rather than a clearly prioritized sequence."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Full price pre-ad 39.60, after-ad 9.60, break-even ROAS about 2.02.",
+            "met": true,
+            "reason": "Reports $39.60 pre-ad, $9.60 after-ad, and 2.02 break-even ROAS."
+          },
+          {
+            "criterion": "Discount price 64, pre-ad 24.08, after-ad -5.92, break-even ROAS about 2.66.",
+            "met": true,
+            "reason": "Reports $64 price, $24.08 pre-ad, -$5.92 after-ad, and 2.66 break-even ROAS."
+          },
+          {
+            "criterion": "Do not treat a discount as automatically profitable or rely on unknown LTV.",
+            "met": true,
+            "reason": "Rejects the offer at $30 CAC and only mentions bundle/loyalty ideas as unvalidated hypotheses."
+          }
+        ]
+      },
+      {
+        "label": "D",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 3,
+          "uncertainty_and_questions": 3,
+          "prioritization": 2
+        },
+        "strengths": [
+          "Correct full-price and discounted unit economics.",
+          "Concise and plain-spoken recommendation.",
+          "Includes break-even CAC thresholds and explicitly excludes LTV/other products."
+        ],
+        "issues": [
+          "No questions supplied.",
+          "Minimal next-step actionability and prioritization.",
+          "Does not use available brand-specific operational context such as PDP/laptop-fit friction or inventory timing."
+        ],
+        "critical_errors": [],
+        "questions_useful": false,
+        "criterion_results": [
+          {
+            "criterion": "Full price pre-ad 39.60, after-ad 9.60, break-even ROAS about 2.02.",
+            "met": true,
+            "reason": "Reports $39.60 pre-ad, $9.60 after-ad, and 2.02 break-even ROAS."
+          },
+          {
+            "criterion": "Discount price 64, pre-ad 24.08, after-ad -5.92, break-even ROAS about 2.66.",
+            "met": true,
+            "reason": "Reports $64 price, $24.08 pre-ad, -$5.92 after-ad, and 2.66 break-even ROAS."
+          },
+          {
+            "criterion": "Do not treat a discount as automatically profitable or rely on unknown LTV.",
+            "met": true,
+            "reason": "Rejects the offer at $30 CAC and excludes other products and lifetime value."
+          }
+        ]
+      }
+    ],
+    "ranking": [
+      "A",
+      "C",
+      "B",
+      "D"
+    ],
+    "summary": "All four answers compute the required Daypack unit economics correctly and reject the 20% offer at $30 CAC. A is strongest overall because it combines correct math with useful brand-specific prioritization, inventory timing, and clear uncertainty. C is close but slightly less prioritized and includes some out-of-scope bundle/LTV-adjacent suggestions. B and D are accurate and concise but offer no questions and limited next-step prioritization; B edges D because its decision thresholds and caveats are slightly more developed."
+  },
+  "request_id": "9fe87984c9712bbd447c8ae1cc2137394623c521c409f2ccd4b807364a8f36b9",
+  "cost_upper_estimate_usd": 0.0161154
+}

@@ -1,0 +1,73 @@
+{
+  "request_id": "cad63c894d7615f8f076bdb71d0a30a3d99fc408a31683dc44fe8c330d7ad35e",
+  "provider": "openai",
+  "model": "gpt-5.6-terra",
+  "effort": "high",
+  "completion_limit": 8192,
+  "usage": {
+    "prompt_tokens": 3041,
+    "completion_tokens": 119,
+    "total_tokens": 3160,
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 3038,
+      "audio_tokens": 0
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 92,
+      "audio_tokens": 0,
+      "accepted_prediction_tokens": 0,
+      "rejected_prediction_tokens": 0
+    }
+  },
+  "booked_cost_usd": 0.0090305,
+  "seconds": 3.59,
+  "finish_reason": "stop",
+  "output": {
+    "verdict": "supported",
+    "issues": [],
+    "missing_qualifiers": []
+  },
+  "raw_content": "{\"verdict\":\"supported\",\"issues\":[],\"missing_qualifiers\":[]}",
+  "input": {
+    "source": {
+      "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+      "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+      "locator": "batch",
+      "start": 0,
+      "text": "06-MEA / measurement and analytics\n\nGoes here. Website and business analytics, measuring organic and paid traffic, Google Analytics, Shopify reporting, root cause analysis frameworks, multi-touch attribution (MTA), post-purchase surveys, marketing mix modeling (MMM), conversion rate optimization (CRO) methodologies, quiz funnel psychology, heatmaps, causal inference methods, incrementality testing, and general marketing/business performance dashboards.\n\nNot here.\n\nPaid advertising performance metrics, ROAS, scaling rules, bidding, or ad-platform specific attribution -> 11-ADC\n\nFinancial modeling or accounting -> 20-FIN\n\nHeader. url: rights: public_reference why: Details the rigorous statistical and methodological foundations of A/B testing for e-commerce, outlining sample size math, the dangers of \"peeking,\" Bayesian versus Frequentist models, and a volume-based playbook for scaling experimentation. modules: [MEA] topics: [conversion rate optimization, attribution and modeling, business and marketing analytics] tier: 2 scope_hint: core\n\nTopics. conversion rate optimization / Deconstructing the mathematical realities of A/B testing, emphasizing that true CRO requires evaluating hypotheses under genuine uncertainty rather than running tests to \"repair\" objectively broken elements. Establishing a stage-gated testing playbook based on monthly order volume, directing low-volume stores (<300 orders/month) to rely on qualitative research and bold, big-swing changes, while reserving complex A/B/n testing, multi-armed bandits, and CUPED variance reduction for high-volume stores (3,000+ orders/month). attribution and modeling / Evaluating the statistical rigor of experimentation by comparing Frequentist models (fixed-horizon) against Bayesian approaches and sequential testing frameworks (mSPRT, GAVI) designed to mitigate the massive false positive risks of \"peeking.\" Outlining critical experiment invalidations—including Sample Ratio Mismatch (SRM), flicker (FOOC), and Twyman’s Law—to ensure reported lifts are statistically valid rather than instrumentation artifacts. business and marketing analytics / Navigating platform-specific testing constraints, such as Shopify's deprecation of client-side checkout A/B testing (via checkout extensibility) and the ethical/legal landmines of personalized price testing. Moving away from highly subjective prioritization frameworks (like ICE) toward evidence-gated, profit-weighted models (like PXL) that calculate the true expected value of an experiment before development begins.\n\nLook for. The core mathematical reality of sample size (Evan Miller's formula): detecting a 10% relative lift on a typical 2% baseline requires approximately 80,000 visitors per variant, making micro-tweaks mathematically invalid for most DTC brands. The definition of the \"peeking problem\": checking A/B test results continuously and stopping as soon as p < 0.05 inflates the false positive rate to over 26%. The definition of Twyman's Law: any figure that looks incredibly interesting or surprising (e.g., a 364% lift) is usually wrong and likely caused by a tracking bug or Sample Ratio Mismatch (SRM). The impact of Shopify's checkout extensibility update: it prevents third-party client-side tools from A/B testing the checkout UI, forcing reliance on server-side theme testing (Shopify Rollouts) or Plus-exclusive Checkout Blocks.\n\nSkip. Generic claims about \"magic conversion numbers\" (e.g., requiring exactly 400 conversions per month to test) that fail to account for Minimum Detectable Effect (MDE) math.\n\nScope mix. Almost all core.\n\nVolume. 15 to 20.\n\nPart A: synthesised research document\n\n0. scope and the repair-versus-test rule\n\nCRO in this module means \"is the difference real\": statistics, experiment design, experimentation discipline. It is not page design (that is LPG) and not tracking accuracy (that is MEA), except where tracking breakage invalidates an experiment.\n\nRepair versus test. A broken thing gets repaired, not tested. If a page throws errors, a form field rejects valid input, the add-to-cart fails on Safari, or tracking fires twice, you fix it. You do not run an experiment to decide whether to fix a bug. The test for whether something is a repair: if the current state is objectively defective (loses money with no upside, violates a known standard, or is literally broken), repair it and move on. You test when both versions are plausibly viable and you do not know which is better. Kohavi's framing: experiments are for evaluating hypotheses where the outcome is genuinely uncertain.\n\n1. sample size and statistical power\n\nThe core formula (Evan Miller, \"How Not To Run an A/B Test\", April 18 2010): n = 16 x (sigma^2 / delta^2) per variant, where delta is the absolute minimum effect you want to detect and sigma^2 is the variance. For a conversion rate (binomial), sigma^2 = p(1-p). The \"16\" bakes in 95% significance (alpha 0.05, two-sided) and 80% power. Halving the effect you want to detect quadruples the sample.\n\nKey terms:\n\nAlpha (significance): false positive rate. Standard 0.05.\n\nPower (1-beta): chance of detecting a real effect of the target size. Standard 0.80.\n\nMDE (minimum detectable effect): the smallest lift the test is designed to catch. Set it to the smallest lift worth shipping, not the smallest possible.\n\nRelative vs absolute lift: a 2% baseline going to 2.4% is +0.4 points absolute, +20% relative. Sample calculators usually take relative MDE. Confusing the two is a common error.\n\nOne vs two tailed: one-tailed reaches significance faster but only tests one direction. Two-tailed is the safer default; use one-tailed only when a negative result would trigger the same action as a null.\n\nWorked sample sizes, visitors per variant, 95% confidence, 80% power, two-sided (from statsunlock.com reference table, consistent with Evan Miller's calculator):\n\nBaseline | 5% rel lift | 10% rel lift | 20% rel lift | 30% rel lift | 50% rel lift\n1% | 637,010 | 163,095 | 42,693 | 19,827 | 7,750\n2% | 315,206 | 80,682 | 21,109 | 9,798 | 3,826\n3% | 207,938 | 53,211 | 13,914 | 6,455 | 2,518\n5% | 122,124 | 31,234 | 8,158 | 3,780 | 1,471\n\nRead this as the central fact of the whole module: at a 2% baseline (typical DTC), detecting a 10% relative lift needs about 80,000 visitors per variant, 160,000 total. Detecting a 20% lift needs about 21,000 per variant. Detecting a 5% lift needs 315,000 per variant, which most brands will never reach in a reasonable window.\n\nConversions per variant is the cleaner way to think about it. At fixed power, the required number of conversions per variant depends mainly on the relative MDE, not the baseline. Rough conversions-per-variant needed at 80% power, 95% confidence: about 3,830 for a 5% lift, about 1,000 for a 10% lift, about 260 for a 20% lift, about 120 for a 30% lift. (Derived from the visitor tables times baseline.)\n\n2. verifying the four internal-doc claims\n\nClaim 1: \"Classic A/B test on a page needs 400+ conversions per month.\" Partly true as a floor, but incomplete and slightly misleading. There is no magic conversion number (CXL, \"Stopping A/B Tests: How Many Conversions Do I Need?\"). The real driver is the MDE. 400 conversions per variant per month lets you detect roughly a 30-40% relative lift in a month, which is a large swing. To detect a 10% lift you need roughly 1,000 conversions per variant, not 400. So 400/month is a bare minimum to detect big effects, not a general threshold. Correct statement: you need enough conversions per variant to detect your target MDE; 400 per variant only powers large lifts (25%+).\n\nClaim 2: \"Detecting a 20% lift at 95% confidence needs roughly 200 conversions per variant.\" True and well-supported, with one clarification: this is roughly 260 conversions per variant at 80% power (the standard). The improvado.io guide states \"at least 200 conversions in the control group to achieve 80% statistical power for detecting a 10-20% lift.\" HubSpot's \"20,000 rule\" gives the same picture: 20,000 recipients per group at 2% baseline yields about 400 control conversions, enough to detect a 20% lift comfortably. So 200 per variant is a reasonable rule of thumb for a 20% lift at slightly lower power; 250-260 is the safer number at 80% power.\n\nClaim 3: \"Sequential before-after testing works at low volume if you accept wider error bars.\" Directionally true but dangerous as stated. Before/after (pre-post) uses all traffic on one variant at a time, which helps at low volume, but it confounds the change with time: seasonality, promotions, weekday/weekend, traffic-source shifts, news. The wider-error-bars framing understates the risk; the real problem is bias, not just variance. It is defensible only if you hold external conditions as constant as possible, compare equal and comparable periods, and treat a clear, explainable, stable shift as a weak signal, not proof (customerimpact.be). Better: use it for big structural changes where the expected effect dwarfs the noise, and confirm later with a real randomised test when traffic allows.\n\nClaim 4: \"Multi-variant and multi-armed testing needs S4 scale (3,000 to 20,000 orders/month).\" Broadly correct in spirit. Multi-variant (A/B/n) splits traffic across more arms, so each arm needs the same per-variant sample as a two-arm test; total traffic scales with the number of arms. A brand doing under a few thousand orders/month cannot power 3-4 variants at a useful MDE. Bandits also need volume to learn before they exploit. The 3,000-20,000 orders/month band is a fair floor for A/B/n and bandit work. Caveat: bandits can be used lower down for short campaigns where the goal is to minimise regret rather than get a clean read, so it is not a hard cutoff.\n\n3. stopping rules and the peeking problem\n\nFixed-horizon testing is the classic frequentist model: fix the sample size in advance, look once at the end. The p-value and confidence level are only valid under this assumption (Evan Miller)."
+    },
+    "candidate": {
+      "id": "qualified-sample-size-v1",
+      "kind": "action",
+      "title": "Estimate test sample size with explicit confidence, power and absolute-effect assumptions",
+      "claim": {
+        "text": "The source presents n = 16 × variance / absolute-effect² per variant, calibrated to 95% significance (alpha 0.05, two-sided) and 80% power; for conversion rates, variance is p(1-p).",
+        "quote": "The core formula (Evan Miller, \"How Not To Run an A/B Test\", April 18 2010): n = 16 x (sigma^2 / delta^2) per variant, where delta is the absolute minimum effect you want to detect and sigma^2 is the variance. For a conversion rate (binomial), sigma^2 = p(1-p). The \"16\" bakes in 95% significance (alpha 0.05, two-sided) and 80% power. Halving the effect you want to detect quadruples the sample."
+      },
+      "action": {
+        "text": "For the source's stated 95% two-sided significance and 80% power settings, estimate sample size per variant as n = 16 × sigma² / delta². Use the absolute target effect for delta; for conversion rates use sigma² = p(1-p).",
+        "quote": "The core formula (Evan Miller, \"How Not To Run an A/B Test\", April 18 2010): n = 16 x (sigma^2 / delta^2) per variant, where delta is the absolute minimum effect you want to detect and sigma^2 is the variance. For a conversion rate (binomial), sigma^2 = p(1-p). The \"16\" bakes in 95% significance (alpha 0.05, two-sided) and 80% power. Halving the effect you want to detect quadruples the sample."
+      },
+      "trigger": {
+        "op": "all",
+        "args": []
+      },
+      "prerequisites": {
+        "op": "all",
+        "args": []
+      },
+      "exclusions": {
+        "op": "any",
+        "args": []
+      },
+      "completion": [],
+      "unknowns": [
+        "Brand baseline conversion probability, target effect, traffic allocation and feasible duration are not supplied.",
+        "The underlying cited source has not been independently checked."
+      ],
+      "relations": []
+    }
+  },
+  "system_prompt_sha256": "2b73e15ccc4a053b6e420989465f36a408696330ff2b6c56602eff486aed2597"
+}

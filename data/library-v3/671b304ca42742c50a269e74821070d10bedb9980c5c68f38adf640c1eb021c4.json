@@ -1,0 +1,244 @@
+{
+  "request_id": "671b304ca42742c50a269e74821070d10bedb9980c5c68f38adf640c1eb021c4",
+  "provider": "deepseek",
+  "model": "deepseek-flash",
+  "effort": "none",
+  "completion_limit": 16384,
+  "usage": {
+    "prompt_tokens": 1707,
+    "completion_tokens": 2957,
+    "total_tokens": 4664,
+    "prompt_tokens_details": {
+      "cached_tokens": 512
+    },
+    "prompt_cache_hit_tokens": 512,
+    "prompt_cache_miss_tokens": 1195
+  },
+  "booked_cost_usd": 0.0040605,
+  "seconds": 17.25,
+  "finish_reason": "stop",
+  "output": {
+    "cards": [
+      {
+        "title": "Dedicated sending domain and DMARC setup for inbox placement",
+        "summary": "Configure a branded sending subdomain with DNS records and a DMARC policy so Gmail/Yahoo 2024 bulk-sender rules don't suppress store email.",
+        "use_when": "Initial Klaviyo (or comparable ESP) account setup, or a deliverability audit when store emails land in spam or Gmail promotions tab.",
+        "steps": [
+          "Create a dedicated sending subdomain (e.g. send.yourstore.com or news.yourstore.com) rather than sending from the root domain, isolating sender reputation from transactional and corporate mail.",
+          "Add the ESP's DNS records at the registrar — typically CNAME records for branded link tracking and NS or CNAME records for the sending domain — and wait for propagation before sending.",
+          "Publish a DMARC record at the root domain. The source describes starting in reporting-only mode (p=none) to collect alignment reports, then tightening to quarantine or reject once you confirm legitimate senders pass SPF/DKIM alignment.",
+          "Verify alignment: the From domain must match the domain authenticated by SPF and DKIM, otherwise the DMARC policy has no protective effect.",
+          "Confirm the current interface — Klaviyo and DNS providers change setup screens, so verify the exact record values in the live onboarding wizard before publishing.",
+          "Re-check DMARC reports periodically after tightening the policy to catch any internal or third-party sender you broke."
+        ],
+        "caveats": [
+          "The p=none → quarantine/reject progression is the source's recommended sequence; tightening prematurely can block legitimate mail from unaligned senders.",
+          "DNS propagation delays mean setup is not instant; don't run a major campaign immediately after publishing records."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "deliverability",
+          "dmarc",
+          "dns",
+          "klaviyo",
+          "technical-setup",
+          "sender-reputation"
+        ]
+      },
+      {
+        "title": "Popup architecture that converts without hurting the list",
+        "summary": "Build a single-opt-in popup with time and scroll triggers, a micro-yes step, and an oversized contrasting button to hit 8–12% list-growth rates.",
+        "use_when": "Designing or redesigning the store's email capture popup to grow the list without annoying first-time visitors.",
+        "steps": [
+          "Use single opt-in: ask only for email at the capture step rather than email plus several fields, which the source ties to higher completion.",
+          "Delay the popup 4–10 seconds so the visitor sees the page first; trigger it earlier on scroll — roughly 60% scroll depth — for visitors who engage faster.",
+          "Insert a micro-yes step, i.e. a small first interaction or qualifying choice before the email field, to build commitment before asking for the address.",
+          "Make the primary button visibly large — the source cites 70px+ — and use strong contrast against the surrounding popup so it reads as the obvious next action.",
+          "Test the popup's copy and offer, not just its timing; the source treats the capture offer as the main lever on completion.",
+          "Watch list quality alongside growth: verify deliverability and engagement rates after scaling the popup, and tighten triggers if bounce or unsubscribe rates climb."
+        ],
+        "caveats": [
+          "The 4–10 second delay, 60% scroll, 70px button and 8–12% growth figures are the source's own targets, not universal benchmarks — the floor depends on traffic source and offer.",
+          "Aggressive popups can raise list size while lowering engagement; measure downstream performance, not capture rate alone."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "list-building",
+          "popup-design",
+          "conversion-optimization",
+          "klaviyo",
+          "lead-capture"
+        ]
+      },
+      {
+        "title": "The seven core lifecycle flows to build first",
+        "summary": "Prioritize seven automated flows — welcome, site abandon, browse abandon, cart, checkout, post-purchase and winback — as the revenue backbone of the account.",
+        "use_when": "Standing up a new email program or auditing which automations a store is missing before adding more campaigns.",
+        "steps": [
+          "Welcome series: deliver the promised discount immediately, then sequence brand story, bestsellers, social proof, unique selling benefits and a closing urgency message.",
+          "Site abandon: send to visitors who browsed without viewing a product, guiding them to relevant product categories or entry points.",
+          "Browse abandon: send personalized product reminders, and delay review or social-proof content to later messages rather than front-loading it.",
+          "Cart abandonment: trigger on the 'Added to Cart' event, not Shopify's default checkout-started trigger (see the separate card on the custom snippet).",
+          "Checkout abandonment: target shoppers who reached checkout, addressing friction, payment concerns or shipping-cost hesitation.",
+          "Post-purchase: reduce buyer's remorse, educate on product use, introduce the loyalty or rewards program, then request a review after a realistic delivery and usage window.",
+          "Winback: re-engage lapsed buyers on a defined inactivity window (tie this to your engagement segments).",
+          "Sequence the builds in this order and treat each flow as a module you can iterate on, rather than launching all seven at once with thin copy."
+        ],
+        "caveats": [
+          "Trigger definitions depend on which events your ESP and platform actually fire; verify the flows are receiving events before trusting their revenue numbers.",
+          "Timing windows (review requests, winback waits) should reflect your fulfillment and product-use cycle, not a generic default."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "automation",
+          "welcome-series",
+          "cart-abandonment",
+          "post-purchase",
+          "winback",
+          "klaviyo"
+        ]
+      },
+      {
+        "title": "Use an 'Added to Cart' snippet, not checkout-started triggers",
+        "summary": "Shopify's default checkout trigger does not capture true cart abandonment, so install a custom JavaScript snippet tracking 'Added to Cart' events for a real cart flow.",
+        "use_when": "Setting up or debugging the cart-abandonment flow when it fires too rarely or includes the wrong shoppers.",
+        "steps": [
+          "Recognize the gap: Shopify's built-in 'Checkout Started' event only fires when a shopper reaches checkout, so anyone who adds to cart and leaves earlier never enters a default abandonment flow.",
+          "Install a custom JavaScript snippet on the storefront that fires an 'Added to Cart' event to your ESP when a product is added, capturing the true cart population.",
+          "Build the cart-abandonment flow on that custom event rather than the checkout-started event, so the email audience matches the real abandoned-cart segment.",
+          "Keep checkout abandonment as a distinct flow for shoppers who did reach checkout; the two flows address different friction points.",
+          "Verify event firing end-to-end — add a product in a test session and confirm the profile records the event — before scaling spend or volume.",
+          "Re-validate after theme changes, app installs or platform updates, since snippet-based tracking can silently break."
+        ],
+        "caveats": [
+          "Custom snippet implementation depends on your theme and platform version; an experienced developer may be needed, and the code may require updates over time.",
+          "This is the source's technical warning about Shopify specifically; other platforms may have different default event behavior — verify yours."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "cart-abandonment",
+          "shopify",
+          "tracking",
+          "automation",
+          "klaviyo",
+          "technical-setup"
+        ]
+      },
+      {
+        "title": "Hold a 10:1 non-discount to discount campaign ratio",
+        "summary": "Protect brand margin and engagement by sending at least ten value, education or social-proof campaigns for every one discount promotion.",
+        "use_when": "Planning the monthly campaign calendar or deciding whether a new promotion is justified.",
+        "steps": [
+          "Classify each planned campaign as either value-driven (education, entertainment, brand story, social proof, values) or discount-driven.",
+          "Target a ratio of at least ten non-discount campaigns for every discount campaign, as the source's stated rule for margin protection.",
+          "Build a rotating set of content buckets to fill the non-discount slots — promos, holidays, product highlights, social proof and brand values — so the calendar doesn't collapse into repeat promotions.",
+          "Aim for roughly 3–4 targeted campaigns per week, distributed across those buckets, rather than blasting one message to the whole file.",
+          "When revenue dips, resist defaulting to a discount: first test whether a product-education, social-proof or restock message to the right segment recovers the gap.",
+          "Review the ratio monthly and flag runs of consecutive discount campaigns as a margin risk."
+        ],
+        "caveats": [
+          "The 10:1 ratio and 3–4 sends per week are the source's heuristics, not measured thresholds; appropriate frequency depends on list size, engagement and seasonality.",
+          "This is an opinionated strategy aimed at brand and margin preservation — a heavily promotional or clearance-driven business may deliberately deviate."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "campaign-strategy",
+          "promotion",
+          "margin",
+          "content-calendar",
+          "retention"
+        ]
+      },
+      {
+        "title": "Dynamic segments for engagement, purchase history and suppression",
+        "summary": "Build dynamic Klaviyo segments by recency of engagement and buyer frequency, and suppress hard bounces and unengaged profiles to protect deliverability.",
+        "use_when": "Setting up list segmentation for targeting, or cleaning the list after a deliverability dip.",
+        "steps": [
+          "Create engagement segments by active window — the source names 30, 60, 90 and 120-day active buckets — so you can mail recent openers or clickers differently from the long-lapsed.",
+          "Create purchase-history segments that isolate VIPs and 1x, 2x and 3x buyers, since repeat buyers justify different offers than first-time buyers.",
+          "Suppress hard bounces permanently, and suppress long-unengaged profiles (e.g. the 120-day inactive bucket) from regular sends to avoid damaging sender reputation.",
+          "Run a deliberate re-permission or sunset sequence for the unengaged before suppressing them, so you don't silently discard recoverable contacts.",
+          "Map each segment to a purpose: VIPs for early access or loyalty, recent engagers for frequent sends, lapsed buyers for winback.",
+          "Re-check segment definitions after flow and event changes, since segments built on events can silently go stale if tracking breaks."
+        ],
+        "caveats": [
+          "The 30/60/90/120-day windows are the source's suggested buckets, not measured optima; choose recency thresholds that match your purchase cycle.",
+          "Suppression reduces list size and can reduce short-term reach — the tradeoff is sender reputation and inbox placement over time."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "segmentation",
+          "list-hygiene",
+          "deliverability",
+          "klaviyo",
+          "retention",
+          "vip"
+        ]
+      },
+      {
+        "title": "Optimize tests on placed order rate, not opens or clicks",
+        "summary": "Evaluate campaign and flow split tests by placed order rate or net revenue, since open and click metrics don't reflect store outcomes.",
+        "use_when": "Designing or reading the results of an A/B test on a campaign send time, product block or flow delay.",
+        "steps": [
+          "Define the success metric before launching the test: use placed order rate (orders divided by delivered recipients) or net revenue as the decision metric.",
+          "Treat opens and clicks as diagnostics only — they tell you why a variant behaved differently, not which variant made money.",
+          "Test variables the source names: send times, product blocks and flow time delays are the concrete levers it highlights.",
+          "Apply the result to the flow or campaign on a defined evaluation window (e.g. 7–14 days of revenue attribution) so short-window revenue isn't misread as a win.",
+          "Avoid calling a winner on small samples; require enough conversions to distinguish signal from noise before rolling a variant out.",
+          "When a variant wins on opens but loses on placed order rate, follow the placed order rate — the source is explicit that these can diverge."
+        ],
+        "caveats": [
+          "The source's directive is to test campaigns and flows on placed order rate; open rates are increasingly unreliable anyway because of Apple Mail Privacy Protection and similar prefetching.",
+          "Number of tested variables and needed sample size are not specified in the source — apply standard statistical caution and pick an evaluation window that matches your purchase latency."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "experiment-design",
+          "measurement",
+          "conversion-optimization",
+          "a-b-testing",
+          "revenue-attribution"
+        ]
+      },
+      {
+        "title": "Short, emotional, visually hierarchical email copy",
+        "summary": "Write at a fifth-grade reading level with emotion-driven hooks and Z-pattern or inverted-triangle layout so subscribers absorb the message instantly.",
+        "use_when": "Writing or reviewing campaign and flow email copy, especially for a store whose emails feel long or text-heavy.",
+        "steps": [
+          "Write short copy aimed at roughly a fifth-grade reading level — plain words, short sentences, minimal jargon — so it's readable in a glance on mobile.",
+          "Lead with an emotion-driven hook: open on the customer's feeling, desired outcome or pain, not on a feature list or brand announcement.",
+          "Arrange the layout in a Z-pattern or inverted triangle — the most important element first, then supporting proof, then the call to action — so readers scanning diagonally still get the point.",
+          "Keep the primary call to action singular and visually prominent; don't split attention across multiple competing links.",
+          "Apply the same framework to flows as to campaigns — the welcome and cart emails carry the same scanning behavior as promotional sends.",
+          "Review the rendered mobile version, since the hierarchy you designed on desktop is often the one that breaks first."
+        ],
+        "caveats": [
+          "Reading-level targets and layout patterns are the source's craft guidance, not tested thresholds; a technically complex or luxury brand may deliberately write differently.",
+          "Emotion-first hooks still need an honest, specific offer behind them or they read as noise."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "copywriting",
+          "creative-strategy",
+          "design",
+          "campaign-strategy",
+          "mobile"
+        ]
+      }
+    ]
+  },
+  "raw_content": "{\"cards\": [{\"title\": \"Dedicated sending domain and DMARC setup for inbox placement\", \"summary\": \"Configure a branded sending subdomain with DNS records and a DMARC policy so Gmail/Yahoo 2024 bulk-sender rules don't suppress store email.\", \"use_when\": \"Initial Klaviyo (or comparable ESP) account setup, or a deliverability audit when store emails land in spam or Gmail promotions tab.\", \"steps\": [\"Create a dedicated sending subdomain (e.g. send.yourstore.com or news.yourstore.com) rather than sending from the root domain, isolating sender reputation from transactional and corporate mail.\", \"Add the ESP's DNS records at the registrar — typically CNAME records for branded link tracking and NS or CNAME records for the sending domain — and wait for propagation before sending.\", \"Publish a DMARC record at the root domain. The source describes starting in reporting-only mode (p=none) to collect alignment reports, then tightening to quarantine or reject once you confirm legitimate senders pass SPF/DKIM alignment.\", \"Verify alignment: the From domain must match the domain authenticated by SPF and DKIM, otherwise the DMARC policy has no protective effect.\", \"Confirm the current interface — Klaviyo and DNS providers change setup screens, so verify the exact record values in the live onboarding wizard before publishing.\", \"Re-check DMARC reports periodically after tightening the policy to catch any internal or third-party sender you broke.\"], \"caveats\": [\"The p=none → quarantine/reject progression is the source's recommended sequence; tightening prematurely can block legitimate mail from unaligned senders.\", \"DNS propagation delays mean setup is not instant; don't run a major campaign immediately after publishing records.\"], \"tags\": [\"email-lifecycle\", \"deliverability\", \"dmarc\", \"dns\", \"klaviyo\", \"technical-setup\", \"sender-reputation\"]}, {\"title\": \"Popup architecture that converts without hurting the list\", \"summary\": \"Build a single-opt-in popup with time and scroll triggers, a micro-yes step, and an oversized contrasting button to hit 8–12% list-growth rates.\", \"use_when\": \"Designing or redesigning the store's email capture popup to grow the list without annoying first-time visitors.\", \"steps\": [\"Use single opt-in: ask only for email at the capture step rather than email plus several fields, which the source ties to higher completion.\", \"Delay the popup 4–10 seconds so the visitor sees the page first; trigger it earlier on scroll — roughly 60% scroll depth — for visitors who engage faster.\", \"Insert a micro-yes step, i.e. a small first interaction or qualifying choice before the email field, to build commitment before asking for the address.\", \"Make the primary button visibly large — the source cites 70px+ — and use strong contrast against the surrounding popup so it reads as the obvious next action.\", \"Test the popup's copy and offer, not just its timing; the source treats the capture offer as the main lever on completion.\", \"Watch list quality alongside growth: verify deliverability and engagement rates after scaling the popup, and tighten triggers if bounce or unsubscribe rates climb.\"], \"caveats\": [\"The 4–10 second delay, 60% scroll, 70px button and 8–12% growth figures are the source's own targets, not universal benchmarks — the floor depends on traffic source and offer.\", \"Aggressive popups can raise list size while lowering engagement; measure downstream performance, not capture rate alone.\"], \"tags\": [\"email-lifecycle\", \"list-building\", \"popup-design\", \"conversion-optimization\", \"klaviyo\", \"lead-capture\"]}, {\"title\": \"The seven core lifecycle flows to build first\", \"summary\": \"Prioritize seven automated flows — welcome, site abandon, browse abandon, cart, checkout, post-purchase and winback — as the revenue backbone of the account.\", \"use_when\": \"Standing up a new email program or auditing which automations a store is missing before adding more campaigns.\", \"steps\": [\"Welcome series: deliver the promised discount immediately, then sequence brand story, bestsellers, social proof, unique selling benefits and a closing urgency message.\", \"Site abandon: send to visitors who browsed without viewing a product, guiding them to relevant product categories or entry points.\", \"Browse abandon: send personalized product reminders, and delay review or social-proof content to later messages rather than front-loading it.\", \"Cart abandonment: trigger on the 'Added to Cart' event, not Shopify's default checkout-started trigger (see the separate card on the custom snippet).\", \"Checkout abandonment: target shoppers who reached checkout, addressing friction, payment concerns or shipping-cost hesitation.\", \"Post-purchase: reduce buyer's remorse, educate on product use, introduce the loyalty or rewards program, then request a review after a realistic delivery and usage window.\", \"Winback: re-engage lapsed buyers on a defined inactivity window (tie this to your engagement segments).\", \"Sequence the builds in this order and treat each flow as a module you can iterate on, rather than launching all seven at once with thin copy.\"], \"caveats\": [\"Trigger definitions depend on which events your ESP and platform actually fire; verify the flows are receiving events before trusting their revenue numbers.\", \"Timing windows (review requests, winback waits) should reflect your fulfillment and product-use cycle, not a generic default.\"], \"tags\": [\"email-lifecycle\", \"automation\", \"welcome-series\", \"cart-abandonment\", \"post-purchase\", \"winback\", \"klaviyo\"]}, {\"title\": \"Use an 'Added to Cart' snippet, not checkout-started triggers\", \"summary\": \"Shopify's default checkout trigger does not capture true cart abandonment, so install a custom JavaScript snippet tracking 'Added to Cart' events for a real cart flow.\", \"use_when\": \"Setting up or debugging the cart-abandonment flow when it fires too rarely or includes the wrong shoppers.\", \"steps\": [\"Recognize the gap: Shopify's built-in 'Checkout Started' event only fires when a shopper reaches checkout, so anyone who adds to cart and leaves earlier never enters a default abandonment flow.\", \"Install a custom JavaScript snippet on the storefront that fires an 'Added to Cart' event to your ESP when a product is added, capturing the true cart population.\", \"Build the cart-abandonment flow on that custom event rather than the checkout-started event, so the email audience matches the real abandoned-cart segment.\", \"Keep checkout abandonment as a distinct flow for shoppers who did reach checkout; the two flows address different friction points.\", \"Verify event firing end-to-end — add a product in a test session and confirm the profile records the event — before scaling spend or volume.\", \"Re-validate after theme changes, app installs or platform updates, since snippet-based tracking can silently break.\"], \"caveats\": [\"Custom snippet implementation depends on your theme and platform version; an experienced developer may be needed, and the code may require updates over time.\", \"This is the source's technical warning about Shopify specifically; other platforms may have different default event behavior — verify yours.\"], \"tags\": [\"email-lifecycle\", \"cart-abandonment\", \"shopify\", \"tracking\", \"automation\", \"klaviyo\", \"technical-setup\"]}, {\"title\": \"Hold a 10:1 non-discount to discount campaign ratio\", \"summary\": \"Protect brand margin and engagement by sending at least ten value, education or social-proof campaigns for every one discount promotion.\", \"use_when\": \"Planning the monthly campaign calendar or deciding whether a new promotion is justified.\", \"steps\": [\"Classify each planned campaign as either value-driven (education, entertainment, brand story, social proof, values) or discount-driven.\", \"Target a ratio of at least ten non-discount campaigns for every discount campaign, as the source's stated rule for margin protection.\", \"Build a rotating set of content buckets to fill the non-discount slots — promos, holidays, product highlights, social proof and brand values — so the calendar doesn't collapse into repeat promotions.\", \"Aim for roughly 3–4 targeted campaigns per week, distributed across those buckets, rather than blasting one message to the whole file.\", \"When revenue dips, resist defaulting to a discount: first test whether a product-education, social-proof or restock message to the right segment recovers the gap.\", \"Review the ratio monthly and flag runs of consecutive discount campaigns as a margin risk.\"], \"caveats\": [\"The 10:1 ratio and 3–4 sends per week are the source's heuristics, not measured thresholds; appropriate frequency depends on list size, engagement and seasonality.\", \"This is an opinionated strategy aimed at brand and margin preservation — a heavily promotional or clearance-driven business may deliberately deviate.\"], \"tags\": [\"email-lifecycle\", \"campaign-strategy\", \"promotion\", \"margin\", \"content-calendar\", \"retention\"]}, {\"title\": \"Dynamic segments for engagement, purchase history and suppression\", \"summary\": \"Build dynamic Klaviyo segments by recency of engagement and buyer frequency, and suppress hard bounces and unengaged profiles to protect deliverability.\", \"use_when\": \"Setting up list segmentation for targeting, or cleaning the list after a deliverability dip.\", \"steps\": [\"Create engagement segments by active window — the source names 30, 60, 90 and 120-day active buckets — so you can mail recent openers or clickers differently from the long-lapsed.\", \"Create purchase-history segments that isolate VIPs and 1x, 2x and 3x buyers, since repeat buyers justify different offers than first-time buyers.\", \"Suppress hard bounces permanently, and suppress long-unengaged profiles (e.g. the 120-day inactive bucket) from regular sends to avoid damaging sender reputation.\", \"Run a deliberate re-permission or sunset sequence for the unengaged before suppressing them, so you don't silently discard recoverable contacts.\", \"Map each segment to a purpose: VIPs for early access or loyalty, recent engagers for frequent sends, lapsed buyers for winback.\", \"Re-check segment definitions after flow and event changes, since segments built on events can silently go stale if tracking breaks.\"], \"caveats\": [\"The 30/60/90/120-day windows are the source's suggested buckets, not measured optima; choose recency thresholds that match your purchase cycle.\", \"Suppression reduces list size and can reduce short-term reach — the tradeoff is sender reputation and inbox placement over time.\"], \"tags\": [\"email-lifecycle\", \"segmentation\", \"list-hygiene\", \"deliverability\", \"klaviyo\", \"retention\", \"vip\"]}, {\"title\": \"Optimize tests on placed order rate, not opens or clicks\", \"summary\": \"Evaluate campaign and flow split tests by placed order rate or net revenue, since open and click metrics don't reflect store outcomes.\", \"use_when\": \"Designing or reading the results of an A/B test on a campaign send time, product block or flow delay.\", \"steps\": [\"Define the success metric before launching the test: use placed order rate (orders divided by delivered recipients) or net revenue as the decision metric.\", \"Treat opens and clicks as diagnostics only — they tell you why a variant behaved differently, not which variant made money.\", \"Test variables the source names: send times, product blocks and flow time delays are the concrete levers it highlights.\", \"Apply the result to the flow or campaign on a defined evaluation window (e.g. 7–14 days of revenue attribution) so short-window revenue isn't misread as a win.\", \"Avoid calling a winner on small samples; require enough conversions to distinguish signal from noise before rolling a variant out.\", \"When a variant wins on opens but loses on placed order rate, follow the placed order rate — the source is explicit that these can diverge.\"], \"caveats\": [\"The source's directive is to test campaigns and flows on placed order rate; open rates are increasingly unreliable anyway because of Apple Mail Privacy Protection and similar prefetching.\", \"Number of tested variables and needed sample size are not specified in the source — apply standard statistical caution and pick an evaluation window that matches your purchase latency.\"], \"tags\": [\"email-lifecycle\", \"experiment-design\", \"measurement\", \"conversion-optimization\", \"a-b-testing\", \"revenue-attribution\"]}, {\"title\": \"Short, emotional, visually hierarchical email copy\", \"summary\": \"Write at a fifth-grade reading level with emotion-driven hooks and Z-pattern or inverted-triangle layout so subscribers absorb the message instantly.\", \"use_when\": \"Writing or reviewing campaign and flow email copy, especially for a store whose emails feel long or text-heavy.\", \"steps\": [\"Write short copy aimed at roughly a fifth-grade reading level — plain words, short sentences, minimal jargon — so it's readable in a glance on mobile.\", \"Lead with an emotion-driven hook: open on the customer's feeling, desired outcome or pain, not on a feature list or brand announcement.\", \"Arrange the layout in a Z-pattern or inverted triangle — the most important element first, then supporting proof, then the call to action — so readers scanning diagonally still get the point.\", \"Keep the primary call to action singular and visually prominent; don't split attention across multiple competing links.\", \"Apply the same framework to flows as to campaigns — the welcome and cart emails carry the same scanning behavior as promotional sends.\", \"Review the rendered mobile version, since the hierarchy you designed on desktop is often the one that breaks first.\"], \"caveats\": [\"Reading-level targets and layout patterns are the source's craft guidance, not tested thresholds; a technically complex or luxury brand may deliberately write differently.\", \"Emotion-first hooks still need an honest, specific offer behind them or they read as noise.\"], \"tags\": [\"email-lifecycle\", \"copywriting\", \"creative-strategy\", \"design\", \"campaign-strategy\", \"mobile\"]}]}",
+  "input": {
+    "source_id": "1gAs1Y6DDO4ld3V07pv7EQ4Hq585FJEwm",
+    "source_sha256": "5d0fcefa9fd4199b4c5c5dcc8c43a38a40850839509c4fc3dd1d1082a6c262d3",
+    "source_name": "_Klaviyo Email Marketing FULL COURSE 2025.docx",
+    "folder": "/14-EML-email-lifecycle",
+    "domain": "email-lifecycle",
+    "section": 0,
+    "section_count": 6,
+    "text": "09-EML / email and sms Goes here. A masterclass in DTC e-commerce email marketing, covering Klaviyo account setup, Google's 2024 DNS/DMARC deliverability requirements, popup form design, automated lifecycle flows, campaign calendar management, modular copywriting, and statistical A/B testing frameworks. Not here. • Paid media campaign setup or Meta ad management -> 06-MEA • Front-end website development or CRO audits -> 07-LPG\n\nHeader. url: rights: public_reference why: Provides an end-to-end technical, operational, and strategic blueprint for scaling DTC e-commerce email revenue from list building to advanced deliverability and campaign segmentation. modules: [EML] topics: [email marketing, Klaviyo, DMARC, DNS setup, popup forms, automated flows, welcome series, cart abandonment, email campaigns, segmentation, copywriting, A/B testing] tier: 3 scope_hint: comprehensive\n\nTopics. technical deliverability setup / executing Google's 2024 requirements by configuring a dedicated sending domain (DNS records: CNAME/NS) and a DMARC record to protect sender reputation; high-converting popup architecture / deploying single-opt-in popups with 4–10 second time delays, 60% scroll triggers, contrasting button sizes (70px+), and a micro-yes step to achieve 8–12% list growth; essential lifecycle flows / building the 7 core automations: Welcome Series (discount delivery, brand story, bestsellers, social proof, USBs, and urgency), Site Abandon (guide traffic to products), Browse Abandon (personalized product reminders and delayed reviews), Cart Abandonment (using Shopify's \"Added to Cart\" custom snippet rather than checkout triggers), Checkout Abandonment, Post-Purchase (reducing buyer's remorse, product education, loyalty introduction, and review requests), and Winback; campaign strategy / maintaining a 10:1 non-discount to discount ratio, sending 3–4 targeted campaigns per week across diverse content buckets (promos, holidays, product highlights, social proof, values); email copywriting framework / utilizing short, fifth-grade reading level copy, the \"inverted triangle\" or \"Z-pattern\" visual hierarchies, and emotion-driven hooks; list hygiene and segmentation / creating dynamic segments for engagement (30/60/90/120-day active), purchase history (VIPs, 1x/2x/3x buyers), and suppressing hard bounces or unengaged profiles; A/B testing methodology / optimizing campaigns and flows for placed order rate rather than open rates, split-testing send times, product blocks, and time delays.\n\nLook for.\n\nThe \"Added to Cart\" vs. \"Checkout Started\" Distinction: The critical technical warning that Shopify's default checkout trigger is not a cart abandonment flow; true cart abandonment requires installing a custom JavaScript snippet to track \"Added to Cart\" events.\n\nThe DMARC and DNS Mandate: The technical requirement to set up a branded sending domain and a DMARC policy (reporting mode p=none moving to quarantine/reject) to comply with Gmail and Yahoo's 2024 inbox standards.\n\nThe 10:1 Non-Discount Ratio: The strategic rule to protect brand margins by sending at least ten value-driven, educational, or social proof campaigns for every single promotional discount.\n\nPlaced Order Rate A/B Testing: The analytical directive to evaluate campaign and flow split tests strictly by placed order rate or net revenue, rather than vanity metrics like open rates or click-through rates.\n\nSkip. Self-promotional agency pitches, introductory course overviews, repetitive walkthroughs of creating demo Klaviyo accounts, and long lists of basic definitions.\n\nScope mix. 15% baseline (Klaviyo UI navigation and basic email terminology), 85% growth (technical DMARC setup, advanced lifecycle flow architecture, and conversion-optimized design/segmentation). Volume. ~450 words.",
+    "prior_notes": [],
+    "id": "c63bed5eaff7fcaf57212752"
+  },
+  "system_prompt_sha256": "f2341d28186a0dbaee868d37ce33c173f631088eb1754997556740d4905c0f2b"
+}

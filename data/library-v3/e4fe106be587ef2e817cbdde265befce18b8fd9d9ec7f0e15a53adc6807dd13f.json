@@ -1,0 +1,218 @@
+{
+  "request_id": "e4fe106be587ef2e817cbdde265befce18b8fd9d9ec7f0e15a53adc6807dd13f",
+  "provider": "deepseek",
+  "model": "deepseek-flash",
+  "effort": "none",
+  "completion_limit": 16384,
+  "usage": {
+    "prompt_tokens": 3540,
+    "completion_tokens": 2868,
+    "total_tokens": 6408,
+    "prompt_tokens_details": {
+      "cached_tokens": 512
+    },
+    "prompt_cache_hit_tokens": 512,
+    "prompt_cache_miss_tokens": 3028
+  },
+  "booked_cost_usd": 0.0045036,
+  "seconds": 47.88,
+  "finish_reason": "stop",
+  "output": {
+    "cards": [
+      {
+        "title": "Diagnose inflated ROAS in Advantage+ scaling campaigns with audience breakdowns",
+        "summary": "Break a top-spending Advantage+ TOF ad down by audience (new vs existing vs engaged) to reveal when headline ROAS is really just retargeting existing customers.",
+        "use_when": "Reviewing a Meta Advantage+ top-of-funnel scaling campaign where a top-spending ad shows a very high platform ROAS and you need to decide whether to scale budget, brief more creative like it, or pull spend.",
+        "steps": [
+          "Start with the ad-level report sorted by spend. High frequency on the top ad is the first red flag — the source flags this as a symptom of retargeting-style delivery, not genuine TOF reach.",
+          "Open the audience breakdown (existing customers / engaged / new) and read how spend distributes across segments. In the source example, roughly half of the budget on a 'scaling' campaign was landing on existing customers.",
+          "Re-read ROAS within the new-audience segment only. The source example dropped from a 13x blended ROAS to about 5x on new audiences — still positive, but a different decision than the headline implied.",
+          "Use the gap between blended ROAS and new-customer ROAS as the diagnostic: a large gap means the ad set is over-distributing spend because it performs well on existing customers, not because the creative is a strong acquisition asset.",
+          "Do not brief more creative in that format or 'double down' on that concept until the breakdown confirms new-customer performance, because scaling a fake winner adds creative production cost against bad data.",
+          "Verify the current Meta Ads Manager interface for where audience breakdowns live — column layouts and breakdown menus change."
+        ],
+        "caveats": [
+          "Percentages and the 13x-to-5x drop are one account example, not a benchmark; run your own breakdown.",
+          "A high frequency is a yellow flag, not proof — check it against the audience breakdown before acting."
+        ],
+        "tags": [
+          "ad-copy-deployment",
+          "meta-ads",
+          "attribution",
+          "measurement",
+          "audience-targeting",
+          "scaling",
+          "roas"
+        ]
+      },
+      {
+        "title": "Use 7-day click for optimization and treat incremental attribution as a breakout only",
+        "summary": "Optimize Meta campaigns on 7-day click (ignore view-throughs) and use Meta's incremental attribution only as a comparison column, because it is a modelled estimate, not a holdout result.",
+        "use_when": "Setting the attribution/optimization setting on any Meta cold or scaling campaign, or deciding whether to switch optimization toward incremental attribution because it looks 'more accurate'.",
+        "steps": [
+          "Set the attribution setting for optimization to 7-day click, ignoring view-throughs, so that ad-level spend distribution follows conversions actually caused by a click.",
+          "Add incremental attribution as a comparison column (via the compare-attribution-settings view) rather than as the optimization target.",
+          "Understand what incremental attribution is before trusting it: per the source, it applies a factor derived from aggregated competitor lift studies to your account — it is an algorithmic estimate, not a measurement of your customers.",
+          "Contrast that with a true Meta Conversion Lift Test, which is a geo-holdout difference-in-difference experiment: Meta holds out a percentage of the target audience, compares conversion rates between held-out and served groups, and the difference is the true incremental lift.",
+          "Use a lift test when you genuinely need to know incremental impact; use incremental attribution only as directional context when ordering your ad-level analysis.",
+          "Confirm current names of these settings inside the Experiments and column-customization menus, as Meta relabels them over time."
+        ],
+        "caveats": [
+          "The source's position (do not optimize toward incremental attribution) is an opinion with a stated reason, not a universal rule; a lift test is the recommended ground-truth substitute.",
+          "Incremental attribution's exact modelling method is not disclosed by Meta, so its accuracy for your category is unverifiable."
+        ],
+        "tags": [
+          "ad-copy-deployment",
+          "meta-ads",
+          "attribution",
+          "measurement",
+          "experiment-design",
+          "view-through-conversions"
+        ]
+      },
+      {
+        "title": "Exclude existing customers from cold TOF campaigns, with a lapsed-customer carve-out",
+        "summary": "Block existing customers from cold scaling campaigns so spend cannot cannibalize retargeting, but segment long-lapsed buyers into their own campaign rather than hard-excluding them.",
+        "use_when": "Structuring a Meta cold/prospecting or Advantage+ top-of-funnel campaign and defining exclusion audiences, especially when attempting to scale and new-customer acquisition is flat while CAC rises.",
+        "steps": [
+          "Add an existing-customer exclusion to every cold top-of-funnel scaling campaign, so budget cannot flow to people already in your customer file.",
+          "Decide a recency threshold for 'existing'. The source suggests roughly a 2-year window as a reasonable starting point: someone who last purchased two years ago is treated as lapsed rather than active.",
+          "Do not simply hard-exclude lapsed customers with the same logic as recent buyers. Give them a dedicated campaign and dedicated strategy so they get some spend without contaminating cold acquisition data.",
+          "Keep acquisition (cold) spend separate from retargeting spend so retargeting performance is not propped up by cold-campaign cannibalization, and cold performance is not propped up by past buyers.",
+          "When CAC climbs on every scaling attempt while new-customer acquisition stays flat, check this structure first — the source identifies unexcluded existing customers as a primary cause of that pattern.",
+          "Verify the current interface for customer-list exclusion setup in Meta, as the exclusions UI changes."
+        ],
+        "caveats": [
+          "The 2-year threshold is a source heuristic, not a tested constant; choose a window that reflects your repurchase cycle.",
+          "Some categories have short repurchase cycles where a shorter lapse window is appropriate — test rather than copy the number."
+        ],
+        "tags": [
+          "ad-copy-deployment",
+          "meta-ads",
+          "campaign-structure",
+          "audience-targeting",
+          "customer-acquisition-cost",
+          "scaling",
+          "retention"
+        ]
+      },
+      {
+        "title": "Measure scaling lift on top-line new-customer sales at the SKU level",
+        "summary": "Validate a TOF scaling campaign against top-line revenue (ideally new-customer sales on a specific SKU) rather than accepting in-platform ROAS as the success metric.",
+        "use_when": "Deciding whether a Meta TOF scaling campaign actually worked after a budget increase, or when total-revenue-based readouts are too noisy to reach significance in a reasonable test window.",
+        "steps": [
+          "Check whether the campaign concentrates on one SKU or a small SKU set. If it does, read sales for that specific SKU before and after the scale-up instead of relying on store-wide totals.",
+          "Prefer this SKU-level readout because a whole-store test needs either a much larger budget change or a much longer duration to reach statistical relevance — narrowing to one SKU raises signal per dollar of spend.",
+          "Further narrow to new-customer sales on that SKU, since the stated objective of an Advantage+ TOF scaling campaign is acquiring new customers, not re-acquiring existing ones.",
+          "Compare in-platform reported ROAS against this Shopify-side new-customer SKU sales movement; divergence means platform attribution is overstating the campaign's acquisition contribution.",
+          "Confirm the SKU was not simultaneously promoted elsewhere (other channels, promotions, email) so the revenue movement can plausibly be attributed to the scaling change.",
+          "Recheck Shopify reporting views and any current Meta reporting fields, since both interfaces change."
+        ],
+        "caveats": [
+          "The source example only notes that sales 'might have gone up' — it does not report a confirmed lift, so treat this as method, not evidence of results.",
+          "SKU-level readout works best when scaling a single SKU; for large SKU-count campaigns, isolate the SKU under test explicitly."
+        ],
+        "tags": [
+          "ad-copy-deployment",
+          "measurement",
+          "attribution",
+          "scaling",
+          "new-customer-acquisition",
+          "shopify",
+          "sku-analysis"
+        ]
+      },
+      {
+        "title": "Why optimizing on 1-day view-through inflates rankings and misallocates spend",
+        "summary": "If the ad set optimizes on 7-day click plus 1-day view, spend concentrates on view-through-heavy ads, so the in-platform ranking of your best creatives is not trustworthy.",
+        "use_when": "Interpreting ad-level performance rankings in a Meta scaling campaign, or deciding which creative concepts to brief more of based on which ads are winning inside the account.",
+        "steps": [
+          "Check whether the ad set's optimization/attribution includes 1-day view. If it does, an ad can accumulate spend from view-throughs rather than click-caused purchases.",
+          "Recognize the loop: the ad set allocates spend to ads that 'perform' including viewers, sometimes on existing customers, so those ads rank top and receive more budget — not because they acquire new customers.",
+          "Treat every ad ranking in such an account as untrustworthy, and consider that a lower-spend ad may actually be the best new-audience performer because spend was never distributed to it in line with new-customer performance.",
+          "Before briefing more creative in the 'winning' format, switch optimization to 7-day click, exclude existing customers, and re-read the rankings.",
+          "Watch for the downstream cost: teams commission more of a format based on bad rankings, adding creative and operating expense against a concept that was never validated.",
+          "Confirm the current attribution-setting options in Meta Ads Manager before applying this."
+        ],
+        "caveats": [
+          "View-through conversions are not inherently worthless; the source's argument is that they should not drive optimization decisions in a cold acquisition campaign.",
+          "This is a diagnostic reasoning chain from the source, illustrated with one account rather than a controlled study."
+        ],
+        "tags": [
+          "ad-copy-deployment",
+          "meta-ads",
+          "attribution",
+          "view-through-conversions",
+          "creative-strategy",
+          "scaling",
+          "measurement"
+        ]
+      },
+      {
+        "title": "Read purchase conversion separately from lead conversion when auditing a scaling campaign",
+        "summary": "Keep purchase-based campaign metrics distinct from lead-based ones, since the diagnosis of an inflated scaling campaign depends on conversions that end in sales, not leads.",
+        "use_when": "Evaluating a Meta cold acquisition campaign that runs on purchase events, or when a campaign's reported performance differs depending on whether leads or purchases are counted.",
+        "steps": [
+          "Confirm the campaign's optimization event is purchase, not lead, before applying the click-vs-view and new-vs-existing diagnoses — a lead-optimized ad set can look incremental while adding little revenue.",
+          "If the business collects leads that convert to purchase off-platform, split reporting: platform ROAS will only capture the lead event, while true acquisition performance lives in the CRM or store.",
+          "For purchase-optimized TOF scaling, apply the full diagnostic chain: audience breakdown, then attribution-setting comparison, then SKU-level new-customer sales in Shopify.",
+          "Do not compare a lead-based conversion rate to a purchase-based conversion rate when judging the same campaign; they measure different stages.",
+          "State which conversion type a benchmark refers to when relaying results, since the source's ROAS discussion is explicitly about purchase conversions in a scaling campaign.",
+          "Check current campaign objective and event options in Meta, as these are periodically renamed."
+        ],
+        "caveats": [
+          "The source discusses purchase-based scaling campaigns specifically; it does not provide separate guidance on lead-gen diagnostics.",
+          "Conversion event choice is set at campaign creation and changing it later resets learning — plan structure before launch."
+        ],
+        "tags": [
+          "ad-copy-deployment",
+          "meta-ads",
+          "measurement",
+          "conversion-tracking",
+          "scaling",
+          "new-customer-acquisition"
+        ]
+      },
+      {
+        "title": "Diagnostic path when CAC rises on every scaling attempt and new customers stay flat",
+        "summary": "When scale-ups raise CAC without raising new-customer acquisition, run a fixed three-check audit: retargeting overlap, over-attribution, and cold-spend cannibalization.",
+        "use_when": "A store repeatedly increases Meta budget and sees CAC climb while new-customer count stays flat, and you need a structured first-pass audit of the ad account.",
+        "steps": [
+          "Check for retargeting: break the scaling campaign's spend down by audience to see how much is going to existing customers or engaged users.",
+          "Check for over-attribution: compare 7-day click versus view-through and versus incremental attribution on the same ads to see whether reported ROAS rests on view-throughs or modelled factors.",
+          "Check for cannibalization: confirm cold top-of-funnel campaigns are not outbidding or absorbing audiences that retargeting campaigns should be serving, which inflates retargeting's apparent success and hides cold performance.",
+          "Fix the structure first — 7-day click optimization, existing-customer exclusions on cold campaigns — before drawing conclusions from any ad-level ranking.",
+          "Then measure the scaling effort on top-line new-customer sales at the SKU level, since in-platform ROAS is the metric that was misleading to begin with.",
+          "Re-audit after changes, because correcting attribution shifts which ads win spend and changes the rankings you were relying on."
+        ],
+        "caveats": [
+          "The source presents this as a reasoning framework, illustrated by an account where scaling had repeatedly raised CAC — not a tested remedy with published outcomes.",
+          "The source's claim that most accounts skip these basics is its own observation, not a measured statistic."
+        ],
+        "tags": [
+          "ad-copy-deployment",
+          "scaling",
+          "customer-acquisition-cost",
+          "meta-ads",
+          "audience-targeting",
+          "attribution",
+          "measurement"
+        ]
+      }
+    ]
+  },
+  "raw_content": "{\"cards\": [{\"title\": \"Diagnose inflated ROAS in Advantage+ scaling campaigns with audience breakdowns\", \"summary\": \"Break a top-spending Advantage+ TOF ad down by audience (new vs existing vs engaged) to reveal when headline ROAS is really just retargeting existing customers.\", \"use_when\": \"Reviewing a Meta Advantage+ top-of-funnel scaling campaign where a top-spending ad shows a very high platform ROAS and you need to decide whether to scale budget, brief more creative like it, or pull spend.\", \"steps\": [\"Start with the ad-level report sorted by spend. High frequency on the top ad is the first red flag — the source flags this as a symptom of retargeting-style delivery, not genuine TOF reach.\", \"Open the audience breakdown (existing customers / engaged / new) and read how spend distributes across segments. In the source example, roughly half of the budget on a 'scaling' campaign was landing on existing customers.\", \"Re-read ROAS within the new-audience segment only. The source example dropped from a 13x blended ROAS to about 5x on new audiences — still positive, but a different decision than the headline implied.\", \"Use the gap between blended ROAS and new-customer ROAS as the diagnostic: a large gap means the ad set is over-distributing spend because it performs well on existing customers, not because the creative is a strong acquisition asset.\", \"Do not brief more creative in that format or 'double down' on that concept until the breakdown confirms new-customer performance, because scaling a fake winner adds creative production cost against bad data.\", \"Verify the current Meta Ads Manager interface for where audience breakdowns live — column layouts and breakdown menus change.\"], \"caveats\": [\"Percentages and the 13x-to-5x drop are one account example, not a benchmark; run your own breakdown.\", \"A high frequency is a yellow flag, not proof — check it against the audience breakdown before acting.\"], \"tags\": [\"ad-copy-deployment\", \"meta-ads\", \"attribution\", \"measurement\", \"audience-targeting\", \"scaling\", \"roas\"]}, {\"title\": \"Use 7-day click for optimization and treat incremental attribution as a breakout only\", \"summary\": \"Optimize Meta campaigns on 7-day click (ignore view-throughs) and use Meta's incremental attribution only as a comparison column, because it is a modelled estimate, not a holdout result.\", \"use_when\": \"Setting the attribution/optimization setting on any Meta cold or scaling campaign, or deciding whether to switch optimization toward incremental attribution because it looks 'more accurate'.\", \"steps\": [\"Set the attribution setting for optimization to 7-day click, ignoring view-throughs, so that ad-level spend distribution follows conversions actually caused by a click.\", \"Add incremental attribution as a comparison column (via the compare-attribution-settings view) rather than as the optimization target.\", \"Understand what incremental attribution is before trusting it: per the source, it applies a factor derived from aggregated competitor lift studies to your account — it is an algorithmic estimate, not a measurement of your customers.\", \"Contrast that with a true Meta Conversion Lift Test, which is a geo-holdout difference-in-difference experiment: Meta holds out a percentage of the target audience, compares conversion rates between held-out and served groups, and the difference is the true incremental lift.\", \"Use a lift test when you genuinely need to know incremental impact; use incremental attribution only as directional context when ordering your ad-level analysis.\", \"Confirm current names of these settings inside the Experiments and column-customization menus, as Meta relabels them over time.\"], \"caveats\": [\"The source's position (do not optimize toward incremental attribution) is an opinion with a stated reason, not a universal rule; a lift test is the recommended ground-truth substitute.\", \"Incremental attribution's exact modelling method is not disclosed by Meta, so its accuracy for your category is unverifiable.\"], \"tags\": [\"ad-copy-deployment\", \"meta-ads\", \"attribution\", \"measurement\", \"experiment-design\", \"view-through-conversions\"]}, {\"title\": \"Exclude existing customers from cold TOF campaigns, with a lapsed-customer carve-out\", \"summary\": \"Block existing customers from cold scaling campaigns so spend cannot cannibalize retargeting, but segment long-lapsed buyers into their own campaign rather than hard-excluding them.\", \"use_when\": \"Structuring a Meta cold/prospecting or Advantage+ top-of-funnel campaign and defining exclusion audiences, especially when attempting to scale and new-customer acquisition is flat while CAC rises.\", \"steps\": [\"Add an existing-customer exclusion to every cold top-of-funnel scaling campaign, so budget cannot flow to people already in your customer file.\", \"Decide a recency threshold for 'existing'. The source suggests roughly a 2-year window as a reasonable starting point: someone who last purchased two years ago is treated as lapsed rather than active.\", \"Do not simply hard-exclude lapsed customers with the same logic as recent buyers. Give them a dedicated campaign and dedicated strategy so they get some spend without contaminating cold acquisition data.\", \"Keep acquisition (cold) spend separate from retargeting spend so retargeting performance is not propped up by cold-campaign cannibalization, and cold performance is not propped up by past buyers.\", \"When CAC climbs on every scaling attempt while new-customer acquisition stays flat, check this structure first — the source identifies unexcluded existing customers as a primary cause of that pattern.\", \"Verify the current interface for customer-list exclusion setup in Meta, as the exclusions UI changes.\"], \"caveats\": [\"The 2-year threshold is a source heuristic, not a tested constant; choose a window that reflects your repurchase cycle.\", \"Some categories have short repurchase cycles where a shorter lapse window is appropriate — test rather than copy the number.\"], \"tags\": [\"ad-copy-deployment\", \"meta-ads\", \"campaign-structure\", \"audience-targeting\", \"customer-acquisition-cost\", \"scaling\", \"retention\"]}, {\"title\": \"Measure scaling lift on top-line new-customer sales at the SKU level\", \"summary\": \"Validate a TOF scaling campaign against top-line revenue (ideally new-customer sales on a specific SKU) rather than accepting in-platform ROAS as the success metric.\", \"use_when\": \"Deciding whether a Meta TOF scaling campaign actually worked after a budget increase, or when total-revenue-based readouts are too noisy to reach significance in a reasonable test window.\", \"steps\": [\"Check whether the campaign concentrates on one SKU or a small SKU set. If it does, read sales for that specific SKU before and after the scale-up instead of relying on store-wide totals.\", \"Prefer this SKU-level readout because a whole-store test needs either a much larger budget change or a much longer duration to reach statistical relevance — narrowing to one SKU raises signal per dollar of spend.\", \"Further narrow to new-customer sales on that SKU, since the stated objective of an Advantage+ TOF scaling campaign is acquiring new customers, not re-acquiring existing ones.\", \"Compare in-platform reported ROAS against this Shopify-side new-customer SKU sales movement; divergence means platform attribution is overstating the campaign's acquisition contribution.\", \"Confirm the SKU was not simultaneously promoted elsewhere (other channels, promotions, email) so the revenue movement can plausibly be attributed to the scaling change.\", \"Recheck Shopify reporting views and any current Meta reporting fields, since both interfaces change.\"], \"caveats\": [\"The source example only notes that sales 'might have gone up' — it does not report a confirmed lift, so treat this as method, not evidence of results.\", \"SKU-level readout works best when scaling a single SKU; for large SKU-count campaigns, isolate the SKU under test explicitly.\"], \"tags\": [\"ad-copy-deployment\", \"measurement\", \"attribution\", \"scaling\", \"new-customer-acquisition\", \"shopify\", \"sku-analysis\"]}, {\"title\": \"Why optimizing on 1-day view-through inflates rankings and misallocates spend\", \"summary\": \"If the ad set optimizes on 7-day click plus 1-day view, spend concentrates on view-through-heavy ads, so the in-platform ranking of your best creatives is not trustworthy.\", \"use_when\": \"Interpreting ad-level performance rankings in a Meta scaling campaign, or deciding which creative concepts to brief more of based on which ads are winning inside the account.\", \"steps\": [\"Check whether the ad set's optimization/attribution includes 1-day view. If it does, an ad can accumulate spend from view-throughs rather than click-caused purchases.\", \"Recognize the loop: the ad set allocates spend to ads that 'perform' including viewers, sometimes on existing customers, so those ads rank top and receive more budget — not because they acquire new customers.\", \"Treat every ad ranking in such an account as untrustworthy, and consider that a lower-spend ad may actually be the best new-audience performer because spend was never distributed to it in line with new-customer performance.\", \"Before briefing more creative in the 'winning' format, switch optimization to 7-day click, exclude existing customers, and re-read the rankings.\", \"Watch for the downstream cost: teams commission more of a format based on bad rankings, adding creative and operating expense against a concept that was never validated.\", \"Confirm the current attribution-setting options in Meta Ads Manager before applying this.\"], \"caveats\": [\"View-through conversions are not inherently worthless; the source's argument is that they should not drive optimization decisions in a cold acquisition campaign.\", \"This is a diagnostic reasoning chain from the source, illustrated with one account rather than a controlled study.\"], \"tags\": [\"ad-copy-deployment\", \"meta-ads\", \"attribution\", \"view-through-conversions\", \"creative-strategy\", \"scaling\", \"measurement\"]}, {\"title\": \"Read purchase conversion separately from lead conversion when auditing a scaling campaign\", \"summary\": \"Keep purchase-based campaign metrics distinct from lead-based ones, since the diagnosis of an inflated scaling campaign depends on conversions that end in sales, not leads.\", \"use_when\": \"Evaluating a Meta cold acquisition campaign that runs on purchase events, or when a campaign's reported performance differs depending on whether leads or purchases are counted.\", \"steps\": [\"Confirm the campaign's optimization event is purchase, not lead, before applying the click-vs-view and new-vs-existing diagnoses — a lead-optimized ad set can look incremental while adding little revenue.\", \"If the business collects leads that convert to purchase off-platform, split reporting: platform ROAS will only capture the lead event, while true acquisition performance lives in the CRM or store.\", \"For purchase-optimized TOF scaling, apply the full diagnostic chain: audience breakdown, then attribution-setting comparison, then SKU-level new-customer sales in Shopify.\", \"Do not compare a lead-based conversion rate to a purchase-based conversion rate when judging the same campaign; they measure different stages.\", \"State which conversion type a benchmark refers to when relaying results, since the source's ROAS discussion is explicitly about purchase conversions in a scaling campaign.\", \"Check current campaign objective and event options in Meta, as these are periodically renamed.\"], \"caveats\": [\"The source discusses purchase-based scaling campaigns specifically; it does not provide separate guidance on lead-gen diagnostics.\", \"Conversion event choice is set at campaign creation and changing it later resets learning — plan structure before launch.\"], \"tags\": [\"ad-copy-deployment\", \"meta-ads\", \"measurement\", \"conversion-tracking\", \"scaling\", \"new-customer-acquisition\"]}, {\"title\": \"Diagnostic path when CAC rises on every scaling attempt and new customers stay flat\", \"summary\": \"When scale-ups raise CAC without raising new-customer acquisition, run a fixed three-check audit: retargeting overlap, over-attribution, and cold-spend cannibalization.\", \"use_when\": \"A store repeatedly increases Meta budget and sees CAC climb while new-customer count stays flat, and you need a structured first-pass audit of the ad account.\", \"steps\": [\"Check for retargeting: break the scaling campaign's spend down by audience to see how much is going to existing customers or engaged users.\", \"Check for over-attribution: compare 7-day click versus view-through and versus incremental attribution on the same ads to see whether reported ROAS rests on view-throughs or modelled factors.\", \"Check for cannibalization: confirm cold top-of-funnel campaigns are not outbidding or absorbing audiences that retargeting campaigns should be serving, which inflates retargeting's apparent success and hides cold performance.\", \"Fix the structure first — 7-day click optimization, existing-customer exclusions on cold campaigns — before drawing conclusions from any ad-level ranking.\", \"Then measure the scaling effort on top-line new-customer sales at the SKU level, since in-platform ROAS is the metric that was misleading to begin with.\", \"Re-audit after changes, because correcting attribution shifts which ads win spend and changes the rankings you were relying on.\"], \"caveats\": [\"The source presents this as a reasoning framework, illustrated by an account where scaling had repeatedly raised CAC — not a tested remedy with published outcomes.\", \"The source's claim that most accounts skip these basics is its own observation, not a measured statistic.\"], \"tags\": [\"ad-copy-deployment\", \"scaling\", \"customer-acquisition-cost\", \"meta-ads\", \"audience-targeting\", \"attribution\", \"measurement\"]}]}",
+  "input": {
+    "source_id": "1ylnZFnlwBEhctSQ1WnU-xTiIJ_8I2V5t",
+    "source_sha256": "1ceeda46ba114afcd959f95c01c9d31ee066dc6a58cc7fb87fe2ffdbef8e9998",
+    "source_name": "How To Scale Meta TOF Campaigns.docx",
+    "folder": "/11-ADC-ad-copy-deployment",
+    "domain": "ad-copy-deployment",
+    "section": 0,
+    "section_count": 1,
+    "text": "11-ADC / ad copy and deployment\n\nGoes here. Ad account structure, budget distribution, scaling rules, attribution modeling, return on ad spend (ROAS) targets, incrementality testing parameters, Customer Acquisition Cost (CAC) tolerance, and evaluating unit economics on first vs. returning customers.\n\nNot here.\n\nAd creative formats, concepts, aesthetic guidelines, video overlays, or evaluating ad creative quality -> 10-MCR\n\nGoogle Analytics reporting or general marketing mix modeling (MMM) tools -> 06-MEA\n\nHeader. url: rights: public_reference why: Details how to diagnose flawed ROAS metrics in Meta ad accounts by utilizing audience breakdowns and attribution windows, demonstrating that top-spending ads often over-index on retargeting returning customers and view-through conversions rather than driving incremental new customer acquisition. modules: [ADC] topics: [attribution and modeling, campaign setup and tracking] tier: 2 scope_hint: core\n\nTopics. attribution and modeling / Deconstructing deceptive Return on Ad Spend (ROAS) metrics within Meta Advantage+ campaigns by demonstrating how a seemingly strong 13x ROAS often masks poor performance (e.g., a 1.7x incremental ROAS) once analyzed through the lens of audience breakdowns (existing vs. new customers) and attribution settings (7-day click vs. 1-day view). Differentiating between a true Conversion Lift Test (a geo-holdout experiment based on difference-in-difference design) and Meta's \"incremental attribution\" setting (an algorithmic estimate based on aggregated competitor data), advising against using the latter for campaign optimization. campaign setup and tracking / Establishing strict account structure guidelines to prevent top-of-funnel scaling campaigns from cannibalizing retargeting audiences. Mandating the use of a 7-day click attribution setting for optimization (ignoring view-throughs) and explicitly excluding existing customers from cold campaigns (with specific nuances for lapsed customers, e.g., excluding 2-year purchasers). Recommending that scaling efforts be measured against top-line revenue impact—specifically, new customer sales at the individual SKU level—rather than relying solely on in-platform ROAS.\n\nLook for. The primary reason a top-spending ad in an Advantage+ campaign might actually be performing poorly: it is over-allocating budget to existing customers and relying heavily on 1-day view-through conversions rather than driving incremental new customers. The recommended attribution setting for campaign optimization: 7-day click. The distinction between a Meta Conversion Lift Test and Meta's \"incremental attribution\" setting: a lift test is a true holdout experiment, whereas the incremental setting is merely an algorithmic estimate based on competitor averages. The primary method to verify ad scaling success: measuring top-line new customer sales at the specific SKU level in Shopify.\n\nSkip. General complaints about other agencies misinterpreting data.\n\nScope mix. Almost all core.\n\nVolume. 5 to 10.\n\nYour best ad is actually costing you money. And here's proof. Here's an advantage plus scaling campaign. If we go and look at the top ad here, it's got a 13 return on ad spend and it's the highest spender. Looks really good on the surface. Now, first thing you should notice is frequency is a little bit high. And that should be a red flag. So, let's go a little bit deeper. Well, let's go and do an audience breakdown. See how is spend distributing across existing customers, engaged, and new. Well, now we can see about half the budget is actually going into existing customers. And if we scroll through here and look at the return on ad spend numbers now, what we can see is that for new audiences, we're actually only at a five. So it's nowhere near as good as it initially seemed. And in fact, Meta is probably overdistributing spend here just because it's getting a good rorowaz on existing customers, but not new. Now once again, I'll flag this is a scaling top offunnel advantage plus campaign. Now let's go one step further. Let's go and then do an attribution breakdown. So you can go and click on columns, compare attribution settings, and you can start to break out 7-day click and incremental attribution. Now we'll keep the same split and this is where we start to get a lot of data. So follow with me. New audience. Let's look at incremental attribution over here. And right here, what do we get? A 1.71. And so this ad in the ad account is currently delivering a 1.71 return. It is not delivering a 12.84 84 that we thought. And so once you delineate down to new audience targeting and you then also delineate down to incremental attribution, you end up in a position where the ads that you're looking at in the accounts that are getting all of the spend are actually not performing anywhere near as well as you think they are. Now, this is a recursive loop. This is a bad thing for multiple reasons. It's not just that you might go into the account and look at this ad and go, \"Okay, this ad's getting a lot of spend. It's got a good return. Amazing creative team, creative strategist, external creative agency. Make more stuff like this. Double down on this concept. Double down on this format. Whatever we're doing here, let's figure out what's actually working and let's do more of it. Now, that's a bad idea because this ad actually isn't performing well. And so, you've just gone and then operated added all of these operating expenses towards your creative team to double down on this creative format or this creative type. And it's meaningless. It's bad data. It's not actually going to work. But it gets worse than that, which is that the actual ad set is optimizing based on 7-day click, one day view, which is what is causing all of the spend to pull here. It's not because it's performing well based on a click basis or an incrementality basis. It's just performing well due to viewthroughs. So that's obviously not good because then all of our spend priorities here are not based on actual commercial outcomes in the business, but instead just based on an inflated fake number. And so we actually can't trust any of these rankings of ads. In fact, this ad down here might be the best performing ad on new audiences. We don't know because the adset currently isn't distributing spend in alignment with performance on new customers. Now, the other core issue here is the existing customer spend because all of these ads are distributing spend to existing customers as much as they want because there's no restrictions put into this account. Well, then spend is also just getting distributed based on whichever ads are performing the best on existing customers inclusive of viewers. So, you can see the rabbit hole of how bad this ends up getting. And this is actually pretty basic to fix. So, what do you actually have to do? or every time that this brand has tried to scale in the last 2 years, CAC has gone up and new customer acquisition stays flat. And so if that feels like it's the case for you, if your cost to acquire keeps going up every time you try to scale, a new customer acquisition doesn't go up with it, it's because the ad is probably just retargeting, overattributing, or cannibalizing spend from ads that should be good topunnel ads, but because of your setup, all of the spend is going into this ad that actually isn't performing. So what do you want to do? Well, number one, you want to make sure that on all campaigns you're using 7-day click optimization so that the spend distribution at the ad level is distributing based on actual conversions caused by a click. You can also go and optimize for incremental attribution. And I've had a lot of people ask me for my thoughts here. Why optimize for 7-day click when you can get even better? And you can optimize for incremental attribution. And the reason for this, a quick explanation of why this is a questionable metric to optimize towards is because how lift tests work in meta is that let's say you're targeting 10,000 people a day. Meta goes and holds out 10% of these users and then what meta does is goes are these people still purchasing? Answer is yes, maybe 1% of them buy. Over here, the people that do see ads, 2% of them buy. Therefore, the incrementality of serving ads is the difference of these two numbers. This is called difference and difference design within uh data science. And so the actual impact of ads is a 1% conversion lift. And so let's say you're at a five row as well actually you're not. You're probably at a 2.5 once we take out all the conversions that were going to occur anyway. So this sounds like a really good reliable method for being able to attribute based on incremental conversions. But this is actually not what incremental attribution is. This is what a geolo lift test is. Sorry, this is what a conversion lift test is within meta. When you go into experiments and you pull up conversion lift test, what incremental attribution is is Meta is taking all of these studies from all of your competitors and then applying a factor into your account based on the average. And so Meta might go and pull you into fashion for men 40 to 50. And then it goes and it looks at everyone I think in the world. They don't obviously specify how they're doing this, but they're going and looking at I assume everyone all the conversion lift studies that have been run on a retargeting campaign and then they're going, \"Okay, on average a retargeting campaign has a 0.2x incrementality factor for a fashion brand aimed at men for 40 to 50. Therefore, your 10 rorowaz actually is a two.\" And so this is a estimate based on large data sets that they have from your competitors. it is not an actual reflection of what is actually occurring within the business. And so because it's an estimate, I don't really love optimizing a campaign towards an estimate because it's not truth. We are just applying factors from our competitors into our own data set and our competitors might be very very different from us. That's number one. Use 7-day clicks. You can use incremental attribution, but I'd recommend just using this as a breakout column rather than as a source of measurement and optimization. Number two is exclude existing customers. Sounds pretty obvious, but exclude existing customers from your cold campaigns. Now, there are caveats here. For example, what about customers that haven't bought in 2 years? Well, we probably do want a bit of spend on them because they're kind of a lapsed customer. I wouldn't even call them an existing customer anymore. They're definitely not an active customer. And so because of that, maybe we do want some spend allocation there. So maybe just a 2-year exclusion is good enough, but we might want to have a little bit of delineation in the account and just have that segmented out into its dedicated campaign. It can have its dedicated strategy as well. And then lastly is that we want to be measuring topline revenue impact when scaling product level if possible. And so in this case over here, this ad up the top here, this was a single skew where none of these other products were selling that skew. And so what we would want to determine here is that when we go and scale this campaign up or when we went and introduced this product into this campaign, did we see a lift in sales on this individual skew? much easier to do than just looking at total sales because obviously you know you need a much larger time duration for the test to be statistically relevant or you need a much larger lift delta. Um so you either need to make massive increases in the budget of the campaign or you need to run the test for a lot longer duration. Much easier way is you just delineate down into this individual skew and you look at the sales impact. Obviously you want the sales to go up. In this case, sales might have gone up. And so take this a step further and look at new customer sales on this skew because ultimately the objective of an advantage plus top offunnel scaling campaign is to acquire new customers, not to be going and acquiring existing back. So this is the framework everyone should be using. It honestly blows my mind that 90% of ad accounts I look at aren't doing these basics, which is using 7-day click, excluding existing customers from cold topfunnel scaling campaigns, and then measuring against topline revenue impact when scaling, ideally at a product level if there's a large skew count and you're scaling one individual",
+    "prior_notes": [],
+    "id": "b08caf5fc286180982e3b5d6"
+  },
+  "system_prompt_sha256": "f2341d28186a0dbaee868d37ce33c173f631088eb1754997556740d4905c0f2b"
+}

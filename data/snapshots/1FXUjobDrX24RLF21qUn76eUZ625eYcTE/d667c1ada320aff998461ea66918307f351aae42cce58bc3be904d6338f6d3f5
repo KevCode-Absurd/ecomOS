@@ -1,0 +1,72 @@
+# 08-SPD / page speed
+
+**Goes here.** Performance. Field versus lab metrics, LCP, INP, CLS, app and plugin
+script weight, image and font strategy, render blocking, how to measure, and what
+each fix is worth.
+
+## Not here
+
+- Initial theme and app configuration -> 05-SET
+- Whether a speed fix moved conversion -> 09-CRO
+- Hosting security, WAF and bot traffic -> 23-SEC
+
+## Header
+
+```
+---
+url:                   # REQUIRED. Never blank.
+rights: public_reference
+why:
+modules: [SPD]
+platform: []           # [shopify] or [woocommerce] where the advice does not transfer
+topics: []
+tier: 1                # prefer web.dev and Chrome documentation
+scope_hint: baseline
+---
+```
+
+`platform` matters here more than almost anywhere else. Shopify is hosted, so the
+levers are theme code and app scripts. WooCommerce is self-hosted, so hosting, caching
+and plugin bloat are a whole extra surface. Keep 1 WooCommerce speed source, not more.
+
+## Topics
+
+field versus lab metrics, LCP, INP, CLS, app script weight, image and font strategy,
+render blocking, measurement method.
+
+## Look for
+
+Field metrics versus lab metrics and when each applies. Thresholds. The order to fix
+things in. What each fix typically buys. How to measure app or plugin script weight,
+because that usually sits at the top of the ranked list once priced.
+
+## Skip
+
+**Lighthouse score chasing.** Anything treating the score as the goal rather than a
+diagnostic. Gate every recommendation on field data at the 75th percentile.
+
+**Tool tutorials** that walk the PageSpeed Insights interface. Keep only the parts
+about reading field data.
+
+**Statistics listicles** unless every statistic carries its sample and source. Most
+"page speed statistics" pages recycle the same few figures without either.
+
+**Generic speed guides.** Several near-identical ecommerce speed guides exist here.
+Keep 2: the most operator-facing and the most specific.
+
+## The unit that matters
+
+Convert milliseconds into orders per month. Speed reports lose arguments because they
+are written in milliseconds and read by people who think in orders. A source giving
+conversion effect per millisecond by template is worth 10 that give a checklist.
+
+## Scope mix
+
+Nearly all baseline. Speed advice barely varies by brand, which makes this the
+cheapest module to build well.
+
+## Done when
+
+You can rank the 15 most common speed problems on a real store by profit impact.
+
+Current file counts, duplicates and holds: see `_INGESTION-STATE.yaml`.

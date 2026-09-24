@@ -1,0 +1,1207 @@
+{
+  "request_id": "c22fe8e76aee905164a864e8f35d60d9d2a70ea9f621ea969f35cf7612b551ea",
+  "provider": "deepseek",
+  "model": "deepseek-flash",
+  "effort": "none",
+  "completion_limit": 16384,
+  "usage": {
+    "prompt_tokens": 20328,
+    "completion_tokens": 6779,
+    "total_tokens": 27107,
+    "prompt_tokens_details": {
+      "cached_tokens": 384
+    },
+    "prompt_cache_hit_tokens": 384,
+    "prompt_cache_miss_tokens": 19944
+  },
+  "booked_cost_usd": 0.0142332,
+  "seconds": 34.38,
+  "finish_reason": "stop",
+  "output": {
+    "cards": [
+      {
+        "title": "Choose revenue per visitor over conversion rate as the core metric",
+        "summary": "Conversion rate is an output of many inputs and is not comparable across brands; track revenue per visitor or contribution per visitor instead.",
+        "use_when": "Setting the north-star metric for an ecommerce business or evaluating whether a conversion-rate change actually helped.",
+        "steps": [
+          "Recognize that the speaker argues conversion rate is a weak headline metric: it is an output of roughly 50 inputs, most of them not on the landing page, and it is not tightly correlated to revenue.",
+          "Compute revenue per visitor (RPV) as conversion rate multiplied by average order value.",
+          "For a profit-oriented view, compute contribution per visitor by multiplying RPV by gross margin percentage. The speaker keeps it simple rather than folding ad spend into the metric.",
+          "The speaker's internal model tracks RPV over a roughly 2.5-year window to see whether it is trending up or down, which tells them whether the business is improving. Treat that window as their internal practice, not a universal benchmark.",
+          "Use RPV or contribution per visitor for decisions because it is directly tied to revenue; making decisions on conversion rate alone detaches you from reality."
+        ],
+        "caveats": [
+          "The source still says to do landing-page optimization and push conversion rate as high as you can — RPV is a better tracking metric, not a reason to stop improving pages.",
+          "This is the presenter's strong opinion; conversion rate remains a legitimate diagnostic for locating problems.",
+          "RPV calculation depends on session data, which is unreliable in Shopify (bot traffic); the speaker prefers GA4 session numbers."
+        ],
+        "tags": [
+          "testing",
+          "measurement",
+          "revenue-per-visitor",
+          "contribution-margin",
+          "metrics",
+          "analytics"
+        ]
+      },
+      {
+        "title": "Recognize the conversion-rate ceiling set by category, price and traffic",
+        "summary": "Conversion rate has a ceiling usually set by category, price point and traffic quality rather than page quality, so the next lever after page clarity is often economics and product.",
+        "use_when": "Deciding whether to keep redesigning a landing page or invest elsewhere in the business.",
+        "steps": [
+          "Check whether the page already delivers clarity, offer and proof; once it does, further on-page design tests usually do not move RPV much.",
+          "Treat the conversion-rate ceiling as set mainly by category, price point and the quality of traffic sent to the site, not by page quality.",
+          "Move the next investment to levers outside the page: contribution margin on first order, future product launches, product quality, and repeat purchasing.",
+          "Note that repeat customers convert at much higher rates, which skews blended conversion rate upward over time as the returning share grows.",
+          "Flag constant page redesign as a likely misdiagnosis when the real constraint sits outside the landing page."
+        ],
+        "caveats": [
+          "The source is arguing against endless redesign, not against landing-page optimization — it explicitly still recommends doing it well.",
+          "No numeric threshold is given for when a page is 'as far as it can go'; that judgment is qualitative."
+        ],
+        "tags": [
+          "testing",
+          "measurement",
+          "conversion-optimization",
+          "retention",
+          "average-order-value",
+          "strategy"
+        ]
+      },
+      {
+        "title": "Account for cold traffic depressing blended conversion rate",
+        "summary": "As the share of cold traffic grows, blended conversion rate falls because cold converts below warm, so lower conversion rate at scale is not necessarily a page problem.",
+        "use_when": "Interpreting a conversion-rate drop after increasing cold acquisition spend, or comparing conversion rates across brands at different scale.",
+        "steps": [
+          "Model conversion rate as blended across traffic sources: cold traffic always converts lower than warm existing-customer traffic.",
+          "Expect blended conversion rate to move toward the cold-traffic conversion rate as cold share increases; if Meta were turned off, only warm traffic would remain and conversion rate would jump.",
+          "Do not conclude a landing page is broken when the drop is driven by cold-traffic mix — diagnose category, price point, AOV, traffic source, and how much the creative educates.",
+          "Use RPV or contribution per visitor rather than conversion rate when evaluating performance across scales of spend."
+        ],
+        "caveats": [
+          "The source claims blended conversion rate generally declines as cold share rises; it does not give a formula or benchmark values.",
+          "The presented store examples are illustrative, not targets."
+        ],
+        "tags": [
+          "testing",
+          "measurement",
+          "acquisition",
+          "traffic-quality",
+          "conversion-optimization"
+        ]
+      },
+      {
+        "title": "Reframe conversion-rate leverage through CAC and CPM",
+        "summary": "Conversion rate matters because it is the denominator of CAC and a factor in platform CPMs, making it a no-extra-spend efficiency lever.",
+        "use_when": "Making the business case for conversion work to a founder or CFO, or prioritizing between ad spend and page improvements.",
+        "steps": [
+          "Show the CAC relationship: CAC equals ad spend divided by new customer orders, equivalently ad spend divided by (sessions × conversion rate). Because conversion rate is in the denominator, doubling it would halve CAC.",
+          "Explain the speaker's framing: doubling conversion rate is 'an insane change' he has almost never seen; even small improvements reduce CAC proportionally and let you raise the CAC ceiling to scale volume.",
+          "Note the second-order CPM effect: platform expected action rate is roughly historical click-through rate times historical conversion rate, so better conversion can slightly reduce CPMs. Treat this as small and not a standalone reason to run CRO.",
+          "Contrast with the alternative levers — more ad spend or better in-platform efficiency via CTR/CPC — which generally require more money. Conversion-rate improvements do not."
+        ],
+        "caveats": [
+          "The 'double conversion rate' math is theoretical; the source explicitly says he has almost never seen anyone double conversion rate.",
+          "The CPM effect is described as small; the speaker says not to work on conversion rate just for CPM reduction.",
+          "CAC calculation uses new-customer sessions/orders, which the source admits are hard to delineate; the simplified version is an approximation."
+        ],
+        "tags": [
+          "testing",
+          "measurement",
+          "cac",
+          "paid-media",
+          "conversion-optimization",
+          "unit-economics"
+        ]
+      },
+      {
+        "title": "Run a five-level conversion optimization order of operations",
+        "summary": "Work through clarity and hierarchy, then copy, then offer, then proof, then friction, because the order reflects impact versus ease and doubles as a landing-page structure.",
+        "use_when": "Planning a conversion-optimization roadmap or laying out a product landing page section by section.",
+        "steps": [
+          "Rank and work in this order: (1) clarity and hierarchy — can the user instantly understand what it is above the fold; (2) copy — does it remove doubt and speak to the real desire; (3) offer — is the thing worth converting on; (4) proof — do they believe the claims and mechanism; (5) friction — is anything physically blocking purchase.",
+          "Fix the top items first because they are generally the highest-leverage, quickest changes; the speaker notes clarity fixes require little time and he says you don't really need split testing for them.",
+          "Acknowledge the speaker's counterweight: the offer has the biggest impact of all five — a bad offer can keep conversion near zero — but good offer curation is very hard, which is why it ranks below the easy fixes on ease.",
+          "Use the same sequence as page layout: absolute clarity at top, then persuasive copy explaining the unique mechanism, then the offer, then social proof, then remove friction."
+        ],
+        "caveats": [
+          "The ranking is the speaker's ICE-informed judgment (impact, confidence, ease), not a mathematically derived order; he notes the offer is arguably the highest impact but ranks lower on ease.",
+          "The source says this is not the same as ordering individual ICE variables."
+        ],
+        "tags": [
+          "testing",
+          "conversion-optimization",
+          "landing-page",
+          "prioritization",
+          "experiment-design"
+        ]
+      },
+      {
+        "title": "Answer four above-the-fold questions on every PDP",
+        "summary": "A product page must answer what it is, why this one, why now and why trust you above the fold, audited on a phone because most traffic is mobile.",
+        "use_when": "Auditing or redesigning a product detail page's above-the-fold area.",
+        "steps": [
+          "Answer four questions above the fold: What is it? Why this one (the unique mechanism / differentiation)? Why buy now rather than later? Why should they trust you (especially without pre-built brand authority)?",
+          "Audit on your phone, not desktop, because roughly 80% of traffic is mobile per the source; pull up your live PDP and check whether all four are answered.",
+          "For 'what is it', replace generic names (e.g. 'face serum 30ml') with a clear, mechanism-bearing descriptor such as 'the only overnight retinol buffered to work while you sleep so you wake up firmer, not red.'",
+          "For 'why now', include elements like pay-in-four installments and scarcity/newness cues such as small-batch wording.",
+          "For 'trust', place reviews above the fold; the speaker prefers a 4.8-star display over a perfect 5.0 because it reads as genuine.",
+          "Order the above-fold block by persuasive weight: value proposition, then proof, then price, then CTA."
+        ],
+        "caveats": [
+          "The four questions are stated specifically for PDPs; the source says advertorials, listicles and custom pages are edge cases handled separately.",
+          "The 4.8-vs-5.0 preference is explicitly the speaker's opinion, not a proven threshold.",
+          "The 80% mobile figure is the speaker's stated figure."
+        ],
+        "tags": [
+          "testing",
+          "landing-page",
+          "product-page",
+          "conversion-optimization",
+          "mobile",
+          "copywriting"
+        ]
+      },
+      {
+        "title": "Maintain ad-to-landing-page continuity (message match)",
+        "summary": "When you change the ad persona, offer or angle, route traffic to a page that reflects that same angle, because mismatch substantially hurts conversion.",
+        "use_when": "Running multiple Meta ad concepts and deciding how many landing pages to build.",
+        "steps": [
+          "Define a new ad concept as a change to one of three things: the persona addressed, the offer, or the angle/unique mechanism.",
+          "When any of those three changes, reflect it on the landing page rather than sending everyone to one generic PDP.",
+          "Build persona-specific PDPs — e.g. a menopause-focused creatine page and a separate muscle-building page — because you cannot speak to both above the fold on one page.",
+          "Do the same for offers (bundle vs single vs different product) and for angles (e.g. cognitive versus muscle-recovery benefits of the same supplement).",
+          "Avoid the common supplement failure mode: testing many ad angles then listing every benefit on one generic PDP, which makes a shopper doubt the product works for their specific problem and converts worse.",
+          "Choose specificity over broad application on both the ad and the page; problem-agitate into one problem for one person."
+        ],
+        "caveats": [
+          "The source presents this as a strong general advantage but gives no measured lift figures.",
+          "Building persona/angle-specific pages adds production overhead; the source treats it as worth it when you are actively testing many concepts."
+        ],
+        "tags": [
+          "testing",
+          "landing-page",
+          "creative-strategy",
+          "meta-ads",
+          "conversion-optimization",
+          "positioning"
+        ]
+      },
+      {
+        "title": "Lead with the outcome and pass the 'so what' test",
+        "summary": "Write benefit-led copy that answers 'so what' for every line and leads with the outcome before the feature.",
+        "use_when": "Writing or editing landing-page copy, headlines and product descriptions.",
+        "steps": [
+          "Apply the so-what test to every line: if you mention a feature, immediately answer why it matters to the reader.",
+          "Format as benefit-then-feature, e.g. write 'firmer skin in 4 weeks using a triple peptide complex' instead of 'triple peptide complex' or 'triple peptide complex, firmer skin in 4 weeks.'",
+          "Lead with the outcome and justify it with the feature underneath.",
+          "Write about the person rather than the product; the most common mistake is too much about what the product is and not enough about why it matters.",
+          "Treat a pain-led or benefit-led headline as one of the few things genuinely worth split testing, because it is a big swing and everyone sees it above the fold.",
+          "Handle objections to alternative solutions near the end of the copy so readers don't default to a cheaper option or one they already own."
+        ],
+        "caveats": [
+          "The source says copywriting alone warrants a longer dedicated treatment and that he cannot fully condense it here.",
+          "No test duration or sample-size guidance is given for headline tests."
+        ],
+        "tags": [
+          "testing",
+          "copywriting",
+          "landing-page",
+          "conversion-optimization",
+          "value-proposition"
+        ]
+      },
+      {
+        "title": "Write an FAQ that handles real purchase objections",
+        "summary": "Use the FAQ to address specific reasons customers hesitate, based on customer research, rather than generic brand or shipping questions.",
+        "use_when": "Building the below-the-fold section of a product or landing page.",
+        "steps": [
+          "Source the objections from customer research rather than guessing; in the source's example the three biggest reasons for not buying were fear it would irritate sensitive skin, uncertainty about time to results, and whether it can be used with other actives.",
+          "Write FAQ questions that speak to the person and their hesitation, not about the brand — the source explicitly says to skip 'what is your shipping policy' and 'how did the brand start' type questions.",
+          "Answer each objection by explaining the mechanism or evidence, e.g. why the buffered, time-released retinol works on sensitive skin, how long results take, and compatibility with other actives.",
+          "Pair the FAQ with proof that validates the same claim, such as a customer line like 'the first retinol that didn't make me peel.'"
+        ],
+        "caveats": [
+          "The source does not describe the customer-research method used to surface objections.",
+          "Objections are product- and audience-specific; the example list is not a template."
+        ],
+        "tags": [
+          "testing",
+          "landing-page",
+          "objection-handling",
+          "copywriting",
+          "customer-research",
+          "conversion-optimization"
+        ]
+      },
+      {
+        "title": "Build an offer from reframing and bundles, not discounts",
+        "summary": "Treat the offer as positioning that raises perceived value, using bundles, gifts with purchase, shipping and post-purchase upsells rather than blanket discounting.",
+        "use_when": "Designing the offer for a PDP or cart, or when a brand is stuck in a discount habit.",
+        "steps": [
+          "Reframe the offer as positioning rather than discounting; the source says discounting is the lazy default and that a full-price reframe (e.g. a product bundled as a 'New Year's reset') can beat a sale by meeting the customer where they are.",
+          "Use bundling to group complementary products as steps toward the outcome; this raises units per transaction (a key AOV lever) and lets you pass on shipping and fulfillment savings.",
+          "In the source's skincare example, three products valued at $136 are sold at $122 — the $14 discount is offset by not paying shipping/fulfillment three times, so margin is unchanged.",
+          "Add a gift with purchase with low cost of goods and high perceived value (e.g. a travel set valued at $30 costing $4–$5) at a spend threshold such as $60.",
+          "Use a cart slide-out that upgrades a single-item buyer to the full routine to unlock the gift and free shipping, which is a one-click AOV increase.",
+          "Add a post-purchase one-click upsell immediately after checkout, framed as time-limited (source example: an accessory discounted 50% for five minutes).",
+          "Aim for a wide gap between cost of goods and perceived value; the source calls margin a reflection of how good the offer is."
+        ],
+        "caveats": [
+          "The source notes a full offer-curation treatment lives in a separate long video not included here.",
+          "Post-purchase upsells must be relevant to what was just bought, not random add-ons.",
+          "Case figures are illustrative examples, not promised results."
+        ],
+        "tags": [
+          "testing",
+          "offer-design",
+          "bundling",
+          "average-order-value",
+          "upsell",
+          "cart",
+          "positioning"
+        ]
+      },
+      {
+        "title": "Go from generic to unique: the 1-of-1 positioning recipe",
+        "summary": "Make a commoditized product feel unique by mining reviews, stacking benefits, or repositioning to an underserved audience rather than competing on formula.",
+        "use_when": "Writing positioning and copy for a product that is functionally similar to competitors'.",
+        "steps": [
+          "Accept the premise that your product is probably not unique; if you do what everyone else does you will sound like everyone else and give no reason to choose you.",
+          "Export all customer reviews and run them through an LLM asking for unique feedback that differentiates you; look for benefits customers report that you had not considered.",
+          "Combine two or more existing benefits to create a first — e.g. a pillowcase that both prevents acne and is comfortable to sleep on.",
+          "Do not count table stakes as uniqueness: free shipping, fast delivery and great service are assumed by customers and are not differentiation.",
+          "Look for white space (or 'purple ocean') by repositioning a commoditized product via marketing without changing the product.",
+          "Example given: a greens powder brand (the speaker says he might be getting this wrong) found that greens powder was not positioned to women and served an essentially undifferentiated product to that audience, finding a blue ocean through marketing."
+        ],
+        "caveats": [
+          "The Bloom greens-powder example is recalled second-hand with the speaker explicitly unsure about details, including whether the formula was actually better.",
+          "LLM review mining may not surface a usable differentiator; the source treats it as a promising direction rather than a guaranteed output.",
+          "Stacking unrelated benefits just to sound unique does not work — the combined benefits must be meaningful together."
+        ],
+        "tags": [
+          "testing",
+          "positioning",
+          "copywriting",
+          "customer-research",
+          "differentiation",
+          "offer-design"
+        ]
+      },
+      {
+        "title": "Keep table stakes small, low and out of the hero",
+        "summary": "Move non-differentiating features like size, vegan status and shipping claims into small, low-positioned detail rather than prominent blocks.",
+        "use_when": "Structuring where baseline product facts and logistics claims appear on a page.",
+        "steps": [
+          "Demote table-stakes features (vegan, 30ml, made in Australia, apply nightly) from large highlighted callouts to small, low-positioned bullet details.",
+          "Avoid filler sections quoting free shipping, fast dispatch and great service as headline benefits; the source says these are assumed and can be claimed by anyone with no proof.",
+          "Do not overprioritize free shipping's conversion effect; the speaker claims it is smaller than most people assume.",
+          "Replace the space you free up with benefit-led content, the unique mechanism, or a customer-derived 1-of-1 claim.",
+          "Place the unique mechanism or a claim pulled directly from customer testimonials near the top rather than the commodity features."
+        ],
+        "caveats": [
+          "'Nobody cares about free shipping' is the speaker's strong opinion; some brands may still see an effect, and the source does not provide test data here.",
+          "The source does not give a precise rule for which features count as table stakes in every category."
+        ],
+        "tags": [
+          "testing",
+          "landing-page",
+          "copywriting",
+          "value-proposition",
+          "conversion-optimization"
+        ]
+      },
+      {
+        "title": "Release conversion-rate leverage in the cart slide-out and post-purchase",
+        "summary": "Use the cart and post-purchase moments to upsell routines, bundles and accessories rather than optimizing for size or quantity selections earlier.",
+        "use_when": "Configuring the cart experience and post-checkout flow for a Shopify-style store.",
+        "steps": [
+          "Do not optimize the PDP for size options or cart quantity; the source says get the ad to cart and handle size later, or bundle/force the larger size to raise first-purchase gross profit.",
+          "Configure the cart slide-out to show the unlocked rewards — free gift and free shipping — along with a one-click upgrade to a routine or bundle that unlocks them.",
+          "Make the upgrade math explicit: total added cost versus free items and savings, so the step up feels like a deal on a better outcome.",
+          "Add a post-purchase one-click upsell (no card re-entry) immediately after purchase, timed and discounted (source example: five minutes at 50% off).",
+          "Ensure each upsell item is relevant to the purchase rather than a random add-on, and that it increases revenue per visitor."
+        ],
+        "caveats": [
+          "The cart mechanics assume a platform supporting slide-out cart editing and one-click post-purchase upsells; verify your platform's current capabilities.",
+          "Thresholds and discount frames in the example are illustrative and should be tested for your AOV and margin."
+        ],
+        "tags": [
+          "testing",
+          "checkout",
+          "cart",
+          "upsell",
+          "average-order-value",
+          "shopify"
+        ]
+      },
+      {
+        "title": "Decide whether A/B split tests are worth running at your scale",
+        "summary": "The source argues ongoing micro-testing does not materially move RPV for most stores and split testing becomes worth it mainly at large revenue scale.",
+        "use_when": "Deciding whether to invest in an experimentation program or just implement known best practices.",
+        "steps": [
+          "Recognize that making slight design tweaks on an ongoing basis does not materially move RPV for most stores.",
+          "The source sets a heuristic: at roughly $40M+ online, A/B split testing starts to become worth doing to squeeze out a small extra increment (he cites around 0.1%).",
+          "Below that scale, prioritize making clear, high-leverage page fixes (especially clarity and hierarchy) that do not require a test.",
+          "Still treat a pain-led versus benefit-led headline as one of the few worthwhile big-swing tests, because it is above the fold and everyone sees it.",
+          "If you do test, remember conversion rate is easy to 'game' and noisy; judge results through revenue per visitor or contribution per visitor rather than conversion rate alone."
+        ],
+        "caveats": [
+          "The '$40M+ online' figure is explicitly framed as a heuristic ('like 40 million plus online'), not a rigorous threshold.",
+          "This is the presenter's opinion and runs counter to some CRO orthodoxy; the source is arguing against small ongoing UI tests specifically.",
+          "Full statistical power discussion is deliberately out of scope in this section."
+        ],
+        "tags": [
+          "testing",
+          "experiment-design",
+          "measurement",
+          "prioritization",
+          "conversion-optimization"
+        ]
+      },
+      {
+        "title": "Measure conversion metrics correctly in Shopify",
+        "summary": "Calculate conversion rate and RPV from corrected Shopify numbers — net sales plus shipping, and GA4 sessions — because several dashboard metrics are misleading.",
+        "use_when": "Building a conversion-rate or RPV report from a Shopify store.",
+        "steps": [
+          "Do not use total sales as-is for revenue: it includes tax, so subtract tax, or start from net sales in the Shopify dashboard.",
+          "Add shipping collected back in, because it is realized revenue at checkout but is excluded from Shopify's average order value; RPV comes out higher once included.",
+          "Use GA4 session numbers rather than Shopify sessions, because Shopify filters bot traffic poorly and inflates sessions.",
+          "Compute conversion rate using corrected sessions and orders, and RPV as conversion rate times AOV (with shipping included).",
+          "Remember that many metrics can be 'gamed': turning off cold Meta traffic raises conversion rate immediately by leaving only warm traffic, running traffic campaigns inflates sessions without revenue, and pushing high-AOV products raises AOV while potentially destroying profit.",
+          "Therefore track finance KPIs — LTV-to-CAC, contribution profit, acquisition and retention metrics — alongside conversion rate, because every individual metric can be skewed in a direction that hurts the business."
+        ],
+        "caveats": [
+          "The source calls out that these five Shopify metrics are poorly represented; interface details may change, so verify the current dashboard fields.",
+          "Even GA4 sessions are imperfect; the source only claims they are better than Shopify's for bot filtering.",
+          "New-customer conversion rate is hard to isolate, which complicates CAC math."
+        ],
+        "tags": [
+          "testing",
+          "measurement",
+          "shopify",
+          "analytics",
+          "ga4",
+          "revenue-per-visitor",
+          "metrics"
+        ]
+      },
+      {
+        "title": "Optimize above-the-fold title and subtitle for direct response",
+        "summary": "Swap a generic product name for a mechanism-driven title and subtitle, add small-batch freshness wording and pay-in-four options to answer why-now.",
+        "use_when": "Rewriting the hero of a DTC product page for paid-traffic conversion.",
+        "steps": [
+          "Replace a generic title such as 'face serum 30ml' with a clear mechanism-driven line, e.g. an 'overnight repair serum' paired with a subtitle promising firmer skin by morning.",
+          "Use the subtitle to carry the unique mechanism and the 'why this one' claim, not just the product category.",
+          "Add a specific freshness or sourcing claim to strengthen why-now, e.g. small-batch bottling because retinol loses strength on the shelf, plus a batch-fill date ('this batch was filled this month').",
+          "Offer a pay-in-four installment option (e.g. four payments of $12) to pull purchase forward.",
+          "Keep the display compact so the value proposition, proof, price and CTA all sit above the fold in persuasive order.",
+          "Avoid a page that looks finished at the fold — include a scroll cue so users know content continues below."
+        ],
+        "caveats": [
+          "The example is a DTC-style landing page; the source notes a big retail brand would not necessarily write a title that way.",
+          "The speaker presents this as an example of what converts better, not a tested result with figures."
+        ],
+        "tags": [
+          "testing",
+          "product-page",
+          "landing-page",
+          "copywriting",
+          "hero-section",
+          "dtc"
+        ]
+      },
+      {
+        "title": "Write reviews for mechanism validation, not volume",
+        "summary": "Select reviews that specifically validate the claimed unique mechanism and place a small number of relevant, image-rich reviews prominently.",
+        "use_when": "Choosing which reviews to surface on a PDP or landing page.",
+        "steps": [
+          "Match proof to the claim: the reviews shown should specifically validate the unique mechanism stated in the ad and headline.",
+          "Prioritize a small number of hyper-relevant reviews, with images or video, over hundreds of generic reviews.",
+          "Pull a distinctive customer phrase and use it as the 1-of-1 angle — the source's example is 'the first retinol that didn't make me peel,' which no competitor can honestly claim.",
+          "Prefer a slightly imperfect aggregate rating (the source cites 4.8) over a perfect 5.0, since it reads as genuine.",
+          "If a product has no reviews, treat that as the first priority because the source says going from zero to 100 reviews can roughly double conversion rate."
+        ],
+        "caveats": [
+          "The 'zero to 100 reviews can roughly double conversion rate' claim is from the speaker's personal brand experience, not a controlled study.",
+          "The 4.8-over-5.0 preference is explicitly the speaker's opinion.",
+          "No definition is given for how many reviews constitutes 'a few' or how to judge relevance beyond matching the mechanism."
+        ],
+        "tags": [
+          "testing",
+          "proof",
+          "social-proof",
+          "reviews",
+          "product-page",
+          "conversion-optimization"
+        ]
+      },
+      {
+        "title": "Optimize checkout for trust-heavy conversion",
+        "summary": "Apply a specific checkout ruleset: extra costs under 10% of AOV, guest checkout default, express payment at top, no trust badges.",
+        "use_when": "Configuring checkout settings and payment options for an ecommerce store.",
+        "steps": [
+          "Keep any extra costs (like shipping) below roughly 10% of average order value; the source reports from his own 2019–2020 store tests that shipping collected under about 10% of revenue had no material impact on conversion.",
+          "Make guest checkout the default rather than requiring account creation.",
+          "Place express payment options such as Shop Pay at the top of the checkout.",
+          "Avoid trust badges.",
+          "Note the source's related shipping view: free shipping is not automatically a win, because it teaches customers to value delivery separately from the product, and shipping collected is nearly pure profit when kept under the threshold."
+        ],
+        "caveats": [
+          "The 'avoid trust badges' instruction is stated without explanation in this section; it is a strong presenter claim.",
+          "The sub-10%-of-AOV shipping guidance comes from the speaker's own store tests in 2019–2020, not a broad controlled benchmark.",
+          "Payment-option and checkout interfaces change; verify current platform support for guest checkout and express payment placement."
+        ],
+        "tags": [
+          "testing",
+          "checkout",
+          "shipping",
+          "shopify",
+          "trust",
+          "conversion-optimization"
+        ]
+      },
+      {
+        "title": "Set and test your free-shipping threshold deliberately",
+        "summary": "Free shipping should be a threshold incentive placed deliberately and tested, because most merchants set their threshold too low.",
+        "use_when": "Deciding whether to offer free shipping and at what cart value.",
+        "steps": [
+          "Recognize that free shipping is not always the win it appears to be, because it decouples delivery value from the product in the customer's mind.",
+          "If you do offer it, offer it at a cart threshold so it pulls average order value up.",
+          "Set the threshold thoughtfully and test it over time; the source says most people set their free-shipping threshold way too low.",
+          "Weigh against shipping collected: the source reports shipping can be charged up to roughly 10% of cart AOV without materially hurting conversion, and that amount is nearly pure profit."
+        ],
+        "caveats": [
+          "The 10%-of-AOV figure comes from the speaker's own store testing in 2019–2020, not an independent benchmark.",
+          "The source cuts off mid-discussion of 'two additional levers' around shipping, so additional specifics are unavailable.",
+          "Threshold choice depends on your AOV and margin; no universal number is given."
+        ],
+        "tags": [
+          "testing",
+          "shipping",
+          "average-order-value",
+          "offer-design",
+          "conversion-optimization"
+        ]
+      },
+      {
+        "title": "Diagnose conversion rate before deciding it matters",
+        "summary": "Use conversion rate as a diagnostic to find problems to solve, not as the brand's north star or a cross-brand comparison.",
+        "use_when": "Interpreting conversion-rate numbers for your own store or judging an agency client's performance.",
+        "steps": [
+          "Treat conversion rate as a diagnostic that points to a problem to fix, not a goal by itself.",
+          "Do not conclude a competitor or another brand is better just because its conversion rate is higher; the metric reflects price point, category, traffic mix, creative education and purchase intent.",
+          "For a genuinely low conversion rate, investigate the inputs: category, price point, AOV, traffic source, how much the creative educates, and purchase intent — not just the page.",
+          "Remember the example contrasts: a 9% conversion-rate store with a $45–55 AOV and mostly bottom-funnel Google traffic, versus a 1% conversion-rate brand doing $200M online at 50% contribution margin; the speaker says he would rather be the latter.",
+          "Prioritize revenue and contribution margin over the percentage of visitors converting when making strategic decisions."
+        ],
+        "caveats": [
+          "The comparison stores are historical examples, not benchmarks or targets.",
+          "The speaker still says the low-conversion-rate brand should work to improve it; the point is relative priority, not neglect."
+        ],
+        "tags": [
+          "testing",
+          "measurement",
+          "diagnostics",
+          "ecommerce-strategy",
+          "contribution-margin"
+        ]
+      },
+      {
+        "title": "Run traffic to PDPs that match persona, offer and angle",
+        "summary": "When testing personas, offers or angles in ads, build a matching PDP per concept instead of one generic page.",
+        "use_when": "Scaling creative testing and deciding whether to build separate landing pages.",
+        "steps": [
+          "List the concepts you are testing and classify each as a persona change, an offer change or an angle change.",
+          "Build a distinct PDP for each persona you actually traffic, e.g. a menopause-oriented creatine page and a muscle-building page, since you cannot address both above the fold on one page.",
+          "Build a distinct PDP for each distinct offer (bundle vs single vs different product).",
+          "Build a distinct PDP for each distinct angle (e.g. cognitive benefit vs muscle-recovery benefit).",
+          "Restrict each page to one specific problem, one specific person and one mechanism so the ad promise is reinforced on arrival.",
+          "Treat the resulting pages as a portfolio you continue to refine, rather than one page you keep redesigning."
+        ],
+        "caveats": [
+          "The source cautions you could stack multiple angles on one page, but says keeping the angle consistent generally yields better conversion and continuity.",
+          "No guidance is given on how many persona pages are too many or how to consolidate low-traffic ones."
+        ],
+        "tags": [
+          "testing",
+          "landing-page",
+          "product-page",
+          "creative-strategy",
+          "meta-ads",
+          "positioning"
+        ]
+      }
+    ]
+  },
+  "raw_content": "{\"cards\":[{\"title\":\"Choose revenue per visitor over conversion rate as the core metric\",\"summary\":\"Conversion rate is an output of many inputs and is not comparable across brands; track revenue per visitor or contribution per visitor instead.\",\"use_when\":\"Setting the north-star metric for an ecommerce business or evaluating whether a conversion-rate change actually helped.\",\"steps\":[\"Recognize that the speaker argues conversion rate is a weak headline metric: it is an output of roughly 50 inputs, most of them not on the landing page, and it is not tightly correlated to revenue.\",\"Compute revenue per visitor (RPV) as conversion rate multiplied by average order value.\",\"For a profit-oriented view, compute contribution per visitor by multiplying RPV by gross margin percentage. The speaker keeps it simple rather than folding ad spend into the metric.\",\"The speaker's internal model tracks RPV over a roughly 2.5-year window to see whether it is trending up or down, which tells them whether the business is improving. Treat that window as their internal practice, not a universal benchmark.\",\"Use RPV or contribution per visitor for decisions because it is directly tied to revenue; making decisions on conversion rate alone detaches you from reality.\"],\"caveats\":[\"The source still says to do landing-page optimization and push conversion rate as high as you can — RPV is a better tracking metric, not a reason to stop improving pages.\",\"This is the presenter's strong opinion; conversion rate remains a legitimate diagnostic for locating problems.\",\"RPV calculation depends on session data, which is unreliable in Shopify (bot traffic); the speaker prefers GA4 session numbers.\"],\"tags\":[\"testing\",\"measurement\",\"revenue-per-visitor\",\"contribution-margin\",\"metrics\",\"analytics\"]},{\"title\":\"Recognize the conversion-rate ceiling set by category, price and traffic\",\"summary\":\"Conversion rate has a ceiling usually set by category, price point and traffic quality rather than page quality, so the next lever after page clarity is often economics and product.\",\"use_when\":\"Deciding whether to keep redesigning a landing page or invest elsewhere in the business.\",\"steps\":[\"Check whether the page already delivers clarity, offer and proof; once it does, further on-page design tests usually do not move RPV much.\",\"Treat the conversion-rate ceiling as set mainly by category, price point and the quality of traffic sent to the site, not by page quality.\",\"Move the next investment to levers outside the page: contribution margin on first order, future product launches, product quality, and repeat purchasing.\",\"Note that repeat customers convert at much higher rates, which skews blended conversion rate upward over time as the returning share grows.\",\"Flag constant page redesign as a likely misdiagnosis when the real constraint sits outside the landing page.\"],\"caveats\":[\"The source is arguing against endless redesign, not against landing-page optimization — it explicitly still recommends doing it well.\",\"No numeric threshold is given for when a page is 'as far as it can go'; that judgment is qualitative.\"],\"tags\":[\"testing\",\"measurement\",\"conversion-optimization\",\"retention\",\"average-order-value\",\"strategy\"]},{\"title\":\"Account for cold traffic depressing blended conversion rate\",\"summary\":\"As the share of cold traffic grows, blended conversion rate falls because cold converts below warm, so lower conversion rate at scale is not necessarily a page problem.\",\"use_when\":\"Interpreting a conversion-rate drop after increasing cold acquisition spend, or comparing conversion rates across brands at different scale.\",\"steps\":[\"Model conversion rate as blended across traffic sources: cold traffic always converts lower than warm existing-customer traffic.\",\"Expect blended conversion rate to move toward the cold-traffic conversion rate as cold share increases; if Meta were turned off, only warm traffic would remain and conversion rate would jump.\",\"Do not conclude a landing page is broken when the drop is driven by cold-traffic mix — diagnose category, price point, AOV, traffic source, and how much the creative educates.\",\"Use RPV or contribution per visitor rather than conversion rate when evaluating performance across scales of spend.\"],\"caveats\":[\"The source claims blended conversion rate generally declines as cold share rises; it does not give a formula or benchmark values.\",\"The presented store examples are illustrative, not targets.\"],\"tags\":[\"testing\",\"measurement\",\"acquisition\",\"traffic-quality\",\"conversion-optimization\"]},{\"title\":\"Reframe conversion-rate leverage through CAC and CPM\",\"summary\":\"Conversion rate matters because it is the denominator of CAC and a factor in platform CPMs, making it a no-extra-spend efficiency lever.\",\"use_when\":\"Making the business case for conversion work to a founder or CFO, or prioritizing between ad spend and page improvements.\",\"steps\":[\"Show the CAC relationship: CAC equals ad spend divided by new customer orders, equivalently ad spend divided by (sessions × conversion rate). Because conversion rate is in the denominator, doubling it would halve CAC.\",\"Explain the speaker's framing: doubling conversion rate is 'an insane change' he has almost never seen; even small improvements reduce CAC proportionally and let you raise the CAC ceiling to scale volume.\",\"Note the second-order CPM effect: platform expected action rate is roughly historical click-through rate times historical conversion rate, so better conversion can slightly reduce CPMs. Treat this as small and not a standalone reason to run CRO.\",\"Contrast with the alternative levers — more ad spend or better in-platform efficiency via CTR/CPC — which generally require more money. Conversion-rate improvements do not.\"],\"caveats\":[\"The 'double conversion rate' math is theoretical; the source explicitly says he has almost never seen anyone double conversion rate.\",\"The CPM effect is described as small; the speaker says not to work on conversion rate just for CPM reduction.\",\"CAC calculation uses new-customer sessions/orders, which the source admits are hard to delineate; the simplified version is an approximation.\"],\"tags\":[\"testing\",\"measurement\",\"cac\",\"paid-media\",\"conversion-optimization\",\"unit-economics\"]},{\"title\":\"Run a five-level conversion optimization order of operations\",\"summary\":\"Work through clarity and hierarchy, then copy, then offer, then proof, then friction, because the order reflects impact versus ease and doubles as a landing-page structure.\",\"use_when\":\"Planning a conversion-optimization roadmap or laying out a product landing page section by section.\",\"steps\":[\"Rank and work in this order: (1) clarity and hierarchy — can the user instantly understand what it is above the fold; (2) copy — does it remove doubt and speak to the real desire; (3) offer — is the thing worth converting on; (4) proof — do they believe the claims and mechanism; (5) friction — is anything physically blocking purchase.\",\"Fix the top items first because they are generally the highest-leverage, quickest changes; the speaker notes clarity fixes require little time and he says you don't really need split testing for them.\",\"Acknowledge the speaker's counterweight: the offer has the biggest impact of all five — a bad offer can keep conversion near zero — but good offer curation is very hard, which is why it ranks below the easy fixes on ease.\",\"Use the same sequence as page layout: absolute clarity at top, then persuasive copy explaining the unique mechanism, then the offer, then social proof, then remove friction.\"],\"caveats\":[\"The ranking is the speaker's ICE-informed judgment (impact, confidence, ease), not a mathematically derived order; he notes the offer is arguably the highest impact but ranks lower on ease.\",\"The source says this is not the same as ordering individual ICE variables.\"],\"tags\":[\"testing\",\"conversion-optimization\",\"landing-page\",\"prioritization\",\"experiment-design\"]},{\"title\":\"Answer four above-the-fold questions on every PDP\",\"summary\":\"A product page must answer what it is, why this one, why now and why trust you above the fold, audited on a phone because most traffic is mobile.\",\"use_when\":\"Auditing or redesigning a product detail page's above-the-fold area.\",\"steps\":[\"Answer four questions above the fold: What is it? Why this one (the unique mechanism / differentiation)? Why buy now rather than later? Why should they trust you (especially without pre-built brand authority)?\",\"Audit on your phone, not desktop, because roughly 80% of traffic is mobile per the source; pull up your live PDP and check whether all four are answered.\",\"For 'what is it', replace generic names (e.g. 'face serum 30ml') with a clear, mechanism-bearing descriptor such as 'the only overnight retinol buffered to work while you sleep so you wake up firmer, not red.'\",\"For 'why now', include elements like pay-in-four installments and scarcity/newness cues such as small-batch wording.\",\"For 'trust', place reviews above the fold; the speaker prefers a 4.8-star display over a perfect 5.0 because it reads as genuine.\",\"Order the above-fold block by persuasive weight: value proposition, then proof, then price, then CTA.\"],\"caveats\":[\"The four questions are stated specifically for PDPs; the source says advertorials, listicles and custom pages are edge cases handled separately.\",\"The 4.8-vs-5.0 preference is explicitly the speaker's opinion, not a proven threshold.\",\"The 80% mobile figure is the speaker's stated figure.\"],\"tags\":[\"testing\",\"landing-page\",\"product-page\",\"conversion-optimization\",\"mobile\",\"copywriting\"]},{\"title\":\"Maintain ad-to-landing-page continuity (message match)\",\"summary\":\"When you change the ad persona, offer or angle, route traffic to a page that reflects that same angle, because mismatch substantially hurts conversion.\",\"use_when\":\"Running multiple Meta ad concepts and deciding how many landing pages to build.\",\"steps\":[\"Define a new ad concept as a change to one of three things: the persona addressed, the offer, or the angle/unique mechanism.\",\"When any of those three changes, reflect it on the landing page rather than sending everyone to one generic PDP.\",\"Build persona-specific PDPs — e.g. a menopause-focused creatine page and a separate muscle-building page — because you cannot speak to both above the fold on one page.\",\"Do the same for offers (bundle vs single vs different product) and for angles (e.g. cognitive versus muscle-recovery benefits of the same supplement).\",\"Avoid the common supplement failure mode: testing many ad angles then listing every benefit on one generic PDP, which makes a shopper doubt the product works for their specific problem and converts worse.\",\"Choose specificity over broad application on both the ad and the page; problem-agitate into one problem for one person.\"],\"caveats\":[\"The source presents this as a strong general advantage but gives no measured lift figures.\",\"Building persona/angle-specific pages adds production overhead; the source treats it as worth it when you are actively testing many concepts.\"],\"tags\":[\"testing\",\"landing-page\",\"creative-strategy\",\"meta-ads\",\"conversion-optimization\",\"positioning\"]},{\"title\":\"Lead with the outcome and pass the 'so what' test\",\"summary\":\"Write benefit-led copy that answers 'so what' for every line and leads with the outcome before the feature.\",\"use_when\":\"Writing or editing landing-page copy, headlines and product descriptions.\",\"steps\":[\"Apply the so-what test to every line: if you mention a feature, immediately answer why it matters to the reader.\",\"Format as benefit-then-feature, e.g. write 'firmer skin in 4 weeks using a triple peptide complex' instead of 'triple peptide complex' or 'triple peptide complex, firmer skin in 4 weeks.'\",\"Lead with the outcome and justify it with the feature underneath.\",\"Write about the person rather than the product; the most common mistake is too much about what the product is and not enough about why it matters.\",\"Treat a pain-led or benefit-led headline as one of the few things genuinely worth split testing, because it is a big swing and everyone sees it above the fold.\",\"Handle objections to alternative solutions near the end of the copy so readers don't default to a cheaper option or one they already own.\"],\"caveats\":[\"The source says copywriting alone warrants a longer dedicated treatment and that he cannot fully condense it here.\",\"No test duration or sample-size guidance is given for headline tests.\"],\"tags\":[\"testing\",\"copywriting\",\"landing-page\",\"conversion-optimization\",\"value-proposition\"]},{\"title\":\"Write an FAQ that handles real purchase objections\",\"summary\":\"Use the FAQ to address specific reasons customers hesitate, based on customer research, rather than generic brand or shipping questions.\",\"use_when\":\"Building the below-the-fold section of a product or landing page.\",\"steps\":[\"Source the objections from customer research rather than guessing; in the source's example the three biggest reasons for not buying were fear it would irritate sensitive skin, uncertainty about time to results, and whether it can be used with other actives.\",\"Write FAQ questions that speak to the person and their hesitation, not about the brand — the source explicitly says to skip 'what is your shipping policy' and 'how did the brand start' type questions.\",\"Answer each objection by explaining the mechanism or evidence, e.g. why the buffered, time-released retinol works on sensitive skin, how long results take, and compatibility with other actives.\",\"Pair the FAQ with proof that validates the same claim, such as a customer line like 'the first retinol that didn't make me peel.'\"],\"caveats\":[\"The source does not describe the customer-research method used to surface objections.\",\"Objections are product- and audience-specific; the example list is not a template.\"],\"tags\":[\"testing\",\"landing-page\",\"objection-handling\",\"copywriting\",\"customer-research\",\"conversion-optimization\"]},{\"title\":\"Build an offer from reframing and bundles, not discounts\",\"summary\":\"Treat the offer as positioning that raises perceived value, using bundles, gifts with purchase, shipping and post-purchase upsells rather than blanket discounting.\",\"use_when\":\"Designing the offer for a PDP or cart, or when a brand is stuck in a discount habit.\",\"steps\":[\"Reframe the offer as positioning rather than discounting; the source says discounting is the lazy default and that a full-price reframe (e.g. a product bundled as a 'New Year's reset') can beat a sale by meeting the customer where they are.\",\"Use bundling to group complementary products as steps toward the outcome; this raises units per transaction (a key AOV lever) and lets you pass on shipping and fulfillment savings.\",\"In the source's skincare example, three products valued at $136 are sold at $122 — the $14 discount is offset by not paying shipping/fulfillment three times, so margin is unchanged.\",\"Add a gift with purchase with low cost of goods and high perceived value (e.g. a travel set valued at $30 costing $4–$5) at a spend threshold such as $60.\",\"Use a cart slide-out that upgrades a single-item buyer to the full routine to unlock the gift and free shipping, which is a one-click AOV increase.\",\"Add a post-purchase one-click upsell immediately after checkout, framed as time-limited (source example: an accessory discounted 50% for five minutes).\",\"Aim for a wide gap between cost of goods and perceived value; the source calls margin a reflection of how good the offer is.\"],\"caveats\":[\"The source notes a full offer-curation treatment lives in a separate long video not included here.\",\"Post-purchase upsells must be relevant to what was just bought, not random add-ons.\",\"Case figures are illustrative examples, not promised results.\"],\"tags\":[\"testing\",\"offer-design\",\"bundling\",\"average-order-value\",\"upsell\",\"cart\",\"positioning\"]},{\"title\":\"Go from generic to unique: the 1-of-1 positioning recipe\",\"summary\":\"Make a commoditized product feel unique by mining reviews, stacking benefits, or repositioning to an underserved audience rather than competing on formula.\",\"use_when\":\"Writing positioning and copy for a product that is functionally similar to competitors'.\",\"steps\":[\"Accept the premise that your product is probably not unique; if you do what everyone else does you will sound like everyone else and give no reason to choose you.\",\"Export all customer reviews and run them through an LLM asking for unique feedback that differentiates you; look for benefits customers report that you had not considered.\",\"Combine two or more existing benefits to create a first — e.g. a pillowcase that both prevents acne and is comfortable to sleep on.\",\"Do not count table stakes as uniqueness: free shipping, fast delivery and great service are assumed by customers and are not differentiation.\",\"Look for white space (or 'purple ocean') by repositioning a commoditized product via marketing without changing the product.\",\"Example given: a greens powder brand (the speaker says he might be getting this wrong) found that greens powder was not positioned to women and served an essentially undifferentiated product to that audience, finding a blue ocean through marketing.\"],\"caveats\":[\"The Bloom greens-powder example is recalled second-hand with the speaker explicitly unsure about details, including whether the formula was actually better.\",\"LLM review mining may not surface a usable differentiator; the source treats it as a promising direction rather than a guaranteed output.\",\"Stacking unrelated benefits just to sound unique does not work — the combined benefits must be meaningful together.\"],\"tags\":[\"testing\",\"positioning\",\"copywriting\",\"customer-research\",\"differentiation\",\"offer-design\"]},{\"title\":\"Keep table stakes small, low and out of the hero\",\"summary\":\"Move non-differentiating features like size, vegan status and shipping claims into small, low-positioned detail rather than prominent blocks.\",\"use_when\":\"Structuring where baseline product facts and logistics claims appear on a page.\",\"steps\":[\"Demote table-stakes features (vegan, 30ml, made in Australia, apply nightly) from large highlighted callouts to small, low-positioned bullet details.\",\"Avoid filler sections quoting free shipping, fast dispatch and great service as headline benefits; the source says these are assumed and can be claimed by anyone with no proof.\",\"Do not overprioritize free shipping's conversion effect; the speaker claims it is smaller than most people assume.\",\"Replace the space you free up with benefit-led content, the unique mechanism, or a customer-derived 1-of-1 claim.\",\"Place the unique mechanism or a claim pulled directly from customer testimonials near the top rather than the commodity features.\"],\"caveats\":[\"'Nobody cares about free shipping' is the speaker's strong opinion; some brands may still see an effect, and the source does not provide test data here.\",\"The source does not give a precise rule for which features count as table stakes in every category.\"],\"tags\":[\"testing\",\"landing-page\",\"copywriting\",\"value-proposition\",\"conversion-optimization\"]},{\"title\":\"Release conversion-rate leverage in the cart slide-out and post-purchase\",\"summary\":\"Use the cart and post-purchase moments to upsell routines, bundles and accessories rather than optimizing for size or quantity selections earlier.\",\"use_when\":\"Configuring the cart experience and post-checkout flow for a Shopify-style store.\",\"steps\":[\"Do not optimize the PDP for size options or cart quantity; the source says get the ad to cart and handle size later, or bundle/force the larger size to raise first-purchase gross profit.\",\"Configure the cart slide-out to show the unlocked rewards — free gift and free shipping — along with a one-click upgrade to a routine or bundle that unlocks them.\",\"Make the upgrade math explicit: total added cost versus free items and savings, so the step up feels like a deal on a better outcome.\",\"Add a post-purchase one-click upsell (no card re-entry) immediately after purchase, timed and discounted (source example: five minutes at 50% off).\",\"Ensure each upsell item is relevant to the purchase rather than a random add-on, and that it increases revenue per visitor.\"],\"caveats\":[\"The cart mechanics assume a platform supporting slide-out cart editing and one-click post-purchase upsells; verify your platform's current capabilities.\",\"Thresholds and discount frames in the example are illustrative and should be tested for your AOV and margin.\"],\"tags\":[\"testing\",\"checkout\",\"cart\",\"upsell\",\"average-order-value\",\"shopify\"]},{\"title\":\"Decide whether A/B split tests are worth running at your scale\",\"summary\":\"The source argues ongoing micro-testing does not materially move RPV for most stores and split testing becomes worth it mainly at large revenue scale.\",\"use_when\":\"Deciding whether to invest in an experimentation program or just implement known best practices.\",\"steps\":[\"Recognize that making slight design tweaks on an ongoing basis does not materially move RPV for most stores.\",\"The source sets a heuristic: at roughly $40M+ online, A/B split testing starts to become worth doing to squeeze out a small extra increment (he cites around 0.1%).\",\"Below that scale, prioritize making clear, high-leverage page fixes (especially clarity and hierarchy) that do not require a test.\",\"Still treat a pain-led versus benefit-led headline as one of the few worthwhile big-swing tests, because it is above the fold and everyone sees it.\",\"If you do test, remember conversion rate is easy to 'game' and noisy; judge results through revenue per visitor or contribution per visitor rather than conversion rate alone.\"],\"caveats\":[\"The '$40M+ online' figure is explicitly framed as a heuristic ('like 40 million plus online'), not a rigorous threshold.\",\"This is the presenter's opinion and runs counter to some CRO orthodoxy; the source is arguing against small ongoing UI tests specifically.\",\"Full statistical power discussion is deliberately out of scope in this section.\"],\"tags\":[\"testing\",\"experiment-design\",\"measurement\",\"prioritization\",\"conversion-optimization\"]},{\"title\":\"Measure conversion metrics correctly in Shopify\",\"summary\":\"Calculate conversion rate and RPV from corrected Shopify numbers — net sales plus shipping, and GA4 sessions — because several dashboard metrics are misleading.\",\"use_when\":\"Building a conversion-rate or RPV report from a Shopify store.\",\"steps\":[\"Do not use total sales as-is for revenue: it includes tax, so subtract tax, or start from net sales in the Shopify dashboard.\",\"Add shipping collected back in, because it is realized revenue at checkout but is excluded from Shopify's average order value; RPV comes out higher once included.\",\"Use GA4 session numbers rather than Shopify sessions, because Shopify filters bot traffic poorly and inflates sessions.\",\"Compute conversion rate using corrected sessions and orders, and RPV as conversion rate times AOV (with shipping included).\",\"Remember that many metrics can be 'gamed': turning off cold Meta traffic raises conversion rate immediately by leaving only warm traffic, running traffic campaigns inflates sessions without revenue, and pushing high-AOV products raises AOV while potentially destroying profit.\",\"Therefore track finance KPIs — LTV-to-CAC, contribution profit, acquisition and retention metrics — alongside conversion rate, because every individual metric can be skewed in a direction that hurts the business.\"],\"caveats\":[\"The source calls out that these five Shopify metrics are poorly represented; interface details may change, so verify the current dashboard fields.\",\"Even GA4 sessions are imperfect; the source only claims they are better than Shopify's for bot filtering.\",\"New-customer conversion rate is hard to isolate, which complicates CAC math.\"],\"tags\":[\"testing\",\"measurement\",\"shopify\",\"analytics\",\"ga4\",\"revenue-per-visitor\",\"metrics\"]},{\"title\":\"Optimize above-the-fold title and subtitle for direct response\",\"summary\":\"Swap a generic product name for a mechanism-driven title and subtitle, add small-batch freshness wording and pay-in-four options to answer why-now.\",\"use_when\":\"Rewriting the hero of a DTC product page for paid-traffic conversion.\",\"steps\":[\"Replace a generic title such as 'face serum 30ml' with a clear mechanism-driven line, e.g. an 'overnight repair serum' paired with a subtitle promising firmer skin by morning.\",\"Use the subtitle to carry the unique mechanism and the 'why this one' claim, not just the product category.\",\"Add a specific freshness or sourcing claim to strengthen why-now, e.g. small-batch bottling because retinol loses strength on the shelf, plus a batch-fill date ('this batch was filled this month').\",\"Offer a pay-in-four installment option (e.g. four payments of $12) to pull purchase forward.\",\"Keep the display compact so the value proposition, proof, price and CTA all sit above the fold in persuasive order.\",\"Avoid a page that looks finished at the fold — include a scroll cue so users know content continues below.\"],\"caveats\":[\"The example is a DTC-style landing page; the source notes a big retail brand would not necessarily write a title that way.\",\"The speaker presents this as an example of what converts better, not a tested result with figures.\"],\"tags\":[\"testing\",\"product-page\",\"landing-page\",\"copywriting\",\"hero-section\",\"dtc\"]},{\"title\":\"Write reviews for mechanism validation, not volume\",\"summary\":\"Select reviews that specifically validate the claimed unique mechanism and place a small number of relevant, image-rich reviews prominently.\",\"use_when\":\"Choosing which reviews to surface on a PDP or landing page.\",\"steps\":[\"Match proof to the claim: the reviews shown should specifically validate the unique mechanism stated in the ad and headline.\",\"Prioritize a small number of hyper-relevant reviews, with images or video, over hundreds of generic reviews.\",\"Pull a distinctive customer phrase and use it as the 1-of-1 angle — the source's example is 'the first retinol that didn't make me peel,' which no competitor can honestly claim.\",\"Prefer a slightly imperfect aggregate rating (the source cites 4.8) over a perfect 5.0, since it reads as genuine.\",\"If a product has no reviews, treat that as the first priority because the source says going from zero to 100 reviews can roughly double conversion rate.\"],\"caveats\":[\"The 'zero to 100 reviews can roughly double conversion rate' claim is from the speaker's personal brand experience, not a controlled study.\",\"The 4.8-over-5.0 preference is explicitly the speaker's opinion.\",\"No definition is given for how many reviews constitutes 'a few' or how to judge relevance beyond matching the mechanism.\"],\"tags\":[\"testing\",\"proof\",\"social-proof\",\"reviews\",\"product-page\",\"conversion-optimization\"]},{\"title\":\"Optimize checkout for trust-heavy conversion\",\"summary\":\"Apply a specific checkout ruleset: extra costs under 10% of AOV, guest checkout default, express payment at top, no trust badges.\",\"use_when\":\"Configuring checkout settings and payment options for an ecommerce store.\",\"steps\":[\"Keep any extra costs (like shipping) below roughly 10% of average order value; the source reports from his own 2019–2020 store tests that shipping collected under about 10% of revenue had no material impact on conversion.\",\"Make guest checkout the default rather than requiring account creation.\",\"Place express payment options such as Shop Pay at the top of the checkout.\",\"Avoid trust badges.\",\"Note the source's related shipping view: free shipping is not automatically a win, because it teaches customers to value delivery separately from the product, and shipping collected is nearly pure profit when kept under the threshold.\"],\"caveats\":[\"The 'avoid trust badges' instruction is stated without explanation in this section; it is a strong presenter claim.\",\"The sub-10%-of-AOV shipping guidance comes from the speaker's own store tests in 2019–2020, not a broad controlled benchmark.\",\"Payment-option and checkout interfaces change; verify current platform support for guest checkout and express payment placement.\"],\"tags\":[\"testing\",\"checkout\",\"shipping\",\"shopify\",\"trust\",\"conversion-optimization\"]},{\"title\":\"Set and test your free-shipping threshold deliberately\",\"summary\":\"Free shipping should be a threshold incentive placed deliberately and tested, because most merchants set their threshold too low.\",\"use_when\":\"Deciding whether to offer free shipping and at what cart value.\",\"steps\":[\"Recognize that free shipping is not always the win it appears to be, because it decouples delivery value from the product in the customer's mind.\",\"If you do offer it, offer it at a cart threshold so it pulls average order value up.\",\"Set the threshold thoughtfully and test it over time; the source says most people set their free-shipping threshold way too low.\",\"Weigh against shipping collected: the source reports shipping can be charged up to roughly 10% of cart AOV without materially hurting conversion, and that amount is nearly pure profit.\"],\"caveats\":[\"The 10%-of-AOV figure comes from the speaker's own store testing in 2019–2020, not an independent benchmark.\",\"The source cuts off mid-discussion of 'two additional levers' around shipping, so additional specifics are unavailable.\",\"Threshold choice depends on your AOV and margin; no universal number is given.\"],\"tags\":[\"testing\",\"shipping\",\"average-order-value\",\"offer-design\",\"conversion-optimization\"]},{\"title\":\"Diagnose conversion rate before deciding it matters\",\"summary\":\"Use conversion rate as a diagnostic to find problems to solve, not as the brand's north star or a cross-brand comparison.\",\"use_when\":\"Interpreting conversion-rate numbers for your own store or judging an agency client's performance.\",\"steps\":[\"Treat conversion rate as a diagnostic that points to a problem to fix, not a goal by itself.\",\"Do not conclude a competitor or another brand is better just because its conversion rate is higher; the metric reflects price point, category, traffic mix, creative education and purchase intent.\",\"For a genuinely low conversion rate, investigate the inputs: category, price point, AOV, traffic source, how much the creative educates, and purchase intent — not just the page.\",\"Remember the example contrasts: a 9% conversion-rate store with a $45–55 AOV and mostly bottom-funnel Google traffic, versus a 1% conversion-rate brand doing $200M online at 50% contribution margin; the speaker says he would rather be the latter.\",\"Prioritize revenue and contribution margin over the percentage of visitors converting when making strategic decisions.\"],\"caveats\":[\"The comparison stores are historical examples, not benchmarks or targets.\",\"The speaker still says the low-conversion-rate brand should work to improve it; the point is relative priority, not neglect.\"],\"tags\":[\"testing\",\"measurement\",\"diagnostics\",\"ecommerce-strategy\",\"contribution-margin\"]},{\"title\":\"Run traffic to PDPs that match persona, offer and angle\",\"summary\":\"When testing personas, offers or angles in ads, build a matching PDP per concept instead of one generic page.\",\"use_when\":\"Scaling creative testing and deciding whether to build separate landing pages.\",\"steps\":[\"List the concepts you are testing and classify each as a persona change, an offer change or an angle change.\",\"Build a distinct PDP for each persona you actually traffic, e.g. a menopause-oriented creatine page and a muscle-building page, since you cannot address both above the fold on one page.\",\"Build a distinct PDP for each distinct offer (bundle vs single vs different product).\",\"Build a distinct PDP for each distinct angle (e.g. cognitive benefit vs muscle-recovery benefit).\",\"Restrict each page to one specific problem, one specific person and one mechanism so the ad promise is reinforced on arrival.\",\"Treat the resulting pages as a portfolio you continue to refine, rather than one page you keep redesigning.\"],\"caveats\":[\"The source cautions you could stack multiple angles on one page, but says keeping the angle consistent generally yields better conversion and continuity.\",\"No guidance is given on how many persona pages are too many or how to consolidate low-traffic ones.\"],\"tags\":[\"testing\",\"landing-page\",\"product-page\",\"creative-strategy\",\"meta-ads\",\"positioning\"]}]}",
+  "input": {
+    "source_id": "1wv9Trf2egAaS3LXa54YHIRZSTkcr6H8R",
+    "source_sha256": "33935f0073ec7c3281b3953817ec5913d9fd50c9b4a130d4c7b02c71b4c402b5",
+    "source_name": "eCommerce CRO Masterclass 2026_ The Full System.docx",
+    "folder": "/09-CRO-testing",
+    "domain": "testing",
+    "section": 1,
+    "section_count": 3,
+    "text": "ur questions above the fold: What is it, Why this one (unique mechanism), Why now, Why trust you. The \"so what\" test for copy: reformatting features into benefits (e.g., \"Firmer skin in 4 weeks using a triple peptide complex\" rather than just \"Triple peptide complex\"). Proof alignment: ensuring the reviews shown specifically validate the unique mechanism claimed in the ad/headline. Checkout optimization rules: extra costs must be sub-10% of AOV, guest checkout must be default, express options (Shop Pay) must be at the top, and trust badges should be avoided. Cart slide-out mechanics: using the cart to upsell a \"routine\" or \"bundle\" to unlock free gifts and shipping, rather than just showing the single item.\n\nSkip. The argument that Conversion Rate is a vanity metric and should be replaced by Revenue Per Visitor (RPV). The \"Hierarchy of Influences\" framework comparing budgets, account structures, and creative. Offer mechanics and discounting economics. The mathematical breakdown of why AB testing requires 40,000 sessions per variant to reach statistical significance.\n\nScope mix. Large baseline component: page structure, image set, trust elements, friction removal.\n\nVolume. 25 to 35.\n\nAlmost everything sold to you was conversion rate optimization is button color changes, small UI tweaks. None of it is grounded in the two things that actually matter to optimize conversion rate and increase it. The two things that actually matter is measuring the right number honestly, which isn't conversion rate. Then working back to the page and thinking through conversion rate on the lens of messaging, consumer psychology. And then lastly, we pull UI in to reinforce the first two. The conversion rate number that you're optimizing towards right now is lying to you and it's not even a lever that you can really pull on directly. It's an output of about 50 different inputs, most of which are not on the page at all. In the next 1 to two hours, I'm going to show you where the money actually leaks on your landing pages, the mechanics that genuinely move a page towards converting better, and why most of the CRO wins that you've celebrated were just statistical noise that didn't do anything. Now, this is going to be a unique video from our typical whiteboard videos because I'm also going to be screen sharing throughout. We're going to be pulling up actual landing pages. We're going to be pulling up common mistakes and I'm going to show you what you shouldn't do and what you should do while also whiteboard and breaking down some ideas as well. Now, the first belief that I have to break for you is does conversion rate as a metric even matter? Let me give you two different stores and these are real stores that I've had access to historically. store number one, 9% conversion rate, but a low average order value around about $45 to $55. It's an impulse purchase and majority of the traffic is coming from bottom of funnel on Google because with an average order value that low, you just can't get meta to work. So, the only platform that's going to work for paid is going to be Google. So, would you want to be this brand or would you want to be brand B who has a 1% conversion rate, but they do $200 million in revenue online at a 50% contribution margin? brand B every day of the week. Okay, I couldn't care less about brand A about being brand A because at the end of the day, conversion rate is meaningless comparative to revenue and profit. And so your conversion rate by itself is more a reflection on a diagnosis of a problem to be able to solve and move. It's not saying don't work on conversion rate. This retailer would get massive gains by being able to go to 1.1%. So they should work on trying to do this. They should work on this improvement. They should watch this video to see how they can improve it. But by no means is conversion rate the northstar of a brand. And by no means should you be looking at a friend's brand or a competitor or another client if you're working at an agency and go, \"Oh, this brand's so much better cuz they have a higher conversion rate.\" Not really true because conversion rate is an output of 50 different variables. And one of them is volume on cold traffic. And the more you scale into cold, the lower conversion rate will generally become. Conversion rate in this instance isn't a landing page problem. It's a product category, price point, average order value, traffic source, how much the creative educates, and a purchase intent problem. What actually matters here is revenue and contribution margin. It's not the percentage of people converting. So, if conversion rate is a little bit of a vanity metric and actually isn't very comparable brand to brand, doesn't really matter cuz there's so many underlying levers, then what is a better metric? Well, a better metric is RPV, revenue per visitor. To calculate this, you take your conversion rate and you times by average order value. Now you can make this more blue sense orientated and never have a revenue number, but instead you could go down to profit contribution. So this is called contribution per visitor, which is the exact same thing, right? We're just then timesing by your gross margin percentage. Dependent on the math, you could also technically Microsoft CAC and advertising expenses. I wouldn't do it. I' I'd keep this metric a little bit more simple and just effectively be looking at gross profit per visitor. This is a much better metric to track. In fact, in our internal model, how we calculate this for all brands during the order process. So, we look at revenue per visitor over a 2 and 1/2 year time period to get an understanding if this is going up or going down and that tells us whether conversion rate is improving or getting worse. We don't look at conversion rate. What I also really like about this metric compared to conversion rate is that we always want to be operating as close to base reality as possible in the metrics that we look at, the people that are the best at business are the people that see reality the clearest and therefore their decision-m is better than everyone of their competitors. And so if you are making decisions based on conversion rate, you are detached from reality because this isn't tightly correlated to revenue. But if you're operating based on RPV and you're making decisions based on RPV, well, this is a revenue number. This is directly tied to actual revenue per visitor. And so, as a product of that, you're operating closer to reality, and the decisions you make here should directly influence revenue up or down. Here's a really important truth that most people won't tell you, which is that your conversion rate has a ceiling, and you don't often set that ceiling based on the page quality. You set it based on your category, your price point, and the quality of the traffic that you're sending to the website. Once you've taken the page as far as you can in regards to clarity, offer and proof, the next lever usually isn't another design test. It becomes your contribution margin on first order and future product launches and the quality of the product and the strength of your repeat purchasing because repeat customers have much higher conversion rates on the landing page which skews conversion rate up over time. I think what some brands do poorly is that they just keep redesigning the same page over and over again trying to find a new ceiling when the constraint was never a slight design tweak on the landing page. Now, don't get me wrong, I'm going to give you all of the design changes that you should make on your landing pages. I'm going to give it all to you. But beyond that, making slight tweaks on an ongoing basis doesn't really materially move RPV. Unless you're doing like 40 million plus online, then it starts to become worth doing some AB split test to try to squeeze out a little extra 0.1%. Uh, but for most people, it's not worth it at all. And it also is generally not the constraint. I've just made a pretty strong argument for why conversion rate has its limits. Conversion rate isn't actually a very good metric. You should be using RPV. conversion rate is more determined by the actual product quality, category, return rates, and all of these things that sit outside of the landing page, although you should be doing a lot of landing page optimization and getting conversion rates as high as you can. Um, I'm going to flip the argument for a second, and I'm going to explain to you why people will argue that conversion rate is the highest leverage point you have within the business. So, I'll walk you through the argument. The argument makes sense. It's just worth noting that the landing page typically isn't the thing that's going to double your conversion rates. So your cost to acquire a customer, your CAC, this is one component of the golden ratio of LTGP to CAC. So this is a very important metric. It's arguably the best way to index the performance of acquisition in a business. To calculate CAC, you take ad spend divided by new customer orders. Another way to look at that is you take ad spend divided by sessions times conversion rate. Now technically this is going to be new customer sessions, which we don't really know and we don't know what new customer conversion rate is. It's hard to delineate, but keeping it simple, this is why conversion rate matters. Because if you can double your conversion rate, because it's the denominator here, what that does is it will half your C. So, if you can take your conversion rate from 1 to 2%, it halves your CA. What does that allow? It allows you to spend a lot more on the platforms because you can allow your CAC ceiling to go back up to what it was originally, which will probably allow you to double or triple volume. So you could quite literally double to triple a business just on improving conversion rate. Now doubling conversion rate is an insane change and I've almost never seen anyone be able to effectively double their conversion rate. But even if we can get it up a little bit, CAC will come down proportionate. And this is ultimately why people see it as the biggest most profitable lever because the other things that we can do to scale the brand is we can spend more on ads or we can try to become more efficient within the platform through higher click-through rates or lower CPCs. So the cost of traffic goes down which increases session volume. Both of those levers generally require money. To increase ad spend you need more money. So you need to invest more into ads to improve the inplatform figures on a socialbased platform like Tik Tok or Meta. It normally requires more creative production which needs more money. And so to improve the efficiency of sessions off the platform to the website, you need to spend more, you need to spend more. So there your two levers. Uh to improve conversion rate, you don't need to spend more. You just need to make tactical clear decisions that's going to improve the conversion rate of the landing page. Hence why this is the cheapest best option for improving the efficiency of the whole funnel. Now another argument for why conversion rate is so high leverage is because an effect that sits downstream of this is CPMs. You might be wondering how are CPMs your cost per thousand impressions in meta anything to do with conversion rates. Well, it's because one of the biggest levers within CPMs is not the industry that you're in. Although obviously the industry that you're in and the niche that you're in matters a lot. It is your expected action rate. Your expected action rate is made up of two things. Expected click-through rate times expected conversion rate. How do they come up with this expected conversion rate number? It's just conversion rate. So when we say expected, that's just a prediction of the future based on historical data. So what we're really looking at here is your expected action rate is your historical clickthrough rate and historical conversion rate. So conversion rate is directly tied into the CPM equation. If you can increase conversion rates, your CPMs actually come down. Now, how big of an effect is this? How measurable is it? Now, it's small. I wouldn't worry about I wouldn't just be working on conversion rates for the sake of a CPM decrease, but it's worth noting that it is a second order effect, and conversion rates sit within the CPM equation. Now, to calculate uh conversion rate and revenue per visitor, you need to use a bunch of different metrics that are all very flawed within Shopify. So, if you're using Shopify, I'm going to give you a quick run through of the five metrics that are actually poorly represented within the Shopify dashboards, and you need to go and calculate them yourself. All of these metrics are required to be able to calculate conversion rate or revenue per visitor. So, total sales, you'll use total sales to be able to calculate uh revenue per visitor if you want to just do total sales divided by sessions. The issue with total sales is that it includes tax. So, you want to make sure that you're minusing tax off from here. Or another way that you can calculate it, which is what we do, is we take net sales in Shopify. You'll be able to see this number in your dashboard. And then we add in shipping collected because shipping collected is actual revenue collection at checkout. Average order value does not include shipping collected in the Shopify number. It should. Shipping collected is actual revenue that is realized on an order. So, make sure that you go and add that back in if you're going to use average order value times conversion rate to be able to calculate RPV because you actually have a higher RPV once you factor that in. With sessions, sessions on Shopify are typically full of bot traffic. Shopify actually doesn't do a very good job at filtering out bot traffic compared to G4. This is the one time I will ever shout out G4 in a YouTube video, which is for better session tracking. So, if you're going to do anything using a session um metric, you want to typically default to the G4 number. We already went through why conversion rate isn't valuable face value because it isn't indicative of an actual tie towards revenue. You can have a low conversion rate and be doing much better than someone with a high conversion rate. It's also worth noting that conversion rate by itself is a metric that can be gained. And in fact, every single metric except for probably sales, even sales can be gained. Which is why optimizing for a single metric in isolation without knowing how this breaks down into other metrics and what the actual underlying levers and influences are can be incredibly misleading. I've had clients historically who have said, \"All we need to do is focus on improving conversion rate.\" And I said, \"Cool. I could do that for you within 24 hours. In fact, almost anyone watching this video, I can improve your conversion rate like that. It's super easy. All we do is we turn off Facebook ads.\" Because when we turn off Facebook ads, cold traffic declines to zero. And now you only have warm existing customer traffic which converts at much higher rates. And so your conversion rates will go up overnight. Now you'll probably lose millions of dollars if you're an 8 figure brand, but your conversion rate will be better. And so you can kind of see how it can be gamed. If you want conversion rate to go up, you just spend more on warm. You just pull back on cold. If you want sessions to be better, we just run traffic campaigns. Traffic campaigns are terrible. They don't do anything. They won't drive revenue, but it'll put sessions up. If we want average order value up, easy. We just push higher average order value products. Sounds good on the surface, but what if the CAC is way higher and we're not actually profitable on driving those products? Not a good decision, but we got average order value up. Uh what about total sales? We could just crank up spend by 4x and total sales will go up. It's not going to be profitable. You're going to lose a bunch of money in doing it, but we can definitely crank sales up. So, you can see that I could go through pretty much every single metric that exists in ecom and I could tell you how to game it. I could tell you how to get that metric and manipulate it in the direction that you want it even though it's not in the best interest of the business. Which is why at the end of the day the best metrics for tracking the performance of an e-commerce business over time is LTGPIC hack contribution profit acquisition me and all these finance KPIs that actually tell you whether the business is profitable or not. Uh because you can skew all these numbers but it directionally pushes profitability in the wrong direction which is not what you want. And then you have returning customer rate. If returning customer rate is high it's going to skew conversion rates up and it's also going to skew average order value up a little bit cuz RC average order value is generally higher than NC average order value. Um, so you also just need to be cognizant of that. The last really important concept to understand here about conversion rate as a metric before we start diving into design work, consumer psychology and how to actually improve conversion rates. The thing that you need to understand is that as cold traffic goes up, so cold traffic is us moving to the right and conversion rate is on the y- axis, conversion rate goes down. And it's because there's a smaller share of warm existing customer traffic. Cold traffic will always convert lower than warm existing customer traffic. And so as a product of that, your blended conversion rate declines. And we can see this visually on the screen right here, which is that let's say you have a blended conversion rate of 2.8%. But the core caveat here is that your cold meta traffic is converting at 1%. Your warm high intent traffic is converting at four. So, a good way to think about this is if we just turned meta off tomorrow, your conversion rate would immediately jump to four because you would only be left with warm traffic that's doing well. As we start to scale, so as I move this to the right, we're scaling cold traffic and we're putting more and more cold traffic on the website. What ends up happening is your blended conversion rate goes down. You can see it declining there. The reason being is that the higher the percentage of traffic from cold meta, the closer the conversion rate will be to the cold conversion rate on the Meta platform. And so you want to be cognizant of this as you scale and become a bigger brand. Generally really big brands have lower conversion rates because they have so much traffic coming from cult. All right, let me run you through how we think about conversion rate internally in priority. First is clarity and hierarchy. The key here is can the user clearly understand it instantly and is it above the fold. Number two is copy. Does it remove doubt and speak to the actual desire? Number three is the offer. Is the thing on offer actually worth converting on? How good is the offer? Number four is proof. Do they actually believe you and the claims that you're saying and the unique mechanism? And the number five is friction. Is there anything physically in the way of the purchase? The top is generally the highest leverage, quickest change that you can make that will make the biggest impact. So this is ranked based on the ICE framework, not based on an individual variable in the ice framework. For context, if you don't know what the ICE framework is, this is impact, the C is confidence, and the E is ease. So, how easy is it to implement? How confident are we in impact? And what will the impact actually be? For context, I think the biggest impact here out of all of these five things is actually the offer. A bad offer will keep your conversion rate at 0%. A good offer will skyrocket you to 80% conversion rate. I'll give you an example. If you go and give away a $1 million car for free, and anyone can buy it for free on the landing page, you're probably going to get the most insane conversion rates you've ever seen because everyone wants to claim a million dollars. There is nothing that you can do on clarity and hierarchy copy proof or friction that's going to take your conversion rate to 80%. So this has the biggest impact, but it's not the easiest to do at all. Good offer curation is actually very very hard. It's much easier to just fix the landing page, make it clear, put the hierarchy in place, and that's going to have a very quick impact, and it's not going to take a lot of time. You're not going to really need to do any split testing either. So this is the order of operations in which you should look to improve your conversion rate. It's not the order of operations of an individual element of the ICE framework. Worth noting that this is also an incredible way to be structuring your actual landing page. If you think about it, at the top, you want absolute clarity and you want it to be clear what is being presented to them so they can begin reading. Then you want to move into a piece of copy that actually convinces them to buy your product and explains the unique mechanism and educates them appropriately. Then you want to come in and show them the offer. Off the back of the offer, you want to social proof. And then lastly, you want to remove all friction so that the purchase is easy. So this is also a nice way to think through landing page design as well. So as we move through the video from this point, we're going to be going through each of these points. We're going to start with clarity and hierarchy, particularly talking about above the fold. We'll then go into copy. We'll then go into offer. We'll then go into proof. We'll then go into friction. And I'll be pulling up on my laptop as well examples of each and how this actually applies into landing pages. So the first four questions that we need answered above the fold and this is specific to PDPs. So product pages, we are going to at the end of the video go into the specific edge cases of if you're doing listicles, custom landing pages, avitorials, anything that sits outside of a PDP, we're going to go into at the end of the video. And that's strategies that actually really move the needle beyond just driving people to the landing page. Starting here first though, we need to answer what is it. So when someone lands on a product page, they need to immediately know what the product actually is, what's being sold to them. Number two, why would they buy this one? Why wouldn't they buy from someone else? What is the unique mechanism? What makes the brand differentiated from everyone else? Number three, why should they buy right now? Why don't they bounce and buy in a week's time? Why don't they wait for you to go on sale? Why should they purchase at this very moment? And then the last thing is why should they even trust you if you don't have authority pre-built into the market through brand awareness? Why should they trust you? Why should this product do what you say it does? And why should they buy now? So, if you want, pause the video, go and look at above the fold on your phone. Right now, 80% of traffic's on mobile. So, don't look at your computer. Look at your phone. Pull up your website. Look at your PDP. Do you answer these four questions above the fold? If you don't, I'm going to show you how to do it in a second. So, here's a mockup of two websites that I actually pulled from, but I've anonymized them into a mockup here, so I'm not calling anyone out. First thing, website on the left loads in 4.8 seconds. Website on the right loads in 0.9 seconds. So, your load time is actually really important. It's one of the easiest leverage points that you have uh to improve conversion rate. So make sure your load time's good. Then let's look at this through the lens of the four questions that we ask. So firstly, what is it in landing page number one? What is it? Is a face serum 30 mil. Okay, it's generic. What's unique about it? I don't really know. We could move over instead to the better landing page. The only overnight retinol buffered to work while you sleep so you wake up firmer, not red. Okay, incredibly clear what this product is and what the unique mechanism is and how it's differentiated. So just the difference between this product title and this subtitle is enormous. Now they have switched out the title here for firmer skin by morning. Now a big retail brand wouldn't do something like this, but someone who was dialed into direct to consumer advertising would run a landing page like this and it would crush this one every single day of the week. So number one, what is it is so much clearer above the fold on the landing page on the right compared to the landing page on the left. Now why this one? Why should we be purchasing from this brand rather than this brand? Well, right here, overnight repair serum, firmer skin by the morning. So it's very clear why you should be purchasing this specific product over competitors or ones that you've tried before, which is that I imagine products that you've tried before haven't yielded this result. Further to that, a little sub headline has been put here, which I really like, which is that retinol loses strength on the shelf, so we bottle in small batches. This batch was filled this month. Gives you another reason to buy this product rather than another one. The why now is answered in two ways. This line right here reinforces it. Plus, the option for four payments of $12 is to directly address number three. So, if you have an Afterpay option, it's going to allow people to pull their purchase forward before having to wait uh to get paid. Number four, why should they trust you? Pretty obvious. This is an easy one. Just throwing the uh reviews in there. 4.8 stars is actually better than five stars in my opinion because it shows that these reviews are actually genuine. So, let's break this down a step further. Landing page number one, which is most people's landing page. This is the default landing page within Shopify. It fails all four questions. It doesn't give you a reason for what it is, why this one, why now, and why they should trust you. So, a stranger gets an ad, they click on this link, and then they just get a generic product that gives them absolutely no information about why they should buy. There's no scroll cue. So, they see this and they go, there must be nothing below the fold. So, there's no reason to actually scroll over here. The more below and the fade out gives people a reason to continue scrolling and learning more. And obviously, we can continue to educate and we'll go into more landing page design later. and message mismatch. We're going to talk about this in a second. But if we're pushing an ad that talks about getting firmer skin by the morning, let's say some kind of piece of UGC, and then we just go to this generic landing page that doesn't reinforce the messaging on the ad, it's going to substantially impact conversion rates. Now, we go over to the better landing page. All four questions are answered. It's ordered by persuasive weight. And so, the value proposition is first, then the proof is next, then the price, then the CTA. There's no skew details or size options. Who cares about size options? Who cares about quantity in cart? We don't want to optimize for these things. We want to just get the ad to cart and we can deal with this in the cart or later on. Or we just immediately force people up to the 50 mil and we bundle it. And so we create an offer that immediately increases first purchase GP. And then the message matches the ad. So the ad here is us talking about getting firmer skin overnight. You land on the landing page. Look at that. Firmer skin by the morning overnight repair serum. It's reinforced on the lander. Now, we're going to come back to that mockup landing page and scroll into below the fold in a second, but before we do that, I want to touch on something that we alluded to just there, which is continuity on the landing page. Continuity might be the biggest hack that exists in this entire video that you're watching, which is that if the landing page reflects the angle and messaging on the ad, your conversion rates go up substantially. This is really important if you are good at meta ads and you're testing different concepts. So hopefully if you're watching this channel, you're good and you know what you're doing. Which means that you should be constantly testing different concepts. A different concept is changing either the persona in which you're talking to in the ad, you're changing the offer, or you are changing the angle. When you change one of these three things, we need it reflected on the landing page. Because if we switch up the persona, for example, let's say we're selling creatine, we can either talk to women in menopause and the benefits of creatine in women in menopause, or we can talk about the benefits of creatine towards young men wanting to go to the gym who are 19 years old. Now, we shouldn't be driving those two people to the same generic creatine PDP. We just saw before that we could just put them on a generic PDP and just be like, creatine 500 g by now, but it's not going to convert anywhere near as well as answering all the four questions on the PDP. and actually enriching the uh value that's provided above the fold. So, we want to do that. We want to enrich it. We want to enrich the title. We want to provide reviews. We want to get all that stuff above the fold. But to do that, we need to pick out a persona cuz we can't talk about menopause and muscle growth on the same landing page above the fold. Okay? We need to pick one. And so, we want to drive the menopause persona to a menopause related PDP that talks about all the benefits and speaks to that individual. And then we have a muscle building PDP. and we drive this two separate landing pages. Same thing for the offer. The offer is the obvious one. Obviously, if you change the offer, you need to go to a different PDP because the offer is different, right? If you're doing like a bundle versus a single product versus a different product entirely, needs a unique PDP. Most people don't mess that up. Uh angle is also important. So, this is if we're leaning into different unique mechanisms. Creatine is a good one, which is that we can lean into creatine's cognitive benefits or we can lean into creatine's muscle recovery benefits. Yes, you could stack them on the one landing page. You could say creatine cognitive benefits, muscle benefits, this benefit, but generally you will get better conversion rates and better continuity on the landing page if you can keep the angle the same. And this becomes really important in supplements because almost every supplement can be spun into 15 different angles. Okay, you can say collagen is for 15 different things. Now, the reason why a lot of supplement brands fail when they drive traffic to their Shopify PDP is because they're testing all these different angles on ads, which is great. They're testing collagen for skin health. They're testing collagen for joint health. They're testing collagen against old and younger demographics. But then everyone goes to this landing page that just says collagen. 500 g. Tick, tick, tick, tick, tick, tick, tick, tick, tick. Benefit number one. benefit number two, benefit number three, benefit number four, benefit number five. So all of these different angles that you were testing here, you have listed as all the benefits of the product. Now what happens from a consumer perspective is I watch an ad, it talks to me about arthritis and I'm like, \"Oh, I have arthritis. Let me continue watching.\" It starts to educate me on the causes of arthritis, the mechanism, and then how collagen in particular helps ease arthritis pain because collagen is the fundamental building block of the connective tissue in the joint. And so, as you increase collagen while supplementing at the same time with vitamin C, it allows for increased uptake and that joint can operate better in less pain. Now, I've watched that ad and I've gone, \"Incredible. I'm in constant pain. and I have arthritis. All right, I'm going to click and go through. How can I get my hands on this thing? I then land on this PDP and the ninth point here is arthritis support. And then there are all of these other random things and I go, what? I just watched an ad that told me that this is the solution to my arthritis. But then the landing page is saying this is the solution to everything that exists on the planet. Do I trust this? Do I trust that this supplement that apparently does a million things is going to support the one problem that I actually need it for? or would I prefer to buy a supplement from someone else where the product is only for arthritis support? Obviously, I'm going to go for the supplement which is just dedicated to arthritis support, not all these other things. And so, as a product of that, this converts worse. So, you want specificity over broad application anytime on a landing page and anytime in an ad. Like an ad listing all these benefits isn't going to do well. You need to problem agitate into one and talk to one specific person. Now, let's move into copywriting. The most common mistake that people make in copywriting on landing pages is that they write about the product instead of writing about the person. Too much about what it is and not enough about why it actually matters. You need to be benefitled, not feature. Every line in the copy within the landing page needs to pass what we call the so what test, which is that anytime you say something, we need to explain so what. Like why is this even being mentioned? An example is you can put triple peptide complex onto the landing page. So what what does this mean to anyone? Well, it gives you firmer skin in four weeks. Great. So we're reinforcing with a benefit. We're not just leading with a feature. A painled or benefitled headline beats a featureled one every single day of the week. And that's one of the few things that's actually worth split testing on a landing page because it's a big swing. It's typically above the fold and everyone's going to see it. A really good habit to get into is you always want to lead with the outcome and then you want to justify it with the feature underneath. So instead of saying triple peptide complex, firmer skin in 4 weeks, you want to flip this around and you want to say firmer skin in 4 weeks using a triple peptide complex. So number one benefit feature. Number two is brutal reality. Your product is not unique. It is probably the case that if you're watching this, you haven't invented some kind of new product that doesn't exist on the market right now. Now some people have. Amazing. Uh, but most people have it. Most people are just selling similar stuff to everyone else across the world. Now, why is that an important call out? It's an important call out because you, if you do what everyone else is doing, will sound like everyone else and you will not be unique and there'll be no unique mechanism for why someone should buy from you. And so, step one of copywriting is to reposition yourself as one of one. Now, I've got some really good tactical things that you can do right here to be able to achieve this. You want to go and export all of the reviews that you have right now. Hopefully you have some reviews. Uh you want to run it through a large language model, run it through claw, run it through chat jbt, run it through something and ask it, can you find unique feedback on my product that differentiates me from others? And hopefully that will spit out something. It will tell you that some customers talked about this specific benefit of the product that you've never even thought of before. Amazing. Well, that gives us at least some direction in terms of what we can talk about. Another option here is that you can become unique by tactically adding multiple benefits together. And so while everyone in your industry might be talking about how soft their pillow is or how good their pillow case is for preventing acne because it doesn't hold oil, you could take the two, bring them together and you could be the first uh pillow case that's getting pushed that solves for acne and is actually comfortable to sleep on. And so the addition of multiple benefits is a way to make yourself unique. It is just worth noting that you can't just string a bunch of benefits together and hope that it makes you unique in some way. What some people think off the back of this is that they go, \"Oh, well, we have free shipping. We have great service. We have fast delivery. Let's add it all together and we're unique.\" I'm telling you, they're all givens. No one cares about your free shipping or your great service or your fast delivery. People just assume that that is baked in to the brand. It is effectively the bare minimum expectation. Now, the best thing you can possibly do here is reposition yourself into whites space. Or you could think about this as a purple ocean. I would recommend going and watching I would recommend going and reading uh Blue Ocean Strategy. This is actually my favorite book that I've ever read because it explains the concept that you don't actually have to change your product at all. You just have to use marketing to be able to reposition it into what looks like a blue ocean that differentiates you from competitors. And this is ultimately like in my opinion what the crux of incredible marketing is. Is that you take a commoditized product and you make it seem feel completely unique and differentiated from competitors with a strategical change to the way that it is positioned. And some people might hear that and go, \"Oh, you're just trying to deceive people. You're trying to take a commoditized product and make it seem like it's something else.\" Not at all. You're taking a commoditized product, you're repositioning it, and then people are happy with it. People are happy with the product. they repeat by because there is this perception that it is differentiated and often it can be differentiated just with a tiny little tweak but it is that tweak that allows you to lower your CAC, find new audiences, take market share because the product is actually good. Now another way to think about this as well is looking for whites space. It's effectively the same thing where we're taking a product and we're repositioning it. Now, I might be getting this wrong, but I'm going to take this as an example uh from the founder of Bloom, who puts out really good content. And his point was that their first product that they launched with that was a success. This was the first hero product was a greens powder. Now, everyone was doing a greens powder at the time. So, why would they launch a greens powder, right? They launched a product in one of the most saturated spaces at the time, but it worked and they cut through. And the way that it worked and the way that it cut throat was that they effectively identified that greens powder wasn't being marketed well or positioned well towards women. And so as a product of that there was no greens powder that was women specific. So they came in with an undifferentiated product. This is the same product effectively that everyone else is selling. Now their formula might have been better. I'm not sure but it's effectively the same thing, right? same product, but instead of just trying to sell it to the masses and be like, \"We're better than AG1. Please buy our product.\" Or trying to differentiate on an ingredient mix, instead they were like, \"No, we'll just take AG1 and we'll just serve it to an audience that isn't directly getting communicated to, which is women.\" And so they took a commoditized product and they effectively found a blue ocean strategy by pivoting the marketing. This is what you need to be doing with your product. This is what you need to be doing in the copywriting. This is ultimately what is going to create copy, create ads, create a funnel that's going to convert incredibly well over competitors. Now, in all honesty, copywriting by itself is probably a 1 and 1/2 hour masterass, which we will do in one or two months time. So, subscribe, come back to the channel, we will do a copywriting video where we'll just talk about copyrightiting for 90 minutes because this is not something that I can condense very well into a 10-minute segment within this larger video. However, if you just be benefits, you differentiate your product uniquely, you find oneofone positions, you make sure that the copy is specific to the funnel that you're running and you're speaking to the person. You're not speaking to the product. This is going to get you at least 70% of the way there. Just the last thing I'll probably say is make sure that towards the end of the copy, uh, you're effectively objection handling. And so, you want to be objection handling any of the other solutions. If you don't do this, people will just default in their mind to I'll just do this solution instead, which is cheaper, or I'll just do this solution instead, which I already have. You need to very effectively objection handle every other possible solution that they could go for to hone them in on this is the only solution to this problem for you. And that is what really good copywriting does. So, here's that same landing page from before, but we've scrolled down. We're now below the fold. Here is what a typical default landing page looks like on a Shopify build, which is that you have your description, which is just some product details and a oneliner, and then some call outs, free shipping, fast dispatch, great service. Three things that almost no one cares about, and it's a given that these are a part of the brand and the product. So, first thing is it fails on the so what test. These are all featureled, not benefitled. Why do I care it's 30 ms? Why do I care that it's vegan? Why do I care that it's made in Australia? Why do I care that it's a triple peptide complex? Why do I care that it should be applied nightly? Why do I care about any of this? It's not clear. Number two, it leaves with table stakes. So, it leaves with stuff that just once again, nobody cares about. Nobody cares that you have fast dispatch. Everyone has fast dispatch. Nobody cares you have great service. Everyone has great service. And anyone can say this. There's no proof that's actually backing it up. Free shipping, sure, that might increase conversion rates a little bit, but the reality is most people have it as well. And so I think people actually overprioritize the impact the free shipping has on conversion rates when it's not as high as you think. And then it doesn't objection handle at all. There's no objections handled here as to why people wouldn't buy this product and would go and go to another solution. Now here is a substantially better landing page out of the gates. Number one, it's benefitled. So it passes the so what test on everything. Firmer skin, calmer by morning benefit. And then it will go into what is the actual mechanism which is timereleased retinol. Number two, the one ofone angle is placed up top. This is a specific claim that's pulled from real reviews that no competitor can make. So the table stakes like vegan and 30 mil over here are kept small and low down where they belong. So you can see that we've taken this big highlighted features and we've gone and just made it little tiny dot points here in case it's a feature that anyone cares about. But this is how important it is. It's not important. It's tiny and so we want to make it that. Here's the one of one angle. Obviously, we're not going to put one of one angle on the landing page, but just wanted to call it out here. The first retinol that didn't make me peel. So, we've just pulled straight out of the uh customer testimonial, which is a great idea, and we can just put it on the landing page and say like, here is our unique angle. Our customers say that this is the first retinol that didn't make them peel, the line that customers keep writing. Now, we're not going to put mind for 300 reviews. Most retinols do the opposite. So, no competitor can claim this honestly. So, that is a incredible call out. And then number three is that we objection handle all the reasons as to why they wouldn't buy. And we do this directly with an FAQ, which is a really compelling reason as to why you should put FAQs on your landing pages. Now, an FAQ, please don't put generic questions, okay? Don't go and put like, \"What is the shipping policy? What is the brand story? How did the brand get started?\" These things are not going to get someone over the line and convince them to convert. It's a waste of space. It's a waste of copyrightiting. Instead, we want to continue talking to the person, not about the brand or about the product. And we want to answer the questions that might stop them from converting. Now, one of the biggest objections we may have found from our customer research is that people don't buy because they don't know if it'll work on sensitive skin because retinol is very aggressive of a treatment, which hopefully we objection handle right here with this quote. But let's back it in further. So, we explain the unique mechanism that makes it work on sensitive skin. How long until I see results? Clearly answered here. Can I use it with my other activives? Yes. So, these are the three biggest reasons based on our customer research as to why people don't buy and we've directly addressed them right here on the second part of the landing page. So, the copy removes the doubt of the purchase. But there is a limit to what copywriting can do because at some point the customer stops asking do I believe you and they start asking is this actually worth it? And that's not a copy question that's an offer question. So, the biggest lever is the offer. When I say offer, most people think immediately that I'm talking about discounting. I'm not talking about discounting. That is the wrong frame entirely. The offer is the positioning of the product in the market. Discounting is just e-commerce's lazy way out of it and the thing that people reach for when they can't actually think of how to curate a proper offer because it's difficult to do. I've seen the exact same product bundled and reframed as a New Year's reset at full price and it converts better than they ever did on sale because the offer met the customer where they actually were, which was that they wanted a New Year's resolution, a New Year's reset. So, reframing the product beats discounting and it costs you absolutely nothing on margin. In fact, it actually often allows you to increase margin because we can increase average order value. Now, I'm not going to go through full offer curation here because we have an hour and a half video on how to create offers in e-commerce. So, I strongly recommend you go and watch that video if you want to go really deep on offer curation. But, let's do a quick 2-minute run through. So, gift with purchase and bundles is two good options that allows you to keep margin if not improve margin whilst increasing perceived value. At the end of the day, what the offer is and what makes a good offer is increasing the perceived value from the customer. So the customer believes they're getting more whilst the advertiser or the seller is actually selling for less. And so we want to decrease our cost of goods while increasing the perceived value from the customer. And it is that gap between cost of goods and price which is margin. And margin is a reflection of how good the offer is. If you're running on like a 90% margin, that is usually a product of the offer being incredible because the actual perceived value, not just perceived, but also the received value from the customer is substantially higher than the cost of the consumer. That's where you find really good arbitrage opportunities and that is where you can scale. So, a gift with purchase, you can put a gift in that might be a product that's valued at $50, but it has a really low cost of goods. It's something like $4. And if you layer that in, you can increase your pricing to offset this $4 cost of goods, but then as a product, the value looks a lot higher because you're discount anchoring at a full price off within the bundle. Um, and that allows you to have higher conversion rates and higher average order value. Uh, bundles work really well because they allow you to pass on the shipping and fulfillment efficiency to the customer while pushing up units per transaction, which is one of the biggest levers that underpins average order value. And then there's two additional levers that no one really talks about properly, which is shipping. Free shipping is not always the win that it looks like because it teaches the customer to value delivery separately from the product. And shipping collected is almost pure profit for most people. Most people can charge shipping up to about 10% of the average order value of the cart. And it won't impact conversion rate at all. And I ran a lot of tests myself on my own e-commerce stores back in 2019 2020 on this. I did a lot of free shipping testing, introducing shipping back in, putting shipping insurance, putting expedited shipping, all of these different options. And generally speaking, as long as you keep your shipping collected at sub 10% of total revenue, it has no material impact on conversion rates. And so if you're going to give away free shipping, you definitely want to give it away at a threshold to incentivize people up. And then if you're going to do it at a threshold, you want to be very specific as to where you place that threshold and do a lot of testing around it because most people set their free shipping threshold way too low. Now the second lever that exists is the post-purchase upsell. Right after they buy, one click, no re-entering their card. You can just bill them a second time with a oneclick upsell. It obviously has to be relevant to what they just bought, not a random add-on, but it's the cleanest, easiest way to increase average order value because you're presenting it right as they're the warmest within the entire funnel because they've just spent money and you hit them with obviously a discount on that cross-eller upsell. Ends up having a very high take rate, increases revenue per visitor. So now going back to our example, we have a bad offer on the left, a good offer on the right, honing in on the left, we've got a 20% off. Obviously, this is going to erode margin enormously. It's just lazy discounting. It's not increasing average order value. This is what most people do. Revenue is going to go up, sure, but profit is going to go down here. Now, this is also going to train the customer to wait for discounts. People that start doing 20% off everything discounts pretty quickly. Everyone knows them for doing 20% off everything discounts and they can't get out of this rut and so they become reliant on it. Now, we have a good offer on the right. There's a lot going on here, but this is what the best direct to consumer brands are doing at the moment. So, we've moved away from the overnight repair serum, and we've moved into a routine bundle. The bundle has a gentle cleanser, overnight repair serum, and then the recovery night cream. And each of these is framed as a different step. And so, you need each of these steps to actually be able to achieve the outcome that you're after. Immediately by doing this, it's increased our average order value to $122. Now, what we've also done is we've baked in a discount across the bundle. Now, the discount that we're giving is $14. So, normally this is valued at $136, but we're going to give it for $122. We lose no margin here because we are just passing on our economies of scale from shipping these three items together. If we were to ship them separately, we would have to pay shipping and fulfillment costs three separate times, which would have cost us an additional $14. But shipping them together, we save on the duplication of shipping fees. Therefore, our margin is the same. We don't actually lose any margin giving this discount away. We're just passing on our shipping and fulfillment savings. Now, in addition to putting a bundle together here, which is maintaining margin and improving average order value. On top of that, we have two things up the top. Number one, we have a free travel size ritual set, which is worth $30. Now, it's priced at $30. Cost of goods to us might just be $4 or $5. It's going to be very low. We always want to put a gift that's very low cost, but high perceived value. And that's added to all orders over $60. So, right away, this is our first incentive at the $60 mark. If someone went and bought this on the left, they wouldn't get the gift. But if they go and buy the full routine, which is a much better option because it will actually allow them to achieve their outcome, we will also then throw in a free gift. We're also going to give away free shipping at 66. Now, this would need to be really thoughtful as to do we really want it at 66, do we want it a little bit higher? We'd obviously need to dial this in, test it over time, but we've got a free shipping offer there. But then really the key of this whole landing page is that yes, we can drive traffic straight to the routine page, but we can continue driving traffic to just the overnight repair serum. When people click add to cart, this is what appears in the cart. They haven't achieved free [snorts] shipping yet. They're not getting their free travel gift, but the way that they can get a free travel gift and they can get free shipping and they can save money is by adding the routine to cart. So, this is a one-click upgrade of the cart which upgrades them from just buying the overnight serum to adding in the cleanser and the recovery night cream. It is such a good frame of here is the enormous amount of free stuff that we're going to give you and you're going to save so much money by adding this stuff into cart and tripling your average order value for a brand like this. This change alone just to the cart slide out is going to make an enormous difference in revenue per visitor. Now, on top of this, after checkout, we're going to add a uh postcheckout oneclick upsell, which is going to be the ritual bag for $19. Now, we're going to obviously frame this as it's typically at 35 or $40 and it's discounted for 50% for 5 minutes post checkout. And so, this is also going to further increase our revenue per visitor on this pack. So, what's done well here, the offer is positioning. It's not discounting. Once again, we are not losing any margin here. The free shipping we're happy to give away because the average order value is high enough that the cost of shipping has democratized. We're happy to give away the $14 here because we're actually saving on shipping and fulfillment cost by shipping this all together. The free gift is $4 and so the margin impact is very minimal. And so this all came down to positioning as these three steps are your solution to be able to actually get your outcome than it was to do with price. The gift with purchase improves break even rorowaz. The bundle lifts units per transaction. And then we have a threshold and an upsell which is both going to increase revenue per visitor. Moving into the next element, which is proof. Number one, most obvious one with proof is reviews. If you have no reviews, nothing else in this chapter really matters because getting from zero reviews to 100 reviews can roughly double your conversion rate. And I say that from personal experience running my own multiple e-commerce brands during 2019 to 2020.",
+    "prior_notes": [
+      {
+        "title": "Order landing page sections Clarity, Copy, Offer, Proof, Friction",
+        "claim": "The source states the specific section order for a landing page is Clarity -> Copy -> Offer -> Proof -> Friction.",
+        "action": {
+          "text": "Order the landing page sections as Clarity, Copy, Offer, Proof, Friction.",
+          "quote": "The specific section order for a landing page: Clarity -> Copy -> Offer -> Proof -> Friction."
+        },
+        "unknowns": [
+          "The source does not detail the content or length of each section (Clarity, Copy, Offer, Proof, Friction)."
+        ]
+      },
+      {
+        "title": "Answer four mandatory questions above the fold",
+        "claim": "The source states four mandatory questions must be answered above the fold: What is it, Why this one (unique mechanism), Why now, Why trust you.",
+        "action": {
+          "text": "Answer above the fold: What is it? Why this one (unique mechanism)? Why now? Why trust you?",
+          "quote": "The four questions above the fold: What is it, Why this one (unique mechanism), Why now, Why trust you."
+        },
+        "unknowns": [
+          "The source does not specify the visual order or format for answering the four questions above the fold."
+        ]
+      },
+      {
+        "title": "Write benefit-led copy passing the so what test",
+        "claim": "The source recommends writing benefit-led copy by passing the \"so what\" test and leading with the outcome justified by the feature.",
+        "action": {
+          "text": "Reformat features into benefits, leading with the outcome justified by the feature, as in \"Firmer skin in 4 weeks using a triple peptide complex\" rather than just \"Triple peptide complex\".",
+          "quote": "The \"so what\" test for copy: reformatting features into benefits (e.g., \"Firmer skin in 4 weeks using a triple peptide complex\" rather than just \"Triple peptide complex\")."
+        },
+        "unknowns": [
+          "The source does not provide a general method for converting any feature into a benefit beyond the example."
+        ]
+      },
+      {
+        "title": "Use FAQ below fold for specific objections",
+        "claim": "The source recommends using the FAQ section directly below the fold to handle specific objections rather than generic brand questions.",
+        "action": {
+          "text": "Place an FAQ section directly below the fold and use it to handle specific objections, not generic brand questions.",
+          "quote": "using the FAQ section directly below the fold to handle specific objections rather than generic brand questions."
+        },
+        "unknowns": [
+          "The source does not identify which objections exist; discovering objections is directed to 02-AVT."
+        ]
+      },
+      {
+        "title": "Prioritize hyper-relevant reviews over generic ones",
+        "claim": "The source recommends prioritizing a few hyper-relevant reviews (with images/videos) that match the specific claim over hundreds of generic reviews.",
+        "action": {
+          "text": "Show a few hyper-relevant reviews with images or videos that match the specific claim rather than hundreds of generic reviews.",
+          "quote": "prioritizing a few hyper-relevant reviews (with images/videos) that match the specific claim over hundreds of generic reviews."
+        },
+        "unknowns": [
+          "The source does not define \"a few\" reviews or how to judge hyper-relevance."
+        ]
+      },
+      {
+        "title": "Align proof with unique mechanism from ad/headline",
+        "claim": "The source recommends ensuring the reviews shown specifically validate the unique mechanism claimed in the ad/headline.",
+        "action": {
+          "text": "Select proof reviews that specifically validate the unique mechanism claimed in the ad or headline.",
+          "quote": "ensuring the reviews shown specifically validate the unique mechanism claimed in the ad/headline."
+        },
+        "unknowns": [
+          "The source does not explain how to identify the unique mechanism."
+        ]
+      },
+      {
+        "title": "Keep extra costs below 10% of AOV",
+        "claim": "The source states extra costs must be sub-10% of AOV.",
+        "action": {
+          "text": "Keep extra costs below 10% of AOV.",
+          "quote": "extra costs must be sub-10% of AOV"
+        },
+        "unknowns": [
+          "The source does not define AOV or specify what counts as extra costs."
+        ]
+      },
+      {
+        "title": "Make guest checkout default",
+        "claim": "The source states guest checkout must be default.",
+        "action": {
+          "text": "Enable guest checkout and make it the default option.",
+          "quote": "guest checkout must be default"
+        },
+        "unknowns": [
+          "The source earlier says enabling guest checkout; it does not detail how to make it default."
+        ]
+      },
+      {
+        "title": "Provide accelerated payment options",
+        "claim": "The source recommends providing accelerated payment options such as Shop Pay and Apple Pay.",
+        "action": {
+          "text": "Offer accelerated payment options such as Shop Pay and Apple Pay.",
+          "quote": "providing accelerated payment options (Shop Pay, Apple Pay)"
+        },
+        "unknowns": [
+          "The source does not specify which accelerated payment options beyond Shop Pay and Apple Pay."
+        ]
+      },
+      {
+        "title": "Place express payment options at the top",
+        "claim": "The source states express options (Shop Pay) must be at the top.",
+        "action": {
+          "text": "Place express payment options such as Shop Pay at the top of the checkout.",
+          "quote": "express options (Shop Pay) must be at the top"
+        },
+        "unknowns": [
+          "The source does not specify whether other express options should also be at the top."
+        ]
+      },
+      {
+        "title": "Avoid trust badges",
+        "claim": "The source states trust badges should be avoided.",
+        "action": {
+          "text": "Avoid trust badges.",
+          "quote": "trust badges should be avoided"
+        },
+        "unknowns": [
+          "The source does not explain why trust badges should be avoided or what to use instead."
+        ]
+      },
+      {
+        "title": "Upsell routine or bundle in cart slide-out",
+        "claim": "The source recommends using the cart slide-out to upsell a routine or bundle to unlock free gifts and shipping, rather than just showing the single item.",
+        "action": {
+          "text": "In the cart slide-out, upsell a routine or bundle to unlock free gifts and shipping instead of only showing the single item.",
+          "quote": "using the cart to upsell a \"routine\" or \"bundle\" to unlock free gifts and shipping, rather than just showing the single item."
+        },
+        "unknowns": [
+          "The source does not specify how to structure the upsell or which bundles to offer."
+        ]
+      },
+      {
+        "title": "Structure advertorial/long-form VSL pages in specified order",
+        "claim": "The source states the structure for advertorials/long-form landing pages driven by VSLs is Hook -> Problem -> Mechanism -> Objections -> Proof -> Risk Reversal -> CTA.",
+        "action": {
+          "text": "Order advertorial/long-form VSL-driven landing pages as Hook, Problem, Mechanism, Objections, Proof, Risk Reversal, CTA.",
+          "quote": "the structure for advertorials/long-form landing pages driven by VSLs: Hook -> Problem -> Mechanism -> Objections -> Proof -> Risk Reversal -> CTA."
+        },
+        "unknowns": [
+          "The source does not detail the content of each section or how VSL integrates."
+        ]
+      },
+      {
+        "title": "Skip CR vanity metric, Hierarchy of Influences, offer economics, AB test math",
+        "claim": "The source instructs skipping the argument that Conversion Rate is a vanity metric and should be replaced by Revenue Per Visitor, the \"Hierarchy of Influences\" framework, offer mechanics and discounting economics, and the mathematical breakdown of AB testing significance.",
+        "action": null,
+        "unknowns": [
+          "The source does not explain why these topics are excluded."
+        ]
+      },
+      {
+        "title": "Optimize conversion rate through messaging and psychology before UI",
+        "claim": "The source says the two things that actually matter are measuring the right number honestly (not conversion rate), then working back to the page through messaging and consumer psychology, then pulling UI in to reinforce the first two.",
+        "action": {
+          "text": "Measure the right number honestly, work back to the page through messaging and consumer psychology, and pull UI in to reinforce the first two.",
+          "quote": "The two things that actually matter is measuring the right number honestly, which isn't conversion rate. Then working back to the page and thinking through conversion rate on the lens of messaging, consumer psychology. And then lastly, we pull UI in to reinforce the first two."
+        },
+        "unknowns": []
+      },
+      {
+        "title": "Treat conversion rate as an output, not a direct lever",
+        "claim": "The source warns that the conversion rate being optimized toward is not a lever that can be pulled directly; it is an output of about 50 different inputs, mostly not on the page.",
+        "action": null,
+        "unknowns": [
+          "The 50 different inputs are not enumerated in this passage."
+        ]
+      },
+      {
+        "title": "Calculate revenue per visitor (RPV)",
+        "claim": "The source states a better metric is RPV, revenue per visitor, calculated by multiplying conversion rate by average order value.",
+        "action": {
+          "text": "Calculate revenue per visitor by taking conversion rate and multiplying it by average order value.",
+          "quote": "To calculate this, you take your conversion rate and you times by average order value."
+        },
+        "unknowns": []
+      },
+      {
+        "title": "Use contribution per visitor for profit-oriented tracking",
+        "claim": "The source says you can make the metric profit-oriented and avoid using a revenue number by using contribution per visitor, which is RPV times gross margin percentage.",
+        "action": {
+          "text": "Calculate contribution per visitor by multiplying RPV by gross margin percentage.",
+          "quote": "So this is called contribution per visitor, which is the exact same thing, right? We're just then timesing by your gross margin percentage."
+        },
+        "unknowns": []
+      },
+      {
+        "title": "Example: internal model tracks RPV over a 2.5-year period",
+        "claim": "The source describes the speaker's internal model: it calculates RPV for all brands during the order process and looks at revenue per visitor over a 2 and 1/2 year time period to understand if it is going up or down, which tells whether conversion rate is improving or getting worse; they do not look at conversion rate.",
+        "action": null,
+        "unknowns": [
+          "This describes the speaker's internal model; the source does not establish 2 and 1/2 years as a general recommendation or required tracking period."
+        ]
+      },
+      {
+        "title": "Use RPV rather than conversion rate for decisions",
+        "claim": "The source says operating and making decisions based on RPV ties decisions directly to actual revenue per visitor, whereas making decisions based on conversion rate detaches from reality because it is not tightly correlated to revenue.",
+        "action": {
+          "text": "Use RPV rather than conversion rate for business decisions.",
+          "quote": "You should be using RPV."
+        },
+        "unknowns": []
+      },
+      {
+        "title": "Recognize conversion rate ceiling is not set by page quality",
+        "claim": "The source says conversion rate has a ceiling set by category, price point, and traffic quality, not usually page quality. Once the page is taken as far as it can go on clarity, offer, and proof, the next lever usually is not another design test; it becomes contribution margin on first order, future product launches, product quality, and repeat purchasing.",
+        "action": null,
+        "unknowns": [
+          "Specific thresholds for when the page is as far as it can go are not stated."
+        ]
+      },
+      {
+        "title": "Avoid repeatedly redesigning the same page for a new ceiling",
+        "claim": "The source says some brands keep redesigning the same page over and over trying to find a new ceiling when the constraint was never a slight design tweak on the landing page.",
+        "action": null,
+        "unknowns": []
+      },
+      {
+        "title": "Still optimize landing pages and maximize conversion rate",
+        "claim": "The source says conversion rate is more determined by product quality, category, return rates, and things outside the landing page, but you should still do a lot of landing page optimization and get conversion rates as high as you can.",
+        "action": {
+          "text": "Do a lot of landing page optimization and get conversion rates as high as you can.",
+          "quote": "although you should be doing a lot of landing page optimization and getting conversion rates as high as you can."
+        },
+        "unknowns": []
+      },
+      {
+        "title": "Reserve A/B split tests for $40M+ online",
+        "claim": "The source says making slight tweaks on an ongoing basis does not materially move RPV unless you are doing like 40 million plus online, at which point A/B split tests can be worth doing to squeeze out a little extra 0.1%; for most people it is not worth it.",
+        "action": {
+          "text": "If doing like 40 million plus online, consider running A/B split tests to squeeze out a little extra 0.1%.",
+          "quote": "Unless you're doing like 40 million plus online, then it starts to become worth doing some AB split test to try to squeeze out a little extra 0.1%."
+        },
+        "unknowns": [
+          "The exact revenue threshold is heuristic (like 40 million plus online); what counts as online is not defined."
+        ]
+      },
+      {
+        "title": "Understand the CAC argument for conversion rate",
+        "claim": "The source explains that because conversion rate is the denominator in the CAC formula, doubling conversion rate halves CAC, which allows raising the CAC ceiling back up and could allow doubling or tripling volume; however, doubling conversion rate is described as an insane change almost never seen.",
+        "action": null,
+        "unknowns": []
+      },
+      {
+        "title": "Prefer conversion rate improvements because they do not require more spend",
+        "claim": "The source says other scaling levers such as spending more on ads or improving in-platform efficiency through click-through rates or CPCs generally require money, but improving conversion rate does not require more spend; it requires tactical clear decisions to improve the landing page conversion rate, making it the cheapest best option for improving whole-funnel efficiency.",
+        "action": {
+          "text": "Improve conversion rate by making tactical clear decisions on the landing page instead of requiring more ad spend.",
+          "quote": "to improve conversion rate, you don't need to spend more. You just need to make tactical clear decisions that's going to improve the conversion rate of the landing page."
+        },
+        "unknowns": [
+          "What specific tactical clear decisions are is not enumerated in this passage."
+        ]
+      },
+      {
+        "title": "Example: low-AOV impulse store relied on Google because Meta could not work",
+        "claim": "The source describes a real store with a 9% conversion rate and low average order value around $45 to $55; it was an impulse purchase with most traffic from bottom-of-funnel Google, and because the average order value was that low, Meta could not work, so the only paid platform that would work was Google. This is presented as one historical store example, not a general platform-selection rule.",
+        "action": null,
+        "unknowns": [
+          "The source presents this as one real store example; the approximately $45 to $55 AOV is not established as a general threshold for excluding Meta or selecting Google."
+        ]
+      },
+      {
+        "title": "Avoid cross-brand conversion-rate comparisons",
+        "claim": "The source says you should not look at a friend's brand, competitor, or agency client and conclude it is better because it has a higher conversion rate.",
+        "action": null,
+        "unknowns": []
+      },
+      {
+        "title": "Expect lower conversion rate when scaling into cold traffic",
+        "claim": "The source says one of the variables that conversion rate is an output of is volume on cold traffic; the more you scale into cold, the lower conversion rate will generally become.",
+        "action": null,
+        "unknowns": [
+          "The source does not quantify how much conversion rate declines or define cold traffic."
+        ]
+      },
+      {
+        "title": "Improve conversion rate in source order",
+        "claim": "The source presents an order of operations for improving conversion rate: clarity and hierarchy, copy, offer, proof, then friction.",
+        "action": {
+          "text": "Work through conversion-rate improvements starting with clarity and hierarchy, then copy, then offer, then proof, then friction.",
+          "quote": "We're going to start with clarity and hierarchy, particularly talking about above the fold. We'll then go into copy. We'll then go into offer. We'll then go into proof. We'll then go into friction."
+        },
+        "unknowns": [
+          "The source says this is not the order of operations of an individual element of the ICE framework, but the ICE framework is not defined in this passage."
+        ]
+      },
+      {
+        "title": "Structure landing page in source order",
+        "claim": "The source says the same sequence is a useful way to think through landing page design.",
+        "action": {
+          "text": "At the top use absolute clarity, then copy that convinces and explains the unique mechanism, then the offer, then social proof, then remove friction so purchase is easy.",
+          "quote": "at the top, you want absolute clarity and you want it to be clear what is being presented to them so they can begin reading. Then you want to move into a piece of copy that actually convinces them to buy your product and explains the unique mechanism and educates them appropriately. Then you want to come in and show them the offer. Off the back of the offer, you want to social proof. And then lastly, you want to remove all friction so that the purchase is easy."
+        },
+        "unknowns": []
+      },
+      {
+        "title": "Offer curation has highest impact but is hard",
+        "claim": "The source indicates offer curation has the biggest conversion-rate impact but is not easy and is very hard.",
+        "action": null,
+        "unknowns": [
+          "The antecedent of 'this' in 'So this has the biggest impact' is not explicit; context suggests offer curation, but the passage does not name it in that sentence.",
+          "Offer curation is not defined in this passage."
+        ]
+      },
+      {
+        "title": "Fix landing page clarity and hierarchy for quick impact",
+        "claim": "Fixing the landing page by making it clear and putting hierarchy in place is easier, has quick impact, does not take much time, and the source says split testing is not really needed.",
+        "action": {
+          "text": "Fix the landing page by making it clear and putting the hierarchy in place for quick impact.",
+          "quote": "It's much easier to just fix the landing page, make it clear, put the hierarchy in place, and that's going to have a very quick impact, and it's not going to take a lot of time. You're not going to really need to do any split testing either."
+        },
+        "unknowns": [
+          "The source says split testing is not really needed for this quick landing-page fix, but no measurement method or validation criteria is stated."
+        ]
+      },
+      {
+        "title": "Answer four PDP above-the-fold questions and audit on phone",
+        "claim": "For PDPs, the above fold must answer four questions: what it is, why buy this one, why buy right now, and why trust you.",
+        "action": {
+          "text": "Look at the above the fold on your phone, pull up your website PDP, and check whether it answers the four questions above the fold.",
+          "quote": "pause the video, go and look at above the fold on your phone. Right now, 80% of traffic's on mobile. So, don't look at your computer. Look at your phone. Pull up your website. Look at your PDP. Do you answer these four questions above the fold?"
+        },
+        "unknowns": [
+          "The source says it will show how to answer the four questions 'in a second,' but this passage does not contain those implementation steps."
+        ]
+      },
+      {
+        "title": "Clear product title communicates unique mechanism",
+        "claim": "The better landing page example uses a subtitle that makes the product, unique mechanism, and differentiation clear.",
+        "action": null,
+        "unknowns": []
+      },
+      {
+        "title": "Use reviews above fold to address trust",
+        "claim": "The source says to put reviews in to address trust, and states 4.8 stars is better than five stars in the speaker's opinion because it shows reviews are genuine.",
+        "action": {
+          "text": "Put reviews above the fold to address the trust question.",
+          "quote": "Just throwing the uh reviews in there. 4.8 stars is actually better than five stars in my opinion because it shows that these reviews are actually genuine."
+        },
+        "unknowns": [
+          "The claim that 4.8 stars is better than five stars is stated as the speaker's opinion, not as a universal threshold."
+        ]
+      },
+      {
+        "title": "Default Shopify landing page fails four questions",
+        "claim": "The default Shopify landing page fails all four above-the-fold questions.",
+        "action": null,
+        "unknowns": []
+      },
+      {
+        "title": "Reflect ad angle and messaging on landing page",
+        "claim": "The source says if the landing page reflects the ad angle and messaging, conversion rates go up substantially.",
+        "action": {
+          "text": "When you change the ad persona, offer, or angle, reflect that change on the landing page.",
+          "quote": "When you change one of these three things, we need it reflected on the landing page."
+        },
+        "unknowns": []
+      },
+      {
+        "title": "Constantly test different ad concepts",
+        "claim": "The source says that if you are good at Meta ads and testing different concepts, you should be constantly testing different concepts, where a different concept changes the ad persona, offer, or angle.",
+        "action": {
+          "text": "Constantly test different ad concepts by changing the persona, the offer, or the angle.",
+          "quote": "you should be constantly testing different concepts. A different concept is changing either the persona in which you're talking to in the ad, you're changing the offer, or you are changing the angle."
+        },
+        "unknowns": []
+      },
+      {
+        "title": "Drive different personas to separate landing pages",
+        "claim": "The source says different personas should not be driven to the same generic creatine PDP.",
+        "action": {
+          "text": "Drive the menopause persona to a menopause-related PDP and drive the muscle-building persona to a separate muscle-building PDP.",
+          "quote": "we want to drive the menopause persona to a menopause related PDP that talks about all the benefits and speaks to that individual. And then we have a muscle building PDP. and we drive this two separate landing pages."
+        },
+        "unknowns": [
+          "The source cuts off after 'Same thing for the offer. The offer is the obvious one.' so the offer-specific continuation is missing."
+        ]
+      },
+      {
+        "title": "Order above-the-fold elements by persuasive weight",
+        "claim": "The better landing page above the fold is ordered by persuasive weight: value proposition first, then proof, then price, then CTA.",
+        "action": null,
+        "unknowns": []
+      },
+      {
+        "title": "Better landing page omits size options; cart or bundle alternatives",
+        "claim": "In the source's better landing page example, there are no SKU details or size options, and the source says not to optimize for size options or quantity in cart; the ad goes to cart and size is handled later or the shopper is forced up to the 50 ml bundle to increase first purchase GP.",
+        "action": null,
+        "unknowns": [
+          "The source presents handling sizing later and forcing a 50 ml bundle as alternatives in this example but does not state conditions for choosing either.",
+          "'50 mil' appears to mean 50 ml but is not defined; 'GP' is not expanded."
+        ]
+      },
+      {
+        "title": "Avoid optimizing for size options or cart quantity",
+        "claim": "The source says not to optimize for SKU details, size options, or quantity in cart, and to get the ad to cart.",
+        "action": {
+          "text": "Do not optimize for SKU details, size options, or quantity in cart; get the ad to cart and handle size later or in the cart.",
+          "quote": "We want to just get the ad to cart and we can deal with this in the cart or later on."
+        },
+        "unknowns": [
+          "The source does not state conditions for when to handle sizing later versus when to bundle or force a larger size."
+        ]
+      },
+      {
+        "title": "Message mismatch substantially impacts conversion rates",
+        "claim": "The source warns that if an ad talks about a specific benefit and the landing page does not reinforce the ad messaging, conversion rates are substantially impacted.",
+        "action": null,
+        "unknowns": [
+          "The source does not quantify how much conversion rates are impacted."
+        ]
+      },
+      {
+        "title": "Use specificity over broad application on landing pages and ads",
+        "claim": "The source recommends specificity over broad application anytime on a landing page and in an ad.",
+        "action": {
+          "text": "Use specificity over broad application on landing pages and in ads.",
+          "quote": "So, you want specificity over broad application anytime on a landing page and anytime in an ad."
+        },
+        "unknowns": [
+          "No method for selecting the specific angle."
+        ]
+      },
+      {
+        "title": "Problem agitate into one specific person in ads",
+        "claim": "The source says an ad listing all benefits won't do well; you need to problem agitate into one and talk to one specific person.",
+        "action": {
+          "text": "Problem agitate into one specific problem and person in the ad.",
+          "quote": "You need to problem agitate into one and talk to one specific person."
+        },
+        "unknowns": [
+          "No guidance on choosing the single problem and person."
+        ]
+      },
+      {
+        "title": "Ad angle and PDP benefit list mismatch reduces trust",
+        "claim": "The source describes that when an ad targets a specific problem and the PDP lists that benefit among many, consumers question whether the supplement will support their actual problem, and conversion worsens.",
+        "action": null,
+        "unknowns": [
+          "No quantified conversion impact."
+        ]
+      },
+      {
+        "title": "Write about the person, not the product",
+        "claim": "The source says the most common copywriting mistake on landing pages is writing about the product instead of the person, with too much about what it is and not enough about why it matters.",
+        "action": {
+          "text": "Write benefit-led copy about the person rather than feature-led copy about the product.",
+          "quote": "You need to be benefitled, not feature."
+        },
+        "unknowns": [
+          "No process for identifying the person's priorities."
+        ]
+      },
+      {
+        "title": "So what test example: triple peptide complex",
+        "claim": "The source gives the example of putting triple peptide complex on a landing page and answering so what with firmer skin in four weeks.",
+        "action": null,
+        "unknowns": []
+      },
+      {
+        "title": "Lead with outcome, then justify with feature",
+        "claim": "The source says you always want to lead with the outcome and then justify it with the feature underneath.",
+        "action": {
+          "text": "Lead with the outcome and then justify it with the feature underneath.",
+          "quote": "you always want to lead with the outcome and then you want to justify it with the feature underneath."
+        },
+        "unknowns": []
+      },
+      {
+        "title": "Use a pain-led or benefit-led headline and split test it",
+        "claim": "The source says a pain-led or benefit-led headline beats a feature-led one, and it is one of the few things worth split testing on a landing page because it is a big swing above the fold.",
+        "action": {
+          "text": "Use a pain-led or benefit-led headline and split test it.",
+          "quote": "A painled or benefitled headline beats a featureled one every single day of the week."
+        },
+        "unknowns": [
+          "No test duration or sample size stated."
+        ]
+      },
+      {
+        "title": "Mine customer reviews with an LLM for unique differentiators",
+        "claim": "The source recommends exporting all reviews and running them through a large language model to find unique feedback that differentiates you from others.",
+        "action": {
+          "text": "Export all reviews and ask an LLM to find unique feedback that differentiates the product.",
+          "quote": "you want to run it through a large language model, run it through claw, run it through chat jbt, run it through something and ask it, can you find unique feedback on my product that differentiates me from others?"
+        },
+        "unknowns": [
+          "Specific LLM and review export method not specified; output not guaranteed."
+        ]
+      },
+      {
+        "title": "Combine multiple benefits to create uniqueness",
+        "claim": "The source says you can become unique by tactically adding multiple benefits together, such as solving for acne and being comfortable to sleep on.",
+        "action": {
+          "text": "Combine multiple benefits tactically to create unique positioning.",
+          "quote": "Another option here is that you can become unique by tactically adding multiple benefits together."
+        },
+        "unknowns": [
+          "How to choose complementary benefits is not specified."
+        ]
+      },
+      {
+        "title": "Bloom greens powder women-specific positioning example",
+        "claim": "The source, with the speaker's caveat that he might be getting this wrong, gives the example of Bloom launching a greens powder in a saturated space by identifying that greens powder was not marketed or positioned well towards women, so no women-specific greens powder existed.",
+        "action": null,
+        "unknowns": [
+          "Speaker is unsure whether Bloom's formula was better or different."
+        ]
+      },
+      {
+        "title": "Reposition into white space or a purple ocean",
+        "claim": "The source says the best thing you can do is reposition yourself into white space, or think of it as a purple ocean, by using marketing to reposition a commoditized product as differentiated without changing the product.",
+        "action": {
+          "text": "Reposition the product into white space, or a purple ocean, using marketing.",
+          "quote": "reposition yourself into whites space"
+        },
+        "unknowns": [
+          "Source does not provide a step-by-step method for identifying white space."
+        ]
+      },
+      {
+        "title": "Pivot marketing to an underserved audience",
+        "claim": "The source claims that taking a commoditized product and pivoting the marketing to an audience not directly communicated to can create a blue ocean strategy.",
+        "action": {
+          "text": "Pivot marketing to serve an audience that is not directly getting communicated to.",
+          "quote": "serve it to an audience that isn't directly getting communicated to"
+        },
+        "unknowns": [
+          "No method stated for identifying which audience is underserved."
+        ]
+      },
+      {
+        "title": "Greens powder brand repositioned to women",
+        "claim": "The source describes a greens powder brand that identified greens powder was not marketed well towards women and served an undifferentiated product to women, finding a blue ocean by pivoting marketing.",
+        "action": null,
+        "unknowns": [
+          "Source says the formula might have been better but is not sure."
+        ]
+      },
+      {
+        "title": "Objection handle alternative solutions",
+        "claim": "The source recommends objection handling every other possible solution toward the end of copy so prospects do not default to cheaper or already-owned alternatives.",
+        "action": {
+          "text": "Toward the end of the copy, objection handle every other possible solution.",
+          "quote": "make sure that towards the end of the copy, uh, you're effectively objection handling"
+        },
+        "unknowns": []
+      },
+      {
+        "title": "Avoid default Shopify landing page pattern",
+        "claim": "The source says a typical default landing page fails the so-what test and is feature-led, not benefit-led.",
+        "action": null,
+        "unknowns": [
+          "Source also says the default page leaves table stakes and does not objection handle, but those spans are not in this unit's quote."
+        ]
+      },
+      {
+        "title": "Do not overprioritize free shipping conversion impact",
+        "claim": "The source asserts people overprioritize the impact free shipping has on conversion rates and it is not as high as assumed.",
+        "action": null,
+        "unknowns": [
+          "No quantified conversion impact is given."
+        ]
+      },
+      {
+        "title": "Build benefit-led landing page with mechanism",
+        "claim": "The source says a substantially better landing page is benefit-led and passes the so-what test on everything.",
+        "action": {
+          "text": "Build a benefit-led landing page that passes the so-what test and then goes into the actual mechanism.",
+          "quote": "it's benefitled. So it passes the so what test on everything. Firmer skin, calmer by morning benefit. And then it will go into what is the actual mechanism which is timereleased retinol."
+        },
+        "unknowns": []
+      },
+      {
+        "title": "Keep table stakes small and low",
+        "claim": "The source says table stakes like vegan and 30 mil are kept small and low down where they belong.",
+        "action": {
+          "text": "Keep table stakes features small and low down.",
+          "quote": "the table stakes like vegan and 30 mil over here are kept small and low down where they belong."
+        },
+        "unknowns": []
+      },
+      {
+        "title": "Use FAQ to objection handle purchase reasons",
+        "claim": "The source recommends objection handling all the reasons they would not buy directly with an FAQ.",
+        "action": {
+          "text": "Use an FAQ to objection handle all the reasons they would not buy.",
+          "quote": "we objection handle all the reasons as to why they wouldn't buy. And we do this directly with an FAQ"
+        },
+        "unknowns": []
+      },
+      {
+        "title": "Use customer research to identify and address objections",
+        "claim": "The source says one of the biggest objections found from customer research was that people do not buy because they do not know if it will work on sensitive skin.",
+        "action": {
+          "text": "Use customer research to identify the biggest reasons people do not buy and directly address them on the second part of the landing page.",
+          "quote": "So, these are the three biggest reasons based on our customer research as to why people don't buy and we've directly addressed them right here on the second part of the landing page."
+        },
+        "unknowns": [
+          "Source does not describe the customer research method."
+        ]
+      },
+      {
+        "title": "Recognize copy limit and treat offer as biggest lever",
+        "claim": "The source says copy removes doubt, but when the customer asks if it is worth it, that is an offer question and the biggest lever is the offer.",
+        "action": null,
+        "unknowns": [
+          "Source says full offer curation is covered in a separate hour-and-a-half video not included here."
+        ]
+      },
+      {
+        "title": "New Year's reset reframe example",
+        "claim": "The source says the exact same product bundled and reframed as a New Year's reset at full price converted better than it ever did on sale because the offer met the customer where they actually were.",
+        "action": null,
+        "unknowns": [
+          "Product category and timeframe are not specified."
+        ]
+      },
+      {
+        "title": "Shipping levers and free shipping continuation",
+        "claim": "The source begins to say there are two additional levers no one talks about properly, naming shipping, and that free shipping is not always the win it looks like because it teaches the customer to value, then the passage cuts off.",
+        "action": null,
+        "unknowns": [
+          "What the two additional shipping levers are is not stated.",
+          "What free shipping teaches the customer to value is cut off.",
+          "Whether the second lever is shipping-related or separate is unknown."
+        ]
+      },
+      {
+        "title": "Table stakes claims lack proof",
+        "claim": "The source says table-stakes claims such as fast dispatch and great service can be said by anyone and have no proof backing them up.",
+        "action": null,
+        "unknowns": []
+      },
+      {
+        "title": "Decrease cost of goods while increasing perceived value",
+        "claim": "The source says the offer should decrease cost of goods while increasing perceived value from the customer.",
+        "action": {
+          "text": "Decrease cost of goods while increasing perceived value from the customer.",
+          "quote": "And so we want to decrease our cost of goods while increasing the perceived value from the customer."
+        },
+        "unknowns": []
+      },
+      {
+        "title": "Bundle complementary products to lift units per transaction",
+        "claim": "Bundles let a brand pass shipping and fulfillment efficiency to the customer while raising units per transaction, which the source calls one of the biggest levers underpinning average order value.",
+        "action": {
+          "text": "Use bundles to increase units per transaction and therefore average order value.",
+          "quote": "Uh, bundles work really well because they allow you to pass on the shipping and fulfillment efficiency to the customer while pushing up units per transaction"
+        },
+        "unknowns": [
+          "No rules are given for which products to bundle beyond the skincare example."
+        ]
+      }
+    ],
+    "id": "f24164474cbb2a1bbcc79ea0"
+  },
+  "system_prompt_sha256": "458942624a5ba73364ec3f25288651f604b915c91776cbe18915311c9c3637ed"
+}

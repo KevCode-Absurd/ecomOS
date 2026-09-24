@@ -1,0 +1,583 @@
+{
+  "request_id": "827e85089291cbc750d389aaef54c0e88c8735ca50dece6d435a9b025715eb38",
+  "provider": "deepseek",
+  "model": "deepseek-flash",
+  "effort": "high",
+  "completion_limit": 32768,
+  "usage": {
+    "prompt_tokens": 3470,
+    "completion_tokens": 22278,
+    "total_tokens": 25748,
+    "prompt_tokens_details": {
+      "cached_tokens": 1024
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 17840
+    },
+    "prompt_cache_hit_tokens": 1024,
+    "prompt_cache_miss_tokens": 2446
+  },
+  "booked_cost_usd": 0.0277746,
+  "seconds": 82.0,
+  "finish_reason": "stop",
+  "output": {
+    "units": [
+      {
+        "id": "u1",
+        "kind": "action",
+        "title": "Be more relevant rather than bidding more to lower cost",
+        "claim": {
+          "text": "The source says the fastest way to lower cost is not to bid more but to be more relevant.",
+          "quote": "the fastest way to go and lower your cost isn't to go and bid more, but it's to be more relevant."
+        },
+        "action": {
+          "text": "Be more relevant rather than bidding more to lower cost.",
+          "quote": "the fastest way to go and lower your cost isn't to go and bid more, but it's to be more relevant."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "Source does not define how to measure or improve relevance."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u2",
+        "kind": "principle",
+        "title": "Estimated action rate and ad quality are diagnostic metrics, not live levers",
+        "claim": {
+          "text": "The source says Meta describes estimated action rate and ad quality as diagnostic metrics of past events, not levers in the live auction, and they cannot be changed in real time.",
+          "quote": "They aren't levers that exist within the live auction."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "Source does not explain how historical diagnostics map to current auction behavior."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u3",
+        "kind": "principle",
+        "title": "Estimated action rate appears causal to CPMs",
+        "claim": {
+          "text": "The speaker says from what they have seen, estimated action rate seems very causal to CPMs, likely because of its relationship to ad quality.",
+          "quote": "estimated action rate seems to be very causal to CPMs"
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "Causal claim is the speaker's observation, not verified platform behavior."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u2"
+          }
+        ]
+      },
+      {
+        "id": "u4",
+        "kind": "example",
+        "title": "Lead magnet funnel has lower CPMs than book-a-call funnel in source example",
+        "claim": {
+          "text": "The source reports that CPMs are about $25 on a lead magnet funnel and about $100 on a book-a-call funnel.",
+          "quote": "CPMs on a lead magnet funnel are so low. They're like $25. CPMs on a book a call funnel are like $100."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "Numbers are reported observations, not universal benchmarks; exact funnel configurations and events are not fully specified."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u5",
+        "kind": "action",
+        "title": "Set up funnels to maximize landing-page action rate for CPM arbitrage",
+        "claim": {
+          "text": "If Meta bases CPMs on expected action rate, the source says one can use this to advantage by setting up funnels to maximize landing-page action rate and minimize CPMs.",
+          "quote": "you can use this technically to your advantage if you're smart about how to set up funnels to maximize action rate on the landing page to minimize CPMs and find that arbitrage."
+        },
+        "action": {
+          "text": "Set up funnels to maximize action rate on the landing page to minimize CPMs and find that arbitrage.",
+          "quote": "you can use this technically to your advantage if you're smart about how to set up funnels to maximize action rate on the landing page to minimize CPMs and find that arbitrage."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "The source assumes Meta bases CPMs on expected action rate.",
+              "quote": "if they're going based on expected action rate"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": [
+            {
+              "text": "You are smart about how to set up funnels.",
+              "quote": "if you're smart about how to set up funnels"
+            }
+          ]
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "Mechanism is presented as a technical possibility; not verified current platform behavior."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u3"
+          }
+        ]
+      },
+      {
+        "id": "u6",
+        "kind": "principle",
+        "title": "Bid is economics; higher sustainable bid wins more auctions and scale",
+        "claim": {
+          "text": "The source says your bid is just your economics, and a higher sustainable bid wins more auctions and enables more scale.",
+          "quote": "The higher your sustainable bid, the more auctions that you win, the more auctions that you win, the more scale you can achieve."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No method is given to compute a sustainable bid."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u7",
+        "kind": "action",
+        "title": "Open margin and allocate it to acquisition",
+        "claim": {
+          "text": "The source describes opening up margin to allocate as much margin as possible to acquisition to win more auctions and achieve more scale.",
+          "quote": "It's a game of opening up margin so that you can allocate as much margin as possible to acquisition so that you can win more auctions and you can achieve more scale."
+        },
+        "action": {
+          "text": "Open up margin and allocate as much margin as possible to acquisition.",
+          "quote": "It's a game of opening up margin so that you can allocate as much margin as possible to acquisition so that you can win more auctions and you can achieve more scale."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No target margin or allocation rule stated."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u6"
+          }
+        ]
+      },
+      {
+        "id": "u8",
+        "kind": "principle",
+        "title": "Cannot out tactic bad economics; finance is the base",
+        "claim": {
+          "text": "The source says you cannot out tactic bad economics, audits start at the economics level, and finance is the base that builds the entire business.",
+          "quote": "you cannot out tactic bad economics, which is why all of our audits start at the economics level. It's why everyone in the team is trained heavily and deeply on finance because ultimately finance is the base that builds the entire business."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "Source does not detail what an economics-level audit includes."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u6"
+          }
+        ]
+      },
+      {
+        "id": "u9",
+        "kind": "principle",
+        "title": "Better unit economics can beat better tactics",
+        "claim": {
+          "text": "The source says a competitor with better unit economics can have worse creatives, campaign structure, and measurement and still outperform by bidding more.",
+          "quote": "person with better unit economics can have way worse creatives than you, can have way worse campaign structure, can have way worse measure measurement, and they can actually still outperform you because they just bid more than you on the auction."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No quantified threshold for better unit economics is given."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u6"
+          }
+        ]
+      },
+      {
+        "id": "u10",
+        "kind": "action",
+        "title": "Maximize first-order unit economics with UPT and AUR",
+        "claim": {
+          "text": "The source lists maximizing unit economics on first order by increasing units per transaction and average unit retail.",
+          "quote": "maximizing unit economic on first order by increasing units per transaction and average unit retail"
+        },
+        "action": {
+          "text": "Increase units per transaction and average unit retail to maximize first-order unit economics.",
+          "quote": "maximizing unit economic on first order by increasing units per transaction and average unit retail"
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No target levels or tactics for increasing UPT or AUR are provided."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u9"
+          }
+        ]
+      },
+      {
+        "id": "u11",
+        "kind": "principle",
+        "title": "Signal quality is a hidden lever on CPMs",
+        "claim": {
+          "text": "The source says signal quality is a hidden lever that decreases CPMs and ties into action rates and the bid equation.",
+          "quote": "signal quality is a hidden lever that will decrease your CPMs and it ties into action rates and the bid equation."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "Source does not define signal quality measurement."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u12",
+        "kind": "action",
+        "title": "Get conversions through pixel or CAPI for clean signal",
+        "claim": {
+          "text": "The source says getting conversions through the pixel or CAPI gives a high AMQ score or clean signal, leading to accurate estimated action rate and cheaper, better delivery.",
+          "quote": "when you get conversions through the pixel or CAPI, that then pushes through and gives you a high AMQ score or a clean signal into the account."
+        },
+        "action": {
+          "text": "Get conversions through the pixel or CAPI to produce a clean signal.",
+          "quote": "when you get conversions through the pixel or CAPI, that then pushes through and gives you a high AMQ score or a clean signal into the account."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "AMQ score is not defined; exact implementation is not described."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u11"
+          }
+        ]
+      },
+      {
+        "id": "u13",
+        "kind": "example",
+        "title": "Tracking gap can corrupt estimated action rate and bidding",
+        "claim": {
+          "text": "The source gives an example where 100 conversions occur but Meta tracks only 70, so Meta sees a 2% conversion rate instead of the actual 3%, causing the bidding equation to fall apart.",
+          "quote": "let's say that you're getting 100 conversions from your ads, but Meta's only effectively tracking 70 of them and pushing them back into the platform."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Underreported conversions or bad tracking.",
+              "quote": "bad tracking and bad signal quality"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "Numbers are illustrative; source does not specify how to diagnose exact tracking loss."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u12"
+          }
+        ]
+      },
+      {
+        "id": "u14",
+        "kind": "action",
+        "title": "Get server-side tracking if affordable, but do not expect measurable results",
+        "claim": {
+          "text": "The source says server-side tracking is nice to have if you can afford it and assume it may help signal quality, but the impact is very hard to measure and you should not expect measurable results.",
+          "quote": "get it if you can afford it, but don't expect it to be measurable."
+        },
+        "action": {
+          "text": "Get server-side tracking if you can afford it.",
+          "quote": "for sure, go get server-side tracking"
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Considering whether to add server-side tracking.",
+              "quote": "should we have server-side tracking"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": [
+            {
+              "text": "You can afford to put server-side tracking onto the P&L and assume it is probably helping signal quality.",
+              "quote": "If you can afford it, if you can just put it onto the P&L, and you can assume that it is probably helping signal quality"
+            }
+          ]
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "Actual impact on signal quality is unknown and the speaker says they have no idea how much impact it will make."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u12"
+          }
+        ]
+      },
+      {
+        "id": "u15",
+        "kind": "warning",
+        "title": "Entity ID trap groups similar ads and reduces unique reach",
+        "claim": {
+          "text": "The source warns that if many similar ads are put into an account, Meta may group them under the same entity ID, registering far fewer unique ads and reducing unique reach.",
+          "quote": "even though you might have 200 ads in the account, Meta will actually only register it as 20 unique ads."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Putting 200 ads into the account with many very similar ads.",
+              "quote": "put 200 ads into the account, and a lot of them are very similar"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "Criteria for entity ID grouping are not fully specified."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u16",
+        "kind": "action",
+        "title": "Ensure creative diversity by thinking in concepts of angle and offer",
+        "claim": {
+          "text": "The source advises making sure there is as much diversity as possible and thinking through creatives based on concepts, which is the intersection of an angle and offer.",
+          "quote": "You should make sure as much as possible that there is diversity. You should be thinking through all of your creatives based on concepts, which is the intersection of an angle and offer"
+        },
+        "action": {
+          "text": "Ensure diversity by thinking through creatives based on concepts, the intersection of an angle and offer.",
+          "quote": "You should make sure as much as possible that there is diversity. You should be thinking through all of your creatives based on concepts, which is the intersection of an angle and offer"
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Risk of similar ads being grouped and not reaching unique people.",
+              "quote": "If you're serving very, very similar ads to the same people over and over again"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "Source cuts off after 'offer'; the continuation describing concepts is missing."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u15"
+          }
+        ]
+      }
+    ],
+    "more_units": true,
+    "unresolved": [
+      "Omitted due to cap: Meta uses historical ad quality, click-through rates, and conversion rates to adjust bid at an individual user level.",
+      "Omitted due to cap: speaker's unresolved claim that Meta may intuitively value certain actions differently, and speculation whether Meta reads landing pages or uses expected action rate.",
+      "Omitted due to cap: server-side tracking sales-pitch caveat and measurement-design questions such as 10-day vs 30-day windows and causal impact models.",
+      "Source cuts off mid-sentence at which is the intersection of an angle and offer; continuation needed.",
+      "Provenance is unverified and unresolved platform behavior requires current primary-source verification."
+    ]
+  },
+  "raw_content": "{\n  \"units\": [\n    {\n      \"id\": \"u1\",\n      \"kind\": \"action\",\n      \"title\": \"Be more relevant rather than bidding more to lower cost\",\n      \"claim\": {\n        \"text\": \"The source says the fastest way to lower cost is not to bid more but to be more relevant.\",\n        \"quote\": \"the fastest way to go and lower your cost isn't to go and bid more, but it's to be more relevant.\"\n      },\n      \"action\": {\n        \"text\": \"Be more relevant rather than bidding more to lower cost.\",\n        \"quote\": \"the fastest way to go and lower your cost isn't to go and bid more, but it's to be more relevant.\"\n      },\n      \"trigger\": {\n        \"op\": \"all\",\n        \"args\": []\n      },\n      \"prerequisites\": {\n        \"op\": \"all\",\n        \"args\": []\n      },\n      \"exclusions\": {\n        \"op\": \"any\",\n        \"args\": []\n      },\n      \"completion\": [],\n      \"unknowns\": [\n        \"Source does not define how to measure or improve relevance.\"\n      ],\n      \"relations\": []\n    },\n    {\n      \"id\": \"u2\",\n      \"kind\": \"principle\",\n      \"title\": \"Estimated action rate and ad quality are diagnostic metrics, not live levers\",\n      \"claim\": {\n        \"text\": \"The source says Meta describes estimated action rate and ad quality as diagnostic metrics of past events, not levers in the live auction, and they cannot be changed in real time.\",\n        \"quote\": \"They aren't levers that exist within the live auction.\"\n      },\n      \"action\": null,\n      \"trigger\": {\n        \"op\": \"all\",\n        \"args\": []\n      },\n      \"prerequisites\": {\n        \"op\": \"all\",\n        \"args\": []\n      },\n      \"exclusions\": {\n        \"op\": \"any\",\n        \"args\": []\n      },\n      \"completion\": [],\n      \"unknowns\": [\n        \"Source does not explain how historical diagnostics map to current auction behavior.\"\n      ],\n      \"relations\": []\n    },\n    {\n      \"id\": \"u3\",\n      \"kind\": \"principle\",\n      \"title\": \"Estimated action rate appears causal to CPMs\",\n      \"claim\": {\n        \"text\": \"The speaker says from what they have seen, estimated action rate seems very causal to CPMs, likely because of its relationship to ad quality.\",\n        \"quote\": \"estimated action rate seems to be very causal to CPMs\"\n      },\n      \"action\": null,\n      \"trigger\": {\n        \"op\": \"all\",\n        \"args\": []\n      },\n      \"prerequisites\": {\n        \"op\": \"all\",\n        \"args\": []\n      },\n      \"exclusions\": {\n        \"op\": \"any\",\n        \"args\": []\n      },\n      \"completion\": [],\n      \"unknowns\": [\n        \"Causal claim is the speaker's observation, not verified platform behavior.\"\n      ],\n      \"relations\": [\n        {\n          \"kind\": \"depends_on\",\n          \"target\": \"u2\"\n        }\n      ]\n    },\n    {\n      \"id\": \"u4\",\n      \"kind\": \"example\",\n      \"title\": \"Lead magnet funnel has lower CPMs than book-a-call funnel in source example\",\n      \"claim\": {\n        \"text\": \"The source reports that CPMs are about $25 on a lead magnet funnel and about $100 on a book-a-call funnel.\",\n        \"quote\": \"CPMs on a lead magnet funnel are so low. They're like $25. CPMs on a book a call funnel are like $100.\"\n      },\n      \"action\": null,\n      \"trigger\": {\n        \"op\": \"all\",\n        \"args\": []\n      },\n      \"prerequisites\": {\n        \"op\": \"all\",\n        \"args\": []\n      },\n      \"exclusions\": {\n        \"op\": \"any\",\n        \"args\": []\n      },\n      \"completion\": [],\n      \"unknowns\": [\n        \"Numbers are reported observations, not universal benchmarks; exact funnel configurations and events are not fully specified.\"\n      ],\n      \"relations\": []\n    },\n    {\n      \"id\": \"u5\",\n      \"kind\": \"action\",\n      \"title\": \"Set up funnels to maximize landing-page action rate for CPM arbitrage\",\n      \"claim\": {\n        \"text\": \"If Meta bases CPMs on expected action rate, the source says one can use this to advantage by setting up funnels to maximize landing-page action rate and minimize CPMs.\",\n        \"quote\": \"you can use this technically to your advantage if you're smart about how to set up funnels to maximize action rate on the landing page to minimize CPMs and find that arbitrage.\"\n      },\n      \"action\": {\n        \"text\": \"Set up funnels to maximize action rate on the landing page to minimize CPMs and find that arbitrage.\",\n        \"quote\": \"you can use this technically to your advantage if you're smart about how to set up funnels to maximize action rate on the landing page to minimize CPMs and find that arbitrage.\"\n      },\n      \"trigger\": {\n        \"op\": \"all\",\n        \"args\": [\n          {\n            \"text\": \"The source assumes Meta bases CPMs on expected action rate.\",\n            \"quote\": \"if they're going based on expected action rate\"\n          }\n        ]\n      },\n      \"prerequisites\": {\n        \"op\": \"all\",\n        \"args\": [\n          {\n            \"text\": \"You are smart about how to set up funnels.\",\n            \"quote\": \"if you're smart about how to set up funnels\"\n          }\n        ]\n      },\n      \"exclusions\": {\n        \"op\": \"any\",\n        \"args\": []\n      },\n      \"completion\": [],\n      \"unknowns\": [\n        \"Mechanism is presented as a technical possibility; not verified current platform behavior.\"\n      ],\n      \"relations\": [\n        {\n          \"kind\": \"depends_on\",\n          \"target\": \"u3\"\n        }\n      ]\n    },\n    {\n      \"id\": \"u6\",\n      \"kind\": \"principle\",\n      \"title\": \"Bid is economics; higher sustainable bid wins more auctions and scale\",\n      \"claim\": {\n        \"text\": \"The source says your bid is just your economics, and a higher sustainable bid wins more auctions and enables more scale.\",\n        \"quote\": \"The higher your sustainable bid, the more auctions that you win, the more auctions that you win, the more scale you can achieve.\"\n      },\n      \"action\": null,\n      \"trigger\": {\n        \"op\": \"all\",\n        \"args\": []\n      },\n      \"prerequisites\": {\n        \"op\": \"all\",\n        \"args\": []\n      },\n      \"exclusions\": {\n        \"op\": \"any\",\n        \"args\": []\n      },\n      \"completion\": [],\n      \"unknowns\": [\n        \"No method is given to compute a sustainable bid.\"\n      ],\n      \"relations\": []\n    },\n    {\n      \"id\": \"u7\",\n      \"kind\": \"action\",\n      \"title\": \"Open margin and allocate it to acquisition\",\n      \"claim\": {\n        \"text\": \"The source describes opening up margin to allocate as much margin as possible to acquisition to win more auctions and achieve more scale.\",\n        \"quote\": \"It's a game of opening up margin so that you can allocate as much margin as possible to acquisition so that you can win more auctions and you can achieve more scale.\"\n      },\n      \"action\": {\n        \"text\": \"Open up margin and allocate as much margin as possible to acquisition.\",\n        \"quote\": \"It's a game of opening up margin so that you can allocate as much margin as possible to acquisition so that you can win more auctions and you can achieve more scale.\"\n      },\n      \"trigger\": {\n        \"op\": \"all\",\n        \"args\": []\n      },\n      \"prerequisites\": {\n        \"op\": \"all\",\n        \"args\": []\n      },\n      \"exclusions\": {\n        \"op\": \"any\",\n        \"args\": []\n      },\n      \"completion\": [],\n      \"unknowns\": [\n        \"No target margin or allocation rule stated.\"\n      ],\n      \"relations\": [\n        {\n          \"kind\": \"depends_on\",\n          \"target\": \"u6\"\n        }\n      ]\n    },\n    {\n      \"id\": \"u8\",\n      \"kind\": \"principle\",\n      \"title\": \"Cannot out tactic bad economics; finance is the base\",\n      \"claim\": {\n        \"text\": \"The source says you cannot out tactic bad economics, audits start at the economics level, and finance is the base that builds the entire business.\",\n        \"quote\": \"you cannot out tactic bad economics, which is why all of our audits start at the economics level. It's why everyone in the team is trained heavily and deeply on finance because ultimately finance is the base that builds the entire business.\"\n      },\n      \"action\": null,\n      \"trigger\": {\n        \"op\": \"all\",\n        \"args\": []\n      },\n      \"prerequisites\": {\n        \"op\": \"all\",\n        \"args\": []\n      },\n      \"exclusions\": {\n        \"op\": \"any\",\n        \"args\": []\n      },\n      \"completion\": [],\n      \"unknowns\": [\n        \"Source does not detail what an economics-level audit includes.\"\n      ],\n      \"relations\": [\n        {\n          \"kind\": \"depends_on\",\n          \"target\": \"u6\"\n        }\n      ]\n    },\n    {\n      \"id\": \"u9\",\n      \"kind\": \"principle\",\n      \"title\": \"Better unit economics can beat better tactics\",\n      \"claim\": {\n        \"text\": \"The source says a competitor with better unit economics can have worse creatives, campaign structure, and measurement and still outperform by bidding more.\",\n        \"quote\": \"person with better unit economics can have way worse creatives than you, can have way worse campaign structure, can have way worse measure measurement, and they can actually still outperform you because they just bid more than you on the auction.\"\n      },\n      \"action\": null,\n      \"trigger\": {\n        \"op\": \"all\",\n        \"args\": []\n      },\n      \"prerequisites\": {\n        \"op\": \"all\",\n        \"args\": []\n      },\n      \"exclusions\": {\n        \"op\": \"any\",\n        \"args\": []\n      },\n      \"completion\": [],\n      \"unknowns\": [\n        \"No quantified threshold for better unit economics is given.\"\n      ],\n      \"relations\": [\n        {\n          \"kind\": \"depends_on\",\n          \"target\": \"u6\"\n        }\n      ]\n    },\n    {\n      \"id\": \"u10\",\n      \"kind\": \"action\",\n      \"title\": \"Maximize first-order unit economics with UPT and AUR\",\n      \"claim\": {\n        \"text\": \"The source lists maximizing unit economics on first order by increasing units per transaction and average unit retail.\",\n        \"quote\": \"maximizing unit economic on first order by increasing units per transaction and average unit retail\"\n      },\n      \"action\": {\n        \"text\": \"Increase units per transaction and average unit retail to maximize first-order unit economics.\",\n        \"quote\": \"maximizing unit economic on first order by increasing units per transaction and average unit retail\"\n      },\n      \"trigger\": {\n        \"op\": \"all\",\n        \"args\": []\n      },\n      \"prerequisites\": {\n        \"op\": \"all\",\n        \"args\": []\n      },\n      \"exclusions\": {\n        \"op\": \"any\",\n        \"args\": []\n      },\n      \"completion\": [],\n      \"unknowns\": [\n        \"No target levels or tactics for increasing UPT or AUR are provided.\"\n      ],\n      \"relations\": [\n        {\n          \"kind\": \"depends_on\",\n          \"target\": \"u9\"\n        }\n      ]\n    },\n    {\n      \"id\": \"u11\",\n      \"kind\": \"principle\",\n      \"title\": \"Signal quality is a hidden lever on CPMs\",\n      \"claim\": {\n        \"text\": \"The source says signal quality is a hidden lever that decreases CPMs and ties into action rates and the bid equation.\",\n        \"quote\": \"signal quality is a hidden lever that will decrease your CPMs and it ties into action rates and the bid equation.\"\n      },\n      \"action\": null,\n      \"trigger\": {\n        \"op\": \"all\",\n        \"args\": []\n      },\n      \"prerequisites\": {\n        \"op\": \"all\",\n        \"args\": []\n      },\n      \"exclusions\": {\n        \"op\": \"any\",\n        \"args\": []\n      },\n      \"completion\": [],\n      \"unknowns\": [\n        \"Source does not define signal quality measurement.\"\n      ],\n      \"relations\": []\n    },\n    {\n      \"id\": \"u12\",\n      \"kind\": \"action\",\n      \"title\": \"Get conversions through pixel or CAPI for clean signal\",\n      \"claim\": {\n        \"text\": \"The source says getting conversions through the pixel or CAPI gives a high AMQ score or clean signal, leading to accurate estimated action rate and cheaper, better delivery.\",\n        \"quote\": \"when you get conversions through the pixel or CAPI, that then pushes through and gives you a high AMQ score or a clean signal into the account.\"\n      },\n      \"action\": {\n        \"text\": \"Get conversions through the pixel or CAPI to produce a clean signal.\",\n        \"quote\": \"when you get conversions through the pixel or CAPI, that then pushes through and gives you a high AMQ score or a clean signal into the account.\"\n      },\n      \"trigger\": {\n        \"op\": \"all\",\n        \"args\": []\n      },\n      \"prerequisites\": {\n        \"op\": \"all\",\n        \"args\": []\n      },\n      \"exclusions\": {\n        \"op\": \"any\",\n        \"args\": []\n      },\n      \"completion\": [],\n      \"unknowns\": [\n        \"AMQ score is not defined; exact implementation is not described.\"\n      ],\n      \"relations\": [\n        {\n          \"kind\": \"depends_on\",\n          \"target\": \"u11\"\n        }\n      ]\n    },\n    {\n      \"id\": \"u13\",\n      \"kind\": \"example\",\n      \"title\": \"Tracking gap can corrupt estimated action rate and bidding\",\n      \"claim\": {\n        \"text\": \"The source gives an example where 100 conversions occur but Meta tracks only 70, so Meta sees a 2% conversion rate instead of the actual 3%, causing the bidding equation to fall apart.\",\n        \"quote\": \"let's say that you're getting 100 conversions from your ads, but Meta's only effectively tracking 70 of them and pushing them back into the platform.\"\n      },\n      \"action\": null,\n      \"trigger\": {\n        \"op\": \"all\",\n        \"args\": [\n          {\n            \"text\": \"Underreported conversions or bad tracking.\",\n            \"quote\": \"bad tracking and bad signal quality\"\n          }\n        ]\n      },\n      \"prerequisites\": {\n        \"op\": \"all\",\n        \"args\": []\n      },\n      \"exclusions\": {\n        \"op\": \"any\",\n        \"args\": []\n      },\n      \"completion\": [],\n      \"unknowns\": [\n        \"Numbers are illustrative; source does not specify how to diagnose exact tracking loss.\"\n      ],\n      \"relations\": [\n        {\n          \"kind\": \"depends_on\",\n          \"target\": \"u12\"\n        }\n      ]\n    },\n    {\n      \"id\": \"u14\",\n      \"kind\": \"action\",\n      \"title\": \"Get server-side tracking if affordable, but do not expect measurable results\",\n      \"claim\": {\n        \"text\": \"The source says server-side tracking is nice to have if you can afford it and assume it may help signal quality, but the impact is very hard to measure and you should not expect measurable results.\",\n        \"quote\": \"get it if you can afford it, but don't expect it to be measurable.\"\n      },\n      \"action\": {\n        \"text\": \"Get server-side tracking if you can afford it.\",\n        \"quote\": \"for sure, go get server-side tracking\"\n      },\n      \"trigger\": {\n        \"op\": \"all\",\n        \"args\": [\n          {\n            \"text\": \"Considering whether to add server-side tracking.\",\n            \"quote\": \"should we have server-side tracking\"\n          }\n        ]\n      },\n      \"prerequisites\": {\n        \"op\": \"all\",\n        \"args\": [\n          {\n            \"text\": \"You can afford to put server-side tracking onto the P&L and assume it is probably helping signal quality.\",\n            \"quote\": \"If you can afford it, if you can just put it onto the P&L, and you can assume that it is probably helping signal quality\"\n          }\n        ]\n      },\n      \"exclusions\": {\n        \"op\": \"any\",\n        \"args\": []\n      },\n      \"completion\": [],\n      \"unknowns\": [\n        \"Actual impact on signal quality is unknown and the speaker says they have no idea how much impact it will make.\"\n      ],\n      \"relations\": [\n        {\n          \"kind\": \"depends_on\",\n          \"target\": \"u12\"\n        }\n      ]\n    },\n    {\n      \"id\": \"u15\",\n      \"kind\": \"warning\",\n      \"title\": \"Entity ID trap groups similar ads and reduces unique reach\",\n      \"claim\": {\n        \"text\": \"The source warns that if many similar ads are put into an account, Meta may group them under the same entity ID, registering far fewer unique ads and reducing unique reach.\",\n        \"quote\": \"even though you might have 200 ads in the account, Meta will actually only register it as 20 unique ads.\"\n      },\n      \"action\": null,\n      \"trigger\": {\n        \"op\": \"all\",\n        \"args\": [\n          {\n            \"text\": \"Putting 200 ads into the account with many very similar ads.\",\n            \"quote\": \"put 200 ads into the account, and a lot of them are very similar\"\n          }\n        ]\n      },\n      \"prerequisites\": {\n        \"op\": \"all\",\n        \"args\": []\n      },\n      \"exclusions\": {\n        \"op\": \"any\",\n        \"args\": []\n      },\n      \"completion\": [],\n      \"unknowns\": [\n        \"Criteria for entity ID grouping are not fully specified.\"\n      ],\n      \"relations\": []\n    },\n    {\n      \"id\": \"u16\",\n      \"kind\": \"action\",\n      \"title\": \"Ensure creative diversity by thinking in concepts of angle and offer\",\n      \"claim\": {\n        \"text\": \"The source advises making sure there is as much diversity as possible and thinking through creatives based on concepts, which is the intersection of an angle and offer.\",\n        \"quote\": \"You should make sure as much as possible that there is diversity. You should be thinking through all of your creatives based on concepts, which is the intersection of an angle and offer\"\n      },\n      \"action\": {\n        \"text\": \"Ensure diversity by thinking through creatives based on concepts, the intersection of an angle and offer.\",\n        \"quote\": \"You should make sure as much as possible that there is diversity. You should be thinking through all of your creatives based on concepts, which is the intersection of an angle and offer\"\n      },\n      \"trigger\": {\n        \"op\": \"all\",\n        \"args\": [\n          {\n            \"text\": \"Risk of similar ads being grouped and not reaching unique people.\",\n            \"quote\": \"If you're serving very, very similar ads to the same people over and over again\"\n          }\n        ]\n      },\n      \"prerequisites\": {\n        \"op\": \"all\",\n        \"args\": []\n      },\n      \"exclusions\": {\n        \"op\": \"any\",\n        \"args\": []\n      },\n      \"completion\": [],\n      \"unknowns\": [\n        \"Source cuts off after 'offer'; the continuation describing concepts is missing.\"\n      ],\n      \"relations\": [\n        {\n          \"kind\": \"depends_on\",\n          \"target\": \"u15\"\n        }\n      ]\n    }\n  ],\n  \"more_units\": true,\n  \"unresolved\": [\n    \"Omitted due to cap: Meta uses historical ad quality, click-through rates, and conversion rates to adjust bid at an individual user level.\",\n    \"Omitted due to cap: speaker's unresolved claim that Meta may intuitively value certain actions differently, and speculation whether Meta reads landing pages or uses expected action rate.\",\n    \"Omitted due to cap: server-side tracking sales-pitch caveat and measurement-design questions such as 10-day vs 30-day windows and causal impact models.\",\n    \"Source cuts off mid-sentence at which is the intersection of an angle and offer; continuation needed.\",\n    \"Provenance is unverified and unresolved platform behavior requires current primary-source verification.\"\n  ]\n}",
+  "input": {
+    "source_id": "1yEyKvUZcQKwo69HfAxOG4gAIAdgcxt4p",
+    "source_sha256": "0bed57b20bb12b7c910abb2d80ce7fa614e4567f724abc043a3f2b42fcb41062",
+    "locator": "body:15/paragraph",
+    "start": 19000,
+    "text": "uality is superior to yours. So, the fastest way to go and lower your cost isn't to go and bid more, but it's to be more relevant. Now, I think one really important concept to understand here about estimated action rate and ad quality is that Meta hasn't been clearer that these are diagnostic metrics of what has already happened. They aren't levers that exist within the live auction. So, they're effectively like a rearview mirror, but they're not a steering wheel looking forward. So, these tell you what has happened in the past and Meta is using historical ad quality, click-through rates, conversion rates to be able to adjust your bid at an individual user level. You can't actually change these in real time. Now, from what we've seen, just a little bit of a side note, is that estimated action rate seems to be very causal to CPMs, which I think is because there's a relationship here to ad quality. What does that mean? Well, if you're running, I'm going to step outside of e-comm for a second, if you're running a book-a-call funnel, right, and you could book people into your calendar directly as a book-a-call funnel, let's say through Calendly, or you could run a lead magnet funnel, right? And the lead magnet funnel is where someone can download something for free on the landing page, and you're just grabbing their email address so you can remarket to them. Now, the book a call funnel will have a conversion rate on the landing page of between 3 to 6% of people will actually book a call. On a lead magnet funnel, conversion rates on the landing page will be between 30 to 70% will just download the free lead magnet and give you their email address. Now, as a function of that, CPMs on a lead magnet funnel are so low. They're like $25. CPMs on a book a call funnel are like $100. And I believe that one of the core reasons for this is estimated action rate. The action rate of people on this particular uh funnel with this event is so high that Meta goes, \"Oh, people love what they're saying. Everyone is triggering the lead event on the landing page. Let's drop CPMs.\" Over here, because conversion rates are so low, they increase CPMs cuz they're like, \"Oh, people clearly aren't liking what they're seeing on the landing page anywhere near as much as this, so we're going to charge them more.\" I think Meta also intuitively knows that this is a much more valuable action than this one, and so they also factor this into CPMs. But, that one's kind of harder to prove because you can trigger a lead event on a lead magnet. You can trigger a lead event on a book a call funnel. Exact same event, but the book a call funnel will have a 4x higher CPM. It makes you wonder how. Like, how how does Meta know that this is so much more valuable? Either they're reading the landing pages and inferring value, and if they have an incredible algorithm to do that, which might be the case, or they're just going based on expected action rate. And if they're going based on expected action rate, it means that you can use this technically to your advantage if you're smart about how to set up funnels to maximize action rate on the landing page to minimize CPMs and find that arbitrage. The part nobody talks about within the auction is that your bid is just your economics. This is the same thing for Google, too. The higher your sustainable bid, the more auctions that you win, the more auctions that you win, the more scale you can achieve. And this is why really all business strategy is pricing strategy. It's how do we price as high as possible while getting our cost of goods as low as possible. It's a game of opening up margin so that you can allocate as much margin as possible to acquisition so that you can win more auctions and you can achieve more scale. So the competitors that are priced higher than you, the competitors that have higher gross profit, the competitors that have higher average order value, the competitors that have higher LTV, the competitors that beat you on the economic game as well as the retention game, and obviously uh maximizing unit economic on first order by increasing units per transaction and average unit retail, etc. This is ultimately where majority of the winning happens because person with better unit economics can have way worse creatives than you, can have way worse campaign structure, can have way worse measure measurement, and they can actually still outperform you because they just bid more than you on the auction. This is why I still can't stress enough that you cannot out tactic bad economics, which is why all of our audits start at the economics level. It's why everyone in the team is trained heavily and deeply on finance because ultimately finance is the base that builds the entire business. And if the finance doesn't make sense, you just won't be able to win on these platforms. Another important component of the algorithm is that signal quality is a hidden lever that will decrease your CPMs and it ties into action rates and the bid equation. So when you get conversions through the pixel or CAPI, that then pushes through and gives you a high AMQ score or a clean signal into the account. What that does, and this is really the key step here, is that gives you an accurate estimated action rate. And that will deliver you cheaper and better delivery. How does that work? Well, let's say that you're getting 100 conversions from your ads, but Meta's only effectively tracking 70 of them and pushing them back into the platform. What that means is Meta's visibility into your action rate is, let's say, based on these 70 conversions, 2%. So, Meta sees a 2% conversion rate. But, the reality is your ads are actually driving a 3% conversion rate, which might be industry leading. But, because you have bad tracking and bad signal quality, Meta doesn't know that, and so you don't get a higher action rate within Meta. You don't get a higher estimated action rate, and therefore the entire bidding equation falls apart, and you start losing a bunch of auctions just due to the fact that you don't have high-quality signal getting pushed back into the platform. Now, the one caveat that I'll give to this is that this is a big sales pitch that will get pushed to you a lot for server-side tracking softwares. Now, I think that server-side tracking is a nice to have. If you can afford it, if you can just put it onto the P&L, and you can assume that it is probably helping signal quality, then amazing. The issue with server-side tracking is that it's actually very hard to materially measure the impact of this dynamic. And so, if you go and introduce a server-side tracking software that might be costing you a couple thousand dollars a month, results probably won't go up. You probably won't see better efficiency. The account probably won't change that much, and it's because this is a very small lever. And so, when you make an intervention, let's say this is your data, and let's say you introduce a server-side tracking software right here. The issue is there's so much noise that exists in your week-to-week fluctuations that we can't really tell if it did anything. Like, maybe it did. Like, maybe the average here is a little bit higher than the average here. But, what are we measuring this against? Are we doing a 10-day 10-day? Are we doing a 30-day 30-day? Are we doing the year before the year after? Are we sure that it was only to do with server-side tracking, or was there any other interventions that occurred around this time? Very difficult to really materially measure the actual impact of server-side tracking within a business. And so, because of that, when people ask me, and I'm sure I'll get this question in the comments below, should we have server-side tracking? The answer is, sure. If you can afford to put it on, and if you're assuming that it's probably going to have a positive impact on signal quality, for sure, go get server-side tracking. If you want to ask me how much of an impact is it going to make, my answer is, I have absolutely no idea. Because I've tried to measure this multiple times, and it's so incredibly difficult to do, because you need to use a model like causal impact or something, and the actual impact is so small that there's not enough variance, so you can't actually get high statistical confidence. So, the TLDR, get it if you can afford it, but don't expect it to be measurable. This is just another cost that you're going to layer into the business for some hopeful upside. This is then the entity ID trap. If you've watched any of our content, this should be fairly obvious, but if you go and put 200 ads into the account, and a lot of them are very similar, and Andromeda goes and scans them and goes, \"These are the same ads.\" What will happen is they will get grouped under the same entity ID. And so, even though you might have 200 ads in the account, Meta will actually only register it as 20 unique ads. Why that's important is that if an ad gets grouped into the same entity, so in this case, we're getting groups of 10, these 10 ads will all serve to the exact same audience, and there'll be no unique reach. Meaning that these 10 ads won't go and reach other people, they will only serve to this pool. So, it substantially reduces the amount of people that you reach within the account, and honestly kind of becomes pointless, because the main point in putting more unique concepts and creatives into an ad account is to reach more unique people and convert them, or serve it to existing people and convert them. If you're serving very, very similar ads to the same people over and over again, it's not going to increase the likelihood of purchase, and if you're not reaching new people, then like what even is the point? So, what should you do here? You should make sure as much as possible that there is diversity. You should be thinking through all of your creatives based on concepts, which is the intersection of an angle and offer ",
+    "provenance": "unverified"
+  },
+  "system_prompt_sha256": "169564fc11fb12a123446ec006b5bb473bb0bb9c6a71a491eafeedd914dc865e"
+}

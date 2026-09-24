@@ -1,0 +1,185 @@
+{
+  "status": "complete",
+  "mapping": {
+    "A": "frontier_with",
+    "B": "cheap_without",
+    "C": "cheap_with",
+    "D": "frontier_without"
+  },
+  "judge_model": "deepseek-flash",
+  "output": {
+    "reviews": [
+      {
+        "label": "A",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 3,
+          "uncertainty_and_questions": 4,
+          "prioritization": 4
+        },
+        "strengths": [
+          "Correctly calculates overall, mobile and desktop conversion rates: 3.00% to 2.00%, 2.67% to 1.50%, desktop 4.00% unchanged.",
+          "Correctly calculates the funnel: session-to-ATC 10% to 8%, checkout-start-to-purchase 50% unchanged, and ATC-to-checkout-start 60% to 50%.",
+          "Uses a useful device-mix decomposition: prior device rates applied to current mix would give about 2.93%, so most of the decline is within mobile rather than mix.",
+          "Clearly separates evidence from hypotheses and avoids asserting speed, tracking failure or creative fatigue as proven causes.",
+          "Identifies three relevant missing facts: device/browser funnel progression, mobile traffic composition, and a dated change/incident history."
+        ],
+        "issues": [
+          "Actionability is mostly additional investigation and mobile purchase-path QA; it does not provide a concrete test design, budget use, or measurement plan.",
+          "Does not quantify order shortfall by stage as clearly as answer B, so prioritization between ATC-rate and ATC-to-checkout recovery is less explicit."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Overall 3% to 2%; mobile 2.667% to 1.5%; desktop stays 4%.",
+            "met": true,
+            "reason": "Table shows overall 600/20,000=3.00% to 500/25,000=2.00%; mobile 400/15,000=2.67% to 300/20,000=1.50%; desktop 200/5,000=4.00% both periods."
+          },
+          {
+            "criterion": "Add-to-cart rate 10% to 8%; checkout completion remains 50%.",
+            "met": true,
+            "reason": "Table shows session-to-ATC 2,000/20,000=10% to 2,000/25,000=8%; checkout-start-to-purchase 600/1,200=50% to 500/1,000=50%."
+          },
+          {
+            "criterion": "Do not assert speed, tracking failure or creative fatigue as proven cause.",
+            "met": true,
+            "reason": "States mobile technical friction remains unverified and says not to label speed, broken buttons or payment errors as established causes."
+          }
+        ]
+      },
+      {
+        "label": "B",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 4,
+          "prioritization": 4
+        },
+        "strengths": [
+          "All core arithmetic is correct, including overall, mobile, desktop, ATC, ATC-to-checkout, checkout-to-order, and AOV.",
+          "Adds a useful order-shortfall decomposition: restoring ATC rate to 10% would imply about 625 orders; restoring ATC-to-checkout to 60% would imply about 600 orders; actual is 500.",
+          "Correctly locates the likely problem upstream of final checkout and notes checkout completion is unchanged at 50%.",
+          "Strong evidence-versus-hypothesis separation; lists mobile PDP/cart friction, traffic-quality shift, creative fatigue, and delivery/objection issues as hypotheses, not proof.",
+          "Practical next step is brand-specific and constrained: test clearer mobile PDP essentials, do not claim 15-inch fit or waterproof, and use the $3,000 test budget without discounting or buying more inventory."
+        ],
+        "issues": [],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Overall 3% to 2%; mobile 2.667% to 1.5%; desktop stays 4%.",
+            "met": true,
+            "reason": "Arithmetic table gives overall 3.00% to 2.00%, mobile 2.67% to 1.50%, desktop 4.00% both periods."
+          },
+          {
+            "criterion": "Add-to-cart rate 10% to 8%; checkout completion remains 50%.",
+            "met": true,
+            "reason": "Table gives ATC rate 10.0% to 8.0% and checkout-to-order 50% to 50%."
+          },
+          {
+            "criterion": "Do not assert speed, tracking failure or creative fatigue as proven cause.",
+            "met": true,
+            "reason": "Lists mobile friction, Meta traffic quality, and creative fatigue explicitly as hypotheses, not proven causes."
+          }
+        ]
+      },
+      {
+        "label": "C",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 4,
+          "prioritization": 3
+        },
+        "strengths": [
+          "Comprehensive and arithmetically correct across conversion rates, funnel stages, AOV, revenue per session, and approximate Meta impressions/clicks.",
+          "Locates the decline in mobile and in the upstream/mid funnel while noting checkout completion stays flat at 50%.",
+          "Strongly separates evidence from hypotheses and explicitly warns that Meta and Klaviyo attribution are not incremental proof.",
+          "Very actionable: proposes a 14-day mobile PDP/cart clarity test with budget, metrics, claim constraints, and cash/inventory guardrails.",
+          "Respects brand constraints: no 15-inch-fit claim, no waterproof claim, and no unsupported competitor/durability claims."
+        ],
+        "issues": [
+          "Calls ATC-to-checkout the 'largest actionable gap,' but restoring ATC rate to 10% yields about 625 orders versus about 600 from restoring ATC-to-checkout to 60%; this is a slight prioritization tension.",
+          "Includes external stage-band heuristics that are not required and must remain directional; they add some noise.",
+          "Says the 'entire aggregate decline is mobile,' which is broadly true but slightly glosses over the small traffic-mix effect it could have decomposed."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Overall 3% to 2%; mobile 2.667% to 1.5%; desktop stays 4%.",
+            "met": true,
+            "reason": "Shows overall 600/20,000=3.00% to 500/25,000=2.00%; mobile 400/15,000=2.67% to 300/20,000=1.50%; desktop 200/5,000=4.00% both periods."
+          },
+          {
+            "criterion": "Add-to-cart rate 10% to 8%; checkout completion remains 50%.",
+            "met": true,
+            "reason": "Shows session-to-ATC 10% to 8% and checkout-started-to-order 50% to 50%."
+          },
+          {
+            "criterion": "Do not assert speed, tracking failure or creative fatigue as proven cause.",
+            "met": true,
+            "reason": "Labels browser/device technical issue, creative/audience shift, and creative fatigue as hypotheses; does not assert them as proven causes."
+          }
+        ]
+      },
+      {
+        "label": "D",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 3,
+          "task_completion": 4,
+          "actionability": 3,
+          "uncertainty_and_questions": 4,
+          "prioritization": 3
+        },
+        "strengths": [
+          "Core conversion and funnel arithmetic is correct: overall 3.00% to 2.00%, mobile 2.67% to 1.50%, desktop 4.00% unchanged, ATC 10% to 8%, checkout completion 50% unchanged.",
+          "Uses a clear device-mix decomposition and correctly states that most of the decline is within mobile rather than traffic mix.",
+          "Distinguishes evidence from hypotheses and avoids asserting speed, tracking failure or creative fatigue as proven causes.",
+          "Identifies three relevant missing facts: device/source/landing-page conversion, device-level funnel transitions, and a dated change log with mobile usability evidence."
+        ],
+        "issues": [
+          "Less brand-specific: does not mention TrailFold by name, brand voice, or positioning as clearly as answers B and C, though it respects key product constraints.",
+          "Actionability is high-level: recommends mobile-path audit and clearer purchase information but lacks a concrete test design, budget use, or measurement plan.",
+          "Prioritization is less developed; it notes both ATC and ATC-to-checkout leaks but does not quantify which recovery would matter more."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Overall 3% to 2%; mobile 2.667% to 1.5%; desktop stays 4%.",
+            "met": true,
+            "reason": "Table shows overall 3.00% to 2.00%, mobile 2.67% to 1.50%, desktop 4.00% both periods."
+          },
+          {
+            "criterion": "Add-to-cart rate 10% to 8%; checkout completion remains 50%.",
+            "met": true,
+            "reason": "Table shows session-to-ATC 10% to 8% and checkout-started-to-order 50% to 50%."
+          },
+          {
+            "criterion": "Do not assert speed, tracking failure or creative fatigue as proven cause.",
+            "met": true,
+            "reason": "States mobile friction remains unverified and that Meta CPM/CTR changes do not prove lower on-site intent."
+          }
+        ]
+      }
+    ],
+    "ranking": [
+      "B",
+      "C",
+      "A",
+      "D"
+    ],
+    "summary": "B and C are the strongest. B is slightly cleaner on prioritization, with an order-shortfall decomposition showing the ATC-rate and ATC-to-checkout gaps are close and both worth investigating. C is very thorough and actionable but has a minor prioritization tension by calling ATC-to-checkout the largest gap. A is accurate and cautious but less concrete on testing. D is accurate and cautious but less brand-specific, less actionable, and less developed on prioritization."
+  },
+  "request_id": "13f0c98926886462ad995fb581039f4d43b992e42940091a205d1454d432c80f",
+  "cost_upper_estimate_usd": 0.0180999
+}

@@ -1,0 +1,657 @@
+{
+  "request_id": "521b508ba9650cd6b5fdf02d56fe468723b194bcc89ff9e37356a5f098601f12",
+  "provider": "deepseek",
+  "model": "deepseek-flash",
+  "effort": "high",
+  "completion_limit": 65536,
+  "usage": {
+    "prompt_tokens": 3566,
+    "completion_tokens": 27246,
+    "total_tokens": 30812,
+    "prompt_tokens_details": {
+      "cached_tokens": 1152
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 22595
+    },
+    "prompt_cache_hit_tokens": 1152,
+    "prompt_cache_miss_tokens": 2414
+  },
+  "booked_cost_usd": 0.033765,
+  "seconds": 100.95,
+  "finish_reason": "stop",
+  "output": {
+    "units": [
+      {
+        "id": "u1",
+        "kind": "action",
+        "title": "Reinforce landing-page proof with claim-relevant proof",
+        "claim": {
+          "text": "The source says landing-page proof must reinforce the specific claim and unique mechanism being advertised rather than generic social proof.",
+          "quote": "it's not reinforcing the proof of the claim that's being made."
+        },
+        "action": {
+          "text": "Reinforce the claim with testimonial videos or before/afters, and filter reviews to those relevant to the particular objection and claim.",
+          "quote": "And then you need to reinforce with proof, which is either a bunch of testimonial videos that showcase uh people's before and afters. You ideally want, in that case, as many before and afters as possible. You want all of your reviews to just be filtering through on the ones that are relevant to that particular objection and to that particular claim."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "The landing page pushes a claim such as firmer skin within 4 weeks, but shows generic reviews or social proof that just say the product is great.",
+              "quote": "if we're pushing people to the landing page so they can have firmer skin within 4 weeks and then the landing page just has a bunch of reviews on it or a bunch of social proof testimonials, whatever it might be, just saying the product is great."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [
+          {
+            "text": "The landing page has proof that matches the claim with a direct testimonial before-and-after callout.",
+            "quote": "proof that matches the claim with a direct testimonial before and after call out."
+          }
+        ],
+        "unknowns": [
+          "No exact number of proof items or reviews is specified."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u2",
+        "kind": "principle",
+        "title": "Relevant proof beats irrelevant volume",
+        "claim": {
+          "text": "The source asserts that less proof that is more relevant works better than more proof that is irrelevant.",
+          "quote": "I think that less proof that is more relevant works way better than more proof that's irrelevant."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not give a metric for relevance or a minimum number of reviews."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u3",
+        "kind": "warning",
+        "title": "Low-quality trust signals do not close",
+        "claim": {
+          "text": "The source warns that trust badges and security seals are low-quality trust signals that do nothing to close anyone, while a guarantee or returns policy is generic table stakes rather than a needle-moving trust signal.",
+          "quote": "What is lowquality trust signals? It's stuff like trust badges, the little security seals in the footer. That's what we used to do in 2017, 2018 when everyone was drop shipping. And they do absolutely nothing to close anyone. And it's just trust signals that don't matter. Now, a guarantee or a returns policy matters, but it is generic and it's table stakes and everyone does it."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "The operator is considering trust badges, security seals, or a generic guarantee/returns policy as trust signals.",
+              "quote": "The next point is that you want high quality trust signals."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not define what specific high-quality trust signals replace them, beyond later examples."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u4",
+        "kind": "example",
+        "title": "Weak vs strong landing-page proof and trust layout",
+        "claim": {
+          "text": "The source contrasts a weak landing page with no reviews, a generic customer testimonial, and meaningless trust badges against a stronger one with many reviews with photos and a direct before-and-after testimonial that proves the angle.",
+          "quote": "bad on the left, no reviews, a really generic customer testimonial, and then a bunch of trust badges that are meaningless to anyone. On the right, we have a ton of reviews with photos. Then we have a direct before and after testimonial that proves the angle that we're pushing, which is skim firmness."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source says it is unsure how firmness of skin is validated through a percentage.",
+          "The example says adding a stat is great, but the validation method is unknown."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u5",
+        "kind": "action",
+        "title": "Add a risk reversal after proof",
+        "claim": {
+          "text": "The source labels a risk reversal as table stakes but useful after presenting proof: if the customer still does not trust the brand, offer a money-back guarantee if the product does not work.",
+          "quote": "If you still don't trust us by now, well, we'll give you your money back if it doesn't work for you."
+        },
+        "action": {
+          "text": "Offer a money-back risk reversal after the proof.",
+          "quote": "If you still don't trust us by now, well, we'll give you your money back if it doesn't work for you."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Proof has been presented but the customer still does not trust the brand.",
+              "quote": "here's all the proof"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [
+          {
+            "text": "A risk reversal appears at the end.",
+            "quote": "And then we have a risk reversal at the end."
+          }
+        ],
+        "unknowns": [
+          "No specific guarantee terms, duration, or return window are stated."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u1"
+          }
+        ]
+      },
+      {
+        "id": "u6",
+        "kind": "action",
+        "title": "Add more before/after testimonials across demographics",
+        "claim": {
+          "text": "The source says the landing page could be improved with more before-and-after testimonials, ideally four with four slightly different demographics.",
+          "quote": "The only thing that could make this better is if we had more of these, right? If we had like four of them with four slightly different demographics, that would be amazing."
+        },
+        "action": {
+          "text": "Add more before-and-after testimonials, ideally four with slightly different demographics.",
+          "quote": "If we had like four of them with four slightly different demographics, that would be amazing."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "The page already has one direct before-and-after testimonial proving the angle.",
+              "quote": "we have a direct before and after testimonial that proves the angle that we're pushing"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source frames four testimonials as an amazing improvement, not a firm requirement."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u7",
+        "kind": "action",
+        "title": "Use Baymard research to identify checkout abandonment fixes",
+        "claim": {
+          "text": "The source strongly recommends visiting Baymard's UX e-commerce research website and checking its research on cart abandonment reasons.",
+          "quote": "I actually strongly recommend going to this website and checking out some of their research because it is very helpful for CRO."
+        },
+        "action": {
+          "text": "Go to Baymard.com and check its research on the top reasons people abandon cart to inform checkout fixes.",
+          "quote": "I actually strongly recommend going to this website and checking out some of their research because it is very helpful for CRO."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "70% of carts are abandoned and the operator needs to identify why.",
+              "quote": "70% of carts end up getting abandoned."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [
+          {
+            "text": "The operator has checked Baymard's research on cart abandonment reasons.",
+            "quote": "checking out some of their research"
+          }
+        ],
+        "unknowns": [
+          "The source gives the website as bayard.com and describes it as a UX e-commerce research website; the exact spelling or current URL is not verified in the passage."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u8",
+        "kind": "action",
+        "title": "Keep extra checkout costs below 10% of AOV",
+        "claim": {
+          "text": "The source says additional expenses added at checkout, not just shipping, should be sub-10% of average order value.",
+          "quote": "you want all of these expenses, not just shipping, but any in additional expenses that get added at checkout to be sub 10% of the average order value."
+        },
+        "action": {
+          "text": "Keep shipping, tax, fees, and any other additional checkout expenses below 10% of average order value.",
+          "quote": "you want all of these expenses, not just shipping, but any in additional expenses that get added at checkout to be sub 10% of the average order value."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Extra costs such as shipping, tax, and fees are added at checkout, which is a top abandonment reason.",
+              "quote": "39% of people abandon cart because the extra costs are too high."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [
+          {
+            "text": "Additional expenses are below 10% of average order value.",
+            "quote": "as long as you keep these below 10% of average order value, this should be a non-issue for you."
+          }
+        ],
+        "unknowns": [
+          "The source describes the sub-10% threshold as an internal finding and says it can be tested lower and may differ by brand."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u7"
+          }
+        ]
+      },
+      {
+        "id": "u9",
+        "kind": "action",
+        "title": "If delivery is slow, remove delivery-time estimates and split test",
+        "claim": {
+          "text": "The source says that if delivery is actually slow, the checkout page should not mention or specify delivery times.",
+          "quote": "If your delivery is actually slow, well, then you want to not mention it on the checkout page. You don't want to specify the delivery times."
+        },
+        "action": {
+          "text": "If actual delivery is slow, do not mention or specify delivery times on the checkout page.",
+          "quote": "If your delivery is actually slow, well, then you want to not mention it on the checkout page. You don't want to specify the delivery times."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "21% of people abandon because delivery is too slow.",
+              "quote": "21% of people abandon because delivery is too slow."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [
+          {
+            "text": "A split test is run on a 7-to-10-day basis depending on revenue, and the operator determines whether it makes a material impact.",
+            "quote": "So, that's really a split test that you would have to run. I'd run it on a 7 to 10 day basis dependent on revenue and then figure out if it makes a material impact."
+          }
+        ],
+        "unknowns": [
+          "The source does not define material impact.",
+          "Removing delivery times adds ambiguity and lowers conversion rates, so the offset must be assessed."
+        ],
+        "relations": [
+          {
+            "kind": "alternative_to",
+            "target": "u10"
+          }
+        ]
+      },
+      {
+        "id": "u10",
+        "kind": "action",
+        "title": "Offer faster delivery or fast checkout delivery options",
+        "claim": {
+          "text": "The source says a better option is to get faster delivery, and another option is to have fast delivery options at checkout.",
+          "quote": "Another better option is you just get faster delivery, which isn't necessarily possible because a lot of these people could just be abandoning cuz they're in regional areas where there's poor shipping times. Um, and then another option is to have fast delivery options at checkout."
+        },
+        "action": {
+          "text": "Get faster delivery or offer fast delivery options at checkout.",
+          "quote": "Another better option is you just get faster delivery, which isn't necessarily possible because a lot of these people could just be abandoning cuz they're in regional areas where there's poor shipping times. Um, and then another option is to have fast delivery options at checkout."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "21% of people abandon because delivery is too slow.",
+              "quote": "21% of people abandon because delivery is too slow."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [
+          {
+            "text": "Fast delivery options are available at checkout.",
+            "quote": "another option is to have fast delivery options at checkout."
+          }
+        ],
+        "unknowns": [
+          "Faster delivery may not be possible due to regional poor shipping times.",
+          "No specific delivery speed threshold is stated."
+        ],
+        "relations": [
+          {
+            "kind": "alternative_to",
+            "target": "u9"
+          }
+        ]
+      },
+      {
+        "id": "u11",
+        "kind": "action",
+        "title": "Reinforce social proof and brand presence for card-detail trust",
+        "claim": {
+          "text": "The source treats card-detail distrust as a trust issue that needs more social proof and brand presence, particularly likely for startups and new brands.",
+          "quote": "Now, this is just a trust issue, right? You need more social proof. You need more brand presence. This should naturally fix itself over time as you become a very well-known brand because we work with a lot of very large established retailers in Australia. Um I would hope that no one is abandoning due to them not trusting the website with card details because everyone knows who the brand is. So why would you not trust putting your card details in with them? Um, so this is likely just pertaining to startups and new brands, in which case really just don't make your website look like a scam and make sure you're reinforcing with good proof."
+        },
+        "action": {
+          "text": "Do not make the website look like a scam and reinforce it with good proof.",
+          "quote": "really just don't make your website look like a scam and make sure you're reinforcing with good proof."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "19% of people did not trust the site with their card details.",
+              "quote": "19% of people didn't trust you with their card details."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [
+          {
+            "text": "Trust should naturally improve over time as the brand becomes well known.",
+            "quote": "This should naturally fix itself over time as you become a very well-known brand"
+          }
+        ],
+        "unknowns": [
+          "The source does not state how much social proof or brand presence is needed or how long the natural fix takes."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u1"
+          }
+        ]
+      },
+      {
+        "id": "u12",
+        "kind": "action",
+        "title": "Disable forced account creation and enable guest checkout",
+        "claim": {
+          "text": "The source says not to force people to create accounts and to turn off the Shopify default if it is enabled so people can guest checkout.",
+          "quote": "So make sure that you're not forcing people to create accounts. I actually believe this is the default setting that is enabled within Shopify, which if it is, make sure you turn it off so people can guess check out and they don't need to create accounts."
+        },
+        "action": {
+          "text": "Turn off forced account creation, especially if Shopify has it enabled by default, so customers can guest checkout.",
+          "quote": "I actually believe this is the default setting that is enabled within Shopify, which if it is, make sure you turn it off so people can guess check out and they don't need to create accounts."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "19% of people abandon because they are forced to create an account.",
+              "quote": "19% of people abandon because they're forced to create an account."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [
+          {
+            "text": "People can guest checkout and do not need to create accounts.",
+            "quote": "so people can guess check out and they don't need to create accounts."
+          }
+        ],
+        "unknowns": [
+          "The source says it believes forced account creation is the Shopify default; this is not verified in the passage."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u13",
+        "kind": "action",
+        "title": "Shorten checkout and enable express payments",
+        "claim": {
+          "text": "The source says checkout is too long and recommends removing fields, making fields optional, and enabling Shop Pay, Apple Pay, and other fast immediate checkout options.",
+          "quote": "18% is because the checkout is too long. So you want to remove as many fields as possible. Make as many fields optional so that people can pass through the checkout very quickly. Another massive play here is that you need to make sure you have shop pay enabled and you have Apple Pay enabled and you have any other option that facilitates a fast immediate checkout. You need all of this stuff enabled cuz all of this will make the checkout instantaneous."
+        },
+        "action": {
+          "text": "Remove as many checkout fields as possible, make as many fields optional as possible, and enable Shop Pay, Apple Pay, and any other fast immediate checkout option.",
+          "quote": "So you want to remove as many fields as possible. Make as many fields optional so that people can pass through the checkout very quickly. Another massive play here is that you need to make sure you have shop pay enabled and you have Apple Pay enabled and you have any other option that facilitates a fast immediate checkout. You need all of this stuff enabled cuz all of this will make the checkout instantaneous."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "18% abandon because the checkout is too long.",
+              "quote": "18% is because the checkout is too long."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [
+          {
+            "text": "The checkout is instantaneous.",
+            "quote": "all of this will make the checkout instantaneous."
+          }
+        ],
+        "unknowns": [
+          "The source does not specify which fields to remove or which additional express checkout options to enable."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u14",
+        "kind": "warning",
+        "title": "Do not rush into free or lenient returns",
+        "claim": {
+          "text": "The source warns against rushing into a free returns policy or making the returns policy as generous as possible, because it can incentivize returns and damage profit and operations, especially in fashion.",
+          "quote": "You don't necessarily want just a free returns policy, particularly if you're in fashion, because it's going to incentivize people to return like crazy."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "15% do not check out because they are not happy with the returns policy.",
+              "quote": "15% don't check out because they're not happy with the returns policy."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not state how to design a returns policy that balances conversion and profit.",
+          "It says a free returns policy can be tested but may need to be clawed back."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u15",
+        "kind": "unresolved_claim",
+        "title": "Total cost shown up front recommendation is cut off",
+        "claim": {
+          "text": "The source begins to say that if a brand is not transparent like IM8, showing total cost up front is definitely something to be addressed, but the passage cuts off mid-sentence.",
+          "quote": "if you're not like IM8, it's definitely something to be "
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "14% abandoned because the total cost was not shown up front.",
+              "quote": "14% abandoned because the total cost isn't shown up front."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "Missing continuation after 'it's definitely something to be'.",
+          "The research is unclear whether the 14% reason refers to extra costs added at checkout or genuine mispricing on the landing page before the price changes at checkout."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u16",
+        "kind": "principle",
+        "title": "Cart abandonment cannot be reduced to zero",
+        "claim": {
+          "text": "The source says cart abandonment cannot be reduced to zero because 43% of abandoners were just browsing and were never going to buy that day; focus on the remaining fixable reasons.",
+          "quote": "43% of those people were just browsing and were never going to buy today. So, you'll never get it to zero. But for the rest, they left for a reason that we can try to fix."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "70% of carts end up being abandoned.",
+              "quote": "70% of carts end up getting abandoned."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not quantify what portion of abandoners are fixable."
+        ],
+        "relations": []
+      }
+    ],
+    "more_units": true,
+    "unresolved": [
+      "The passage ends mid-sentence after 'it's definitely something to be ', so the total-cost-up-front recommendation is incomplete.",
+      "Potential omitted unit: use specific callouts or stats when possible; the source says anytime we can have a specific call out, it's always great.",
+      "The source gives the research website as bayard.com and describes it as a UX e-commerce research website; exact spelling or current URL is not independently verified.",
+      "The source is uncertain how to validate skin firmness through a percentage.",
+      "The source says it believes forced account creation is the default in Shopify; this is not verified in the passage.",
+      "The source does not define material impact for the delivery split test.",
+      "The 14% total-cost abandonment reason is ambiguous about extra checkout costs versus landing-page mispricing."
+    ]
+  },
+  "raw_content": "{\"units\":[{\"id\":\"u1\",\"kind\":\"action\",\"title\":\"Reinforce landing-page proof with claim-relevant proof\",\"claim\":{\"text\":\"The source says landing-page proof must reinforce the specific claim and unique mechanism being advertised rather than generic social proof.\",\"quote\":\"it's not reinforcing the proof of the claim that's being made.\"},\"action\":{\"text\":\"Reinforce the claim with testimonial videos or before/afters, and filter reviews to those relevant to the particular objection and claim.\",\"quote\":\"And then you need to reinforce with proof, which is either a bunch of testimonial videos that showcase uh people's before and afters. You ideally want, in that case, as many before and afters as possible. You want all of your reviews to just be filtering through on the ones that are relevant to that particular objection and to that particular claim.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"The landing page pushes a claim such as firmer skin within 4 weeks, but shows generic reviews or social proof that just say the product is great.\",\"quote\":\"if we're pushing people to the landing page so they can have firmer skin within 4 weeks and then the landing page just has a bunch of reviews on it or a bunch of social proof testimonials, whatever it might be, just saying the product is great.\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[{\"text\":\"The landing page has proof that matches the claim with a direct testimonial before-and-after callout.\",\"quote\":\"proof that matches the claim with a direct testimonial before and after call out.\"}],\"unknowns\":[\"No exact number of proof items or reviews is specified.\"],\"relations\":[]},{\"id\":\"u2\",\"kind\":\"principle\",\"title\":\"Relevant proof beats irrelevant volume\",\"claim\":{\"text\":\"The source asserts that less proof that is more relevant works better than more proof that is irrelevant.\",\"quote\":\"I think that less proof that is more relevant works way better than more proof that's irrelevant.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source does not give a metric for relevance or a minimum number of reviews.\"],\"relations\":[]},{\"id\":\"u3\",\"kind\":\"warning\",\"title\":\"Low-quality trust signals do not close\",\"claim\":{\"text\":\"The source warns that trust badges and security seals are low-quality trust signals that do nothing to close anyone, while a guarantee or returns policy is generic table stakes rather than a needle-moving trust signal.\",\"quote\":\"What is lowquality trust signals? It's stuff like trust badges, the little security seals in the footer. That's what we used to do in 2017, 2018 when everyone was drop shipping. And they do absolutely nothing to close anyone. And it's just trust signals that don't matter. Now, a guarantee or a returns policy matters, but it is generic and it's table stakes and everyone does it.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"The operator is considering trust badges, security seals, or a generic guarantee/returns policy as trust signals.\",\"quote\":\"The next point is that you want high quality trust signals.\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source does not define what specific high-quality trust signals replace them, beyond later examples.\"],\"relations\":[]},{\"id\":\"u4\",\"kind\":\"example\",\"title\":\"Weak vs strong landing-page proof and trust layout\",\"claim\":{\"text\":\"The source contrasts a weak landing page with no reviews, a generic customer testimonial, and meaningless trust badges against a stronger one with many reviews with photos and a direct before-and-after testimonial that proves the angle.\",\"quote\":\"bad on the left, no reviews, a really generic customer testimonial, and then a bunch of trust badges that are meaningless to anyone. On the right, we have a ton of reviews with photos. Then we have a direct before and after testimonial that proves the angle that we're pushing, which is skim firmness.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source says it is unsure how firmness of skin is validated through a percentage.\",\"The example says adding a stat is great, but the validation method is unknown.\"],\"relations\":[]},{\"id\":\"u5\",\"kind\":\"action\",\"title\":\"Add a risk reversal after proof\",\"claim\":{\"text\":\"The source labels a risk reversal as table stakes but useful after presenting proof: if the customer still does not trust the brand, offer a money-back guarantee if the product does not work.\",\"quote\":\"If you still don't trust us by now, well, we'll give you your money back if it doesn't work for you.\"},\"action\":{\"text\":\"Offer a money-back risk reversal after the proof.\",\"quote\":\"If you still don't trust us by now, well, we'll give you your money back if it doesn't work for you.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Proof has been presented but the customer still does not trust the brand.\",\"quote\":\"here's all the proof\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[{\"text\":\"A risk reversal appears at the end.\",\"quote\":\"And then we have a risk reversal at the end.\"}],\"unknowns\":[\"No specific guarantee terms, duration, or return window are stated.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u1\"}]},{\"id\":\"u6\",\"kind\":\"action\",\"title\":\"Add more before/after testimonials across demographics\",\"claim\":{\"text\":\"The source says the landing page could be improved with more before-and-after testimonials, ideally four with four slightly different demographics.\",\"quote\":\"The only thing that could make this better is if we had more of these, right? If we had like four of them with four slightly different demographics, that would be amazing.\"},\"action\":{\"text\":\"Add more before-and-after testimonials, ideally four with slightly different demographics.\",\"quote\":\"If we had like four of them with four slightly different demographics, that would be amazing.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"The page already has one direct before-and-after testimonial proving the angle.\",\"quote\":\"we have a direct before and after testimonial that proves the angle that we're pushing\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source frames four testimonials as an amazing improvement, not a firm requirement.\"],\"relations\":[]},{\"id\":\"u7\",\"kind\":\"action\",\"title\":\"Use Baymard research to identify checkout abandonment fixes\",\"claim\":{\"text\":\"The source strongly recommends visiting Baymard's UX e-commerce research website and checking its research on cart abandonment reasons.\",\"quote\":\"I actually strongly recommend going to this website and checking out some of their research because it is very helpful for CRO.\"},\"action\":{\"text\":\"Go to Baymard.com and check its research on the top reasons people abandon cart to inform checkout fixes.\",\"quote\":\"I actually strongly recommend going to this website and checking out some of their research because it is very helpful for CRO.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"70% of carts are abandoned and the operator needs to identify why.\",\"quote\":\"70% of carts end up getting abandoned.\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[{\"text\":\"The operator has checked Baymard's research on cart abandonment reasons.\",\"quote\":\"checking out some of their research\"}],\"unknowns\":[\"The source gives the website as bayard.com and describes it as a UX e-commerce research website; the exact spelling or current URL is not verified in the passage.\"],\"relations\":[]},{\"id\":\"u8\",\"kind\":\"action\",\"title\":\"Keep extra checkout costs below 10% of AOV\",\"claim\":{\"text\":\"The source says additional expenses added at checkout, not just shipping, should be sub-10% of average order value.\",\"quote\":\"you want all of these expenses, not just shipping, but any in additional expenses that get added at checkout to be sub 10% of the average order value.\"},\"action\":{\"text\":\"Keep shipping, tax, fees, and any other additional checkout expenses below 10% of average order value.\",\"quote\":\"you want all of these expenses, not just shipping, but any in additional expenses that get added at checkout to be sub 10% of the average order value.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Extra costs such as shipping, tax, and fees are added at checkout, which is a top abandonment reason.\",\"quote\":\"39% of people abandon cart because the extra costs are too high.\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[{\"text\":\"Additional expenses are below 10% of average order value.\",\"quote\":\"as long as you keep these below 10% of average order value, this should be a non-issue for you.\"}],\"unknowns\":[\"The source describes the sub-10% threshold as an internal finding and says it can be tested lower and may differ by brand.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u7\"}]},{\"id\":\"u9\",\"kind\":\"action\",\"title\":\"If delivery is slow, remove delivery-time estimates and split test\",\"claim\":{\"text\":\"The source says that if delivery is actually slow, the checkout page should not mention or specify delivery times.\",\"quote\":\"If your delivery is actually slow, well, then you want to not mention it on the checkout page. You don't want to specify the delivery times.\"},\"action\":{\"text\":\"If actual delivery is slow, do not mention or specify delivery times on the checkout page.\",\"quote\":\"If your delivery is actually slow, well, then you want to not mention it on the checkout page. You don't want to specify the delivery times.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"21% of people abandon because delivery is too slow.\",\"quote\":\"21% of people abandon because delivery is too slow.\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[{\"text\":\"A split test is run on a 7-to-10-day basis depending on revenue, and the operator determines whether it makes a material impact.\",\"quote\":\"So, that's really a split test that you would have to run. I'd run it on a 7 to 10 day basis dependent on revenue and then figure out if it makes a material impact.\"}],\"unknowns\":[\"The source does not define material impact.\",\"Removing delivery times adds ambiguity and lowers conversion rates, so the offset must be assessed.\"],\"relations\":[{\"kind\":\"alternative_to\",\"target\":\"u10\"}]},{\"id\":\"u10\",\"kind\":\"action\",\"title\":\"Offer faster delivery or fast checkout delivery options\",\"claim\":{\"text\":\"The source says a better option is to get faster delivery, and another option is to have fast delivery options at checkout.\",\"quote\":\"Another better option is you just get faster delivery, which isn't necessarily possible because a lot of these people could just be abandoning cuz they're in regional areas where there's poor shipping times. Um, and then another option is to have fast delivery options at checkout.\"},\"action\":{\"text\":\"Get faster delivery or offer fast delivery options at checkout.\",\"quote\":\"Another better option is you just get faster delivery, which isn't necessarily possible because a lot of these people could just be abandoning cuz they're in regional areas where there's poor shipping times. Um, and then another option is to have fast delivery options at checkout.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"21% of people abandon because delivery is too slow.\",\"quote\":\"21% of people abandon because delivery is too slow.\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[{\"text\":\"Fast delivery options are available at checkout.\",\"quote\":\"another option is to have fast delivery options at checkout.\"}],\"unknowns\":[\"Faster delivery may not be possible due to regional poor shipping times.\",\"No specific delivery speed threshold is stated.\"],\"relations\":[{\"kind\":\"alternative_to\",\"target\":\"u9\"}]},{\"id\":\"u11\",\"kind\":\"action\",\"title\":\"Reinforce social proof and brand presence for card-detail trust\",\"claim\":{\"text\":\"The source treats card-detail distrust as a trust issue that needs more social proof and brand presence, particularly likely for startups and new brands.\",\"quote\":\"Now, this is just a trust issue, right? You need more social proof. You need more brand presence. This should naturally fix itself over time as you become a very well-known brand because we work with a lot of very large established retailers in Australia. Um I would hope that no one is abandoning due to them not trusting the website with card details because everyone knows who the brand is. So why would you not trust putting your card details in with them? Um, so this is likely just pertaining to startups and new brands, in which case really just don't make your website look like a scam and make sure you're reinforcing with good proof.\"},\"action\":{\"text\":\"Do not make the website look like a scam and reinforce it with good proof.\",\"quote\":\"really just don't make your website look like a scam and make sure you're reinforcing with good proof.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"19% of people did not trust the site with their card details.\",\"quote\":\"19% of people didn't trust you with their card details.\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[{\"text\":\"Trust should naturally improve over time as the brand becomes well known.\",\"quote\":\"This should naturally fix itself over time as you become a very well-known brand\"}],\"unknowns\":[\"The source does not state how much social proof or brand presence is needed or how long the natural fix takes.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u1\"}]},{\"id\":\"u12\",\"kind\":\"action\",\"title\":\"Disable forced account creation and enable guest checkout\",\"claim\":{\"text\":\"The source says not to force people to create accounts and to turn off the Shopify default if it is enabled so people can guest checkout.\",\"quote\":\"So make sure that you're not forcing people to create accounts. I actually believe this is the default setting that is enabled within Shopify, which if it is, make sure you turn it off so people can guess check out and they don't need to create accounts.\"},\"action\":{\"text\":\"Turn off forced account creation, especially if Shopify has it enabled by default, so customers can guest checkout.\",\"quote\":\"I actually believe this is the default setting that is enabled within Shopify, which if it is, make sure you turn it off so people can guess check out and they don't need to create accounts.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"19% of people abandon because they are forced to create an account.\",\"quote\":\"19% of people abandon because they're forced to create an account.\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[{\"text\":\"People can guest checkout and do not need to create accounts.\",\"quote\":\"so people can guess check out and they don't need to create accounts.\"}],\"unknowns\":[\"The source says it believes forced account creation is the Shopify default; this is not verified in the passage.\"],\"relations\":[]},{\"id\":\"u13\",\"kind\":\"action\",\"title\":\"Shorten checkout and enable express payments\",\"claim\":{\"text\":\"The source says checkout is too long and recommends removing fields, making fields optional, and enabling Shop Pay, Apple Pay, and other fast immediate checkout options.\",\"quote\":\"18% is because the checkout is too long. So you want to remove as many fields as possible. Make as many fields optional so that people can pass through the checkout very quickly. Another massive play here is that you need to make sure you have shop pay enabled and you have Apple Pay enabled and you have any other option that facilitates a fast immediate checkout. You need all of this stuff enabled cuz all of this will make the checkout instantaneous.\"},\"action\":{\"text\":\"Remove as many checkout fields as possible, make as many fields optional as possible, and enable Shop Pay, Apple Pay, and any other fast immediate checkout option.\",\"quote\":\"So you want to remove as many fields as possible. Make as many fields optional so that people can pass through the checkout very quickly. Another massive play here is that you need to make sure you have shop pay enabled and you have Apple Pay enabled and you have any other option that facilitates a fast immediate checkout. You need all of this stuff enabled cuz all of this will make the checkout instantaneous.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"18% abandon because the checkout is too long.\",\"quote\":\"18% is because the checkout is too long.\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[{\"text\":\"The checkout is instantaneous.\",\"quote\":\"all of this will make the checkout instantaneous.\"}],\"unknowns\":[\"The source does not specify which fields to remove or which additional express checkout options to enable.\"],\"relations\":[]},{\"id\":\"u14\",\"kind\":\"warning\",\"title\":\"Do not rush into free or lenient returns\",\"claim\":{\"text\":\"The source warns against rushing into a free returns policy or making the returns policy as generous as possible, because it can incentivize returns and damage profit and operations, especially in fashion.\",\"quote\":\"You don't necessarily want just a free returns policy, particularly if you're in fashion, because it's going to incentivize people to return like crazy.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"15% do not check out because they are not happy with the returns policy.\",\"quote\":\"15% don't check out because they're not happy with the returns policy.\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source does not state how to design a returns policy that balances conversion and profit.\",\"It says a free returns policy can be tested but may need to be clawed back.\"],\"relations\":[]},{\"id\":\"u15\",\"kind\":\"unresolved_claim\",\"title\":\"Total cost shown up front recommendation is cut off\",\"claim\":{\"text\":\"The source begins to say that if a brand is not transparent like IM8, showing total cost up front is definitely something to be addressed, but the passage cuts off mid-sentence.\",\"quote\":\"if you're not like IM8, it's definitely something to be \"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"14% abandoned because the total cost was not shown up front.\",\"quote\":\"14% abandoned because the total cost isn't shown up front.\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"Missing continuation after 'it's definitely something to be'.\",\"The research is unclear whether the 14% reason refers to extra costs added at checkout or genuine mispricing on the landing page before the price changes at checkout.\"],\"relations\":[]},{\"id\":\"u16\",\"kind\":\"principle\",\"title\":\"Cart abandonment cannot be reduced to zero\",\"claim\":{\"text\":\"The source says cart abandonment cannot be reduced to zero because 43% of abandoners were just browsing and were never going to buy that day; focus on the remaining fixable reasons.\",\"quote\":\"43% of those people were just browsing and were never going to buy today. So, you'll never get it to zero. But for the rest, they left for a reason that we can try to fix.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"70% of carts end up being abandoned.\",\"quote\":\"70% of carts end up getting abandoned.\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source does not quantify what portion of abandoners are fixable.\"],\"relations\":[]}],\"more_units\":true,\"unresolved\":[\"The passage ends mid-sentence after 'it's definitely something to be ', so the total-cost-up-front recommendation is incomplete.\",\"Potential omitted unit: use specific callouts or stats when possible; the source says anytime we can have a specific call out, it's always great.\",\"The source gives the research website as bayard.com and describes it as a UX e-commerce research website; exact spelling or current URL is not independently verified.\",\"The source is uncertain how to validate skin firmness through a percentage.\",\"The source says it believes forced account creation is the default in Shopify; this is not verified in the passage.\",\"The source does not define material impact for the delivery split test.\",\"The 14% total-cost abandonment reason is ambiguous about extra checkout costs versus landing-page mispricing.\"]}",
+  "input": {
+    "source": {
+      "source_id": "1wv9Trf2egAaS3LXa54YHIRZSTkcr6H8R",
+      "source_sha256": "33935f0073ec7c3281b3953817ec5913d9fd50c9b4a130d4c7b02c71b4c402b5",
+      "locator": "batch",
+      "start": 0,
+      "text": "it is actually meaningless and the proof doesn't matter. For example, if we're pushing people to the landing page so they can have firmer skin within 4 weeks and then the landing page just has a bunch of reviews on it or a bunch of social proof testimonials, whatever it might be, just saying the product is great. Cool. It might do a little bit, but it's not reinforcing the proof of the claim that's being made. And that's what people are looking for. People want to know, okay, the reason why I'm buying this is because of this unique mechanism, which is that it will make my skin firmer in 4 weeks. Is that true? How can I trust these guys? What is the proof? And then you need to reinforce with proof, which is either a bunch of testimonial videos that showcase uh people's before and afters. You ideally want, in that case, as many before and afters as possible. You want all of your reviews to just be filtering through on the ones that are relevant to that particular objection and to that particular claim. I'm going to make a pretty uh bold statement here, which is that I think that less proof that is more relevant works way better than more proof that's irrelevant. So, I would rather have five reviews on the landing page that are hyper relevant to the claim being made than having 400 that are just generic. Yeah, this is a great product. You should buy it. The next point is that you want high quality trust signals. What is lowquality trust signals? It's stuff like trust badges, the little security seals in the footer. That's what we used to do in 2017, 2018 when everyone was drop shipping. And they do absolutely nothing to close anyone. And it's just trust signals that don't matter. Now, a guarantee or a returns policy matters, but it is generic and it's table stakes and everyone does it. And so, it's kind of just a given now. It's not a trust signal that's going to move the needle upwards. So, really quick example here, bad on the left, no reviews, a really generic customer testimonial, and then a bunch of trust badges that are meaningless to anyone. On the right, we have a ton of reviews with photos. Then we have a direct before and after testimonial that proves the angle that we're pushing, which is skim firmness. We've also put a little stat here. Now, I don't know how we actually validate firmness of skin through a percentage, but if we can do something like this, anytime we can have a specific call out, it's always great. The only thing that could make this better is if we had more of these, right? If we had like four of them with four slightly different demographics, that would be amazing. Number three, we've labeled this as table stakes because anyone can do this. like this is not unique to them in any way, but it does act as a risk reversal. And so, hey, here's all the proof. If you still don't trust us by now, well, we'll give you your money back if it doesn't work for you. So, on the left, we've got no proof, no trust. Trust badges are absolutely meaningless, and the proof doesn't match the claim. On the right, we've got reviews with photos sorted first. We've got proof that matches the claim with a direct testimonial before and after call out. And then we have a risk reversal at the end. Next, we've got the checkout. So, we've gone through the landing page, added to cart, now we're getting into the checkout. Why are we even talking about this? Well, because 70% of carts end up getting abandoned. 43% of those people were just browsing and were never going to buy today. So, you'll never get it to zero. But for the rest, they left for a reason that we can try to fix. Now, the nice thing is you don't have to go and try to figure out why people are abandoning cart because bayard.com has done all the research for us and I'm just pulling from their data. are there a UX e-commerce research website. So, I actually strongly recommend going to this website and checking out some of their research because it is very helpful for CRO. They have gone and done a bunch of research on all of the top reasons why people abandon cart. And so, these are the things that we need to fix in your checkout process. The biggest reason for people abandoning cart, 39% of people abandon cart because the extra costs are too high. So the shipping tax, fees, everything that suddenly gets added right at checkout is the reason why they abandoned. I gave you a rule of thumb before, which is that you want all of these expenses, not just shipping, but any in additional expenses that get added at checkout to be sub 10% of the average order value. This is generally what we have found internally to be the point in which going any lower has no material positive impact on revenue per session or conversion rates. And so as long as if you're selling something for $100, your shipping tax and fees comes out at below $10, you should be completely fine here. Now, you can still test this. Sure, go and test pulling this even lower. That's fine. And it might be different and unique for your particular brand. But as long as you keep these below 10% of average order value, this should be a non-issue for you. Now, 21% of people abandon because delivery is too slow. So, there are a couple things that you can do here. If your delivery is actually slow, well, then you want to not mention it on the checkout page. You don't want to specify the delivery times. Now, that will impact your conversion rate. If you go and take away the delivery times, it adds ambiguity and people no longer have clarity as to when they're going to receive their package and therefore, yes, you will get lower conversion rates. The question is, does it offset the fact that people are abandoning because when you do list the delivery dates, they're too slow. So, that's really a split test that you would have to run. I'd run it on a 7 to 10 day basis dependent on revenue and then figure out if it makes a material impact. Another better option is you just get faster delivery, which isn't necessarily possible because a lot of these people could just be abandoning cuz they're in regional areas where there's poor shipping times. Um, and then another option is to have fast delivery options at checkout. So, there's a lot of options here. There's some testing that you need to do, but it's important to have this top of mind when you're thinking about CRO test at checkout. The next is 19% of people didn't trust you with their card details. Now, this is just a trust issue, right? You need more social proof. You need more brand presence. This should naturally fix itself over time as you become a very well-known brand because we work with a lot of very large established retailers in Australia. Um I would hope that no one is abandoning due to them not trusting the website with card details because everyone knows who the brand is. So why would you not trust putting your card details in with them? Um, so this is likely just pertaining to startups and new brands, in which case really just don't make your website look like a scam and make sure you're reinforcing with good proof. Another 19% of people abandon because they're forced to create an account. So make sure that you're not forcing people to create accounts. I actually believe this is the default setting that is enabled within Shopify, which if it is, make sure you turn it off so people can guess check out and they don't need to create accounts. 18% is because the checkout is too long. So you want to remove as many fields as possible. Make as many fields optional so that people can pass through the checkout very quickly. Another massive play here is that you need to make sure you have shop pay enabled and you have Apple Pay enabled and you have any other option that facilitates a fast immediate checkout. You need all of this stuff enabled cuz all of this will make the checkout instantaneous. decrease this, increase conversion rates. 15% don't check out because they're not happy with the returns policy. Now, honestly, returns policy is something that you have to spend more time on than just giving away a crazy returns policy. Okay? You don't necessarily want just a free returns policy, particularly if you're in fashion, because it's going to incentivize people to return like crazy. um and you could do a lot of damage to your business having a really flexible returns policy that's very positive for the consumer um rather than having something that protects you a little bit. So this one I think there's a lot more nuance and you shouldn't just rush into free returns and try to make your returns policy as great as possible. You can do it run it as a test but it might have a detriment to profit and operations in which case you might need to claw this back and just admit that yeah we're going to lose 15% of people but we're going to be way more profitable instead. and then 14% abandoned because the total cost isn't shown up front. That isn't really clear in this research study whether this is just referring to the extra costs getting it added at checkout or whether this is due to people genuinely mispricing on the landing page and then the price changes at checkout. Now you might be thinking who's actually doing this? Uh a really good example of someone who does this is IM8. If you go to the IM8 landing page uh you will see a price but they have it in small detail as price per month. So it looks like it's $100 and you go, \"Oh, great.\" And you hit the add to cart button, but it's a quarterly subscription only. So when you hit add to cart and then you open up the cart slider, immediately the price jumps to like $300 to $400. So that would be an example of where the total cost wasn't shown up front, but once they actually reach the cart and reach the checkout, it gives them a reason to abandon. Now, I don't think most people have to worry about this cuz most people are transparent on pricing up front, but if you're not like IM8, it's definitely something to be "
+    },
+    "already_extracted_claims": [],
+    "instruction": "Extract remaining distinct task-sized units. Do not repeat already extracted claims."
+  },
+  "system_prompt_sha256": "f23d9572f5bf1b93a5822a96b30f4ea85c0469c454d5ce80d227418df3d2e25e"
+}

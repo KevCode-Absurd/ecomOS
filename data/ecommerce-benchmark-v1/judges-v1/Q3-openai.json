@@ -1,0 +1,178 @@
+{
+  "status": "complete",
+  "mapping": {
+    "A": "frontier_without",
+    "B": "cheap_with",
+    "C": "frontier_with",
+    "D": "cheap_without"
+  },
+  "judge_model": "gpt-5.6-terra",
+  "output": {
+    "reviews": [
+      {
+        "label": "A",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 4,
+          "prioritization": 4
+        },
+        "strengths": [
+          "All required unit-economics figures are correct: $39.60/$9.60/2.02x at full price and $24.08/-$5.92/2.66x at 20% off.",
+          "Shows the cost and payment-fee arithmetic clearly and uses the discounted selling price for discounted ROAS.",
+          "Makes the correct recommendation not to use the offer at unchanged $30 CAC, without invoking unprovided LTV or basket effects.",
+          "States relevant assumptions and appropriately notes that this is contribution rather than net profit."
+        ],
+        "issues": [],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Full price pre-ad 39.60, after-ad 9.60, break-even ROAS about 2.02.",
+            "met": true,
+            "reason": "Calculates $39.60 pre-ad contribution, $9.60 after CAC, and 2.02x break-even ROAS."
+          },
+          {
+            "criterion": "Discount price 64, pre-ad 24.08, after-ad -5.92, break-even ROAS about 2.66.",
+            "met": true,
+            "reason": "Calculates the $64 price and all required discounted economics correctly."
+          },
+          {
+            "criterion": "Do not treat a discount as automatically profitable or rely on unknown LTV.",
+            "met": true,
+            "reason": "Rejects the discount at the supplied CAC and explicitly excludes lifetime value and unlisted costs."
+          }
+        ]
+      },
+      {
+        "label": "B",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 4,
+          "prioritization": 3
+        },
+        "strengths": [
+          "Correctly completes every required calculation and clearly compares actual ROAS at $30 CAC with each scenario's break-even ROAS.",
+          "Correctly quantifies the CAC thresholds: $24.08 to break even on the discounted order and $14.48 to retain the full-price after-ad contribution.",
+          "Appropriately distinguishes the stipulated CAC input from verified incremental CAC and does not use unsupported LTV to justify the loss.",
+          "Notes the owner-approval constraint and cash constraint without changing the required first-order calculation."
+        ],
+        "issues": [
+          "The answer goes beyond the narrow requested comparison with several alternative-offer and measurement suggestions. These are mostly reasonable, but make the response less tightly prioritized than necessary.",
+          "The statement that including returns would make the discount case worse is directionally plausible but not calculable from the supplied facts; return behavior and costs were not provided."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Full price pre-ad 39.60, after-ad 9.60, break-even ROAS about 2.02.",
+            "met": true,
+            "reason": "Reports $39.60, $9.60, and 2.02 correctly."
+          },
+          {
+            "criterion": "Discount price 64, pre-ad 24.08, after-ad -5.92, break-even ROAS about 2.66.",
+            "met": true,
+            "reason": "Reports $64, $24.08, -$5.92, and 2.66 correctly."
+          },
+          {
+            "criterion": "Do not treat a discount as automatically profitable or rely on unknown LTV.",
+            "met": true,
+            "reason": "Treats CAC improvement and bundle effects as unproven hypotheses and excludes LTV."
+          }
+        ]
+      },
+      {
+        "label": "C",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 4,
+          "prioritization": 4
+        },
+        "strengths": [
+          "Provides a complete, accurate per-order comparison with all required figures.",
+          "Correctly explains that free customer shipping still leaves TrailFold with the listed $8 merchant shipping cost.",
+          "Correctly uses post-discount revenue in the discounted ROAS calculation and identifies 2.13x actual ROAS as below the 2.66x requirement.",
+          "Uses appropriate uncertainty language: conversion-driven CAC improvement is presented as a hypothesis, not evidence."
+        ],
+        "issues": [],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Full price pre-ad 39.60, after-ad 9.60, break-even ROAS about 2.02.",
+            "met": true,
+            "reason": "The full-price table and calculation section give all three required values accurately."
+          },
+          {
+            "criterion": "Discount price 64, pre-ad 24.08, after-ad -5.92, break-even ROAS about 2.66.",
+            "met": true,
+            "reason": "The discounted scenario gives the correct price, contributions, and break-even ROAS."
+          },
+          {
+            "criterion": "Do not treat a discount as automatically profitable or rely on unknown LTV.",
+            "met": true,
+            "reason": "Rejects the offer at the stated CAC and expressly excludes LTV, other products, and unlisted costs."
+          }
+        ]
+      },
+      {
+        "label": "D",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 3,
+          "uncertainty_and_questions": 4,
+          "prioritization": 3
+        },
+        "strengths": [
+          "The required full-price and discount calculations are all correct.",
+          "The maximum break-even discount-depth calculation is correct: a $70.10 price, or roughly 12.4% off, breaks even at $30 CAC.",
+          "Uses relevant TrailFold constraints, including discount approval, free shipping, cash protection, and Daypack stock cover.",
+          "Appropriately identifies the lack of evidence that the discount would change CAC and excludes LTV and other-product revenue from the calculation."
+        ],
+        "issues": [
+          "The inventory analysis is arithmetically sound but is outside the requested one-order economics task and depends on current daily sales remaining at 8 units; it is secondary to the core decision.",
+          "The recommendation to fix PDP friction and the added-to-cart flow first is plausible and brand-specific, but it extends beyond the supplied task and causal evidence is not available.",
+          "Calling these items 'cheaper tests' is not established by the provided resource or implementation-cost data."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Full price pre-ad 39.60, after-ad 9.60, break-even ROAS about 2.02.",
+            "met": true,
+            "reason": "Reports $39.60 pre-ad contribution, $9.60 after CAC, and 2.02x break-even ROAS."
+          },
+          {
+            "criterion": "Discount price 64, pre-ad 24.08, after-ad -5.92, break-even ROAS about 2.66.",
+            "met": true,
+            "reason": "Reports the correct discounted price and all requested discounted economics."
+          },
+          {
+            "criterion": "Do not treat a discount as automatically profitable or rely on unknown LTV.",
+            "met": true,
+            "reason": "Concludes the offer is contribution-negative at $30 CAC and explicitly excludes LTV."
+          }
+        ]
+      }
+    ],
+    "ranking": [
+      "A",
+      "C",
+      "B",
+      "D"
+    ],
+    "summary": "All four answers correctly complete the required Daypack unit-economics calculation and reject 20% off at a constant $30 CAC. A and C are the most focused and complete. B adds useful but somewhat unnecessary extensions and one unsupported directional returns comment. D is accurate and brand-aware, but devotes more attention to out-of-scope inventory and funnel actions, including an unsubstantiated implementation-cost comparison."
+  },
+  "request_id": "0ce557c76971e914d8ba1468800e8c7f98f52cb7d4d71764e9b506ac09c64db9",
+  "cost_upper_estimate_usd": 0.044525625
+}

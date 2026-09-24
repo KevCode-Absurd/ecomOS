@@ -1,0 +1,602 @@
+{
+  "request_id": "7710b3a2f9a6bcdb57b79dc909be870e101655051337041d4eace8cb7d44b1b0",
+  "provider": "deepseek",
+  "model": "deepseek-flash",
+  "effort": "high",
+  "completion_limit": 32768,
+  "usage": {
+    "prompt_tokens": 3337,
+    "completion_tokens": 19991,
+    "total_tokens": 23328,
+    "prompt_tokens_details": {
+      "cached_tokens": 1024
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 16585
+    },
+    "prompt_cache_hit_tokens": 1024,
+    "prompt_cache_miss_tokens": 2313
+  },
+  "booked_cost_usd": 0.0249903,
+  "seconds": 73.92,
+  "finish_reason": "stop",
+  "output": {
+    "units": [
+      {
+        "id": "qc_agent",
+        "kind": "action",
+        "title": "Use a QC agent when using a manufacturer",
+        "claim": {
+          "text": "The source highly recommends a QC agent to check the product the first time a manufacturer is used, and even on the second or third time.",
+          "quote": "I highly highly recommend that every single uh first time that you use a manufacturer even the second or third time that you're using a QC agent to go check the product"
+        },
+        "action": {
+          "text": "Get a QC agent to check the product.",
+          "quote": "I highly recommend first time you're using it get a QC agent"
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "It is the first time using the manufacturer.",
+              "quote": "first time that you use a manufacturer"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [
+          {
+            "text": "A QC agency goes to the factory, uses the Tech pack as reference, weighs and measures the product, and checks the panone color.",
+            "quote": "a QC is where a quality control agency will actually go to the factory they'll use your Tech pack again as a reference and they'll weigh the product they'll measure the product they'll do all kinds of things they'll check the panone color"
+          }
+        ],
+        "unknowns": [
+          "No QC acceptance thresholds or pass/fail criteria are stated."
+        ],
+        "relations": [
+          {
+            "kind": "alternative_to",
+            "target": "alibaba_qc"
+          }
+        ]
+      },
+      {
+        "id": "alibaba_qc",
+        "kind": "action",
+        "title": "Use Alibaba's inbuilt QC function",
+        "claim": {
+          "text": "Alibaba has an inbuilt QC function for sending a QC agent to an order.",
+          "quote": "one of the best things about Alibaba is they have an inbuilt QC function"
+        },
+        "action": {
+          "text": "Send a QC agent out to the order via Alibaba's inbuilt QC function.",
+          "quote": "send a QC agent out to this order"
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The exact process, cost and coverage of Alibaba's inbuilt QC function are not stated."
+        ],
+        "relations": [
+          {
+            "kind": "alternative_to",
+            "target": "qc_agent"
+          }
+        ]
+      },
+      {
+        "id": "late_sample_warning",
+        "kind": "warning",
+        "title": "Late samples can cause missed trade periods",
+        "claim": {
+          "text": "Failing to get the sample on time may delay the product, miss the Christmas trade period, and leave product stuck in January and February.",
+          "quote": "if you fail to get the sample on time you might fail to to get the product on time you might miss Christmas trade period and then you'll get stuck with all of the product come January February"
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "The sample is not obtained on time.",
+              "quote": "if you fail to get the sample on time"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not state how to recover once the sample is late beyond using a critical path."
+        ],
+        "relations": []
+      },
+      {
+        "id": "define_steps",
+        "kind": "action",
+        "title": "Define every step of the critical path",
+        "claim": {
+          "text": "The first critical-path step is to define every single step of the process, either with a team member or by writing it out.",
+          "quote": "first we Define every single step of the process and you can do this with your team member or you can just write it out"
+        },
+        "action": {
+          "text": "Define every single step of the process.",
+          "quote": "first we Define every single step of the process and you can do this with your team member or you can just write it out"
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No required level of granularity or template format is stated."
+        ],
+        "relations": []
+      },
+      {
+        "id": "sequence_events",
+        "kind": "action",
+        "title": "Sequence critical-path events in order",
+        "claim": {
+          "text": "The second critical-path step is to sequence all events in the correct order.",
+          "quote": "the second step is we're going to sequence all of these events in the correct order"
+        },
+        "action": {
+          "text": "Sequence all events in the correct order.",
+          "quote": "the second step is we're going to sequence all of these events in the correct order"
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not specify a formal sequencing method."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "define_steps"
+          }
+        ]
+      },
+      {
+        "id": "pm_tool",
+        "kind": "action",
+        "title": "Use a project management tool to keep tasks visible",
+        "claim": {
+          "text": "A project management tool such as Asana, monday.com, Notion or Excel can be used; the important requirement is that every task is visible in the right order.",
+          "quote": "you can use a project management tool like aana I use monday.com really impartial about which one you use they're all pretty much the same you can use notion but you really want uh some people use Excel as well you just want all of these things visible all of every single task and in the right order"
+        },
+        "action": {
+          "text": "Use a project management tool to keep all tasks visible and in the right order.",
+          "quote": "use a project management tool like aana"
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [
+          {
+            "text": "Every task is visible in the right order.",
+            "quote": "every single task and in the right order"
+          }
+        ],
+        "unknowns": [
+          "The source says the named tools are all pretty much the same but does not prescribe one."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "sequence_events"
+          }
+        ]
+      },
+      {
+        "id": "define_time",
+        "kind": "action",
+        "title": "Define the time each step takes",
+        "claim": {
+          "text": "After sequencing, the source says to define the time it takes to do each step.",
+          "quote": "then you're going to define the time it takes to do them"
+        },
+        "action": {
+          "text": "Define the time it takes to do each step.",
+          "quote": "then you're going to define the time it takes to do them"
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [
+          {
+            "text": "Every granular part of the process is defined within the critical path.",
+            "quote": "every single granular part of the process needs to be defined within this critical PA"
+          }
+        ],
+        "unknowns": [
+          "The transcript says critical PA, likely a truncated or mispronounced term, but the source does not define it."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "sequence_events"
+          }
+        ]
+      },
+      {
+        "id": "assign_dates",
+        "kind": "action",
+        "title": "Assign dates to every critical-path step",
+        "claim": {
+          "text": "Because the time each step takes is known, dates can be set for every step of the process.",
+          "quote": "because we know how long everything's going to take we can set dates to every single uh step of the process"
+        },
+        "action": {
+          "text": "Set dates for every step of the process.",
+          "quote": "we can set dates to every single uh step of the process"
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not state the starting date or calendar basis for the launch example."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "define_time"
+          }
+        ]
+      },
+      {
+        "id": "monitor_daily",
+        "kind": "action",
+        "title": "Monitor the critical path daily",
+        "claim": {
+          "text": "The source says that all that is needed then is to monitor on a daily basis.",
+          "quote": "all we need to do is monitor on a daily basis"
+        },
+        "action": {
+          "text": "Monitor on a daily basis.",
+          "quote": "all we need to do is monitor on a daily basis"
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not define what to monitor, except overdue dates and blowouts elsewhere."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "assign_dates"
+          }
+        ]
+      },
+      {
+        "id": "supplier_edit_warning",
+        "kind": "warning",
+        "title": "Do not let suppliers edit the project management sheets",
+        "claim": {
+          "text": "The source does not recommend letting suppliers edit the sheets because suppliers can manipulate things and you cannot see it.",
+          "quote": "typically I don't recommend that because the suppliers can manipulate things and then you can't actually see it"
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Suppliers are allowed to edit the project management sheets.",
+              "quote": "you can get your suppliers to edit them as well if you want"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": [
+            {
+              "text": "Letting suppliers edit the project management sheets.",
+              "quote": "get your suppliers to edit them as well"
+            }
+          ]
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not describe a read-only or limited supplier access alternative."
+        ],
+        "relations": []
+      },
+      {
+        "id": "forecast_risk",
+        "kind": "warning",
+        "title": "Poor order quantity forecasting is an existential risk",
+        "claim": {
+          "text": "Getting the order quantity wrong on the low end gives zero revenue and can send the business out of business; ordering too much inventory on the high end can also send it out of business.",
+          "quote": "getting this wrong on the low end because they have no stock let's say is going to give you $0 Revenue which can also send you out of business if you've got uh lots of fixed cost getting this on the high end and ordering way too much inventory will also send you out of business"
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Order quantity forecasting is wrong.",
+              "quote": "if you get it wrong"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source mentions both high-end and low-end errors but does not give a quantitative risk threshold."
+        ],
+        "relations": []
+      },
+      {
+        "id": "forecast_cadence",
+        "kind": "action",
+        "title": "Review forecasting on a weekly, fortnightly or monthly cadence",
+        "claim": {
+          "text": "The source says forecasting should realistically be looked at on a weekly, fortnightly or monthly cadence.",
+          "quote": "realistically we should be looking at this on a weekly fortnightly or monthly Cadence"
+        },
+        "action": {
+          "text": "Look at forecasting on a weekly, fortnightly or monthly cadence.",
+          "quote": "we should be looking at this on a weekly fortnightly or monthly Cadence"
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not state how to choose among weekly, fortnightly or monthly."
+        ],
+        "relations": []
+      },
+      {
+        "id": "forecast_goal",
+        "kind": "principle",
+        "title": "Forecast two things: reorder date and order quantity",
+        "claim": {
+          "text": "Forecasting is about finding both the date to reorder, i.e. the replenishment day, and how much to order.",
+          "quote": "we're trying to find both sorry is at what date do I reorder which is basically a replenishment day and then two how much do I order"
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not give formulas for either reorder date or order quantity in this passage."
+        ],
+        "relations": []
+      },
+      {
+        "id": "first_order_quantity",
+        "kind": "action",
+        "title": "Estimate first order quantity from similar products or recent marketing",
+        "claim": {
+          "text": "When first ordering a product, the source says to generally use similar products in the space or a best guess based on recent marketing activities.",
+          "quote": "when you're first ordering the product you're generally going to be using other products that are similar within the space or your best guest based on your marketing activities just recently"
+        },
+        "action": {
+          "text": "Use other products that are similar within the space or a best guess based on recent marketing activities.",
+          "quote": "using other products that are similar within the space or your best guest based on your marketing activities just recently"
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "The product is being ordered for the first time.",
+              "quote": "when you're first ordering the product"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not define best guest or how to select comparable products."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "forecast_goal"
+          }
+        ]
+      },
+      {
+        "id": "wrong_dates",
+        "kind": "action",
+        "title": "Use in-stock days rather than periods containing stockouts for forecasting",
+        "claim": {
+          "text": "The source says people go wrong by selecting the wrong dates, such as taking 30 days that include 15 out-of-stock days and forecasting the next 90 days from those numbers.",
+          "quote": "I'll see people grab those 30 days and forecast out the next 90 days based on those numbers not not recognizing that they were extremely out of stock in those those 15 days"
+        },
+        "action": {
+          "text": "Grab the days that were in stock and extrapolate those out.",
+          "quote": "grabbing the 15 days that they were in in stock and extrapolating that out"
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "The selected period includes out-of-stock days.",
+              "quote": "you're kind of out of stock for half a month or then you're in stock for the rest of the 15 days"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not state how to handle seasonality or partial stockouts in the extrapolation."
+        ],
+        "relations": []
+      },
+      {
+        "id": "inventory_planner",
+        "kind": "action",
+        "title": "Use Inventory Planner for forecasting",
+        "claim": {
+          "text": "The source keeps coming back to and recommending Inventory Planner and started using it about two years ago.",
+          "quote": "the one that I keep coming back to and recommending is inventory planner I started using this probably 2 years ago"
+        },
+        "action": {
+          "text": "Use Inventory Planner.",
+          "quote": "the one that I keep coming back to and recommending is inventory planner"
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not describe specific Inventory Planner features or the affiliate relationship beyond disclosure."
+        ],
+        "relations": []
+      }
+    ],
+    "more_units": true,
+    "unresolved": [
+      "The passage is truncated after huge seasonality, so the seasonality discussion and any following steps are missing.",
+      "The transcript contains unclear terms: aana, Place AO, critical PA, War, net Suite, and panone; these are not resolved in the passage.",
+      "Omitted distinct units due to the 16-unit cap include: assigning roles, notifications when a task blows out, reminders for overdue steps, year-on-year vs month-on-month comparison for businesses less than one or two years old, the 90-95% e-commerce seasonality claim, and SGS as an alternative QC/compliance provider.",
+      "No quantitative forecast thresholds, formulas or risk tolerances are provided."
+    ]
+  },
+  "raw_content": "{\"units\":[{\"id\":\"qc_agent\",\"kind\":\"action\",\"title\":\"Use a QC agent when using a manufacturer\",\"claim\":{\"text\":\"The source highly recommends a QC agent to check the product the first time a manufacturer is used, and even on the second or third time.\",\"quote\":\"I highly highly recommend that every single uh first time that you use a manufacturer even the second or third time that you're using a QC agent to go check the product\"},\"action\":{\"text\":\"Get a QC agent to check the product.\",\"quote\":\"I highly recommend first time you're using it get a QC agent\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"It is the first time using the manufacturer.\",\"quote\":\"first time that you use a manufacturer\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[{\"text\":\"A QC agency goes to the factory, uses the Tech pack as reference, weighs and measures the product, and checks the panone color.\",\"quote\":\"a QC is where a quality control agency will actually go to the factory they'll use your Tech pack again as a reference and they'll weigh the product they'll measure the product they'll do all kinds of things they'll check the panone color\"}],\"unknowns\":[\"No QC acceptance thresholds or pass/fail criteria are stated.\"],\"relations\":[{\"kind\":\"alternative_to\",\"target\":\"alibaba_qc\"}]},{\"id\":\"alibaba_qc\",\"kind\":\"action\",\"title\":\"Use Alibaba's inbuilt QC function\",\"claim\":{\"text\":\"Alibaba has an inbuilt QC function for sending a QC agent to an order.\",\"quote\":\"one of the best things about Alibaba is they have an inbuilt QC function\"},\"action\":{\"text\":\"Send a QC agent out to the order via Alibaba's inbuilt QC function.\",\"quote\":\"send a QC agent out to this order\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The exact process, cost and coverage of Alibaba's inbuilt QC function are not stated.\"],\"relations\":[{\"kind\":\"alternative_to\",\"target\":\"qc_agent\"}]},{\"id\":\"late_sample_warning\",\"kind\":\"warning\",\"title\":\"Late samples can cause missed trade periods\",\"claim\":{\"text\":\"Failing to get the sample on time may delay the product, miss the Christmas trade period, and leave product stuck in January and February.\",\"quote\":\"if you fail to get the sample on time you might fail to to get the product on time you might miss Christmas trade period and then you'll get stuck with all of the product come January February\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"The sample is not obtained on time.\",\"quote\":\"if you fail to get the sample on time\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source does not state how to recover once the sample is late beyond using a critical path.\"],\"relations\":[]},{\"id\":\"define_steps\",\"kind\":\"action\",\"title\":\"Define every step of the critical path\",\"claim\":{\"text\":\"The first critical-path step is to define every single step of the process, either with a team member or by writing it out.\",\"quote\":\"first we Define every single step of the process and you can do this with your team member or you can just write it out\"},\"action\":{\"text\":\"Define every single step of the process.\",\"quote\":\"first we Define every single step of the process and you can do this with your team member or you can just write it out\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"No required level of granularity or template format is stated.\"],\"relations\":[]},{\"id\":\"sequence_events\",\"kind\":\"action\",\"title\":\"Sequence critical-path events in order\",\"claim\":{\"text\":\"The second critical-path step is to sequence all events in the correct order.\",\"quote\":\"the second step is we're going to sequence all of these events in the correct order\"},\"action\":{\"text\":\"Sequence all events in the correct order.\",\"quote\":\"the second step is we're going to sequence all of these events in the correct order\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source does not specify a formal sequencing method.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"define_steps\"}]},{\"id\":\"pm_tool\",\"kind\":\"action\",\"title\":\"Use a project management tool to keep tasks visible\",\"claim\":{\"text\":\"A project management tool such as Asana, monday.com, Notion or Excel can be used; the important requirement is that every task is visible in the right order.\",\"quote\":\"you can use a project management tool like aana I use monday.com really impartial about which one you use they're all pretty much the same you can use notion but you really want uh some people use Excel as well you just want all of these things visible all of every single task and in the right order\"},\"action\":{\"text\":\"Use a project management tool to keep all tasks visible and in the right order.\",\"quote\":\"use a project management tool like aana\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[{\"text\":\"Every task is visible in the right order.\",\"quote\":\"every single task and in the right order\"}],\"unknowns\":[\"The source says the named tools are all pretty much the same but does not prescribe one.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"sequence_events\"}]},{\"id\":\"define_time\",\"kind\":\"action\",\"title\":\"Define the time each step takes\",\"claim\":{\"text\":\"After sequencing, the source says to define the time it takes to do each step.\",\"quote\":\"then you're going to define the time it takes to do them\"},\"action\":{\"text\":\"Define the time it takes to do each step.\",\"quote\":\"then you're going to define the time it takes to do them\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[{\"text\":\"Every granular part of the process is defined within the critical path.\",\"quote\":\"every single granular part of the process needs to be defined within this critical PA\"}],\"unknowns\":[\"The transcript says critical PA, likely a truncated or mispronounced term, but the source does not define it.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"sequence_events\"}]},{\"id\":\"assign_dates\",\"kind\":\"action\",\"title\":\"Assign dates to every critical-path step\",\"claim\":{\"text\":\"Because the time each step takes is known, dates can be set for every step of the process.\",\"quote\":\"because we know how long everything's going to take we can set dates to every single uh step of the process\"},\"action\":{\"text\":\"Set dates for every step of the process.\",\"quote\":\"we can set dates to every single uh step of the process\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source does not state the starting date or calendar basis for the launch example.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"define_time\"}]},{\"id\":\"monitor_daily\",\"kind\":\"action\",\"title\":\"Monitor the critical path daily\",\"claim\":{\"text\":\"The source says that all that is needed then is to monitor on a daily basis.\",\"quote\":\"all we need to do is monitor on a daily basis\"},\"action\":{\"text\":\"Monitor on a daily basis.\",\"quote\":\"all we need to do is monitor on a daily basis\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source does not define what to monitor, except overdue dates and blowouts elsewhere.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"assign_dates\"}]},{\"id\":\"supplier_edit_warning\",\"kind\":\"warning\",\"title\":\"Do not let suppliers edit the project management sheets\",\"claim\":{\"text\":\"The source does not recommend letting suppliers edit the sheets because suppliers can manipulate things and you cannot see it.\",\"quote\":\"typically I don't recommend that because the suppliers can manipulate things and then you can't actually see it\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Suppliers are allowed to edit the project management sheets.\",\"quote\":\"you can get your suppliers to edit them as well if you want\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[{\"text\":\"Letting suppliers edit the project management sheets.\",\"quote\":\"get your suppliers to edit them as well\"}]},\"completion\":[],\"unknowns\":[\"The source does not describe a read-only or limited supplier access alternative.\"],\"relations\":[]},{\"id\":\"forecast_risk\",\"kind\":\"warning\",\"title\":\"Poor order quantity forecasting is an existential risk\",\"claim\":{\"text\":\"Getting the order quantity wrong on the low end gives zero revenue and can send the business out of business; ordering too much inventory on the high end can also send it out of business.\",\"quote\":\"getting this wrong on the low end because they have no stock let's say is going to give you $0 Revenue which can also send you out of business if you've got uh lots of fixed cost getting this on the high end and ordering way too much inventory will also send you out of business\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Order quantity forecasting is wrong.\",\"quote\":\"if you get it wrong\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source mentions both high-end and low-end errors but does not give a quantitative risk threshold.\"],\"relations\":[]},{\"id\":\"forecast_cadence\",\"kind\":\"action\",\"title\":\"Review forecasting on a weekly, fortnightly or monthly cadence\",\"claim\":{\"text\":\"The source says forecasting should realistically be looked at on a weekly, fortnightly or monthly cadence.\",\"quote\":\"realistically we should be looking at this on a weekly fortnightly or monthly Cadence\"},\"action\":{\"text\":\"Look at forecasting on a weekly, fortnightly or monthly cadence.\",\"quote\":\"we should be looking at this on a weekly fortnightly or monthly Cadence\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source does not state how to choose among weekly, fortnightly or monthly.\"],\"relations\":[]},{\"id\":\"forecast_goal\",\"kind\":\"principle\",\"title\":\"Forecast two things: reorder date and order quantity\",\"claim\":{\"text\":\"Forecasting is about finding both the date to reorder, i.e. the replenishment day, and how much to order.\",\"quote\":\"we're trying to find both sorry is at what date do I reorder which is basically a replenishment day and then two how much do I order\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source does not give formulas for either reorder date or order quantity in this passage.\"],\"relations\":[]},{\"id\":\"first_order_quantity\",\"kind\":\"action\",\"title\":\"Estimate first order quantity from similar products or recent marketing\",\"claim\":{\"text\":\"When first ordering a product, the source says to generally use similar products in the space or a best guess based on recent marketing activities.\",\"quote\":\"when you're first ordering the product you're generally going to be using other products that are similar within the space or your best guest based on your marketing activities just recently\"},\"action\":{\"text\":\"Use other products that are similar within the space or a best guess based on recent marketing activities.\",\"quote\":\"using other products that are similar within the space or your best guest based on your marketing activities just recently\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"The product is being ordered for the first time.\",\"quote\":\"when you're first ordering the product\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source does not define best guest or how to select comparable products.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"forecast_goal\"}]},{\"id\":\"wrong_dates\",\"kind\":\"action\",\"title\":\"Use in-stock days rather than periods containing stockouts for forecasting\",\"claim\":{\"text\":\"The source says people go wrong by selecting the wrong dates, such as taking 30 days that include 15 out-of-stock days and forecasting the next 90 days from those numbers.\",\"quote\":\"I'll see people grab those 30 days and forecast out the next 90 days based on those numbers not not recognizing that they were extremely out of stock in those those 15 days\"},\"action\":{\"text\":\"Grab the days that were in stock and extrapolate those out.\",\"quote\":\"grabbing the 15 days that they were in in stock and extrapolating that out\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"The selected period includes out-of-stock days.\",\"quote\":\"you're kind of out of stock for half a month or then you're in stock for the rest of the 15 days\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source does not state how to handle seasonality or partial stockouts in the extrapolation.\"],\"relations\":[]},{\"id\":\"inventory_planner\",\"kind\":\"action\",\"title\":\"Use Inventory Planner for forecasting\",\"claim\":{\"text\":\"The source keeps coming back to and recommending Inventory Planner and started using it about two years ago.\",\"quote\":\"the one that I keep coming back to and recommending is inventory planner I started using this probably 2 years ago\"},\"action\":{\"text\":\"Use Inventory Planner.\",\"quote\":\"the one that I keep coming back to and recommending is inventory planner\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source does not describe specific Inventory Planner features or the affiliate relationship beyond disclosure.\"],\"relations\":[]}],\"more_units\":true,\"unresolved\":[\"The passage is truncated after huge seasonality, so the seasonality discussion and any following steps are missing.\",\"The transcript contains unclear terms: aana, Place AO, critical PA, War, net Suite, and panone; these are not resolved in the passage.\",\"Omitted distinct units due to the 16-unit cap include: assigning roles, notifications when a task blows out, reminders for overdue steps, year-on-year vs month-on-month comparison for businesses less than one or two years old, the 90-95% e-commerce seasonality claim, and SGS as an alternative QC/compliance provider.\",\"No quantitative forecast thresholds, formulas or risk tolerances are provided.\"]}",
+  "input": {
+    "source_id": "1gkDP7vVRMnDRuuoJDvnTNfumOz3vN926",
+    "source_sha256": "43f7a73810c8cbf37b510fefc54abc2c67a2550db64bfae2e484d6f29f242631",
+    "locator": "body:14/paragraph",
+    "start": 37988,
+    "text": "t the strike offs the prints then you're going to get a first samp then you might get uh a finalized production sample there are so many stages of this side of things and then you'll get what's called a QC now a QC is where a quality control agency will actually go to the factory they'll use your Tech pack again as a reference and they'll weigh the product they'll measure the product they'll do all kinds of things they'll check the panone color and I highly highly recommend that every single uh first time that you use a manufacturer even the second or third time that you're using a QC agent to go check the product now again one of the best things about Alibaba is they have an inbuilt QC function where you can just say hey send a QC agent out to this order or you can use any of the other ones like SGS it's quite expensive and big but they do compliance as well so I highly recommend first time you're using it get a QC agent but you can see all of these steps of the process and if you fail to get the sample on time you might fail to to get the product on time you might miss Christmas trade period and then you'll get stuck with all of the product come January February the way that we solve this is a critical path so in short a critical path the main things that we need to know is first we Define every single step of the process and you can do this with your team member or you can just write it out the second step is we're going to sequence all of these events in the correct order now you can use a project management tool like aana I use monday.com really impartial about which one you use they're all pretty much the same you can use notion but you really want uh some people use Excel as well you just want all of these things visible all of every single task and in the right order and then you're going to define the time it takes to do them so for example getting a sample a sample being shipped from China might take 5 days from DHL every single granular part of the process needs to be defined within this critical PA then what we can do is we assign dates to them so let's say we're going to do a hoodie launch for this product we bring up our critical path and again you don't need to make this template every single time but you generally understand what the critical path is and we might change a few things like the the time that it's going to take for this product because it's going to take a little bit longer but we can then because we know how long everything's going to take we can set dates to every single uh step of the process and this is why sometimes project management tools are really good we can set reminders when something has gone over due on its estimated date and then what that will do it will either push all of the future date forward or there may be some overlapping uh overlapping times that create a a little bit of flex or uh it's referred to as actual slack so then all we need to do is monitor on a daily basis and typically these other project management tools a lot of people are going to be able to edit these sheets and change things you can get your suppliers to edit them as well if you want typically I don't recommend that because the suppliers can manipulate things and then you can't actually see it so one person kind of monitoring and owning this process each step of the way is really important so I highly recommend uh assigning roles as well the good thing about these project management tools as well is you can yeah just set up notifications when something blows out uh to notify the person that is responsible for it so they'll get a notification they can change the rest of the process or just notify the rest of the team now if we follow that critical path all the way to the end of the process we're probably going to get well not all the way to the end but on the supplier side we're going to come to something it's called Place AO which is just Place what's called purchase order before that stage though you're going to have you you're going to ask the question how much product do I order now typically I see this being the most challenging part of a lot of e-commerce businesses and this is because you know typically in the industry some of these big box retailers and stuff like that they will have variants of their forecasts of like what they think they're going order uh what they think they're going to sell to what they ordered of like 5% but realistically if you're selling out consistently or you have huge fluctuations you don't get to get anywhere close to that we miss forecast by 50% even where where you growing growing quite rapidly or have some level of stability so understanding how much product to order is really important when you're first ordering the product you're generally going to be using other products that are similar within the space or your best guest based on your marketing activities just recently that being said forecasting is just the most essential part of the business because if you get it wrong let's say you've got a successful business and it's growing and growing and growing and you start expanding skews so you're like I want a black blanket now a gray blanket a blue blanket skew expansion and ordering too much stock all of your money all of your profits will go set into inventory and you will no longer have any money to acquire new customers or even pay your taxes and it's actually an existential risk to your business so getting this wrong on the low end because they have no stock let's say is going to give you $0 Revenue which can also send you out of business if you've got uh lots of fixed cost getting this on the high end and ordering way too much inventory will also send you out of business so realistically we should be looking at this on a weekly fortnightly or monthly Cadence and I'm going to show you exactly how to do it all forecasting is is we're trying to find one of two things actually we're trying to find both sorry is at what date do I reorder which is basically a replenishment day and then two how much do I order seems pretty obvious right but there is a lot of variables that we need to consider and I'm going to have to speak generally because you know something like the Audi where we have a whole dedicated team member looking at every single SK every single product we've sold the last four years of history is going to be very different to someone just starting out a business but speaking generally I think there's a few main things that we need to do the first is we can look at uh certain tools that we can use now I use Excel and I've tested did some very very expensive demand planning tools but because our team a lot of people need a lot of flexibility within our company we just continue to use Excel if you went to something like War they're going to have a software for this like a big Supermarket uh at the same time there's also inbuilt uh Inventory management Tools in certain erps like uh net Suite those kind of things but I still we always seem to end up back at Excel the problem with this is that if you don't have a dedicated team member and you're just a single founder and you're trying to build out these forecasts yourself some people really struggle with Excel formulas and I I still believe that there's a lot of opportunity for uh a Shopify app to solve this especially with AI I've tested a few of them but the one that I keep coming back to and recommending is inventory planner I started using this probably 2 years ago I'll leave again an affiliate Link in the description uh they they're not paying me to say this it's just I just randomly signed up to their affiliate knowing that I was going to talk about them because I really do think that they allow us to do the the next steps that I'm I'm going to talk about realistically any of these tools all we're trying to do is get visibility and Clarity on previous results so that we can make certain assumptions about the future and the best way that you can do that is the first set of things where I see people go wrong is they select the wrong dates so let me explain that the selecting a period let's say let's say you're kind of out of stock for half a month or then you're in stock for the rest of the 15 days I'll see people grab those 30 days and forecast out the next 90 days based on those numbers not not recognizing that they were extremely out of stock in those those 15 days so realistically it would have been a much more accurate Way by grabbing the 15 days that they were in in stock and extrapolating that out because this is really what forecasting is all about we're trying to compare year on year or month on Monon sales and make certain assumptions about the future so if you've got less than a year of business or you're even less than 2 years old and you've been growing quickly realistically you're going to be looking at month- on month so let me just draw a little bit of an example here if we graft out our uh sales for our product let's say January February March oh that's a b March April May and then we look at this skew over here let's say skew one let's just say that's a black a or something like that and we say our sales for this product is 100 in January and a lot of the tools or you can custom build this in Excel will show this let's say we do 120 like 145 175 so that's a about a 20% growth rate if we looked at that and graphed that out we would assume that it's going like that that's uh 20 about a 20% growth rate we could assume that March is going to be something more like that because it's quite a linear slightly exponential line this is the easiest scenario to forecast we're looking at month on Monon revenue for that particular skew and making an assumption about the future month where things get really really difficult is when there's something called seasonality for our product and all e-commerce businesses well 90 95% of e-commerce businesses are going to have huge seasonality ",
+    "provenance": "unverified"
+  },
+  "system_prompt_sha256": "169564fc11fb12a123446ec006b5bb473bb0bb9c6a71a491eafeedd914dc865e"
+}

@@ -1,0 +1,186 @@
+{
+  "status": "complete",
+  "mapping": {
+    "A": "cheap_without",
+    "B": "cheap_with",
+    "C": "frontier_with",
+    "D": "frontier_without"
+  },
+  "judge_model": "deepseek-flash",
+  "output": {
+    "reviews": [
+      {
+        "label": "A",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 4,
+          "prioritization": 3
+        },
+        "strengths": [
+          "Correctly computes implied link CPC from CPM and CTR, with cross-checks via spend and clicks.",
+          "Extends the analysis with accurate Shopify funnel math and clear caveats about unreconciled Meta attribution.",
+          "Brand-specific: references laptop sizing, delivery information, water-resistant-not-waterproof language, and PDP friction.",
+          "Provides a detailed test design, budget arithmetic, and power limitation."
+        ],
+        "issues": [
+          "The recommended next check jumps to a randomized creative split test rather than first pulling asset-level frequency, creative age/start date, conversion, and audience mix.",
+          "Creative age/start date is not explicitly requested, even though 'mature' creative is discussed.",
+          "Some operational recommendations go beyond the narrow question, though they are relevant."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "CPC rises from 0.80 to 1.25.",
+            "met": true,
+            "reason": "Shows $12/(1000×0.015)=$0.80 and $15/(1000×0.012)=$1.25, with checks."
+          },
+          {
+            "criterion": "Aggregate CPM/CTR shifts do not prove creative fatigue.",
+            "met": true,
+            "reason": "States evidence is not clean enough to call fatigue alone and lists auction, scaling, attribution, and PDP/offer alternatives."
+          },
+          {
+            "criterion": "Need asset-level frequency, age, conversion and audience mix before causal conclusions.",
+            "met": false,
+            "reason": "Lists frequency/reach and ad-level conversion/audience splits as missing, but does not explicitly request creative age/start date and moves to a split test."
+          }
+        ]
+      },
+      {
+        "label": "B",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 3,
+          "prioritization": 4
+        },
+        "strengths": [
+          "Correctly computes implied link CPC and reported Meta ROAS, and highlights the Meta-reported value versus Shopify revenue gap.",
+          "Gives a clear next check around ad-level frequency and unique reach, with decision rules.",
+          "Brand-specific practical steps: laptop-fit PDP placement, delivery information, no discount without approval, replenishment cash protection.",
+          "Uses supplied reference thresholds but labels them directional in assumptions."
+        ],
+        "issues": [
+          "Leans on external reference thresholds for CPC, CTR, CPM, and frequency >2; the CTR threshold is used to suggest a creative/hook problem from aggregate data.",
+          "Next check asks for frequency/reach and creative-level conversion, but not explicitly creative age/start date or audience-mix fields.",
+          "Decision rule treats cold frequency above 2 as fatigue/duplicate without restating the heuristic caveat in that section."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "CPC rises from 0.80 to 1.25.",
+            "met": true,
+            "reason": "Provides the formula and shows $0.80 previous and $1.25 current."
+          },
+          {
+            "criterion": "Aggregate CPM/CTR shifts do not prove creative fatigue.",
+            "met": true,
+            "reason": "Says data do not prove classic fatigue and separates fatigue, post-click friction, and measurement artifact hypotheses."
+          },
+          {
+            "criterion": "Need asset-level frequency, age, conversion and audience mix before causal conclusions.",
+            "met": false,
+            "reason": "Requests ad-level frequency/reach and creative-level conversion, but omits explicit creative age and audience-mix fields."
+          }
+        ]
+      },
+      {
+        "label": "C",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 4,
+          "prioritization": 4
+        },
+        "strengths": [
+          "Accurately computes implied link CPC and key Shopify funnel rates.",
+          "Very disciplined about non-causality; clearly says possible fatigue, not a confirmed diagnosis.",
+          "Strong discriminating next check: 60-day weekly ad-level export with frequency, reach, purchases, and audience/placement changes.",
+          "Includes stock/replenishment cash constraint and avoids scaling to investigate."
+        ],
+        "issues": [
+          "Less brand-specific than some alternatives: does not directly use customer support themes or PDP details to connect to storefront friction.",
+          "Creative age/start date is not explicitly included in the requested export, though comparing the same mature ad over time implies it.",
+          "Dismisses generic CTR/frequency thresholds, which is cautious but not a factual error."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "CPC rises from 0.80 to 1.25.",
+            "met": true,
+            "reason": "Shows $12/(1000×0.015)=$0.80 and $15/(1000×0.012)=$1.25."
+          },
+          {
+            "criterion": "Aggregate CPM/CTR shifts do not prove creative fatigue.",
+            "met": true,
+            "reason": "Explicitly says account-level averages cannot establish creative fatigue and lists alternatives."
+          },
+          {
+            "criterion": "Need asset-level frequency, age, conversion and audience mix before causal conclusions.",
+            "met": true,
+            "reason": "Requests weekly ad-level export with frequency, reach, purchases, and audience/placement changes; compares same mature ad over time."
+          }
+        ]
+      },
+      {
+        "label": "D",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 4,
+          "prioritization": 4
+        },
+        "strengths": [
+          "Correctly computes implied link CPC and reported Meta ROAS, with clear attribution caveats.",
+          "Explicitly requests the right diagnostic fields: creative ID/start date, frequency, reach, purchases, device/placement/audience.",
+          "Gives clear pattern-based decision rules and correctly says a fresh concept winning alone does not prove fatigue mechanism.",
+          "Brand-specific: notes laptop sizing/delivery placement and DAY18 stockout risk against replenishment timing."
+        ],
+        "issues": [
+          "Less detailed funnel math than some alternatives, but the task did not require full funnel decomposition.",
+          "Does not mention customer support themes about waterproof meaning or 15-inch laptop fit, though it covers laptop sizing and delivery."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "CPC rises from 0.80 to 1.25.",
+            "met": true,
+            "reason": "Shows $12/15=$0.80 and $15/12=$1.25, plus +56.25%."
+          },
+          {
+            "criterion": "Aggregate CPM/CTR shifts do not prove creative fatigue.",
+            "met": true,
+            "reason": "States supplied evidence does not establish creative fatigue and lists alternative explanations."
+          },
+          {
+            "criterion": "Need asset-level frequency, age, conversion and audience mix before causal conclusions.",
+            "met": true,
+            "reason": "Requests weekly ad-level breakdown with creative ID/start date, frequency, purchases, and device/placement/audience."
+          }
+        ]
+      }
+    ],
+    "ranking": [
+      "D",
+      "C",
+      "A",
+      "B"
+    ],
+    "summary": "D and C give the most discriminating next checks and strongest causal discipline. D is especially explicit on creative ID/start date, frequency, conversion, and audience mix. C is similarly rigorous and adds stock/cash prioritization. A is very comprehensive and numerically strong, but its next check prioritizes a split test before explicitly pulling asset-level age/frequency mix. B is also correct and practical, but leans more on external thresholds and is less explicit on creative age and audience mix."
+  },
+  "request_id": "7fa6a559ceffc48849bbc55d14d19385400a18646807be0d9cf6bc4cc9fc79a5",
+  "cost_upper_estimate_usd": 0.0337416
+}

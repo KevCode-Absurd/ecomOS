@@ -1,0 +1,213 @@
+specification: ecomos-generator-contract
+version: 1
+generated: 2026-09-20
+consumer: the model or prompt that produces the analysis documents
+pairs_with: [_INGESTION-SPEC.yaml, _INGESTION-STATE.yaml]
+
+why_this_file_exists: >
+  Three files, three consumers. _INGESTION-SPEC.yaml is what Colin's parser reads.
+  _INGESTION-STATE.yaml is a dated snapshot of what is in Drive. This file is what the
+  document generator reads. Until now the generator was not working from the spec,
+  which is why it produced correct module codes and correct why lines and left url
+  blank on roughly 12 documents. Feeding the generator this file closes that loop.
+
+# ---------------------------------------------------------------------------
+# THE OUTPUT SHAPE
+# ---------------------------------------------------------------------------
+
+emit:
+  structure:
+    1: yaml frontmatter fenced by --- as the VERY FIRST thing in the document
+    2: the body, transcript or extracted text, immediately after
+  never:
+    - a second frontmatter block lower in the document
+    - a header placed below an analysis section
+    - an echoed prompt such as "Analyze the Source Material" before the header
+    - inventing a field name. Use only the fields listed below.
+
+# ---------------------------------------------------------------------------
+# REQUIRED FIELDS
+# ---------------------------------------------------------------------------
+
+required_always:
+  url:
+    rule: the canonical source url, or the literal string offline
+    status: THE FAILURE THAT KEEPS RECURRING
+    detail: >
+      About 12 documents so far carry a complete, correct header with this field
+      empty. A card with no source url can never be re-verified and cannot be dated,
+      which caps it at tier 4 however good the content is. If the url is genuinely
+      unavailable, write offline and supply title, author and date instead. Never
+      leave it blank.
+  rights:
+    enum: [owned, public_reference, licensed, study_only]
+    rule: no default. Pick one.
+    books: >
+      Anything that is a book or a paid course is licensed, never public_reference.
+      8 books are currently mis-tagged: 100M Offers, Competing Against Luck,
+      Positioning, Designing Brand Identity, This Is Marketing, Influence,
+      Multipliers, The Five Dysfunctions of a Team.
+  why:
+    rule: 1 line, what is in here that a good model would not say unprompted
+    test: if you cannot write this line, do not produce the document at all
+
+conditionally_required:
+  date: "when the source page shows no publish date, or shows an update date.
+         YYYY-MM-DD, or 2026-04-00 for an unknown day, or the literal unknown.
+         Never guess, never default to today."
+  title, author, platform: "when url is offline"
+  mode: "on PRD: new_product | expansion | both.  on AMZ: dtc_first | amazon_first | both"
+  jurisdiction: "on FIN: IN | US | UK | EU | global"
+  marketplace: "on AMZ: IN | US | UK | EU | global"
+  cost_ceiling: "on WLD: the bounded downside in money and time"
+
+optional_but_wanted:
+  modules: "see cross-module rule below"
+  platforms: "[meta, tiktok, snap, youtube, instagram, pinterest, reddit]"
+  platform: "[shopify] or [woocommerce]. Effectively required on SET and SPD."
+  topics: "from the controlled list in the folder's _README file"
+  tier: "1 to 4, see tier rules"
+  scope_hint: "baseline | growth | mixed"
+  timestamps: "yes | no"
+  covers: "timestamp ranges, on 99-multi sources"
+  watch: "point the extractor at something specific you noticed"
+
+never_emit:
+  - id                        # the pipeline owns the source id sequence
+  - source_date               # use date
+  - verified_at               # use date
+  - date_of_upload            # use date
+  - decay_risk                # derived from the module review_due
+  - check
+
+# ---------------------------------------------------------------------------
+# CROSS-MODULE TAGGING. The second recurring failure.
+# ---------------------------------------------------------------------------
+
+cross_module_rule:
+  problem: >
+    Headers currently name only the dominant module. Both COGS documents are tagged
+    [FIN], but which costs count as COGS is the gross profit formula the ranking
+    engine runs on, so the MEA agents need those cards and will never retrieve them.
+  rule: "emit 2 to 4 modules where the source genuinely covers them, primary first"
+  limit: "5 or more modules with none dominating means the source belongs in 99-multi"
+  worked_examples:
+    - source: "what counts as COGS in ecommerce accounting"
+      emit: "modules: [FIN, MEA]"
+    - source: "subscription offer structure and its effect on retention"
+      emit: "modules: [OFF, CXP]"
+    - source: "server-side CAPI install"
+      emit: "modules: [MEA, ADC]"
+    - source: "a founder interview covering offer, brand, creative and organic"
+      emit: "modules: [OFF, BRD, MCR, ORG] and file it in 99-multi"
+
+# ---------------------------------------------------------------------------
+# TIER. Getting this wrong lets a YouTuber outrank platform documentation.
+# ---------------------------------------------------------------------------
+
+tier_rules:
+  1: "platform primary source only. Google Search Central, Meta developer docs,
+      Shopify docs, Amazon Seller Central, Klaviyo docs."
+  2: "large-sample research or benchmark data. Baymard, academic work, platform
+      benchmark reports, research-grounded books."
+  3: "named practitioner showing account-level receipts. Most operator videos."
+  4: "opinion with no name attached or no receipts. Hypothesis fuel only."
+  hard_rules:
+    - "a practitioner interview is tier 3, never tier 1"
+    - "a source with no resolvable date is tier 4 regardless of author"
+    - "nothing below tier 1 may contradict tier 1 on platform mechanics"
+  currently_wrong: "3 documents claim tier 1 for practitioner interviews"
+
+# ---------------------------------------------------------------------------
+# THE DISCARD TEST. Run this BEFORE producing a document.
+# ---------------------------------------------------------------------------
+
+discard_test:
+  question: "would a good frontier model state this unprompted?"
+  if_yes: produce nothing
+  capture_only: "the number, the threshold, the sequence, the exception, the condition"
+
+  patterns_that_keep_failing_this:
+    - pattern: general leadership and management books
+      seen_in: 21-OPS
+      count: 4
+      examples: [Multipliers, The Five Dysfunctions of a Team, Wharton team tips,
+                 generic team building handbook]
+      why: >
+        OPS needs capacity thresholds: at what order volume a second person is
+        required, at what ticket volume support needs a dedicated hire, what a 3PL
+        costs per order at volume. None of these contains a number of that kind.
+    - pattern: single-vendor tool tutorials
+      seen_in: [15-SEO, 05-SET, 09-CRO, 08-SPD]
+      examples: [Semrush tutorial, Microsoft Clarity tutorial, PageSpeed Insights
+                 tutorial, AI-builds-your-Shopify-store demos]
+      why: "teaches a product rather than a mechanism, and decays within months"
+    - pattern: what-is explainers
+      seen_in: 16-AEO
+      examples: [What Is GEO, AI SEO Course for Beginners]
+      why: "definitional content is exactly what a model already knows"
+    - pattern: statistics listicles
+      seen_in: 08-SPD
+      example: "93 powerful statistics"
+      why: "keep only if every statistic carries its sample and source"
+    - pattern: revenue-claim titles with no method
+      examples: [rank #1 overnight, made me $2.3M, $750k/m]
+      why: "the claim is the content. Check for thresholds before producing."
+
+# ---------------------------------------------------------------------------
+# HARD SKIPS. Never produce a document for these.
+# ---------------------------------------------------------------------------
+
+never_produce:
+  - subject: dropshipping
+    applies_to: 01-PRD
+    reason: "different economics, different failure modes. It poisons the library."
+  - subject: amazon retail and online arbitrage
+    applies_to: 22-AMZ
+    reason: "explicit AMZ skip"
+  - subject: review manipulation or rank gaming
+    applies_to: 22-AMZ
+    reason: "policy violation and account-ending risk"
+  - subject: aggressive tax structuring
+    applies_to: 20-FIN
+  - subject: blanket bot blocking with no treatment of wanted agents
+    applies_to: 23-SEC
+    reason: >
+      an answer-engine crawler is distribution, not an attack. A source that does not
+      distinguish wanted from unwanted agents is not useful for this module.
+  - subject: general management with no ecommerce specifics
+    applies_to: 21-OPS
+
+# ---------------------------------------------------------------------------
+# PER-MODULE REMINDERS THE GENERATOR KEEPS NEEDING
+# ---------------------------------------------------------------------------
+
+module_reminders:
+  AVT: "reject any avatar without a trigger moment and a job statement backed by a quote"
+  OFF: "an offer source with no margin math is a skip. Capture the effect on conversion
+        rate and on average order value separately."
+  MCR: "benchmarks must carry the sample they came from. Fastest-ageing module."
+  CRO: "a lift claim with no sample size is the single most common library poison"
+  MEA: "formulas must define every term, including whether tax and shipping are in or out"
+  SPD: "gate on field data at p75. Never on a Lighthouse score."
+  SEO: "every content brief must state how the content will be found"
+  AEO: "prefer a measurement method over a tactic list. The citation panel is the metric."
+  CXP: "every tactic needs a cost per order and an effect on repeat rate"
+  COG: "a negotiation ask with no benchmark behind it is not a negotiation"
+  WLD: "cost_ceiling required. Never invent an expected effect."
+  SEC: "the agents/ family is the point of the module and is still empty"
+  MULTI: "add the covers block with timestamp ranges, and mark the ranges to skip"
+
+# ---------------------------------------------------------------------------
+# SELF-CHECK BEFORE EMITTING
+# ---------------------------------------------------------------------------
+
+preflight:
+  - is url populated, or is it the literal offline with title, author and date present
+  - is rights set, and is it licensed if this is a book or paid course
+  - does the why line say something a frontier model would not say unprompted
+  - are all modules listed, not just the dominant one
+  - is tier 3 rather than 1 if this is a practitioner
+  - is the module's required extra field present: mode, jurisdiction, marketplace, cost_ceiling
+  - is the header the first thing in the document, with no second block below
+  - does this source survive the discard test at all

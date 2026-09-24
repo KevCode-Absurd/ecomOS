@@ -1,0 +1,609 @@
+{
+  "cards": [
+    {
+      "title": "Diagnose Google Ads health in the right order",
+      "summary": "Use a fixed sequence of account-level metrics to find the real bottleneck before touching campaigns.",
+      "use_when": "Your Google Ads spend is rising but profit is flat, and you need to decide whether to fix creative, landing page, offer or campaign setup before scaling budget.",
+      "steps": [
+        "Pull six metrics: impression share, average CPC, CTR, conversion rate, number of conversions, and average session duration.",
+        "Read them in that priority order — the source treats impression share as the leading indicator: low impression share predicts high CPC, low CTR, low conversion rate and few conversions.",
+        "Treat average session duration as the congruence check between ad promise and landing page; short sessions suggest the ad and page are saying different things.",
+        "Only after those site/offer-level numbers look sound, move to Google Ads mechanics (conversion tracking, structure, creative, bids).",
+        "Interpret the benchmark contextually: lower impression share means competitors are outbidding or out-converting you, which is a spend/offer problem, not just a bidding problem."
+      ],
+      "caveats": [
+        "The source asserts impression share is the single most important metric for ecommerce; this is a practitioner heuristic, not a Google-documented rule.",
+        "Session duration is the source's informal ad-to-page congruence proxy, not a formal diagnostic metric."
+      ],
+      "tags": [
+        "ad-copy-deployment",
+        "measurement",
+        "account-diagnostics",
+        "impression-share",
+        "conversion-optimization",
+        "landing-page"
+      ],
+      "id": "ae67680618f3b47530a7448e",
+      "source_id": "19kkN-IXtZV6Ql1pijuYJ86V5l4mfK_wP",
+      "source_sha256": "0ea5ac6b9698707c29a4718ac01602de9408eaa094c791e99cc804dfe0c6d805",
+      "source_name": "Ecommerce Google Ads Free Course (4+ Hours) _ Google & Shopify.docx",
+      "folder": "/11-ADC-ad-copy-deployment",
+      "domain": "ad-copy-deployment",
+      "section": 2
+    },
+    {
+      "title": "Set up Shopify-to-Google Ads purchase conversion tracking",
+      "summary": "Configure enhanced conversions with purchase as the primary goal, then correctly order the remaining funnel events.",
+      "use_when": "You are launching Google Ads or your reported conversions do not match Shopify orders and you need trustworthy purchase data before scaling.",
+      "steps": [
+        "Install Google Analytics 4 via the Shopify Google & YouTube app first, then in Google Ads go to Goals > Settings and switch on enhanced conversions using the Google tag method.",
+        "In Goals > Conversions > Summary, create new conversion actions for purchase, add to cart, begin checkout and product view (page view).",
+        "For the purchase action: add to account-default goals, mark as primary, use different values per conversion, count every conversion, and set click-through window to 90 days and engage-view and view-through windows to 30 days.",
+        "Set attribution to data-driven and manage conversions through the Google tag.",
+        "Import the prebuilt Google Tag Manager container, then paste the conversion ID and each of the four conversion labels into the matching GTM constants and publish the workspace.",
+        "In Shopify admin > Settings > Customer Events, add a custom pixel, paste the GTM customer-event code, set your country code and insert your GTM container ID, then save and connect.",
+        "Finally, edit add to cart, begin checkout and product view to Secondary (observe only) so they do not drive bidding; keep purchase as the account default goal."
+      ],
+      "caveats": [
+        "The exact menu paths and prebuilt container are from the source's 2025 workflow; verify current Google Ads and Shopify interfaces before following step by step.",
+        "Turning non-purchase events to secondary assumes purchase is your optimisation event — different goals may justify a different primary."
+      ],
+      "tags": [
+        "ad-copy-deployment",
+        "conversion-tracking",
+        "shopify",
+        "google-tag-manager",
+        "measurement",
+        "pixel-setup"
+      ],
+      "id": "fff2f5c0c47cc2280a62280d",
+      "source_id": "19kkN-IXtZV6Ql1pijuYJ86V5l4mfK_wP",
+      "source_sha256": "0ea5ac6b9698707c29a4718ac01602de9408eaa094c791e99cc804dfe0c6d805",
+      "source_name": "Ecommerce Google Ads Free Course (4+ Hours) _ Google & Shopify.docx",
+      "folder": "/11-ADC-ad-copy-deployment",
+      "domain": "ad-copy-deployment",
+      "section": 2
+    },
+    {
+      "title": "Structure campaigns by funnel stage and start at the bottom",
+      "summary": "Split cold, mid-funnel and branded campaigns so cold and branded conversion data stay visible and separately attributable.",
+      "use_when": "You are planning a Google Ads account architecture or reworking an account where branded and non-branded results are blended and unreadable.",
+      "steps": [
+        "Top of funnel: YouTube Shorts and static assets run through Demand Gen, fed by your Meta winners at roughly $50/day, running fully broad with the creative doing the targeting.",
+        "Mid funnel: cold search, competitive search (only if it works well), Performance Max and cold Shopping.",
+        "Bottom funnel: branded search, branded shopping and dynamic remarketing.",
+        "If you are just starting, begin at the bottom of the funnel to accumulate conversions, then add one mid-funnel campaign — for ecommerce usually Shopping and PMax — and only move up-funnel once smart bidding is viable.",
+        "Exclude all customer lists from cold campaigns and exclude your brand from PMax so branded conversions do not inflate cold performance.",
+        "Keep branded search and branded shopping in separate campaigns so cheap branded conversions stay identifiable and marketing spend stays efficient."
+      ],
+      "caveats": [
+        "The source's rule of thumb for smart bidding eligibility is about one conversion per day sustained over 30 days — treat as a heuristic, not a Google requirement.",
+        "Running your Meta winners as YouTube statics/shorts is a transfer assumption; test rather than assuming parity."
+      ],
+      "tags": [
+        "ad-copy-deployment",
+        "campaign-structure",
+        "google-ads",
+        "funnel",
+        "performance-max",
+        "branded-search",
+        "demand-gen"
+      ],
+      "id": "a2427f18e5fed0e70ab1a89f",
+      "source_id": "19kkN-IXtZV6Ql1pijuYJ86V5l4mfK_wP",
+      "source_sha256": "0ea5ac6b9698707c29a4718ac01602de9408eaa094c791e99cc804dfe0c6d805",
+      "source_name": "Ecommerce Google Ads Free Course (4+ Hours) _ Google & Shopify.docx",
+      "folder": "/11-ADC-ad-copy-deployment",
+      "domain": "ad-copy-deployment",
+      "section": 2
+    },
+    {
+      "title": "Write Google ads from audience research, not keyword lists",
+      "summary": "Ground search ads, shopping titles and YouTube angles in the language and motivations of the person searching.",
+      "use_when": "You are writing search ad copy, shopping titles or a YouTube short for a cold audience and need angle and language direction.",
+      "steps": [
+        "Before writing anything, map the audience: the language they use, psychographics, problems, pains, goals, desires, why they buy and why they buy from you specifically.",
+        "Ask explicitly: what type of person searches this, what pain are they in, what problem are they solving, what desire or goal does the product fulfil.",
+        "Write search headlines, descriptions, images, callouts, site links and snippets that echo that language, since on Google the searcher is seeing every competitor's ad simultaneously.",
+        "In shopping ads, carry the same language into the title (for targeting) plus the promo extension, ratings and social proof that visually differentiate the listing.",
+        "For YouTube Shorts use heavy direct response: make the CTA explicit (click here, search this, tap the screen) and state the big offer and next step, because the platform is less purchase-oriented than Meta.",
+        "The source argues resonance, connection and offer are what make you stand out — not just being cheapest, since margin constrains price competition."
+      ],
+      "caveats": [
+        "The claim that cheap price would win all else being equal is the source's framing; margin reality often prevents it.",
+        "Heavy-direct-response guidance is the source's opinion about YouTube's buying sophistication, not a measured universal rule."
+      ],
+      "tags": [
+        "ad-copy-deployment",
+        "customer-research",
+        "ad-copy",
+        "shopping-ads",
+        "youtube-ads",
+        "positioning",
+        "offer-design"
+      ],
+      "id": "52816ff362042371fac1a743",
+      "source_id": "19kkN-IXtZV6Ql1pijuYJ86V5l4mfK_wP",
+      "source_sha256": "0ea5ac6b9698707c29a4718ac01602de9408eaa094c791e99cc804dfe0c6d805",
+      "source_name": "Ecommerce Google Ads Free Course (4+ Hours) _ Google & Shopify.docx",
+      "folder": "/11-ADC-ad-copy-deployment",
+      "domain": "ad-copy-deployment",
+      "section": 2
+    },
+    {
+      "title": "Let Shopping and PMax discover your converting keywords",
+      "summary": "Use broad-match Shopping/PMax search term reports as first-party keyword research rather than guessing keywords upfront.",
+      "use_when": "You need real, purchase-confirmed search phrases for search campaigns, shopping titles or landing page copy.",
+      "steps": [
+        "Launch Shopping and PMax broadly and let Google test a wide range of search terms automatically rather than pre-selecting keywords.",
+        "Read the search term report inside Google Ads and rank queries by impressions, CTR, conversions and CPC.",
+        "In Shopping, this also reveals what your product title is actually matching against, which tells you what your feed title is communicating.",
+        "Extract converting queries into exact and phrase match keywords in search campaigns — start with exact for proven winners, phrase for close variations.",
+        "Push the same winning phrases into product titles, PMax assets, YouTube angles, offers and landing page copy.",
+        "Exclude the low-performing and non-converting search terms to raise efficiency, then repeat: the loop is a flywheel, not a one-time task.",
+        "Example: a shopping feed surfaces 'best marathon shoes for flat feet' as converting, so you'd otherwise never have intuited that query and can now target it exactly and build copy around it."
+      ],
+      "caveats": [
+        "This inverts traditional keyword-first research; the source recommends manual keyword research only for your very first search campaigns or when you need control.",
+        "The source claims broad will not work in search campaigns unless you are explicitly testing — validate data elsewhere first."
+      ],
+      "tags": [
+        "ad-copy-deployment",
+        "keyword-research",
+        "search-terms",
+        "performance-max",
+        "shopping-ads",
+        "search-campaigns"
+      ],
+      "id": "a223f5b65ca87621da924d08",
+      "source_id": "19kkN-IXtZV6Ql1pijuYJ86V5l4mfK_wP",
+      "source_sha256": "0ea5ac6b9698707c29a4718ac01602de9408eaa094c791e99cc804dfe0c6d805",
+      "source_name": "Ecommerce Google Ads Free Course (4+ Hours) _ Google & Shopify.docx",
+      "folder": "/11-ADC-ad-copy-deployment",
+      "domain": "ad-copy-deployment",
+      "section": 2
+    },
+    {
+      "title": "Use manual keyword tools only for the first rung",
+      "summary": "Seed initial search campaigns with third-party keyword data, then hand research over to Google's conversion data.",
+      "use_when": "You have no conversion history and must launch a first search campaign or decide initial product title targets.",
+      "steps": [
+        "Use Google Keyword Planner on your main product category to find general product-level search phrases with high search volume and reasonable CPCs.",
+        "Use paid tools (Ahrefs, Semrush) to reverse-engineer competitor keywords, and SpyFu to see what competitors are bidding on.",
+        "Treat competitor bidding as weak evidence: the source says assume competitors may be bidding on terms that do not work for them.",
+        "Note the limitation: third-party data gives search volume and competitor behaviour but no purchase confirmation for your product.",
+        "Use these keywords only to seed, then let Shopping/PMax conversion data replace and refine them over time.",
+        "Best combined approach per the source: start broad with method one (let Google optimise for speed and scale), then layer traditional research for extra optimisation."
+      ],
+      "caveats": [
+        "High search volume without buyer intent is a poor target; the source stresses buy intent over volume.",
+        "Keyword Planner and third-party tool interfaces change frequently — verify current functionality."
+      ],
+      "tags": [
+        "ad-copy-deployment",
+        "keyword-research",
+        "google-keyword-planner",
+        "competitor-research",
+        "search-campaigns"
+      ],
+      "id": "287eff9e616777e146db7aae",
+      "source_id": "19kkN-IXtZV6Ql1pijuYJ86V5l4mfK_wP",
+      "source_sha256": "0ea5ac6b9698707c29a4718ac01602de9408eaa094c791e99cc804dfe0c6d805",
+      "source_name": "Ecommerce Google Ads Free Course (4+ Hours) _ Google & Shopify.docx",
+      "folder": "/11-ADC-ad-copy-deployment",
+      "domain": "ad-copy-deployment",
+      "section": 2
+    },
+    {
+      "title": "Set bids and budgets from unit economics, not habit",
+      "summary": "Choose bidding strategies per campaign type and let your margins and KPIs define how much you can afford to bid and spend.",
+      "use_when": "You are setting bid strategy and daily budget for branded, shopping, PMax or cold campaigns.",
+      "steps": [
+        "Work backwards from unit economics: how much can you afford to spend per acquisition to beat competitors, and how much are you willing to spend to test versus scale.",
+        "Match strategy to campaign type: branded search runs on target impression share (the source calls it absolute target impression share); branded shopping runs on manual CPC where you control max CPC.",
+        "Mid-funnel and cold campaigns use smart bidding: maximise conversion value for ecommerce (more value per purchase), maximise conversions when you want volume, plus tROAS and tCPA variants.",
+        "Choose maximise conversions over value only when you know your break-even CPA and simply want as many actions as possible; otherwise value-based bidding is the ecommerce default per the source.",
+        "The source treats bids and budget as the last optimisation area — after creative, structure, tracking and offer — though it still matters.",
+        "Budget levels depend entirely on brand specifics: goals, KPIs, COGS and desired scale; there is no universal number."
+      ],
+      "caveats": [
+        "The source explicitly gives a non-specific answer on budget size because it depends on individual brand economics — do not copy another brand's budget.",
+        "Smart bidding requires sufficient conversion volume to learn; bid strategy names and settings change, so verify in the current Google Ads interface."
+      ],
+      "tags": [
+        "ad-copy-deployment",
+        "bidding",
+        "budgeting",
+        "unit-economics",
+        "smart-bidding",
+        "branded-search"
+      ],
+      "id": "fa9689ea4d16a4ca77a176cd",
+      "source_id": "19kkN-IXtZV6Ql1pijuYJ86V5l4mfK_wP",
+      "source_sha256": "0ea5ac6b9698707c29a4718ac01602de9408eaa094c791e99cc804dfe0c6d805",
+      "source_name": "Ecommerce Google Ads Free Course (4+ Hours) _ Google & Shopify.docx",
+      "folder": "/11-ADC-ad-copy-deployment",
+      "domain": "ad-copy-deployment",
+      "section": 2
+    },
+    {
+      "title": "Enrol the four GMC add-ons",
+      "summary": "Turn on dynamic remarketing, customer reviews, product ratings and promotions in Merchant Center to lift CTR and enable remarketing.",
+      "use_when": "You are setting up or auditing Google Merchant Center before running Shopping, PMax or remarketing.",
+      "steps": [
+        "Go to Merchant Center Settings > Add-ons and check the Discover tab for programs you are not enrolled in.",
+        "Enable dynamic remarketing — the source says it is essential for the whole Google Ads system to function for ecommerce.",
+        "Enable Google customer reviews and product ratings to add trust signals that the source claims noticeably raise CTR and conversion rate on ads.",
+        "Enable promotions so your discount appears in the Shopping ad itself; the source argues a visible better offer wins the click and increases purchase likelihood.",
+        "Verify each add-on is actually active, not just available, before spending on feed campaigns."
+      ],
+      "caveats": [
+        "CTR and conversion-rate lifts from reviews/ratings/promotions are stated by the source without specific measured figures — treat as directional.",
+        "Eligibility for some add-ons varies by country and account standing."
+      ],
+      "tags": [
+        "ad-copy-deployment",
+        "google-merchant-center",
+        "dynamic-remarketing",
+        "promotions",
+        "social-proof",
+        "shopping-ads"
+      ],
+      "id": "5fa36e157a58bb8cb43198b8",
+      "source_id": "19kkN-IXtZV6Ql1pijuYJ86V5l4mfK_wP",
+      "source_sha256": "0ea5ac6b9698707c29a4718ac01602de9408eaa094c791e99cc804dfe0c6d805",
+      "source_name": "Ecommerce Google Ads Free Course (4+ Hours) _ Google & Shopify.docx",
+      "folder": "/11-ADC-ad-copy-deployment",
+      "domain": "ad-copy-deployment",
+      "section": 2
+    },
+    {
+      "title": "Complete GMC business info and branding to survive review",
+      "summary": "Fill business details, verified store, logo/colour assets and social profiles accurately to protect account standing.",
+      "use_when": "You are onboarding a store to Merchant Center or your account has warnings and you want to reduce suspension risk.",
+      "steps": [
+        "In Business Info, enter details that exactly match your website: verify and claim your online store, provide your checkout link, accepted payment methods, and business logo and colours.",
+        "In the same screen use Edit logo and colours to upload square and rectangular logos plus a main and accent colour, so Shopping ads look on-brand and Google sees a complete, legitimate business.",
+        "Verify your website branding, payment methods and policies are genuinely consistent with what you enter — the source warns Google is ruthless about mismatches that lead to account suspension.",
+        "If in the US, enable business identity attributes: category options include woman-owned, veteran-owned, black-owned, Latino-owned and small business.",
+        "The source recommends selecting small business even for larger companies, citing the Bureau of Labor Statistics threshold of under $40 million annual revenue as qualifying as small.",
+        "Add social profiles (Instagram, Facebook and others) to make business information as complete as possible."
+      ],
+      "caveats": [
+        "The small-business threshold is the source's interpretation of Bureau of Labor Statistics classification, not a Google eligibility rule — verify current Google criteria.",
+        "Identity attributes are flagged as a minor CTR/social-standing factor, not a major performance lever."
+      ],
+      "tags": [
+        "ad-copy-deployment",
+        "google-merchant-center",
+        "account-compliance",
+        "brand-assets",
+        "risk-management"
+      ],
+      "id": "bb3574f9e67a9e6cd1f3bf26",
+      "source_id": "19kkN-IXtZV6Ql1pijuYJ86V5l4mfK_wP",
+      "source_sha256": "0ea5ac6b9698707c29a4718ac01602de9408eaa094c791e99cc804dfe0c6d805",
+      "source_name": "Ecommerce Google Ads Free Course (4+ Hours) _ Google & Shopify.docx",
+      "folder": "/11-ADC-ad-copy-deployment",
+      "domain": "ad-copy-deployment",
+      "section": 2
+    },
+    {
+      "title": "Lock shipping and returns as manual in GMC",
+      "summary": "Fix shipping and returns configuration inside Merchant Center so Shopify changes cannot desync policies and trigger suspension.",
+      "use_when": "You are configuring Merchant Center shipping/returns or your store changes shipping rates and you fear feed or policy mismatches.",
+      "steps": [
+        "In the Shopify Google & YouTube sales channel, under product feed settings, set shipping settings to Manual setup in GMC so changes in Shopify do not auto-update Merchant Center.",
+        "The source's reasoning: a random sync change can create a mismatch with your stated shipping policy and a flag can escalate to account suspension.",
+        "In Merchant Center > Shipping and returns, add policies for every country you ship to, including differing speeds and methods (the example brand runs both US and Canada).",
+        "Enter an accurate ship-from location.",
+        "Add your returns policy inside GMC, link directly to the specific returns policy page, and ensure it mirrors what is on your site.",
+        "Treat a clear, strong return policy as effectively a requirement to run Merchant Center today, and as something Google checks when deciding to suspend."
+      ],
+      "caveats": [
+        "Keeping settings manual means you must update GMC yourself when shipping genuinely changes — do it as part of the routine maintenance cycle.",
+        "Google's policy and feeds interfaces change; verify that manual-mode options still exist before relying on the workflow."
+      ],
+      "tags": [
+        "ad-copy-deployment",
+        "google-merchant-center",
+        "shipping",
+        "returns",
+        "account-compliance",
+        "shopify"
+      ],
+      "id": "7255257382d035576fa7841b",
+      "source_id": "19kkN-IXtZV6Ql1pijuYJ86V5l4mfK_wP",
+      "source_sha256": "0ea5ac6b9698707c29a4718ac01602de9408eaa094c791e99cc804dfe0c6d805",
+      "source_name": "Ecommerce Google Ads Free Course (4+ Hours) _ Google & Shopify.docx",
+      "folder": "/11-ADC-ad-copy-deployment",
+      "domain": "ad-copy-deployment",
+      "section": 2
+    },
+    {
+      "title": "Audit feeds and fix 'needs attention' errors",
+      "summary": "Locate your primary feed and systematically clear product-level errors before scaling feed ads.",
+      "use_when": "You are diagnosing why feed ads underperform, or onboarding a store whose products are disapproved or warning-flagged.",
+      "steps": [
+        "In Merchant Center settings, open Data sources to see every feed; with the Shopify Google & YouTube app the primary feed comes via the content API.",
+        "Identify your primary feed and any supplemental feeds, confirm the primary is updating, and note that promotions sources can also live here.",
+        "Go to Products > Needs attention to see Google's per-SKU issues; the example shows approved products missing an age group.",
+        "Work through the list systematically, fixing red errors and yellow warnings using Google's own stated fix instructions.",
+        "Make this a weekly routine: revisit Products and diagnostics each week and clear new red or yellow flags before they accumulate."
+      ],
+      "caveats": [
+        "The source notes many brands never do this and blame Google Ads for what is a feed problem — expect meaningful time cost with large SKU counts.",
+        "Some errors only apply to specific categories (e.g. age group for certain verticals), so not every flag is relevant to every product."
+      ],
+      "tags": [
+        "ad-copy-deployment",
+        "google-merchant-center",
+        "product-feed",
+        "diagnostics",
+        "shopping-ads",
+        "account-maintenance"
+      ],
+      "id": "5157f5f5a6878aa068fc687f",
+      "source_id": "19kkN-IXtZV6Ql1pijuYJ86V5l4mfK_wP",
+      "source_sha256": "0ea5ac6b9698707c29a4718ac01602de9408eaa094c791e99cc804dfe0c6d805",
+      "source_name": "Ecommerce Google Ads Free Course (4+ Hours) _ Google & Shopify.docx",
+      "folder": "/11-ADC-ad-copy-deployment",
+      "domain": "ad-copy-deployment",
+      "section": 2
+    },
+    {
+      "title": "Build product titles with the 130–150 character formula",
+      "summary": "Frontload high-volume keywords and differentiators in feed titles, placing brand first or last depending on brand strength.",
+      "use_when": "You are rewriting Shopping/PMax feed titles to raise relevance and win more qualifying impressions.",
+      "steps": [
+        "Write titles of roughly 130–150 characters including: highest-volume keyword, product details (colour, size, quantity), second highest-volume keyword, differentiating angles/USPs, and brand name.",
+        "For a small brand pushing cold traffic, frontload the high-volume keywords and place the brand name at the end.",
+        "For a big brand that can leverage recognition in Shopping, place the brand name first and the high-volume keywords after.",
+        "Cover variant fields — colour, size, weight, format — so searchers know exactly what they are buying.",
+        "Apply the difference between high-volume keyword (the most product-aware term everyone uses), variants, USPs/angles and brand name in that structure.",
+        "Edit titles in Merchant Center > Products by opening the SKU and using Edit product, or manage them in a data feed tool like DataFeedWatch.",
+        "You can paste the formula and your product info into ChatGPT to generate a draft, then edit the keyword choices yourself."
+      ],
+      "caveats": [
+        "The 130–150 character target is the source's recommendation; verify current Google title length limits before publishing.",
+        "The example 'Apple Watch band' title shows the pattern but is a case illustration, not a performance promise."
+      ],
+      "tags": [
+        "ad-copy-deployment",
+        "product-feed",
+        "product-titles",
+        "shopping-ads",
+        "keyword-research",
+        "seo-copy"
+      ],
+      "id": "3cce923d11c9033f5f8b3e37",
+      "source_id": "19kkN-IXtZV6Ql1pijuYJ86V5l4mfK_wP",
+      "source_sha256": "0ea5ac6b9698707c29a4718ac01602de9408eaa094c791e99cc804dfe0c6d805",
+      "source_name": "Ecommerce Google Ads Free Course (4+ Hours) _ Google & Shopify.docx",
+      "folder": "/11-ADC-ad-copy-deployment",
+      "domain": "ad-copy-deployment",
+      "section": 2
+    },
+    {
+      "title": "Write feed descriptions that survive policy review",
+      "summary": "Use the description for targeting and benefit copy, not promotions, and avoid website copy dumps.",
+      "use_when": "You are optimising feed descriptions for a store that simply imports Shopify product copy into Merchant Center.",
+      "steps": [
+        "Check your current description: if it is auto-pulled from the Shopify product page, assume it is not optimised for feed targeting.",
+        "Write roughly 1,000 characters covering key features, USPs, a call to action and useful product information.",
+        "Frontload high-volume keywords at the start, in the style of an SEO article, because Google uses the description for targeting.",
+        "Exclude promotional text such as discount claims, because the source states that violates Google's policies.",
+        "Treat description as secondary in impact to the title, but still worth the effort because it expands the terms your product can match against."
+      ],
+      "caveats": [
+        "The source calls the description less leveraged than the title — prioritise titles first.",
+        "Promotion language belongs in Merchant Center promotions, not the description; policy details can change, so verify current rules."
+      ],
+      "tags": [
+        "ad-copy-deployment",
+        "product-feed",
+        "product-descriptions",
+        "shopping-ads",
+        "policy-compliance"
+      ],
+      "id": "f74643a53f4d28cf3e839e60",
+      "source_id": "19kkN-IXtZV6Ql1pijuYJ86V5l4mfK_wP",
+      "source_sha256": "0ea5ac6b9698707c29a4718ac01602de9408eaa094c791e99cc804dfe0c6d805",
+      "source_name": "Ecommerce Google Ads Free Course (4+ Hours) _ Google & Shopify.docx",
+      "folder": "/11-ADC-ad-copy-deployment",
+      "domain": "ad-copy-deployment",
+      "section": 2
+    },
+    {
+      "title": "Choose feed images for context and standout",
+      "summary": "Test main images that show the product in use versus on plain backgrounds to improve Shopping ad click appeal.",
+      "use_when": "You are choosing or testing primary feed images for product pages and Shopping/PMax assets.",
+      "steps": [
+        "Select the highest quality, most attention-grabbing image available for each SKU as the primary feed image.",
+        "Test the product alone on a clean background against the product in context: a sofa in a well-lit living room setup, golf clubs mid-swing on the green, an Apple Watch band shown on an actual Apple Watch.",
+        "Show a product in the context it was made for when the item alone is confusing — the Apple Watch band only makes sense attached to a watch.",
+        "Supplement with lifestyle images of people using the product for other placements.",
+        "For this source's example brand, the product-focused image performed best; treat that as their finding and run your own test rather than copying it."
+      ],
+      "caveats": [
+        "The source is explicit that the best-performing image style is brand-specific — do not assume product-only wins for your category.",
+        "Main image choice can affect eligibility and performance simultaneously; check policy requirements alongside conversion appeal."
+      ],
+      "tags": [
+        "ad-copy-deployment",
+        "product-feed",
+        "creative-strategy",
+        "shopping-ads",
+        "experiment-design"
+      ],
+      "id": "eeaaed11a13b370d37849dd0",
+      "source_id": "19kkN-IXtZV6Ql1pijuYJ86V5l4mfK_wP",
+      "source_sha256": "0ea5ac6b9698707c29a4718ac01602de9408eaa094c791e99cc804dfe0c6d805",
+      "source_name": "Ecommerce Google Ads Free Course (4+ Hours) _ Google & Shopify.docx",
+      "folder": "/11-ADC-ad-copy-deployment",
+      "domain": "ad-copy-deployment",
+      "section": 2
+    },
+    {
+      "title": "Fill product identifiers, categories and attributes accurately",
+      "summary": "Use GTINs, product type, category and filtering attributes to remove performance-limiting warnings and increase discoverability.",
+      "use_when": "Your feed shows warnings about identifiers or missing attributes, or you want products to appear under Shopping filters.",
+      "steps": [
+        "Never change the product ID or SKU; let them import consistently from Shopify or a feed tool, because changing them disrupts history and targeting.",
+        "Provide GTIN, UPC, EAN, JAN or ISBN if your product has one — ask your supplier and register the barcode in the feed; custom-made products may legitimately lack one.",
+        "Set product type and Google product category for every SKU (the source suggests asking ChatGPT for a first draft), condition to new unless genuinely used, plus accurate price and availability.",
+        "Complete detailed attributes used in Shopping filters: colour, size, size type, sizing system by country, gender, material, pattern, age group for apparel; bundle status, adult and energy class where relevant.",
+        "Leave shipping and returns to pull from Shopify or the policies configured in GMC.",
+        "Add custom labels (e.g. label 1 for small bands, label 2 for large bands) so you can target and report on cohorts inside Google Ads.",
+        "Keep COGS, sell quantity and currency fields filled where applicable, though the source calls these minor for performance."
+      ],
+      "caveats": [
+        "Missing correct identifiers create performance-limiting warnings rather than outright ban in most cases — still fix them early.",
+        "Attribute requirements and identifier rules vary by category and country; check current Merchant Center requirements."
+      ],
+      "tags": [
+        "ad-copy-deployment",
+        "product-feed",
+        "product-identifiers",
+        "google-merchant-center",
+        "custom-labels",
+        "shopping-ads"
+      ],
+      "id": "61f93049590a87a342501419",
+      "source_id": "19kkN-IXtZV6Ql1pijuYJ86V5l4mfK_wP",
+      "source_sha256": "0ea5ac6b9698707c29a4718ac01602de9408eaa094c791e99cc804dfe0c6d805",
+      "source_name": "Ecommerce Google Ads Free Course (4+ Hours) _ Google & Shopify.docx",
+      "folder": "/11-ADC-ad-copy-deployment",
+      "domain": "ad-copy-deployment",
+      "section": 2
+    },
+    {
+      "title": "Never edit price or availability inside GMC",
+      "summary": "Change price, availability and sale price only at source so Google does not flag a website mismatch.",
+      "use_when": "You are updating product pricing or stock and deciding where to make the change.",
+      "steps": [
+        "Make all price, availability and sale price changes in Shopify (or your store platform), never directly in Merchant Center.",
+        "Let the change flow back into GMC through the feed so the value matches what a shopper sees on your site.",
+        "Understand the risk: Merchant Center checks for mismatches between the site price and the feed price, flags a warning, and repeated mismatches compound account risk.",
+        "Treat this as part of weekly and monthly maintenance: review feed values against the live site during routine checks.",
+        "If a value genuinely must change in GMC for a feed-only reason, confirm the source-of-truth logic first so the next sync does not overwrite or re-flag it."
+      ],
+      "caveats": [
+        "The rule applies to price, availability and sale price specifically; other attributes such as titles and descriptions are edited in the feed.",
+        "This is the source's stated best practice for avoiding suspension — enforcement behaviour can change, so keep site and feed aligned regardless."
+      ],
+      "tags": [
+        "ad-copy-deployment",
+        "google-merchant-center",
+        "pricing",
+        "inventory",
+        "account-compliance",
+        "shopify"
+      ],
+      "id": "c32fb2d0de6335ae110ae80f",
+      "source_id": "19kkN-IXtZV6Ql1pijuYJ86V5l4mfK_wP",
+      "source_sha256": "0ea5ac6b9698707c29a4718ac01602de9408eaa094c791e99cc804dfe0c6d805",
+      "source_name": "Ecommerce Google Ads Free Course (4+ Hours) _ Google & Shopify.docx",
+      "folder": "/11-ADC-ad-copy-deployment",
+      "domain": "ad-copy-deployment",
+      "section": 2
+    },
+    {
+      "title": "Earn the Shopping experience scorecard badge",
+      "summary": "Use Google's store quality scorecard to catch missing trust factors and differentiate listings with a trusted badge.",
+      "use_when": "You want Shopping listings to stand out against competitors and are looking for the highest-leverage remaining trust improvements.",
+      "steps": [
+        "Open the Shopping experience scorecard in Merchant Center and read which components are missing or underperforming.",
+        "Work through the components it covers: shipping experience, return experience, purchase experience, browsing experience and promotion data.",
+        "Use the edit links to correct shipping details, returns information, purchase experience and browsing experience directly.",
+        "Aim to reach the exceptional tier, which the source says earns a trusted badge on Shopping listings and is measured comparatively against competitors.",
+        "Combine this with active product ratings and promotions (see the add-ons card) since they feed the same trust layer.",
+        "The source's own example sits at number one in its industry for this scorecard, which they attribute to a well-optimised Merchant Center — treat as their result, not a guarantee."
+      ],
+      "caveats": [
+        "The badge is awarded comparatively against competitors in your industry, so you can improve and still not hold it.",
+        "Scorecard components and point thresholds change; check the current scorecard requirements."
+      ],
+      "tags": [
+        "ad-copy-deployment",
+        "google-merchant-center",
+        "trust-signals",
+        "shopping-ads",
+        "store-quality",
+        "conversion-optimization"
+      ],
+      "id": "8a99ccae1285787ec297fbec",
+      "source_id": "19kkN-IXtZV6Ql1pijuYJ86V5l4mfK_wP",
+      "source_sha256": "0ea5ac6b9698707c29a4718ac01602de9408eaa094c791e99cc804dfe0c6d805",
+      "source_name": "Ecommerce Google Ads Free Course (4+ Hours) _ Google & Shopify.docx",
+      "folder": "/11-ADC-ad-copy-deployment",
+      "domain": "ad-copy-deployment",
+      "section": 2
+    },
+    {
+      "title": "Run a weekly and monthly GMC maintenance rhythm",
+      "summary": "Keep Merchant Center healthy with recurring checks for feed errors, policy drift and promotion dates.",
+      "use_when": "You run feed campaigns continuously and need an operating routine that prevents gradual account decay or suspension.",
+      "steps": [
+        "Weekly: go through Products and diagnostics, fixing any new red errors and yellow warnings.",
+        "Monthly: briefly review your website shipping and returns policies against what is configured in Merchant Center and correct any drift.",
+        "When a new sale or promotion starts, add it to GMC promotions and set a proper end date; when the sale ends, make sure the promotion expires or is removed.",
+        "Keep the go-to-market discipline of never editing price, availability or sale price in GMC, so maintenance stays focused on feed hygiene rather than correcting mismatches.",
+        "Treat this as the ongoing layer on top of the one-time setup phases: account and business setup, shipping/returns/tax, feed health, and trust/visibility."
+      ],
+      "caveats": [
+        "The source frames nine out of ten brands as not having Merchant Center set up correctly — expect setup debt, not just ongoing tweaks.",
+        "Promotion scheduling mistakes can leave stale offers live, so calendar the end dates."
+      ],
+      "tags": [
+        "ad-copy-deployment",
+        "google-merchant-center",
+        "account-maintenance",
+        "promotions",
+        "operations",
+        "shopping-ads"
+      ],
+      "id": "b9ecdf07948a6a3c17e6b59b",
+      "source_id": "19kkN-IXtZV6Ql1pijuYJ86V5l4mfK_wP",
+      "source_sha256": "0ea5ac6b9698707c29a4718ac01602de9408eaa094c791e99cc804dfe0c6d805",
+      "source_name": "Ecommerce Google Ads Free Course (4+ Hours) _ Google & Shopify.docx",
+      "folder": "/11-ADC-ad-copy-deployment",
+      "domain": "ad-copy-deployment",
+      "section": 2
+    },
+    {
+      "title": "Reduce Merchant Center suspension risk deliberately",
+      "summary": "Treat suspension as the highest-cost ecommerce event and run the checklist that keeps feed, Shopping and PMax running.",
+      "use_when": "You are auditing an account for suspension risk or your store has received warnings, mismatches or policy flags.",
+      "steps": [
+        "Prioritise the most common triggers the source identifies: inaccurate business information, mismatched shipping and returns policies, and price/availability mismatches between site and feed.",
+        "Keep business info, checkout link, payment methods and branding accurate and consistent with the live site at all times.",
+        "Set shipping settings to manual in GMC and maintain policies per country with an accurate ship-from location.",
+        "Link directly to a real returns policy page and mirror the policy in Greenhouse Center configuration.",
+        "Clear feed errors and warnings weekly rather than letting them stack, and never edit price, availability or sale price inside GMC.",
+        "Recognise the stakes: a ban blocks feed ads, Shopping ads, and the strongest part of PMax for an ecommerce brand, so prevention work outranks other optimisation."
+      ],
+      "caveats": [
+        "This is a prevention checklist, not an appeals process — a suspended account needs its own remediation path.",
+        "Google's policy enforcement and specific triggers are opaque and change; treat the list as risk reduction rather than a guarantee."
+      ],
+      "tags": [
+        "ad-copy-deployment",
+        "google-merchant-center",
+        "account-compliance",
+        "risk-management",
+        "shopping-ads",
+        "performance-max"
+      ],
+      "id": "8ff6407379e3ed7cf8da833e",
+      "source_id": "19kkN-IXtZV6Ql1pijuYJ86V5l4mfK_wP",
+      "source_sha256": "0ea5ac6b9698707c29a4718ac01602de9408eaa094c791e99cc804dfe0c6d805",
+      "source_name": "Ecommerce Google Ads Free Course (4+ Hours) _ Google & Shopify.docx",
+      "folder": "/11-ADC-ad-copy-deployment",
+      "domain": "ad-copy-deployment",
+      "section": 2
+    }
+  ],
+  "request_id": "a7234b7b5579f5766138c93bff107cadd3f79a7340409c0e49066dcff2f2a08f",
+  "ecommerce_scope_version": 1
+}

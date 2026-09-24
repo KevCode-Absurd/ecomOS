@@ -1,0 +1,411 @@
+{
+  "request_id": "de86e71f6118d0f08cb5ed0baf1bbcd12cbe9813fde1e63d5ccfbcdaeac31f97",
+  "provider": "deepseek",
+  "model": "deepseek-flash",
+  "effort": "none",
+  "completion_limit": 16384,
+  "usage": {
+    "prompt_tokens": 1896,
+    "completion_tokens": 4485,
+    "total_tokens": 6381,
+    "prompt_tokens_details": {
+      "cached_tokens": 512
+    },
+    "prompt_cache_hit_tokens": 512,
+    "prompt_cache_miss_tokens": 1384
+  },
+  "booked_cost_usd": 0.0059508,
+  "seconds": 23.41,
+  "finish_reason": "stop",
+  "output": {
+    "cards": [
+      {
+        "title": "Pop-up form architecture for 8–12% traffic capture",
+        "summary": "Design mobile-first pop-ups with one input field, delayed trigger, and dollars-off incentive to hit double-digit opt-in rates.",
+        "use_when": "Building or redesigning your store's list-building pop-up to lift email/SMS opt-in rate above the industry norm.",
+        "steps": [
+          "Design the pop-up to cover 75%+ of a mobile screen so it visually dominates and can't be ignored, but keep the actual form minimal.",
+          "Show only ONE input field on screen one — never stack email + SMS side by side. Collect the second channel on a subsequent step or in-flow.",
+          "Set a time delay of 4–12 seconds so the visitor has at least glimpsed a product before being interrupted.",
+          "Write the value proposition in plain language (e.g., a dollar amount off, an early-access promise). Keep supporting copy to a minimum.",
+          "If your average order value is above ~$100, use a dollars-off incentive rather than a percentage — a percentage on a high-AOV product feels abstract and less motivating.",
+          "Hide or de-emphasize the standard top-right 'X' close button to interrupt reflexive dismissal habits (still keep the pop-up closable for compliance/UX)."
+        ],
+        "caveats": [
+          "The 10%+ opt-in target is the source's benchmark in their observed stores, not a guaranteed result; actual rates depend on traffic quality, offer, and niche.",
+          "Hiding the close button can frustrate users — test with a visible alternative close (e.g., 'no thanks' text link) and monitor bounce."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "list-building",
+          "pop-up-forms",
+          "klaviyo",
+          "conversion-optimization",
+          "mobile-ux"
+        ]
+      },
+      {
+        "title": "Welcome flow: 8-email brand immersion sequence",
+        "summary": "Build an 8-email welcome series that leads with brand mission, social proof, and founder outreach before any hard sell.",
+        "use_when": "Setting up or overhauling the welcome automation that fires when a new subscriber joins your list.",
+        "steps": [
+          "Structure 8 emails, sequenced over the first days and weeks post-signup, rather than a single 'here's your code' message.",
+          "Lead with brand mission and story — why the store exists and what it stands for — to build connection before pitching.",
+          "Include social proof content (customer reviews, UGC, press) early to establish credibility with a cold subscriber.",
+          "Include a founder outreach email (personal note from the founder/owner) to humanize the brand and drive reply engagement.",
+          "Deliver the promised incentive (e.g., discount code) but spread value across the sequence rather than dumping everything in email one.",
+          "Use punchy, skimmable copy with bold headers and short paragraphs; keep each email under two mobile scrolls."
+        ],
+        "caveats": [
+          "8 emails is the source's recommendation for a fully built welcome; if you have low list volume or few products, test a shorter sequence and measure revenue per recipient.",
+          "Founder outreach works best when it reads as genuinely personal — templated 'founder' emails that feel automated undercut the effect."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "welcome-series",
+          "retention",
+          "klaviyo",
+          "copywriting",
+          "automation"
+        ]
+      },
+      {
+        "title": "Separate Cart Abandon from Checkout Abandon flows",
+        "summary": "Run distinct flows for 'Added to Cart' and 'Checkout Started' because treating them as one drops up to 90% of cart abandoners.",
+        "use_when": "Configuring abandon-cart and abandon-checkout automations in your ESP and you need to decide whether one flow or two is correct.",
+        "steps": [
+          "Recognize the two events fire at different funnel stages: 'Added to Cart' fires when a product enters the cart; 'Checkout Started' fires later when the shopper begins the checkout process.",
+          "For 'Checkout Started', most ESPs (Klaviyo) have a native integration — you can enable the trigger directly.",
+          "For 'Added to Cart', a native trigger often does NOT exist; on Shopify you must inject a custom JavaScript snippet into the theme's liquid code to fire the event to your ESP.",
+          "Build TWO separate flows so that top-of-funnel cart abandoners (who never reached checkout) still receive an email — collapsing them into one checkout flow means those early abandoners fall through.",
+          "Feed the cart-abandon flow with best-seller or dynamic product content showing the item left behind."
+        ],
+        "caveats": [
+          "The source states that treating cart and checkout as identical can drop up to 90% of cart abandoners — this is the source's figure, not a universal benchmark.",
+          "Custom snippet implementations can break on theme updates; verify and re-test after any Shopify theme change.",
+          "Verify current Shopify/Klaviyo event support in the platform UI, as native triggers and setup steps change over time."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "cart-abandonment",
+          "checkout-abandonment",
+          "klaviyo",
+          "shopify",
+          "automation"
+        ]
+      },
+      {
+        "title": "Browse Abandon flow with dynamic viewed items",
+        "summary": "Build a 5-email browse-abandon sequence that dynamically pulls the specific products a visitor viewed.",
+        "use_when": "Setting up a browse-abandon automation to re-engage visitors who viewed products but did not add to cart.",
+        "steps": [
+          "Create a 5-email sequence triggered when a visitor views a product (or products) but does not add to cart or purchase.",
+          "Use dynamic content blocks that pull the exact items the visitor viewed into the email, so the message is personally relevant.",
+          "Space the emails across the following days to stay top-of-mind without over-mailing a warm browsing signal.",
+          "Blend the viewed-product reminder with light social proof or benefit framing rather than pure 'you left this' repetition.",
+          "Distinguish this from cart-abandon (which fires on add-to-cart) so signals don't overlap or double-send."
+        ],
+        "caveats": [
+          "Dynamically pulling viewed items requires correct catalog/feed setup in your ESP and product-view tracking; test rendering across email clients.",
+          "Browse-abandon can fire frequently for repeat visitors — use frequency caps to avoid fatigue."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "browse-abandonment",
+          "klaviyo",
+          "automation",
+          "dynamic-content",
+          "retention"
+        ]
+      },
+      {
+        "title": "Winback flow timed to 2x the average order interval",
+        "summary": "Trigger a 3-email winback sequence at twice the customer's average reorder interval to recover lapsed buyers.",
+        "use_when": "Building a winback automation to re-engage customers who have stopped purchasing.",
+        "steps": [
+          "First calculate your store's average order interval (average time between a customer's purchases).",
+          "Trigger the winback flow at 2x that interval — i.e., if customers typically reorder every 60 days, the flow fires around day 120.",
+          "Run 3 emails in the sequence, escalating the message and offer if earlier emails go unopened.",
+          "Segment winback recipients so you don't message customers who recently purchased (which would be confusing or wasteful).",
+          "Use the sequence to reintroduce the brand, best-sellers, or a targeted incentive rather than only a discount.",
+          "Move respondents into normal campaign streams once they re-engage."
+        ],
+        "caveats": [
+          "2x average order interval is the source's timing heuristic; stores with consumables and long-lifecycle goods need different intervals.",
+          "Suppress customers already in active flows to avoid message collisions."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "winback",
+          "retention",
+          "automation",
+          "segmentation",
+          "klaviyo"
+        ]
+      },
+      {
+        "title": "Post-purchase flow to drive repeat and reduce support load",
+        "summary": "Build a post-purchase automation that confirms, reassures, and sets up the next purchase.",
+        "use_when": "Creating or improving the automated emails sent after a customer completes an order.",
+        "steps": [
+          "Start with order confirmation and shipping/fulfillment updates to reduce 'where is my order' support tickets.",
+          "Add usage or onboarding content explaining how to get the most from the product, reducing returns and buyer's remorse.",
+          "Include social proof or community content to reinforce the purchase decision.",
+          "Introduce complementary products or replenishment cues to seed a repeat purchase.",
+          "Collect reviews or UGC at an appropriate delay after the product has been received and used.",
+          "Keep copy punchy and skimmable, using headers and visual elements rather than dense text."
+        ],
+        "caveats": [
+          "Review requests sent too early (before use) get poor response; time them after expected delivery plus usage.",
+          "Do not over-bundle upsells into the first order-confirmation email — it dilutes the confirmation's job."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "post-purchase",
+          "retention",
+          "upsell",
+          "automation",
+          "reviews"
+        ]
+      },
+      {
+        "title": "Non-discount microtopic campaign cadence",
+        "summary": "Send 3–4 non-promotional emails weekly, each covering a single hyper-specific microtopic, to build an opening habit without margin-eroding discounts.",
+        "use_when": "Planning your recurring campaign calendar and trying to keep list engagement high without running constant sales.",
+        "steps": [
+          "Commit to a cadence of 3–4 campaigns per week that are NOT discount-driven promotions.",
+          "Make each email about exactly ONE microtopic — a single feature, a single benefit, a single FAQ, an ingredient breakdown, a myth-vs-fact, or one customer review.",
+          "Rotate microtopics so variety keeps curiosity high and the list doesn't fatigue on the same angle.",
+          "Use these emails to build authority and stay top-of-mind, creating a 'dopamine-driven opening habit' so subscribers open by reflex.",
+          "Preserve profit margins by reserving discounts for genuine promotions rather than every send.",
+          "Track which microtopics earn the strongest engagement and feed winners into your paid and automated channels."
+        ],
+        "caveats": [
+          "3–4 weekly is the source's recommended cadence for this strategy; smaller lists or niche audiences may need a lower rate to avoid deliverability pressure.",
+          "High frequency demands genuinely valuable content — low-value frequent emails will increase unsubscribes and spam complaints."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "campaign-strategy",
+          "copywriting",
+          "retention",
+          "deliverability",
+          "content-marketing"
+        ]
+      },
+      {
+        "title": "Use high-frequency campaigns as a flow-testing lab",
+        "summary": "Treat your weekly campaign sends as an instant testing ground, then cycle winning angles into automated flows.",
+        "use_when": "You want faster learnings on messaging and offers than slow A/B email tests allow, and need to improve flow performance.",
+        "steps": [
+          "Use frequent campaign sends (e.g., the 3–4x weekly microtopic cadence) as a low-risk place to test subject lines, angles, offers, and formats.",
+          "Read performance signals quickly across sends rather than waiting on a single isolated test.",
+          "Identify the campaign angles, subjects, and formats that consistently win.",
+          "Cycle those winning angles directly into your automated flows (welcome, abandon, winback, post-purchase) so flows inherit proven messaging.",
+          "Keep testing new angles in campaigns while locking in proven winners in flows.",
+          "Document what won and why to build a durable swipe file for future sends."
+        ],
+        "caveats": [
+          "Campaign sends and flow sends reach different contexts (broadcast vs. triggered), so validate a campaign winner in a flow before assuming it transfers.",
+          "High-frequency testing requires enough list volume for signals to be meaningful."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "experiment-design",
+          "campaign-strategy",
+          "conversion-optimization",
+          "measurement",
+          "automation"
+        ]
+      },
+      {
+        "title": "Skimmable email copywriting rules",
+        "summary": "Write short, punchy, visually structured emails that stay under two mobile scrolls using headers and infographics.",
+        "use_when": "Writing or reviewing any lifecycle or campaign email and wanting to maximize mobile read-through and click rate.",
+        "steps": [
+          "Keep every email under two mobile scrolls — assume the reader is on a phone and skims.",
+          "Write punchy, concise copy rather than dense paragraphs.",
+          "Use bold headers to break up sections and guide the eye.",
+          "Replace dense text blocks with infographics: timelines, checklists, comparison tables.",
+          "Lead each email with a single clear idea (see the microtopic approach) rather than multiple competing messages.",
+          "Proof on a mobile device and trim anything that pushes past the two-scroll limit."
+        ],
+        "caveats": [
+          "Infographics must still render legibly on mobile; test image-heavy emails since some clients block images by default.",
+          "Keep a text-heavy fallback for accessibility and image-blocked inboxes."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "copywriting",
+          "mobile-ux",
+          "conversion-optimization",
+          "creative-strategy",
+          "campaign-strategy"
+        ]
+      },
+      {
+        "title": "6-week deliverability rehabilitation protocol",
+        "summary": "Repair a damaged sender reputation by mailing only to a 14-day engaged segment 3x weekly, then widening the window incrementally.",
+        "use_when": "Your open rates have fallen below roughly 40% and you suspect deliverability or sender-reputation damage.",
+        "steps": [
+          "Temporarily shut off non-essential flows so you're not sending to unengaged recipients during recovery.",
+          "Send exclusively 3x weekly to a tight 14-day engaged segment — people who opened or clicked in the last 14 days.",
+          "Continue until open rates recover to 50%+ on that engaged segment.",
+          "Then incrementally widen the sending segment: first to 30 days, then 60 days, then 90 days, watching engagement each step.",
+          "Only after reputation recovers, consider re-enabling the paused non-essential flows.",
+          "Maintain suppression hygiene (see suppression card) so the recovered reputation is not immediately degraded again."
+        ],
+        "caveats": [
+          "This is the source's 6-week protocol with specific thresholds (14-day segment, 3x weekly, 50%+ opens) — treat as a heuristic, not a guaranteed outcome.",
+          "Exact timing and thresholds should be validated against your ESP's deliverability tooling and your list size.",
+          "Shutting off flows during recovery means some revenue is paused; weigh against the cost of continued reputation damage."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "deliverability",
+          "list-hygiene",
+          "engagement-segmentation",
+          "klaviyo",
+          "measurement"
+        ]
+      },
+      {
+        "title": "Engagement + behavior segmentation and suppression",
+        "summary": "Segment by engagement recency and store behavior, and suppress profiles with 180-day zero-opens or hard bounces.",
+        "use_when": "Cleaning your list and building segments to protect inbox placement and target relevant offers.",
+        "steps": [
+          "Segment by engagement recency: 30-day active, 60-day active, 90-day active windows.",
+          "Segment by store behavior: VIPs (high-value repeat buyers), browsers who never purchased, and other behavioral cohorts.",
+          "Suppress any profile with zero opens in 180 days — long-dormant addresses drag down deliverability.",
+          "Suppress any address that produces a hard bounce immediately and permanently.",
+          "Use these segments to route different messaging (VIPs get different content than cold browsers).",
+          "Re-run suppression rules regularly so the list stays clean over time."
+        ],
+        "caveats": [
+          "Aggressive suppression shrinks your list but protects deliverability — expect the total count to drop.",
+          "Segment windows should be tuned to your sending frequency; very low-frequency senders may need longer engagement windows."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "segmentation",
+          "list-hygiene",
+          "deliverability",
+          "retention",
+          "klaviyo"
+        ]
+      },
+      {
+        "title": "Flows should drive ~50% of total email revenue",
+        "summary": "Automated lifecycle flows are the revenue backbone, expected to produce roughly half of email revenue; campaigns supplement.",
+        "use_when": "Prioritizing where to invest email effort — deciding whether to build out flows or focus on campaign sends.",
+        "steps": [
+          "Treat automated flows as the foundation: they run continuously and capture intent at key moments (welcome, browse, cart, checkout, post-purchase, winback).",
+          "Set a working expectation that core flows can account for roughly 50% of total email revenue.",
+          "Build the foundational flows first (welcome, site abandon, browse abandon, cart vs. checkout abandon) before expanding campaign volume.",
+          "Use microtopic campaigns to add the remaining revenue and keep engagement warm.",
+          "Monitor flow vs. campaign revenue split to see where the gap is and invest accordingly.",
+          "Feed proven campaign angles into flows to keep the flow engine improving."
+        ],
+        "caveats": [
+          "'~50% of email revenue from flows' is the source's framing, not a universal benchmark; the split varies by store, list, and maturity.",
+          "New stores with little list history may see different splits until flows accumulate data."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "automation",
+          "measurement",
+          "campaign-strategy",
+          "retention",
+          "klaviyo"
+        ]
+      },
+      {
+        "title": "Site Abandon flow with best-seller content",
+        "summary": "Deploy a single-email site-abandon flow featuring best sellers to catch visitors who engaged but didn't browse a specific product.",
+        "use_when": "Adding a site-abandon automation to capture visitors who showed intent without viewing a specific product page.",
+        "steps": [
+          "Trigger the single-email site-abandon flow for visitors who show site engagement but do not view a specific product (the weaker intent signal).",
+          "Keep it to one email — this is a light-touch catch, not a multi-email sequence.",
+          "Populate it with best-seller content since you lack a specific viewed item to reference.",
+          "Keep copy punchy and use bold headers/infographics per the copywriting rules.",
+          "Distinguish this from browse-abandon (which pulls a viewed item) so the two flows don't overlap poorly."
+        ],
+        "caveats": [
+          "Site abandon generally signals weaker intent than browse or cart abandon, so keep expectations modest and frequency low.",
+          "Definition of the trigger event depends on your ESP's site-tracking setup — verify the current trigger configuration in your ESP."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "abandonment",
+          "automation",
+          "klaviyo",
+          "best-sellers",
+          "retention"
+        ]
+      },
+      {
+        "title": "Keep flows pause-able for deliverability emergencies",
+        "summary": "Design and operate flows so non-essential ones can be quickly paused when sender reputation needs repair.",
+        "use_when": "Setting up flow architecture and planning for the possibility of a deliverability crisis or reputation repair.",
+        "steps": [
+          "Architect flows so it's easy to identify and pause the 'non-essential' ones (e.g., post-purchase, winback, browse) separately from essential transactional email.",
+          "During a deliverability crisis (open rates below ~40%), temporarily shut off non-essential flows per the 6-week rehabilitation protocol.",
+          "Keep essential/transactional messages (order confirmation, shipping) running throughout.",
+          "After reputation recovers, re-enable paused flows gradually rather than all at once.",
+          "Maintain suppression hygiene so recovered reputation isn't immediately re-damaged."
+        ],
+        "caveats": [
+          "Pausing non-essential flows means temporarily forgoing the revenue they generate — a deliberate trade-off for reputation recovery.",
+          "Never pause transactional emails; those are expected and protected by different delivery rules."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "deliverability",
+          "automation",
+          "operations",
+          "list-hygiene",
+          "klaviyo"
+        ]
+      },
+      {
+        "title": "Match flow scope to intent strength and cadence",
+        "summary": "Size and structure each lifecycle flow (1 email vs 5 vs 8) according to the strength of the trigger's intent.",
+        "use_when": "Deciding how many emails each automation should contain and how aggressively to message each audience.",
+        "steps": [
+          "Match the number of emails to the intent strength of the trigger: weaker signals get fewer emails, stronger signals merit more.",
+          "Per the source's flow setup: Site Abandon = 1 email (light touch), Browse Abandon = 5 emails (viewed items), Welcome = 8 emails (full brand immersion), Winback = 3 emails (timed by order interval).",
+          "Cart Abandon and Checkout Abandon are separate flows, sized to their respective funnel stages.",
+          "Avoid over-mailing low-intent triggers, which invites unsubscribes and hurts deliverability.",
+          "Keep copy punchy and under two mobile scrolls in every flow email.",
+          "Review flow length periodically against engagement and revenue-per-recipient per email."
+        ],
+        "caveats": [
+          "These flow lengths are the source's recommended configurations, not universal rules; tune to your catalog, price point and list.",
+          "Adding more emails to a flow isn't automatically better — each added email must earn its place."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "automation",
+          "flow-design",
+          "retention",
+          "klaviyo",
+          "segmentation"
+        ]
+      }
+    ]
+  },
+  "raw_content": "{\"cards\": [{\"title\": \"Pop-up form architecture for 8–12% traffic capture\", \"summary\": \"Design mobile-first pop-ups with one input field, delayed trigger, and dollars-off incentive to hit double-digit opt-in rates.\", \"use_when\": \"Building or redesigning your store's list-building pop-up to lift email/SMS opt-in rate above the industry norm.\", \"steps\": [\"Design the pop-up to cover 75%+ of a mobile screen so it visually dominates and can't be ignored, but keep the actual form minimal.\", \"Show only ONE input field on screen one — never stack email + SMS side by side. Collect the second channel on a subsequent step or in-flow.\", \"Set a time delay of 4–12 seconds so the visitor has at least glimpsed a product before being interrupted.\", \"Write the value proposition in plain language (e.g., a dollar amount off, an early-access promise). Keep supporting copy to a minimum.\", \"If your average order value is above ~$100, use a dollars-off incentive rather than a percentage — a percentage on a high-AOV product feels abstract and less motivating.\", \"Hide or de-emphasize the standard top-right 'X' close button to interrupt reflexive dismissal habits (still keep the pop-up closable for compliance/UX).\"], \"caveats\": [\"The 10%+ opt-in target is the source's benchmark in their observed stores, not a guaranteed result; actual rates depend on traffic quality, offer, and niche.\", \"Hiding the close button can frustrate users — test with a visible alternative close (e.g., 'no thanks' text link) and monitor bounce.\"], \"tags\": [\"email-lifecycle\", \"list-building\", \"pop-up-forms\", \"klaviyo\", \"conversion-optimization\", \"mobile-ux\"]}, {\"title\": \"Welcome flow: 8-email brand immersion sequence\", \"summary\": \"Build an 8-email welcome series that leads with brand mission, social proof, and founder outreach before any hard sell.\", \"use_when\": \"Setting up or overhauling the welcome automation that fires when a new subscriber joins your list.\", \"steps\": [\"Structure 8 emails, sequenced over the first days and weeks post-signup, rather than a single 'here's your code' message.\", \"Lead with brand mission and story — why the store exists and what it stands for — to build connection before pitching.\", \"Include social proof content (customer reviews, UGC, press) early to establish credibility with a cold subscriber.\", \"Include a founder outreach email (personal note from the founder/owner) to humanize the brand and drive reply engagement.\", \"Deliver the promised incentive (e.g., discount code) but spread value across the sequence rather than dumping everything in email one.\", \"Use punchy, skimmable copy with bold headers and short paragraphs; keep each email under two mobile scrolls.\"], \"caveats\": [\"8 emails is the source's recommendation for a fully built welcome; if you have low list volume or few products, test a shorter sequence and measure revenue per recipient.\", \"Founder outreach works best when it reads as genuinely personal — templated 'founder' emails that feel automated undercut the effect.\"], \"tags\": [\"email-lifecycle\", \"welcome-series\", \"retention\", \"klaviyo\", \"copywriting\", \"automation\"]}, {\"title\": \"Separate Cart Abandon from Checkout Abandon flows\", \"summary\": \"Run distinct flows for 'Added to Cart' and 'Checkout Started' because treating them as one drops up to 90% of cart abandoners.\", \"use_when\": \"Configuring abandon-cart and abandon-checkout automations in your ESP and you need to decide whether one flow or two is correct.\", \"steps\": [\"Recognize the two events fire at different funnel stages: 'Added to Cart' fires when a product enters the cart; 'Checkout Started' fires later when the shopper begins the checkout process.\", \"For 'Checkout Started', most ESPs (Klaviyo) have a native integration — you can enable the trigger directly.\", \"For 'Added to Cart', a native trigger often does NOT exist; on Shopify you must inject a custom JavaScript snippet into the theme's liquid code to fire the event to your ESP.\", \"Build TWO separate flows so that top-of-funnel cart abandoners (who never reached checkout) still receive an email — collapsing them into one checkout flow means those early abandoners fall through.\", \"Feed the cart-abandon flow with best-seller or dynamic product content showing the item left behind.\"], \"caveats\": [\"The source states that treating cart and checkout as identical can drop up to 90% of cart abandoners — this is the source's figure, not a universal benchmark.\", \"Custom snippet implementations can break on theme updates; verify and re-test after any Shopify theme change.\", \"Verify current Shopify/Klaviyo event support in the platform UI, as native triggers and setup steps change over time.\"], \"tags\": [\"email-lifecycle\", \"cart-abandonment\", \"checkout-abandonment\", \"klaviyo\", \"shopify\", \"automation\"]}, {\"title\": \"Browse Abandon flow with dynamic viewed items\", \"summary\": \"Build a 5-email browse-abandon sequence that dynamically pulls the specific products a visitor viewed.\", \"use_when\": \"Setting up a browse-abandon automation to re-engage visitors who viewed products but did not add to cart.\", \"steps\": [\"Create a 5-email sequence triggered when a visitor views a product (or products) but does not add to cart or purchase.\", \"Use dynamic content blocks that pull the exact items the visitor viewed into the email, so the message is personally relevant.\", \"Space the emails across the following days to stay top-of-mind without over-mailing a warm browsing signal.\", \"Blend the viewed-product reminder with light social proof or benefit framing rather than pure 'you left this' repetition.\", \"Distinguish this from cart-abandon (which fires on add-to-cart) so signals don't overlap or double-send.\"], \"caveats\": [\"Dynamically pulling viewed items requires correct catalog/feed setup in your ESP and product-view tracking; test rendering across email clients.\", \"Browse-abandon can fire frequently for repeat visitors — use frequency caps to avoid fatigue.\"], \"tags\": [\"email-lifecycle\", \"browse-abandonment\", \"klaviyo\", \"automation\", \"dynamic-content\", \"retention\"]}, {\"title\": \"Winback flow timed to 2x the average order interval\", \"summary\": \"Trigger a 3-email winback sequence at twice the customer's average reorder interval to recover lapsed buyers.\", \"use_when\": \"Building a winback automation to re-engage customers who have stopped purchasing.\", \"steps\": [\"First calculate your store's average order interval (average time between a customer's purchases).\", \"Trigger the winback flow at 2x that interval — i.e., if customers typically reorder every 60 days, the flow fires around day 120.\", \"Run 3 emails in the sequence, escalating the message and offer if earlier emails go unopened.\", \"Segment winback recipients so you don't message customers who recently purchased (which would be confusing or wasteful).\", \"Use the sequence to reintroduce the brand, best-sellers, or a targeted incentive rather than only a discount.\", \"Move respondents into normal campaign streams once they re-engage.\"], \"caveats\": [\"2x average order interval is the source's timing heuristic; stores with consumables and long-lifecycle goods need different intervals.\", \"Suppress customers already in active flows to avoid message collisions.\"], \"tags\": [\"email-lifecycle\", \"winback\", \"retention\", \"automation\", \"segmentation\", \"klaviyo\"]}, {\"title\": \"Post-purchase flow to drive repeat and reduce support load\", \"summary\": \"Build a post-purchase automation that confirms, reassures, and sets up the next purchase.\", \"use_when\": \"Creating or improving the automated emails sent after a customer completes an order.\", \"steps\": [\"Start with order confirmation and shipping/fulfillment updates to reduce 'where is my order' support tickets.\", \"Add usage or onboarding content explaining how to get the most from the product, reducing returns and buyer's remorse.\", \"Include social proof or community content to reinforce the purchase decision.\", \"Introduce complementary products or replenishment cues to seed a repeat purchase.\", \"Collect reviews or UGC at an appropriate delay after the product has been received and used.\", \"Keep copy punchy and skimmable, using headers and visual elements rather than dense text.\"], \"caveats\": [\"Review requests sent too early (before use) get poor response; time them after expected delivery plus usage.\", \"Do not over-bundle upsells into the first order-confirmation email — it dilutes the confirmation's job.\"], \"tags\": [\"email-lifecycle\", \"post-purchase\", \"retention\", \"upsell\", \"automation\", \"reviews\"]}, {\"title\": \"Non-discount microtopic campaign cadence\", \"summary\": \"Send 3–4 non-promotional emails weekly, each covering a single hyper-specific microtopic, to build an opening habit without margin-eroding discounts.\", \"use_when\": \"Planning your recurring campaign calendar and trying to keep list engagement high without running constant sales.\", \"steps\": [\"Commit to a cadence of 3–4 campaigns per week that are NOT discount-driven promotions.\", \"Make each email about exactly ONE microtopic — a single feature, a single benefit, a single FAQ, an ingredient breakdown, a myth-vs-fact, or one customer review.\", \"Rotate microtopics so variety keeps curiosity high and the list doesn't fatigue on the same angle.\", \"Use these emails to build authority and stay top-of-mind, creating a 'dopamine-driven opening habit' so subscribers open by reflex.\", \"Preserve profit margins by reserving discounts for genuine promotions rather than every send.\", \"Track which microtopics earn the strongest engagement and feed winners into your paid and automated channels.\"], \"caveats\": [\"3–4 weekly is the source's recommended cadence for this strategy; smaller lists or niche audiences may need a lower rate to avoid deliverability pressure.\", \"High frequency demands genuinely valuable content — low-value frequent emails will increase unsubscribes and spam complaints.\"], \"tags\": [\"email-lifecycle\", \"campaign-strategy\", \"copywriting\", \"retention\", \"deliverability\", \"content-marketing\"]}, {\"title\": \"Use high-frequency campaigns as a flow-testing lab\", \"summary\": \"Treat your weekly campaign sends as an instant testing ground, then cycle winning angles into automated flows.\", \"use_when\": \"You want faster learnings on messaging and offers than slow A/B email tests allow, and need to improve flow performance.\", \"steps\": [\"Use frequent campaign sends (e.g., the 3–4x weekly microtopic cadence) as a low-risk place to test subject lines, angles, offers, and formats.\", \"Read performance signals quickly across sends rather than waiting on a single isolated test.\", \"Identify the campaign angles, subjects, and formats that consistently win.\", \"Cycle those winning angles directly into your automated flows (welcome, abandon, winback, post-purchase) so flows inherit proven messaging.\", \"Keep testing new angles in campaigns while locking in proven winners in flows.\", \"Document what won and why to build a durable swipe file for future sends.\"], \"caveats\": [\"Campaign sends and flow sends reach different contexts (broadcast vs. triggered), so validate a campaign winner in a flow before assuming it transfers.\", \"High-frequency testing requires enough list volume for signals to be meaningful.\"], \"tags\": [\"email-lifecycle\", \"experiment-design\", \"campaign-strategy\", \"conversion-optimization\", \"measurement\", \"automation\"]}, {\"title\": \"Skimmable email copywriting rules\", \"summary\": \"Write short, punchy, visually structured emails that stay under two mobile scrolls using headers and infographics.\", \"use_when\": \"Writing or reviewing any lifecycle or campaign email and wanting to maximize mobile read-through and click rate.\", \"steps\": [\"Keep every email under two mobile scrolls — assume the reader is on a phone and skims.\", \"Write punchy, concise copy rather than dense paragraphs.\", \"Use bold headers to break up sections and guide the eye.\", \"Replace dense text blocks with infographics: timelines, checklists, comparison tables.\", \"Lead each email with a single clear idea (see the microtopic approach) rather than multiple competing messages.\", \"Proof on a mobile device and trim anything that pushes past the two-scroll limit.\"], \"caveats\": [\"Infographics must still render legibly on mobile; test image-heavy emails since some clients block images by default.\", \"Keep a text-heavy fallback for accessibility and image-blocked inboxes.\"], \"tags\": [\"email-lifecycle\", \"copywriting\", \"mobile-ux\", \"conversion-optimization\", \"creative-strategy\", \"campaign-strategy\"]}, {\"title\": \"6-week deliverability rehabilitation protocol\", \"summary\": \"Repair a damaged sender reputation by mailing only to a 14-day engaged segment 3x weekly, then widening the window incrementally.\", \"use_when\": \"Your open rates have fallen below roughly 40% and you suspect deliverability or sender-reputation damage.\", \"steps\": [\"Temporarily shut off non-essential flows so you're not sending to unengaged recipients during recovery.\", \"Send exclusively 3x weekly to a tight 14-day engaged segment — people who opened or clicked in the last 14 days.\", \"Continue until open rates recover to 50%+ on that engaged segment.\", \"Then incrementally widen the sending segment: first to 30 days, then 60 days, then 90 days, watching engagement each step.\", \"Only after reputation recovers, consider re-enabling the paused non-essential flows.\", \"Maintain suppression hygiene (see suppression card) so the recovered reputation is not immediately degraded again.\"], \"caveats\": [\"This is the source's 6-week protocol with specific thresholds (14-day segment, 3x weekly, 50%+ opens) — treat as a heuristic, not a guaranteed outcome.\", \"Exact timing and thresholds should be validated against your ESP's deliverability tooling and your list size.\", \"Shutting off flows during recovery means some revenue is paused; weigh against the cost of continued reputation damage.\"], \"tags\": [\"email-lifecycle\", \"deliverability\", \"list-hygiene\", \"engagement-segmentation\", \"klaviyo\", \"measurement\"]}, {\"title\": \"Engagement + behavior segmentation and suppression\", \"summary\": \"Segment by engagement recency and store behavior, and suppress profiles with 180-day zero-opens or hard bounces.\", \"use_when\": \"Cleaning your list and building segments to protect inbox placement and target relevant offers.\", \"steps\": [\"Segment by engagement recency: 30-day active, 60-day active, 90-day active windows.\", \"Segment by store behavior: VIPs (high-value repeat buyers), browsers who never purchased, and other behavioral cohorts.\", \"Suppress any profile with zero opens in 180 days — long-dormant addresses drag down deliverability.\", \"Suppress any address that produces a hard bounce immediately and permanently.\", \"Use these segments to route different messaging (VIPs get different content than cold browsers).\", \"Re-run suppression rules regularly so the list stays clean over time.\"], \"caveats\": [\"Aggressive suppression shrinks your list but protects deliverability — expect the total count to drop.\", \"Segment windows should be tuned to your sending frequency; very low-frequency senders may need longer engagement windows.\"], \"tags\": [\"email-lifecycle\", \"segmentation\", \"list-hygiene\", \"deliverability\", \"retention\", \"klaviyo\"]}, {\"title\": \"Flows should drive ~50% of total email revenue\", \"summary\": \"Automated lifecycle flows are the revenue backbone, expected to produce roughly half of email revenue; campaigns supplement.\", \"use_when\": \"Prioritizing where to invest email effort — deciding whether to build out flows or focus on campaign sends.\", \"steps\": [\"Treat automated flows as the foundation: they run continuously and capture intent at key moments (welcome, browse, cart, checkout, post-purchase, winback).\", \"Set a working expectation that core flows can account for roughly 50% of total email revenue.\", \"Build the foundational flows first (welcome, site abandon, browse abandon, cart vs. checkout abandon) before expanding campaign volume.\", \"Use microtopic campaigns to add the remaining revenue and keep engagement warm.\", \"Monitor flow vs. campaign revenue split to see where the gap is and invest accordingly.\", \"Feed proven campaign angles into flows to keep the flow engine improving.\"], \"caveats\": [\"'~50% of email revenue from flows' is the source's framing, not a universal benchmark; the split varies by store, list, and maturity.\", \"New stores with little list history may see different splits until flows accumulate data.\"], \"tags\": [\"email-lifecycle\", \"automation\", \"measurement\", \"campaign-strategy\", \"retention\", \"klaviyo\"]}, {\"title\": \"Site Abandon flow with best-seller content\", \"summary\": \"Deploy a single-email site-abandon flow featuring best sellers to catch visitors who engaged but didn't browse a specific product.\", \"use_when\": \"Adding a site-abandon automation to capture visitors who showed intent without viewing a specific product page.\", \"steps\": [\"Trigger the single-email site-abandon flow for visitors who show site engagement but do not view a specific product (the weaker intent signal).\", \"Keep it to one email — this is a light-touch catch, not a multi-email sequence.\", \"Populate it with best-seller content since you lack a specific viewed item to reference.\", \"Keep copy punchy and use bold headers/infographics per the copywriting rules.\", \"Distinguish this from browse-abandon (which pulls a viewed item) so the two flows don't overlap poorly.\"], \"caveats\": [\"Site abandon generally signals weaker intent than browse or cart abandon, so keep expectations modest and frequency low.\", \"Definition of the trigger event depends on your ESP's site-tracking setup — verify the current trigger configuration in your ESP.\"], \"tags\": [\"email-lifecycle\", \"abandonment\", \"automation\", \"klaviyo\", \"best-sellers\", \"retention\"]}, {\"title\": \"Keep flows pause-able for deliverability emergencies\", \"summary\": \"Design and operate flows so non-essential ones can be quickly paused when sender reputation needs repair.\", \"use_when\": \"Setting up flow architecture and planning for the possibility of a deliverability crisis or reputation repair.\", \"steps\": [\"Architect flows so it's easy to identify and pause the 'non-essential' ones (e.g., post-purchase, winback, browse) separately from essential transactional email.\", \"During a deliverability crisis (open rates below ~40%), temporarily shut off non-essential flows per the 6-week rehabilitation protocol.\", \"Keep essential/transactional messages (order confirmation, shipping) running throughout.\", \"After reputation recovers, re-enable paused flows gradually rather than all at once.\", \"Maintain suppression hygiene so recovered reputation isn't immediately re-damaged.\"], \"caveats\": [\"Pausing non-essential flows means temporarily forgoing the revenue they generate — a deliberate trade-off for reputation recovery.\", \"Never pause transactional emails; those are expected and protected by different delivery rules.\"], \"tags\": [\"email-lifecycle\", \"deliverability\", \"automation\", \"operations\", \"list-hygiene\", \"klaviyo\"]}, {\"title\": \"Match flow scope to intent strength and cadence\", \"summary\": \"Size and structure each lifecycle flow (1 email vs 5 vs 8) according to the strength of the trigger's intent.\", \"use_when\": \"Deciding how many emails each automation should contain and how aggressively to message each audience.\", \"steps\": [\"Match the number of emails to the intent strength of the trigger: weaker signals get fewer emails, stronger signals merit more.\", \"Per the source's flow setup: Site Abandon = 1 email (light touch), Browse Abandon = 5 emails (viewed items), Welcome = 8 emails (full brand immersion), Winback = 3 emails (timed by order interval).\", \"Cart Abandon and Checkout Abandon are separate flows, sized to their respective funnel stages.\", \"Avoid over-mailing low-intent triggers, which invites unsubscribes and hurts deliverability.\", \"Keep copy punchy and under two mobile scrolls in every flow email.\", \"Review flow length periodically against engagement and revenue-per-recipient per email.\"], \"caveats\": [\"These flow lengths are the source's recommended configurations, not universal rules; tune to your catalog, price point and list.\", \"Adding more emails to a flow isn't automatically better — each added email must earn its place.\"], \"tags\": [\"email-lifecycle\", \"automation\", \"flow-design\", \"retention\", \"klaviyo\", \"segmentation\"]}]}",
+  "input": {
+    "source_id": "1O7snRnsdSzGQFcGwqLifQRarAjLuQMVy",
+    "source_sha256": "0a590e4b0fb4fe7d3ac7b774f3fa114375aeffa88c529ee1b5b004f6d1d57efd",
+    "source_name": "Ecommerce Email Marketing 2025.docx",
+    "folder": "/14-EML-email-lifecycle",
+    "domain": "email-lifecycle",
+    "section": 0,
+    "section_count": 13,
+    "text": "09-EML / email and sms Goes here. A comprehensive masterclass on e-commerce email marketing and lifecycle automation (primarily built on Klaviyo and Figma). Covers high-converting pop-up form design (targeting 10%+ opt-in rates), foundational email flows (Welcome, Site Abandon, Browse Abandon, Cart vs. Checkout Abandon, Post-Purchase, Winback), non-discount campaign strategies (sending 3–4x weekly microtopics), inbox deliverability repair, advanced segmentation, and systematic A/B testing. Not here. • Paid media acquisition or cold traffic ad campaigns -> 06-MEA • Physical fulfillment, unboxing operations, or shipping logistics -> 21-OPS or 22-CXP\n\nHeader. url: rights: public_reference why: Details the complete end-to-end framework for generating 20–40%+ of e-commerce store revenue through automated email flows and high-frequency, non-discount campaigns while maintaining high inbox deliverability. modules: [EML] topics: [email marketing, Klaviyo, email flows, cart abandonment, checkout abandonment, welcome series, post-purchase flows, deliverability, list building, pop-up forms, segmentation, copywriting] tier: 3 scope_hint: comprehensive\n\nTopics. list growth & pop-up architecture / capturing 8–12% of traffic using large, mobile-optimized pop-ups (75%+ screen coverage) with a single input field, clear value proposition (e.g., dollars off for AOV >$100), 4–12 second time delay, and minimal copy; core lifecycle flows / building automated sequences that drive roughly 50% of total email revenue, specifically: Welcome (8 emails focusing on brand mission, USPS, and founder outreach), Site Abandon (1 email, best sellers), Browse Abandon (5 emails, dynamically pulling viewed items), and Winback (3 emails deployed at 2x the average order interval); Cart Abandonment vs. Checkout Abandonment / distinguishing between \"Added to Cart\" (custom JavaScript snippet required in Shopify) and \"Checkout Started\" (native integration), ensuring separate flows so top-of-funnel cart abandoners are not dropped; non-discount campaign engine / sending 3–4 non-promotional campaigns per week focused on a single \"microtopic\" (one feature, one benefit, or one FAQ) to build authority, stay top-of-mind, and preserve profit margins; flow optimization loop / using high-frequency email campaigns as an instant testing ground and cycling winning campaign angles directly into automated flows; email copywriting / writing skimmable, punchy, and concise copy (under two mobile scrolls) that uses bold headers and infographics (timelines, checklists, comparison tables) rather than dense text blocks; deliverability recovery protocol / executing a 6-week rehabilitation plan for sender reputations below 40% open rates by temporarily shutting non-essential flows and strictly sending 3x weekly to a 14-day engaged segment before gradually expanding to 30, 60, and 90 days; segmentation & suppression / maintaining list health by segmenting by engagement (30/60/90-day active), store behavior (VIPs, browse without purchase), and suppressing profiles with zero opens in 180 days or any hard bounce.\n\nLook for.\n\nCart vs. Checkout Abandonment Separation: The critical technical distinction that \"Added to Cart\" requires an injected custom snippet into Shopify's liquid code and fires earlier than \"Checkout Started\"; treating them as identical drops up to 90% of cart abandoners.\n\nThe 6-Week Deliverability Rehabilitation Protocol: The specific step-by-step process of turning off non-essential flows and mailing exclusively to a 14-day engaged list 3x weekly until open rates hit 50%+, before incrementally widening to 30, 60, and 90 days.\n\nThe 10%+ Pop-up Blueprint: Form rules demanding single-input steps (never email + SMS on screen one), 4–12 second delay, hiding the standard top-right \"X\" to break reflexive closing habits, and using dollars-off rather than percentages if AOV is above $100.\n\nThe Microtopic Campaign Cadence: The strategy of sending 3–4 non-discount emails weekly by covering only one hyper-specific topic (e.g., an ingredient breakdown, myth vs. fact, or single customer review) to build a dopamine-driven opening habit without fatiguing the list with sales pitches.\n\nSkip. Personal agency revenue disclaimers, video intro banter, self-promotional newsletter links (inboxnewsletter.com), and the live design/coding walkthrough in Figma/Klaviyo.\n\nScope mix. 15% baseline (standard Klaviyo setup and flow triggers), 85% growth (deliverability rehabilitation, non-discount retention frameworks, and advanced segmentation). Volume. ~450 words.",
+    "prior_notes": [],
+    "id": "09130e87cc1cd8fcb7cf7046"
+  },
+  "system_prompt_sha256": "f2341d28186a0dbaee868d37ce33c173f631088eb1754997556740d4905c0f2b"
+}

@@ -1,0 +1,368 @@
+{
+  "request_id": "6bf392b3886557378eb5f9ab6d2bcf4b7c74d94501fbf996dee0b041cfd1528a",
+  "provider": "deepseek",
+  "model": "deepseek-flash",
+  "effort": "none",
+  "completion_limit": 16384,
+  "usage": {
+    "prompt_tokens": 5649,
+    "completion_tokens": 4606,
+    "total_tokens": 10255,
+    "prompt_tokens_details": {
+      "cached_tokens": 512
+    },
+    "prompt_cache_hit_tokens": 512,
+    "prompt_cache_miss_tokens": 5137
+  },
+  "booked_cost_usd": 0.0072219,
+  "seconds": 24.33,
+  "finish_reason": "stop",
+  "output": {
+    "cards": [
+      {
+        "title": "Set SMS campaign frequency to 1–2 sends per week maximum",
+        "summary": "SMS hits the phone's primary app with a ding, so send far less often than email—one message per week as the default, occasionally two—to protect a hard-won list from unsubscribes.",
+        "use_when": "Deciding your monthly SMS campaign cadence and how many messages to schedule per week for your store's list.",
+        "steps": [
+          "Treat 1 SMS per week as your standing default and 2 per week as the rare exception, reserving extra sends for big events.",
+          "Recognize SMS is more intrusive than email because it triggers a notification sound and vibration in a primary app; the source says it is not comparable to sending 4–5 emails per week without backlash.",
+          "Use segmentation and selective sending so only the relevant portion of the list gets each message, reducing annoyance while keeping total weekly volume low.",
+          "Watch unsubscribe rate as your primary guardrail: the source reports unsubscribe rates on SMS run much higher than email, and that they rise the more you send.",
+          "Plan a regular monthly cadence of roughly 1–2 sends per week rather than blasting everything at a launch and going silent."
+        ],
+        "caveats": [
+          "The 1–2 per week figure is the presenter's tested recommendation, not an industry standard; test against your own unsubscribe and revenue data.",
+          "Back-to-back daily sends (e.g., flash sale launch day then last-chance day) are acceptable for major events per the source."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "sms-marketing",
+          "retention",
+          "campaign-calendar",
+          "list-health",
+          "frequency-capping"
+        ]
+      },
+      {
+        "title": "Keep SMS copy under 160 characters to avoid double billing",
+        "summary": "A single SMS segment is 160 characters; crossing that line splits the message into two and doubles your cost, and you would need roughly 2x revenue to justify it.",
+        "use_when": "Writing and editing SMS campaign or flow copy before sending, to control per-message cost.",
+        "steps": [
+          "Count characters in the full message body, including spaces and the URL, and keep the entire send at or under 160 characters.",
+          "Understand the billing mechanic: at 161 characters the message becomes two SMS segments and you are charged for two; additional 160-character blocks keep multiplying the cost.",
+          "Judge any overage against ROI: if you send two segments you need roughly double the revenue from that message for the same return, which the source says is very rare.",
+          "Cut ruthlessly—state one simple point and a link; the source argues SMS performance comes from when and what you send, not from intricate copy.",
+          "Track which messages crossed the limit and what they earned, so you can see whether the extra segment ever paid off."
+        ],
+        "caveats": [
+          "The 160-character figure is the standard SMS segment size described in the source; multi-part concatenation can change exact limits (e.g., with certain encodings), so verify with your provider.",
+          "This is the source's cost-efficiency advice, not a claim that long messages never convert."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "sms-marketing",
+          "creative-strategy",
+          "cost-control",
+          "copywriting"
+        ]
+      },
+      {
+        "title": "Limit emojis in SMS because each consumes 35–50 characters",
+        "summary": "An emoji can eat a third of your 160-character SMS budget, pushing you over the segment limit and into double billing, so use them sparingly or not at all.",
+        "use_when": "Deciding whether to include emojis in SMS campaign or flow copy to add visual interest without images.",
+        "steps": [
+          "Before adding an emoji, mentally subtract 35–50 characters from your 160-character budget per emoji and rewrite the rest of the message to fit.",
+          "Question the need: since MMS images are expensive, emojis are tempting as a visual substitute, but the source advises staying away from them as much as possible.",
+          "If you must use one, place it where it replaces several words rather than adding to a message already near the limit.",
+          "Audit sent messages for character-limit breaches that were caused by emoji count, and check whether the extra segments earned enough revenue to justify the cost."
+        ],
+        "caveats": [
+          "The 35–50 character cost per emoji is the presenter's stated figure based on their testing; exact encoding cost can vary by emoji and platform, so verify in your SMS tool.",
+          "This is a cost-control recommendation, not a rule that emojis hurt conversion."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "sms-marketing",
+          "creative-strategy",
+          "copywriting",
+          "cost-control"
+        ]
+      },
+      {
+        "title": "Reserve MMS images for campaigns where they earn 2–3x the SMS revenue",
+        "summary": "MMS (image) messages cost 2–3 times more than plain SMS, so include a picture only when the message can plausibly generate two to three times the revenue of a text-only send.",
+        "use_when": "Choosing between a plain-text SMS and an image MMS for a product launch or campaign send.",
+        "steps": [
+          "Default to plain-text SMS for your regular campaign and flow sends, since SMS itself is already far more expensive than email per message.",
+          "Before attaching an image, estimate whether the MMS send must produce 2–3x the revenue of the SMS version to break even on cost—the source says this is rarely achieved by one image.",
+          "Restrict MMS to situations where the visual is essential (e.g., a highly visual product drop) and you can defend the cost with expected revenue.",
+          "Compare MMS vs SMS versions of similar sends over time in your dashboard to see whether images genuinely lift response for your audience before scaling them up."
+        ],
+        "caveats": [
+          "The 2–3x cost multiplier is the presenter's stated range; your provider's rate card may differ, so confirm actual per-message pricing.",
+          "The source's advice is to stick to SMS as much as possible, but treats MMS as a judgment call rather than a prohibition."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "sms-marketing",
+          "cost-control",
+          "creative-strategy",
+          "campaign-strategy"
+        ]
+      },
+      {
+        "title": "Choose an SMS platform that consolidates with your existing email stack",
+        "summary": "Most SMS platforms do the same core things at similar prices, so pick one—ideally the same tool you already use for email—and ignore marginal AI feature comparisons.",
+        "use_when": "Selecting or switching an SMS provider for your store before building flows and campaigns.",
+        "steps": [
+          "Check whether your current email platform also offers SMS; the source recommends Klaviyo users stay on Klaviyo to consolidate marketing in one place.",
+          "If considering alternatives, the source names Attentive and Postscript as solid options alongside Klaviyo.",
+          "Discount vendor comparisons built on novel AI features—the source argues these features are rarely used and the differences are marginal.",
+          "Note that the main platforms are similarly priced, so switching to save money is often not the deciding factor.",
+          "Expect the provider to support a dedicated phone number, data tracking, and automation setup; follow the provider's own setup guide, which the source says takes minutes.",
+          "Verify current pricing, feature sets and setup steps directly with the vendor, as these change."
+        ],
+        "caveats": [
+          "The named tools reflect the source's opinion at time of recording; verify current capabilities and pricing.",
+          "There is no single 'correct' platform per the source—consolidation and simplicity are the main criteria."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "sms-marketing",
+          "tooling",
+          "stack-consolidation",
+          "vendor-selection"
+        ]
+      },
+      {
+        "title": "Grow the SMS list with a post-purchase opt-in checkbox",
+        "summary": "Add a marketing opt-in checkbox at checkout so every buyer passively contributes a phone number, giving you a growing list in the background.",
+        "use_when": "Setting up checkout and post-purchase list growth to continuously add SMS subscribers without extra traffic.",
+        "steps": [
+          "Place a checkbox on the purchase/checkout page asking the buyer to agree to receive marketing messages.",
+          "Keep it on for all buyers so the list grows automatically with every order.",
+          "Position SMS opt-in alongside email opt-in so the same checkout flow captures both channels.",
+          "Treat this as the low-effort baseline channel; the source still calls pop-ups the most effective list-growth method, so run both.",
+          "Confirm your checkout and SMS platform support the consent capture and that opt-ins sync to the right list."
+        ],
+        "caveats": [
+          "Post-purchase opt-ins yield fewer subscribers than a well-optimized pop-up per the source; they are a background contributor, not the main driver.",
+          "Consent and messaging regulations vary by region—confirm compliance for your markets."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "sms-marketing",
+          "list-growth",
+          "checkout",
+          "consent"
+        ]
+      },
+      {
+        "title": "Delay the SMS/email pop-up trigger to 6–10 seconds after page load",
+        "summary": "Trigger signup pop-ups on a 6–10 second time delay—not scroll or exit intent—to maximize views without hurting site conversions.",
+        "use_when": "Configuring the trigger and display rules of a website pop-up form that captures email and SMS subscribers.",
+        "steps": [
+          "Set the pop-up trigger to a time delay of about 6–10 seconds after the page loads, which the source says is not too soon and has been tested.",
+          "Avoid scroll-based or exit-intent triggers, which the source says can misfire; a simple time delay performs reliably.",
+          "Reject long delays: the source argues few visitors stay 30 seconds, so waiting that long means few people ever see the form.",
+          "Balance intrusiveness: the form should be seen by as many visitors as possible without harming website conversions, which is the stated fine line.",
+          "Monitor both form conversion rate and overall site conversion rate after launch to confirm the delay is not hurting purchases."
+        ],
+        "caveats": [
+          "The 6–10 second window is the presenter's tested recommendation for their client set, not a universal optimum; test on your own traffic.",
+          "Pop-up timing interacts with page speed and device type—validate on mobile specifically."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "sms-marketing",
+          "list-growth",
+          "pop-up",
+          "conversion-optimization"
+        ]
+      },
+      {
+        "title": "Build a two-step micro-commitment pop-up: email first, then phone",
+        "summary": "Ask for email in step one, then prompt for the phone number in step two with benefit-driven copy, which the source says converts roughly ten times better than asking for both at once.",
+        "use_when": "Designing the multi-step flow of a website signup pop-up to capture both email and SMS subscribers.",
+        "steps": [
+          "Step one: state the offer plainly ('this is what you get') and ask only for the email address.",
+          "Step two: immediately prompt for the phone number with copy that ties it to completing the offer, e.g. 'finish signing up to get your discount'.",
+          "Use as few words as possible in both steps—simplicity is emphasized repeatedly.",
+          "Never ask for birthday, product preferences, or other fields in the same step; the source says extra fields kill completion.",
+          "Offer something of value—a discount, giveaway, or free guide—since the source notes people will not hand over a phone number for nothing.",
+          "Test the two-step version against a single combined field to confirm the lift in your own funnel."
+        ],
+        "caveats": [
+          "The '10x better' comparison is the presenter's claim from their testing, not an independent benchmark.",
+          "Discount offers trade margin on the first purchase; the source assumes a strong email/SMS backend recovers that margin over time."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "sms-marketing",
+          "list-growth",
+          "pop-up",
+          "form-design",
+          "offer-design"
+        ]
+      },
+      {
+        "title": "Aim pop-up forms at 8–10% conversion vs the 2–3% baseline",
+        "summary": "Most audited brands convert only ~2–3% of visitors via pop-up; optimizing trigger, offer, and form simplicity can reach 8–10%, tripling list acquisition from same traffic.",
+        "use_when": "Benchmarking and improving the conversion rate of your site's email/SMS signup form against typical performance.",
+        "steps": [
+          "Measure your current pop-up conversion rate (new subscribers divided by visitors who saw the form) to establish a baseline.",
+          "Compare against the source's observed baseline: most audited brands sit around 2–3%.",
+          "Apply the levers that drive the source's 8–10% results: a 6–10 second time delay, a strong offer, minimal copy, and the two-step email-then-phone flow.",
+          "Track the form's impact on total site conversion so you can confirm the extra visibility is not costing more sales than it creates.",
+          "Re-test offer strength separately from form design, since the source stresses you must give people a reason to sign up."
+        ],
+        "caveats": [
+          "8–10% is an outcome the presenter reports from their own optimization work, not a guaranteed result; it is a target, not a promise.",
+          "Results depend on traffic source, offer, and audience; poor-fit traffic may never reach those levels."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "list-growth",
+          "pop-up",
+          "conversion-optimization",
+          "benchmarking"
+        ]
+      },
+      {
+        "title": "Launch five core SMS automation flows before heavy campaign sending",
+        "summary": "Set up Welcome, Browse Abandonment, Cart Abandonment, Checkout Abandonment, and Win-back flows, keeping each short and high-ROI, since automations run in the background and earn clicks without extra effort.",
+        "use_when": "Building the automated SMS flow system for a store, or deciding which flows to prioritize first.",
+        "steps": [
+          "Welcome flow: deliver the promised discount to new subscribers in about 2–3 SMS messages.",
+          "Browse abandonment: message users who viewed a product and left, prompting them to return and finish.",
+          "Cart abandonment and checkout abandonment: remind people who added to cart or reached checkout to complete the order with a direct link.",
+          "Win-back: re-engage customers who purchased months ago and have not returned, optionally with a discount.",
+          "Keep flow volume light—do not overload customers with messages, since flows are meant for quick, high-converting, high-ROI touches rather than retention nurturing.",
+          "Use your platform's templates and connect it to your store platform (e.g., Shopify) so triggers fire automatically; the source says setup is easy and templates exist for base flows."
+        ],
+        "caveats": [
+          "The source says you 'really don't need too much' in flows—avoid adding many extra steps.",
+          "Template copy and trigger names may change in the platform interface; verify current setup steps in your tool."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "sms-marketing",
+          "automation",
+          "flows",
+          "abandoned-cart",
+          "retention"
+        ]
+      },
+      {
+        "title": "Keep SMS campaigns transactional, urgent, or announcement-based—not nurture",
+        "summary": "SMS campaigns should carry product drops, special offers, restocks, and announcements; pure nurture or social-proof content tends to get high unsubscribes and poor ROI on SMS.",
+        "use_when": "Choosing what content types belong in the SMS campaign calendar versus what should stay in email.",
+        "steps": [
+          "Assign to SMS: product drops and launches, flash sales, special offers, back-in-stock/restock alerts, and important announcements.",
+          "Assign to email: nurture, educational, and social-proof content; the source says email is where you can nurture without annoying people.",
+          "Use angles that manufacture importance where relevant, e.g. a 'back in stock' message, since urgency fits the channel.",
+          "Send mostly transactional-style content on SMS and reserve the bulk of relationship-building content for email.",
+          "Cut any SMS campaign type that historically shows high unsubscribes and weak ROI in your own data, since the source found nurture/social-proof SMS underperformed."
+        ],
+        "caveats": [
+          "This reflects the presenter's tested experience; your audience may tolerate more or less nurture content, so test.",
+          "Some announcement types (e.g., giveaways to grow social) are used as filler, not core revenue drivers."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "sms-marketing",
+          "campaign-strategy",
+          "content-mix",
+          "segmentation"
+        ]
+      },
+      {
+        "title": "Model the SMS month around launches and flash sales, then fill the gaps",
+        "summary": "Anchor the SMS calendar on big events—product launches get 2–3 messages, flash sales get 2—then insert 2–3 filler campaigns (giveaway, restock) to keep a 1–2 per week cadence.",
+        "use_when": "Planning a store's monthly SMS campaign calendar around known launch and promotion dates.",
+        "steps": [
+          "List the month's main events first; use the source's example of a brand with a Halloween product launch mid-month and a Halloween flash sale on the last two days.",
+          "For a product launch, plan about 2–3 messages: an announcement on launch day (likely the biggest sales driver), a reminder or low-stock/urgency message about a week later, and optionally a teaser 1–2 days before to build hype.",
+          "For a flash sale, send two messages: a launch message on day one and a last-chance message on the final day; the source says back-to-back daily sends are fine for big events.",
+          "Identify gaps of more than a week without an SMS and insert 2–3 filler campaigns, e.g. a social media giveaway driving to Instagram, or a 'restock' alert for a popular item.",
+          "Note the source's rationale for restock sends: an item that sold out proves popularity, and the restock itself creates urgency—you can even run one on an item that was not literally out of stock.",
+          "Count total sends against the 1–2 per week ceiling and trim if the calendar exceeds it."
+        ],
+        "caveats": [
+          "The example calendar is an illustration for an eight-figure brand, not a template that fits every store size or category.",
+          "The suggested restock angle may not be appropriate if it misrepresents inventory availability."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "sms-marketing",
+          "campaign-calendar",
+          "launch-strategy",
+          "promotion-planning"
+        ]
+      },
+      {
+        "title": "Test SMS send times; default to 11 a.m.–2 p.m. and 4–5 p.m.",
+        "summary": "There is no universal best send time, so test per audience; the source's safer windows are midday and early evening, avoiding pre-10 a.m. and post-7:30 p.m.",
+        "use_when": "Scheduling SMS campaigns and last-chance messages to maximize open and click response for your specific list.",
+        "steps": [
+          "Run your own tests across times of day, since the source says every audience differs and there is no single right answer.",
+          "Use 11 a.m.–2 p.m. as the safest default window, when people are between morning and lunch.",
+          "Try early evening at 4–5 p.m. as a secondary window that the source says performs well.",
+          "Avoid sending before 10 a.m. (people sleep in) and after about 7:30 p.m. (people go to bed or turn off phones).",
+          "Schedule last-chance messages around 6–7 p.m. with a short deadline like '4 hours left', but not later than that window.",
+          "Track clicks and revenue by send hour over multiple sends before locking in a standard time."
+        ],
+        "caveats": [
+          "These windows are the presenter's tested heuristics, not universal laws; confirm with your own A/B timing tests.",
+          "Timezone spread in your list can blur results—segment or schedule per timezone where your platform allows."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "sms-marketing",
+          "send-time",
+          "experiment-design",
+          "campaign-strategy",
+          "measurement"
+        ]
+      },
+      {
+        "title": "Treat the SMS list as a channel asset for revenue you control",
+        "summary": "The source frames SMS as a near-guaranteed-seen channel with very high open rates and an owned list—unlike ad accounts that platforms can shut down—and reports major contribution to store revenue.",
+        "use_when": "Deciding whether to invest budget and team time in building an SMS channel versus relying solely on paid acquisition.",
+        "steps": [
+          "Evaluate SMS as an owned audience asset: contacts gave you their number, so they are not cold traffic and the list cannot be revoked by an ad platform.",
+          "Recognize the reach mechanic: the source cites an average 98% open rate because text messages are seen almost immediately by nearly everyone.",
+          "Expect automations to run continuously in the background after one-time setup, requiring only periodic checks and optimization.",
+          "Judge channel value against your store's revenue mix; the source cites an example brand generating $750k in 30 days from SMS (roughly 20% of total revenue) and $422k from automations alone in the same window.",
+          "Set expectations by tracking your own SMS-attributed revenue and automation click rates rather than adopting case-study numbers as targets."
+        ],
+        "caveats": [
+          "The 98% open rate and the $750k/$422k figures are the presenter's cited examples, not benchmarks or promises; your results depend on list size, offer, and product.",
+          "Introductory framing of 'SMS is the future' is the presenter's opinion; treat it as a rationale for testing, not a guaranteed channel outcome."
+        ],
+        "tags": [
+          "email-lifecycle",
+          "sms-marketing",
+          "channel-strategy",
+          "retention",
+          "attribution",
+          "owned-audience"
+        ]
+      }
+    ]
+  },
+  "raw_content": "{\"cards\": [{\"title\": \"Set SMS campaign frequency to 1–2 sends per week maximum\", \"summary\": \"SMS hits the phone's primary app with a ding, so send far less often than email—one message per week as the default, occasionally two—to protect a hard-won list from unsubscribes.\", \"use_when\": \"Deciding your monthly SMS campaign cadence and how many messages to schedule per week for your store's list.\", \"steps\": [\"Treat 1 SMS per week as your standing default and 2 per week as the rare exception, reserving extra sends for big events.\", \"Recognize SMS is more intrusive than email because it triggers a notification sound and vibration in a primary app; the source says it is not comparable to sending 4–5 emails per week without backlash.\", \"Use segmentation and selective sending so only the relevant portion of the list gets each message, reducing annoyance while keeping total weekly volume low.\", \"Watch unsubscribe rate as your primary guardrail: the source reports unsubscribe rates on SMS run much higher than email, and that they rise the more you send.\", \"Plan a regular monthly cadence of roughly 1–2 sends per week rather than blasting everything at a launch and going silent.\"], \"caveats\": [\"The 1–2 per week figure is the presenter's tested recommendation, not an industry standard; test against your own unsubscribe and revenue data.\", \"Back-to-back daily sends (e.g., flash sale launch day then last-chance day) are acceptable for major events per the source.\"], \"tags\": [\"email-lifecycle\", \"sms-marketing\", \"retention\", \"campaign-calendar\", \"list-health\", \"frequency-capping\"]}, {\"title\": \"Keep SMS copy under 160 characters to avoid double billing\", \"summary\": \"A single SMS segment is 160 characters; crossing that line splits the message into two and doubles your cost, and you would need roughly 2x revenue to justify it.\", \"use_when\": \"Writing and editing SMS campaign or flow copy before sending, to control per-message cost.\", \"steps\": [\"Count characters in the full message body, including spaces and the URL, and keep the entire send at or under 160 characters.\", \"Understand the billing mechanic: at 161 characters the message becomes two SMS segments and you are charged for two; additional 160-character blocks keep multiplying the cost.\", \"Judge any overage against ROI: if you send two segments you need roughly double the revenue from that message for the same return, which the source says is very rare.\", \"Cut ruthlessly—state one simple point and a link; the source argues SMS performance comes from when and what you send, not from intricate copy.\", \"Track which messages crossed the limit and what they earned, so you can see whether the extra segment ever paid off.\"], \"caveats\": [\"The 160-character figure is the standard SMS segment size described in the source; multi-part concatenation can change exact limits (e.g., with certain encodings), so verify with your provider.\", \"This is the source's cost-efficiency advice, not a claim that long messages never convert.\"], \"tags\": [\"email-lifecycle\", \"sms-marketing\", \"creative-strategy\", \"cost-control\", \"copywriting\"]}, {\"title\": \"Limit emojis in SMS because each consumes 35–50 characters\", \"summary\": \"An emoji can eat a third of your 160-character SMS budget, pushing you over the segment limit and into double billing, so use them sparingly or not at all.\", \"use_when\": \"Deciding whether to include emojis in SMS campaign or flow copy to add visual interest without images.\", \"steps\": [\"Before adding an emoji, mentally subtract 35–50 characters from your 160-character budget per emoji and rewrite the rest of the message to fit.\", \"Question the need: since MMS images are expensive, emojis are tempting as a visual substitute, but the source advises staying away from them as much as possible.\", \"If you must use one, place it where it replaces several words rather than adding to a message already near the limit.\", \"Audit sent messages for character-limit breaches that were caused by emoji count, and check whether the extra segments earned enough revenue to justify the cost.\"], \"caveats\": [\"The 35–50 character cost per emoji is the presenter's stated figure based on their testing; exact encoding cost can vary by emoji and platform, so verify in your SMS tool.\", \"This is a cost-control recommendation, not a rule that emojis hurt conversion.\"], \"tags\": [\"email-lifecycle\", \"sms-marketing\", \"creative-strategy\", \"copywriting\", \"cost-control\"]}, {\"title\": \"Reserve MMS images for campaigns where they earn 2–3x the SMS revenue\", \"summary\": \"MMS (image) messages cost 2–3 times more than plain SMS, so include a picture only when the message can plausibly generate two to three times the revenue of a text-only send.\", \"use_when\": \"Choosing between a plain-text SMS and an image MMS for a product launch or campaign send.\", \"steps\": [\"Default to plain-text SMS for your regular campaign and flow sends, since SMS itself is already far more expensive than email per message.\", \"Before attaching an image, estimate whether the MMS send must produce 2–3x the revenue of the SMS version to break even on cost—the source says this is rarely achieved by one image.\", \"Restrict MMS to situations where the visual is essential (e.g., a highly visual product drop) and you can defend the cost with expected revenue.\", \"Compare MMS vs SMS versions of similar sends over time in your dashboard to see whether images genuinely lift response for your audience before scaling them up.\"], \"caveats\": [\"The 2–3x cost multiplier is the presenter's stated range; your provider's rate card may differ, so confirm actual per-message pricing.\", \"The source's advice is to stick to SMS as much as possible, but treats MMS as a judgment call rather than a prohibition.\"], \"tags\": [\"email-lifecycle\", \"sms-marketing\", \"cost-control\", \"creative-strategy\", \"campaign-strategy\"]}, {\"title\": \"Choose an SMS platform that consolidates with your existing email stack\", \"summary\": \"Most SMS platforms do the same core things at similar prices, so pick one—ideally the same tool you already use for email—and ignore marginal AI feature comparisons.\", \"use_when\": \"Selecting or switching an SMS provider for your store before building flows and campaigns.\", \"steps\": [\"Check whether your current email platform also offers SMS; the source recommends Klaviyo users stay on Klaviyo to consolidate marketing in one place.\", \"If considering alternatives, the source names Attentive and Postscript as solid options alongside Klaviyo.\", \"Discount vendor comparisons built on novel AI features—the source argues these features are rarely used and the differences are marginal.\", \"Note that the main platforms are similarly priced, so switching to save money is often not the deciding factor.\", \"Expect the provider to support a dedicated phone number, data tracking, and automation setup; follow the provider's own setup guide, which the source says takes minutes.\", \"Verify current pricing, feature sets and setup steps directly with the vendor, as these change.\"], \"caveats\": [\"The named tools reflect the source's opinion at time of recording; verify current capabilities and pricing.\", \"There is no single 'correct' platform per the source—consolidation and simplicity are the main criteria.\"], \"tags\": [\"email-lifecycle\", \"sms-marketing\", \"tooling\", \"stack-consolidation\", \"vendor-selection\"]}, {\"title\": \"Grow the SMS list with a post-purchase opt-in checkbox\", \"summary\": \"Add a marketing opt-in checkbox at checkout so every buyer passively contributes a phone number, giving you a growing list in the background.\", \"use_when\": \"Setting up checkout and post-purchase list growth to continuously add SMS subscribers without extra traffic.\", \"steps\": [\"Place a checkbox on the purchase/checkout page asking the buyer to agree to receive marketing messages.\", \"Keep it on for all buyers so the list grows automatically with every order.\", \"Position SMS opt-in alongside email opt-in so the same checkout flow captures both channels.\", \"Treat this as the low-effort baseline channel; the source still calls pop-ups the most effective list-growth method, so run both.\", \"Confirm your checkout and SMS platform support the consent capture and that opt-ins sync to the right list.\"], \"caveats\": [\"Post-purchase opt-ins yield fewer subscribers than a well-optimized pop-up per the source; they are a background contributor, not the main driver.\", \"Consent and messaging regulations vary by region—confirm compliance for your markets.\"], \"tags\": [\"email-lifecycle\", \"sms-marketing\", \"list-growth\", \"checkout\", \"consent\"]}, {\"title\": \"Delay the SMS/email pop-up trigger to 6–10 seconds after page load\", \"summary\": \"Trigger signup pop-ups on a 6–10 second time delay—not scroll or exit intent—to maximize views without hurting site conversions.\", \"use_when\": \"Configuring the trigger and display rules of a website pop-up form that captures email and SMS subscribers.\", \"steps\": [\"Set the pop-up trigger to a time delay of about 6–10 seconds after the page loads, which the source says is not too soon and has been tested.\", \"Avoid scroll-based or exit-intent triggers, which the source says can misfire; a simple time delay performs reliably.\", \"Reject long delays: the source argues few visitors stay 30 seconds, so waiting that long means few people ever see the form.\", \"Balance intrusiveness: the form should be seen by as many visitors as possible without harming website conversions, which is the stated fine line.\", \"Monitor both form conversion rate and overall site conversion rate after launch to confirm the delay is not hurting purchases.\"], \"caveats\": [\"The 6–10 second window is the presenter's tested recommendation for their client set, not a universal optimum; test on your own traffic.\", \"Pop-up timing interacts with page speed and device type—validate on mobile specifically.\"], \"tags\": [\"email-lifecycle\", \"sms-marketing\", \"list-growth\", \"pop-up\", \"conversion-optimization\"]}, {\"title\": \"Build a two-step micro-commitment pop-up: email first, then phone\", \"summary\": \"Ask for email in step one, then prompt for the phone number in step two with benefit-driven copy, which the source says converts roughly ten times better than asking for both at once.\", \"use_when\": \"Designing the multi-step flow of a website signup pop-up to capture both email and SMS subscribers.\", \"steps\": [\"Step one: state the offer plainly ('this is what you get') and ask only for the email address.\", \"Step two: immediately prompt for the phone number with copy that ties it to completing the offer, e.g. 'finish signing up to get your discount'.\", \"Use as few words as possible in both steps—simplicity is emphasized repeatedly.\", \"Never ask for birthday, product preferences, or other fields in the same step; the source says extra fields kill completion.\", \"Offer something of value—a discount, giveaway, or free guide—since the source notes people will not hand over a phone number for nothing.\", \"Test the two-step version against a single combined field to confirm the lift in your own funnel.\"], \"caveats\": [\"The '10x better' comparison is the presenter's claim from their testing, not an independent benchmark.\", \"Discount offers trade margin on the first purchase; the source assumes a strong email/SMS backend recovers that margin over time.\"], \"tags\": [\"email-lifecycle\", \"sms-marketing\", \"list-growth\", \"pop-up\", \"form-design\", \"offer-design\"]}, {\"title\": \"Aim pop-up forms at 8–10% conversion vs the 2–3% baseline\", \"summary\": \"Most audited brands convert only ~2–3% of visitors via pop-up; optimizing trigger, offer, and form simplicity can reach 8–10%, tripling list acquisition from same traffic.\", \"use_when\": \"Benchmarking and improving the conversion rate of your site's email/SMS signup form against typical performance.\", \"steps\": [\"Measure your current pop-up conversion rate (new subscribers divided by visitors who saw the form) to establish a baseline.\", \"Compare against the source's observed baseline: most audited brands sit around 2–3%.\", \"Apply the levers that drive the source's 8–10% results: a 6–10 second time delay, a strong offer, minimal copy, and the two-step email-then-phone flow.\", \"Track the form's impact on total site conversion so you can confirm the extra visibility is not costing more sales than it creates.\", \"Re-test offer strength separately from form design, since the source stresses you must give people a reason to sign up.\"], \"caveats\": [\"8–10% is an outcome the presenter reports from their own optimization work, not a guaranteed result; it is a target, not a promise.\", \"Results depend on traffic source, offer, and audience; poor-fit traffic may never reach those levels.\"], \"tags\": [\"email-lifecycle\", \"list-growth\", \"pop-up\", \"conversion-optimization\", \"benchmarking\"]}, {\"title\": \"Launch five core SMS automation flows before heavy campaign sending\", \"summary\": \"Set up Welcome, Browse Abandonment, Cart Abandonment, Checkout Abandonment, and Win-back flows, keeping each short and high-ROI, since automations run in the background and earn clicks without extra effort.\", \"use_when\": \"Building the automated SMS flow system for a store, or deciding which flows to prioritize first.\", \"steps\": [\"Welcome flow: deliver the promised discount to new subscribers in about 2–3 SMS messages.\", \"Browse abandonment: message users who viewed a product and left, prompting them to return and finish.\", \"Cart abandonment and checkout abandonment: remind people who added to cart or reached checkout to complete the order with a direct link.\", \"Win-back: re-engage customers who purchased months ago and have not returned, optionally with a discount.\", \"Keep flow volume light—do not overload customers with messages, since flows are meant for quick, high-converting, high-ROI touches rather than retention nurturing.\", \"Use your platform's templates and connect it to your store platform (e.g., Shopify) so triggers fire automatically; the source says setup is easy and templates exist for base flows.\"], \"caveats\": [\"The source says you 'really don't need too much' in flows—avoid adding many extra steps.\", \"Template copy and trigger names may change in the platform interface; verify current setup steps in your tool.\"], \"tags\": [\"email-lifecycle\", \"sms-marketing\", \"automation\", \"flows\", \"abandoned-cart\", \"retention\"]}, {\"title\": \"Keep SMS campaigns transactional, urgent, or announcement-based—not nurture\", \"summary\": \"SMS campaigns should carry product drops, special offers, restocks, and announcements; pure nurture or social-proof content tends to get high unsubscribes and poor ROI on SMS.\", \"use_when\": \"Choosing what content types belong in the SMS campaign calendar versus what should stay in email.\", \"steps\": [\"Assign to SMS: product drops and launches, flash sales, special offers, back-in-stock/restock alerts, and important announcements.\", \"Assign to email: nurture, educational, and social-proof content; the source says email is where you can nurture without annoying people.\", \"Use angles that manufacture importance where relevant, e.g. a 'back in stock' message, since urgency fits the channel.\", \"Send mostly transactional-style content on SMS and reserve the bulk of relationship-building content for email.\", \"Cut any SMS campaign type that historically shows high unsubscribes and weak ROI in your own data, since the source found nurture/social-proof SMS underperformed.\"], \"caveats\": [\"This reflects the presenter's tested experience; your audience may tolerate more or less nurture content, so test.\", \"Some announcement types (e.g., giveaways to grow social) are used as filler, not core revenue drivers.\"], \"tags\": [\"email-lifecycle\", \"sms-marketing\", \"campaign-strategy\", \"content-mix\", \"segmentation\"]}, {\"title\": \"Model the SMS month around launches and flash sales, then fill the gaps\", \"summary\": \"Anchor the SMS calendar on big events—product launches get 2–3 messages, flash sales get 2—then insert 2–3 filler campaigns (giveaway, restock) to keep a 1–2 per week cadence.\", \"use_when\": \"Planning a store's monthly SMS campaign calendar around known launch and promotion dates.\", \"steps\": [\"List the month's main events first; use the source's example of a brand with a Halloween product launch mid-month and a Halloween flash sale on the last two days.\", \"For a product launch, plan about 2–3 messages: an announcement on launch day (likely the biggest sales driver), a reminder or low-stock/urgency message about a week later, and optionally a teaser 1–2 days before to build hype.\", \"For a flash sale, send two messages: a launch message on day one and a last-chance message on the final day; the source says back-to-back daily sends are fine for big events.\", \"Identify gaps of more than a week without an SMS and insert 2–3 filler campaigns, e.g. a social media giveaway driving to Instagram, or a 'restock' alert for a popular item.\", \"Note the source's rationale for restock sends: an item that sold out proves popularity, and the restock itself creates urgency—you can even run one on an item that was not literally out of stock.\", \"Count total sends against the 1–2 per week ceiling and trim if the calendar exceeds it.\"], \"caveats\": [\"The example calendar is an illustration for an eight-figure brand, not a template that fits every store size or category.\", \"The suggested restock angle may not be appropriate if it misrepresents inventory availability.\"], \"tags\": [\"email-lifecycle\", \"sms-marketing\", \"campaign-calendar\", \"launch-strategy\", \"promotion-planning\"]}, {\"title\": \"Test SMS send times; default to 11 a.m.–2 p.m. and 4–5 p.m.\", \"summary\": \"There is no universal best send time, so test per audience; the source's safer windows are midday and early evening, avoiding pre-10 a.m. and post-7:30 p.m.\", \"use_when\": \"Scheduling SMS campaigns and last-chance messages to maximize open and click response for your specific list.\", \"steps\": [\"Run your own tests across times of day, since the source says every audience differs and there is no single right answer.\", \"Use 11 a.m.–2 p.m. as the safest default window, when people are between morning and lunch.\", \"Try early evening at 4–5 p.m. as a secondary window that the source says performs well.\", \"Avoid sending before 10 a.m. (people sleep in) and after about 7:30 p.m. (people go to bed or turn off phones).\", \"Schedule last-chance messages around 6–7 p.m. with a short deadline like '4 hours left', but not later than that window.\", \"Track clicks and revenue by send hour over multiple sends before locking in a standard time.\"], \"caveats\": [\"These windows are the presenter's tested heuristics, not universal laws; confirm with your own A/B timing tests.\", \"Timezone spread in your list can blur results—segment or schedule per timezone where your platform allows.\"], \"tags\": [\"email-lifecycle\", \"sms-marketing\", \"send-time\", \"experiment-design\", \"campaign-strategy\", \"measurement\"]}, {\"title\": \"Treat the SMS list as a channel asset for revenue you control\", \"summary\": \"The source frames SMS as a near-guaranteed-seen channel with very high open rates and an owned list—unlike ad accounts that platforms can shut down—and reports major contribution to store revenue.\", \"use_when\": \"Deciding whether to invest budget and team time in building an SMS channel versus relying solely on paid acquisition.\", \"steps\": [\"Evaluate SMS as an owned audience asset: contacts gave you their number, so they are not cold traffic and the list cannot be revoked by an ad platform.\", \"Recognize the reach mechanic: the source cites an average 98% open rate because text messages are seen almost immediately by nearly everyone.\", \"Expect automations to run continuously in the background after one-time setup, requiring only periodic checks and optimization.\", \"Judge channel value against your store's revenue mix; the source cites an example brand generating $750k in 30 days from SMS (roughly 20% of total revenue) and $422k from automations alone in the same window.\", \"Set expectations by tracking your own SMS-attributed revenue and automation click rates rather than adopting case-study numbers as targets.\"], \"caveats\": [\"The 98% open rate and the $750k/$422k figures are the presenter's cited examples, not benchmarks or promises; your results depend on list size, offer, and product.\", \"Introductory framing of 'SMS is the future' is the presenter's opinion; treat it as a rationale for testing, not a guaranteed channel outcome.\"], \"tags\": [\"email-lifecycle\", \"sms-marketing\", \"channel-strategy\", \"retention\", \"attribution\", \"owned-audience\"]}]}",
+  "input": {
+    "source_id": "1AMtIBd_PeRP4tnLvitYS4vmRri5QKpz4",
+    "source_sha256": "af248520436f634c8a96fe3f157cbceade36e501d69ef23c22f824d02cfddb29",
+    "source_name": "Everything You Need to Know About SMS Marketing in 2025.docx",
+    "folder": "/14-EML-email-lifecycle",
+    "domain": "email-lifecycle",
+    "section": 0,
+    "section_count": 1,
+    "text": "14-EML / email and lifecycle\n\nGoes here. Klaviyo email system architecture, list growth strategies, high-converting signup forms (pop-ups, full-page, micro-commitments), automated core email flows, email campaign calendar planning, list segmentation, deliverability optimization, and SMS marketing strategy (list growth, flows, campaigns, segmentation, conversational commerce).\n\nNot here.\n\nPaid ad campaign setup, tracking pixels, or Meta Conversions API -> 11-ADC\n\nEvaluating marketing or website analytics -> 06-MEA\n\nHeader. url: rights: public_reference why: Details a foundational guide to SMS marketing for e-commerce, focusing on list growth via pop-ups, technical constraints (character limits, MMS costs), core automated flows, and structuring a balanced SMS campaign calendar. modules: [EML] topics: [SMS marketing, list growth, campaign strategy] tier: 3 scope_hint: baseline\n\nTopics. SMS marketing / Navigating the technical and financial constraints of SMS marketing. Managing message frequency to prevent high unsubscribe rates (recommending 1–2 sends per week), keeping copy under the strict 160-character limit to avoid double billing, minimizing emoji use (which consumes 35–50 characters), and restricting expensive MMS (image) messages only to campaigns where the ROI justifies a 2–3x cost increase. Establishing five core automated flows: Welcome (2-3 messages), Browse Abandonment, Cart Abandonment, Checkout Abandonment, and Win-back. list growth / Driving SMS list growth by optimizing website pop-up forms to capture 8–10% of visitors. Implementing a two-step micro-commitment strategy: first asking for an email, and then prompting for the phone number with clear, benefit-driven copy (e.g., \"finish signing up to get your discount\"). Delaying the pop-up trigger to 6–10 seconds to ensure optimal visibility without hurting website conversions. campaign strategy / Structuring an SMS campaign calendar centered around transactional, high-urgency, and important announcements rather than nurture content. Planning monthly sends around product launches (teaser, launch, reminder), flash sales (launch, last chance), and strategic filler campaigns like social media giveaways or \"restock\" alerts to maintain a cadence of 1–2 messages per week. Testing optimal send times, typically finding success in the 11:00 a.m. to 2:00 p.m. or 4:00 p.m. to 5:00 p.m. windows.\n\nLook for. The primary nuances/constraints of SMS marketing compared to email: higher cost, strict 160-character limits, emoji character consumption (35–50 characters per emoji), and the 2–3x higher cost of MMS (images) versus SMS. The recommended SMS campaign sending frequency: 1 to 2 times per week. The recommended pop-up form time delay trigger: 6 to 10 seconds.\n\nSkip. Promotional pitches to book a consulting call with the speaker or download the free SMS swipe file document in the description.\n\nScope mix. Almost all baseline.\n\nVolume. 10 to 15.\n\nokay so SMS marketing is the future why I mean who doesn't check all of their text messages pretty much everybody in the US SMS marketing messages have an average open rate of 98% which means that when you click send you are almost guaranteed that all of your SMS members are going to see your message and these are people who already know like and trust you these aren't cold audiences these are people who have bought from you or have given you their phone number so this brand who's the SMS list I manage has generated $750,000 throughs Marketing in the past 30 days and that contributes to 20% of the Brand's total revenue to take this one step further automations which we set up once check in on and optimize and just let run in the background the on average 15% click rates and has generated $422,000 in this past 30-day period pretty freaking crazy building a strong SMS list is an asset that nobody can take away Zuck can't like shut down your SMS list like you can with like your Facebook ads now SMS is super super simple but that does not mean that it is easy there's a big difference there and there are a lot of nuances I've literally sent tens of millions of total SMS messages and reviewed the data points and everything so I'm going to save you all that time the years of testing and of course the cost that came with that everything is going to be in this video so let's break down SMS marketing so you can have it as one of your top channels for your Ecom store so SMS marketing it's literally just text messages very similar to email marketing but it's just text super simple so you think okay let's just type up some text send it to our customers and we're good I wish but there are a lot of nuances with SMS marketing so let's go over some of these nuances the first Nuance with SMS marketing is frequency and how often you can send messages SMS marketing is a bit more intrusive you're going into like one of the main apps on somebody's phone you're sending them a ding sound and a vibration and it's not something like email marketing where you can send four to five messages a week and not get any backlash from customers for this reason unsubscribe rates on SMS marketing are way higher than with email marketing so we want to send much less frequently and only send important messages so that we can avoid these high unsubscribe rates for these people where we've worked so hard to get their phone number now to just make things super easy for you I wouldn't recommend sending more than one maybe two SMS messages per week and I've tested this the more you send the higher your unsubscribe rates go so make sure that you're only sending on like big events or important messages and you can get creative with your messaging and then also your segmentation so that you make sure that you're not annoying people again try not to send more than once per week every now and again you can do twice now the second Nuance is SMS messages versus MMS messages SMS messages are the main kind of like what you picture for like SMS marketing where it's just text and then like a link however MMS messages are the ones that also have an image so you have a text with just text and then also there's like an image or a gift now ideally you want to be able to send images to your customers however MMS messages are usually 2 to three times more expensive than SMS messages and this is really important to pay attention to because SMS messaging is much more expensive than email where it literally costs like a fraction of a scent so you really want to be careful with your spend and so if MMS messages are two to three times more expensive than SMS that means that if you including an image or a gift or whatever in an MMS needs to generate two to three times more revenue for it to be worth it in an Roi perspective to send that MMS and in my experience that is very very rare to have one image generate so much more Revenue so I would highly recommend just sticking to SMS messages text only as much as you can unless it's absolutely necessary to include an image this way you're making the most out of your Roi and still SMS messages perform really well so going to the third nuance and that is going to be your message length so with one SMS message you only have 160 characters which is really not a lot if you go over one character from 160 to 161 you're not just sending one SMS message that's actually two SMS messages and so you are charged on two SMS rather than one so if you go over to like 161 characters you're paying double the price and this goes on for like 3 SMS to 4 SMS all split up by 160 characters and if you do go over you're going to have to pay double and again it is very very rare for kind of this extra messaging to generate you 2x more Revenue so we do not have a lot to work with here so our SMS messaging needs to be very short clear and concise I would not recommend trying to go over because again if you go over you're going to have to generate two times more Revenue just keep your messages short sweet waste no space and just try to get it under 160 characters with a simple point to get across to the customer and the fourth and last Nuance I want to cover is emojis it would be amazing to be able to spice up your messaging since you can't really have images cuz they're so expensive and just send a ton of emojis to catch a customer's eye but emojis absolutely eat up your character limit of 160 characters emojis use a different kind of code which I don't really understand the science of it but what I do know is that emojis take up the equivalent of 35 to 50 characters and we already only have 160 characters to work with so I would recommend staying away from emojis as much as you can or else you're going to have to pay up for it so with all the character limits and limitations that we have in our SMS marketing our messages need to be pretty Bare Bones and simple now that doesn't mean it can't be effective which I showed you at the beginning of this video the results that you can drive with these simple messaging tactics so I wanted to just drill that into you and talk about those nuances cuz I get a lot of questions on SMS marketing and also to just show that our messaging has to be simple so need to focus on when we're sending SMS messages and what we're sending rather than the intricate copy and like the tactics within them so now we have that base understanding let's get into how to get started with SMS marketing you can't send SMS messages without an SMS provider so these are softwares which let you set up a phone number with them and you're able to track your data set up automations and all this good stuff in my opinion there's no right answer for your SMS platform they all pretty much do the same things if you use clavio for email marketing which I really hope you do then I'd recommend just sticking to clavio for SMS to consolidate all your marketing into one place but the two other main options are attentive and postcript which are both solid options as well they're going to try to sell themselves against each other on like oh we have this crazy new AI like yada y y feature but in reality you never really use those features and they're pretty marginal and they're relatively the same price so I recommend just sticking with one platform whatever it may be and just use that I don't need to walk you through how to get set up in like a step by step they have really in-depth guide so you can just go to their website and then get set up it literally takes minutes so we know how to get started with SMS now let's talk about how to actually grow your SMS list similar to email marketing there are two main ways to grow your SMS list we have post purchase optins and then we also have popup forms on your Shopify purchase page when somebody's about to make an order you can have a check box essentially saying like do you agree to sign up for marketing and I like to always have that for all of my clients so that we constantly are getting phone numbers from people who buy from us easy way to just grow your list in the background but the most effective way to grow your SMS list is with popup forms and I have multiple different resources and YouTube videos you can watch this one is like an hour long which goes Super in depth on how to create popup forms that convert at a high level so you can get as many people onto your email and SMS list as possible for context most brands I audit only have a form that converts like around 2 to 3% of website visitors into email list subscribers and SMS subscribers however in this video I show you how to get to 8% to 10% essentially like tripling the amount of people entering your list popup forms do have a fine line because you don't want to be intrusive you don't want to harm your website conversions but you also want as many people as possible to see the form so a couple quick tips with your form to get the most out of your traffic but try not to be intrusive one is you want your trigger to be around 6 to 10 seconds after page load I wouldn't recommend doing like scrolling or anything like that or exit intent because sometimes it can misfire I usually just like to set a time delay like 6 seconds and no that's not too soon trust me I've tested this we want to get as many views as possible if we wait 30 seconds then how many people are actually going on your site for 30 seconds not a lot so we want to set it to a shorter time frame again 6 to 10 seconds is where you want to be second tip is actually have a strong offer so that people will want to sign up it's not a charity people aren't just going to hand you their phone number you need to give them something such as a discount which is what most people do which you might have to give up a little bit of margins on that first purchase but if you have a strong email and SMS backend system set up you're going to be getting so much more out of these customers and make back that Roi you can also do things like giveaways or free guides something like that three we want to use as little words as possible our popup form just keep them super simple just tell the customer this is what you get give us your email and then on the next step you ask for SMS and again I break this all down in the video highly recommend you check it out just a last Quick tip is make it as easy as possible to fill out don't ask anybody for their birthday the what products really they're interested all in one step or their social security card no just ask hey do you want this discount enter your email address and then once they enter the email address then say finish signing up by entering your phone number that works 10 times better you want to see me setting this up inside Clay on these other platforms then watch the video I'll also have a link to the document below so we have SMS set up we're growing our lists effectively now we can actually start sending messages with like the nuances we went over in mind there are two different types of messages for SMS very similar to email we just have our automations AKA our flows and then we have our campaigns which are the onetime emails that we're sending out to the list at a specific time first let's talk about the automations in the flows all the main platforms make it super duper easy for you to set up your automations it'll just connect whatever your provider is it'll connect to your Shopify or whatever platform you use and they'll probably have templates for like a lot of the base flows there are five main SMS flows that I like to start out with you really don't need too much with your flows because again we don't want to overload our customers with messages first is the welcome flow to deliver that discount or whatever you're giving to people who sign up to your list usually you want like two to three SMS messages and then we have the browse abandoned flow for anybody who views a product and then leaves we want to send them a message being like hey where'd you go you can finish your order here then same thing for the cart abandoned flow and the checkout abandoned flow people who add to cart or go to checkout we want to remind them to come back and say like hey you can finish your order right here and then the last is a winback flow for anybody who purchased like months ago but they haven't come back since we just want to you know let them know that we're thinking about them you can try to get them back you can even give them a discount if you want so I'm going to flash on the screen literally copy and paste templates that you can use for all of these flows I've tested these over and over again look at how simple these messages are they're cost effective and they convert like crazy copy and paste these I've literally tested this over millions of data points so use these and actually if you want a full guide of everything that I'm going over in this video I'll have a link to the document below it has like all the copy for you and everything I've gone over and you really don't need anything else set up since ideally you're going to be sending one SMS campaign to your list every week which we'll talk about next and those SMS campaigns are going to deal with a lot of your retention and then converting customer these automations are just for quick High converting and high Roi messages kind of like we went over above super easy just copy and paste what I gave you with the triggers and you're all set those are the flows now let's talk about campaigns we already talked about a lot of our content and the copy that we want to use and how often that we want to send but just to summarize with email we can send like four times a week without really bothering the customer too much but with SMS we only want to send once per weekish and then only send important messages things like product drops announcements special offers product highlights whatever it can be you can also create angles that make something seem important like a back in stock message but with SMS we really don't want to send you know too much nurture type content or social proof type content people will just get annoyed and they're like why are you messaging me so I've tested them usually don't get a great Roi and you get higher unsubscribe rates so keep things as mostly transactional email is where you can really nurture people and not send as many like announcements and stuff you still want to send those but we're also mixing in a ton of nurtur and educational content I have a ton of guides on my YouTube which you can check out on non- discount email campaign now I'm sure you're wondering what like a 7 to8 figure Brand's like content calendar would look like for SMS so I actually put this together for you here's like a mock calendar of what an eight fig brand might be sending to their list so let's say it is October and so we have some main events in October for this hypothetical brand let's say that we are doing a product launch on October 10th it's like a Halloween themed product launch and then also a Halloween flash sale on October 30th to 31st so we have those two main events for the whole entire month we can kind of like fill in what we need from there for the October 10th product launch this is a big event I would probably want to send two to three is messages throughout the month on it so let's say on October 10th we do an announcement message to the list just being like new product yada y y and that's probably what's going to generate the most sales I like to send one other reminder or something a little bit more urgency focused like low on stock some sort of message like that we can send that about like a weekish later let's just throw it into like October 15th and something optional that you could do is you could send a teaser to your SMS list on like the 8th or 9th just to really build up hype for it and just tell people to be on the lookout there's a limited time item that's going to be coming to the store on October 10th be ready whatever we see those actually do really help with the sales of your launches so we have an October Halloween flash sale on the 30th and the 31st so I wouldn't really overthink it I would send two messages one on the 30th for a launch SMS just like hey flash sale go buy and then on the 31st do like a last chance this is expiring in a few hours for big events like that it's fine to send on back-to-back days now for the rest of the month we have some gaps of over a week without an SMS so I just want to insert like two to three extra campaigns in there so on October 4th for example we could do like a social media giveaway to try to blow up our social media a bit and drive people to the Instagram for like a giveaway you're doing post on your story yada yada that's something that we could slot in on that month and then we kind of have one other week where we need some opening so on the 23rd I would send some sort of restock for a popular item because those always do well if an item went out of stock that means it's popular because it went out of stock and then also a restock means that this product might go out of stock and so it has urgency and popularity in the same message so I like to do these frequently even if something isn't necessarily out of stock you can still send a message for it so this calendar is perfect we don't really need to do anything more we have the right balance of transactional stuff and then also like some fill-in campaigns so they should be good to go and everything you really need and then I want to talk briefly about send times when do you send your SMS messages now there's no right answer besides test it every audience is different so you need to test different times of the day to see when your audience is responding the best the safest is midday around 11:00 a.m. to 2: p.m. kind of when people are done with their morning and maybe they're on lunch at work then also early evenings such as like 5:00 p.m. or 400 p.m. works well as well some general tips is avoid sending before 10:00 a.m. just because some people sleep in avoid messages past 7:30 p.m. cuz some people go to bed early or they shut off their phone during night you can do last chance SMS messages kind of around like 6:00 to 7:00 p.m. those can perform really well if you say like 4 hours left but you want to make sure you're not sending that too late but I recommend just try to keep most your messages in that window of 11:00 a.m. to 2: p.m. also in the description in the doc I have a swipe file of 30 SMS messages which I handpicked with the help of attentive so if you want some inspiration on how to create quick messages you can just steal from Brands who are absolutely crushing it so if you want it just go to the description you can have the doc and so that is everything that I have in this video for SMS marketing and how to get the most out of your SMS Channel every single e-commerce brand that is scaling needs SMS marketing and hopefully I filled you in on why you need that if you're an econ brand above $50,000 a month and you want some help with SMS then you can book a call with me uh free Consulting call I'll talk you through it and then we can see if there are options for us working together but if not I'll have a ton more guides in the future I'll continue to post on YouTube so be sure you're on the lookout for more content I hope that this was useful for you let me know if it was thank you for watching and I will see you in the next one",
+    "prior_notes": [],
+    "id": "c21ced813963f9bc7ca1e4f4"
+  },
+  "system_prompt_sha256": "f2341d28186a0dbaee868d37ce33c173f631088eb1754997556740d4905c0f2b"
+}

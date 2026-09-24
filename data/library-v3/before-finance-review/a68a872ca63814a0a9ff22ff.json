@@ -1,0 +1,291 @@
+{
+  "cards": [
+    {
+      "title": "Build an Amazon FBA order forecast from marketing spend",
+      "summary": "Model paid orders from a monthly marketing budget divided by CAC, then layer a paid-to-organic ratio that grows as reviews accumulate.",
+      "use_when": "You are planning a new Amazon FBA product launch or replenishment cycle and need a 12-18 month order forecast before deciding how much inventory to buy and how much cash to raise.",
+      "steps": [
+        "Set a monthly marketing budget row (example: $1,000 in month 1, $1,500 in month 2, +$1,000 each month thereafter as the business scales).",
+        "Compute paid orders per month with =ROUND(marketing budget / CAC, 0). At $1,500 spend and $41 CAC that yields 36 orders.",
+        "Add a paid-to-organic ratio that starts very low (the source uses 10%, meaning a few friends/family purchases) and rises over time. Compute organic orders as =ROUND(paid orders * ratio, 0).",
+        "Increase the ratio by a fixed step per month (source example: +10 percentage points per month) on the assumption that after roughly four to five months and ~300 orders you have accumulated enough reviews to start ranking organically.",
+        "Total orders = paid + organic, and this drives the revenue, COGS, fulfillment and inventory rows.",
+        "Freeze panes so the month header row and column labels stay visible as you scroll the model."
+      ],
+      "caveats": [
+        "The 10%-per-month organic ramp and the 4-5 month review threshold are the presenter's illustrative assumptions, not measured benchmarks; tune them to your category and review velocity.",
+        "The model assumes a stable CAC; if CAC rises with spend, split the marketing row into channels."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "forecasting",
+        "cac",
+        "amazon-fba",
+        "inventory-planning",
+        "financial-model"
+      ],
+      "id": "e9dcc756a1174a1af026b38f",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 7
+    },
+    {
+      "title": "Model inventory timing with a lead-time lag row",
+      "summary": "Offset inventory purchases by the supplier lead time so the model shows when stock actually arrives and when you go negative.",
+      "use_when": "You are building or auditing a cash model for a physical product where stock is bought months before it can be sold.",
+      "steps": [
+        "Add an inventory-purchase row for the units you pay for each month (example: 250 units at $25 = $6,300).",
+        "Add an 'inventory arrival' row that simply equals the purchase row shifted forward by the lead time — the source uses a four-month lag, so a month-2 purchase arrives in month 5.",
+        "Add a total inventory row: previous month's total inventory − units sold that month + units arriving that month.",
+        "Copy the formula across all months and hunt for negative values. A negative number means you are out of stock and cannot sell; the goal is to time purchases so total inventory never goes negative.",
+        "Use the negative months as the trigger to size the next purchase (source example: 500 units, then 1,500, then 4,000 as order volume compounds).",
+        "Multiply each purchase quantity by unit cost to get the cash outlay, and note that a 4,000-unit buy at $25 is $100,000 — this is the number that drives the financing question."
+      ],
+      "caveats": [
+        "Ignore the common shortcut of expensing unit cost proportional to orders; as a founder your cash leaves in lumps, and the inventory-investment row is what reflects reality.",
+        "Lead time should include production plus freight plus inbound receiving to Amazon."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "inventory-planning",
+        "cash-flow",
+        "financial-model",
+        "amazon-fba",
+        "supply-chain"
+      ],
+      "id": "49138d1247d7817b047e40f6",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 7
+    },
+    {
+      "title": "Diagnose cash shortfalls by adding profit to starting cash",
+      "summary": "Roll monthly post-marketing profit into starting cash to find the exact months where the business runs out of money.",
+      "use_when": "You have an order and inventory forecast and need to quantify the funding gap before committing to a launch or a scaling plan.",
+      "steps": [
+        "Build the income statement top-down: total orders × price = net revenue; then Amazon fulfillment fee per item × orders; then product/COGS; then advertising budget; the result is post-marketing profit.",
+        "Compute gross profit as revenue minus the cost of fulfilling and buying the product, and gross margin as gross profit divided by revenue — expect it to swing wildly in months with large inventory buys.",
+        "Create a cash row: prior month's ending cash + this month's post-marketing profit.",
+        "Scan for the first negative cash month. In the source example the business cannot even reach month 2 because inventory bought for month-5 arrival is paid for up front.",
+        "Treat the deepest cumulative negative as your minimum financing requirement, not just the first negative month."
+      ],
+      "caveats": [
+        "The source's example shows months where total profit is slightly positive while cash is deeply negative — profit and cash diverge whenever you prepay inventory.",
+        "This model excludes taxes, returns and payment processing unless you add rows for them."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "cash-flow",
+        "financial-model",
+        "inventory-planning",
+        "unit-economics"
+      ],
+      "id": "961109c23d9ce7c6172fcbde",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 7
+    },
+    {
+      "title": "Evaluate non-dilutive inventory and marketing financing",
+      "summary": "Revenue-share financing lets you fund inventory without selling equity, repaid as a percentage of revenue plus a flat fee.",
+      "use_when": "Your cash model shows a funding gap for inventory or paid acquisition and you are weighing equity dilution against revenue-based financing.",
+      "steps": [
+        "Identify the months your cash model goes negative and the total peak funding need.",
+        "Compare two options: selling permanent equity (the source's complaint is selling 30 years of ownership to fund three months of inventory) versus non-dilutive revenue-share financing.",
+        "For revenue-share providers, connect your store and ad accounts; the source says offers come back in about 24 hours and funding in three to five days (verify the current process and terms directly with the provider, as interfaces and criteria change).",
+        "Model the repayment: remove the inventory-purchase row from the cash model and replace it with a revenue payback row (source example: 30% of monthly revenue plus a flat fee of roughly 6-12%).",
+        "Check that the model stays profitable every month under the revenue-share scenario and that cumulative payback roughly equals cumulative financed amount within a reasonable window.",
+        "The source names Clearco (formerly Clearbank) as the provider it has worked with most; Pipe is cited for SaaS recurring-revenue financing. Confirm current eligibility rules, rates and product names before relying on them."
+      ],
+      "caveats": [
+        "Source-stated eligibility for the main program: ecommerce or SaaS and at least six months of $10,000+ monthly revenue; a smaller 'Clear Angel' style program was described for ~$2,000/month revenue on different repayment terms — treat these as examples and verify.",
+        "Revenue-share financing is still a cost of capital; it is not free money."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "financing",
+        "cash-flow",
+        "inventory-planning",
+        "clearco",
+        "non-dilutive"
+      ],
+      "id": "fa3dcc45b30155f9f4d965ff",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 7
+    },
+    {
+      "title": "Calculate customer lifetime value from churn and gross margin",
+      "summary": "LTV = transactions × AOV × gross margin × average customer lifetime, divided by the number of customers in the cohort.",
+      "use_when": "You are setting a CAC ceiling for a subscription or repeat-purchase store and need to know how much you can afford to spend to acquire one customer.",
+      "steps": [
+        "Collect assumptions and mark them in a distinct colour: number of clients (example: 730), orders per client (example: 1.35), average order value (example: $25), gross margin % (example: 60%), monthly churn rate (example: 22%).",
+        "Transactions = clients × orders per client.",
+        "Average customer lifetime in months = 1 / monthly churn rate. At 22% churn the source gets 4.5 months.",
+        "LTV = transactions × AOV × gross margin × lifetime ÷ clients. The source's example yields $92.",
+        "Treat $92 as the upper bound on CAC in this model: spending up to that keeps the customer profitable over their lifetime, spending above it loses money.",
+        "Validate the formula by building the same calculation month by month (cohort decays 22% per month) and confirm the total gross profit divided by the original client count matches the short formula."
+      ],
+      "caveats": [
+        "LTV is most important for subscription or repeat-purchase businesses; it matters less for one-time-purchase categories.",
+        "The formula is only as good as the churn assumption — using an early, high-churn cohort understates LTV, and a mature cohort may overstate it for new traffic."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "ltv",
+        "cac",
+        "retention",
+        "subscriptions",
+        "churn",
+        "unit-economics"
+      ],
+      "id": "3e42b6437425b18310382aa5",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 7
+    },
+    {
+      "title": "Spend above first-order profit when LTV justifies it",
+      "summary": "A subscription can profitably spend more on acquisition than the first order returns because later months repay the CAC.",
+      "use_when": "You are deciding whether to scale paid acquisition on a subscription product even though first-order economics look unprofitable.",
+      "steps": [
+        "Compute first-order contribution: AOV × gross margin (example: $25 × 60% = $15) versus your CAC.",
+        "If CAC is higher than first-order contribution, check whether cumulative gross profit across the average lifetime exceeds CAC.",
+        "Use the cohort view: month 0 has 986 transactions, month 1 has 986 × (1 − churn), and each month's revenue × gross margin accumulates.",
+        "In the source's example, even spending $50 to acquire a customer whose first order only nets $15 works, because the average 4.5-month lifetime repays it and adds profit.",
+        "For hyper-growth planning, use historical churn rates to predict the payback period (the source cites roughly one year to profitability at very high growth rates) before committing ad budget.",
+        "Investors evaluating the business will ask for LTV before funding growth spend — keep the cohort calculation current."
+      ],
+      "caveats": [
+        "This only works if churn is stable and measured; if churn worsens as you scale into colder traffic, the payback promise breaks.",
+        "The example numbers are illustrative, not benchmarks."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "ltv",
+        "cac",
+        "subscriptions",
+        "acquisition",
+        "payback-period"
+      ],
+      "id": "8b747d69f620cfd55d5fc285",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 7
+    },
+    {
+      "title": "Model discounts and CAC as one combined acquisition cost",
+      "summary": "A discount and paid acquisition are mathematically equivalent spend per customer — add them together to see true cost of acquisition.",
+      "use_when": "You are choosing between a deeper discount and more ad spend to drive first purchases and want to compare them on equal footing.",
+      "steps": [
+        "Define the unit economics of one customer: net AOV (after discount) − COGS = contribution margin; then subtract CAC = contribution margin post-marketing.",
+        "Run a scenario table with identical ad spend across scenarios (source example: $100,000 each, $1.50 per click, 66,667 sessions, $200 list price, $75 COGS).",
+        "Vary the discount (0%, $30, $60) and set an assumed conversion-rate lift for each (source's illustrative assumptions: 1.5% → 2.2% → 3.8%).",
+        "Compute purchases, CAC (= ad spend ÷ purchases) and contribution margin post-marketing for each scenario.",
+        "In the source's example all three scenarios land at exactly $25 contribution margin post-marketing per customer because discount + CAC totalled $100 in each — the discount is not automatically worse than the ad spend.",
+        "Use this to decide allocation: the discount and the ad budget are two ways to spend the same acquisition dollar, and the split is a choice, not a fixed rule."
+      ],
+      "caveats": [
+        "The conversion lifts and $100 discount+CAC equality are the presenter's constructed example, not a universal result — real conversion lift depends on your price point, audience and offer.",
+        "Discount depth can damage brand perception and reference prices over time; the source cautions against discounting indiscriminately."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "discount-strategy",
+        "cac",
+        "unit-economics",
+        "conversion-optimization",
+        "pricing"
+      ],
+      "id": "8723bc22dfe2e2d276d26691",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 7
+    },
+    {
+      "title": "Choose the discount/CAC mix that maximises total contribution margin",
+      "summary": "Compare scenarios on total revenue and total post-marketing contribution margin, not on per-customer margin alone.",
+      "use_when": "You are setting a promotional calendar or ad budget and deciding whether a bigger discount can be offset by higher volume.",
+      "steps": [
+        "For each scenario multiply purchases × net AOV to get net sales, and purchases × COGS for total COGS.",
+        "Subtract total COGS and total ad spend from net sales to get total post-marketing contribution margin.",
+        "In the source's worked example: no discount returns $25,000; $30 off returns $36,000; $60 off returns $63,000 on the same $100,000 ad spend.",
+        "Compare this against the opposite strategy: shrinking revenue on a smaller set of customers can also maximise profit if per-customer unit economics are exceptional. There is no universal winner.",
+        "Choose the scenario with the highest total contribution margin subject to your brand and capacity constraints."
+      ],
+      "caveats": [
+        "Source-specific example numbers; your conversion elasticity to discount depth may be much flatter or steeper.",
+        "Deeper discounts that attract discount-only buyers can raise future churn and erode base-price demand."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "discount-strategy",
+        "unit-economics",
+        "pricing",
+        "experiment-design",
+        "contribution-margin"
+      ],
+      "id": "993ecc7a19f08496eb4203ec",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 7
+    },
+    {
+      "title": "Attach your best discounts to a loyalty or subscription on-ramp",
+      "summary": "Give the deepest discounts in exchange for enrolling in a subscription or loyalty program rather than as a flash sale.",
+      "use_when": "You are designing the offer and landing page for a promotion and deciding whether the discount should require a commitment.",
+      "steps": [
+        "Instead of a pure flash sale, structure the best discount as the entry point into a subscription or loyalty program.",
+        "Rationale: flash-sale buyers often will not buy again without another large discount, while a customer who accepts a subscription has self-selected into higher lifetime value.",
+        "Reserve the biggest discount for the customers most likely to stay; do not spread the deepest discounts across one-time transactional traffic.",
+        "Budget the discount and the ad spend out of one pool for the year (source example: $5M to zero) and split it between discounts and marketing based on which produces more sales lift.",
+        "Whoever runs marketing should own the combined pool, since both levers have the same profit impact per dollar."
+      ],
+      "caveats": [
+        "The equivalence between discount dollars and ad dollars holds at the point of acquisition; the downstream retention effect differs by which lever you used, which is exactly why the on-ramp matters.",
+        "The $5M pool figure is the presenter's illustration of a single budget construct."
+      ],
+      "tags": [
+        "finance-and-accounting",
+        "discount-strategy",
+        "retention",
+        "subscriptions",
+        "loyalty",
+        "offer-design"
+      ],
+      "id": "8acd81a0345ee05ab7e7ea9b",
+      "source_id": "1GvhNMqu3NTACVEQwTEwpTWMlsVdrB_bV",
+      "source_sha256": "40f40913a87214a30236d186559fde465c6ed3c093f916fe3d63cb198d794178",
+      "source_name": "Finance for eCommerce (1).docx",
+      "folder": "/20-FIN-finance-and-accounting",
+      "domain": "finance-and-accounting",
+      "section": 7
+    }
+  ],
+  "request_id": "ad55a45b56c379ac62d3e6ad65cd9457c53bfcd11d4e2dca6e2fb6e62987d712",
+  "ecommerce_scope_version": 1
+}

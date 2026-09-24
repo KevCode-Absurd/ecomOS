@@ -1,0 +1,221 @@
+# START HERE
+
+Expert knowledge base for the Ecommerce OS. Kevin writes, Colin's pipeline reads.
+Revision F: added 21-OPS, AMZ moved to 22. 22 modules.
+
+**This file holds the rules. `_MODULE-GUIDE.md` holds the per-module detail:**
+what belongs in each bucket, the boundaries, the topic list, volumes and the header
+to copy. Topics and volumes live only in the guide, so there is 1 place to update
+when a module changes.
+
+## The 2 rules
+
+1. **The folder is for you. The header is for the machine.** The pipeline reads the
+   `modules:` line in the header, never the folder. A mis-filed source is harmless.
+2. **Never split a source by hand.** A 4 hour video covering 7 topics stays as 1 file.
+   The context around a claim is what gives the claim its conditions. Cut the file in
+   the wrong place and the condition is gone, and the resulting card looks fine and is
+   wrong.
+
+## The 22 modules
+
+    01-PRD-product-research              market, category, product, expansion
+    02-AVT-avatars
+    03-OFF-offers
+    04-BRD-brand
+    05-SET-store-setup
+    06-MEA-measurement
+    07-LPG-landing-pages
+    08-SPD-speed
+    09-CRO-testing
+    10-MCR-paid-social-creative          Meta, TikTok, Snap, YouTube
+    11-ADC-ad-copy-deployment
+    12-GAD-google-ads
+    13-ORG-organic-and-content
+    14-EML-email-lifecycle
+    15-SEO-search
+    16-AEO-answer-and-generative-engines AEO and GEO
+    17-CXP-post-purchase
+    18-COG-sourcing
+    19-WLD-wild-bets
+    20-FIN-finance-and-accounting
+    21-OPS-team-and-management
+    22-AMZ-amazon-marketplace
+    99-multi                             no single primary module
+
+## The 2 constraint modules
+
+FIN and OPS are different from the rest. Every other module tells the system what to
+do. These 2 tell it **what the brand is capable of doing**.
+
+- **FIN is the cash constraint.** A brand cannot act on a recommendation that ties up
+  money it does not have for 90 days.
+- **OPS is the capacity constraint.** A brand with 1 founder and no designer cannot
+  execute a 40-creative-a-month plan.
+
+Both become preconditions on plays. A system that ignores them produces a to-do list
+nobody will ever action, which is worse than producing nothing.
+
+## Current phase
+
+Phase 1: 06-MEA, plus the FIN baseline topics, plus the 50 hand-written reference
+cards. FIN baseline means chart of accounts, COGS recorded per SKU, inventory
+reconciliation, payout reconciliation. Gross profit per purchase is not trustworthy
+without them.
+
+Then phase 2: 02-AVT, 03-OFF, 07-LPG. That is the wedge.
+
+Do not collect ahead of the phase. Update this line when the phase changes.
+
+    3.  10-MCR, 11-ADC
+    4.  13-ORG, 14-EML, 17-CXP, 04-BRD, 08-SPD, 09-CRO, 05-SET, 20-FIN (the rest)
+    5.  15-SEO, 16-AEO, 12-GAD, 21-OPS
+    6.  01-PRD, 18-COG, 22-AMZ
+    ongoing: 19-WLD, opportunistically, never as a phase
+
+One exception to the phase discipline: collect the OPS capacity thresholds early,
+out of order. They are a handful of cards, not a library, and the play preconditions
+need them before anything else in OPS matters.
+
+## 3 things that are fields, not folders
+
+**Platform.** MCR covers paid social creative everywhere. TikTok does not get its own
+module and neither does Snapchat, because a module is a body of knowledge, not a
+placement. A Meta hook works on TikTok with pacing adjustments, so the knowledge
+transfers. Use `platforms: [tiktok]`. ORG uses the same field.
+
+**Jurisdiction.** Required on FIN. Tax and accounting rules do not travel. A card
+about GST filing thresholds is useless to a US brand and dangerous if retrieved for
+one. Use `jurisdiction: [IN]`, or `[global]` only for universal mechanics like the
+cash conversion cycle.
+
+**Marketplace.** Required on AMZ. Fees, gating, ad products and compliance differ by
+marketplace, and Amazon India is not Amazon US. Use `marketplace: [IN]`.
+
+**Amazon is the exception that proves the platform rule.** It gets its own module
+because it is a different commerce surface, not a different placement. A Shopify
+product page structure does not work as an Amazon listing. The knowledge does not
+transfer, and that failure to transfer is the test.
+
+## File naming
+
+    MODULE_PUBLISHDATE_author-slug_topic-slug.md
+
+- MODULE: 3 letter code of the primary module, uppercase. MULTI for cross-cutting.
+- PUBLISHDATE: the date the source was PUBLISHED, not captured. `nodate` if none.
+  Use `00` for an unknown day: 2026-04-00.
+
+Examples:
+
+    MCR_2026-03-14_dara-denney_creative-testing-structure.md
+    ORG_2026-05-02_some-operator_short-form-organic-cadence.md
+    FIN_2026-02-10_some-cfo_cash-conversion-cycle-dtc.md
+    OPS_2026-07-04_some-operator_first-five-hires-dtc.md
+    AMZ_2026-06-21_some-seller_sponsored-products-structure.md
+    WLD_2025-09-18_founder-name_handwritten-notes-program.md
+    MULTI_2026-01-09_ecom-masterclass_full-course.md
+
+Publish date in the filename means sorting a folder by name gives you the library
+ordered by age. In MCR, anything older than 18 months is a retirement candidate.
+
+## The header
+
+Every file opens with a YAML block fenced by 3 dashes. Then the body.
+
+REQUIRED, always:
+
+- `url`       canonical URL, or `offline`
+- `rights`    owned | public_reference | licensed | study_only. NO DEFAULT.
+- `why`       1 line. What is in here that a good model would not say unprompted.
+              If you cannot write this line, do not capture the source.
+
+REQUIRED sometimes:
+
+- `date`      when the page shows none or shows the wrong one. YYYY-MM-DD or
+              `unknown`. Never blank, never guessed.
+- `title` `author` `org` `platform`   only when url: offline
+- `mode`      on PRD: new_product | expansion | both
+              on AMZ: dtc_first | amazon_first | both
+- `jurisdiction`  on FIN: IN | US | UK | EU | global
+- `marketplace`   on AMZ: IN | US | UK | EU | global
+- `cost_ceiling`  on WLD: the bounded downside in money and time
+
+OPTIONAL, worth using:
+
+- `modules`   your hint, primary first, e.g. [MCR, MEA]
+- `platforms` [meta, tiktok, snap, youtube, instagram, pinterest, reddit]
+- `topics`    from the list in `_MODULE-GUIDE.md`
+- `tier`      1 to 4, your authority read
+- `scope_hint`  baseline | growth | mixed
+- `watch`     point the extractor at something specific you noticed
+- `covers`    timestamp ranges for long multi-topic sources
+- `assets`    filenames in _assets/ that belong to this source
+- `timestamps`  yes | no
+
+NEVER write `id`. The pipeline owns source IDs.
+
+## Tiers
+
+    1  platform primary source. Google Search Central, Meta dev docs, Shopify docs,
+       Amazon Seller Central docs. Authoritative on mechanics.
+    2  large sample research or benchmark data. Baymard, academic, platform reports.
+    3  named practitioner showing account-level receipts.
+    4  opinion with no name or no receipts. Hypothesis fuel only.
+
+Nothing below tier 1 may contradict tier 1 on a factual claim about how a platform
+works. A practitioner can disagree with Google about what works. They cannot disagree
+with Google about what the API does. A source with no date gets tier 4 regardless of
+who wrote it.
+
+## What you deliberately do not do
+
+- Do not clean transcripts. Keep the timestamps, strip nothing else.
+- Do not split long sources.
+- Do not create topic subfolders until a module passes about 60 files.
+- Do not create a folder per platform, jurisdiction or marketplace. Use the fields.
+- Do not maintain a spreadsheet. The register is generated from the headers.
+- Do not number sources.
+- Do not write your own summary of the source. The `why` line is all the
+  interpretation the header needs.
+- Do not capture a source you cannot write a `why` for. Expect to keep 1 in 4.
+
+## Assets
+
+A transcript cannot see a chart. When a number is read off a dashboard, screenshot it.
+
+    _assets/MCR_dara-denney_1422-dashboard.png
+
+Name: MODULE_author-slug_TIMESTAMP-what-it-is.png. Then list it in `assets:`.
+Without it, that segment gets held as "visual evidence required", because a model
+asked to fill the gap will invent a plausible number.
+
+## Google Docs warning
+
+Do not type headers into a Google Doc. Docs converts straight quotes to curly quotes
+and can silently break the YAML. Write plain .md or .txt files in a text editor and
+upload them. If you must use Docs, turn off automatic substitution first:
+Tools > Preferences > uncheck automatic substitution.
+
+## Retired module codes
+
+MKT, CAT and EXP are RETIRED. Market, category, product and expansion are now 1
+module: PRD, with the distinction preserved by the `mode` field and topic prefixes.
+Never reuse a retired code. If one appears in a header it is a stale file.
+
+## Capture budget
+
+15 to 25 minutes per source you keep. Most of that is screening, not capture.
+Open it, look for specific numbers, sequences and conditions in the first 2 minutes,
+close it if there are none. Expect to keep 1 in 4.
+
+The test: would a good model already say this? "Write unique title tags" is noise.
+"Collection pages competing for the same query lose roughly 8 to 25% of impressions
+to each other, and consolidation takes 60 days to show" is the whole point.
+Collect the number, the threshold, the sequence, the exception, the condition.
+
+WLD is the one exception. There, capture the mechanism and the cost ceiling even
+when there are no numbers, because there will never be numbers until somebody runs
+it.
+
+Roughly 440 sources at a full library. Never collect toward that total. Collect
+toward the current phase. Per-module volumes are in `_MODULE-GUIDE.md`.

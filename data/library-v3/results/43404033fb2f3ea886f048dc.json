@@ -1,0 +1,171 @@
+{
+  "cards": [
+    {
+      "title": "Set Up Conversion Tracking Before Running Any Test",
+      "summary": "Define conversion as form submit or thank-you-page view, configure a primary metric, and whitelist domains so winners and losers are measurable.",
+      "use_when": "Planning a landing page or PDP A/B test and you need a reliable purchase/lead conversion metric before spending traffic on variants.",
+      "steps": [
+        "Write the conversion math explicitly: conversions divided by page views equals conversion rate (e.g., 10 form fills / 100 visitors = 10%). Decide whether 'conversion' means a lead (form submit) or a purchase; for lead-gen landing pages the source uses form submission or arrival on a thank-you page.",
+        "Add a dedicated thank-you page that the form redirects to. Tracking arrival on that URL is the simpler of the two tracking options the source describes; tracking the raw form-submit event is the more complex alternative.",
+        "In PostHog (free tier), create an experiment, add a primary metric, and select the conversion event (in the demo, the event named 'quote submitted'). If the event is missing, submit the form once yourself so the event is registered, and check that an authorized URL is configured in Settings > Web Analytics.",
+        "Whitelist the root domain only — strip subpaths, drop the trailing '/', and note that 'http' without an 's' is normal. If running locally, confirm the port (localhost:3000 by default, but 3001/3002/3003 are possible) matches.",
+        "Launch the experiment only after the tracking code snippet has been added to both the control and test pages.",
+        "On any ecommerce test (PDP hero, bundle offer, checkout button copy), define the primary metric up front — add-to-cart or purchase — rather than optimizing a proxy that never touches revenue."
+      ],
+      "caveats": [
+        "The source's workflow is built around lead-gen forms and thank-you pages; for ecommerce you must substitute purchase or add-to-cart events and verify they fire correctly.",
+        "PostHog's interface, wizard and naming may change — verify the current UI before following exact clicks."
+      ],
+      "tags": [
+        "landing-pages",
+        "conversion-optimization",
+        "measurement",
+        "experiment-design",
+        "posthog",
+        "analytics",
+        "thank-you-page"
+      ],
+      "id": "a835b362c4f57eefaf697a4f",
+      "source_id": "138QqvbshfkmK9XIwu-Hm8f3uRYqy2tJ6",
+      "source_sha256": "cd9ee4398bcd000b0dbccc03d3d8a146a695cd2242d67450bd5f61ff9edeb84a",
+      "source_name": "Claude Code Website Masterclass_ How I Got 20% Conversions (10x The Average).docx",
+      "folder": "/07-LPG-landing-pages",
+      "domain": "landing-pages",
+      "section": 2
+    },
+    {
+      "title": "Run a 50/50 Split Test and Iterate Losers Out",
+      "summary": "Split traffic evenly between control and test pages, measure conversion rate, retire losers and promote winners as the new control in a continuous loop.",
+      "use_when": "Deciding which of two landing page, PDP or offer variants to keep, and how to keep improving after the first test.",
+      "steps": [
+        "Create an experiment in PostHog with an even 50/50 traffic split between page A (control) and page B (test). The source says you can add more than two variants, but starts simple with two.",
+        "Optionally record a hypothesis (e.g., 'variant A will convert better') so future readers understand the intent.",
+        "Ask your build agent to insert the returned code snippets into both the control page and the test page — the labeling of which is 'control' is arbitrary.",
+        "Test routing in an incognito window: PostHog stores a cookie that pins you to one variant, so a normal browser will keep serving the same page. Incognito clears that cookie so repeated visits reveal both variants.",
+        "When a winner emerges, promote it to the new control and rotate the loser out, generating fresh variants to challenge it — a repeating cycle rather than a one-off test.",
+        "Apply the same loop to ecommerce-specific variants: two PDP hero treatments, two bundle price framings, or two checkout button labels, always resolving on the purchase metric."
+      ],
+      "caveats": [
+        "There is no sample-size or duration guidance in the source; the presenter only says that 'if you do it enough times' results become statistically significant — treat that as a loose claim, not a benchmark, and consult a proper significance calculator.",
+        "Real-time dashboards can lag; the source warns data may take about 30 minutes to refresh, so refresh manually before reading results."
+      ],
+      "tags": [
+        "landing-pages",
+        "experiment-design",
+        "conversion-optimization",
+        "split-testing",
+        "posthog",
+        "product-page",
+        "measurement"
+      ],
+      "id": "2f79f41a60630980c384fe0a",
+      "source_id": "138QqvbshfkmK9XIwu-Hm8f3uRYqy2tJ6",
+      "source_sha256": "cd9ee4398bcd000b0dbccc03d3d8a146a695cd2242d67450bd5f61ff9edeb84a",
+      "source_name": "Claude Code Website Masterclass_ How I Got 20% Conversions (10x The Average).docx",
+      "folder": "/07-LPG-landing-pages",
+      "domain": "landing-pages",
+      "section": 2
+    },
+    {
+      "title": "Use Session Recordings and Heat Maps to Find Friction",
+      "summary": "Review real visitor sessions and clicking heat maps to catch unexpected behavior that structured A/B tests miss.",
+      "use_when": "Diagnosing why a landing page or PDP underperforms — e.g., visitors clicking non-clickable elements, abandoning a form, or missing the CTA.",
+      "steps": [
+        "Deploy the site live first; the source notes heat maps do not work on a localhost environment, so push to a real domain before capturing them.",
+        "In PostHog, add the deployed production URL as an authorized URL in Settings > Web Analytics, then create a new heat map, entering the URL and choosing 'screenshot' (or 'iframe') as the render mode.",
+        "Open the Activity/Sessions tab to watch individual visitor sessions in real time and identify actions you don't want — repeated misclicks, dead ends, form confusion.",
+        "Document each recurring anomaly, change the page to remove the cause, and re-check later that it no longer happens — treat this as qualitative input to generate test hypotheses, not as proof of causation.",
+        "For ecommerce, review sessions on high-traffic PDPs and the cart page to spot where shoppers stall or tap non-interactive price/size elements.",
+        "If you built the page yourself, remember the source's warning: creators find their own pages intuitive because of time invested, while first-time visitors may experience them as a maze — heat maps give the outsider's view."
+      ],
+      "caveats": [
+        "The presenter states he personally finds A/B tests more valuable than session recordings; treat these as complements, with recordings best for spotting anomalies rather than proving a winner.",
+        "Session recording tools raise privacy/consent considerations that the source does not address — check applicable regulations before recording visitors."
+      ],
+      "tags": [
+        "landing-pages",
+        "conversion-optimization",
+        "posthog",
+        "heat-maps",
+        "session-recordings",
+        "product-page",
+        "user-research"
+      ],
+      "id": "d77e97941d570bbffcebef8a",
+      "source_id": "138QqvbshfkmK9XIwu-Hm8f3uRYqy2tJ6",
+      "source_sha256": "cd9ee4398bcd000b0dbccc03d3d8a146a695cd2242d67450bd5f61ff9edeb84a",
+      "source_name": "Claude Code Website Masterclass_ How I Got 20% Conversions (10x The Average).docx",
+      "folder": "/07-LPG-landing-pages",
+      "domain": "landing-pages",
+      "section": 2
+    },
+    {
+      "title": "Deploy From Localhost to a Live URL via GitHub and Vercel",
+      "summary": "Two-step free deployment pipeline (local code to GitHub, GitHub to Vercel) that makes the site publicly reachable so tracking, testing and heat maps work.",
+      "use_when": "You have a working landing page or store page on localhost and need it live so analytics, split tests, heat maps and real traffic can run.",
+      "steps": [
+        "Understand why: a localhost:3000 site is rendered on your computer only; nobody else can visit it, and PostHog heat maps won't work until it is public.",
+        "Create a free GitHub account, create a new private repository (the source recommends private), and copy the provided setup command into your build agent with a request to upload the whole project.",
+        "Create a free Vercel account, connect it to GitHub, and import the repository as a new project.",
+        "In Vercel's import settings, set the application preset to Next.js and add the environment variable that reconnects PostHog.",
+        "Build the environment variable from your local .env file: the text before the equals sign becomes the Key, the text after it becomes the Value. This is required because .gitignore keeps secrets out of GitHub, so the connection would otherwise be missing in production.",
+        "Deploy (the source says roughly 60 seconds), view the live link, then optionally attach a custom domain bought through Vercel or imported from a provider like GoDaddy.",
+        "For an ecommerce store, this pipeline is the prerequisite for any live cart or checkout test — you cannot measure real buyer behavior on localhost."
+      ],
+      "caveats": [
+        "Never commit API keys or secrets to a public repository; the source explicitly frames .gitignore and environment variables as the industry-standard way to keep keys safe.",
+        "Tool interfaces (GitHub, Vercel, PostHog) change over time — verify the current import and environment-variable screens."
+      ],
+      "tags": [
+        "landing-pages",
+        "deployment",
+        "github",
+        "vercel",
+        "environment-variables",
+        "posthog",
+        "nextjs"
+      ],
+      "id": "7091bbdbaa48565a27f0225a",
+      "source_id": "138QqvbshfkmK9XIwu-Hm8f3uRYqy2tJ6",
+      "source_sha256": "cd9ee4398bcd000b0dbccc03d3d8a146a695cd2242d67450bd5f61ff9edeb84a",
+      "source_name": "Claude Code Website Masterclass_ How I Got 20% Conversions (10x The Average).docx",
+      "folder": "/07-LPG-landing-pages",
+      "domain": "landing-pages",
+      "section": 2
+    },
+    {
+      "title": "Treat Landing Pages as Multi-Year Assets, Not One-Off Builds",
+      "summary": "The source argues a well-built landing page is an upfront investment that keeps converting for years, so optimize for durability.",
+      "use_when": "Deciding whether to invest in a dedicated landing page/PDP build versus a throwaway campaign page, or deciding whether to rebuild an existing page.",
+      "steps": [
+        "Adopt the source's operating assumption: a page built once can convert for 5–7 years, so the build cost amortizes across that lifespan.",
+        "Because the page is long-lived, prioritize testable structure — clear tracking, a thank-you page, and a split-test setup — over short-term campaign hacks that can't be measured.",
+        "Keep iterating on the page over time (rotate losers, promote winners, review heat maps) instead of launching and forgetting it.",
+        "On the ecommerce side, apply this to core evergreen assets: the main PDP template, category landing pages, and the primary checkout flow, which persist longer than any single ad campaign.",
+        "When budget is tight, the source's logic implies spending on a durable, measurable page beats spreading spend across many disposable ones — but validate against your own traffic volume."
+      ],
+      "caveats": [
+        "The 5–7 year lifespan is the presenter's personal experience, not a measured guarantee; page performance depends on traffic source, market and maintenance.",
+        "Durability claims assume ongoing optimization and measurement infrastructure, which the source treats as required, not optional."
+      ],
+      "tags": [
+        "landing-pages",
+        "positioning",
+        "conversion-optimization",
+        "product-page",
+        "experiment-design",
+        "asset-strategy"
+      ],
+      "id": "45546f9223085689fe09e11d",
+      "source_id": "138QqvbshfkmK9XIwu-Hm8f3uRYqy2tJ6",
+      "source_sha256": "cd9ee4398bcd000b0dbccc03d3d8a146a695cd2242d67450bd5f61ff9edeb84a",
+      "source_name": "Claude Code Website Masterclass_ How I Got 20% Conversions (10x The Average).docx",
+      "folder": "/07-LPG-landing-pages",
+      "domain": "landing-pages",
+      "section": 2
+    }
+  ],
+  "request_id": "ed730c3cb9a7a11d61da93de1a9358cbf7d89316f163df606c837dbc92b7a2ca",
+  "ecommerce_scope_version": 4,
+  "local_editorial_recovery": "Targeted merchant adaptation of saved extraction after transport failure; no new API request."
+}

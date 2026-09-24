@@ -1,0 +1,67 @@
+{
+  "case": {
+    "name": "low-traffic-testing",
+    "query": "Should we run an A/B test or use customer research to improve conversion?",
+    "brand": "DTC skincare store; 1500 sessions and 20 purchases per month; no device breakdown yet.",
+    "complexity": "focused"
+  },
+  "variant": "with_library",
+  "model": "gpt-5.6-terra",
+  "answer": {
+    "diagnosis": "Prioritize customer research and measurement setup over a conventional sitewide A/B-testing program. With 1,500 sessions and 20 purchases per month, the store has limited purchase volume for reliably detecting ordinary conversion changes in a practical timeframe. The supplied guidance estimates that detecting a 10–20% conversion lift can require far more conversions than this store currently generates. Do not spend the available traffic on button-copy, imagery, or other micro-tests. The current overall purchase conversion rate is approximately 1.3% (20 / 1,500), but there is no device, channel, landing-page, product-page, or funnel-stage breakdown to identify the constraint.",
+    "actions": [
+      "Instrument and validate the funnel first: session/device/source, landing-page view, product-page view, add-to-cart, cart view, begin checkout, purchase, revenue, discount use, shipping shown, and payment errors where available.",
+      "Make revenue per session (or revenue per visitor) the business outcome metric. Report conversion rate and average order value alongside it so a conversion increase is not mistaken for a commercial gain.",
+      "Run qualitative research now: review session recordings, deploy a short on-site exit or post-purchase survey, conduct moderated usability tests on mobile and desktop, and interview recent purchasers plus non-purchasers where consent/contactability exists.",
+      "Focus research on high-intent pages and steps: primary landing pages, best-selling product PDPs, cart, and checkout. Look for skincare-specific objections such as suitability for skin type/concern, ingredient safety, routine order, expected time to results, proof/reviews, subscription terms, shipping/returns, and price/value.",
+      "Create a small hypothesis backlog from observed evidence, then implement one substantial, coherent change at a time rather than many small changes. Examples could include a materially clearer PDP proposition/proof structure, a redesigned routine-selection flow, improved offer and shipping clarity, or tighter ad-to-landing-page message alignment.",
+      "If testing is used, reserve it for a large, differentiated change on the highest-traffic page or a dedicated campaign landing page. Use add-to-cart or begin-checkout as a leading indicator, while retaining purchase and revenue per session as guardrails.",
+      "Predefine the test duration, allocation, success metric, guardrails, and stopping rule. Do not inspect results daily and stop when they appear favorable.",
+      "Avoid interpreting sequential before/after changes as proof unless external conditions are unusually stable. If a large change appears promising, seek replication or a holdout before treating it as durable incremental revenue.",
+      "Obtain device and channel breakdown before deciding whether the primary intervention should be mobile UX, paid-traffic landing pages, PDP content, cart, or checkout."
+    ],
+    "missing_information": [
+      "Sessions, purchases, conversion rate, revenue per session, AOV, and funnel drop-off by device.",
+      "Traffic-source mix and performance by source, campaign, landing page, new versus returning visitor, and geography.",
+      "Which pages receive the most traffic and which products generate most sessions, add-to-carts, and orders.",
+      "Add-to-cart, checkout-start, payment-failure, and checkout-completion rates.",
+      "Whether checkout is hosted, what payment methods are available, and whether shipping cost/delivery estimates appear before checkout.",
+      "Current analytics implementation and data quality, including consent effects and whether revenue is captured accurately.",
+      "Existing qualitative evidence: recordings, heatmaps, survey responses, support tickets, reviews, return reasons, and customer interview access.",
+      "Promotion, email/SMS campaign, inventory, pricing, and paid-media changes that could contaminate an experiment.",
+      "Typical purchase lag and repeat-purchase/subscription behavior."
+    ],
+    "caveats": [
+      "The supplied traffic thresholds are heuristics, not universal statistical rules. Actual test feasibility depends on baseline rates, allocation, desired detectable effect, variance, traffic quality, and planned runtime.",
+      "Micro-conversions provide faster directional evidence but can diverge from purchases and revenue; do not declare success solely from add-to-cart or checkout-start movement.",
+      "Customer research identifies likely problems and hypotheses; it does not by itself quantify incremental impact.",
+      "A before/after rollout is vulnerable to seasonality, traffic-source shifts, promotions, and other time-based confounding.",
+      "No device breakdown is available, so it would be premature to assume that mobile is the problem or to prescribe a device-specific redesign."
+    ]
+  },
+  "usage": {
+    "prompt_tokens": 1793,
+    "completion_tokens": 865,
+    "total_tokens": 2658,
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 1790,
+      "audio_tokens": 0
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 0,
+      "audio_tokens": 0,
+      "accepted_prediction_tokens": 0,
+      "rejected_prediction_tokens": 0
+    }
+  },
+  "estimated_cost_usd": 0.0148625,
+  "knowledge_tokens": 1626,
+  "retrieved_titles": [
+    "Low-traffic playbook: test bigger, not more",
+    "Choose big swings or comprehensive CRO based on monthly sessions",
+    "Decide whether a real A/B test is even feasible",
+    "Prioritize revenue per visitor over conversion rate",
+    "Decide CRO depth by monthly session volume"
+  ]
+}

@@ -1,0 +1,600 @@
+{
+  "request_id": "32f17ce55464502e76145aabebdd9d23dff0322e93db67eb97ba88d30d78e21b",
+  "provider": "deepseek",
+  "model": "deepseek-flash",
+  "effort": "high",
+  "completion_limit": 32768,
+  "usage": {
+    "prompt_tokens": 3534,
+    "completion_tokens": 17577,
+    "total_tokens": 21111,
+    "prompt_tokens_details": {
+      "cached_tokens": 1024
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 14201
+    },
+    "prompt_cache_hit_tokens": 1024,
+    "prompt_cache_miss_tokens": 2510
+  },
+  "booked_cost_usd": 0.022152599999999998,
+  "seconds": 67.73,
+  "finish_reason": "stop",
+  "output": {
+    "units": [
+      {
+        "id": "u1",
+        "kind": "action",
+        "title": "Generate brand mockup images from product inputs",
+        "claim": {
+          "text": "The source says the brand mockup generator knows the product's ingredients and reference images to create similar images.",
+          "quote": "it knows that it's made with avocado oil and cucumbers"
+        },
+        "action": {
+          "text": "Input products into the brand mockup generator to receive the image breakdown and prompt.",
+          "quote": "all I kept doing was kept putting in products right here. Kept getting the breakdown the images to use and the prompt to use."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "Which products or reference images to use is not specified beyond examples.",
+          "The generator's exact interface is not described."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u2",
+        "kind": "principle",
+        "title": "Prompt quality limits AI image quality",
+        "claim": {
+          "text": "The source asserts that AI image generation quality is limited by the quality of prompts used.",
+          "quote": "in AI image generation your images will only ever be as good as the prompts that you use."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No prompt evaluation or optimization method is provided."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u3",
+        "kind": "action",
+        "title": "Run White Labeler supplier scout in Claude",
+        "claim": {
+          "text": "The source used White Labeler AI supplier scout version two by loading it and pasting it into Claude to run.",
+          "quote": "we use the white labeler AI supplier scout version two"
+        },
+        "action": {
+          "text": "Paste the AI employee into Claude and ask it to run the employee.",
+          "quote": "Inside Claude, we paste the AI employee. I just ask it to run the employee and rename the chat."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "The source introduces sourcing as the next focus when starting the business.",
+              "quote": "So, the next thing we should focus on is suppliers, right?"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The AI employee setup and exact prompt are not fully described."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u4",
+        "kind": "action",
+        "title": "Capture a product page with White Labeler extension",
+        "claim": {
+          "text": "The source used the White Labeler Chrome extension to capture an entire page.",
+          "quote": "I used the white labeler Chrome extension link down below. And I hit capture and just goes through and captures the entire page for us."
+        },
+        "action": {
+          "text": "Hit capture in the White Labeler Chrome extension to capture the entire page.",
+          "quote": "And I hit capture and just goes through and captures the entire page for us."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "Whether capture requires an account or extension installed is not stated in this passage."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u5",
+        "kind": "action",
+        "title": "Upload page screenshot to supplier scout or tell it to go",
+        "claim": {
+          "text": "The AI supplier scout asks for a screenshot if desired, but the user could also say go.",
+          "quote": "It still asks for us to upload a screenshot um if if we want to or we could have just even said go. So, I did upload a screenshot."
+        },
+        "action": {
+          "text": "Upload the captured screenshot to the AI supplier scout.",
+          "quote": "So, I did upload a screenshot."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "The AI supplier scout asks for a screenshot if wanted.",
+              "quote": "It still asks for us to upload a screenshot um if if we want to or we could have just even said go."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The alternative 'go' path and its consequences are not described."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u4"
+          }
+        ]
+      },
+      {
+        "id": "u6",
+        "kind": "action",
+        "title": "Start with drop shipping",
+        "claim": {
+          "text": "The sourcing report verdict recommends starting with drop shipping.",
+          "quote": "start with drop shipping"
+        },
+        "action": {
+          "text": "Start with drop shipping.",
+          "quote": "start with drop shipping"
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The report's exact criteria and supplier choices are not fully shown."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u7",
+        "kind": "action",
+        "title": "Move to Zenrop or Spocket after initial orders",
+        "claim": {
+          "text": "After getting some orders, the sourcing report recommends moving to Zenrop or Spocket for faster delivery.",
+          "quote": "you can move to Zenrop or Spocket for uh faster delivery"
+        },
+        "action": {
+          "text": "Move to Zenrop or Spocket for faster delivery after getting some orders.",
+          "quote": "you can move to Zenrop or Spocket for uh faster delivery"
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "After getting some orders.",
+              "quote": "after you get some orders um um um in after you get some orders"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "How many orders constitute 'some orders' is not stated."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u6"
+          }
+        ]
+      },
+      {
+        "id": "u8",
+        "kind": "action",
+        "title": "Move into private labeling after more sales",
+        "claim": {
+          "text": "When there are more sales, the sourcing report recommends moving into private labeling.",
+          "quote": "when you have some uh more sales you can then move into private labeling"
+        },
+        "action": {
+          "text": "Move into private labeling after more sales.",
+          "quote": "when you have some uh more sales you can then move into private labeling"
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "After more sales.",
+              "quote": "when you have some uh more sales"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "How many sales constitute 'more sales' is not stated."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u7"
+          }
+        ]
+      },
+      {
+        "id": "u9",
+        "kind": "action",
+        "title": "Drop ship and use supplier images if unable to fund inventory and branding",
+        "claim": {
+          "text": "If there is no ability to spend $500 to $1,000 on inventory and branding/packaging, the source says to drop ship and use supplier images for brand images.",
+          "quote": "If you don't have the ability right now to spend a little bit on getting a little bit of inventory in place, even $500 to $1,000, um, and then getting some nice branding and packaging"
+        },
+        "action": {
+          "text": "Go and drop ship it and use the drop shipping supplier's images to create brand images.",
+          "quote": "then go and drop ship it and use this supplier, your drop shipping suppliers images to create all of the images for your brand"
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "If you do not have the ability to spend $500 to $1,000 on inventory and branding/packaging.",
+              "quote": "If you don't have the ability right now to spend a little bit on getting a little bit of inventory in place, even $500 to $1,000, um, and then getting some nice branding and packaging"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "Whether supplier images are legally usable for brand marketing is not addressed."
+        ],
+        "relations": [
+          {
+            "kind": "alternative_to",
+            "target": "u8"
+          }
+        ]
+      },
+      {
+        "id": "u10",
+        "kind": "warning",
+        "title": "Keep branding on website, not product pages",
+        "claim": {
+          "text": "The source advises keeping completed branding visible on the website but not on product pages to avoid a mismatch between received product and seen product.",
+          "quote": "But still, the branding that you've done, um, that should be very visible on the website, not on the product pages, cuz then there'll be a mismatch between the product that they receive versus the one that they see."
+        },
+        "action": {
+          "text": "Make the branding visible on the website, not on product pages.",
+          "quote": "that should be very visible on the website, not on the product pages"
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": [
+            {
+              "text": "Do not put branding on product pages.",
+              "quote": "not on the product pages"
+            }
+          ]
+        },
+        "completion": [],
+        "unknowns": [
+          "Where on the website branding should appear is not specified."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u9"
+          }
+        ]
+      },
+      {
+        "id": "u11",
+        "kind": "principle",
+        "title": "Try drop shipping first, then switch to branding when able",
+        "claim": {
+          "text": "The source recommends trying the drop shipping strategy first and switching to branding once there is ability and money.",
+          "quote": "So try that strategy first and then once you have the ability and the money then switch all over to the branding."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The transition criteria beyond ability and money are not defined."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u9"
+          }
+        ]
+      },
+      {
+        "id": "u12",
+        "kind": "principle",
+        "title": "Do branding first for vision and motivation",
+        "claim": {
+          "text": "The source says branding is done first to have a vision of the final end goal and motivation, and that lack of money should not stop you.",
+          "quote": "Now the reason you do the branding first is so that you have like a vision of what your final end goal looks like and that's always good to have even as just motivation that man eventually my brand will look like this. But don't let it stop you if you don't have the money."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "How this relates to trying drop shipping first is not fully resolved in the passage."
+        ],
+        "relations": [
+          {
+            "kind": "conflicts_with",
+            "target": "u11"
+          }
+        ]
+      },
+      {
+        "id": "u13",
+        "kind": "action",
+        "title": "Use AliExpress or local USA suppliers to drop ship",
+        "claim": {
+          "text": "The source says AliExpress or local USA suppliers can be used to drop ship and sell the product.",
+          "quote": "You can use AliExpress. You can even use local USA suppliers to be able to drop ship and uh sell this product."
+        },
+        "action": {
+          "text": "Use AliExpress or local USA suppliers to drop ship and sell the product.",
+          "quote": "You can use AliExpress. You can even use local USA suppliers to be able to drop ship and uh sell this product."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "Specific supplier evaluation criteria are not provided in this passage."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u6"
+          }
+        ]
+      },
+      {
+        "id": "u14",
+        "kind": "action",
+        "title": "Use Shopify to host the e-commerce website",
+        "claim": {
+          "text": "The source highly recommends Shopify to host the website.",
+          "quote": "I highly recommend using Shopify to uh host your website."
+        },
+        "action": {
+          "text": "Use Shopify to host the website.",
+          "quote": "I highly recommend using Shopify to uh host your website."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The specific Shopify plan is not stated here."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u15",
+        "kind": "principle",
+        "title": "White Labeler mirrors a proven page and follows four steps",
+        "claim": {
+          "text": "The source describes White Labeler as taking a proven page and mirroring it for your brand, with four steps: mirror, rebrand, upgrade, and launch on Shopify.",
+          "quote": "White Labeler takes any proven page and mirrors it for your brand. All right. Um, and there's a four-step process. First, we mirror a page, which is basically create a template of the page that is already existing. Then, we rebrand it, right? We change the colors. We change the branding. We change everything about the page so that it more so reflects our style. Then we're going to upgrade the page. This is a new feature that we've added where it'll go through identify all the weaknesses of the page and it will build sections that are missing. You're going to want to watch this fully and then we launch on Shopify."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The four-step process is described, but this unit does not split each step into an atomic action.",
+          "The 'upgrade' feature's exact weaknesses identification is not detailed."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u16",
+        "kind": "action",
+        "title": "Mirror a page with White Labeler extension",
+        "claim": {
+          "text": "The source says to go to the White Label extension and hit mirror page, which requires an account and being signed in.",
+          "quote": "all I have to do is go to the white label extension, which we've been using to capture pages, but this time we're going to hit the mirror page."
+        },
+        "action": {
+          "text": "Go to the White Label extension and hit the mirror page button.",
+          "quote": "go to the white label extension, which we've been using to capture pages, but this time we're going to hit the mirror page"
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "With the page open.",
+              "quote": "with the page open"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": [
+            {
+              "text": "You must already have an account and be signed in.",
+              "quote": "This will only happen if you already have an account and if you're signed in."
+            }
+          ]
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The mirroring process after hitting the button is not fully described before the transcript cuts off."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u15"
+          }
+        ]
+      }
+    ],
+    "more_units": true,
+    "unresolved": [
+      "Continuation needed: source text ends mid-sentence at 'I recommend you watch '.",
+      "Omitted units due to 16-unit cap: White Labeler plan and AI Vault recommendation; White Labeler can model homepage/collections/contact pages; decision whether people buy on page and include checkouts; Shopify page-building difficulty claim; branding use cases for presentations.",
+      "Ambiguity: source says try drop shipping first then switch to branding, but also says do branding first for vision; distinction between branding assets and fulfillment is not fully resolved.",
+      "Unknown: whether current White Labeler features (supplier scout v2, upgrade page, mirror page) match described behavior; needs primary-source verification for live deployment.",
+      "Target monthly inventory/compliance details referenced but not provided in passage."
+    ]
+  },
+  "raw_content": "{\"units\":[{\"id\":\"u1\",\"kind\":\"action\",\"title\":\"Generate brand mockup images from product inputs\",\"claim\":{\"text\":\"The source says the brand mockup generator knows the product's ingredients and reference images to create similar images.\",\"quote\":\"it knows that it's made with avocado oil and cucumbers\"},\"action\":{\"text\":\"Input products into the brand mockup generator to receive the image breakdown and prompt.\",\"quote\":\"all I kept doing was kept putting in products right here. Kept getting the breakdown the images to use and the prompt to use.\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"Which products or reference images to use is not specified beyond examples.\",\"The generator's exact interface is not described.\"],\"relations\":[]},{\"id\":\"u2\",\"kind\":\"principle\",\"title\":\"Prompt quality limits AI image quality\",\"claim\":{\"text\":\"The source asserts that AI image generation quality is limited by the quality of prompts used.\",\"quote\":\"in AI image generation your images will only ever be as good as the prompts that you use.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"No prompt evaluation or optimization method is provided.\"],\"relations\":[]},{\"id\":\"u3\",\"kind\":\"action\",\"title\":\"Run White Labeler supplier scout in Claude\",\"claim\":{\"text\":\"The source used White Labeler AI supplier scout version two by loading it and pasting it into Claude to run.\",\"quote\":\"we use the white labeler AI supplier scout version two\"},\"action\":{\"text\":\"Paste the AI employee into Claude and ask it to run the employee.\",\"quote\":\"Inside Claude, we paste the AI employee. I just ask it to run the employee and rename the chat.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"The source introduces sourcing as the next focus when starting the business.\",\"quote\":\"So, the next thing we should focus on is suppliers, right?\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The AI employee setup and exact prompt are not fully described.\"],\"relations\":[]},{\"id\":\"u4\",\"kind\":\"action\",\"title\":\"Capture a product page with White Labeler extension\",\"claim\":{\"text\":\"The source used the White Labeler Chrome extension to capture an entire page.\",\"quote\":\"I used the white labeler Chrome extension link down below. And I hit capture and just goes through and captures the entire page for us.\"},\"action\":{\"text\":\"Hit capture in the White Labeler Chrome extension to capture the entire page.\",\"quote\":\"And I hit capture and just goes through and captures the entire page for us.\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"Whether capture requires an account or extension installed is not stated in this passage.\"],\"relations\":[]},{\"id\":\"u5\",\"kind\":\"action\",\"title\":\"Upload page screenshot to supplier scout or tell it to go\",\"claim\":{\"text\":\"The AI supplier scout asks for a screenshot if desired, but the user could also say go.\",\"quote\":\"It still asks for us to upload a screenshot um if if we want to or we could have just even said go. So, I did upload a screenshot.\"},\"action\":{\"text\":\"Upload the captured screenshot to the AI supplier scout.\",\"quote\":\"So, I did upload a screenshot.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"The AI supplier scout asks for a screenshot if wanted.\",\"quote\":\"It still asks for us to upload a screenshot um if if we want to or we could have just even said go.\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The alternative 'go' path and its consequences are not described.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u4\"}]},{\"id\":\"u6\",\"kind\":\"action\",\"title\":\"Start with drop shipping\",\"claim\":{\"text\":\"The sourcing report verdict recommends starting with drop shipping.\",\"quote\":\"start with drop shipping\"},\"action\":{\"text\":\"Start with drop shipping.\",\"quote\":\"start with drop shipping\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The report's exact criteria and supplier choices are not fully shown.\"],\"relations\":[]},{\"id\":\"u7\",\"kind\":\"action\",\"title\":\"Move to Zenrop or Spocket after initial orders\",\"claim\":{\"text\":\"After getting some orders, the sourcing report recommends moving to Zenrop or Spocket for faster delivery.\",\"quote\":\"you can move to Zenrop or Spocket for uh faster delivery\"},\"action\":{\"text\":\"Move to Zenrop or Spocket for faster delivery after getting some orders.\",\"quote\":\"you can move to Zenrop or Spocket for uh faster delivery\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"After getting some orders.\",\"quote\":\"after you get some orders um um um in after you get some orders\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"How many orders constitute 'some orders' is not stated.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u6\"}]},{\"id\":\"u8\",\"kind\":\"action\",\"title\":\"Move into private labeling after more sales\",\"claim\":{\"text\":\"When there are more sales, the sourcing report recommends moving into private labeling.\",\"quote\":\"when you have some uh more sales you can then move into private labeling\"},\"action\":{\"text\":\"Move into private labeling after more sales.\",\"quote\":\"when you have some uh more sales you can then move into private labeling\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"After more sales.\",\"quote\":\"when you have some uh more sales\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"How many sales constitute 'more sales' is not stated.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u7\"}]},{\"id\":\"u9\",\"kind\":\"action\",\"title\":\"Drop ship and use supplier images if unable to fund inventory and branding\",\"claim\":{\"text\":\"If there is no ability to spend $500 to $1,000 on inventory and branding/packaging, the source says to drop ship and use supplier images for brand images.\",\"quote\":\"If you don't have the ability right now to spend a little bit on getting a little bit of inventory in place, even $500 to $1,000, um, and then getting some nice branding and packaging\"},\"action\":{\"text\":\"Go and drop ship it and use the drop shipping supplier's images to create brand images.\",\"quote\":\"then go and drop ship it and use this supplier, your drop shipping suppliers images to create all of the images for your brand\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"If you do not have the ability to spend $500 to $1,000 on inventory and branding/packaging.\",\"quote\":\"If you don't have the ability right now to spend a little bit on getting a little bit of inventory in place, even $500 to $1,000, um, and then getting some nice branding and packaging\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"Whether supplier images are legally usable for brand marketing is not addressed.\"],\"relations\":[{\"kind\":\"alternative_to\",\"target\":\"u8\"}]},{\"id\":\"u10\",\"kind\":\"warning\",\"title\":\"Keep branding on website, not product pages\",\"claim\":{\"text\":\"The source advises keeping completed branding visible on the website but not on product pages to avoid a mismatch between received product and seen product.\",\"quote\":\"But still, the branding that you've done, um, that should be very visible on the website, not on the product pages, cuz then there'll be a mismatch between the product that they receive versus the one that they see.\"},\"action\":{\"text\":\"Make the branding visible on the website, not on product pages.\",\"quote\":\"that should be very visible on the website, not on the product pages\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[{\"text\":\"Do not put branding on product pages.\",\"quote\":\"not on the product pages\"}]},\"completion\":[],\"unknowns\":[\"Where on the website branding should appear is not specified.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u9\"}]},{\"id\":\"u11\",\"kind\":\"principle\",\"title\":\"Try drop shipping first, then switch to branding when able\",\"claim\":{\"text\":\"The source recommends trying the drop shipping strategy first and switching to branding once there is ability and money.\",\"quote\":\"So try that strategy first and then once you have the ability and the money then switch all over to the branding.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The transition criteria beyond ability and money are not defined.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u9\"}]},{\"id\":\"u12\",\"kind\":\"principle\",\"title\":\"Do branding first for vision and motivation\",\"claim\":{\"text\":\"The source says branding is done first to have a vision of the final end goal and motivation, and that lack of money should not stop you.\",\"quote\":\"Now the reason you do the branding first is so that you have like a vision of what your final end goal looks like and that's always good to have even as just motivation that man eventually my brand will look like this. But don't let it stop you if you don't have the money.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"How this relates to trying drop shipping first is not fully resolved in the passage.\"],\"relations\":[{\"kind\":\"conflicts_with\",\"target\":\"u11\"}]},{\"id\":\"u13\",\"kind\":\"action\",\"title\":\"Use AliExpress or local USA suppliers to drop ship\",\"claim\":{\"text\":\"The source says AliExpress or local USA suppliers can be used to drop ship and sell the product.\",\"quote\":\"You can use AliExpress. You can even use local USA suppliers to be able to drop ship and uh sell this product.\"},\"action\":{\"text\":\"Use AliExpress or local USA suppliers to drop ship and sell the product.\",\"quote\":\"You can use AliExpress. You can even use local USA suppliers to be able to drop ship and uh sell this product.\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"Specific supplier evaluation criteria are not provided in this passage.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u6\"}]},{\"id\":\"u14\",\"kind\":\"action\",\"title\":\"Use Shopify to host the e-commerce website\",\"claim\":{\"text\":\"The source highly recommends Shopify to host the website.\",\"quote\":\"I highly recommend using Shopify to uh host your website.\"},\"action\":{\"text\":\"Use Shopify to host the website.\",\"quote\":\"I highly recommend using Shopify to uh host your website.\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The specific Shopify plan is not stated here.\"],\"relations\":[]},{\"id\":\"u15\",\"kind\":\"principle\",\"title\":\"White Labeler mirrors a proven page and follows four steps\",\"claim\":{\"text\":\"The source describes White Labeler as taking a proven page and mirroring it for your brand, with four steps: mirror, rebrand, upgrade, and launch on Shopify.\",\"quote\":\"White Labeler takes any proven page and mirrors it for your brand. All right. Um, and there's a four-step process. First, we mirror a page, which is basically create a template of the page that is already existing. Then, we rebrand it, right? We change the colors. We change the branding. We change everything about the page so that it more so reflects our style. Then we're going to upgrade the page. This is a new feature that we've added where it'll go through identify all the weaknesses of the page and it will build sections that are missing. You're going to want to watch this fully and then we launch on Shopify.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The four-step process is described, but this unit does not split each step into an atomic action.\",\"The 'upgrade' feature's exact weaknesses identification is not detailed.\"],\"relations\":[]},{\"id\":\"u16\",\"kind\":\"action\",\"title\":\"Mirror a page with White Labeler extension\",\"claim\":{\"text\":\"The source says to go to the White Label extension and hit mirror page, which requires an account and being signed in.\",\"quote\":\"all I have to do is go to the white label extension, which we've been using to capture pages, but this time we're going to hit the mirror page.\"},\"action\":{\"text\":\"Go to the White Label extension and hit the mirror page button.\",\"quote\":\"go to the white label extension, which we've been using to capture pages, but this time we're going to hit the mirror page\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"With the page open.\",\"quote\":\"with the page open\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[{\"text\":\"You must already have an account and be signed in.\",\"quote\":\"This will only happen if you already have an account and if you're signed in.\"}]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The mirroring process after hitting the button is not fully described before the transcript cuts off.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u15\"}]}],\"more_units\":true,\"unresolved\":[\"Continuation needed: source text ends mid-sentence at 'I recommend you watch '.\",\"Omitted units due to 16-unit cap: White Labeler plan and AI Vault recommendation; White Labeler can model homepage/collections/contact pages; decision whether people buy on page and include checkouts; Shopify page-building difficulty claim; branding use cases for presentations.\",\"Ambiguity: source says try drop shipping first then switch to branding, but also says do branding first for vision; distinction between branding assets and fulfillment is not fully resolved.\",\"Unknown: whether current White Labeler features (supplier scout v2, upgrade page, mirror page) match described behavior; needs primary-source verification for live deployment.\",\"Target monthly inventory/compliance details referenced but not provided in passage.\"]}",
+  "input": {
+    "source_id": "1Ig6z4IGo0uaqFz7wHZSEla-LB2LUOsUi",
+    "source_sha256": "c726b9dc7eef6422893637df7ea264954f64df5de865f803ede40683f69c377a",
+    "locator": "body:17/paragraph",
+    "start": 37986,
+    "text": " it knows that it's made with avocado oil and cucumbers. So, that's the background that it used. Right. Over here, I gave it a reference image of flowers, but it knows it has rosemary and cucumbers. Right. Over here I give it a reference image of uh lavender. Again it knows that it needs to use rosemary here. Right over here I gave it a watermelon image and it knows that it has to use cucumbers and rosemary and created a very very similar image for us. Again all I kept doing was kept putting in products right here. Kept getting the breakdown the images to use and the prompt to use. And in AI image generation your images will only ever be as good as the prompts that you use. and our brand mockup generator. It is some of the best prompting that you will see and it will be close to your brand as possible. It'll be close to your product as possible and you will have worldclass images that give you a feeling of the brand. If you're ever going to investors, if you're ever going to pitch this product, if you want to show suppliers what it needs to look like, if you want to show influencers what your product's going to look like, if you want to show any of your investors, your parents or your siblings or your wife like this is what my brand's going to look like. Look at where we started and look at what we've ended up with, right? This is why this is so freaking important. And now we're going to jump into the next section, which is actually how do we find suppliers? How do we private label this product? and how do we drop ship this product if need be? All right, guys. So, the next thing we should focus on is suppliers, right? You're starting this uh business. Where are you going to get the products from? And there are different ways to go about this. And for that, we've prepared a full sourcing report with different types of uh suppliers. If you want to drop ship this, what is the price shipping ETA uh and trust? If you're private labeling, which means you're ordering inventory, you're giving them your branding, they print labels for you, and they prepare the product for you on your behalf. What are the suppliers to look for? If you want dropshipping, but you want like local manufacturers, uh, who may be able to drop ship it for you or who you can just buy small units from and you don't have to ship from China. What are those guys look like? And what's the profit on each level? How do you negotiate with them? And how do you do outreach? So, we've actually prepared an entire report for this particular product, but let me show you how you can prepare it for any product that you want or if you want to run this for the same product, how do we do that? All right. And just like all of the other stuff that we've done here, we've done this with the help of AI employees, right? So, for this one particularly, we use the white labeler AI supplier scout version two. Again, we access this AI employee and load it up. And then we head over to Claude. Inside Claude, we paste the AI employee. I just ask it to run the employee and rename the chat. Um, and it because I asked it to rename the chat for hair oil, it understood immediately that I'm sourcing for uh the um rosemary hair oil, right? And it also knew all of these details uh like the target price, target selling stage, monthly inventory compliance. It knew all of this because we've been working with claude for this product for a while, right? It still asks for us to upload a screenshot um if if we want to or we could have just even said go. So, I did upload a screenshot. Again, the way that I got the screenshot was I went on the page. I used the white labeler Chrome extension link down below. And I hit capture and just goes through and captures the entire page for us. Opens it up. We can download it and we can upload it right here. Okay. And then that's it. the screenshots's been received, right? Um, and it knows everything it needs to. Then it does a product identity card, right? With all of the uh details available for this product, and then it does a sourcing report, right? It goes through all of the different suppliers for this particular product, what are the costs and the margins associated, how should we sell it, and what the verdict is. It basically says start with drop shipping and then after you get some orders um um um in after you get some orders you can move to Zenrop or Spocket for uh faster delivery and then um when you have some uh more sales you can then move into private labeling. Okay. and an entire report gets built and then you can just uh you know import this into Google Drive and you can see all of the details right here. This is an amazing AI employee and it'll allow you to be able to um it'll allow you to be able to um really source pretty much any product right now. Um, these numbers are important to understand again. Um, and I and I want to briefly talk about drop shipping versus private labeling and branding. Now, we spent all of this time branding our product. If you don't have the ability right now to spend a little bit on getting a little bit of inventory in place, even $500 to $1,000, um, and then getting some nice branding and packaging, which is completely fine. If you don't have the ability to, then go and drop ship it and use this supplier, your drop shipping suppliers images to create all of the images for your brand. But still, the branding that you've done, um, that should be very visible on the website, not on the product pages, cuz then there'll be a mismatch between the product that they receive versus the one that they see. So try that strategy first and then once you have the ability and the money then switch all over to the branding. Now the reason you do the branding first is so that you have like a vision of what your final end goal looks like and that's always good to have even as just motivation that man eventually my brand will look like this. But don't let it stop you if you don't have the money. You can use AliExpress. You can even use local USA suppliers to be able to drop ship and uh sell this product. All right, guys. So, now with the branding done, product design done, um suppliers done, initial all of the assets that we need to be able to launch all of that out of the way, the next thing that we're going to do is probably the most fun out of everything. Now, we're going to start designing our actual website. Um, now for the platform, because this is an e-commerce business, I highly recommend using Shopify to uh host your website. and I'll leave a link down below. But building pages on Shopify has been very difficult. They they don't have a page builder um currently uh at least in my understanding that is really really good. And if I am building this brand, all right, I would basically much like my page to look very similar to the page that's already been designed here, but in my brand because they've gone ahead and done such a great job at building pages that generate them six to seven figures. But I at the same time, I don't want it to be exactly this page. I want it to be my brand. And if there are any weaknesses in this page, I don't want my brand to have those weaknesses. And so for this part of the process, we're going to be using White Labeler to create our pages. Now, we've just redone the homepage of White Labeler to really show you what it is, right? So, White Labeler takes any proven page and mirrors it for your brand. All right. Um, and there's a four-step process. First, we mirror a page, which is basically create a template of the page that is already existing. Then, we rebrand it, right? We change the colors. We change the branding. We change everything about the page so that it more so reflects our style. Then we're going to upgrade the page. This is a new feature that we've added where it'll go through identify all the weaknesses of the page and it will build sections that are missing. You're going to want to watch this fully and then we launch on Shopify. So this is it. I would highly recommend getting a white labeler plan and the program that we've been using. The AI vault is part of it. All right. Uh there are three plans. Um get the one that you're comfortable with, but get a plan to be able to do any of this. All right. So, without further ado, let's get into um white labeling a page. All right. So, for the first thing is let's go to the product that we've been working with all this time, which is Rosemary. Right now, again, this is the page we've been working with thus far. Right. So, what we're going to want to do right here is we're going to want to take this page. Okay. And let me just open it up. Okay. So, with the page open, all I have to do is go to the white label extension, which we've been using to capture pages, but this time we're going to hit the mirror page. Okay. And what this does is really cool. It will take an entire it'll crawl through the whole page and it will take all of the information of that page and submit it inside of the white labeler tool. This will only happen if you already have an account and if you're signed in. Okay. Um, now we just uh name our products. Our product is called the hair nectar grow getter. Right. And then uh we're going to need to decide if people are buying on this page or if people don't buy on this page. Okay. Now, why is that important? It's because pages serve different functions and they need to be built differently. If somebody is buying on the page, we need to be able to include checkouts and stuff on the page, right? So, you're going to need to choose, do people buy on this page or no? Because you can technically use this to model the entire homepage, right? To model a collections page, to model a contact us page, whatever page you want, this will uh allow you to do it. Okay. So, now hair nectar growter, right? Um people do buy on this page and we hit the mirror. And so, now there's this cool animation that happens. And I recommend you watch ",
+    "provenance": "unverified"
+  },
+  "system_prompt_sha256": "169564fc11fb12a123446ec006b5bb473bb0bb9c6a71a491eafeedd914dc865e"
+}

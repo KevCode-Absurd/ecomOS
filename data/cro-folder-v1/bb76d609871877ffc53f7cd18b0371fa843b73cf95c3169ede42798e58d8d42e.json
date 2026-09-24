@@ -1,0 +1,610 @@
+{
+  "request_id": "bb76d609871877ffc53f7cd18b0371fa843b73cf95c3169ede42798e58d8d42e",
+  "provider": "deepseek",
+  "model": "deepseek-flash",
+  "effort": "high",
+  "completion_limit": 65536,
+  "usage": {
+    "prompt_tokens": 3712,
+    "completion_tokens": 22435,
+    "total_tokens": 26147,
+    "prompt_tokens_details": {
+      "cached_tokens": 1152
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 18156
+    },
+    "prompt_cache_hit_tokens": 1152,
+    "prompt_cache_miss_tokens": 2560
+  },
+  "booked_cost_usd": 0.028035599999999997,
+  "seconds": 81.36,
+  "finish_reason": "stop",
+  "output": {
+    "units": [
+      {
+        "id": "u1",
+        "kind": "warning",
+        "title": "Peeking inflates false positives",
+        "claim": {
+          "text": "The source warns that testing after every observation and stopping at first p<0.05 turns a nominal 5% false positive rate into 26.1%.",
+          "quote": "Miller's worst case: testing after every observation and stopping at first p<0.05 turns a nominal 5% false positive rate into 26.1%."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Testing after every observation and stopping at first p<0.05.",
+              "quote": "testing after every observation and stopping at first p<0.05"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No direct recommendation on whether to avoid peeking or use sequential methods is stated in this unit; sequential methods are covered separately."
+        ],
+        "relations": [
+          {
+            "kind": "alternative_to",
+            "target": "u2"
+          }
+        ]
+      },
+      {
+        "id": "u2",
+        "kind": "principle",
+        "title": "Sequential methods legitimise looking early",
+        "claim": {
+          "text": "The source states that sequential methods legitimise looking early, listing mSPRT, GAVI, group sequential design with alpha spending, and corrected-alpha approach.",
+          "quote": "Sequential methods legitimise looking early:"
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "Tradeoff: always-valid methods cost power (wider intervals) versus a correctly-sized fixed test; Spotify's guidance is conditional on ability to estimate expected sample size."
+        ],
+        "relations": [
+          {
+            "kind": "alternative_to",
+            "target": "u1"
+          }
+        ]
+      },
+      {
+        "id": "u3",
+        "kind": "action",
+        "title": "Run a minimum test duration of at least one week",
+        "claim": {
+          "text": "The source recommends a minimum runtime of at least one full week, and in practice two, to cover the weekly business cycle and returning visitors.",
+          "quote": "run at least one full week, and in practice two"
+        },
+        "action": {
+          "text": "Run at least one full week, and in practice two, to cover the weekly business cycle.",
+          "quote": "run at least one full week, and in practice two"
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No specific stopping rule or metric for determining the full cycle beyond the statement is given."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u4",
+        "kind": "action",
+        "title": "Diagnose novelty and primacy effects",
+        "claim": {
+          "text": "The source describes novelty and primacy as threats to external validity, and says to diagnose by plotting daily effect over time and comparing first-exposure vs repeat-exposure conversion for the variant.",
+          "quote": "Diagnose by plotting daily effect over time and by comparing first-exposure vs repeat-exposure conversion for the variant."
+        },
+        "action": {
+          "text": "Diagnose novelty/primacy by plotting daily effect over time and comparing first-exposure vs repeat-exposure conversion.",
+          "quote": "Diagnose by plotting daily effect over time and by comparing first-exposure vs repeat-exposure conversion for the variant."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Novelty or primacy effect is suspected.",
+              "quote": "Novelty and primacy effects."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No threshold for how much daily effect change indicates novelty/primacy is stated.",
+          "Kohavi's finding that most suspected effects are statistical artifacts of early noisy cumulative deltas is noted but no test is specified."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u5",
+        "kind": "action",
+        "title": "Use bold big-swing tests for low-traffic sites",
+        "claim": {
+          "text": "The source's governing principle for below-threshold traffic is to shift from statistical proof to learning fast and cheaply; it recommends bold, big-swing A/B tests with differentiated changes targeting 10-20%+ effect rather than tweaks below about 100,000 visitors/month.",
+          "quote": "The governing principle: below the A/B threshold, the job shifts from proving things statistically to learning fast and cheaply. Test bigger, not more.\n\nMethods and when each applies:\n\nBold, big-swing A/B tests. Below about 100,000 visitors/month, default to differentiated changes with a target effect of 10-20%+, not tweaks"
+        },
+        "action": {
+          "text": "Default to differentiated changes with a target effect of 10-20%+, not tweaks, below about 100,000 visitors/month.",
+          "quote": "Below about 100,000 visitors/month, default to differentiated changes with a target effect of 10-20%+, not tweaks"
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Site has below about 100,000 visitors/month.",
+              "quote": "Below about 100,000 visitors/month"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": [
+            {
+              "text": "Avoid tweaks.",
+              "quote": "not tweaks"
+            }
+          ]
+        },
+        "completion": [],
+        "unknowns": [
+          "The source says one bold homepage test teaches more than 10 micro-tests on low-traffic category pages, but no metric for 'teaches more' is defined."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u6",
+        "kind": "action",
+        "title": "Concentrate tests on higher-traffic pages",
+        "claim": {
+          "text": "The source recommends concentrating tests where the traffic is: homepage, top product pages, cart, and not testing low-traffic category pages.",
+          "quote": "Concentrate tests where the traffic is: homepage, top product pages, cart. Do not test low-traffic category pages."
+        },
+        "action": {
+          "text": "Concentrate tests where the traffic is: homepage, top product pages, cart. Do not test low-traffic category pages.",
+          "quote": "Concentrate tests where the traffic is: homepage, top product pages, cart. Do not test low-traffic category pages."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": [
+            {
+              "text": "Do not test low-traffic category pages.",
+              "quote": "Do not test low-traffic category pages."
+            }
+          ]
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": []
+      },
+      {
+        "id": "u7",
+        "kind": "action",
+        "title": "Use sequential before/after with honest error bars only under strict conditions",
+        "claim": {
+          "text": "The source describes sequential before/after with honest error bars as a method only when parallel testing is impossible and external conditions can be held constant; it is best for large structural changes and should be treated as weak evidence.",
+          "quote": "Sequential before/after with honest error bars. Only when parallel testing is impossible and you can hold external conditions constant. Best for large structural changes. Treat as weak evidence."
+        },
+        "action": {
+          "text": "Use sequential before/after with honest error bars only when parallel testing is impossible and external conditions can be held constant.",
+          "quote": "Sequential before/after with honest error bars. Only when parallel testing is impossible and you can hold external conditions constant."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Parallel testing is impossible and external conditions can be held constant.",
+              "quote": "Only when parallel testing is impossible and you can hold external conditions constant."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Parallel testing is impossible and external conditions can be held constant.",
+              "quote": "Only when parallel testing is impossible and you can hold external conditions constant."
+            }
+          ]
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No definition of 'honest error bars' is given.",
+          "No specific external conditions are listed."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u8",
+        "kind": "action",
+        "title": "Re-test surprising large winners with a holdout",
+        "claim": {
+          "text": "The source recommends re-testing any surprising large winner with a holdout before banking the revenue.",
+          "quote": "Re-test any surprising large winner with a holdout before banking the revenue."
+        },
+        "action": {
+          "text": "Re-test any surprising large winner with a holdout before banking the revenue.",
+          "quote": "Re-test any surprising large winner with a holdout before banking the revenue."
+        },
+        "trigger": {
+          "op": "any",
+          "args": [
+            {
+              "text": "A surprising large winner is observed.",
+              "quote": "any surprising large winner"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No definition of 'surprising large' is given."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u9",
+        "kind": "action",
+        "title": "Use qualitative research first when tests are limited",
+        "claim": {
+          "text": "The source recommends qualitative research first, using session replay, surveys, and user testing to generate strong hypotheses when you cannot run many tests.",
+          "quote": "Qualitative research first. Session replay, surveys, user testing to generate strong hypotheses when you cannot run many tests."
+        },
+        "action": {
+          "text": "Use qualitative research first, with session replay, surveys, and user testing, when you cannot run many tests.",
+          "quote": "Qualitative research first. Session replay, surveys, user testing to generate strong hypotheses when you cannot run many tests."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "You cannot run many tests.",
+              "quote": "when you cannot run many tests"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No sample size or method selection criteria for qualitative research are given."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u10",
+        "kind": "action",
+        "title": "Use micro-conversions as primary metric with purchase/revenue guardrails",
+        "claim": {
+          "text": "The source suggests micro-conversions such as add-to-cart and begin-checkout as the primary metric because they are more frequent and power faster, but warns a lift may not carry through to purchase or revenue; use them as a leading indicator and keep purchase/revenue as guardrails.",
+          "quote": "Micro-conversions (add-to-cart, begin-checkout) as primary metric. They are more frequent so they power faster, but the risk is real: a lift in add-to-cart may not carry through to purchase or revenue. Use them as a leading indicator, keep purchase/revenue as guardrails."
+        },
+        "action": {
+          "text": "Use micro-conversions (add-to-cart, begin-checkout) as the primary metric and keep purchase/revenue as guardrails.",
+          "quote": "Use them as a leading indicator, keep purchase/revenue as guardrails."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No threshold for when micro-conversion lift is likely to carry through to purchase is given."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u11",
+        "kind": "action",
+        "title": "Use A/B/n and bandits only at 3,000+ orders/month",
+        "claim": {
+          "text": "The source says A/B/n and bandits should be used only at 3,000+ orders/month.",
+          "quote": "A/B/n and bandits: only at 3,000+ orders/month."
+        },
+        "action": {
+          "text": "Use A/B/n and bandits only at 3,000+ orders/month.",
+          "quote": "A/B/n and bandits: only at 3,000+ orders/month."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "At least 3,000 orders/month.",
+              "quote": "3,000+ orders/month"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": [
+            {
+              "text": "At least 3,000 orders/month.",
+              "quote": "3,000+ orders/month"
+            }
+          ]
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No further detail on bandit implementation or comparison is given in the supplied text."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u12",
+        "kind": "warning",
+        "title": "Bayesian methods are not immune to peeking",
+        "claim": {
+          "text": "The source flags that Bayesian is not immune to peeking; Alex Molas simulated peeking every 100 observations and stopping when P(A>B)>0.95, pushing false positive rate to about 80%, because a fixed posterior threshold does not control frequentist error under optional stopping.",
+          "quote": "Bayesian is not immune to peeking. Alex Molas (October 30 2025) simulated this: peeking after every 100 observations and stopping when P(A>B)>0.95 pushed the false positive rate to about 80%. A fixed posterior threshold does not control frequentist error under optional stopping."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Peeking after every 100 observations and stopping when P(A>B)>0.95.",
+              "quote": "peeking after every 100 observations and stopping when P(A>B)>0.95"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The simulation details beyond the stated threshold and observation interval are not given."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u13",
+        "kind": "action",
+        "title": "Detect and act on sample ratio mismatch",
+        "claim": {
+          "text": "The source defines sample ratio mismatch (SRM) as observed traffic split differing from designed split, recommends detecting with a chi-square goodness-of-fit test on the randomisation unit (users, not page views), and says if SRM is present the result is biased and should not be trusted until the cause is found.",
+          "quote": "Detect with a chi-square goodness-of-fit test on the randomisation unit (users, not page views). Kohavi: about 6% of Microsoft experiments show SRM. If SRM is present the result is biased and should not be trusted until the cause is found."
+        },
+        "action": {
+          "text": "Detect SRM with a chi-square goodness-of-fit test on the randomisation unit (users, not page views).",
+          "quote": "Detect with a chi-square goodness-of-fit test on the randomisation unit (users, not page views)."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Observed traffic split differs from designed split.",
+              "quote": "the observed traffic split differs from the designed split"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No repair procedure beyond finding the cause is given."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u14",
+        "kind": "action",
+        "title": "Mitigate flicker in client-side tests",
+        "claim": {
+          "text": "The source describes flicker (FOOC) in client-side tests where the original page renders briefly before JavaScript swaps in the variant; GrowthBook says it can lead to inaccurate or unreliable results and may even inflate effects, so flicker both hurts UX and biases the read.",
+          "quote": "Flicker (FOOC, Flash of Original Content): in client-side tests the original page renders briefly before JavaScript swaps in the variant."
+        },
+        "action": {
+          "text": "Mitigate with anti-flicker snippets (hide body until variant ready), synchronous script loading high in the head, or server-side testing.",
+          "quote": "Mitigate with anti-flicker snippets (hide body until variant ready), synchronous script loading high in the head, or server-side testing."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Client-side test renders original page briefly before JavaScript swaps in the variant.",
+              "quote": "in client-side tests the original page renders briefly before JavaScript swaps in the variant"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "Anti-flicker snippets hide the page for up to 3-4 seconds by default and slow initial load; no threshold for acceptable cost is given."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u15",
+        "kind": "action",
+        "title": "Consider CUPED only with appropriate pre-experiment data",
+        "claim": {
+          "text": "The source says CUPED uses pre-experiment data as a covariate to strip out variance not caused by treatment; the adjusted estimator stays unbiased with lower variance, and Optimizely's glossary says it can cut sample requirements 30-50% for metrics with strong correlation to historical behaviour. DTC practicality is mixed.",
+          "quote": "Uses pre-experiment data (usually the same metric measured before the test) as a covariate to strip out variance not caused by the treatment."
+        },
+        "action": {
+          "text": "Turn on CUPED if your platform offers it and you have returning identified users; it is not a magic fix for a brand with mostly new, anonymous traffic.",
+          "quote": "worth turning on if your platform offers it and you have returning identified users; not a magic fix for a brand with mostly new, anonymous traffic."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Platform offers CUPED and you have returning identified users.",
+              "quote": "if your platform offers it and you have returning identified users"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": [
+            {
+              "text": "CUPED needs pre-experiment data keyed to the same user, which means logged-in users or stable device IDs.",
+              "quote": "CUPED needs pre-experiment data keyed to the same user, which means logged-in users or stable device IDs."
+            }
+          ]
+        },
+        "exclusions": {
+          "op": "any",
+          "args": [
+            {
+              "text": "For a DTC brand where most checkout traffic is new or not logged in, the pre-period covariate is often missing or weakly correlated.",
+              "quote": "For a DTC brand where most checkout traffic is new or not logged in, the pre-period covariate is often missing or weakly correlated, so the variance reduction is smaller."
+            }
+          ]
+        },
+        "completion": [],
+        "unknowns": [
+          "The source says simpler cousins help ecommerce more: pick a proportion metric instead of a raw revenue mean, and winsorize outlier orders, but does not give thresholds."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u16",
+        "kind": "unresolved_claim",
+        "title": "Multi-armed bandits vs A/B tests comparison is cut off",
+        "claim": {
+          "text": "The source introduces section 8 on multi-armed bandits vs A/B tests and describes A/B tests, but the supplied text ends after the A/B description; the bandit comparison and continuation are missing.",
+          "quote": "A/B test: two periods, explore (split evenly) then exploit (ship winner). Best when you need a clean, high-confidence causal read before a lasting change: redesigns, pricing, navigation, checkout. Gives a defensible answer and a measured effect size."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The section title is '8. multi-armed bandits vs A/B tests', but no bandit-specific guidance or comparison is present in the supplied text.",
+          "The continuation after 'Gives a defensible answer and a measured effect size.' is missing."
+        ],
+        "relations": []
+      }
+    ],
+    "more_units": true,
+    "unresolved": [
+      "Omitted from this batch due to cap: Bayesian vs frequentist pros/cons, how tools report statistical methods (VWO, Optimizely, AB Tasty, Eppo, Statsig, GrowthBook), commercial Bayesian tools using uninformative/flat priors, bot traffic filtering, tracking breakage invalidation, seasonality/promotion overlap, multiple comparisons correction, segment fishing pre-registration, Twyman's law auditing rule, and bandit-specific guidance after the A/B test description.",
+      "The multi-armed bandits vs A/B tests section is cut off after the A/B test description; the bandit comparison and continuation are missing.",
+      "The provided text does not state how to resolve contradictory platform instructions; current primary-source verification would be needed for live deployment."
+    ]
+  },
+  "raw_content": "{\"units\":[{\"id\":\"u1\",\"kind\":\"warning\",\"title\":\"Peeking inflates false positives\",\"claim\":{\"text\":\"The source warns that testing after every observation and stopping at first p<0.05 turns a nominal 5% false positive rate into 26.1%.\",\"quote\":\"Miller's worst case: testing after every observation and stopping at first p<0.05 turns a nominal 5% false positive rate into 26.1%.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Testing after every observation and stopping at first p<0.05.\",\"quote\":\"testing after every observation and stopping at first p<0.05\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"No direct recommendation on whether to avoid peeking or use sequential methods is stated in this unit; sequential methods are covered separately.\"],\"relations\":[{\"kind\":\"alternative_to\",\"target\":\"u2\"}]},{\"id\":\"u2\",\"kind\":\"principle\",\"title\":\"Sequential methods legitimise looking early\",\"claim\":{\"text\":\"The source states that sequential methods legitimise looking early, listing mSPRT, GAVI, group sequential design with alpha spending, and corrected-alpha approach.\",\"quote\":\"Sequential methods legitimise looking early:\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"Tradeoff: always-valid methods cost power (wider intervals) versus a correctly-sized fixed test; Spotify's guidance is conditional on ability to estimate expected sample size.\"],\"relations\":[{\"kind\":\"alternative_to\",\"target\":\"u1\"}]},{\"id\":\"u3\",\"kind\":\"action\",\"title\":\"Run a minimum test duration of at least one week\",\"claim\":{\"text\":\"The source recommends a minimum runtime of at least one full week, and in practice two, to cover the weekly business cycle and returning visitors.\",\"quote\":\"run at least one full week, and in practice two\"},\"action\":{\"text\":\"Run at least one full week, and in practice two, to cover the weekly business cycle.\",\"quote\":\"run at least one full week, and in practice two\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"No specific stopping rule or metric for determining the full cycle beyond the statement is given.\"],\"relations\":[]},{\"id\":\"u4\",\"kind\":\"action\",\"title\":\"Diagnose novelty and primacy effects\",\"claim\":{\"text\":\"The source describes novelty and primacy as threats to external validity, and says to diagnose by plotting daily effect over time and comparing first-exposure vs repeat-exposure conversion for the variant.\",\"quote\":\"Diagnose by plotting daily effect over time and by comparing first-exposure vs repeat-exposure conversion for the variant.\"},\"action\":{\"text\":\"Diagnose novelty/primacy by plotting daily effect over time and comparing first-exposure vs repeat-exposure conversion.\",\"quote\":\"Diagnose by plotting daily effect over time and by comparing first-exposure vs repeat-exposure conversion for the variant.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Novelty or primacy effect is suspected.\",\"quote\":\"Novelty and primacy effects.\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"No threshold for how much daily effect change indicates novelty/primacy is stated.\",\"Kohavi's finding that most suspected effects are statistical artifacts of early noisy cumulative deltas is noted but no test is specified.\"],\"relations\":[]},{\"id\":\"u5\",\"kind\":\"action\",\"title\":\"Use bold big-swing tests for low-traffic sites\",\"claim\":{\"text\":\"The source's governing principle for below-threshold traffic is to shift from statistical proof to learning fast and cheaply; it recommends bold, big-swing A/B tests with differentiated changes targeting 10-20%+ effect rather than tweaks below about 100,000 visitors/month.\",\"quote\":\"The governing principle: below the A/B threshold, the job shifts from proving things statistically to learning fast and cheaply. Test bigger, not more.\\n\\nMethods and when each applies:\\n\\nBold, big-swing A/B tests. Below about 100,000 visitors/month, default to differentiated changes with a target effect of 10-20%+, not tweaks\"},\"action\":{\"text\":\"Default to differentiated changes with a target effect of 10-20%+, not tweaks, below about 100,000 visitors/month.\",\"quote\":\"Below about 100,000 visitors/month, default to differentiated changes with a target effect of 10-20%+, not tweaks\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Site has below about 100,000 visitors/month.\",\"quote\":\"Below about 100,000 visitors/month\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[{\"text\":\"Avoid tweaks.\",\"quote\":\"not tweaks\"}]},\"completion\":[],\"unknowns\":[\"The source says one bold homepage test teaches more than 10 micro-tests on low-traffic category pages, but no metric for 'teaches more' is defined.\"],\"relations\":[]},{\"id\":\"u6\",\"kind\":\"action\",\"title\":\"Concentrate tests on higher-traffic pages\",\"claim\":{\"text\":\"The source recommends concentrating tests where the traffic is: homepage, top product pages, cart, and not testing low-traffic category pages.\",\"quote\":\"Concentrate tests where the traffic is: homepage, top product pages, cart. Do not test low-traffic category pages.\"},\"action\":{\"text\":\"Concentrate tests where the traffic is: homepage, top product pages, cart. Do not test low-traffic category pages.\",\"quote\":\"Concentrate tests where the traffic is: homepage, top product pages, cart. Do not test low-traffic category pages.\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[{\"text\":\"Do not test low-traffic category pages.\",\"quote\":\"Do not test low-traffic category pages.\"}]},\"completion\":[],\"unknowns\":[],\"relations\":[]},{\"id\":\"u7\",\"kind\":\"action\",\"title\":\"Use sequential before/after with honest error bars only under strict conditions\",\"claim\":{\"text\":\"The source describes sequential before/after with honest error bars as a method only when parallel testing is impossible and external conditions can be held constant; it is best for large structural changes and should be treated as weak evidence.\",\"quote\":\"Sequential before/after with honest error bars. Only when parallel testing is impossible and you can hold external conditions constant. Best for large structural changes. Treat as weak evidence.\"},\"action\":{\"text\":\"Use sequential before/after with honest error bars only when parallel testing is impossible and external conditions can be held constant.\",\"quote\":\"Sequential before/after with honest error bars. Only when parallel testing is impossible and you can hold external conditions constant.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Parallel testing is impossible and external conditions can be held constant.\",\"quote\":\"Only when parallel testing is impossible and you can hold external conditions constant.\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[{\"text\":\"Parallel testing is impossible and external conditions can be held constant.\",\"quote\":\"Only when parallel testing is impossible and you can hold external conditions constant.\"}]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"No definition of 'honest error bars' is given.\",\"No specific external conditions are listed.\"],\"relations\":[]},{\"id\":\"u8\",\"kind\":\"action\",\"title\":\"Re-test surprising large winners with a holdout\",\"claim\":{\"text\":\"The source recommends re-testing any surprising large winner with a holdout before banking the revenue.\",\"quote\":\"Re-test any surprising large winner with a holdout before banking the revenue.\"},\"action\":{\"text\":\"Re-test any surprising large winner with a holdout before banking the revenue.\",\"quote\":\"Re-test any surprising large winner with a holdout before banking the revenue.\"},\"trigger\":{\"op\":\"any\",\"args\":[{\"text\":\"A surprising large winner is observed.\",\"quote\":\"any surprising large winner\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"No definition of 'surprising large' is given.\"],\"relations\":[]},{\"id\":\"u9\",\"kind\":\"action\",\"title\":\"Use qualitative research first when tests are limited\",\"claim\":{\"text\":\"The source recommends qualitative research first, using session replay, surveys, and user testing to generate strong hypotheses when you cannot run many tests.\",\"quote\":\"Qualitative research first. Session replay, surveys, user testing to generate strong hypotheses when you cannot run many tests.\"},\"action\":{\"text\":\"Use qualitative research first, with session replay, surveys, and user testing, when you cannot run many tests.\",\"quote\":\"Qualitative research first. Session replay, surveys, user testing to generate strong hypotheses when you cannot run many tests.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"You cannot run many tests.\",\"quote\":\"when you cannot run many tests\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"No sample size or method selection criteria for qualitative research are given.\"],\"relations\":[]},{\"id\":\"u10\",\"kind\":\"action\",\"title\":\"Use micro-conversions as primary metric with purchase/revenue guardrails\",\"claim\":{\"text\":\"The source suggests micro-conversions such as add-to-cart and begin-checkout as the primary metric because they are more frequent and power faster, but warns a lift may not carry through to purchase or revenue; use them as a leading indicator and keep purchase/revenue as guardrails.\",\"quote\":\"Micro-conversions (add-to-cart, begin-checkout) as primary metric. They are more frequent so they power faster, but the risk is real: a lift in add-to-cart may not carry through to purchase or revenue. Use them as a leading indicator, keep purchase/revenue as guardrails.\"},\"action\":{\"text\":\"Use micro-conversions (add-to-cart, begin-checkout) as the primary metric and keep purchase/revenue as guardrails.\",\"quote\":\"Use them as a leading indicator, keep purchase/revenue as guardrails.\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"No threshold for when micro-conversion lift is likely to carry through to purchase is given.\"],\"relations\":[]},{\"id\":\"u11\",\"kind\":\"action\",\"title\":\"Use A/B/n and bandits only at 3,000+ orders/month\",\"claim\":{\"text\":\"The source says A/B/n and bandits should be used only at 3,000+ orders/month.\",\"quote\":\"A/B/n and bandits: only at 3,000+ orders/month.\"},\"action\":{\"text\":\"Use A/B/n and bandits only at 3,000+ orders/month.\",\"quote\":\"A/B/n and bandits: only at 3,000+ orders/month.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"At least 3,000 orders/month.\",\"quote\":\"3,000+ orders/month\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[{\"text\":\"At least 3,000 orders/month.\",\"quote\":\"3,000+ orders/month\"}]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"No further detail on bandit implementation or comparison is given in the supplied text.\"],\"relations\":[]},{\"id\":\"u12\",\"kind\":\"warning\",\"title\":\"Bayesian methods are not immune to peeking\",\"claim\":{\"text\":\"The source flags that Bayesian is not immune to peeking; Alex Molas simulated peeking every 100 observations and stopping when P(A>B)>0.95, pushing false positive rate to about 80%, because a fixed posterior threshold does not control frequentist error under optional stopping.\",\"quote\":\"Bayesian is not immune to peeking. Alex Molas (October 30 2025) simulated this: peeking after every 100 observations and stopping when P(A>B)>0.95 pushed the false positive rate to about 80%. A fixed posterior threshold does not control frequentist error under optional stopping.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Peeking after every 100 observations and stopping when P(A>B)>0.95.\",\"quote\":\"peeking after every 100 observations and stopping when P(A>B)>0.95\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The simulation details beyond the stated threshold and observation interval are not given.\"],\"relations\":[]},{\"id\":\"u13\",\"kind\":\"action\",\"title\":\"Detect and act on sample ratio mismatch\",\"claim\":{\"text\":\"The source defines sample ratio mismatch (SRM) as observed traffic split differing from designed split, recommends detecting with a chi-square goodness-of-fit test on the randomisation unit (users, not page views), and says if SRM is present the result is biased and should not be trusted until the cause is found.\",\"quote\":\"Detect with a chi-square goodness-of-fit test on the randomisation unit (users, not page views). Kohavi: about 6% of Microsoft experiments show SRM. If SRM is present the result is biased and should not be trusted until the cause is found.\"},\"action\":{\"text\":\"Detect SRM with a chi-square goodness-of-fit test on the randomisation unit (users, not page views).\",\"quote\":\"Detect with a chi-square goodness-of-fit test on the randomisation unit (users, not page views).\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Observed traffic split differs from designed split.\",\"quote\":\"the observed traffic split differs from the designed split\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"No repair procedure beyond finding the cause is given.\"],\"relations\":[]},{\"id\":\"u14\",\"kind\":\"action\",\"title\":\"Mitigate flicker in client-side tests\",\"claim\":{\"text\":\"The source describes flicker (FOOC) in client-side tests where the original page renders briefly before JavaScript swaps in the variant; GrowthBook says it can lead to inaccurate or unreliable results and may even inflate effects, so flicker both hurts UX and biases the read.\",\"quote\":\"Flicker (FOOC, Flash of Original Content): in client-side tests the original page renders briefly before JavaScript swaps in the variant.\"},\"action\":{\"text\":\"Mitigate with anti-flicker snippets (hide body until variant ready), synchronous script loading high in the head, or server-side testing.\",\"quote\":\"Mitigate with anti-flicker snippets (hide body until variant ready), synchronous script loading high in the head, or server-side testing.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Client-side test renders original page briefly before JavaScript swaps in the variant.\",\"quote\":\"in client-side tests the original page renders briefly before JavaScript swaps in the variant\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"Anti-flicker snippets hide the page for up to 3-4 seconds by default and slow initial load; no threshold for acceptable cost is given.\"],\"relations\":[]},{\"id\":\"u15\",\"kind\":\"action\",\"title\":\"Consider CUPED only with appropriate pre-experiment data\",\"claim\":{\"text\":\"The source says CUPED uses pre-experiment data as a covariate to strip out variance not caused by treatment; the adjusted estimator stays unbiased with lower variance, and Optimizely's glossary says it can cut sample requirements 30-50% for metrics with strong correlation to historical behaviour. DTC practicality is mixed.\",\"quote\":\"Uses pre-experiment data (usually the same metric measured before the test) as a covariate to strip out variance not caused by the treatment.\"},\"action\":{\"text\":\"Turn on CUPED if your platform offers it and you have returning identified users; it is not a magic fix for a brand with mostly new, anonymous traffic.\",\"quote\":\"worth turning on if your platform offers it and you have returning identified users; not a magic fix for a brand with mostly new, anonymous traffic.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Platform offers CUPED and you have returning identified users.\",\"quote\":\"if your platform offers it and you have returning identified users\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[{\"text\":\"CUPED needs pre-experiment data keyed to the same user, which means logged-in users or stable device IDs.\",\"quote\":\"CUPED needs pre-experiment data keyed to the same user, which means logged-in users or stable device IDs.\"}]},\"exclusions\":{\"op\":\"any\",\"args\":[{\"text\":\"For a DTC brand where most checkout traffic is new or not logged in, the pre-period covariate is often missing or weakly correlated.\",\"quote\":\"For a DTC brand where most checkout traffic is new or not logged in, the pre-period covariate is often missing or weakly correlated, so the variance reduction is smaller.\"}]},\"completion\":[],\"unknowns\":[\"The source says simpler cousins help ecommerce more: pick a proportion metric instead of a raw revenue mean, and winsorize outlier orders, but does not give thresholds.\"],\"relations\":[]},{\"id\":\"u16\",\"kind\":\"unresolved_claim\",\"title\":\"Multi-armed bandits vs A/B tests comparison is cut off\",\"claim\":{\"text\":\"The source introduces section 8 on multi-armed bandits vs A/B tests and describes A/B tests, but the supplied text ends after the A/B description; the bandit comparison and continuation are missing.\",\"quote\":\"A/B test: two periods, explore (split evenly) then exploit (ship winner). Best when you need a clean, high-confidence causal read before a lasting change: redesigns, pricing, navigation, checkout. Gives a defensible answer and a measured effect size.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The section title is '8. multi-armed bandits vs A/B tests', but no bandit-specific guidance or comparison is present in the supplied text.\",\"The continuation after 'Gives a defensible answer and a measured effect size.' is missing.\"],\"relations\":[]}],\"more_units\":true,\"unresolved\":[\"Omitted from this batch due to cap: Bayesian vs frequentist pros/cons, how tools report statistical methods (VWO, Optimizely, AB Tasty, Eppo, Statsig, GrowthBook), commercial Bayesian tools using uninformative/flat priors, bot traffic filtering, tracking breakage invalidation, seasonality/promotion overlap, multiple comparisons correction, segment fishing pre-registration, Twyman's law auditing rule, and bandit-specific guidance after the A/B test description.\",\"The multi-armed bandits vs A/B tests section is cut off after the A/B test description; the bandit comparison and continuation are missing.\",\"The provided text does not state how to resolve contradictory platform instructions; current primary-source verification would be needed for live deployment.\"]}",
+  "input": {
+    "source": {
+      "source_id": "1-erJBJ6iVbCFgrxQ0SjuTi9kbLRL2jmF",
+      "source_sha256": "42e318e0530deaa30558f2eb1c023810a59587984aa4057a0b40a9194f8b1356",
+      "locator": "batch",
+      "start": 0,
+      "text": "Peeking inflates false positives. Miller's worst case: testing after every observation and stopping at first p<0.05 turns a nominal 5% false positive rate into 26.1%. His peeking table: to get a true 5% you need reported significance of 2.9% (1 peek), 2.2% (2), 1.8% (3), 1.4% (5), 1.0% (10). Etsy Engineering (Code as Craft, October 3 2018) put numbers on it with a true null at a 50% baseline and alpha 0.10: \"if we do peek and we check the significance level at every observation, then after 500 observations, there is over a 50% chance of incorrectly stating that treatment is different than the control.\" Kohavi and Sonnet's practical number: running two weeks then checking daily for two more weeks pushes a 5% error rate to about 17%.\n\nSequential methods legitimise looking early:\n\nmSPRT (mixture sequential probability ratio test): Johari, Koomen, Pekelis, Walsh, \"Always Valid Inference\" (arXiv 2015; Operations Research 2022). Produces always-valid p-values valid at any stopping time. Used by Optimizely, Uber, Netflix, Amplitude.\n\nGAVI (generalisation of always-valid inference): Howard et al. 2021 confidence sequences. Used by Eppo.\n\nGroup sequential design (GST) with alpha spending: Lan-DeMets 1983. Used by Spotify, which prefers GST over AVI for its power advantage in batch-analysed settings (Spotify Engineering, March 2023).\n\nCorrected-alpha approach (CAA): used by Statsig. Tradeoff: always-valid methods let you stop any time but cost power (wider intervals) versus a correctly-sized fixed test. Spotify's guidance: if you can estimate the expected sample size well, GST is more powerful; if you cannot, always-valid is safer.\n\nMinimum runtime: run at least one full week, and in practice two, to cover the weekly business cycle (Kohavi, \"Five Puzzling Outcomes\"). Weekends convert differently from weekdays; buyers differ by day. Two weeks captures one full cycle of returning visitors.\n\nNovelty and primacy effects. Novelty: a change gets a temporary bump because it is new; the effect decays. Primacy: existing users are primed to the old design and the new one underperforms at first, then recovers. Both are threats to external validity (Kohavi, Trustworthy Online Controlled Experiments). Diagnose by plotting daily effect over time and by comparing first-exposure vs repeat-exposure conversion for the variant. Kohavi's surprising finding: most suspected novelty/primacy effects are actually statistical artifacts of early, noisy cumulative deltas, not real trends.\n\n4. low-traffic methods with thresholds\n\nThe governing principle: below the A/B threshold, the job shifts from proving things statistically to learning fast and cheaply. Test bigger, not more.\n\nMethods and when each applies:\n\nBold, big-swing A/B tests. Below about 100,000 visitors/month, default to differentiated changes with a target effect of 10-20%+, not tweaks (aiformarketing.news; VWO concedes low-traffic sites should make big changes). One bold homepage test teaches more than 10 micro-tests on low-traffic category pages (SplitBase).\n\nTest on higher-traffic pages. Concentrate tests where the traffic is: homepage, top product pages, cart. Do not test low-traffic category pages.\n\nSequential before/after with honest error bars. Only when parallel testing is impossible and you can hold external conditions constant. Best for large structural changes. Treat as weak evidence.\n\nHoldouts and pre/post with controls. Re-test any surprising large winner with a holdout before banking the revenue.\n\nQualitative research first. Session replay, surveys, user testing to generate strong hypotheses when you cannot run many tests.\n\nMicro-conversions (add-to-cart, begin-checkout) as primary metric. They are more frequent so they power faster, but the risk is real: a lift in add-to-cart may not carry through to purchase or revenue. Use them as a leading indicator, keep purchase/revenue as guardrails.\n\nA/B/n and bandits: only at 3,000+ orders/month.\n\n5. Bayesian vs frequentist in practice\n\nFrequentist: controls long-run error rates via pre-set sample size, fixed alpha, analysis plan. Outputs p-values and confidence intervals. Pros: explicit error-rate contract, forces upfront MDE/sample discipline, reproducible across tools (a z-test is a z-test). Cons: p-values are widely misinterpreted, the 0.05 cliff is artificial, fixed sample is rigid, peeking silently breaks it.\n\nBayesian: computes posterior probabilities given data and a prior. Outputs \"probability B beats A\" and expected loss. Pros: intuitive for stakeholders, gives magnitude and risk, credible intervals mean what people think. Cons: priors are subjective and usually hidden by vendors; \"probability to be best\" can mislead without a loss function.\n\nHow tools report:\n\nVWO SmartStats: Bayesian, Beta-Binomial conjugate with Monte Carlo, reports probability-to-beat-baseline and expected loss.\n\nOptimizely Stats Engine: frequentist with mSPRT always-valid p-values plus False Discovery Rate control instead of raw Type I control.\n\nAB Tasty: Bayesian by preference.\n\nEppo: Bayesian with shrinkage plus GAVI sequential.\n\nStatsig: sequential always-valid (corrected-alpha).\n\nGrowthBook: both frequentist and Bayesian, plus sequential.\n\nThe two big pitfalls to flag: (1) Bayesian is not immune to peeking. Alex Molas (October 30 2025) simulated this: peeking after every 100 observations and stopping when P(A>B)>0.95 pushed the false positive rate to about 80%. A fixed posterior threshold does not control frequentist error under optional stopping. (2) Most commercial \"Bayesian\" tools use uninformative/flat priors, which makes them mathematically close to frequentist tests but with less transparency about what prior was used. If you cannot state the prior, you cannot fully interpret or reproduce the result (Convert.com; dripagency.de).\n\n6. common invalidations\n\nSample ratio mismatch (SRM): the observed traffic split differs from the designed split (e.g. 50/50 comes back 50.3/49.7). Detect with a chi-square goodness-of-fit test on the randomisation unit (users, not page views). Kohavi: about 6% of Microsoft experiments show SRM. If SRM is present the result is biased and should not be trusted until the cause is found. Kameleoon flags SRM at p<0.001. Test early and often; it is easy to run in a spreadsheet.\n\nFlicker (FOOC, Flash of Original Content): in client-side tests the original page renders briefly before JavaScript swaps in the variant. GrowthBook docs: \"this flickering can lead to inaccurate or unreliable test results... rather counterintuitively, flickering may have a positive effect on the results, sometimes the flashing may draw a user's attention to that variation, and cause an inflation in the effect.\" So flicker both hurts UX and biases the read. Mitigate with anti-flicker snippets (hide body until variant ready), synchronous script loading high in the head, or server-side testing. Anti-flicker snippets have a cost: they hide the page for up to 3-4 seconds by default and slow initial load (DebugBear; Andy Davies).\n\nBot traffic: bots create skew and SRM; filter them (Kohavi/Sonnet).\n\nTracking breakage: if the pixel/event breaks mid-test, the experiment is invalid. This is the one MEA concern that belongs here.\n\nSeasonality and promotions overlapping a test: a sale or holiday during one variant's window confounds before/after tests and can distort even parallel tests if it changes the visitor mix.\n\nMultiple comparisons: testing many metrics or segments inflates false positives. With one decision metric error is 5%, two metrics about 10%, three about 14% (Kohavi/Sonnet). Correct with Bonferroni or FDR.\n\nNovelty effects: see section 3.\n\nSegment fishing: slicing results after the fact until you find a \"winning\" segment is p-hacking. Pre-register segments.\n\nStopping early: see peeking, section 3.\n\nTwyman's law: any figure that looks interesting or surprising is usually wrong. A 364% lift is more likely an instrumentation bug, SRM, or contamination than a discovery (Kohavi). This is the anchor rule for auditing case studies.\n\n7. variance reduction: CUPED\n\nCUPED (Controlled-experiment Using Pre-Experiment Data), Deng, Xu, Kohavi, Walker, Microsoft 2013. Uses pre-experiment data (usually the same metric measured before the test) as a covariate to strip out variance not caused by the treatment. Adjusted estimator stays unbiased but has lower variance, so you reach significance faster or detect smaller effects at the same sample. Optimizely's glossary: can cut sample requirements 30-50% for metrics with strong correlation to historical behaviour. Now default-on in several tools (Datadog, Optimizely) and used by Netflix, Airbnb, Booking.\n\nPracticality for DTC: mixed. CUPED needs pre-experiment data keyed to the same user, which means logged-in users or stable device IDs. For a DTC brand where most checkout traffic is new or not logged in, the pre-period covariate is often missing or weakly correlated, so the variance reduction is smaller. The clearest evidence of the ceiling: Jin, Ba and colleagues at LinkedIn (\"Towards Optimal Variance Reduction in Online Controlled Experiments\", arXiv 2110.13406) ran CUPED on n=400,000 feed members and found it \"reduces 15.91% of variance compared to the diff-in-mean estimator\", limited because \"member's revenue is a volatile metric whose autocorrelation across different time periods is weak.\" Verdict: worth turning on if your platform offers it and you have returning identified users; not a magic fix for a brand with mostly new, anonymous traffic. Simpler cousins that help ecommerce more: pick a proportion metric instead of a raw revenue mean, and winsorize (cap) outlier orders.\n\n8. multi-armed bandits vs A/B tests\n\nA/B test: two periods, explore (split evenly) then exploit (ship winner). Best when you need a clean, high-confidence causal read before a lasting change: redesigns, pricing, navigation, checkout. Gives a defensible answer and a measured effect size."
+    },
+    "already_extracted_claims": [],
+    "instruction": "Extract remaining distinct task-sized units. Do not repeat already extracted claims."
+  },
+  "system_prompt_sha256": "f23d9572f5bf1b93a5822a96b30f4ea85c0469c454d5ce80d227418df3d2e25e"
+}

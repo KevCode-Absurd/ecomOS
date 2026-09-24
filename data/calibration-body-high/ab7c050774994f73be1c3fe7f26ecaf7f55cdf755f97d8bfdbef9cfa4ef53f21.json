@@ -1,0 +1,113 @@
+{
+  "summary": {
+    "case_index": 19,
+    "provider": "deepseek",
+    "model": "deepseek-flash",
+    "booked_cost_usd": 0.0089367,
+    "seconds": 27.78,
+    "cards": 3,
+    "checks": [],
+    "origin": "uncertain",
+    "publication_status": "review_only"
+  },
+  "evidence": {
+    "source_id": "1VoLYmy_EdEqYdss2JbmmJWq3tAarNIXb",
+    "source_sha256": "7acfa49289c2d801448a5aee30cc358b48d6b88404efe8a40a7737ca33d0a86a",
+    "folder": "/20-FIN-finance-and-accounting",
+    "locator": "body:25/paragraph",
+    "provenance_status": "unverified_body_candidate",
+    "start": 56986,
+    "end": 66986,
+    "text": "ple that for example might see a billboard up here and this is obviously a super extreme example but let's say someone sees a billboard and they become aware of uh the brand. They then see a TV ad which reinforces that they actually really want to buy your stuff because there was an influencer in there who they connect with. Then eventually they get an ad on Facebook. They click on the ad and they buy. Now did that ad on Facebook cause them to buy? Probably not. Like yes it got it over the edge at that specific moment but they were going to buy regardless at the next point of activation. It was the billboard and the TV that actually warmed them up at the top of funnel but these got no attribution. Now, it's the same thing across platforms. And so, a really evident example of this actually right now for us, and this might change depending on when you're watching this video, is Tik Tok to Meta to Google. Now, this isn't applicable for everyone. This is a very unique circumstance, but it at least gets the point across, which is that we're finding at the moment for some very large retail brands that Tik Tok is actually underattributing substantially because it's getting impressions. It's getting in front of people in new markets, but they don't actually click off the platform much. or if they do click off the platform, they click off, they look at the product page, but they don't buy. Then once we have them in the pixel, Meta goes and follows up and retargets them. And we end up capturing a lot of increased demand on Meta when we increase our Tik Tok spend. And then finally, people that still haven't bought after Tik Tok and Meta, they end up going to Google. They search for the brand name, they click and buy. And so when we increase Tik Tok spend, our meta rorowaz goes up and our Google rorowaz goes up. Tik Tok doesn't. If we're using rorowaz as the indicator for performance and budget allocation across the business particularly and this is where this becomes a very large issue is when this is reporting up to a seuite a seuite will see return on ad spend numbers across these different channels and go okay tik tok we should cut it's not driving returns meta is okay let's decrease budget and team let's put more budget into Google that would be a fundamentally terrible idea because what we're effectively saying there is let's cut all the top of funnel generation and move to just bottom of funnel bottom of funnel will stop working unless there is top ofunnel generation. And so rorowaz ends up misleading people in terms of decision-m unless there's a lot of additional nuance in understanding what is actually driving impact in the business. And so we need to go to better measurement systems to be able to actually encapsulate this, understand it, and then communicate it to a seauite or if you're a small business just to you as the founder. Now we could go on and on about the other limitations of attribution and return on ad spend here, but this is fundamentally the crux of why this metric misleads you in terms of decision-making. So then we move one stage up in the pyramid and we get to financial grade KPIs. Now these are metrics like acquisition me. You can throw me in here as well. We've got profit contribution which we've ran through. We have CAC which we've ran through. So these are all metrics that aren't relying on the inplatform attributed numbers to be able to calculate them, but instead they're using the actual financial metrics that exist within the business. So the actual amount of new customers that you're acquiring, the actual new customer revenue, and then we're dividing by the actual ad spend. So this is all metrics that aren't relying on any kind of correlation calculation but instead are directly associated to financial metric. And so because of that the reliability is much better as we move up the pyramid reliability improves. However, speed decreases and so what ends up being the case with these metrics is them going up and down. You need to look at this on slightly longer time periods to be able to make correct decisions. Whereas you will get faster feedback loops generally speaking on your inplatform metrics. So why would we even use this bottom half of the pyramid at all? Why would we even look at rorowaz CPA? They are helpful in directional campaign feedback and ad feedback within the siloed platform. So what we do not want to do, what would be a big mistake is comparing a rorowaz number on a Google campaign to a rorowaz number on a meta campaign because they have different attribution models. They're sitting at different points in the funnel. They're driving different incremental impact to the business. If we took both of the campaigns and we pushed budget up, one of them would drive excess return compared to the other irrespective of the rorowaz number on the campaign. So these are helpful directionally within the own platform. So if we're looking at two meta campaigns next to each other, we can compare rorowaz, we can use that to make decisions. But if we start comparing platforms, if we start zooming out and making larger business level decisions based on these numbers, that's where we can start to mislead ourselves and go into using low reliability, low data integrity level metric. And then all the way up the top here, we have incrementality testing. We won't dive into this in too much detail in this video, but the crux of the way that this works is that you take an area, generally the whole country. You split down by states. In Australia, you have to split down by commuting zones rather than states because there's not enough state selection. And from there, you hold out a particular area. Now, typically it might even be two states. So, we can go and grab two different states that are next to each other. And then we hold them out. Now, a hold out means that we increase spend everywhere else except here. and we see what is the differential or we can just increase spend here in the control group or we can cut spend entirely. So we have a lot of different options in terms of test design here. But the idea is that when we isolate a large control verse treatment group, we can start to measure the incrementality of changing different campaign types. And so we might go and take that Tik Tok campaign I was talking about before that doesn't seem to be doing well and we might double budgets in these states. And then over a 30-day period, we measure the revenue realization difference over that 30 days and maybe new customer revenue doubles. And so as a function of that we can take the lift in new customer revenue against the control. We can do an incremental return on ad spend calculation and we end up getting a very accurate read on the impact that these campaigns are making. Now that is an unbelievably simplified explanation of how this test design actually works. It's actually a lot more complicated. I could make a 2-hour video just on the data science and approach to building incrementality tests which I think we actually might do at some point. That is the crux of the idea as to how it works. I do not recommend that you go away from this video and think, \"Oh, that was a really interesting idea. Let me just make a Google sheet and start doubling budgets in states.\" If you do that, you won't get good results. It'll pretty much always say states aren't incremental because the test design isn't set up correctly. You'll end up way overspending or under spending. You won't get statistically relevant results. You need at least a fundamental understanding of data science to be able to start to approach this portion of the pyramid. Um, but that is ultimately the most reliable option. It's just very slow. You can't run a lot of them and you're quite restricted. Now, I said before that I was a little bit hesitant, put me in here. And the reason why I was a little bit hesitant is that me is revenue divided by ad spend. Sometimes people will do this the other way round and they'll do ad spend divided by revenue which will give you a percentage number. This instead will give you a multiple number. And so if we for example have $100 in revenue and $50 in ad spend, our me would be a two. So every dollar we spend on ad spend we get in revenue. You could also look at this as an ROI calculation. Now, this looks really good and this looks like a good way to index the performance of total spend across all of our media channels against total revenue. But the reason why it's fundamentally a terrible metric for indexing the performance of paid media over time is that it includes a large bucket of revenue that has very little to do with paid ad, which is returning customer revenue. And so, we really want to strip returning customer revenue out of this calculation because we don't want marketing taking credit for all these returning customers that would have returned anywhere. So that's why we always want to delineate all of our finance grade metrics into new customerbased metric. And so rather than looking at me, we want to look at a me, which is new customer revenue divided by ad spend. And this might actually give us in this example a 1.4, which might not actually be profitable at all for us. And so we might want to be rethinking our whole acquisition strategy based on this delineation to a better number. Now, there is a metric that's better than everything that I just put down in the finance grade section of that pyramid. because I wanted to spend some time on it by itself and give you benchmarks. Now, this is LTGP to CAC, similar to what we talked about before when we had CAC and I said that we needed a pairing metric to be able to contextualize it. This is contextualizing those two numbers. So, we're taking the gross profit on a customer and we're dividing by the cost to acquire that customer. And this will give us an integer. And so, as an example, if we make $100 on a customer, it costs us $33 to actually get that "
+  },
+  "usage": {
+    "prompt_tokens": 2529,
+    "completion_tokens": 6815,
+    "total_tokens": 9344,
+    "prompt_tokens_details": {
+      "cached_tokens": 128
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 5792
+    },
+    "prompt_cache_hit_tokens": 128,
+    "prompt_cache_miss_tokens": 2401
+  },
+  "output": {
+    "origin_assessment": "uncertain",
+    "cards": [
+      {
+        "title": "Use in-platform ROAS directionally, not across platforms",
+        "claim": "In-platform ROAS/CPA are helpful for directional feedback within a siloed platform, but comparing ROAS across platforms can mislead business-level budget decisions because attribution models, funnel position, and incremental impact differ.",
+        "action": "Use ROAS to compare campaigns within the same platform (e.g., two Meta campaigns). Avoid comparing a Google campaign ROAS to a Meta campaign ROAS or making larger business-level decisions based only on cross-platform ROAS.",
+        "applies_when": [
+          "evaluating campaigns within a single platform",
+          "using in-platform metrics for directional campaign or ad feedback"
+        ],
+        "do_not_use_when": [
+          "comparing ROAS across platforms",
+          "making larger business-level budget decisions based only on in-platform ROAS"
+        ],
+        "unknowns": [
+          "How to adjust for different attribution models and funnel positions",
+          "What additional nuance or measurement system is required for cross-platform decisions"
+        ],
+        "evidence_quotes": [
+          "They are helpful in directional campaign feedback and ad feedback within the siloed platform.",
+          "what we do not want to do, what would be a big mistake is comparing a rorowaz number on a Google campaign to a rorowaz number on a meta campaign because they have different attribution models.",
+          "if we start comparing platforms, if we start zooming out and making larger business level decisions based on these numbers, that's where we can start to mislead ourselves and go into using low reliability, low data integrity level metric."
+        ]
+      },
+      {
+        "title": "Use new-customer revenue for finance-grade MER",
+        "claim": "Including returning customer revenue in MER makes it a terrible metric for indexing paid media performance over time because returning customer revenue has little to do with paid ads and may have returned anyway.",
+        "action": "Strip returning customer revenue out of MER; calculate a new-customer MER as new customer revenue divided by ad spend instead of total revenue divided by ad spend.",
+        "applies_when": [
+          "indexing paid media performance over time",
+          "calculating finance-grade acquisition efficiency metrics"
+        ],
+        "do_not_use_when": [
+          "using total MER that includes returning customer revenue to judge paid media or acquisition performance",
+          "letting marketing take credit for returning customers that would have returned anyway"
+        ],
+        "unknowns": [
+          "What profitability threshold applies to new-customer MER in a given business",
+          "Whether a 1.4 new-customer MER is profitable depends on business context"
+        ],
+        "evidence_quotes": [
+          "the reason why it's fundamentally a terrible metric for indexing the performance of paid media over time is that it includes a large bucket of revenue that has very little to do with paid ad, which is returning customer revenue.",
+          "we really want to strip returning customer revenue out of this calculation because we don't want marketing taking credit for all these returning customers that would have returned anywhere.",
+          "rather than looking at me, we want to look at a me, which is new customer revenue divided by ad spend."
+        ]
+      },
+      {
+        "title": "Use geo holdout incrementality tests only with correct design",
+        "claim": "Incrementality testing can measure the impact of changing campaign types by holding out a geographic area and comparing revenue realization against control, but it is complicated and requires data science understanding.",
+        "action": "If running a geo incrementality test, split a country by states (or commuting zones in Australia if state selection is insufficient), hold out a control area, increase or cut spend in treatment, and measure revenue realization difference over a defined period such as 30 days; calculate incremental return on ad spend from the lift in new customer revenue against control.",
+        "applies_when": [
+          "measuring incrementality of different campaign types",
+          "you have sufficient scale and at least a fundamental understanding of data science",
+          "you can isolate large control and treatment groups"
+        ],
+        "do_not_use_when": [
+          "using a simple spreadsheet to double budgets in states without correct test design",
+          "expecting statistically relevant results without proper setup",
+          "lacking data science understanding to approach this portion of the pyramid"
+        ],
+        "unknowns": [
+          "Full test design, data science, and statistical requirements",
+          "How to avoid overspending or underspending and ensure statistically relevant results"
+        ],
+        "evidence_quotes": [
+          "you take an area, generally the whole country. You split down by states. In Australia, you have to split down by commuting zones rather than states because there's not enough state selection. And from there, you hold out a particular area.",
+          "over a 30-day period, we measure the revenue realization difference over that 30 days and maybe new customer revenue doubles.",
+          "I do not recommend that you go away from this video and think, \"Oh, that was a really interesting idea. Let me just make a Google sheet and start doubling budgets in states.\" If you do that, you won't get good results.",
+          "You need at least a fundamental understanding of data science to be able to start to approach this portion of the pyramid."
+        ]
+      }
+    ],
+    "more_candidates": true,
+    "abstention_reason": ""
+  },
+  "raw_content": "{\"origin_assessment\":\"uncertain\",\"cards\":[{\"title\":\"Use in-platform ROAS directionally, not across platforms\",\"claim\":\"In-platform ROAS/CPA are helpful for directional feedback within a siloed platform, but comparing ROAS across platforms can mislead business-level budget decisions because attribution models, funnel position, and incremental impact differ.\",\"action\":\"Use ROAS to compare campaigns within the same platform (e.g., two Meta campaigns). Avoid comparing a Google campaign ROAS to a Meta campaign ROAS or making larger business-level decisions based only on cross-platform ROAS.\",\"applies_when\":[\"evaluating campaigns within a single platform\",\"using in-platform metrics for directional campaign or ad feedback\"],\"do_not_use_when\":[\"comparing ROAS across platforms\",\"making larger business-level budget decisions based only on in-platform ROAS\"],\"unknowns\":[\"How to adjust for different attribution models and funnel positions\",\"What additional nuance or measurement system is required for cross-platform decisions\"],\"evidence_quotes\":[\"They are helpful in directional campaign feedback and ad feedback within the siloed platform.\",\"what we do not want to do, what would be a big mistake is comparing a rorowaz number on a Google campaign to a rorowaz number on a meta campaign because they have different attribution models.\",\"if we start comparing platforms, if we start zooming out and making larger business level decisions based on these numbers, that's where we can start to mislead ourselves and go into using low reliability, low data integrity level metric.\"]},{\"title\":\"Use new-customer revenue for finance-grade MER\",\"claim\":\"Including returning customer revenue in MER makes it a terrible metric for indexing paid media performance over time because returning customer revenue has little to do with paid ads and may have returned anyway.\",\"action\":\"Strip returning customer revenue out of MER; calculate a new-customer MER as new customer revenue divided by ad spend instead of total revenue divided by ad spend.\",\"applies_when\":[\"indexing paid media performance over time\",\"calculating finance-grade acquisition efficiency metrics\"],\"do_not_use_when\":[\"using total MER that includes returning customer revenue to judge paid media or acquisition performance\",\"letting marketing take credit for returning customers that would have returned anyway\"],\"unknowns\":[\"What profitability threshold applies to new-customer MER in a given business\",\"Whether a 1.4 new-customer MER is profitable depends on business context\"],\"evidence_quotes\":[\"the reason why it's fundamentally a terrible metric for indexing the performance of paid media over time is that it includes a large bucket of revenue that has very little to do with paid ad, which is returning customer revenue.\",\"we really want to strip returning customer revenue out of this calculation because we don't want marketing taking credit for all these returning customers that would have returned anywhere.\",\"rather than looking at me, we want to look at a me, which is new customer revenue divided by ad spend.\"]},{\"title\":\"Use geo holdout incrementality tests only with correct design\",\"claim\":\"Incrementality testing can measure the impact of changing campaign types by holding out a geographic area and comparing revenue realization against control, but it is complicated and requires data science understanding.\",\"action\":\"If running a geo incrementality test, split a country by states (or commuting zones in Australia if state selection is insufficient), hold out a control area, increase or cut spend in treatment, and measure revenue realization difference over a defined period such as 30 days; calculate incremental return on ad spend from the lift in new customer revenue against control.\",\"applies_when\":[\"measuring incrementality of different campaign types\",\"you have sufficient scale and at least a fundamental understanding of data science\",\"you can isolate large control and treatment groups\"],\"do_not_use_when\":[\"using a simple spreadsheet to double budgets in states without correct test design\",\"expecting statistically relevant results without proper setup\",\"lacking data science understanding to approach this portion of the pyramid\"],\"unknowns\":[\"Full test design, data science, and statistical requirements\",\"How to avoid overspending or underspending and ensure statistically relevant results\"],\"evidence_quotes\":[\"you take an area, generally the whole country. You split down by states. In Australia, you have to split down by commuting zones rather than states because there's not enough state selection. And from there, you hold out a particular area.\",\"over a 30-day period, we measure the revenue realization difference over that 30 days and maybe new customer revenue doubles.\",\"I do not recommend that you go away from this video and think, \\\"Oh, that was a really interesting idea. Let me just make a Google sheet and start doubling budgets in states.\\\" If you do that, you won't get good results.\",\"You need at least a fundamental understanding of data science to be able to start to approach this portion of the pyramid.\"]}],\"more_candidates\":true,\"abstention_reason\":\"\"}"
+}

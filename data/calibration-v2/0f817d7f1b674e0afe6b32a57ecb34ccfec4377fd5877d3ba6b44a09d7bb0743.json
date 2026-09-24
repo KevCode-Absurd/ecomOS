@@ -1,0 +1,693 @@
+{
+  "request_id": "0f817d7f1b674e0afe6b32a57ecb34ccfec4377fd5877d3ba6b44a09d7bb0743",
+  "provider": "deepseek",
+  "model": "deepseek-flash",
+  "effort": "high",
+  "completion_limit": 32768,
+  "usage": {
+    "prompt_tokens": 3589,
+    "completion_tokens": 27534,
+    "total_tokens": 31123,
+    "prompt_tokens_details": {
+      "cached_tokens": 1024
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 23267
+    },
+    "prompt_cache_hit_tokens": 1024,
+    "prompt_cache_miss_tokens": 2565
+  },
+  "booked_cost_usd": 0.034117499999999995,
+  "seconds": 101.86,
+  "finish_reason": "stop",
+  "output": {
+    "units": [
+      {
+        "id": "u1",
+        "kind": "action",
+        "title": "Disable unneeded WordPress assets",
+        "claim": {
+          "text": "The source recommends ticking all listed unnecessary asset options because they are not needed and may slightly improve performance.",
+          "quote": "So I'm just going to tick all of these because we don't need any of these particular assets and this should help with performance a little bit."
+        },
+        "action": {
+          "text": "Disable unneeded WordPress assets such as pingbacks, emojis, and dash icons for logged-out users.",
+          "quote": "We have remove and disable pingbacks, disable emojis, disable dash icons for logged out users, etc."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Unneeded WordPress assets are present.",
+              "quote": "we don't need any of these particular assets"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [
+          {
+            "text": "Save the changes after ticking the options.",
+            "quote": "Let's go ahead and save those changes."
+          }
+        ],
+        "unknowns": [
+          "The full list of asset options to tick is not specified beyond examples."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u2",
+        "kind": "action",
+        "title": "Dequeue and deregister jQuery for logged-out users",
+        "claim": {
+          "text": "The source says jQuery loading for logged-out users can be removed with a code snippet that dequeues and deregisters jQuery and jQuery migrate.",
+          "quote": "we need to dq and dregister jQuery which will get rid of jQuery and jQuery migrate and all those dependencies."
+        },
+        "action": {
+          "text": "Add a filter for WP and Q scripts and dequeue and deregister jQuery.",
+          "quote": "All we have to do is add a filter for WP and Q scripts. and we need to dq and dregister jQuery which will get rid of jQuery and jQuery migrate and all those dependencies."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "jQuery is loading for logged-out users.",
+              "quote": "jQuery is actually loading for logged out users."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": [
+            {
+              "text": "A code snippet mechanism is available.",
+              "quote": "one way we can get rid of that is with a code snippet"
+            }
+          ]
+        },
+        "exclusions": {
+          "op": "any",
+          "args": [
+            {
+              "text": "Logged-in users need jQuery because the WordPress admin bar uses it.",
+              "quote": "It's necessary for loggedin users because the WordPress admin bar uses jQuery"
+            }
+          ]
+        },
+        "completion": [
+          {
+            "text": "Enable the snippet to remove jQuery for logged-out users on the front end.",
+            "quote": "So I'll go ahead and enable this snippet which will get rid of the jQuery bloat on the front end for logged out users."
+          }
+        ],
+        "unknowns": [
+          "The exact hook name and code are not fully shown; source says WP and Q scripts.",
+          "The condition builder setup is described but not reproduced in full."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u3",
+        "kind": "action",
+        "title": "Unload WooCommerce assets on the landing page",
+        "claim": {
+          "text": "The source says Asset Cleanup is the easiest way to unload WooCommerce assets on specific pages.",
+          "quote": "the easiest way to unload stuff like that on specific pages is a plugin called asset cleanup"
+        },
+        "action": {
+          "text": "Activate Asset Cleanup, open the landing page, and use its metabox to unload specific WooCommerce assets.",
+          "quote": "you activate it and then go to pages, go to your landing page, and we'll have a new metab box here that allows us to unload specific things from this page."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "WooCommerce assets are loading on the landing page and are not needed in its current state.",
+              "quote": "we also had a bunch of Woo Commerce stuff loading which we don't need on the landing page in its current state."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [
+          {
+            "text": "Disable the rest of the WooCommerce assets and save.",
+            "quote": "So, we're just going to disable the rest of this Woo Commerce stuff. And then go ahead and save."
+          }
+        ],
+        "unknowns": [
+          "Which exact WooCommerce assets are safe to unload may vary; the source lists examples like brand styles, source buster, add to cart, block styles CSS, and jQuery block UI."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u16"
+          }
+        ]
+      },
+      {
+        "id": "u4",
+        "kind": "warning",
+        "title": "Revisit unloaded WooCommerce assets if adding WooCommerce features",
+        "claim": {
+          "text": "The source warns to remember that WooCommerce assets were unloaded if WooCommerce features are later added to the landing page, such as a mini cart.",
+          "quote": "So, remember that you've unloaded this if you ever decide to add Woo Commerce features [music] to the landing page, like a mini cart, for instance."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Later adding WooCommerce features to the landing page.",
+              "quote": "if you ever decide to add Woo Commerce features [music] to the landing page"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": []
+      },
+      {
+        "id": "u5",
+        "kind": "example",
+        "title": "Keeping WooCommerce coming soon CSS despite uncertainty",
+        "claim": {
+          "text": "The source decided to keep the WooCommerce coming soon CSS file for now because it is small, though unsure it is needed.",
+          "quote": "there is one thing here that I think I'm going to keep, and it's the WooCommerce coming soon CSS file. I'm not positive that we actually need it, but it's pretty small, so we'll keep it for now."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Unloading WooCommerce assets on the landing page.",
+              "quote": "we basically don't need any of this Woo Commerce stuff"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "Whether the WooCommerce coming soon CSS file is actually needed remains unknown."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u6",
+        "kind": "action",
+        "title": "Load Google Fonts locally as WAFT 2 files",
+        "claim": {
+          "text": "The source wants to load Google Fonts locally instead of embedding or calling Google Fonts, and needs WAFT 2 files to load them as web fonts in WordPress.",
+          "quote": "I need them to be.Waft 2 files in order to be able to load them as web fonts in WordPress."
+        },
+        "action": {
+          "text": "Download the font files and convert them to WAFT 2 files for WordPress.",
+          "quote": "Once I have the font files downloaded, I'm going to have TTF files for the fonts, but I need them to be.Waft 2 files in order to be able to load them as web fonts in WordPress."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Google Fonts are embedded or make calls out to Google Fonts.",
+              "quote": "instead of embedding these or anything else that's going to make a call out to Google Fonts"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Font files are downloaded as TTF.",
+              "quote": "I'm going to have TTF files for the fonts"
+            }
+          ]
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [
+          {
+            "text": "Obtain WAFT 2 files usable in WordPress.",
+            "quote": "it will give us some WAFT 2 files that we can then use in WordPress"
+          }
+        ],
+        "unknowns": [
+          "The term WAFT 2 appears to refer to a web font format but is not normalized in the source.",
+          "Exact font styles and sizes to download are not fully specified."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u7",
+        "kind": "action",
+        "title": "Convert fonts with Font Squirrel web font generator",
+        "claim": {
+          "text": "The source has used Font Squirrel's web font generator to convert fonts and get WAFT 2 files for WordPress.",
+          "quote": "One website I've used to do this before is called Font Squirrel and we can go over to web font generator."
+        },
+        "action": {
+          "text": "Upload fonts to Font Squirrel's web font generator to produce WAFT 2 files.",
+          "quote": "We can upload our fonts and it will give us some WAFT 2 files that we can then use in WordPress."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Need to convert downloaded fonts to WAFT 2 files.",
+              "quote": "I need them to be.Waft 2 files"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": [
+            {
+              "text": "Font Squirrel did not work for all fonts the source wanted to use.",
+              "quote": "in my testing, this didn't work for all of the fonts that I wanted to use"
+            }
+          ]
+        },
+        "completion": [
+          {
+            "text": "Get WAFT 2 files usable in WordPress.",
+            "quote": "it will give us some WAFT 2 files that we can then use in WordPress"
+          }
+        ],
+        "unknowns": [
+          "Why Font Squirrel failed is uncertain; source speculates it might be because one font is a variable font."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u8",
+        "kind": "action",
+        "title": "Use Google Web Fonts Helper as an alternative converter",
+        "claim": {
+          "text": "The source found Google Web Fonts Helper works well for converting fonts when Font Squirrel did not.",
+          "quote": "I found another tool that works really well, and it's called the Google Web Fonts Helper."
+        },
+        "action": {
+          "text": "Select the font from Google, pick styles and sizes, and download the font files using Google Web Fonts Helper.",
+          "quote": "here we can select our font from Google, and then we can pick which styles and sizes we want, and then we can download the font files."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Font Squirrel did not work for all desired fonts.",
+              "quote": "this didn't work for all of the fonts that I wanted to use"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [
+          {
+            "text": "Get font files usable in WordPress.",
+            "quote": "this is going to give you somewhat 2 files that you can use in WordPress"
+          }
+        ],
+        "unknowns": [
+          "The exact URL is described as wacky and included only in the video description.",
+          "The term somewhat 2 files is not normalized in the source."
+        ],
+        "relations": [
+          {
+            "kind": "alternative_to",
+            "target": "u7"
+          }
+        ]
+      },
+      {
+        "id": "u9",
+        "kind": "action",
+        "title": "Upload custom fonts via theme/builder or plugin",
+        "claim": {
+          "text": "The source says uploading custom fonts may work differently depending on site builder or theme, and a custom font plugin may be needed if the builder or theme lacks the option.",
+          "quote": "If your builder or theme don't offer a way to upload custom fonts, you might need to use a custom font plugin"
+        },
+        "action": {
+          "text": "Upload custom fonts, adapting to your site builder or theme.",
+          "quote": "Depending on your site builder or your theme, uploading these custom fonts may work a little differently."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Need to make the site builder or theme know how to work with the custom font files.",
+              "quote": "so that Oxygen knows how to work with it"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Custom WAFT 2 font files are available.",
+              "quote": "custom WAFT 2 files for that individual font that you downloaded"
+            }
+          ]
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [
+          {
+            "text": "Font files are added and configured in the builder or theme.",
+            "quote": "Once you add a font file, for instance, let's add Enter Latin 900. Open that. Then you just have to specify the font weight which in this case is 900 and whether it's itallic or normal."
+          }
+        ],
+        "unknowns": [
+          "Exact steps vary by builder or theme.",
+          "Whether a custom font plugin is needed depends on the builder or theme."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u6"
+          }
+        ]
+      },
+      {
+        "id": "u10",
+        "kind": "action",
+        "title": "Switch font variables to local versions",
+        "claim": {
+          "text": "The source switched body and heading font variables to the local versions so all body text and headings use local fonts.",
+          "quote": "I just need to switch these to the local versions. So I need to go to interlocal and libre Baskerville local."
+        },
+        "action": {
+          "text": "Change the body and heading font variables to the local font versions.",
+          "quote": "I just need to switch these to the local versions."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Custom local fonts have been added to the site.",
+              "quote": "Once that's done, what I did is I went into my variables where I've set up my fonts for my body and headings."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [
+          {
+            "text": "Body text and headings switch to local versions.",
+            "quote": "all my body text and headings will switch to the local versions of these fonts because I changed it on the variable level"
+          }
+        ],
+        "unknowns": [],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u9"
+          }
+        ]
+      },
+      {
+        "id": "u11",
+        "kind": "action",
+        "title": "Enable caching and compression on the server",
+        "claim": {
+          "text": "The source says the final tweak is to turn on caching and compression.",
+          "quote": "As our final tweak, we can turn on caching and compression"
+        },
+        "action": {
+          "text": "Turn on gzip compression and caching on the server.",
+          "quote": "I'm going to go enable both gzip compression and caching on my server"
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Core performance fundamentals have been addressed and further speed improvements are wanted.",
+              "quote": "Now that we've taken care of a bunch of our fundamentals"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Core issues have been addressed first.",
+              "quote": "if you don't take care of some of the core issues we've addressed first"
+            }
+          ]
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [
+          {
+            "text": "Response headers show gzip compression and cache hit.",
+            "quote": "you can see now we have content encoding gzip, which tells us we have compression enabled. And then we have this x-cache response header that says hit."
+          }
+        ],
+        "unknowns": [
+          "Server-specific steps for enabling compression and caching vary; the source used Cloudways and Breeze."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u13"
+          }
+        ]
+      },
+      {
+        "id": "u12",
+        "kind": "action",
+        "title": "Check caching and compression via response headers",
+        "claim": {
+          "text": "The source shows how to check whether caching and compression are enabled by inspecting DevTools network response headers.",
+          "quote": "Let me show you first how to check whether they're enabled in the first place."
+        },
+        "action": {
+          "text": "Open DevTools, go to Network, refresh with preserve log enabled, and inspect the first request's response headers for caching and content encoding gzip.",
+          "quote": "we'll go into our dev tools and go to the network tab. We're going to refresh. Make sure preserve log is enabled."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Need to verify whether caching and compression are enabled.",
+              "quote": "check whether they're enabled in the first place"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [
+          {
+            "text": "See caching-related header such as Xcache hit and content encoding gzip.",
+            "quote": "you should see something like Xcache or something that says hit related to caching. You should also see content encoding and it should mention gzip"
+          }
+        ],
+        "unknowns": [
+          "Exact header names may vary by server."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u13",
+        "kind": "principle",
+        "title": "Treat caching and compression as band-aids after fundamentals",
+        "claim": {
+          "text": "The source says caching and compression can help a lot but are essentially a band-aid if core issues are not addressed first.",
+          "quote": "while they can help a lot, it's essentially just a band-aid if you don't take care of some of the core issues we've addressed first."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Considering caching and compression for WordPress speed.",
+              "quote": "the common answers to the question, how to speed up a WordPress site"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": []
+      },
+      {
+        "id": "u14",
+        "kind": "action",
+        "title": "Rerun performance tests after optimizations",
+        "claim": {
+          "text": "The source reruns tests on GTmetrix, PageSpeed Insights, and Gift of Speed to see performance after optimizations.",
+          "quote": "let's go ahead and rerun our tests and see where we're at."
+        },
+        "action": {
+          "text": "Rerun performance tests on GTmetrix, PageSpeed Insights, and Gift of Speed.",
+          "quote": "We'll run one on Page Speed Insights. We'll retest on GTMetrics. [music] And then we'll retest over here on Gift of Speed."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "After making performance optimizations.",
+              "quote": "Now, let's save that change. And let's go ahead and rerun our GTMetric support and take another look at this waterfall."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [
+          {
+            "text": "Obtain updated performance scores.",
+            "quote": "Our latest test on GTMetrics shows 98% performance, 97% structure, LCP of 1 second, and zero cls."
+          }
+        ],
+        "unknowns": [
+          "Test tools and scores are specific to the source's site and environment."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u15",
+        "kind": "example",
+        "title": "High scores achieved before compression, caching, or CDN",
+        "claim": {
+          "text": "The source reports high performance scores before enabling compression, caching, or a CDN.",
+          "quote": "Again, this is all without having compression, without having caching enabled, and without a CDN."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "After fundamental asset and font optimizations but before enabling compression, caching, or CDN.",
+              "quote": "we've actually improved things quite a bit without gzip compression, caching, or a CDN enabled"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": []
+      },
+      {
+        "id": "u16",
+        "kind": "principle",
+        "title": "Asset Cleanup removes assets surgically on specific pages",
+        "claim": {
+          "text": "The source says Asset Cleanup lets you remove things on specific pages while keeping them active where needed.",
+          "quote": "Asset cleanup lets you kind of surgically remove things on specific pages while keeping stuff active where it needs to be."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Need to unload assets on specific pages without disabling them site-wide.",
+              "quote": "unload stuff like that on specific pages"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": []
+      }
+    ],
+    "more_units": true,
+    "unresolved": [
+      "Source text is cut off at: And you can see that our score here is a little bit different. I",
+      "Term WAFT 2 and somewhat 2 files appear to refer to a web font format but are not normalized in the source.",
+      "Exact code for the jQuery snippet is not shown.",
+      "The initial sentence fragment ot using Gutenberg is completely unnecessary is incomplete."
+    ]
+  },
+  "raw_content": "{\"units\":[{\"id\":\"u1\",\"kind\":\"action\",\"title\":\"Disable unneeded WordPress assets\",\"claim\":{\"text\":\"The source recommends ticking all listed unnecessary asset options because they are not needed and may slightly improve performance.\",\"quote\":\"So I'm just going to tick all of these because we don't need any of these particular assets and this should help with performance a little bit.\"},\"action\":{\"text\":\"Disable unneeded WordPress assets such as pingbacks, emojis, and dash icons for logged-out users.\",\"quote\":\"We have remove and disable pingbacks, disable emojis, disable dash icons for logged out users, etc.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Unneeded WordPress assets are present.\",\"quote\":\"we don't need any of these particular assets\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[{\"text\":\"Save the changes after ticking the options.\",\"quote\":\"Let's go ahead and save those changes.\"}],\"unknowns\":[\"The full list of asset options to tick is not specified beyond examples.\"],\"relations\":[]},{\"id\":\"u2\",\"kind\":\"action\",\"title\":\"Dequeue and deregister jQuery for logged-out users\",\"claim\":{\"text\":\"The source says jQuery loading for logged-out users can be removed with a code snippet that dequeues and deregisters jQuery and jQuery migrate.\",\"quote\":\"we need to dq and dregister jQuery which will get rid of jQuery and jQuery migrate and all those dependencies.\"},\"action\":{\"text\":\"Add a filter for WP and Q scripts and dequeue and deregister jQuery.\",\"quote\":\"All we have to do is add a filter for WP and Q scripts. and we need to dq and dregister jQuery which will get rid of jQuery and jQuery migrate and all those dependencies.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"jQuery is loading for logged-out users.\",\"quote\":\"jQuery is actually loading for logged out users.\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[{\"text\":\"A code snippet mechanism is available.\",\"quote\":\"one way we can get rid of that is with a code snippet\"}]},\"exclusions\":{\"op\":\"any\",\"args\":[{\"text\":\"Logged-in users need jQuery because the WordPress admin bar uses it.\",\"quote\":\"It's necessary for loggedin users because the WordPress admin bar uses jQuery\"}]},\"completion\":[{\"text\":\"Enable the snippet to remove jQuery for logged-out users on the front end.\",\"quote\":\"So I'll go ahead and enable this snippet which will get rid of the jQuery bloat on the front end for logged out users.\"}],\"unknowns\":[\"The exact hook name and code are not fully shown; source says WP and Q scripts.\",\"The condition builder setup is described but not reproduced in full.\"],\"relations\":[]},{\"id\":\"u3\",\"kind\":\"action\",\"title\":\"Unload WooCommerce assets on the landing page\",\"claim\":{\"text\":\"The source says Asset Cleanup is the easiest way to unload WooCommerce assets on specific pages.\",\"quote\":\"the easiest way to unload stuff like that on specific pages is a plugin called asset cleanup\"},\"action\":{\"text\":\"Activate Asset Cleanup, open the landing page, and use its metabox to unload specific WooCommerce assets.\",\"quote\":\"you activate it and then go to pages, go to your landing page, and we'll have a new metab box here that allows us to unload specific things from this page.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"WooCommerce assets are loading on the landing page and are not needed in its current state.\",\"quote\":\"we also had a bunch of Woo Commerce stuff loading which we don't need on the landing page in its current state.\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[{\"text\":\"Disable the rest of the WooCommerce assets and save.\",\"quote\":\"So, we're just going to disable the rest of this Woo Commerce stuff. And then go ahead and save.\"}],\"unknowns\":[\"Which exact WooCommerce assets are safe to unload may vary; the source lists examples like brand styles, source buster, add to cart, block styles CSS, and jQuery block UI.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u16\"}]},{\"id\":\"u4\",\"kind\":\"warning\",\"title\":\"Revisit unloaded WooCommerce assets if adding WooCommerce features\",\"claim\":{\"text\":\"The source warns to remember that WooCommerce assets were unloaded if WooCommerce features are later added to the landing page, such as a mini cart.\",\"quote\":\"So, remember that you've unloaded this if you ever decide to add Woo Commerce features [music] to the landing page, like a mini cart, for instance.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Later adding WooCommerce features to the landing page.\",\"quote\":\"if you ever decide to add Woo Commerce features [music] to the landing page\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[],\"relations\":[]},{\"id\":\"u5\",\"kind\":\"example\",\"title\":\"Keeping WooCommerce coming soon CSS despite uncertainty\",\"claim\":{\"text\":\"The source decided to keep the WooCommerce coming soon CSS file for now because it is small, though unsure it is needed.\",\"quote\":\"there is one thing here that I think I'm going to keep, and it's the WooCommerce coming soon CSS file. I'm not positive that we actually need it, but it's pretty small, so we'll keep it for now.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Unloading WooCommerce assets on the landing page.\",\"quote\":\"we basically don't need any of this Woo Commerce stuff\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"Whether the WooCommerce coming soon CSS file is actually needed remains unknown.\"],\"relations\":[]},{\"id\":\"u6\",\"kind\":\"action\",\"title\":\"Load Google Fonts locally as WAFT 2 files\",\"claim\":{\"text\":\"The source wants to load Google Fonts locally instead of embedding or calling Google Fonts, and needs WAFT 2 files to load them as web fonts in WordPress.\",\"quote\":\"I need them to be.Waft 2 files in order to be able to load them as web fonts in WordPress.\"},\"action\":{\"text\":\"Download the font files and convert them to WAFT 2 files for WordPress.\",\"quote\":\"Once I have the font files downloaded, I'm going to have TTF files for the fonts, but I need them to be.Waft 2 files in order to be able to load them as web fonts in WordPress.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Google Fonts are embedded or make calls out to Google Fonts.\",\"quote\":\"instead of embedding these or anything else that's going to make a call out to Google Fonts\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[{\"text\":\"Font files are downloaded as TTF.\",\"quote\":\"I'm going to have TTF files for the fonts\"}]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[{\"text\":\"Obtain WAFT 2 files usable in WordPress.\",\"quote\":\"it will give us some WAFT 2 files that we can then use in WordPress\"}],\"unknowns\":[\"The term WAFT 2 appears to refer to a web font format but is not normalized in the source.\",\"Exact font styles and sizes to download are not fully specified.\"],\"relations\":[]},{\"id\":\"u7\",\"kind\":\"action\",\"title\":\"Convert fonts with Font Squirrel web font generator\",\"claim\":{\"text\":\"The source has used Font Squirrel's web font generator to convert fonts and get WAFT 2 files for WordPress.\",\"quote\":\"One website I've used to do this before is called Font Squirrel and we can go over to web font generator.\"},\"action\":{\"text\":\"Upload fonts to Font Squirrel's web font generator to produce WAFT 2 files.\",\"quote\":\"We can upload our fonts and it will give us some WAFT 2 files that we can then use in WordPress.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Need to convert downloaded fonts to WAFT 2 files.\",\"quote\":\"I need them to be.Waft 2 files\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[{\"text\":\"Font Squirrel did not work for all fonts the source wanted to use.\",\"quote\":\"in my testing, this didn't work for all of the fonts that I wanted to use\"}]},\"completion\":[{\"text\":\"Get WAFT 2 files usable in WordPress.\",\"quote\":\"it will give us some WAFT 2 files that we can then use in WordPress\"}],\"unknowns\":[\"Why Font Squirrel failed is uncertain; source speculates it might be because one font is a variable font.\"],\"relations\":[]},{\"id\":\"u8\",\"kind\":\"action\",\"title\":\"Use Google Web Fonts Helper as an alternative converter\",\"claim\":{\"text\":\"The source found Google Web Fonts Helper works well for converting fonts when Font Squirrel did not.\",\"quote\":\"I found another tool that works really well, and it's called the Google Web Fonts Helper.\"},\"action\":{\"text\":\"Select the font from Google, pick styles and sizes, and download the font files using Google Web Fonts Helper.\",\"quote\":\"here we can select our font from Google, and then we can pick which styles and sizes we want, and then we can download the font files.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Font Squirrel did not work for all desired fonts.\",\"quote\":\"this didn't work for all of the fonts that I wanted to use\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[{\"text\":\"Get font files usable in WordPress.\",\"quote\":\"this is going to give you somewhat 2 files that you can use in WordPress\"}],\"unknowns\":[\"The exact URL is described as wacky and included only in the video description.\",\"The term somewhat 2 files is not normalized in the source.\"],\"relations\":[{\"kind\":\"alternative_to\",\"target\":\"u7\"}]},{\"id\":\"u9\",\"kind\":\"action\",\"title\":\"Upload custom fonts via theme/builder or plugin\",\"claim\":{\"text\":\"The source says uploading custom fonts may work differently depending on site builder or theme, and a custom font plugin may be needed if the builder or theme lacks the option.\",\"quote\":\"If your builder or theme don't offer a way to upload custom fonts, you might need to use a custom font plugin\"},\"action\":{\"text\":\"Upload custom fonts, adapting to your site builder or theme.\",\"quote\":\"Depending on your site builder or your theme, uploading these custom fonts may work a little differently.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Need to make the site builder or theme know how to work with the custom font files.\",\"quote\":\"so that Oxygen knows how to work with it\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[{\"text\":\"Custom WAFT 2 font files are available.\",\"quote\":\"custom WAFT 2 files for that individual font that you downloaded\"}]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[{\"text\":\"Font files are added and configured in the builder or theme.\",\"quote\":\"Once you add a font file, for instance, let's add Enter Latin 900. Open that. Then you just have to specify the font weight which in this case is 900 and whether it's itallic or normal.\"}],\"unknowns\":[\"Exact steps vary by builder or theme.\",\"Whether a custom font plugin is needed depends on the builder or theme.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u6\"}]},{\"id\":\"u10\",\"kind\":\"action\",\"title\":\"Switch font variables to local versions\",\"claim\":{\"text\":\"The source switched body and heading font variables to the local versions so all body text and headings use local fonts.\",\"quote\":\"I just need to switch these to the local versions. So I need to go to interlocal and libre Baskerville local.\"},\"action\":{\"text\":\"Change the body and heading font variables to the local font versions.\",\"quote\":\"I just need to switch these to the local versions.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Custom local fonts have been added to the site.\",\"quote\":\"Once that's done, what I did is I went into my variables where I've set up my fonts for my body and headings.\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[{\"text\":\"Body text and headings switch to local versions.\",\"quote\":\"all my body text and headings will switch to the local versions of these fonts because I changed it on the variable level\"}],\"unknowns\":[],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u9\"}]},{\"id\":\"u11\",\"kind\":\"action\",\"title\":\"Enable caching and compression on the server\",\"claim\":{\"text\":\"The source says the final tweak is to turn on caching and compression.\",\"quote\":\"As our final tweak, we can turn on caching and compression\"},\"action\":{\"text\":\"Turn on gzip compression and caching on the server.\",\"quote\":\"I'm going to go enable both gzip compression and caching on my server\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Core performance fundamentals have been addressed and further speed improvements are wanted.\",\"quote\":\"Now that we've taken care of a bunch of our fundamentals\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[{\"text\":\"Core issues have been addressed first.\",\"quote\":\"if you don't take care of some of the core issues we've addressed first\"}]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[{\"text\":\"Response headers show gzip compression and cache hit.\",\"quote\":\"you can see now we have content encoding gzip, which tells us we have compression enabled. And then we have this x-cache response header that says hit.\"}],\"unknowns\":[\"Server-specific steps for enabling compression and caching vary; the source used Cloudways and Breeze.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u13\"}]},{\"id\":\"u12\",\"kind\":\"action\",\"title\":\"Check caching and compression via response headers\",\"claim\":{\"text\":\"The source shows how to check whether caching and compression are enabled by inspecting DevTools network response headers.\",\"quote\":\"Let me show you first how to check whether they're enabled in the first place.\"},\"action\":{\"text\":\"Open DevTools, go to Network, refresh with preserve log enabled, and inspect the first request's response headers for caching and content encoding gzip.\",\"quote\":\"we'll go into our dev tools and go to the network tab. We're going to refresh. Make sure preserve log is enabled.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Need to verify whether caching and compression are enabled.\",\"quote\":\"check whether they're enabled in the first place\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[{\"text\":\"See caching-related header such as Xcache hit and content encoding gzip.\",\"quote\":\"you should see something like Xcache or something that says hit related to caching. You should also see content encoding and it should mention gzip\"}],\"unknowns\":[\"Exact header names may vary by server.\"],\"relations\":[]},{\"id\":\"u13\",\"kind\":\"principle\",\"title\":\"Treat caching and compression as band-aids after fundamentals\",\"claim\":{\"text\":\"The source says caching and compression can help a lot but are essentially a band-aid if core issues are not addressed first.\",\"quote\":\"while they can help a lot, it's essentially just a band-aid if you don't take care of some of the core issues we've addressed first.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Considering caching and compression for WordPress speed.\",\"quote\":\"the common answers to the question, how to speed up a WordPress site\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[],\"relations\":[]},{\"id\":\"u14\",\"kind\":\"action\",\"title\":\"Rerun performance tests after optimizations\",\"claim\":{\"text\":\"The source reruns tests on GTmetrix, PageSpeed Insights, and Gift of Speed to see performance after optimizations.\",\"quote\":\"let's go ahead and rerun our tests and see where we're at.\"},\"action\":{\"text\":\"Rerun performance tests on GTmetrix, PageSpeed Insights, and Gift of Speed.\",\"quote\":\"We'll run one on Page Speed Insights. We'll retest on GTMetrics. [music] And then we'll retest over here on Gift of Speed.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"After making performance optimizations.\",\"quote\":\"Now, let's save that change. And let's go ahead and rerun our GTMetric support and take another look at this waterfall.\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[{\"text\":\"Obtain updated performance scores.\",\"quote\":\"Our latest test on GTMetrics shows 98% performance, 97% structure, LCP of 1 second, and zero cls.\"}],\"unknowns\":[\"Test tools and scores are specific to the source's site and environment.\"],\"relations\":[]},{\"id\":\"u15\",\"kind\":\"example\",\"title\":\"High scores achieved before compression, caching, or CDN\",\"claim\":{\"text\":\"The source reports high performance scores before enabling compression, caching, or a CDN.\",\"quote\":\"Again, this is all without having compression, without having caching enabled, and without a CDN.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"After fundamental asset and font optimizations but before enabling compression, caching, or CDN.\",\"quote\":\"we've actually improved things quite a bit without gzip compression, caching, or a CDN enabled\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[],\"relations\":[]},{\"id\":\"u16\",\"kind\":\"principle\",\"title\":\"Asset Cleanup removes assets surgically on specific pages\",\"claim\":{\"text\":\"The source says Asset Cleanup lets you remove things on specific pages while keeping them active where needed.\",\"quote\":\"Asset cleanup lets you kind of surgically remove things on specific pages while keeping stuff active where it needs to be.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Need to unload assets on specific pages without disabling them site-wide.\",\"quote\":\"unload stuff like that on specific pages\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[],\"relations\":[]}],\"more_units\":true,\"unresolved\":[\"Source text is cut off at: And you can see that our score here is a little bit different. I\",\"Term WAFT 2 and somewhat 2 files appear to refer to a web font format but are not normalized in the source.\",\"Exact code for the jQuery snippet is not shown.\",\"The initial sentence fragment ot using Gutenberg is completely unnecessary is incomplete.\"]}",
+  "input": {
+    "source_id": "1xw38NANCmS8DmKTMRPULxChkXGSPApKH",
+    "source_sha256": "29e019fd09450f700bea26ac7460276314f022222877081399b01193dd2a6826",
+    "locator": "body:14/paragraph",
+    "start": 18991,
+    "text": "ot using Gutenberg is completely unnecessary. We have remove and disable pingbacks, disable emojis, disable dash icons for logged out users, etc. So I'm just going to tick all of these because we don't need any of these particular assets and this should help with performance a little bit. Let's go ahead and save those changes. Now as I noted in the waterfall chart, jQuery is actually loading for logged out users. It's necessary for loggedin users because the WordPress admin bar uses jQuery, but there's absolutely no reason that a logged out user should be loading jQuery when they visit our site. So, one way we can get rid of that is with a code snippet. And I'm going to use WP code box because it's a really convenient way to create and manage code snippets on your site. Luckily, this is a really simple one. All we have to do is add a filter for WP and Q scripts. and we need to dq and dregister jQuery which will get rid of jQuery and jQuery migrate and all those dependencies. Now, WP Codebox is really awesome because not only does it make [music] it easy for you to create a snippet like this, but you also can control where it loads. Like I said earlier, we still need this for logged in users. So, we need to be kind of picky about when this snippet runs. If we open up the condition builder, you can see I've got a couple of conditions. I've created a condition for the location and I'm telling the snippet only to run if it's on the front end. I also created a condition for user loggedin status to make sure it only runs if the user is not logged in. So with those conditions, this is going to run exactly when we need it and not run in cases where it might cause some problems. So I'll go ahead and enable this snippet which will get rid of the jQuery bloat on the front end for logged out users. Now, we also had a bunch of Woo Commerce stuff loading which we don't need on the landing page in its current state. And the easiest way to unload stuff like that on specific pages is a plugin called asset cleanup. This is free. It's available in the repository. And the [music] way it works is you activate it and then go to pages, go to your landing page, and we'll have a new metab box here that allows us to unload specific things from this page. So, you can see our Woo Commerce category here has 13 files. So, we'll expand that out. And we don't need our brand styles. We don't need source buster. We don't need add to cart right now. We might in the future. So, remember that you've unloaded this if you ever decide to add Woo Commerce features [music] to the landing page, like a mini cart, for instance. We don't need the block styles CSS. We don't need the jQuery block UI. We basically don't need any of this Woo Commerce stuff. Now, there is one thing here that I think I'm going to keep, and it's the WooCommerce coming soon CSS file. I'm not positive that we actually need it, but it's pretty small, so we'll keep it for now. So, we're just going to disable the rest of this Woo Commerce stuff. And then go ahead and save. And that's going to unload it just on this page, which is what we need for now. Asset cleanup lets you kind of surgically remove things on specific pages while keeping stuff active where it needs to be. Now, the next improvement I want to make is to load our Google fonts locally. So, the way we can do that is we can go out to fonts.google.com and we can find our fonts here. In this case, I'm using enter and I'll hit get font to add it to my list. And I'm also using Libre Baskerville. Now, instead of embedding these or anything else that's going to make a call out to Google Fonts, I want to actually download these. Once I have the font files downloaded, I'm going to have TTF files for the fonts, but I need them to be.Waft 2 files in order to be able to load them as web fonts in WordPress. One website I've used to do this before is called Font Squirrel and we can go over to web font generator. We can upload our fonts and it will give us some WAFT 2 files that we can then use in WordPress. Now, in my testing, this didn't work for all of the fonts that I wanted to use, and it might be because one of the fonts is a variable font, but I found another tool that works really well, and it's called the Google Web Fonts Helper. I'll include a link to this in the video description because the URL is kind of wacky. But basically, here we can select our font from Google, and then we can pick which styles and sizes we want, and then we can download the font files. Again, this is going to give you somewhat 2 files that you can use in WordPress. Now, depending on your site builder or your theme, uploading these custom fonts may work a little differently. If your builder or theme don't offer a way to upload custom fonts, you might need to use a custom font plugin, and there are a few available in the WordPress repository. For me, I'm using Oxygen, which has a custom fonts option. So, I'll show you how that works. Let's go ahead and edit this page in Oxygen. And if we go over to the Oxygen logo at the top left and click preferences, we'll see a custom fonts area. To add a font, you simply add one and give it a name. Test, then add your font files. Once you add a font file, for instance, let's add Enter Latin 900. Open that. Then you just have to specify the font weight which in this case is 900 and whether it's itallic or normal. So you can add all those custom WAFT 2 files for that individual font that you downloaded so that Oxygen knows how to work with it. Here's what it looks like once you've actually created them. So I named them the font name and then local so that I know the difference when picking from the font drop down. And here's how they are all set up. And I did the same thing for Libre Baskerville. Once that's done, what I did is I went into my variables where I've set up my fonts for my body and headings. And I just need to switch these to the local versions. So I need to go to interlocal and libre Baskerville local. And since I'm using variables, all my body text and headings will switch to the local versions of these fonts because I changed it on the variable level. Now, let's save that change. And let's go ahead and rerun our GTMetric support and take another look at this waterfall. And the mind-blowing part is we're not even done yet. And our performance score is already up in the high 90s on GTMetrics just from some of those optimizations that we've done. Let's take a look at the waterfall. And now we can see there are far fewer assets being loaded just at a glance. The Woo Commerce stuff is gone. jQuery is no longer loading, etc. So, we've really paired down what is actually loading on this page to what is actually necessary when someone visits the page. We got another big performance score improvement out of these steps. So, we're moving in the right direction. As our final tweak, we can turn on caching and compression, the common answers to the question, how to speed up a WordPress site. We didn't wholly rely on these because while they can help a lot, it's essentially just a band-aid if you don't take care of some of the core issues we've addressed first. Now that we've taken care of a bunch of our fundamentals, and we've actually improved things quite a bit without gzip compression, caching, or a CDN enabled, let's go ahead and rerun our tests and see where we're at. Our latest test on GTMetrics shows 98% performance, 97% structure, LCP of 1 second, and zero cls. So, this is looking really good on GTMetrics. Let's rerun page speed insights and see where we're at. We're starting at 71 overall. We're at 95 performance on mobile and on desktop 99 and then hundreds across the board on all the other metrics on both. Let's go take a look at Gift of Speed and see what it tells us. We're going to go ahead and rerun the test here and we're at a 99 out of 100. Again, this is all without having compression, without having caching enabled, and without a CDN. But we do want to enable those things. Let me show you first how to check whether they're enabled in the first place. So, we'll go into our dev tools and go to the network tab. We're going to refresh. Make sure preserve log is enabled. And we don't need a throttle right now. Let's just refresh. And this first request is the one we want to look at. We're looking at the response headers. If you have caching enabled, you'll see something related to caching. Not cache control cuz this is saying no cache must revalidate, but you should see something like Xcache or something that says hit related to caching. You should also see content encoding and it should mention gzip or whatever your encoding method is here in the response headers. I'm going to go enable both gzip compression and caching on my server and then I'll show you what the response headers look like when those are enabled. All right, I've got compression turned on now and caching. I did load up the breeze plugin which is the cache management plugin for Cloudways's caching system to make sure everything was turned on, but otherwise it was just a matter of turning it on on my server. And now that those are on, let me show you what those response headers look like in an incognito window. Go ahead and load up the site, open dev tools, go to the network tab, make sure disabled cache is unchecked, and then we're going to refresh. And if we go over here to this first request, you can see now we have content encoding gzip, which tells us we have compression enabled. And then we have this x-cache response header that says hit. That means it's hitting the cache. [music] So, now that we have those turned on and ready to go, let's go ahead and rerun our final tests. We'll run one on Page Speed Insights. We'll retest on GTMetrics. [music] And then we'll retest over here on Gift of Speed. Let's pop over to Page Speed Insights and look at what we've got. And you can see that our score here is a little bit different. I ",
+    "provenance": "unverified"
+  },
+  "system_prompt_sha256": "169564fc11fb12a123446ec006b5bb473bb0bb9c6a71a491eafeedd914dc865e"
+}

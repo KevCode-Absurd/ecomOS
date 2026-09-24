@@ -1,0 +1,323 @@
+{
+  "cards": [
+    {
+      "title": "Market-First Product Research Hierarchy",
+      "summary": "Choose a passionate market and an emotional problem before picking a product, because market and problem drive sales more than the product itself.",
+      "use_when": "Starting a new ecommerce product search, or when a previous product test failed and you're tempted to jump straight to product hunting.",
+      "steps": [
+        "Start with market research, not product research. The presenter argues the market influences success far beyond the product, using the analogy of selling umbrellas in a thunderstorm versus on a sunny day: same product, very different sales volume.",
+        "Pick from markets known for passion and emotion: pets, weight loss, hair growth, cosmetics/skincare (anything with a clear before-and-after transformation), supplements, beauty, health and wellness. The presenter says these markets are broad enough that the market itself won't be the reason for failure.",
+        "Narrow to an emotional problem inside that market before choosing the physical product. Examples given: lower back stiffness, neck and shoulder tension, plantar fasciitis, migraines.",
+        "Keep the problem broad enough to support many products. One winning problem (e.g. migraines) can be solved by supplements, a head band, a massage gun, a neck traction device, or a clinic visit — so you have many product options and room to test.",
+        "Only then select the actual product that solves the chosen problem.",
+        "Don't overthink market selection — pick one and move on. The presenter explicitly frames this as the easiest, most spoonfed part of the process."
+      ],
+      "caveats": [
+        "'Market first' is the presenter's opinion and framework, not a proven law; it does not remove the need for validation and a solid funnel.",
+        "The listed markets are his examples, not a guaranteed set — supplements in particular he calls challenging despite long-term potential."
+      ],
+      "tags": [
+        "product-research",
+        "market-selection",
+        "customer-research",
+        "positioning",
+        "problem-research",
+        "emotional-marketing"
+      ],
+      "id": "c9b651f1b77d02397f2e6461",
+      "source_id": "1TYodTXR6LLlNuTKucxPY5dDu3hFIw3Mu",
+      "source_sha256": "751d64b118fd11afd2f1aef6fb8685070d337fd319d190b4da4cf062a938b08b",
+      "source_name": "_asked claude to find me a $1k_day product (it worked).docx",
+      "folder": "/01-PRD-product-research",
+      "domain": "product-research",
+      "section": 0
+    },
+    {
+      "title": "Use Claude to Generate Winning Emotional Sub-Niches",
+      "summary": "Prompt Claude (Opus or Sonnet) to produce a list of emotional sub-niches downstream from your chosen market, then pick five to research further.",
+      "use_when": "You have picked a market and want a fast list of specific emotional problems to build products and offers around.",
+      "steps": [
+        "Open Claude directly — the presenter used Opus (he says Sonnet would likely be fine) and states no other tool (e.g. Fable) is needed for this step.",
+        "Paste a large structured prompt asking for a list of emotional sub-niches for a DTC beginner brand in your chosen market. The output shown in the video was a list of 30 sub-niches.",
+        "Review the list for problems with demonstrated commercial history — his examples: lower back stiffness, neck and shoulder tension, plantar fasciitis. He claims each of these has multiple seven- and eight-figure businesses inside it.",
+        "Select five sub-niches you like most. These five become the search scope you feed into the next step (ad-spy tool via MCP).",
+        "Treat the AI output as candidate problems, not validated winners — the validation step with real competitor traffic data comes later."
+      ],
+      "caveats": [
+        "The exact models, prompt text and list quality decay quickly; verify what the current Claude interface and models actually produce.",
+        "The presenter's claim that each sub-niche contains multiple seven/eight-figure businesses is his assertion, not measured evidence."
+      ],
+      "tags": [
+        "product-research",
+        "ai-sourcing",
+        "claude",
+        "prompting",
+        "customer-research",
+        "problem-research"
+      ],
+      "id": "1918017689b2a6ca1432071a",
+      "source_id": "1TYodTXR6LLlNuTKucxPY5dDu3hFIw3Mu",
+      "source_sha256": "751d64b118fd11afd2f1aef6fb8685070d337fd319d190b4da4cf062a938b08b",
+      "source_name": "_asked claude to find me a $1k_day product (it worked).docx",
+      "folder": "/01-PRD-product-research",
+      "domain": "product-research",
+      "section": 0
+    },
+    {
+      "title": "Connect Get Hooked to Claude via MCP for Ad-Library Sourcing",
+      "summary": "Wire the Get Hooked ad-aggregator MCP server into Claude as a custom connector so the AI can pull live competitor brand and ad data.",
+      "use_when": "You want Claude to research real competitor brands, active ads, angles and funnels instead of relying on its training data alone.",
+      "steps": [
+        "Create an account (the presenter used a free trial) at get hooked.ai.",
+        "In Get Hooked, open your account menu (bottom-left), then select 'AI and MCP'.",
+        "Scroll past the API section to the 'Connect to AI agent' / MCP section.",
+        "Copy the MCP server URL and the OAuth Client ID shown there.",
+        "In Claude, go to the left-hand sidebar, select 'Customize', then 'Connectors', then the plus icon, then 'Add custom connector'.",
+        "Name it (e.g. 'Get Hooked'), paste the MCP server URL, then paste the OAuth Client ID into the corresponding field, and click Add.",
+        "You now effectively have Claude plus a large Facebook/Meta ad library in one interface. Verify the current menu labels and flow, since MCP connectors and UIs change quickly."
+      ],
+      "caveats": [
+        "Exact UI paths and field names are high-decay — confirm them in both tools before relying on this sequence.",
+        "Get Hooked is described as a free trial; pricing and access may change."
+      ],
+      "tags": [
+        "product-research",
+        "ai-sourcing",
+        "claude",
+        "mcp",
+        "get-hooked",
+        "ad-spy",
+        "tool-setup"
+      ],
+      "id": "2e6da11c04cce1bb152ececd",
+      "source_id": "1TYodTXR6LLlNuTKucxPY5dDu3hFIw3Mu",
+      "source_sha256": "751d64b118fd11afd2f1aef6fb8685070d337fd319d190b4da4cf062a938b08b",
+      "source_name": "_asked claude to find me a $1k_day product (it worked).docx",
+      "folder": "/01-PRD-product-research",
+      "domain": "product-research",
+      "section": 0
+    },
+    {
+      "title": "Run the MCP Product-Sourcing Prompt Over Your Five Sub-Niches",
+      "summary": "Feed the MCP-connected Claude a prompt with MCP usage instructions plus your five chosen sub-niches to return qualifying brands, pain points, ad patterns and funnels.",
+      "use_when": "Claude is connected to the Get Hooked MCP and you have narrowed to five emotional sub-niches.",
+      "steps": [
+        "Write one prompt that includes (a) information about the MCP and how to use it, (b) the research process Claude should follow, and (c) the five sub-niches you selected earlier.",
+        "Submit and let it run — the presenter says this takes a few minutes.",
+        "Read the output: qualifying brands that are running enough active ads and fit your input sub-niches. For each, the output shown included the product, the pain point, the ad pattern typically used, the funnel architecture (e.g. driving to a PDP vs. an advertorial), and a top-performing ad.",
+        "Use the funnel-architecture field as competitive intelligence, not just the product name — it tells you where competitors send traffic.",
+        "The presenter's example find: a Facebook page 'Fall Prevention Tips' running 232 active ads across a few subdomains, selling wide toe box barefoot shoes with a foot-pain angle.",
+        "The presenter claims this makes product selection achievable in about an hour with the right tools."
+      ],
+      "caveats": [
+        "The hour-long claim is the presenter's experience, not a benchmark.",
+        "Qualifying criteria come from active ad volume, which can reflect budget or testing rather than proven profitability — validate separately.",
+        "The exact prompt contents are not fully reproduced in the source; reconstruct to fit your own sub-niches."
+      ],
+      "tags": [
+        "product-research",
+        "ai-sourcing",
+        "claude",
+        "mcp",
+        "get-hooked",
+        "competitor-research",
+        "ad-spy"
+      ],
+      "id": "b09a0ce6330611d7c148ebf8",
+      "source_id": "1TYodTXR6LLlNuTKucxPY5dDu3hFIw3Mu",
+      "source_sha256": "751d64b118fd11afd2f1aef6fb8685070d337fd319d190b4da4cf062a938b08b",
+      "source_name": "_asked claude to find me a $1k_day product (it worked).docx",
+      "folder": "/01-PRD-product-research",
+      "domain": "product-research",
+      "section": 0
+    },
+    {
+      "title": "Estimate Competitor Revenue with the SimilarWeb Formula",
+      "summary": "Reverse-engineer a competitor's monthly revenue floor as monthly visits × estimated conversion rate × estimated AOV, and require roughly $200k–$300k+/month before treating them as proof of a winning product.",
+      "use_when": "Validating whether brands surfaced by your ad-spy research are actually selling at scale.",
+      "steps": [
+        "Install the SimilarWeb extension and open the competitor's store page with it enabled to read estimated monthly visits. The presenter notes about three free searches per day.",
+        "Estimate a conversion rate. He uses a baseline of 2% and typically ranges 1.5%–3.5%; he says the more expensive the product, the lower the rate tends to be (e.g. ~1.5% for high-ticket).",
+        "Estimate an AOV conservatively, using the visible offer stack as a guide. In his example the store sold shoes at $70/pair and he estimated AOV around $90, using $90 as a conservative figure.",
+        "Multiply: monthly visits × conversion rate = monthly orders; then × estimated AOV = estimated monthly revenue.",
+        "Example from the video: 1.5 million visits (conservative, actual ~2M) × 2% = ~30,000 orders; × $90 AOV = ~$2.7M/month.",
+        "Set a floor: the presenter says he only wants to see candidates above roughly $200k–$300k/month in estimated revenue."
+      ],
+      "caveats": [
+        "These are rough estimates, not financials — the presenter states plainly he cannot calculate exact revenue.",
+        "Both conversion rate and AOV are assumptions; conservative inputs make the floor more trustworthy than an optimistic guess.",
+        "SimilarWeb visit figures are estimates and free-tier search limits apply."
+      ],
+      "tags": [
+        "product-research",
+        "competitor-research",
+        "similarweb",
+        "revenue-estimation",
+        "validation",
+        "measurement"
+      ],
+      "id": "b37123cc93c740376239be36",
+      "source_id": "1TYodTXR6LLlNuTKucxPY5dDu3hFIw3Mu",
+      "source_sha256": "751d64b118fd11afd2f1aef6fb8685070d337fd319d190b4da4cf062a938b08b",
+      "source_name": "_asked claude to find me a $1k_day product (it worked).docx",
+      "folder": "/01-PRD-product-research",
+      "domain": "product-research",
+      "section": 0
+    },
+    {
+      "title": "The Two Golden Margin Rules: 3x COGS and $30 Gross Margin",
+      "summary": "Require at least 3x cost of goods sold at retail price and at least $30 of gross margin per unit so the product can absorb rising Meta ad costs.",
+      "use_when": "Deciding whether a sourced product can support paid acquisition before committing to a test.",
+      "steps": [
+        "Rule one: price at minimum 3x your landed cost of goods sold (sourced plus shipped). If it costs $15 landed, sell at $45 or more.",
+        "Rule two: keep at least $30 of gross profit per unit. The presenter says he used to use $20 and raised it because Facebook ad costs keep increasing.",
+        "Check both rules at once. Example: source for $15, sell for $50 gives a $35 gross margin — this satisfies both the 3x multiplier and the $30 floor.",
+        "Account for the fact that established competitors have negotiated better supplier rates than a new dropshipping brand, so do not assume you can match their cost base."
+      ],
+      "caveats": [
+        "These are the presenter's rules of thumb for a specific ad-cost environment, not universal economics.",
+        "3x COGS with a $30 floor can conflict at low price points — a $12 product gives 3.6x but only ~$36 margin, while a $10 product at 3x yields only $20 margin and fails rule two.",
+        "Margins must also cover shipping, payment fees and refunds; the rules as stated only address ad costs."
+      ],
+      "tags": [
+        "product-research",
+        "margin-math",
+        "pricing",
+        "offer-design",
+        "unit-economics",
+        "meta-ads"
+      ],
+      "id": "cd8817fc79ec09c12aadd6d4",
+      "source_id": "1TYodTXR6LLlNuTKucxPY5dDu3hFIw3Mu",
+      "source_sha256": "751d64b118fd11afd2f1aef6fb8685070d337fd319d190b4da4cf062a938b08b",
+      "source_name": "_asked claude to find me a $1k_day product (it worked).docx",
+      "folder": "/01-PRD-product-research",
+      "domain": "product-research",
+      "section": 0
+    },
+    {
+      "title": "Diagnose a Failed Product Test: Ads Problem or Funnel Problem",
+      "summary": "After a failed test, ask 'why' and split the cause into ad-related issues (CPC/CTR/CPM) or funnel-related issues (ATC, checkout completion, AOV) before abandoning the product.",
+      "use_when": "A product test underperforms and you're deciding whether to kill the product, fix creatives, or fix the funnel.",
+      "steps": [
+        "Run the full process — market, problem, product selection, validation, then a sales game plan — before concluding the method failed. The presenter stresses that people often test with no plan and quit at the first unprofitable day.",
+        "Recognize that the product is rarely the issue. The presenter says top six-, seven- and eight-figure brands sell nothing especially remarkable; they have ads and funnel dialed in.",
+        "Ask which bucket the failure falls into: ad-related (creatives not good enough) or funnel-related (store, advertorial or checkout not good enough).",
+        "If concrete funnel KPI checks surface a checkout or payment-processing problem, fix that before touching the product.",
+        "The presenter claims roughly 90% of the failures he sees are ad-related, usually because sellers believe their ads are good when they aren't."
+      ],
+      "caveats": [
+        "The 90% figure is the presenter's observation, not a measured statistic.",
+        "This is in scope as test-triage, but optimizing the ads themselves belongs to creative and media-buying work, and fixing the checkout belongs to storefront work."
+      ],
+      "tags": [
+        "product-research",
+        "conversion-optimization",
+        "experiment-design",
+        "paid-media",
+        "troubleshooting",
+        "diagnostics"
+      ],
+      "id": "2b0c86c591158d80a1d65843",
+      "source_id": "1TYodTXR6LLlNuTKucxPY5dDu3hFIw3Mu",
+      "source_sha256": "751d64b118fd11afd2f1aef6fb8685070d337fd319d190b4da4cf062a938b08b",
+      "source_name": "_asked claude to find me a $1k_day product (it worked).docx",
+      "folder": "/01-PRD-product-research",
+      "domain": "product-research",
+      "section": 0
+    },
+    {
+      "title": "Ad Failure KPIs: CPC, CTR and CPM Thresholds",
+      "summary": "Use link CPC above $1.50, CTR below 3%, and CPM above $80 as indicators that a failed test is an advertising problem, usually a creative problem.",
+      "use_when": "A US product test is unprofitable and you need to determine whether the ads, not the offer or product, are the constraint.",
+      "steps": [
+        "Read link CPC first: target roughly $1.50 for US targeting. If it's elevated — $2, $3, $4 — treat it as a check-engine light: it signals something is wrong but not what.",
+        "Check CTR next: aim for a 3% minimum, and the presenter prefers closer to 4%. A sub-3% CTR means a serious creative problem — weak hooks or copy.",
+        "If CTR is healthy (4–5%) but CPC is still elevated, look at CPM. He offers no strict CPM KPI and calls it niche- and location-dependent, but says above roughly $80 CPM in the US is on the high end.",
+        "Note the feedback loop: poor creatives both lower CTR and raise CPM because the platform penalizes low-engagement ads, producing a high CPC.",
+        "Resist maxing CTR for vanity. High-CTR curiosity/native creatives that don't convert mean you forgot to sell — balance engagement with conversion intent."
+      ],
+      "caveats": [
+        "Thresholds are US-specific and will decay as ad costs change; treat them as directional.",
+        "The presenter explicitly says CPM targets are relative and have no fixed KPI — the $80 line is his rough guide, not a rule."
+      ],
+      "tags": [
+        "product-research",
+        "paid-media",
+        "meta-ads",
+        "creative-strategy",
+        "metrics",
+        "troubleshooting"
+      ],
+      "id": "f5d6e64a0e54c1b8015fcfca",
+      "source_id": "1TYodTXR6LLlNuTKucxPY5dDu3hFIw3Mu",
+      "source_sha256": "751d64b118fd11afd2f1aef6fb8685070d337fd319d190b4da4cf062a938b08b",
+      "source_name": "_asked claude to find me a $1k_day product (it worked).docx",
+      "folder": "/01-PRD-product-research",
+      "domain": "product-research",
+      "section": 0
+    },
+    {
+      "title": "Funnel Failure KPIs: ATC Ratio, Checkout Completion and AOV",
+      "summary": "Use landing-page-to-add-to-cart below 10%, ATC-to-purchase below 30%, and AOV under a 20–40% markup over base price as indicators that the failed test is a funnel problem.",
+      "use_when": "Ad metrics look acceptable but the product still isn't converting, or you need to locate friction between click and purchase.",
+      "steps": [
+        "Add-to-cart ratio: of everyone who lands on the first page (advertorial, pre-sell page, or PDP), at least 10% should add to cart. This is somewhat price-dependent — for more expensive products 8–9% can be acceptable. Below that, the funnel or the traffic quality is failing.",
+        "ATC-to-purchase ratio: aim for 30% completion, so 3 of every 10 add-to-carts purchase. Below 30% points to friction between cart and purchase — check payment-processor approval rates and simplify the checkout. The presenter favors removing steps over adding conversion bumpers.",
+        "AOV: on a straight Shopify setup, target AOV 20–40% above the base selling price (he suggests pushing even 50% above for a one-product store). A low AOV usually means missing upsells or downsells on the first purchase.",
+        "LTV: for subscription or retention-heavy models, LTV should be substantially higher than AOV. A low LTV means you acquire customers reasonably well but don't earn enough from them over time."
+      ],
+      "caveats": [
+        "These are the presenter's working benchmarks, not validated universal thresholds; they vary with price point and model.",
+        "ATC and checkout figures can be distorted by bot traffic or by traffic quality from the ad itself, so read the ad and funnel metrics together."
+      ],
+      "tags": [
+        "product-research",
+        "conversion-optimization",
+        "checkout",
+        "funnel-metrics",
+        "average-order-value",
+        "retention"
+      ],
+      "id": "3b6e3ec9a71b85e99b03a8cd",
+      "source_id": "1TYodTXR6LLlNuTKucxPY5dDu3hFIw3Mu",
+      "source_sha256": "751d64b118fd11afd2f1aef6fb8685070d337fd319d190b4da4cf062a938b08b",
+      "source_name": "_asked claude to find me a $1k_day product (it worked).docx",
+      "folder": "/01-PRD-product-research",
+      "domain": "product-research",
+      "section": 0
+    },
+    {
+      "title": "Keep AI Sourcing and Ad Execution in Separate Ownership",
+      "summary": "AI-assisted sourcing ends at a validated, margin-checked product; creative, media buying and storefront work are separate disciplines that determine whether the product actually succeeds.",
+      "use_when": "Scoping a product-research sprint, or setting expectations that finding the product is only one part of a profitable launch.",
+      "steps": [
+        "Delimit the sourcing workflow to: market selection, emotional problem identification, product selection via AI plus ad-spy data, competitor revenue validation, margin checks, and a basic test-triage game plan.",
+        "Route creative writing and ad design to your creative process — the sourcing workflow does not produce winning ads.",
+        "Route bid management and CPC/CPM optimization to paid-media execution.",
+        "Route checkout-flow and landing-page layout changes to storefront work.",
+        "Treat the KPI thresholds in this method as validation and triage signals for a product test, not as a substitute for media-buying or funnel-building skills.",
+        "Use this split when briefing a team or reviewing a failed test, so you don't replace a creative or checkout fix with another product search."
+      ],
+      "caveats": [
+        "The source maps these boundaries as a module taxonomy; it does not argue paid media or creative are unimportant — the reverse."
+      ],
+      "tags": [
+        "product-research",
+        "workflow",
+        "scope-definition",
+        "paid-media",
+        "creative-strategy",
+        "checkout"
+      ],
+      "id": "33a09eb2fe9d840b800f4141",
+      "source_id": "1TYodTXR6LLlNuTKucxPY5dDu3hFIw3Mu",
+      "source_sha256": "751d64b118fd11afd2f1aef6fb8685070d337fd319d190b4da4cf062a938b08b",
+      "source_name": "_asked claude to find me a $1k_day product (it worked).docx",
+      "folder": "/01-PRD-product-research",
+      "domain": "product-research",
+      "section": 0
+    }
+  ],
+  "request_id": "6b83dd2e51604cb72d15a51945bb5849866e66224d4286e650b3d5739611be98"
+}

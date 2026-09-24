@@ -1,0 +1,323 @@
+{
+  "cards": [
+    {
+      "title": "Set Up a Local AI Coding Environment for Shopify Theme Edits",
+      "summary": "Install VS Code plus the Anthropic Claude extension into a dedicated folder to edit a live Shopify theme by conversational prompt.",
+      "use_when": "You want to make custom theme or product-page edits (new blocks, modified cart, custom templates) without hiring a developer or adding apps.",
+      "steps": [
+        "Upgrade to a paid Claude plan — the source states Claude Code is only included on the paid (Pro) tier, not the free account.",
+        "Download and install Visual Studio Code (free).",
+        "In VS Code, use File > Open Folder to create and open an empty directory named something like 'Shopify editor'; this folder becomes the environment where theme files and connections live.",
+        "Open the Extensions panel, search 'Claude', and install the extension published by Anthropic (ignore other similarly named extensions).",
+        "Click the Claude button in the top-right to open the Claude chat panel inside VS Code; the left sidebar shows your files, the chat panel is the main work area.",
+        "Verify the current Claude/VS Code extension interface and menu locations at install time, since extension UI and plan names change."
+      ],
+      "caveats": [
+        "You must be on a paid Claude plan to access Claude Code.",
+        "Install only the Anthropic-published extension among the many search results.",
+        "This sets up the tooling; it does not guarantee conversion improvements on its own."
+      ],
+      "tags": [
+        "store-setup",
+        "claude-code",
+        "shopify",
+        "theme-editing",
+        "ai-coding",
+        "developer-environment",
+        "visual-studio-code"
+      ],
+      "id": "9311e10409e8ba8513437cc6",
+      "source_id": "1wglJbj9TYsV2mna5N3CodM3Bo1qo7VBm",
+      "source_sha256": "7a4cc86d5f26cd83351e489d4893af7e5ff6e8f32ad75b5361d23a2c46da022f",
+      "source_name": "Claude Just Changed Shopify Forever.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 0
+    },
+    {
+      "title": "Connect Shopify CLI and Authenticate Your Store",
+      "summary": "Have Claude install the Shopify CLI (NPM version) and authenticate your store so it can list and pull themes.",
+      "use_when": "Your local Claude/VS Code environment is set up but not yet connected to your Shopify store, so you need it to see and pull themes.",
+      "steps": [
+        "Prompt Claude to install the Shopify CLI (command line interface) — this is the tool that lets Claude talk to your store.",
+        "When asked how to install, choose the NPM version. The presenter reports the Homebrew version failed for them; treat this as a situational preference, not a universal rule.",
+        "Approve the installation prompts as they appear, checking each one before allowing.",
+        "Prompt Claude to 'connect to my Shopify store and give me a list of the themes' — this triggers authentication.",
+        "Provide the store URL when asked, then copy the authentication command Claude gives you (e.g. 'shopify auth login') into a new VS Code terminal and run it.",
+        "Choose the correct account in the terminal prompt; a browser authentication screen may appear on some setups.",
+        "Once authenticated, confirm Claude can list your themes (the presenter's store showed 13).",
+        "Verify current CLI install options and login command in the Shopify CLI docs, since these change."
+      ],
+      "caveats": [
+        "Claude cannot authenticate on your behalf for security reasons; you complete login manually in the terminal.",
+        "Ask for the theme list first to confirm the connection before editing anything."
+      ],
+      "tags": [
+        "store-setup",
+        "shopify-cli",
+        "claude-code",
+        "authentication",
+        "theme-management",
+        "terminal"
+      ],
+      "id": "cf190b41088d616c604142a7",
+      "source_id": "1wglJbj9TYsV2mna5N3CodM3Bo1qo7VBm",
+      "source_sha256": "7a4cc86d5f26cd83351e489d4893af7e5ff6e8f32ad75b5361d23a2c46da022f",
+      "source_name": "Claude Just Changed Shopify Forever.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 0
+    },
+    {
+      "title": "Duplicate the Live Theme Before Any AI Editing",
+      "summary": "Create a copy of the live theme and confine all edits to that copy to avoid breaking the storefront.",
+      "use_when": "You are about to make any AI-driven theme change and need a safe staging environment.",
+      "steps": [
+        "After connecting, prompt Claude to 'duplicate the live theme' — the presenter's result was called 'copy of horizon'.",
+        "Immediately instruct Claude to 'continue to work just on that theme' so every subsequent edit targets the copy.",
+        "Confirm the duplicated theme appears under Online Store > Themes in Shopify (the copy is created on the store as well as pulled locally).",
+        "Verify all theme files are now pulled into your local folder so edits happen against the copy's code.",
+        "Treat the live theme as untouchable until the edited copy is validated and published."
+      ],
+      "caveats": [
+        "Editing a live theme risks breaking the entire storefront if something goes wrong.",
+        "Do not skip the 'work only on that theme' instruction — otherwise Claude may target the wrong theme."
+      ],
+      "tags": [
+        "store-setup",
+        "theme-management",
+        "staging",
+        "claude-code",
+        "risk-control",
+        "shopify"
+      ],
+      "id": "de00dc0259ba52881e03de68",
+      "source_id": "1wglJbj9TYsV2mna5N3CodM3Bo1qo7VBm",
+      "source_sha256": "7a4cc86d5f26cd83351e489d4893af7e5ff6e8f32ad75b5361d23a2c46da022f",
+      "source_name": "Claude Just Changed Shopify Forever.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 0
+    },
+    {
+      "title": "Inject an Editable Objection-Busting Trust Block Under Add to Cart",
+      "summary": "Prompt Claude to add a reusable theme-editor block of trust icons and text directly below the buy buttons.",
+      "use_when": "Your product page lacks shipping, guarantee and returns reassurance near the add-to-cart button and you want it editable without an app.",
+      "steps": [
+        "Identify the template to edit (e.g. the default product template) in the theme editor.",
+        "Prompt Claude with specifics, e.g.: 'In the product page default template, underneath the add-to-cart button, add three icons and text I can edit in the theme editor — one for shipping, one for guarantees, one for returns.'",
+        "Optionally approve all edits for the session to avoid confirming each change individually.",
+        "Wait for Claude to report what it built (the example produced delivery truck, shield and refresh-arrow icons).",
+        "In the theme editor, refresh the template and confirm a new block (named something like 'Product Trust Buttons') appears, is movable/reorderable, and its icons and text are editable.",
+        "Replicate the pattern for other repeated reassurance needs (payment icons, sizing notes)."
+      ],
+      "caveats": [
+        "This is more capable than Shopify's Sidekick, which the presenter says can essentially only generate sections — Claude Code can add editable blocks and templates.",
+        "Build time in the example was roughly one to two minutes; longer prompts or many instructions can fail (see the one-change-at-a-time caveat)."
+      ],
+      "tags": [
+        "product-page",
+        "store-setup",
+        "trust-signals",
+        "claude-code",
+        "conversion-optimization",
+        "theme-editing",
+        "pdp"
+      ],
+      "id": "2068dc8e74a9d8f129581cee",
+      "source_id": "1wglJbj9TYsV2mna5N3CodM3Bo1qo7VBm",
+      "source_sha256": "7a4cc86d5f26cd83351e489d4893af7e5ff6e8f32ad75b5361d23a2c46da022f",
+      "source_name": "Claude Just Changed Shopify Forever.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 0
+    },
+    {
+      "title": "Generate a Full High-Converting Product Template from a Framework Document",
+      "summary": "Upload a product-page framework to Claude and have it code an entire reusable template with standard conversion sections.",
+      "use_when": "You want a structured, reusable PDP template beyond what your default theme ships with, and you already have a page anatomy/framework to follow.",
+      "steps": [
+        "Have your product-page framework document ready (the presenter uses a 'Perfect Product Page' framework covering hero, trust badges, benefits grid, outcome, image+text, feature highlight and social proof).",
+        "Prompt Claude: 'Create a brand new product template in this theme using the attached framework,' and upload the document.",
+        "Let Claude analyze the framework and generate the template; the example took a couple of minutes.",
+        "In Shopify, refresh and confirm a new template (labeled e.g. 'PPP') exists on the duplicate theme.",
+        "Treat the generated template as a baseline outline to refine: toggle sections on/off, resize icons, remove duplicated elements (the presenter hid a redundant benefits grid).",
+        "Use the theme editor's section settings (badge position, swatch style, etc.) to configure the template per product.",
+        "Assign the template to products where it fits, or duplicate it for testing."
+      ],
+      "caveats": [
+        "The generated layout is a starting outline, not a finished page — expect to edit and remove redundant sections.",
+        "Don't assume the framework itself will translate into conversion gains without testing."
+      ],
+      "tags": [
+        "product-page",
+        "landing-page",
+        "claude-code",
+        "template-design",
+        "conversion-optimization",
+        "pdp",
+        "merchandising"
+      ],
+      "id": "100fb168dda1a3a70d8eb79c",
+      "source_id": "1wglJbj9TYsV2mna5N3CodM3Bo1qo7VBm",
+      "source_sha256": "7a4cc86d5f26cd83351e489d4893af7e5ff6e8f32ad75b5361d23a2c46da022f",
+      "source_name": "Claude Just Changed Shopify Forever.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 0
+    },
+    {
+      "title": "Clone a Competitor Design Element via Screenshot",
+      "summary": "Paste a screenshot of a competitor feature into Claude and have it build a matching, customizable component on your store.",
+      "use_when": "You spot a specific high-performing UI element (e.g. a 'Top Seller' badge on a swatch) on a competitor's store and want an equivalent on your PDP.",
+      "steps": [
+        "Find the element on the competitor's site (the example is True Classic's 'Top Seller' heart badge on a variant swatch).",
+        "Screenshot or copy that section.",
+        "Attach the image to Claude with a prompt like: 'Using the attached reference image, add a similar badge... to my swatches on my product page. I need to add an icon, change the text and color, but the styling must look exactly the same as the reference image.'",
+        "Let Claude build the component; it will return setup instructions (the example added a 'Swatch label' block with an emoji/icon and color options).",
+        "Apply it in the theme editor: click Add block > Swatch label, and set the option/option value to match the variant name exactly.",
+        "Customize the icon, text and color to fit your brand."
+      ],
+      "caveats": [
+        "Match the swatch label to the exact option value, or the badge won't bind to the variant.",
+        "Copy the styling pattern, not the competitor's trademark or content — avoid using their brand assets.",
+        "This copies a design element, not proven conversion results; test it on your own store."
+      ],
+      "tags": [
+        "product-page",
+        "creative-strategy",
+        "claude-code",
+        "competitor-research",
+        "pdp",
+        "merchandising",
+        "trust-signals"
+      ],
+      "id": "91ef75dc529d4c1732b48ab4",
+      "source_id": "1wglJbj9TYsV2mna5N3CodM3Bo1qo7VBm",
+      "source_sha256": "7a4cc86d5f26cd83351e489d4893af7e5ff6e8f32ad75b5361d23a2c46da022f",
+      "source_name": "Claude Just Changed Shopify Forever.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 0
+    },
+    {
+      "title": "Make Global Theme Edits (Cart Icon and Notification Bubble)",
+      "summary": "Prompt Claude to change sitewide theme utilities like the cart icon style, add a selection of preset icons, and customize the cart count bubble.",
+      "use_when": "You want storewide cosmetic/UX changes (cart icon, cart count color, add-to-cart feedback) that aren't exposed as template-level settings.",
+      "steps": [
+        "Prompt with a clear scope, e.g.: 'Change the shopping cart icon and let me pick from pre-selected icons like cart, bag, trolley. Add a small animation when something is added to cart, and let me change the color of the number notification on the cart.'",
+        "Wait for Claude to report where the new controls live (the example placed them under Header > Utilities).",
+        "In the theme editor, go to the reported location and select the new icon style and set the cart count background and number colors.",
+        "Test add-to-cart feedback on the storefront."
+      ],
+      "caveats": [
+        "The presenter's bundle of instructions produced the icons and colors but failed to implement the requested add-to-cart animation — too many instructions at once is the suggested cause.",
+        "If a requested feature doesn't appear, break it into a single focused follow-up prompt rather than assuming it worked."
+      ],
+      "tags": [
+        "store-setup",
+        "theme-editing",
+        "claude-code",
+        "cart",
+        "ux-optimization",
+        "shopify"
+      ],
+      "id": "5c660bd33ab3ce10a7cd37c5",
+      "source_id": "1wglJbj9TYsV2mna5N3CodM3Bo1qo7VBm",
+      "source_sha256": "7a4cc86d5f26cd83351e489d4893af7e5ff6e8f32ad75b5361d23a2c46da022f",
+      "source_name": "Claude Just Changed Shopify Forever.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 0
+    },
+    {
+      "title": "Give Claude One Change at a Time, Not a Bundle",
+      "summary": "Split AI theme requests into single focused prompts, because bundling several changes risks partial or failed implementation.",
+      "use_when": "You are planning a series of theme or PDP edits and deciding how to sequence prompts.",
+      "steps": [
+        "Decide the single change you want (e.g. change the cart icon only).",
+        "Write a prompt scoped to that one change.",
+        "Verify the result in the theme editor before moving on.",
+        "If a bundled prompt (like the cart icon + animation + count color request) partially fails, re-run the missing piece as its own prompt.",
+        "Track which changes succeeded so you can re-issue the failed ones."
+      ],
+      "caveats": [
+        "This is the presenter's observed lesson from a request that partially failed, not a hard rule — a clearly related bundle can still work but is riskier."
+      ],
+      "tags": [
+        "claude-code",
+        "experiment-design",
+        "theme-editing",
+        "prompting",
+        "workflow"
+      ],
+      "id": "9e2078f63db9660e4c99bf54",
+      "source_id": "1wglJbj9TYsV2mna5N3CodM3Bo1qo7VBm",
+      "source_sha256": "7a4cc86d5f26cd83351e489d4893af7e5ff6e8f32ad75b5361d23a2c46da022f",
+      "source_name": "Claude Just Changed Shopify Forever.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 0
+    },
+    {
+      "title": "Manage Claude Usage Limits During Heavy Theme Coding",
+      "summary": "Plan for hitting Claude's usage limit and cooldown when running many theme edits.",
+      "use_when": "You are doing multi-hour AI theme work and want to avoid running out mid-task.",
+      "steps": [
+        "Watch for the usage-limit warning (the example reported '90% of your limit used').",
+        "When you hit the limit, pause theme coding — the source states it resets in about an hour.",
+        "Use the cooldown to plan the next changes or review already-generated output.",
+        "Batch your most important edits earlier in a session before the limit approaches."
+      ],
+      "caveats": [
+        "The reset window (about an hour) and limit percentage are the source's observation and may change with Claude's plans — verify current limits."
+      ],
+      "tags": [
+        "claude-code",
+        "usage-limits",
+        "workflow",
+        "store-setup",
+        "ai-coding"
+      ],
+      "id": "af0b1c6931028e1ee15c1e46",
+      "source_id": "1wglJbj9TYsV2mna5N3CodM3Bo1qo7VBm",
+      "source_sha256": "7a4cc86d5f26cd83351e489d4893af7e5ff6e8f32ad75b5361d23a2c46da022f",
+      "source_name": "Claude Just Changed Shopify Forever.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 0
+    },
+    {
+      "title": "Publish a Claude-Edited Theme and Maintain an Up-to-Date Working Copy",
+      "summary": "Publish your edited duplicate safely, then re-duplicate the live theme for the next round of edits.",
+      "use_when": "Your AI-edited theme or template is validated and you are ready to push it live.",
+      "steps": [
+        "In Shopify, confirm the duplicate theme looks correct before publishing.",
+        "Click Publish on the edited theme; the previously live theme moves to unpublished.",
+        "Treat theme file edits as saved automatically in the theme files — only in-editor content/setting changes need saving.",
+        "For the next round of work, duplicate the now-live theme so your working copy is the most current, then edit and republish that."
+      ],
+      "caveats": [
+        "Publishing is the riskiest step — the source calls it the scariest part of the process.",
+        "Skipping the re-duplicate step means you could edit a stale copy and overwrite newer live changes."
+      ],
+      "tags": [
+        "store-setup",
+        "theme-management",
+        "publishing",
+        "risk-control",
+        "shopify",
+        "workflow"
+      ],
+      "id": "35ef5d4ea699952de1dd3f0a",
+      "source_id": "1wglJbj9TYsV2mna5N3CodM3Bo1qo7VBm",
+      "source_sha256": "7a4cc86d5f26cd83351e489d4893af7e5ff6e8f32ad75b5361d23a2c46da022f",
+      "source_name": "Claude Just Changed Shopify Forever.docx",
+      "folder": "/05-SET-store-setup",
+      "domain": "store-setup",
+      "section": 0
+    }
+  ],
+  "request_id": "9c4cce69c4f1c70b9404c00a3ba3cdf940e246c40a40f1996dbe38af104c8917",
+  "ecommerce_scope_version": 1
+}

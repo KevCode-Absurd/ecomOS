@@ -1,0 +1,145 @@
+{
+  "batch": 5,
+  "request_id": "7d1c9e8db2eab88d137de2ac91589696279c2c206e045a7d017b1278e0c6bee9",
+  "errors": [],
+  "review": {
+    "reviews": [
+      {
+        "candidate_id": "fcff61531736fb08895d8d9f2ca33df62d3b2b179f0a44acb01464480f1159f7",
+        "verdict": "supported",
+        "reasons": [
+          "The action, objective-defect trigger, and exclusion for two plausibly viable but uncertain alternatives accurately reflect the repair-versus-test rule."
+        ]
+      },
+      {
+        "candidate_id": "7209097e27bff06d663465461df33512a594e6581b0f705e05f3317aab84bc2d",
+        "verdict": "supported",
+        "reasons": [
+          "The source expressly says to test when both versions are plausibly viable and the better outcome is unknown, while repairing objectively defective states instead."
+        ]
+      },
+      {
+        "candidate_id": "af82b4e2478beb4c9f8a2e9e3bafb1bf34161a783d40e8c9bdd0c35d18d005e5",
+        "verdict": "revise",
+        "reasons": [
+          "The formula is accurately quoted, but the candidate presents it as a general calculation rule without retaining the source's stated calibration: the factor 16 assumes 95% significance, 80% power, and a two-sided test.",
+          "For conversion rates, the source additionally specifies sigma squared as p(1-p); the candidate does not state this applicable variance definition."
+        ]
+      },
+      {
+        "candidate_id": "8a9be98fd973041e8c7adaddc4ddadb8b53cd9c3a79447fd9c7730b483a98ab9",
+        "verdict": "supported",
+        "reasons": [
+          "The recommended MDE criterion is stated exactly: choose the smallest lift worth shipping rather than the smallest theoretically possible lift."
+        ]
+      },
+      {
+        "candidate_id": "402b6ff394bfe4755e19d399dfa6ddabfd2ebe12cc99675541f4cbd9f0e2f0ef",
+        "verdict": "supported",
+        "reasons": [
+          "The principle directly reflects the source statement that halving the effect to detect quadruples the required sample."
+        ]
+      },
+      {
+        "candidate_id": "6e84bb128a36f9b0816942e0cfcad6ae9df400328676910a418da9577b9f969e",
+        "verdict": "supported",
+        "reasons": [
+          "The warning is supported by the source's distinction between percentage-point and relative lift and its statement that sample calculators usually take relative MDE."
+        ]
+      },
+      {
+        "candidate_id": "0657706f203cb5e7de723ac02be11a5ac7717bf2d651fec9dda9512f4da33537",
+        "verdict": "supported",
+        "reasons": [
+          "The action preserves both the source's two-tailed default and its specific condition under which one-tailed testing may be used."
+        ]
+      },
+      {
+        "candidate_id": "8c1adafb517904009aaaeed54d84b74054847752abe678e284cf7696317a19d2",
+        "verdict": "revise",
+        "reasons": [
+          "The approximately 80,000-visitors-per-variant example is supported only under the source table's stated assumptions of 95% confidence, 80% power, and a two-sided test. The trigger names only the 2% baseline and 10% relative lift, omitting those material qualifiers."
+        ]
+      },
+      {
+        "candidate_id": "0540b470033a08b520d864a98f4e96dd3d0bb305245e915c4b95c3b9654c190c",
+        "verdict": "supported",
+        "reasons": [
+          "The source supports sizing by target relative MDE rather than a universal conversion threshold and gives the quoted rough per-variant conversion requirements at 80% power and 95% confidence."
+        ]
+      },
+      {
+        "candidate_id": "1f4e78082a8ee635b0ad4fd6b30f45b6e13a6e3e46d1694a42b5c35fa0fcc08e",
+        "verdict": "supported",
+        "reasons": [
+          "The source explicitly rejects a magic conversion threshold and states that 400 conversions per variant only powers large lifts, approximately 25% or greater."
+        ]
+      },
+      {
+        "candidate_id": "2fb191e5b337bb0668d896cc0514d0244b4b304e28a9aa5b7e6e76ad98e9179f",
+        "verdict": "revise",
+        "reasons": [
+          "The recommendation for large structural changes and later randomized confirmation is supported, but it omits the source's material safeguards for pre-post designs: holding external conditions as constant as possible, comparing equal and comparable periods, and treating the result as a weak signal rather than proof.",
+          "The candidate depends on u11, which is not supplied as a candidate, leaving a fragmented prerequisite."
+        ]
+      },
+      {
+        "candidate_id": "79a1947da5e4ff18dca6d94f2ddeac427f5c30c33955ca4024016359f841cdad",
+        "verdict": "supported",
+        "reasons": [
+          "The source directly states that each A/B/n arm needs the same per-variant sample as a two-arm test and that total traffic therefore scales with the number of arms."
+        ]
+      },
+      {
+        "candidate_id": "571a009d4ec26a57616682c25d0ed13836d37d4c5829ce26821f78dbe37a31b2",
+        "verdict": "revise",
+        "reasons": [
+          "The 3,000–20,000 monthly-order band and the non-hard-cutoff caveat are supported.",
+          "Its dependency on u13 is not sufficient for the bandit portion of the claim: u13 addresses A/B/n per-arm traffic scaling, whereas the source separately says bandits need volume to learn before exploiting."
+        ]
+      },
+      {
+        "candidate_id": "65c6a2cb9f62f4eb602af3dace33f3967d2fc326931a10c870ae8dcaddd044d6",
+        "verdict": "supported",
+        "reasons": [
+          "The source expressly identifies short campaigns aimed at minimizing regret rather than obtaining a clean read as the caveated lower-volume use case for bandits."
+        ]
+      },
+      {
+        "candidate_id": "8fae5d45bdea35428fe29360e8e913ac7c916ff7d2a833ca8b8194d16d5fc2b2",
+        "verdict": "supported",
+        "reasons": [
+          "The action and fixed-horizon prerequisite accurately reproduce the source definition: set the sample size in advance and inspect results once at the end."
+        ]
+      }
+    ],
+    "omissions": [
+      {
+        "description": "Pre-post testing safeguards and the requirement to regard its result as weak rather than conclusive evidence are not represented.",
+        "quote": "It is defensible only if you hold external conditions as constant as possible, compare equal and comparable periods, and treat a clear, explainable, stable shift as a weak signal, not proof (customerimpact.be)."
+      },
+      {
+        "description": "The excerpt's specific low-volume experimentation guidance is not represented.",
+        "quote": "directing low-volume stores (<300 orders/month) to rely on qualitative research and bold, big-swing changes"
+      },
+      {
+        "description": "The need to check named experiment invalidations is not represented.",
+        "quote": "Outlining critical experiment invalidations—including Sample Ratio Mismatch (SRM), flicker (FOOC), and Twyman’s Law—to ensure reported lifts are statistically valid rather than instrumentation artifacts."
+      },
+      {
+        "description": "The stated Shopify checkout-testing constraint and alternatives are not represented.",
+        "quote": "it prevents third-party client-side tools from A/B testing the checkout UI, forcing reliance on server-side theme testing (Shopify Rollouts) or Plus-exclusive Checkout Blocks."
+      },
+      {
+        "description": "The inferential consequence of deviating from a fixed-horizon design is not represented.",
+        "quote": "The p-value and confidence level are only valid under this assumption (Evan Miller)."
+      }
+    ],
+    "source_limitations": [
+      "The excerpt stops immediately after the opening definition of fixed-horizon testing, so it does not provide the substantive continuation of the stopping-rules or sequential-testing guidance.",
+      "Several claims are presented as a synthesized research document with named external references, but the excerpt does not provide the underlying source text, study methods, or calculation derivations needed to independently assess those attributed claims.",
+      "The numerical sample-size examples are expressly tied to specified assumptions such as confidence level, power, test sidedness, baseline, and target lift; the excerpt does not supply a universal threshold or a business-specific run-duration rule."
+    ]
+  },
+  "publication_allowed": false
+}

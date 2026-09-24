@@ -1,0 +1,201 @@
+{
+  "status": "complete",
+  "mapping": {
+    "A": "cheap_with",
+    "B": "cheap_without",
+    "C": "frontier_with",
+    "D": "frontier_without"
+  },
+  "judge_model": "gpt-5.6-terra",
+  "output": {
+    "reviews": [
+      {
+        "label": "A",
+        "scores": {
+          "factual_accuracy": 3,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 3,
+          "uncertainty_and_questions": 4,
+          "prioritization": 3
+        },
+        "strengths": [
+          "Correctly calculates the Daypack stock bridge: 26.25 days of cover, a 70-unit shortfall over 35 days, and a 6-unit/day sustainable pace.",
+          "Accurately identifies the mobile conversion decline and funnel deterioration while noting checkout completion itself is unchanged.",
+          "Uses compliant, plain-spoken PDP language: 13-inch sleeve only, water-resistant rather than waterproof, and the stated 4–7 business-day delivery estimate.",
+          "Explicitly avoids adding overlapping recovery estimates together and warns that platform-attributed revenue is not incremental truth.",
+          "Provides concrete PDP, lifecycle, and acquisition actions, plus useful questions on sleeve dimensions, accessory availability, and replenishment timing."
+        ],
+        "issues": [
+          "The proposal shifts budget toward accessories despite not knowing accessory sell-through, replenishment timing, or standalone fulfillment economics. It flags this uncertainty, but the action should be conditional on those checks.",
+          "It proposes several implementation items in two weeks—PDP work, mobile QA, an Added-to-Cart flow, post-purchase flow, and delivery messaging—without assigning work against the 8 designer and 4 developer hours per week.",
+          "The statement to use Shopify as the sole 'source of truth' is directionally useful for total revenue, but Shopify alone cannot resolve channel-level attribution or incrementality.",
+          "The first priority combines accessory acquisition with educational creative that could still increase Daypack demand; the inventory gate should be more operationally explicit."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "210/8 = 26.25 days of Daypack stock against 35-day replenishment; about 8.75-day gap at current rate.",
+            "met": true,
+            "reason": "States 26.25 days cover and roughly a nine-day uncovered period, with correct supporting arithmetic."
+          },
+          {
+            "criterion": "Avoid accelerating Daypack demand without a stock plan.",
+            "met": true,
+            "reason": "Sets a 6/day cap, discourages broad Daypack acquisition, and conditions conversion gains on the inventory cap or accessory mix."
+          },
+          {
+            "criterion": "Respect 8 designer and 4 developer hours per week and $3000 budget.",
+            "met": false,
+            "reason": "Honors the $3,000 constraint but does not provide a credible hours allocation for the several proposed PDP, QA, and flow builds."
+          }
+        ]
+      },
+      {
+        "label": "B",
+        "scores": {
+          "factual_accuracy": 2,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 3,
+          "uncertainty_and_questions": 4,
+          "prioritization": 3
+        },
+        "strengths": [
+          "Correctly identifies inventory as the binding constraint and accurately calculates the 8.75-day gap, 6/day cap, and 28-unit two-week reduction needed versus current Daypack pace.",
+          "The mobile analysis is accurate: mobile CVR falls from 2.67% to 1.5%, desktop remains 4%, and the funnel decline is before completed checkout.",
+          "PDP recommendations are specific, factual, and aligned with TrailFold's practical commuter positioning and claim limits.",
+          "Appropriately treats Meta and Klaviyo attribution with caution and avoids unsupported 15-inch, waterproof, or discount claims.",
+          "Retention recommendations focus on in-stock accessories and include sensible filter, suppression, and holdout considerations."
+        ],
+        "issues": [
+          "It calls $22,000 divided by all 500 Shopify orders a 'blended Meta CPA.' This is not a valid Meta CPA because the number of Meta-attributed or incrementally caused Shopify orders is unavailable. The subsequent profitability conclusion based on that figure is therefore unsupported.",
+          "The claim that Klaviyo's reported revenue is 'inconsistent' with marketable-profile count, campaign cadence, click/order rates, and AOV is unsupported. Those metrics can have different denominators, segments, sending volumes, and attribution definitions.",
+          "It assumes Daypack is the primary revenue driver and that most Meta creative features it. Neither is supplied; the creative list and SKU-level sales mix do not establish this.",
+          "It recommends shifting a portion of existing Meta spend to accessories before confirming accessory-level acquisition economics or demand; this should be framed as a limited, conditional test.",
+          "It does not map the proposed PDP test and two additional lifecycle flows to the stated design/development capacity."
+        ],
+        "critical_errors": [
+          "Mislabels total Meta spend divided by total Shopify orders as Meta CPA and uses it to judge paid Daypack profitability without channel-attributed order data."
+        ],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "210/8 = 26.25 days of Daypack stock against 35-day replenishment; about 8.75-day gap at current rate.",
+            "met": true,
+            "reason": "Correctly calculates cover, gap, sustainable pace, and the two-week unit reduction."
+          },
+          {
+            "criterion": "Avoid accelerating Daypack demand without a stock plan.",
+            "met": true,
+            "reason": "Caps Daypack sell-through, reduces Daypack promotion, and proposes a waitlist/notify path if demand exceeds supply."
+          },
+          {
+            "criterion": "Respect 8 designer and 4 developer hours per week and $3000 budget.",
+            "met": false,
+            "reason": "Acknowledges the budget and available hours but does not scope or allocate the proposed PDP test plus multiple flow builds within those hours."
+          }
+        ]
+      },
+      {
+        "label": "C",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 4,
+          "prioritization": 4
+        },
+        "strengths": [
+          "Accurately calculates Daypack coverage, the 70-unit shortfall, and 6/day maximum pace; the 5.5/day target is clearly labeled as a provisional buffer rather than presented as a fact.",
+          "Handles attribution appropriately: compares Meta-reported ROAS with Shopify revenue/spend without treating either as proof of incrementality.",
+          "Makes a disciplined diagnosis of the mobile decline: it identifies a valid priority area while explicitly not claiming proof of a speed, checkout, or UX defect.",
+          "Provides a focused, brand-appropriate PDP artifact with all relevant policy and claim constraints: commuter/weekend positioning, 13-inch sleeve, water-resistant/not waterproof, shipping window, and return terms.",
+          "Avoids accelerating Daypack demand and makes clear that conversion improvements should reduce required paid traffic rather than drive more constrained sales.",
+          "The retention test is narrow and feasible: one no-discount pouch message, an eligibility rule, recent-purchaser suppression, a 20% holdout, and contribution-oriented evaluation.",
+          "Explicitly budgets work below the available fortnightly capacity and defers lower-priority expansions."
+        ],
+        "issues": [
+          "The pouch contribution calculation excludes pick/pack and shipping, though it labels the result as before fulfillment and asks for those facts before sending. This is appropriately caveated but should not be used as a final economics decision.",
+          "The recommendation to use a 20% randomized holdout is useful, but implementation feasibility in the current Klaviyo setup is not confirmed.",
+          "It does not specify a concrete allocation of the $3,000 test budget, though treating it as a ceiling is sensible under the stock and cash constraints."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "210/8 = 26.25 days of Daypack stock against 35-day replenishment; about 8.75-day gap at current rate.",
+            "met": true,
+            "reason": "Uses the correct coverage, shortfall, and sustainable-rate calculations, while adding a clearly qualified safety buffer."
+          },
+          {
+            "criterion": "Avoid accelerating Daypack demand without a stock plan.",
+            "met": true,
+            "reason": "Stops acquisition expansion, reduces Daypack-focused spend, monitors daily sales, and ties all demand decisions to an inventory allowance."
+          },
+          {
+            "criterion": "Respect 8 designer and 4 developer hours per week and $3000 budget.",
+            "met": true,
+            "reason": "Caps proposed fortnight work at 12 design, 6 development, and 8 owner hours, and treats the $3,000 as a ceiling rather than a required spend."
+          }
+        ]
+      },
+      {
+        "label": "D",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 4,
+          "prioritization": 4
+        },
+        "strengths": [
+          "Correctly calculates the Daypack inventory shortfall and uses a clearly qualified 5.5/day buffer target rather than asserting an arbitrary target as fact.",
+          "Makes the strongest inventory-first operating plan: daily stock review, a recalculable allowable-pace formula, and a condition to pause paid Daypack promotion when organic/lifecycle demand consumes the allowance.",
+          "Correctly calculates Daypack contribution before ads, returns, and overhead, and appropriately declines to treat it as a validated allowable CAC.",
+          "The mobile diagnosis is accurate and well-calibrated. It identifies the 233-order difference at the former mobile conversion rate but explicitly says it does not prove a UX defect or represent recoverable orders.",
+          "The PDP recommendations are concise, claim-compliant, policy-compliant, and especially well matched to TrailFold's restrained practical voice.",
+          "Does not automatically redirect acquisition budget to accessories without standalone economics, which is a more defensible response to missing data than assuming accessory scaling is profitable.",
+          "Keeps lifecycle work intentionally small, uses existing campaign capacity, specifies suppression and stock checks, and avoids relying on open rate or overlapping attribution.",
+          "Clearly identifies owners, success conditions, constraints, and useful missing facts."
+        ],
+        "issues": [
+          "The $750 release threshold and the instruction to hold $2,250 uncommitted are prudent but arbitrary; no evidence establishes that $750 is the optimal amount.",
+          "Priority three is deliberately conservative and may yield less near-term retention upside than a fully built post-purchase flow, though this trade-off is reasonable given the capacity and inventory constraints.",
+          "It does not give an explicit hour-by-hour design allocation, but its constrained copy/placement/QA scope is credibly within the available four developer hours per week."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "210/8 = 26.25 days of Daypack stock against 35-day replenishment; about 8.75-day gap at current rate.",
+            "met": true,
+            "reason": "Correctly states 26.3 days of cover, 70-unit shortfall, and 6/day maximum pace."
+          },
+          {
+            "criterion": "Avoid accelerating Daypack demand without a stock plan.",
+            "met": true,
+            "reason": "Prioritizes an inventory allowance, cuts Daypack acquisition first, ties any spend release to stock pace, and avoids acquisition scaling."
+          },
+          {
+            "criterion": "Respect 8 designer and 4 developer hours per week and $3000 budget.",
+            "met": true,
+            "reason": "Uses a narrowly scoped copy/placement/mobile-QA change, limits lifecycle work to existing campaign capacity, and keeps most or all of the $3,000 budget uncommitted."
+          }
+        ]
+      }
+    ],
+    "ranking": [
+      "D",
+      "C",
+      "A",
+      "B"
+    ],
+    "summary": "D and C are the strongest because they accurately treat Daypack inventory as the binding constraint, make narrowly scoped and brand-compliant conversion changes, and avoid pretending attribution or accessory economics are known. D is best on operational discipline and conditional spending; C is best on an explicit feasible test and capacity plan. A is analytically strong and complete but less disciplined on implementation capacity and accessory reallocation. B is useful overall but is materially weakened by treating total Meta spend divided by all Shopify orders as a valid Meta CPA and drawing a profitability conclusion from it."
+  },
+  "request_id": "976f9bce854eda87066940c94efbc9cc41b76a6fc33dcee77f287545729d03d9",
+  "cost_upper_estimate_usd": 0.0578185
+}

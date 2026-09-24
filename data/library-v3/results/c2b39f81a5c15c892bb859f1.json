@@ -1,0 +1,511 @@
+{
+  "cards": [
+    {
+      "title": "Structure a GA4 account for an ecommerce store",
+      "summary": "Decide account, property and data stream structure based on whether your storefront, checkout and subdomains form one user journey.",
+      "use_when": "Setting up GA4 for a store that spans several domains (e.g. main shop domain plus a separate checkout or landing domains) and you need to decide how many properties and streams to create.",
+      "steps": [
+        "Treat the GA4 account as the organization: for a single business, one account is usually enough.",
+        "Create one property per distinct user journey you want measured together. If a shopper moves from your main site to a dedicated checkout domain and then purchases, use ONE property for both so the journey is visible in one place.",
+        "If your sites are separate business lines whose data you never want combined (e.g. two unrelated product ranges), give each its own property so data is not mixed.",
+        "Inside a property, use one web data stream even for multiple websites — Google recommends one web stream across sites rather than a stream per domain.",
+        "Which domain you type when creating the web stream is not critical; the stream still works for the other domains in the property.",
+        "When multiple domains are in one property, configure cross-domain tracking in the data stream settings so sessions are not split when visitors jump domains.",
+        "Select reporting time zone and currency at property creation — these match where the business is, not the individual shopper.",
+        "Choose business objectives at setup; they only change which report collections are unlocked. The presenter prefers the older report layout, so pick objectives you'll actually use or select 'other'.",
+        "Verify the current interface wording in the GA4 admin panel before following these steps, as Google changes report collection names."
+      ],
+      "caveats": [
+        "Report collection names differ depending on the business objectives selected and change over time; content is similar but labels vary.",
+        "GA4 takes roughly 24–48 hours to fully process data, so a fresh property or new custom dimensions will not appear in standard reports immediately."
+      ],
+      "tags": [
+        "measurement",
+        "ga4",
+        "analytics-setup",
+        "cross-domain-tracking",
+        "data-streams",
+        "property-configuration"
+      ],
+      "id": "a61d1986b9456f536f5e1a3d",
+      "source_id": "1b4ZdpEvhYQ-L_FcGvMA86kE5bfoC8zQH",
+      "source_sha256": "fc082c22ff850b0f89e8d87f7940d5b7c374f87dde7c19d65add29dd20fbc1ee",
+      "source_name": "Google Analytics 4 tutorial for beginners (2026) __ GA4 tutorial for beginners __ GA4 course.docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 1
+    },
+    {
+      "title": "Install the GA4 tag: CMS, hardcode, or GTM",
+      "summary": "Choose between a CMS tracking-ID field, developer-installed code, or Google Tag Manager for deploying GA4 on an ecommerce site.",
+      "use_when": "Choosing how to deploy GA4 (and later ecommerce event tags) on your storefront, especially when you lack developer time or need to add vendor tags.",
+      "steps": [
+        "Option 1 — built-in integration: many ecommerce platforms have a field for the measurement ID (starts with 'G-'). Find it in GA4 under Admin > Data Streams > your web stream > Measurement ID, paste it into the platform field, and the platform installs GA4 for you.",
+        "Option 2 — custom site: hand the Google tag snippet to a developer to add to every page. Google recommends the <head> section; the <body> also works if the head is not feasible.",
+        "Option 3 — Google Tag Manager: create a container at tagmanager.google.com, install the first GTM container code on all pages (the second snippet can be ignored), then add a Google tag with your measurement ID inside GTM.",
+        "A container needs its code on every page for the Google tag to activate everywhere, so this is the critical developer handoff.",
+        "GTM's main advantage is managing many tags (GA4, Meta pixel, LinkedIn insight tag) without repeated developer involvement — useful when you need to iterate on ecommerce event tracking.",
+        "After publishing in GTM, GA4 starts collecting data; allow 24–48 hours before trusting new reports."
+      ],
+      "caveats": [
+        "GTM has a learning curve; the presenter's stated preference for GTM is his opinion, not a universal requirement.",
+        "Exact GTM and GA4 button labels change; verify the current interface before instructing a developer."
+      ],
+      "tags": [
+        "measurement",
+        "ga4",
+        "google-tag-manager",
+        "tag-deployment",
+        "implementation",
+        "analytics-setup"
+      ],
+      "id": "53bd7d4a85c1fd455b4084e8",
+      "source_id": "1b4ZdpEvhYQ-L_FcGvMA86kE5bfoC8zQH",
+      "source_sha256": "fc082c22ff850b0f89e8d87f7940d5b7c374f87dde7c19d65add29dd20fbc1ee",
+      "source_name": "Google Analytics 4 tutorial for beginners (2026) __ GA4 tutorial for beginners __ GA4 course.docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 1
+    },
+    {
+      "title": "Test a GA4 tag with GTM Preview and DebugView",
+      "summary": "Run the GTM preview → DebugView sequence to confirm a tag fires and GA4 receives the event and its parameters before publishing.",
+      "use_when": "Validating any new GA4 tracking tag (ecommerce events, custom events) on your store before publishing it to live shoppers.",
+      "steps": [
+        "In GTM click Preview, enter the store URL, and click Connect; the site opens in a new tab with tag assistant connected.",
+        "Trigger the action you want to measure if needed (for a page-load tag, just visiting is enough) and inspect the event in the preview panel — confirm your tag fired.",
+        "Open GA4 in another tab: Admin > Debug View. Confirm the events arrive (e.g. page_view, scroll, session_start) and that parameters such as page location and URL match.",
+        "For custom events, click into the event in DebugView and verify the custom parameters you attached (e.g. menu item name/URL) are present, not just the default ones.",
+        "Only after both GTM preview and DebugView confirm receipt, go back to GTM and Submit / Publish the container version.",
+        "Re-enable Preview each time you restart a GTM session if the preview disconnects."
+      ],
+      "caveats": [
+        "A preview-mode 'unknown tag type' warning can be a preview bug — tags can still work correctly.",
+        "Newly published events and custom dimensions can take 24–48 hours to surface in standard GA4 reports, so DebugView is the fast check, not the report."
+      ],
+      "tags": [
+        "measurement",
+        "ga4",
+        "google-tag-manager",
+        "debug-view",
+        "testing",
+        "implementation"
+      ],
+      "id": "0aad0a745c6673f1de01b2b1",
+      "source_id": "1b4ZdpEvhYQ-L_FcGvMA86kE5bfoC8zQH",
+      "source_sha256": "fc082c22ff850b0f89e8d87f7940d5b7c374f87dde7c19d65add29dd20fbc1ee",
+      "source_name": "Google Analytics 4 tutorial for beginners (2026) __ GA4 tutorial for beginners __ GA4 course.docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 1
+    },
+    {
+      "title": "Read acquisition reports: first touch vs session",
+      "summary": "Distinguish user acquisition (first source ever) from traffic acquisition (per session) to answer the right question about store traffic.",
+      "use_when": "Deciding which channel or campaign drove purchases and revenue for your store, and avoiding misreading first-touch attribution as current-session attribution.",
+      "steps": [
+        "Use User Acquisition to see the FIRST source that ever acquired a visitor — a user acquired months ago by organic search stays in the organic row for all later sessions.",
+        "Use Traffic Acquisition for per-session data, which most marketers actually want: group traffic sources, then drill into Session source/medium.",
+        "Add sessions, then revenue, as metrics and sort by the metric you care about — e.g. sort by revenue to see which sources actually paid off, not just which drove volume.",
+        "Add Session campaign name via the plus button (dimension) to break revenue down by individual campaign, e.g. to find which email newsletter generated the most revenue.",
+        "Use quick filters to isolate a channel: filter Session medium exactly matches email, or combine Session medium = cpc with Session source contains facebook.com to see paid social campaigns and their revenue.",
+        "Change chart granularity (day vs week) and the date range to read trends; clearing rows can blank a chart, so reselect rows or click plot rows to restore data."
+      ],
+      "caveats": [
+        "Assertion that 'most marketers want traffic acquisition' is the presenter's opinion.",
+        "The default chart shows only the top five sources; deselect or plot specific rows to see others."
+      ],
+      "tags": [
+        "measurement",
+        "ga4",
+        "traffic-acquisition",
+        "attribution",
+        "campaign-reporting",
+        "revenue-analysis"
+      ],
+      "id": "a26e80bd210161317dcbf304",
+      "source_id": "1b4ZdpEvhYQ-L_FcGvMA86kE5bfoC8zQH",
+      "source_sha256": "fc082c22ff850b0f89e8d87f7940d5b7c374f87dde7c19d65add29dd20fbc1ee",
+      "source_name": "Google Analytics 4 tutorial for beginners (2026) __ GA4 tutorial for beginners __ GA4 course.docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 1
+    },
+    {
+      "title": "Use the ecommerce purchases report for product decisions",
+      "summary": "Read item views, add-to-carts, purchases and item revenue per product to find merchandising winners and drop-off points.",
+      "use_when": "Merchandising and product-selection decisions — spotting products with strong views but weak add-to-cart or purchase rates, or identifying top revenue items.",
+      "steps": [
+        "Open the Monetization report (might be labeled revenue in your layout) and go to E-commerce purchases.",
+        "Read the columns per item: how often the product was viewed, added to cart, purchased, and item revenue. Sorting by item revenue surfaces top performers (e.g. a best-selling sweater).",
+        "Use gaps between view → add-to-cart → purchase as a signal: a product viewed a lot but rarely bought may have pricing, imagery, or PDP-copy issues worth testing.",
+        "Treat this data as available ONLY if you or your platform sends view_item / add_to_cart / purchase events with product and revenue parameters — GA4 does not track this out of the box.",
+        "If the data is missing, either ask your platform about its GA4 ecommerce integration or have a developer/GTM send the events, then allow 24–48 hours for processing."
+      ],
+      "caveats": [
+        "Out-of-the-box GA4 does not send ecommerce events; without configuration this report is empty or partial."
+      ],
+      "tags": [
+        "measurement",
+        "ga4",
+        "ecommerce-tracking",
+        "product-performance",
+        "merchandising",
+        "item-revenue"
+      ],
+      "id": "d6b4bece95910a772d1e8525",
+      "source_id": "1b4ZdpEvhYQ-L_FcGvMA86kE5bfoC8zQH",
+      "source_sha256": "fc082c22ff850b0f89e8d87f7940d5b7c374f87dde7c19d65add29dd20fbc1ee",
+      "source_name": "Google Analytics 4 tutorial for beginners (2026) __ GA4 tutorial for beginners __ GA4 course.docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 1
+    },
+    {
+      "title": "Diagnose checkout drop-off by device or browser",
+      "summary": "Use the checkout journey report with breakdown dimensions to find where and on which devices/browsers shoppers abandon checkout.",
+      "use_when": "Optimizing the cart and checkout flow — locating funnel steps that lose the most shoppers and checking whether a specific browser/device has a technical problem.",
+      "steps": [
+        "Open the checkout journey report to see drop-off between steps: users who started checkout, added shipping info, added payment info, then purchased.",
+        "Change the breakdown dimension to Device category to compare completion rates across desktop, mobile and tablet.",
+        "Switch the breakdown to Browser and scan for a step where one browser drops off significantly more — that pattern suggests a technical bug rather than a UX preference.",
+        "Investigate the suspect step in that browser (e.g. reproduce the failing checkout) before assuming it is a design issue.",
+        "Repeat across steps to prioritise which fix affects the most lost orders."
+      ],
+      "caveats": [
+        "Requires ecommerce events (begin_checkout, add_shipping_info, add_payment_info, purchase) to be configured; GA4 does not collect these automatically.",
+        "A higher drop-off for one browser is a hypothesis pointing to a bug, not proof."
+      ],
+      "tags": [
+        "measurement",
+        "ga4",
+        "checkout",
+        "funnel-analysis",
+        "conversion-optimization",
+        "device-breakdown"
+      ],
+      "id": "ae2ed547485eb366baa70c99",
+      "source_id": "1b4ZdpEvhYQ-L_FcGvMA86kE5bfoC8zQH",
+      "source_sha256": "fc082c22ff850b0f89e8d87f7940d5b7c374f87dde7c19d65add29dd20fbc1ee",
+      "source_name": "Google Analytics 4 tutorial for beginners (2026) __ GA4 tutorial for beginners __ GA4 course.docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 1
+    },
+    {
+      "title": "Landing page vs pages and screens report",
+      "summary": "Use the landing-page report for session entry pages and pages-and-screens for total page views, and understand why revenue in the pages report can mislead.",
+      "use_when": "Evaluating which entry pages (homepage, collections, checkout URL) start sessions and drive revenue, versus measuring overall page popularity.",
+      "steps": [
+        "Use the Landing page report to see the FIRST page of each session and revenue attributed to those entry sessions — useful for judging which entry points (homepage, new arrivals, clearance) actually produce revenue.",
+        "Use Pages and screens for total page views regardless of position in the session, plus users and active users per page.",
+        "Sort Pages and screens by views or users to find the most-visited pages; be aware revenue in this report is attributed to the page where the conversion occurred, so almost all revenue lands on checkout — the presenter considers revenue unhelpful here.",
+        "Interpret 'active users': a user who spent at least 10 seconds, converted (a key event), viewed 2+ pages in a session, or is a new user.",
+        "Expect checkout URLs to appear as landing pages when a session expires mid-purchase — a visitor who leaves after adding to cart and returns later can start a new session with checkout as the landing page.",
+        "To reduce that false signal, consider raising the default session timeout (see the session-timeout card)."
+      ],
+      "caveats": [
+        "Revenue in the pages-and-screens report is attributed to the conversion page, making it near-useless for judging page value."
+      ],
+      "tags": [
+        "measurement",
+        "ga4",
+        "landing-page",
+        "session-analysis",
+        "page-performance",
+        "revenue-attribution"
+      ],
+      "id": "5c2c65569229cb75e24a9bc8",
+      "source_id": "1b4ZdpEvhYQ-L_FcGvMA86kE5bfoC8zQH",
+      "source_sha256": "fc082c22ff850b0f89e8d87f7940d5b7c374f87dde7c19d65add29dd20fbc1ee",
+      "source_name": "Google Analytics 4 tutorial for beginners (2026) __ GA4 tutorial for beginners __ GA4 course.docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 1
+    },
+    {
+      "title": "Mark key events and pick the right conversion metric",
+      "summary": "Distinguish plain events from key events (purchase, signup) and use them in acquisition and exploration reports to count real business outcomes.",
+      "use_when": "Deciding which ecommerce actions (purchase, newsletter signup, account creation) should count as conversions and where to read them by traffic source.",
+      "steps": [
+        "Treat every interaction GA4 records as an event; mark business-critical ones (purchase, signup) as key events.",
+        "In acquisition reports, use the event-count selector to count a specific event (e.g. purchase) by traffic source, and use the key-events section for events you have promoted.",
+        "Remember User Acquisition counts key events on a first-touch basis, so a repeat buyer counts under the original acquisition source.",
+        "When building explorations, filter by event name (exactly matches purchase) to isolate the action and avoid mixing in irrelevant events.",
+        "Only mark as key the actions that map to revenue or clear value — over-marking dilutes the signal."
+      ],
+      "caveats": [
+        "Key events are only available once the underlying event is actually being sent; GA4 does not detect purchases without configuration."
+      ],
+      "tags": [
+        "measurement",
+        "ga4",
+        "key-events",
+        "conversion-measurement",
+        "acquisition",
+        "event-tracking"
+      ],
+      "id": "70e866a19de2c3ab3874e3c0",
+      "source_id": "1b4ZdpEvhYQ-L_FcGvMA86kE5bfoC8zQH",
+      "source_sha256": "fc082c22ff850b0f89e8d87f7940d5b7c374f87dde7c19d65add29dd20fbc1ee",
+      "source_name": "Google Analytics 4 tutorial for beginners (2026) __ GA4 tutorial for beginners __ GA4 course.docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 1
+    },
+    {
+      "title": "Build a free-form exploration for product/device decisions",
+      "summary": "Create free-form explorations with dimensions as rows/columns and metrics as values to cross-tab store performance, e.g. revenue by country and device.",
+      "use_when": "Answering a specific merchandising or targeting question — e.g. which countries or device categories generate the most purchase revenue — beyond what standard reports allow.",
+      "steps": [
+        "Open Explore, choose Free form (blank), and note the three-pane layout: Variables (dimensions, metrics, segments), Settings, and the output table.",
+        "Add dimensions you will use (e.g. Device category, Country) and metrics (e.g. purchase revenue) via the plus buttons, then confirm.",
+        "Drag dimensions into Rows and Columns, and the metric into Values; double-clicking a dimension also adds it.",
+        "Read the resulting table, e.g. revenue by country split into desktop/mobile/tablet, then switch visualization between bar chart, heat map (darker = higher), and plain table.",
+        "Share a finished exploration via the share icon so other property users can see it."
+      ],
+      "caveats": [
+        "Explorations are private to their creator by default; sharing is view-only — others must copy and modify their own version to change it.",
+        "Exploration data is limited by the property's data retention window (default 2 months)."
+      ],
+      "tags": [
+        "measurement",
+        "ga4",
+        "explorations",
+        "free-form",
+        "segmentation",
+        "reporting"
+      ],
+      "id": "20d5752ed796cedf8d1817f1",
+      "source_id": "1b4ZdpEvhYQ-L_FcGvMA86kE5bfoC8zQH",
+      "source_sha256": "fc082c22ff850b0f89e8d87f7940d5b7c374f87dde7c19d65add29dd20fbc1ee",
+      "source_name": "Google Analytics 4 tutorial for beginners (2026) __ GA4 tutorial for beginners __ GA4 course.docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 1
+    },
+    {
+      "title": "Mine site-search terms to find assortment gaps",
+      "summary": "Build a free-form exploration of site search terms and event counts to see what shoppers ask for and whether your catalogue answers it.",
+      "use_when": "Product selection and assortment planning — spotting search terms with high demand but no matching products, or reframing how products are named/merchandised.",
+      "steps": [
+        "Open Explore, add a new free-form tab.",
+        "Add dimensions Event name and Search term, and metric Event count.",
+        "Put Search term in Rows and Event count in Values.",
+        "Filter Event name exactly matches the search-results event (the presenter's demo uses 'view search results') so the report stops mixing search with all other events — without the filter you get a large blank row aggregating everything.",
+        "Read the top keywords; terms searched often with no matching product point to assortment gaps or merchandising/labeling improvements."
+      ],
+      "caveats": [
+        "The site-search event name depends on your setup; the exact name 'view search results' is specific to the demo property.",
+        "Requires the site-search event parameters to be captured and, if you want them in standard reports, registered as custom dimensions."
+      ],
+      "tags": [
+        "measurement",
+        "ga4",
+        "site-search",
+        "explorations",
+        "product-selection",
+        "customer-research"
+      ],
+      "id": "0c84e8cf0da81210479603cc",
+      "source_id": "1b4ZdpEvhYQ-L_FcGvMA86kE5bfoC8zQH",
+      "source_sha256": "fc082c22ff850b0f89e8d87f7940d5b7c374f87dde7c19d65add29dd20fbc1ee",
+      "source_name": "Google Analytics 4 tutorial for beginners (2026) __ GA4 tutorial for beginners __ GA4 course.docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 1
+    },
+    {
+      "title": "Funnel exploration: build an ecommerce funnel with breakdowns",
+      "summary": "Define ordered steps (view_item → add_to_cart → begin_checkout → purchase) in a funnel exploration and break them down by device to find where completion drops.",
+      "use_when": "Pinpointing the biggest conversion leak in your purchase path and checking whether it differs by device category.",
+      "steps": [
+        "Open Explore, add a Funnel exploration, and click the pencil to edit Steps.",
+        "Define each step as an event condition: step 1 view_item, step 2 add_to_cart, step 3 begin_checkout, step 4 purchase (use your platform's actual event names).",
+        "Optional: narrow a step with a parameter (e.g. item ID) to funnel only a specific product, or by page host name/location.",
+        "Apply and read the counts of users reaching each step and the drop-off between them.",
+        "Add a breakdown dimension such as Device category to compare completion rates — the demo shows desktop completing better, hinting mobile UX is worth investigating.",
+        "Only treat ecommerce events as available if you or your platform send them; GA4 does not collect them out of the box."
+      ],
+      "caveats": [
+        "Requires configured ecommerce events; absent them the funnel will have no steps to match.",
+        "Higher desktop completion is a signal to investigate, not proof of a mobile defect."
+      ],
+      "tags": [
+        "measurement",
+        "ga4",
+        "funnel-analysis",
+        "explorations",
+        "conversion-optimization",
+        "checkout"
+      ],
+      "id": "2cac3e89ff275769ef707278",
+      "source_id": "1b4ZdpEvhYQ-L_FcGvMA86kE5bfoC8zQH",
+      "source_sha256": "fc082c22ff850b0f89e8d87f7940d5b7c374f87dde7c19d65add29dd20fbc1ee",
+      "source_name": "Google Analytics 4 tutorial for beginners (2026) __ GA4 tutorial for beginners __ GA4 course.docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 1
+    },
+    {
+      "title": "Path exploration: work backward from purchase or checkout events",
+      "summary": "Set the ending point to purchase or begin_checkout and read backward to reveal looping or confusing paths before conversion.",
+      "use_when": "Investigating why shoppers abandon checkout (e.g. logging in and out repeatedly) or what pages precede a purchase.",
+      "steps": [
+        "Open Explore, add a Path exploration.",
+        "Click Start over and choose the ENDING point — e.g. event name purchase — to see what happened before the conversion.",
+        "Switch the dimension to Page path and expand backward; expect checkout pages adjacent to purchase, then keep expanding until non-checkout pages appear for useful context.",
+        "Alternatively set the starting point to begin_checkout and expand forward to watch where shoppers go; the demo shows users bouncing to account/login and back to checkout.",
+        "Interpret looping between checkout and account pages as a possible UX or login-friction problem worth testing."
+      ],
+      "caveats": [
+        "Looping patterns indicate a hypothesis to investigate, not a proven cause.",
+        "Path explorations are private by default, like all explorations."
+      ],
+      "tags": [
+        "measurement",
+        "ga4",
+        "path-exploration",
+        "explorations",
+        "checkout",
+        "conversion-optimization"
+      ],
+      "id": "85c9ae56705413125de4b8d7",
+      "source_id": "1b4ZdpEvhYQ-L_FcGvMA86kE5bfoC8zQH",
+      "source_sha256": "fc082c22ff850b0f89e8d87f7940d5b7c374f87dde7c19d65add29dd20fbc1ee",
+      "source_name": "Google Analytics 4 tutorial for beginners (2026) __ GA4 tutorial for beginners __ GA4 course.docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 1
+    },
+    {
+      "title": "Create and register custom events and dimensions in GA4 via GTM",
+      "summary": "Send a custom event (e.g. menu-link click) with parameters from GTM, then register those parameters as custom dimensions to use them in reports.",
+      "use_when": "Tracking a store interaction GA4 does not collect automatically — e.g. clicks on a homepage banner, nav menu, or a category tile you want to evaluate.",
+      "steps": [
+        "In GTM create a trigger (e.g. Just Links) and use Preview to identify the click; inspect the Variables panel for click text, click URL and click classes.",
+        "If click-related variables are missing, enable them under Variables > Configure > Click variables.",
+        "Narrow the trigger with click classes contains a class value that identifies the element (e.g. nav link) — inspect your own site's classes since these differ by site.",
+        "Create a tag: Google Analytics > GA4 event, paste the measurement ID, name the event in lowercase with underscores (GA4 event names must be lowercase, no spaces).",
+        "Add event parameters (e.g. menu_item_name = click text, menu_item_url = click URL) using GTM variables.",
+        "Attach the tag to the trigger, name and save it, then test through GTM Preview and GA4 DebugView before publishing.",
+        "In GA4, register each custom parameter as a custom dimension (Admin > Custom definitions > Create custom dimension) with scope Event so it appears in reports and explorations.",
+        "Publish the GTM container after successful testing."
+      ],
+      "caveats": [
+        "Custom dimensions only appear in standard reports after the event is sent and data has processed (roughly 24–48 hours).",
+        "Parameter and event names are case-sensitive and must match exactly between GTM, GA4 registration and filters.",
+        "Verify current GTM/GA4 menus, which change over time."
+      ],
+      "tags": [
+        "measurement",
+        "ga4",
+        "google-tag-manager",
+        "custom-events",
+        "custom-dimensions",
+        "event-tracking"
+      ],
+      "id": "50fb683ebc09d1ff442265ac",
+      "source_id": "1b4ZdpEvhYQ-L_FcGvMA86kE5bfoC8zQH",
+      "source_sha256": "fc082c22ff850b0f89e8d87f7940d5b7c374f87dde7c19d65add29dd20fbc1ee",
+      "source_name": "Google Analytics 4 tutorial for beginners (2026) __ GA4 tutorial for beginners __ GA4 course.docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 1
+    },
+    {
+      "title": "Configure five settings in every new GA4 property",
+      "summary": "Day-one GA4 configuration: event data retention to 14 months, cross-domain tracking, session timeout, engaged-session threshold, and internal traffic exclusions.",
+      "use_when": "Setting up a new store property or fixing a recently created one where exploration history is short or sessions split unnaturally.",
+      "steps": [
+        "1. Data retention: Admin > Data retention, change event data retention from the default 2 months to 14 months (Premium can go longer). Explorations only see data within the retention window, so set this at property creation.",
+        "2. Multiple domains: if one property covers several domains, tell GA4 which domains belong to your business and configure cross-domain tracking in the data stream settings so sessions join across domains.",
+        "3. Session timeout: extend the default session duration (the demo property is 30 minutes) if leaving-mid-checkout breaks sessions into a new session with checkout as the landing page.",
+        "4. Engaged sessions: the presenter recommends raising the default 10-second engaged-session threshold to at least 30 seconds to better reflect real store engagement.",
+        "5. Internal traffic: exclude your own/team IP addresses so staff visits and test orders do not pollute revenue and conversion data."
+      ],
+      "caveats": [
+        "Thresholds (10s default, 30s recommendation, 30-minute session timeout) are the presenter's guidance, not absolutes; choose values that fit how your shoppers buy.",
+        "Premium (360) allows longer retention; the standard limit is 14 months."
+      ],
+      "tags": [
+        "measurement",
+        "ga4",
+        "property-configuration",
+        "data-retention",
+        "session-settings",
+        "internal-traffic"
+      ],
+      "id": "8f32ae745a5b8f32d3ca1245",
+      "source_id": "1b4ZdpEvhYQ-L_FcGvMA86kE5bfoC8zQH",
+      "source_sha256": "fc082c22ff850b0f89e8d87f7940d5b7c374f87dde7c19d65add29dd20fbc1ee",
+      "source_name": "Google Analytics 4 tutorial for beginners (2026) __ GA4 tutorial for beginners __ GA4 course.docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 1
+    },
+    {
+      "title": "Use Analytics Advisor cautiously for quick questions",
+      "summary": "The Gemini-powered Analytics Advisor answers natural-language questions about your GA4 data, but hallucinates on technical causes.",
+      "use_when": "Getting a fast number from your own GA4 property (e.g. purchases from organic search last week) without building an exploration.",
+      "steps": [
+        "Open the Analytics Advisor icon in the GA4 interface and type a question, e.g. 'How many purchases came from organic search in the last week?'",
+        "Verify the answer against the source report it references (e.g. the traffic acquisition report) and check the date range it applied matches your question.",
+        "Rely on it for simple numeric lookups where you can independently confirm the result.",
+        "Do NOT trust its explanations of why data looks a certain way — the demo shows it asserting a myth that firing a custom event before page_view causes 'not set' landing pages (the presenter's testing shows this is false)."
+      ],
+      "caveats": [
+        "Feature is in beta and powered by Gemini; it can hallucinate, cite wrong sources and opens reports with incorrect date ranges.",
+        "Useful for experienced users as a time-saver; the presenter warns it can mislead complete beginners.",
+        "Verify the current interface and beta status before relying on it."
+      ],
+      "tags": [
+        "measurement",
+        "ga4",
+        "analytics-advisor",
+        "ai-tools",
+        "reporting",
+        "data-verification"
+      ],
+      "id": "bb64df0f76c520e57e16b1b2",
+      "source_id": "1b4ZdpEvhYQ-L_FcGvMA86kE5bfoC8zQH",
+      "source_sha256": "fc082c22ff850b0f89e8d87f7940d5b7c374f87dde7c19d65add29dd20fbc1ee",
+      "source_name": "Google Analytics 4 tutorial for beginners (2026) __ GA4 tutorial for beginners __ GA4 course.docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 1
+    },
+    {
+      "title": "Demographics, tech and region reports for audience context",
+      "summary": "Use user attributes and tech detail reports to see where shoppers are and what they browse on, treating demographics as directional.",
+      "use_when": "Shaping merchandising, shipping or site-experience decisions — e.g. localising assortment by region or prioritising mobile experience.",
+      "steps": [
+        "In User attributes > Demographic details, view country, region or city of shoppers to spot core markets.",
+        "If Google signals is enabled you may also see age, gender and interests — treat these three as imprecise and directional only.",
+        "In Tech > Tech details, view browser performance and switch the dimension to operating system or device category.",
+        "Cross-check device/tech findings against the checkout journey and funnel reports to confirm whether a given device or browser truly under-converts."
+      ],
+      "caveats": [
+        "Demographic dimensions (age/gender/interests) are not highly accurate and require Google signals.",
+        "Report collection names vary by the business objectives chosen at setup."
+      ],
+      "tags": [
+        "measurement",
+        "ga4",
+        "audience-analysis",
+        "device-breakdown",
+        "geo-analysis",
+        "tech-details"
+      ],
+      "id": "3d2bb5de8e28e1de2dcbf845",
+      "source_id": "1b4ZdpEvhYQ-L_FcGvMA86kE5bfoC8zQH",
+      "source_sha256": "fc082c22ff850b0f89e8d87f7940d5b7c374f87dde7c19d65add29dd20fbc1ee",
+      "source_name": "Google Analytics 4 tutorial for beginners (2026) __ GA4 tutorial for beginners __ GA4 course.docx",
+      "folder": "/06-MEA-measurement",
+      "domain": "measurement",
+      "section": 1
+    }
+  ],
+  "request_id": "b09a485cfefcec95377c3162674183a6029a173d788084b53c4452bb9599a834",
+  "ecommerce_scope_version": 1
+}

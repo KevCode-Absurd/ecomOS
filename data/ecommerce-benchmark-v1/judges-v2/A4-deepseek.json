@@ -1,0 +1,192 @@
+{
+  "status": "complete",
+  "mapping": {
+    "A": "cheap_without",
+    "B": "cheap_with",
+    "C": "frontier_without",
+    "D": "frontier_with"
+  },
+  "judge_model": "deepseek-flash",
+  "output": {
+    "reviews": [
+      {
+        "label": "A",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 3,
+          "uncertainty_and_questions": 4,
+          "prioritization": 3
+        },
+        "strengths": [
+          "Correct Shopify, Meta, Klaviyo and DAY18 contribution/stockout arithmetic.",
+          "Includes owners, hours, budget allocations, hypotheses, primary metrics, guardrails, stop rules and go/no-go decisions.",
+          "Brand-safe PDP copy constraints and useful questions about 15-inch fit, Klaviyo baselines and split feasibility."
+        ],
+        "issues": [
+          "Caps Meta-driven DAY18 demand at 12 units/day even though the no-buffer sustainable ceiling is 6/day.",
+          "Runs four concurrent tests, including two overlapping PDP/cart-clarity changes, increasing confounding risk.",
+          "Some stop rules are relative-performance rules without a hard pre-launch inventory gate.",
+          "PDP module uses two primary metrics, increasing multiplicity risk."
+        ],
+        "critical_errors": [
+          "Inventory cap and gating are misaligned with the calculated 70-unit shortfall and 6/day sustainable demand ceiling."
+        ],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Allocations total no more than $3000; hours within 16 designer/8 developer over two weeks.",
+            "met": true,
+            "reason": "Budget $1,800 + $1,200 held = $3,000; D13/Dev8/O6 within D16/Dev8/O8."
+          },
+          {
+            "criterion": "Prioritize constrained inventory and mobile product clarity; avoid running too many confounded changes.",
+            "met": false,
+            "reason": "Calculates the inventory gap but still caps Meta at 12/day and runs four concurrent tests."
+          },
+          {
+            "criterion": "Distinguish operational stop rules from statistical significance; actual usable calendar.",
+            "met": true,
+            "reason": "Includes operational stop rules, avoids significance claims and gives a 14-day calendar."
+          }
+        ]
+      },
+      {
+        "label": "B",
+        "scores": {
+          "factual_accuracy": 3,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 3,
+          "uncertainty_and_questions": 4,
+          "prioritization": 2
+        },
+        "strengths": [
+          "Correct core funnel, contribution-margin and rough MDE arithmetic.",
+          "Budget and hours total correctly to $3,000 and 16/8/8.",
+          "Strong uncertainty language: explicitly disclaims significance and gives useful questions."
+        ],
+        "issues": [
+          "Omits the DAY18 stockout calculation: 26.25 days cover versus 35-day replenishment, with a 70-unit shortfall.",
+          "Allocates $2,200 to a Meta test while DAY18 is inventory constrained and does not set a hard stock gate.",
+          "Launches PDP, email ATC and Meta tests simultaneously, increasing confounding risk.",
+          "Hypothesis states 15-inch laptops are not fitted, which is not verified in the brand facts, though later caveated."
+        ],
+        "critical_errors": [
+          "No inventory gate despite the 70-unit shortfall; $2,200 demand-generation test may accelerate stockout.",
+          "Unsupported 15-inch non-fit statement appears in proposed messaging."
+        ],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Allocations total no more than $3000; hours within 16 designer/8 developer over two weeks.",
+            "met": true,
+            "reason": "$2,200 + $500 + $300 = $3,000; D16/Dev8/O8 totals."
+          },
+          {
+            "criterion": "Prioritize constrained inventory and mobile product clarity; avoid running too many confounded changes.",
+            "met": false,
+            "reason": "No inventory cover/shortfall math; $2,200 demand test plus simultaneous PDP/email/Meta launches."
+          },
+          {
+            "criterion": "Distinguish operational stop rules from statistical significance; actual usable calendar.",
+            "met": true,
+            "reason": "Uses MDE and disclaims significance; includes a 14-day calendar with stop rules."
+          }
+        ]
+      },
+      {
+        "label": "C",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 4,
+          "prioritization": 4
+        },
+        "strengths": [
+          "Excellent inventory gate: 26.25-day cover, 70-unit shortfall, 6/day ceiling, and paid launch defaults to no-go.",
+          "Brand-specific mobile PDP clarity package with accurate fit, water-resistance and delivery wording.",
+          "Distinguishes operational stop/revert rules from significance and provides a usable 14-day calendar.",
+          "Keeps budget and hours within limits while sequencing tests and deferring the ATC flow expansion."
+        ],
+        "issues": [
+          "Owner-hour/readout accounting has minor ambiguity around the final readout hour.",
+          "If both mobile PDP and checkout-reminder tests run, they could still interact; sequencing mitigates but does not eliminate this.",
+          "Uses all owner hours, leaving little operational slack."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Allocations total no more than $3000; hours within 16 designer/8 developer over two weeks.",
+            "met": true,
+            "reason": "$1,200 + $300 + $1,500 = $3,000; calendar totals D16/Dev8/O8."
+          },
+          {
+            "criterion": "Prioritize constrained inventory and mobile product clarity; avoid running too many confounded changes.",
+            "met": true,
+            "reason": "P0 inventory gate; mobile PDP clarity first; tests are conditional and paid launch is default no-go."
+          },
+          {
+            "criterion": "Distinguish operational stop rules from statistical significance; actual usable calendar.",
+            "met": true,
+            "reason": "Separates operational revert/pause rules from significance and includes a full 14-day calendar."
+          }
+        ]
+      },
+      {
+        "label": "D",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 4,
+          "prioritization": 4
+        },
+        "strengths": [
+          "Rigorous inventory and contribution gating; blocks live demand generation under the current forecast.",
+          "Explicit sample-size, power and no-significance discipline.",
+          "Brand-safe prototype copy, clear owners, cost ceilings and a usable 14-day calendar.",
+          "Correctly frames contribution margin as an upper acquisition boundary, not an approved CAC target."
+        ],
+        "issues": [
+          "Very preparatory: default day-14 outcome may not include a live storefront conversion test.",
+          "Conditional P2 depends on inventory clearance that currently fails, so it may not run.",
+          "Six-participant research cannot support statistical claims, though the answer acknowledges this."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Allocations total no more than $3000; hours within 16 designer/8 developer over two weeks.",
+            "met": true,
+            "reason": "$600 + $200 + $1,200 + $1,000 = $3,000; table totals D16/Dev8/O8."
+          },
+          {
+            "criterion": "Prioritize constrained inventory and mobile product clarity; avoid running too many confounded changes.",
+            "met": true,
+            "reason": "P0 gate blocks live demand tests; mobile research/prototype first; avoids concurrent live changes."
+          },
+          {
+            "criterion": "Distinguish operational stop rules from statistical significance; actual usable calendar.",
+            "met": true,
+            "reason": "Explicit sample-size/no-significance treatment plus operational gate/stop rules and calendar."
+          }
+        ]
+      }
+    ],
+    "ranking": [
+      "C",
+      "D",
+      "A",
+      "B"
+    ],
+    "summary": "C and D are strongest: both prioritize the DAY18 inventory constraint, keep budget/hours within limits, and distinguish operational stops from significance. C ranks first for directly executable brand-specific mobile PDP clarity plus conditional tests; D is a very close second for rigorous inventory gating and sample-size discipline, though more preparatory. A is solid and numerically correct but risks stockout by capping demand above the sustainable 6/day and running several concurrent tests. B has correct arithmetic but omits the core inventory shortfall and over-allocates to demand generation while inventory is constrained."
+  },
+  "request_id": "eeaf0146bdaa9b3b32a7f951684610833cf12cbff43b0f08c6a2155f5af9da1d",
+  "cost_upper_estimate_usd": 0.0356355
+}

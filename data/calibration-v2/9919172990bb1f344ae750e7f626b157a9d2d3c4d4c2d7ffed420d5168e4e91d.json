@@ -1,0 +1,610 @@
+{
+  "request_id": "9919172990bb1f344ae750e7f626b157a9d2d3c4d4c2d7ffed420d5168e4e91d",
+  "provider": "deepseek",
+  "model": "deepseek-flash",
+  "effort": "high",
+  "completion_limit": 32768,
+  "usage": {
+    "prompt_tokens": 3617,
+    "completion_tokens": 20894,
+    "total_tokens": 24511,
+    "prompt_tokens_details": {
+      "cached_tokens": 1024
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 16820
+    },
+    "prompt_cache_hit_tokens": 1024,
+    "prompt_cache_miss_tokens": 2593
+  },
+  "booked_cost_usd": 0.026157899999999998,
+  "seconds": 79.64,
+  "finish_reason": "stop",
+  "output": {
+    "units": [
+      {
+        "id": "u1",
+        "kind": "action",
+        "title": "Check other sellers and Prime filter to identify wholesale listing",
+        "claim": {
+          "text": "The source says that seeing four different sellers of the exact same product indicates a wholesale product, not private label, and that selling on the listing is allowed.",
+          "quote": "As long as you see four different sellers selling this exact same product, it means it's a wholesale product, meaning it's a product that is not private label and you're allowed to sell on this listing."
+        },
+        "action": {
+          "text": "Open the listing, click other sellers on Amazon, and filter by Prime.",
+          "quote": "you go on the listing and where it says other sellers on Amazon, you click on that and then you're just going to filter by Prime."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "Source does not specify whether more than four sellers changes the conclusion."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u2",
+        "kind": "warning",
+        "title": "Avoid private label listings with no other sellers",
+        "claim": {
+          "text": "If no other sellers appear, the source says the listing has one seller and is private label; it recommends not selling because the seller owns the listing and Amazon may block the account after multiple violations.",
+          "quote": "if you don't see that at all, then that means there's only one seller on this listing and it's a private label product, meaning I would not recommend you sell that and you shouldn't even sell on that because the seller owns that listing and they will complain to Amazon and then Amazon will literally block your account if you do that multiple times."
+        },
+        "action": null,
+        "trigger": {
+          "op": "any",
+          "args": [
+            {
+              "text": "No other sellers appear on the listing.",
+              "quote": "if you don't see that at all"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "Source does not define how many violations trigger an account block."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u3",
+        "kind": "action",
+        "title": "Check the buy box and avoid listings sold by Amazon",
+        "claim": {
+          "text": "The source says if Amazon is on the listing the seller will never win because Amazon sells cheaper and wins the buy box, since price is the main buy box component.",
+          "quote": "if Amazon's on the listing, my friend, you are never going to win on Amazon because Amazon will sell the product cheaper than you. They will win the buy box."
+        },
+        "action": {
+          "text": "Open the buy box and check that Sold by does not say Amazon.",
+          "quote": "you just open the buy box and then you just check sold by should not say Amazon at all."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": [
+            {
+              "text": "If the buy box says just Amazon, stay away.",
+              "quote": "if it's just Amazon, stay away from it."
+            }
+          ]
+        },
+        "completion": [],
+        "unknowns": [
+          "Source's buy box algorithm statement is not verified as current platform behavior."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u4",
+        "kind": "action",
+        "title": "Ensure minimum 30% ROI and reject failing products",
+        "claim": {
+          "text": "The source's last check is to make sure the product has a minimum 30% ROI.",
+          "quote": "The last check is to make sure the product has minimum 30% ROI."
+        },
+        "action": {
+          "text": "Ensure the product has a minimum 30% ROI.",
+          "quote": "make sure the product has minimum 30% ROI."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Calculate how much profit can be made.",
+              "quote": "first you check how much profit you can make"
+            }
+          ]
+        },
+        "exclusions": {
+          "op": "any",
+          "args": [
+            {
+              "text": "If the checks do not pass, do not sell the product on Amazon.",
+              "quote": "If they don't, then do not sell the product on Amazon."
+            }
+          ]
+        },
+        "completion": [
+          {
+            "text": "Product meets minimum 30% ROI.",
+            "quote": "minimum 30% ROI"
+          }
+        ],
+        "unknowns": [
+          "Source does not specify whether ROI is calculated before or after hidden VAT."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u5",
+        "kind": "action",
+        "title": "Use Amazon seller calculator with ASIN for FBA profit check",
+        "claim": {
+          "text": "To check profit, the source says to put the product ASIN from see all information into the Amazon seller calculator and use FBA fulfillment.",
+          "quote": "All you have to do is put in the asin of this product, which you can grab from see all information. And as you can see, the asin is right here. You just put that number here and then search. And as you can see, this product has just shown. Now, right here where it says your fulfillment, this is where if you're doing FBM, you worry about this, but we care about FBA."
+        },
+        "action": {
+          "text": "Enter the ASIN into the Amazon seller calculator and use FBA fulfillment.",
+          "quote": "All you have to do is put in the asin of this product, which you can grab from see all information. And as you can see, the asin is right here. You just put that number here and then search. And as you can see, this product has just shown. Now, right here where it says your fulfillment, this is where if you're doing FBM, you worry about this, but we care about FBA."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": [
+            {
+              "text": "ASIN can be grabbed from see all information.",
+              "quote": "which you can grab from see all information"
+            }
+          ]
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": []
+      },
+      {
+        "id": "u6",
+        "kind": "action",
+        "title": "Match selling price to the lowest seller in the listing",
+        "claim": {
+          "text": "The source recommends matching the price with the lowest seller in the listing.",
+          "quote": "I recommend you match the price with the lowest seller in the listing."
+        },
+        "action": {
+          "text": "Match the selling price with the lowest seller in the listing.",
+          "quote": "match the price with the lowest seller in the listing"
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "Later source says match the lowest FBA seller on a listing with both FBM and FBA sellers."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u7",
+        "kind": "warning",
+        "title": "Account for 20% VAT hidden on Amazon fees and fulfillment",
+        "claim": {
+          "text": "The source says there is a hidden 20% VAT charged on Amazon fees and fulfillment cost, which many gurus do not mention, and gives an example of around £120 extra on Amazon fees and 60p extra on fulfillment cost to deduct from net profit.",
+          "quote": "there is a hidden fee on your Amazon fees and your fulfillment cost, which is 20% VAT that is charged on this. So, you're actually going to pay around I would say around £120 extra on the Amazon fees and you're going to pay 60p extra on the fulfillment cost."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The stated £120 extra on Amazon fees is a large amount and may be a transcription or example inconsistency; the source does not show the fee base for the 60p fulfillment VAT."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u8",
+        "kind": "action",
+        "title": "Calculate ROI using profit divided by cost of goods times 100",
+        "claim": {
+          "text": "The source gives the ROI formula as profit divided by cost of goods multiplied by 100.",
+          "quote": "the formula for ROI is profit divided by cost of goods multiply by 100"
+        },
+        "action": {
+          "text": "Calculate ROI by dividing profit by cost of goods and multiplying by 100.",
+          "quote": "profit divided by cost of goods multiply by 100"
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The example uses 540 profit and 25 cost of goods and reports 21.6% ROI; 540 divided by 25 times 100 does not equal 21.6, so the example numbers appear inconsistent or mistranscribed."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u9",
+        "kind": "warning",
+        "title": "ROI threshold can be adjusted for fast-selling products",
+        "claim": {
+          "text": "The source says all four checks must pass and if they do not, do not sell, but ROI can be adjusted; if a product sells really well like 2,000 times, it would still go with 20% ROI.",
+          "quote": "So you have to make sure all the four checks that I just showed all of them must pass. If they don't, then do not sell the product on Amazon. The only one that I would say you can adjust is the ROI. Sometimes if the product is selling really well, like 2,000 times, I would still go with 20% ROI."
+        },
+        "action": null,
+        "trigger": {
+          "op": "any",
+          "args": [
+            {
+              "text": "Product sells really well, such as 2,000 times, but ROI is below 30%.",
+              "quote": "Sometimes if the product is selling really well, like 2,000 times"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "Source does not define the exact ROI floor for all fast-selling cases or what counts beyond 2,000 sales."
+        ],
+        "relations": [
+          {
+            "kind": "alternative_to",
+            "target": "u4"
+          }
+        ]
+      },
+      {
+        "id": "u10",
+        "kind": "action",
+        "title": "Make the first wholesale order a test order",
+        "claim": {
+          "text": "The source advises that the first wholesale order should always be a test order of 10 to 50 units, to analyze sales and identify problems without getting stuck with inventory.",
+          "quote": "your first wholesale order should always be a test order. Meaning, it should be anywhere from 10 to 50 units of that product."
+        },
+        "action": {
+          "text": "Make the first wholesale order a test order of 10 to 50 units.",
+          "quote": "always do a test shipment first as the first ever order for the product"
+        },
+        "trigger": {
+          "op": "any",
+          "args": [
+            {
+              "text": "Placing the first wholesale order for a product.",
+              "quote": "first wholesale order"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "Source does not specify a reorder timeline after test order."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u11",
+        "kind": "action",
+        "title": "Add an existing product listing by ASIN",
+        "claim": {
+          "text": "To add a product to inventory, the source says to go to catalog, add product, and copy the ASIN; you do not need to create the same listing from scratch when sellers already exist.",
+          "quote": "go to your Amazon account, click on catalog, add product. All you're going to do here is copy the asin of the product that you would like to sell on."
+        },
+        "action": {
+          "text": "Go to catalog, add product, and enter the ASIN of the product you want to sell.",
+          "quote": "click on catalog, add product. All you're going to do here is copy the asin of the product that you would like to sell on."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": [
+            {
+              "text": "The product ASIN is available.",
+              "quote": "copy the asin of the product"
+            }
+          ]
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": []
+      },
+      {
+        "id": "u12",
+        "kind": "action",
+        "title": "Get ungated by submitting a wholesale invoice",
+        "claim": {
+          "text": "If the listing says condition new apply to sell, the seller is gated; to get ungated, the source says to buy 10 units, sometimes 100 units, from a wholesale supplier, get an invoice under the same name as the Amazon account, and upload it.",
+          "quote": "all you have to do is buy 10 units. In some cases, for some products, it's 100 units of the exact same product from a wholesale supplier. So, you can get an invoice from them. And the invoice should be under your company to the same or your name under the same name of your Amazon account that you create. Upload that and you'll be ungated."
+        },
+        "action": {
+          "text": "Buy the required units from a wholesale supplier, obtain an invoice under the Amazon account name, and upload it to get ungated.",
+          "quote": "Upload that and you'll be ungated."
+        },
+        "trigger": {
+          "op": "any",
+          "args": [
+            {
+              "text": "The listing search shows condition new apply to sell, meaning gated.",
+              "quote": "condition new apply to sell that means you are gated"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": [
+            {
+              "text": "A wholesale supplier and invoice under the same name as the Amazon account.",
+              "quote": "from a wholesale supplier"
+            }
+          ]
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "Source does not show the exact ungating upload process."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u13",
+        "kind": "action",
+        "title": "Configure the listing as new, FBA, and price-matched to the lowest FBA seller",
+        "claim": {
+          "text": "When adding the existing listing, the source says to select condition new, set the price same or close to the lowest FBA seller, set fulfillment channel to Amazon dispatch, disable other marketplaces, and save and finish.",
+          "quote": "you're going to select the condition as new. You're going to add the price which should be the same or close to the lowest price in the listing to the FBA seller. So on on a listing there is FBM and FBA seller. So you have to make sure you match it with the lowest FBA seller."
+        },
+        "action": {
+          "text": "Select condition new, match the lowest FBA seller price, set fulfillment to Amazon dispatch, disable other marketplaces, and save and finish.",
+          "quote": "you're going to select the condition as new. You're going to add the price which should be the same or close to the lowest price in the listing to the FBA seller."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": [
+            {
+              "text": "The product is added to inventory and allowed to sell.",
+              "quote": "this product I'm allowed to add"
+            }
+          ]
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "Source's price-matching instruction here says lowest FBA seller, while earlier calculator step says lowest seller in listing."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u11"
+          }
+        ]
+      },
+      {
+        "id": "u14",
+        "kind": "action",
+        "title": "Use Amazon's barcode only to avoid commingling",
+        "claim": {
+          "text": "The source recommends Amazon's barcode only because if multiple sellers send the same product, Amazon may mix them up and not know whose product is whose; using Amazon's printed barcode identifies ownership on receipt.",
+          "quote": "I recommend Amazon's barcode only because although this product comes with its own barcode. If someone else also sells this product and both of you send it to Amazon and the products get mixed up, Amazon won't know whose product is whose."
+        },
+        "action": {
+          "text": "Select Amazon's barcode only when adding the product.",
+          "quote": "I recommend Amazon's barcode only"
+        },
+        "trigger": {
+          "op": "any",
+          "args": [
+            {
+              "text": "Barcode type is pre-selected or prompted during listing setup.",
+              "quote": "where it says barcode type"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u11"
+          }
+        ]
+      },
+      {
+        "id": "u15",
+        "kind": "action",
+        "title": "Start a shipping plan via send or replenish inventory",
+        "claim": {
+          "text": "After adding the product, the source says to create a shipping plan by clicking the three dots and then send or replenish inventory.",
+          "quote": "you can simply click on these three dots and then click on send or replenish inventory."
+        },
+        "action": {
+          "text": "Click the three dots and select send or replenish inventory to create the shipping plan.",
+          "quote": "click on these three dots and then click on send or replenish inventory."
+        },
+        "trigger": {
+          "op": "any",
+          "args": [
+            {
+              "text": "The product is added to inventory and ready to ship to Amazon.",
+              "quote": "once that's added, you can now go ahead and create your shipping plan"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": [
+            {
+              "text": "The product has been added to inventory.",
+              "quote": "once that's added"
+            }
+          ]
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source says 'So the first' and then cuts off; the remaining shipping-plan steps are missing."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u11"
+          }
+        ]
+      },
+      {
+        "id": "u16",
+        "kind": "principle",
+        "title": "Amazon Warehouse used listings are acceptable",
+        "claim": {
+          "text": "The source says Amazon Warehouse is fine because it is Amazon's used products; used condition is fine, but if the buy box says just Amazon, stay away.",
+          "quote": "If it says Amazon warehouse, it's fine because Amazon warehouse is Amazon's used products. So you will usually see right now this condition is new, but Amazon warehouse, it will say used. So used is fine, but if it's just Amazon, stay away from it."
+        },
+        "action": null,
+        "trigger": {
+          "op": "any",
+          "args": [
+            {
+              "text": "Buy box says Amazon Warehouse.",
+              "quote": "If it says Amazon warehouse"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [],
+        "relations": [
+          {
+            "kind": "alternative_to",
+            "target": "u3"
+          }
+        ]
+      }
+    ],
+    "more_units": true,
+    "unresolved": [
+      "Shipping plan procedure is cut off after 'So the first'; remaining steps are missing.",
+      "Omitted due to cap: separate units for the four-seller criterion, Amazon Warehouse exception, ROI calculation example inconsistency, Amazon price-difference example, and detailed buy box explanation may remain.",
+      "The source's ROI example with 540 profit and 25 cost of goods reporting 21.6% appears inconsistent; preserve raw values and verify.",
+      "The source's £120 extra Amazon fee VAT example may be a transcription error; verify fee base.",
+      "Source's statements about Amazon buy box and gating are platform behavior claims that need current primary-source verification for live deployment."
+    ]
+  },
+  "raw_content": "{\"units\":[{\"id\":\"u1\",\"kind\":\"action\",\"title\":\"Check other sellers and Prime filter to identify wholesale listing\",\"claim\":{\"text\":\"The source says that seeing four different sellers of the exact same product indicates a wholesale product, not private label, and that selling on the listing is allowed.\",\"quote\":\"As long as you see four different sellers selling this exact same product, it means it's a wholesale product, meaning it's a product that is not private label and you're allowed to sell on this listing.\"},\"action\":{\"text\":\"Open the listing, click other sellers on Amazon, and filter by Prime.\",\"quote\":\"you go on the listing and where it says other sellers on Amazon, you click on that and then you're just going to filter by Prime.\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"Source does not specify whether more than four sellers changes the conclusion.\"],\"relations\":[]},{\"id\":\"u2\",\"kind\":\"warning\",\"title\":\"Avoid private label listings with no other sellers\",\"claim\":{\"text\":\"If no other sellers appear, the source says the listing has one seller and is private label; it recommends not selling because the seller owns the listing and Amazon may block the account after multiple violations.\",\"quote\":\"if you don't see that at all, then that means there's only one seller on this listing and it's a private label product, meaning I would not recommend you sell that and you shouldn't even sell on that because the seller owns that listing and they will complain to Amazon and then Amazon will literally block your account if you do that multiple times.\"},\"action\":null,\"trigger\":{\"op\":\"any\",\"args\":[{\"text\":\"No other sellers appear on the listing.\",\"quote\":\"if you don't see that at all\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"Source does not define how many violations trigger an account block.\"],\"relations\":[]},{\"id\":\"u3\",\"kind\":\"action\",\"title\":\"Check the buy box and avoid listings sold by Amazon\",\"claim\":{\"text\":\"The source says if Amazon is on the listing the seller will never win because Amazon sells cheaper and wins the buy box, since price is the main buy box component.\",\"quote\":\"if Amazon's on the listing, my friend, you are never going to win on Amazon because Amazon will sell the product cheaper than you. They will win the buy box.\"},\"action\":{\"text\":\"Open the buy box and check that Sold by does not say Amazon.\",\"quote\":\"you just open the buy box and then you just check sold by should not say Amazon at all.\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[{\"text\":\"If the buy box says just Amazon, stay away.\",\"quote\":\"if it's just Amazon, stay away from it.\"}]},\"completion\":[],\"unknowns\":[\"Source's buy box algorithm statement is not verified as current platform behavior.\"],\"relations\":[]},{\"id\":\"u4\",\"kind\":\"action\",\"title\":\"Ensure minimum 30% ROI and reject failing products\",\"claim\":{\"text\":\"The source's last check is to make sure the product has a minimum 30% ROI.\",\"quote\":\"The last check is to make sure the product has minimum 30% ROI.\"},\"action\":{\"text\":\"Ensure the product has a minimum 30% ROI.\",\"quote\":\"make sure the product has minimum 30% ROI.\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[{\"text\":\"Calculate how much profit can be made.\",\"quote\":\"first you check how much profit you can make\"}]},\"exclusions\":{\"op\":\"any\",\"args\":[{\"text\":\"If the checks do not pass, do not sell the product on Amazon.\",\"quote\":\"If they don't, then do not sell the product on Amazon.\"}]},\"completion\":[{\"text\":\"Product meets minimum 30% ROI.\",\"quote\":\"minimum 30% ROI\"}],\"unknowns\":[\"Source does not specify whether ROI is calculated before or after hidden VAT.\"],\"relations\":[]},{\"id\":\"u5\",\"kind\":\"action\",\"title\":\"Use Amazon seller calculator with ASIN for FBA profit check\",\"claim\":{\"text\":\"To check profit, the source says to put the product ASIN from see all information into the Amazon seller calculator and use FBA fulfillment.\",\"quote\":\"All you have to do is put in the asin of this product, which you can grab from see all information. And as you can see, the asin is right here. You just put that number here and then search. And as you can see, this product has just shown. Now, right here where it says your fulfillment, this is where if you're doing FBM, you worry about this, but we care about FBA.\"},\"action\":{\"text\":\"Enter the ASIN into the Amazon seller calculator and use FBA fulfillment.\",\"quote\":\"All you have to do is put in the asin of this product, which you can grab from see all information. And as you can see, the asin is right here. You just put that number here and then search. And as you can see, this product has just shown. Now, right here where it says your fulfillment, this is where if you're doing FBM, you worry about this, but we care about FBA.\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[{\"text\":\"ASIN can be grabbed from see all information.\",\"quote\":\"which you can grab from see all information\"}]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[],\"relations\":[]},{\"id\":\"u6\",\"kind\":\"action\",\"title\":\"Match selling price to the lowest seller in the listing\",\"claim\":{\"text\":\"The source recommends matching the price with the lowest seller in the listing.\",\"quote\":\"I recommend you match the price with the lowest seller in the listing.\"},\"action\":{\"text\":\"Match the selling price with the lowest seller in the listing.\",\"quote\":\"match the price with the lowest seller in the listing\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"Later source says match the lowest FBA seller on a listing with both FBM and FBA sellers.\"],\"relations\":[]},{\"id\":\"u7\",\"kind\":\"warning\",\"title\":\"Account for 20% VAT hidden on Amazon fees and fulfillment\",\"claim\":{\"text\":\"The source says there is a hidden 20% VAT charged on Amazon fees and fulfillment cost, which many gurus do not mention, and gives an example of around £120 extra on Amazon fees and 60p extra on fulfillment cost to deduct from net profit.\",\"quote\":\"there is a hidden fee on your Amazon fees and your fulfillment cost, which is 20% VAT that is charged on this. So, you're actually going to pay around I would say around £120 extra on the Amazon fees and you're going to pay 60p extra on the fulfillment cost.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The stated £120 extra on Amazon fees is a large amount and may be a transcription or example inconsistency; the source does not show the fee base for the 60p fulfillment VAT.\"],\"relations\":[]},{\"id\":\"u8\",\"kind\":\"action\",\"title\":\"Calculate ROI using profit divided by cost of goods times 100\",\"claim\":{\"text\":\"The source gives the ROI formula as profit divided by cost of goods multiplied by 100.\",\"quote\":\"the formula for ROI is profit divided by cost of goods multiply by 100\"},\"action\":{\"text\":\"Calculate ROI by dividing profit by cost of goods and multiplying by 100.\",\"quote\":\"profit divided by cost of goods multiply by 100\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The example uses 540 profit and 25 cost of goods and reports 21.6% ROI; 540 divided by 25 times 100 does not equal 21.6, so the example numbers appear inconsistent or mistranscribed.\"],\"relations\":[]},{\"id\":\"u9\",\"kind\":\"warning\",\"title\":\"ROI threshold can be adjusted for fast-selling products\",\"claim\":{\"text\":\"The source says all four checks must pass and if they do not, do not sell, but ROI can be adjusted; if a product sells really well like 2,000 times, it would still go with 20% ROI.\",\"quote\":\"So you have to make sure all the four checks that I just showed all of them must pass. If they don't, then do not sell the product on Amazon. The only one that I would say you can adjust is the ROI. Sometimes if the product is selling really well, like 2,000 times, I would still go with 20% ROI.\"},\"action\":null,\"trigger\":{\"op\":\"any\",\"args\":[{\"text\":\"Product sells really well, such as 2,000 times, but ROI is below 30%.\",\"quote\":\"Sometimes if the product is selling really well, like 2,000 times\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"Source does not define the exact ROI floor for all fast-selling cases or what counts beyond 2,000 sales.\"],\"relations\":[{\"kind\":\"alternative_to\",\"target\":\"u4\"}]},{\"id\":\"u10\",\"kind\":\"action\",\"title\":\"Make the first wholesale order a test order\",\"claim\":{\"text\":\"The source advises that the first wholesale order should always be a test order of 10 to 50 units, to analyze sales and identify problems without getting stuck with inventory.\",\"quote\":\"your first wholesale order should always be a test order. Meaning, it should be anywhere from 10 to 50 units of that product.\"},\"action\":{\"text\":\"Make the first wholesale order a test order of 10 to 50 units.\",\"quote\":\"always do a test shipment first as the first ever order for the product\"},\"trigger\":{\"op\":\"any\",\"args\":[{\"text\":\"Placing the first wholesale order for a product.\",\"quote\":\"first wholesale order\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"Source does not specify a reorder timeline after test order.\"],\"relations\":[]},{\"id\":\"u11\",\"kind\":\"action\",\"title\":\"Add an existing product listing by ASIN\",\"claim\":{\"text\":\"To add a product to inventory, the source says to go to catalog, add product, and copy the ASIN; you do not need to create the same listing from scratch when sellers already exist.\",\"quote\":\"go to your Amazon account, click on catalog, add product. All you're going to do here is copy the asin of the product that you would like to sell on.\"},\"action\":{\"text\":\"Go to catalog, add product, and enter the ASIN of the product you want to sell.\",\"quote\":\"click on catalog, add product. All you're going to do here is copy the asin of the product that you would like to sell on.\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[{\"text\":\"The product ASIN is available.\",\"quote\":\"copy the asin of the product\"}]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[],\"relations\":[]},{\"id\":\"u12\",\"kind\":\"action\",\"title\":\"Get ungated by submitting a wholesale invoice\",\"claim\":{\"text\":\"If the listing says condition new apply to sell, the seller is gated; to get ungated, the source says to buy 10 units, sometimes 100 units, from a wholesale supplier, get an invoice under the same name as the Amazon account, and upload it.\",\"quote\":\"all you have to do is buy 10 units. In some cases, for some products, it's 100 units of the exact same product from a wholesale supplier. So, you can get an invoice from them. And the invoice should be under your company to the same or your name under the same name of your Amazon account that you create. Upload that and you'll be ungated.\"},\"action\":{\"text\":\"Buy the required units from a wholesale supplier, obtain an invoice under the Amazon account name, and upload it to get ungated.\",\"quote\":\"Upload that and you'll be ungated.\"},\"trigger\":{\"op\":\"any\",\"args\":[{\"text\":\"The listing search shows condition new apply to sell, meaning gated.\",\"quote\":\"condition new apply to sell that means you are gated\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[{\"text\":\"A wholesale supplier and invoice under the same name as the Amazon account.\",\"quote\":\"from a wholesale supplier\"}]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"Source does not show the exact ungating upload process.\"],\"relations\":[]},{\"id\":\"u13\",\"kind\":\"action\",\"title\":\"Configure the listing as new, FBA, and price-matched to the lowest FBA seller\",\"claim\":{\"text\":\"When adding the existing listing, the source says to select condition new, set the price same or close to the lowest FBA seller, set fulfillment channel to Amazon dispatch, disable other marketplaces, and save and finish.\",\"quote\":\"you're going to select the condition as new. You're going to add the price which should be the same or close to the lowest price in the listing to the FBA seller. So on on a listing there is FBM and FBA seller. So you have to make sure you match it with the lowest FBA seller.\"},\"action\":{\"text\":\"Select condition new, match the lowest FBA seller price, set fulfillment to Amazon dispatch, disable other marketplaces, and save and finish.\",\"quote\":\"you're going to select the condition as new. You're going to add the price which should be the same or close to the lowest price in the listing to the FBA seller.\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[{\"text\":\"The product is added to inventory and allowed to sell.\",\"quote\":\"this product I'm allowed to add\"}]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"Source's price-matching instruction here says lowest FBA seller, while earlier calculator step says lowest seller in listing.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u11\"}]},{\"id\":\"u14\",\"kind\":\"action\",\"title\":\"Use Amazon's barcode only to avoid commingling\",\"claim\":{\"text\":\"The source recommends Amazon's barcode only because if multiple sellers send the same product, Amazon may mix them up and not know whose product is whose; using Amazon's printed barcode identifies ownership on receipt.\",\"quote\":\"I recommend Amazon's barcode only because although this product comes with its own barcode. If someone else also sells this product and both of you send it to Amazon and the products get mixed up, Amazon won't know whose product is whose.\"},\"action\":{\"text\":\"Select Amazon's barcode only when adding the product.\",\"quote\":\"I recommend Amazon's barcode only\"},\"trigger\":{\"op\":\"any\",\"args\":[{\"text\":\"Barcode type is pre-selected or prompted during listing setup.\",\"quote\":\"where it says barcode type\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u11\"}]},{\"id\":\"u15\",\"kind\":\"action\",\"title\":\"Start a shipping plan via send or replenish inventory\",\"claim\":{\"text\":\"After adding the product, the source says to create a shipping plan by clicking the three dots and then send or replenish inventory.\",\"quote\":\"you can simply click on these three dots and then click on send or replenish inventory.\"},\"action\":{\"text\":\"Click the three dots and select send or replenish inventory to create the shipping plan.\",\"quote\":\"click on these three dots and then click on send or replenish inventory.\"},\"trigger\":{\"op\":\"any\",\"args\":[{\"text\":\"The product is added to inventory and ready to ship to Amazon.\",\"quote\":\"once that's added, you can now go ahead and create your shipping plan\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[{\"text\":\"The product has been added to inventory.\",\"quote\":\"once that's added\"}]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source says 'So the first' and then cuts off; the remaining shipping-plan steps are missing.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u11\"}]},{\"id\":\"u16\",\"kind\":\"principle\",\"title\":\"Amazon Warehouse used listings are acceptable\",\"claim\":{\"text\":\"The source says Amazon Warehouse is fine because it is Amazon's used products; used condition is fine, but if the buy box says just Amazon, stay away.\",\"quote\":\"If it says Amazon warehouse, it's fine because Amazon warehouse is Amazon's used products. So you will usually see right now this condition is new, but Amazon warehouse, it will say used. So used is fine, but if it's just Amazon, stay away from it.\"},\"action\":null,\"trigger\":{\"op\":\"any\",\"args\":[{\"text\":\"Buy box says Amazon Warehouse.\",\"quote\":\"If it says Amazon warehouse\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[],\"relations\":[{\"kind\":\"alternative_to\",\"target\":\"u3\"}]}],\"more_units\":true,\"unresolved\":[\"Shipping plan procedure is cut off after 'So the first'; remaining steps are missing.\",\"Omitted due to cap: separate units for the four-seller criterion, Amazon Warehouse exception, ROI calculation example inconsistency, Amazon price-difference example, and detailed buy box explanation may remain.\",\"The source's ROI example with 540 profit and 25 cost of goods reporting 21.6% appears inconsistent; preserve raw values and verify.\",\"The source's £120 extra Amazon fee VAT example may be a transcription error; verify fee base.\",\"Source's statements about Amazon buy box and gating are platform behavior claims that need current primary-source verification for live deployment.\"]}",
+  "input": {
+    "source_id": "1C35xOg2kVT-UwJNkbhbLgfQ1DfsApkjm",
+    "source_sha256": "088cb713f44de288622c950e89968102197d959765249cc39ef72c385c1f34e7",
+    "locator": "body:76/paragraph",
+    "start": 18996,
+    "text": "in why just in a bit. So, the way you do that is you go on the listing and where it says other sellers on Amazon, you click on that and then you're just going to filter by Prime. As long as you see four different sellers selling this exact same product, it means it's a wholesale product, meaning it's a product that is not private label and you're allowed to sell on this listing. And if you don't see this at all, other sellers on Amazon, if you don't see that at all, then that means there's only one seller on this listing and it's a private label product, meaning I would not recommend you sell that and you shouldn't even sell on that because the seller owns that listing and they will complain to Amazon and then Amazon will literally block your account if you do that multiple times. So, I recommend you don't do that at all. And that's the reason why this is one of the checks as well. The third thing you're going to check is to make sure Amazon is not on the listing. Because if Amazon's on the listing, my friend, you are never going to win on Amazon because Amazon will sell the product cheaper than you. They will win the buy box. The buy box is basically this the thing that I just open. They will win the buy box more than you because they own own Amazon. Uh plus buy box's main component or main thing that helps someone win the buy box is actually the price. And as you can see, the difference between Amazon uh sold by Amazon and sold by Grasshopper Toys is almost it's more than £10. Amazon's selling selling for less 10 more than £10 less than the next cheapest person in this listing. So that's why you never want to jump on a listing where Amazon is on. And the way you find if they're on the listing is you just open the buy box and then you just check sold by should not say Amazon at all. If it says Amazon warehouse, it's fine because Amazon warehouse is Amazon's used products. So you will usually see right now this condition is new, but Amazon warehouse, it will say used. So used is fine, but if it's just Amazon, stay away from it. The last check is to make sure the product has minimum 30% ROI. The way you check this is first you check how much profit you can make and that you're going to do using the seller calculator, which you can just go here. This is the Amazon seller calculator. Uh, no. Come on. Amazon seller. Come on. Resources. For some reason, it was taking me to the other website. So, I just wrote UK and it brought me to the right website. As you can see, this is the revenue calculator. All you have to do is put in the asin of this product, which you can grab from see all information. And as you can see, the asin is right here. You just put that number here and then search. And as you can see, this product has just shown. Now, right here where it says your fulfillment, this is where if you're doing FBM, you worry about this, but we care about FBA. So, we just going to worry about this. So, how much we're going to sell this for? Let's say we sell this for £40. I recommend you match the price with the lowest seller in the listing. And then, how much is your cost of goods? How much are you buying this for? Let's say we're buying it for £25. Then you will simply check that all of this number is making sense or not. Such as your VAT, if you're paying VAT, let's say you're not paying VAT because you're not VA registered right now, then you're making £5 profit and your net margin is 13%. Now, one hidden fee that a lot of new Amazon gurus who are making videos online won't tell you is that there is a hidden fee on your Amazon fees and your fulfillment cost, which is 20% VAT that is charged on this. So, you're actually going to pay around I would say around £120 extra on the Amazon fees and you're going to pay 60p extra on the fulfillment cost. If it's not making sense to you, let me know. I'll make a detailed video explaining how exactly that works as well. But just know that Amazon does charge you 20% VAT on the fees or any cost that is seen here. Uh so that you will have to take out from your actual net profit as well. And as you can see here you can see your profit is this. This is your margin. In order to calculate your ROI now all you do is you take your profit uh I will do a calculator. Oh no. So Google Google calculator. You take the profit which is 540 and divide it by the cost of goods and multiply it by 100. So 540 / 25 540 / 20 25 times by 100 that is 21.6% ROI. So remember the formula for ROI is profit divided by cost of goods multiply by 100. So this is 21% ROI only which does not pass our check of minimum 30% ROI. So now if you know how to check these things, how to calculate the ROI, that means you also know how to analyze products and how to make sure the product sells. This product definitely does not pass it. So you have to make sure all the four checks that I just showed all of them must pass. If they don't, then do not sell the product on Amazon. The only one that I would say you can adjust is the ROI. Sometimes if the product is selling really well, like 2,000 times, I would still go with 20% ROI. One bonus advice I will still add on is that your first wholesale order should always be a test order. Meaning, it should be anywhere from 10 to 50 units of that product. Not just so that you can analyze and make sure the product actually sells on Amazon, but you can also see if there's any problems attached to that problem like a lot of other sellers are coming on this and undercutting you or this product is not allowed to be sold on Amazon. So now you're stuck with that inventory. Imagine you ordered 400 units of that product and you were stuck with all that inventory and the money was held into that. So always do a test shipment first as the first ever order for the product. You have now found your product, analyzed your product, and you have bought the product. How do you go about shipping it to Amazon? That's what I will show you now. So, first thing you have to do is add the product to your inventory or onto your Amazon account. So, in order to do that, all you have to do is go to your Amazon account, click on catalog, add product. All you're going to do here is copy the asin of the product that you would like to sell on. So, let's say you want to sell this exact product. you're going to send your product or you're going to create you're going to add this listing onto your Amazon account. You don't have to create the same listing from scratch because as you can see there are 24 sellers selling on this listing. So the way you do that is you're going to grab the as in. So see all information, copy the as and you're going to go here and then you're going to add this right here. Now when you do search and if it says let's say condition new apply to sell that means you are gated. you're not allowed to sell this product. And in order for you to sell on this product, this exact listing, you'll need to get ungated. Now, in order to get ungated, I'll quickly tell you, all you have to do is buy 10 units. In some cases, for some products, it's 100 units of the exact same product from a wholesale supplier. So, you can get an invoice from them. And the invoice should be under your company to the same or your name under the same name of your Amazon account that you create. Upload that and you'll be ungated. If you want me to create a detailed video about this as well, let me know in the comments and I'll do that because if I try and show it step by step here, it will make this video more than 30 minutes. But anyway, I'll still show the entire process of adding a product using a different product that I'm allowed to add. So this product I'm allowed to add. All I have to do is click here condition as new because I'm selling a new condition. And click on sell this product. And this will open right here. It will look like we're creating a new listing from scratch, but you're not. You're simply adding that same listing. All you have to add here is you're going to select the condition as new. You're going to add the price which should be the same or close to the lowest price in the listing to the FBA seller. So on on a listing there is FBM and FBA seller. So you have to make sure you match it with the lowest FBA seller. The way you do that is just select prime new and this is an FBA seller because it's dispatched from Amazon but it's sold by this. So £9.90. So we're going to go here add in 990. Then we're going to just go down here and fulfillment channel. Amazon will dispatch it for us. That's it. And then disable all the other marketplaces because we don't want to sell in that. And then save and finish. And you have done it. You have added. Actually, there's one more step. Yes. Which is you want to make sure right here where it says barcode type. Sometimes it will be pre-selected. Amazon's barcode only. Sometimes it will ask you to select the barcode. I recommend Amazon's barcode only because although this product comes with its own barcode. If someone else also sells this product and both of you send it to Amazon and the products get mixed up, Amazon won't know whose product is whose. So if you do add your own barcode, Amazon's barcode which you can print from Amazon and you stick it on top of that barcode, then when Amazon receives it, they're going to scan the barcode and be like, \"Cool, this product belongs to you and not someone random.\" And then you're going to do list as FBA. That's it. You added it and now it will appear in your inventory within few minutes. 15 minute at maximum. This is the old one I've added. So if I just refresh it in 15 minutes or so, it will show up. But once that's added, you can now go ahead and create your shipping plan to send it off to Amazon. So in order to do that, all you have to do, you can simply click on these three dots and then click on send or replenish inventory. Once you click that, it will open up an entire shipping plan that you need to create. So the first ",
+    "provenance": "unverified"
+  },
+  "system_prompt_sha256": "169564fc11fb12a123446ec006b5bb473bb0bb9c6a71a491eafeedd914dc865e"
+}

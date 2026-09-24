@@ -1,0 +1,637 @@
+{
+  "request_id": "f60db1d7625504dda6e03bac8a1a222ba7e8b60f7a3f06d9b19a29f9b1c8a876",
+  "provider": "deepseek",
+  "model": "deepseek-flash",
+  "effort": "high",
+  "completion_limit": 65536,
+  "usage": {
+    "prompt_tokens": 3600,
+    "completion_tokens": 36508,
+    "total_tokens": 40108,
+    "prompt_tokens_details": {
+      "cached_tokens": 1152
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 30927
+    },
+    "prompt_cache_hit_tokens": 1152,
+    "prompt_cache_miss_tokens": 2448
+  },
+  "booked_cost_usd": 0.0448896,
+  "seconds": 126.52,
+  "finish_reason": "stop",
+  "output": {
+    "units": [
+      {
+        "id": "u1",
+        "kind": "action",
+        "title": "Ask for a phone number only if you will call leads",
+        "claim": {
+          "text": "The source advises asking for a phone number only if you're going to phone people; if not, don't ask or at least make it optional, because asking without calling suppresses conversions.",
+          "quote": "if you're going to phone people, ask for a phone number. If you're not going to phone people, don't ask for a phone number. Let's be honest about this. If you don't have a team that's going to give them a call, it's pointless asking for their phone number. All you're going to do is suppress conversions, right? Or at least make the phone number optional"
+        },
+        "action": {
+          "text": "If you're going to phone people, ask for a phone number; if you're not, don't ask for a phone number, or at least make the phone number optional.",
+          "quote": "if you're going to phone people, ask for a phone number. If you're not going to phone people, don't ask for a phone number. Let's be honest about this. If you don't have a team that's going to give them a call, it's pointless asking for their phone number. All you're going to do is suppress conversions, right? Or at least make the phone number optional"
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": [
+            {
+              "text": "If asking for a phone number, having a team that will give them a call.",
+              "quote": "If you don't have a team that's going to give them a call, it's pointless asking for their phone number."
+            }
+          ]
+        },
+        "exclusions": {
+          "op": "any",
+          "args": [
+            {
+              "text": "If you're not going to phone people, don't ask for a phone number.",
+              "quote": "If you're not going to phone people, don't ask for a phone number."
+            }
+          ]
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not define what counts as having a team that will call."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u2",
+        "kind": "action",
+        "title": "Ask only for information you will use and enough to qualify or disqualify",
+        "claim": {
+          "text": "The source's rule is to ask only for information you're actually going to use, avoid unnecessary fields that suppress conversions, but ask enough for the sales team to qualify or disqualify.",
+          "quote": "the rule here is only use the in only ask for the info that you're actually going to use. Um, don't ask for anything that you don't need because it's just going to suppress conversions, but make sure that you're asking for enough stuff that your sales team can qualify or disqualify as they need to."
+        },
+        "action": {
+          "text": "Ask only for information you're actually going to use; don't ask for anything you don't need; ask enough for your sales team to qualify or disqualify.",
+          "quote": "the rule here is only use the in only ask for the info that you're actually going to use. Um, don't ask for anything that you don't need because it's just going to suppress conversions, but make sure that you're asking for enough stuff that your sales team can qualify or disqualify as they need to."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": [
+            {
+              "text": "Asking for anything you don't need.",
+              "quote": "don't ask for anything that you don't need because it's just going to suppress conversions"
+            }
+          ]
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not specify which fields constitute the minimum information."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u3",
+        "kind": "action",
+        "title": "Ask filtering or disqualifying information when lead volume overwhelms sales",
+        "claim": {
+          "text": "If you get a lot of leads, have a high traffic site, and your sales team can't keep up, the source says to also ask information that allows you to filter or disqualify, such as budget, so you can disqualify low-budget options.",
+          "quote": "If you get a lot of leads, you have a high traffic site and you've got a sales team that can't keep up with everyone. You also want to ask some information that's going to allow you to filter or disqualify, right? So, this might be around budget. If you're dealing with companies, what's your budget for this thing? Then you can disqualify people that choose one of the low budget options."
+        },
+        "action": {
+          "text": "If you get a lot of leads, have a high traffic site, and your sales team can't keep up, ask information that lets you filter or disqualify prospects, for example budget, and disqualify low-budget options.",
+          "quote": "If you get a lot of leads, you have a high traffic site and you've got a sales team that can't keep up with everyone. You also want to ask some information that's going to allow you to filter or disqualify, right? So, this might be around budget. If you're dealing with companies, what's your budget for this thing? Then you can disqualify people that choose one of the low budget options."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "You get a lot of leads, have a high traffic site, and have a sales team that can't keep up with everyone.",
+              "quote": "If you get a lot of leads, you have a high traffic site and you've got a sales team that can't keep up with everyone."
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No threshold for 'a lot of leads' or 'high traffic' is given.",
+          "No specific budget thresholds are given."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u2"
+          }
+        ]
+      },
+      {
+        "id": "u4",
+        "kind": "example",
+        "title": "Exposure Ninja's sales process example",
+        "claim": {
+          "text": "The source describes Exposure Ninja's sales process as a free website and marketing review, then a follow-up consultation, then a plan, then another follow-up consultation, then becoming a client; the process has been refined over eight years.",
+          "quote": "our Exposure Ninja sales process is the free website and marketing review. You go through that. We then have a follow-up consultation. We put together a plan. You have a follow-up consultation and then you become a client. And that's the process that we use and that's the kind of framework that this is based on. and we've worked on that process over the last eight years."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No details of what happens in the consultations or plan are provided."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u5",
+        "kind": "action",
+        "title": "Offer a phone, Skype, or Zoom consultation when experimenting with a lead offer",
+        "claim": {
+          "text": "The source says a free consultation through phone, Skype, or Zoom is a great thing to start with if you're experimenting with offering this type of thing because it allows you to qualify people, test your process, and get live feedback.",
+          "quote": "You might be offering people a free consultation through a phone, Skype or Zoom call. This is a really great thing to start with if you're experimenting with offering this type of thing because it allows you to qualify people and it also allows you to test your process. You can get live feedback from people."
+        },
+        "action": {
+          "text": "Offer a free consultation via phone, Skype, or Zoom when experimenting with a lead offer, to qualify people and get live feedback to test your process.",
+          "quote": "You might be offering people a free consultation through a phone, Skype or Zoom call. This is a really great thing to start with if you're experimenting with offering this type of thing because it allows you to qualify people and it also allows you to test your process. You can get live feedback from people."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "You're experimenting with offering this type of thing.",
+              "quote": "if you're experimenting with offering this type of thing"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No call duration, structure, or qualification criteria are specified."
+        ],
+        "relations": [
+          {
+            "kind": "alternative_to",
+            "target": "u7"
+          },
+          {
+            "kind": "alternative_to",
+            "target": "u9"
+          }
+        ]
+      },
+      {
+        "id": "u6",
+        "kind": "example",
+        "title": "Exposure Ninja's early call-based reviews",
+        "claim": {
+          "text": "Exposure Ninja first did website and marketing reviews over a call because they didn't know what the reviews needed to include to make people become a lead; the calls let them learn what feedback people had, where people were, and the appropriate technical level.",
+          "quote": "when we first started doing our website and marketing reviews, we did them over a call because we didn't know what those reviews needed to include in order to make people become a lead. So, we did them over a call so we could find out um what feedback people had, where people were at, and the sort of level that we needed to put these reviews at."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No outcome metrics from the early calls are provided."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u5"
+          }
+        ]
+      },
+      {
+        "id": "u7",
+        "kind": "action",
+        "title": "Use in-person meetings for high-ticket sales, with scalability caveats",
+        "claim": {
+          "text": "The source says an in-person meeting can be at your office, their office, or a neutral location; it is the least scalable but by far the most effective for a high-ticket sale, and if selling something high ticket it's a good idea to have at least some form of in-person meeting. It can be one-to-one or a discovery day with six to 10 people.",
+          "quote": "An in-person meeting is another option. So, you might invite people to your office, you might go to their office, or you might work uh you might meet up in a neutral location that you would decide. This is the least scalable, but for a high ticket sale, by far the most effective. So, you can either do this as a onetoone or you can get people along to a discovery day. um which means that you can bring like six to 10 people in a room and you can work on selling them all at the same time. But in-person meetings generally the least scalable. But if you're selling something high ticket, then it's a good idea to have at least some form of in-person meeting."
+        },
+        "action": {
+          "text": "For high-ticket sales, consider at least some form of in-person meeting, either one-to-one or as a discovery day with roughly six to 10 people, while recognizing it is the least scalable format.",
+          "quote": "for a high ticket sale, by far the most effective. So, you can either do this as a onetoone or you can get people along to a discovery day. um which means that you can bring like six to 10 people in a room and you can work on selling them all at the same time. But in-person meetings generally the least scalable. But if you're selling something high ticket, then it's a good idea to have at least some form of in-person meeting."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Selling something high ticket.",
+              "quote": "if you're selling something high ticket"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "Definition or threshold for high ticket is not specified.",
+          "No exact discovery day format is given."
+        ],
+        "relations": [
+          {
+            "kind": "alternative_to",
+            "target": "u5"
+          },
+          {
+            "kind": "alternative_to",
+            "target": "u9"
+          }
+        ]
+      },
+      {
+        "id": "u8",
+        "kind": "warning",
+        "title": "Do not assume every lead or sale needs an in-person meeting",
+        "claim": {
+          "text": "The source challenges the assumption that everything needs an in-person meeting, noting Exposure Ninja regularly has clients paying £10,000 a month whom they never meet, and that the need depends on what high ticket means.",
+          "quote": "we regularly have clients at Exposure Ninja that sign up paying us £10,000 a month and we never meet them. So depends on what high ticket is. If we were selling a yacht, we'd probably have to meet them. Although, I'm sure yachts have been purchased without the person being actually there. Um, but you know, I would I would challenge the assumption that everything needs an in-person meeting. Um, just purely because people have told us forever that we need to be meeting every lead and sale that we want to turn into a client, and we've proven that again and again to be completely untrue."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Considering making in-person meetings mandatory for all leads or sales.",
+              "quote": "the assumption that everything needs an in-person meeting"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not define when in-person is necessary beyond 'depends on what high ticket is'."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u9",
+        "kind": "action",
+        "title": "Email a presentation, proposal, mockup, or video review as a low-risk lead result",
+        "claim": {
+          "text": "The source says you might email a presentation, which could be a proposal, a mockup, or a video presentation like the Exposure Ninja free website review; this is the lowest risk for the recipient because they don't have to do anything and can avoid the awkwardness of declining on a call.",
+          "quote": "You might email them a presentation. Now, the presentation, I don't mean like a PowerPoint or something like that, although of course it might be a PowerPoint. So, this might be a proposal that you send over via email. It might be a mockup that you send them by email. It might be the Exposure Ninja free website review, which is a video presentation that we send them by email. Now, this is the lowest risk for the person who's receiving it."
+        },
+        "action": {
+          "text": "Email a presentation, proposal, mockup, or video review as the lead result, because it is low risk for the recipient and avoids the awkwardness of a live refusal.",
+          "quote": "You might email them a presentation. Now, the presentation, I don't mean like a PowerPoint or something like that, although of course it might be a PowerPoint. So, this might be a proposal that you send over via email. It might be a mockup that you send them by email. It might be the Exposure Ninja free website review, which is a video presentation that we send them by email. Now, this is the lowest risk for the person who's receiving it."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No details about what the presentation should contain are provided."
+        ],
+        "relations": [
+          {
+            "kind": "alternative_to",
+            "target": "u5"
+          },
+          {
+            "kind": "alternative_to",
+            "target": "u7"
+          }
+        ]
+      },
+      {
+        "id": "u10",
+        "kind": "action",
+        "title": "Make software trial onboarding painless, fun, and step-by-step",
+        "claim": {
+          "text": "The source says offering a trial of a full product can risk losing users because the user must invest time to get the software up and running and may be daunted by the enormity of setup, not because the software is wrong; it recommends making onboarding as painless and ideally as fun as possible, game-like or very step-by-step, so users feel a strong sense of completion, and not giving massive homework straight away.",
+          "quote": "if you offer a trial of a full product and someone looks in it and they're like, \"Oh, this is going to take us ages.\" You risk losing that person, not because your software is not right, but because the enormity of the task hits them. So it's worth thinking about how you can make the onboarding process of your software as painless as possible and ideally as fun as possible, so they actually feel kind of almost addicted and and it's it's like a game. and there's some kind of game element um or it's very very step by step so they feel a strong sense of completion as they're moving through the process. What you don't want to do is just give them a massive amount of homework straight away"
+        },
+        "action": {
+          "text": "If offering a trial of a full product, make onboarding as painless and fun as possible, for example game-like or very step-by-step, so users feel a strong sense of completion; don't give a massive amount of homework straight away.",
+          "quote": "if you offer a trial of a full product and someone looks in it and they're like, \"Oh, this is going to take us ages.\" You risk losing that person, not because your software is not right, but because the enormity of the task hits them. So it's worth thinking about how you can make the onboarding process of your software as painless as possible and ideally as fun as possible, so they actually feel kind of almost addicted and and it's it's like a game. and there's some kind of game element um or it's very very step by step so they feel a strong sense of completion as they're moving through the process. What you don't want to do is just give them a massive amount of homework straight away"
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "Offering a trial of a full product.",
+              "quote": "if you offer a trial of a full product"
+            },
+            {
+              "text": "The user has to invest a lot of time to get the software up and running usually.",
+              "quote": "the user has to invest a lot of time to get the software up and running usually"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": [
+            {
+              "text": "Giving users a massive amount of homework straight away.",
+              "quote": "What you don't want to do is just give them a massive amount of homework straight away"
+            }
+          ]
+        },
+        "completion": [
+          {
+            "text": "Users feel a strong sense of completion as they move through the process.",
+            "quote": "so they feel a strong sense of completion as they're moving through the process"
+          }
+        ],
+        "unknowns": [
+          "No specific onboarding tactics or metrics are provided.",
+          "The source says the risk is that they just 'bulk'; the term is ambiguous."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u11",
+        "kind": "example",
+        "title": "Infusionoft setup fee versus Zoho free trial example",
+        "claim": {
+          "text": "The source gives a CRM example: Infusionoft charges a setup fee before sale plus monthly fee, not because onboarding costs that much but because the user becomes invested and committed to setup; Zoho offers a free trial to play around with everything, but Exposure Ninja tried Zoho and was put off by the free trial. The source concludes it is about understanding your audience and testing each option to see which works best for you.",
+          "quote": "You'll have a company like Infusionoft that will charge a setup fee. So they'll charge a large amount of money before the sale and then they'll charge you a monthly fee as well. So why are they doing this? Well, they're charging you that fee not because it cost them a load of money to on board you, but because you've then invested and you're more committed to going through the process of getting the thing set up. Whereas other companies like Zoho will offer you a free trial where you can get in and you can play around with everything. Now, on the surface, you'd say, \"Hey Zoho, that's a much better approach.\" But hey, we use Infusionoft and we've tried Zoho and we got completely put off by the um the free trial. So, you know, it's all about understanding your audience and testing each option and seeing which works best for you."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not state which model is better; it says to test."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u12",
+        "kind": "principle",
+        "title": "Make the sales process a slippery slide",
+        "claim": {
+          "text": "The source states the goal is for the sales process to be a slippery slide.",
+          "quote": "The the goal here is really that your sales process is a slippery slide."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not define the specific mechanics of a slippery slide sales process in this passage."
+        ],
+        "relations": []
+      },
+      {
+        "id": "u13",
+        "kind": "action",
+        "title": "Ask what leads are most scared of and do the opposite in the first touch",
+        "claim": {
+          "text": "The source says when people first become a lead, ask questions like what they are most scared of, then immediately do the opposite of that thing in your first touch.",
+          "quote": "when they first become a lead, some of the questions to ask are things like what are they most scared of? Right."
+        },
+        "action": {
+          "text": "When people first become a lead, ask what they are most scared of and immediately do the opposite of that thing in the first thing you give them.",
+          "quote": "So, what are they most scared of? And then how can you immediately do the opposite of that thing."
+        },
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "When they first become a lead.",
+              "quote": "when they first become a lead"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The source does not specify how to discover what leads are most scared of.",
+          "The source says the first thing could be a call or an email plan, but does not give a general format."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u12"
+          }
+        ]
+      },
+      {
+        "id": "u14",
+        "kind": "example",
+        "title": "Claims company fear of being pitched example",
+        "claim": {
+          "text": "In the source's claims company example, the lead has filled in information but is most scared of being pitched immediately; the response starts with 'this is not a pitch', shows details about the claim, and offers a button at the bottom to work with them, which diffuses that fear.",
+          "quote": "if it's a claims company, for example, and they've filled in their information, but you know that they're most scared of being pitched immediately. Well, you might start your the thing that you give them, whether that's a call or an email plan or whatever. You might start with this is not a pitch. We're going to show you some details about your claim. And if you'd like to work with us, you can click the button at the bottom. So immediately we've diffused that fear."
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "No metrics for fear diffusion are provided."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u13"
+          }
+        ]
+      },
+      {
+        "id": "u15",
+        "kind": "unresolved_claim",
+        "title": "Spam-worry email frequency choice continuation is cut off",
+        "claim": {
+          "text": "For leads worried about being spammed, the source recommends sending an email that says, 'Hey, we don't want to spam you. Click the link to choose which frequency of emails you'd' — the passage cuts off mid-sentence.",
+          "quote": "If they're worried about being spammed, well, send them an email that says, \"Hey, we don't want to spam you. Click the link to choose which frequency of emails you'd "
+        },
+        "action": null,
+        "trigger": {
+          "op": "all",
+          "args": [
+            {
+              "text": "If they're worried about being spammed.",
+              "quote": "If they're worried about being spammed"
+            }
+          ]
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [],
+        "unknowns": [
+          "The sentence is cut off after \"you'd\"; the missing continuation is not provided."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u13"
+          }
+        ]
+      },
+      {
+        "id": "u16",
+        "kind": "action",
+        "title": "Test each option to see what works for your audience",
+        "claim": {
+          "text": "The source says it is all about understanding your audience and testing each option and seeing which works best for you.",
+          "quote": "it's all about understanding your audience and testing each option and seeing which works best for you."
+        },
+        "action": {
+          "text": "Test each option and see which works best for your audience.",
+          "quote": "it's all about understanding your audience and testing each option and seeing which works best for you."
+        },
+        "trigger": {
+          "op": "all",
+          "args": []
+        },
+        "prerequisites": {
+          "op": "all",
+          "args": []
+        },
+        "exclusions": {
+          "op": "any",
+          "args": []
+        },
+        "completion": [
+          {
+            "text": "Seeing which option works best for you.",
+            "quote": "seeing which works best for you"
+          }
+        ],
+        "unknowns": [
+          "No testing method or metrics are specified."
+        ],
+        "relations": [
+          {
+            "kind": "depends_on",
+            "target": "u11"
+          }
+        ]
+      }
+    ],
+    "more_units": true,
+    "unresolved": [
+      "The source passage ends mid-sentence at 'Click the link to choose which frequency of emails you'd '; the missing continuation is not provided.",
+      "The term 'bulk' appears in 'the risk is that they just bulk'; it is unresolved in the passage.",
+      "No threshold is given for 'high ticket'.",
+      "No definition is given for 'slippery slide' in this passage.",
+      "No minimum information fields are specified."
+    ]
+  },
+  "raw_content": "{\"units\":[{\"id\":\"u1\",\"kind\":\"action\",\"title\":\"Ask for a phone number only if you will call leads\",\"claim\":{\"text\":\"The source advises asking for a phone number only if you're going to phone people; if not, don't ask or at least make it optional, because asking without calling suppresses conversions.\",\"quote\":\"if you're going to phone people, ask for a phone number. If you're not going to phone people, don't ask for a phone number. Let's be honest about this. If you don't have a team that's going to give them a call, it's pointless asking for their phone number. All you're going to do is suppress conversions, right? Or at least make the phone number optional\"},\"action\":{\"text\":\"If you're going to phone people, ask for a phone number; if you're not, don't ask for a phone number, or at least make the phone number optional.\",\"quote\":\"if you're going to phone people, ask for a phone number. If you're not going to phone people, don't ask for a phone number. Let's be honest about this. If you don't have a team that's going to give them a call, it's pointless asking for their phone number. All you're going to do is suppress conversions, right? Or at least make the phone number optional\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[{\"text\":\"If asking for a phone number, having a team that will give them a call.\",\"quote\":\"If you don't have a team that's going to give them a call, it's pointless asking for their phone number.\"}]},\"exclusions\":{\"op\":\"any\",\"args\":[{\"text\":\"If you're not going to phone people, don't ask for a phone number.\",\"quote\":\"If you're not going to phone people, don't ask for a phone number.\"}]},\"completion\":[],\"unknowns\":[\"The source does not define what counts as having a team that will call.\"],\"relations\":[]},{\"id\":\"u2\",\"kind\":\"action\",\"title\":\"Ask only for information you will use and enough to qualify or disqualify\",\"claim\":{\"text\":\"The source's rule is to ask only for information you're actually going to use, avoid unnecessary fields that suppress conversions, but ask enough for the sales team to qualify or disqualify.\",\"quote\":\"the rule here is only use the in only ask for the info that you're actually going to use. Um, don't ask for anything that you don't need because it's just going to suppress conversions, but make sure that you're asking for enough stuff that your sales team can qualify or disqualify as they need to.\"},\"action\":{\"text\":\"Ask only for information you're actually going to use; don't ask for anything you don't need; ask enough for your sales team to qualify or disqualify.\",\"quote\":\"the rule here is only use the in only ask for the info that you're actually going to use. Um, don't ask for anything that you don't need because it's just going to suppress conversions, but make sure that you're asking for enough stuff that your sales team can qualify or disqualify as they need to.\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[{\"text\":\"Asking for anything you don't need.\",\"quote\":\"don't ask for anything that you don't need because it's just going to suppress conversions\"}]},\"completion\":[],\"unknowns\":[\"The source does not specify which fields constitute the minimum information.\"],\"relations\":[]},{\"id\":\"u3\",\"kind\":\"action\",\"title\":\"Ask filtering or disqualifying information when lead volume overwhelms sales\",\"claim\":{\"text\":\"If you get a lot of leads, have a high traffic site, and your sales team can't keep up, the source says to also ask information that allows you to filter or disqualify, such as budget, so you can disqualify low-budget options.\",\"quote\":\"If you get a lot of leads, you have a high traffic site and you've got a sales team that can't keep up with everyone. You also want to ask some information that's going to allow you to filter or disqualify, right? So, this might be around budget. If you're dealing with companies, what's your budget for this thing? Then you can disqualify people that choose one of the low budget options.\"},\"action\":{\"text\":\"If you get a lot of leads, have a high traffic site, and your sales team can't keep up, ask information that lets you filter or disqualify prospects, for example budget, and disqualify low-budget options.\",\"quote\":\"If you get a lot of leads, you have a high traffic site and you've got a sales team that can't keep up with everyone. You also want to ask some information that's going to allow you to filter or disqualify, right? So, this might be around budget. If you're dealing with companies, what's your budget for this thing? Then you can disqualify people that choose one of the low budget options.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"You get a lot of leads, have a high traffic site, and have a sales team that can't keep up with everyone.\",\"quote\":\"If you get a lot of leads, you have a high traffic site and you've got a sales team that can't keep up with everyone.\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"No threshold for 'a lot of leads' or 'high traffic' is given.\",\"No specific budget thresholds are given.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u2\"}]},{\"id\":\"u4\",\"kind\":\"example\",\"title\":\"Exposure Ninja's sales process example\",\"claim\":{\"text\":\"The source describes Exposure Ninja's sales process as a free website and marketing review, then a follow-up consultation, then a plan, then another follow-up consultation, then becoming a client; the process has been refined over eight years.\",\"quote\":\"our Exposure Ninja sales process is the free website and marketing review. You go through that. We then have a follow-up consultation. We put together a plan. You have a follow-up consultation and then you become a client. And that's the process that we use and that's the kind of framework that this is based on. and we've worked on that process over the last eight years.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"No details of what happens in the consultations or plan are provided.\"],\"relations\":[]},{\"id\":\"u5\",\"kind\":\"action\",\"title\":\"Offer a phone, Skype, or Zoom consultation when experimenting with a lead offer\",\"claim\":{\"text\":\"The source says a free consultation through phone, Skype, or Zoom is a great thing to start with if you're experimenting with offering this type of thing because it allows you to qualify people, test your process, and get live feedback.\",\"quote\":\"You might be offering people a free consultation through a phone, Skype or Zoom call. This is a really great thing to start with if you're experimenting with offering this type of thing because it allows you to qualify people and it also allows you to test your process. You can get live feedback from people.\"},\"action\":{\"text\":\"Offer a free consultation via phone, Skype, or Zoom when experimenting with a lead offer, to qualify people and get live feedback to test your process.\",\"quote\":\"You might be offering people a free consultation through a phone, Skype or Zoom call. This is a really great thing to start with if you're experimenting with offering this type of thing because it allows you to qualify people and it also allows you to test your process. You can get live feedback from people.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"You're experimenting with offering this type of thing.\",\"quote\":\"if you're experimenting with offering this type of thing\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"No call duration, structure, or qualification criteria are specified.\"],\"relations\":[{\"kind\":\"alternative_to\",\"target\":\"u7\"},{\"kind\":\"alternative_to\",\"target\":\"u9\"}]},{\"id\":\"u6\",\"kind\":\"example\",\"title\":\"Exposure Ninja's early call-based reviews\",\"claim\":{\"text\":\"Exposure Ninja first did website and marketing reviews over a call because they didn't know what the reviews needed to include to make people become a lead; the calls let them learn what feedback people had, where people were, and the appropriate technical level.\",\"quote\":\"when we first started doing our website and marketing reviews, we did them over a call because we didn't know what those reviews needed to include in order to make people become a lead. So, we did them over a call so we could find out um what feedback people had, where people were at, and the sort of level that we needed to put these reviews at.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"No outcome metrics from the early calls are provided.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u5\"}]},{\"id\":\"u7\",\"kind\":\"action\",\"title\":\"Use in-person meetings for high-ticket sales, with scalability caveats\",\"claim\":{\"text\":\"The source says an in-person meeting can be at your office, their office, or a neutral location; it is the least scalable but by far the most effective for a high-ticket sale, and if selling something high ticket it's a good idea to have at least some form of in-person meeting. It can be one-to-one or a discovery day with six to 10 people.\",\"quote\":\"An in-person meeting is another option. So, you might invite people to your office, you might go to their office, or you might work uh you might meet up in a neutral location that you would decide. This is the least scalable, but for a high ticket sale, by far the most effective. So, you can either do this as a onetoone or you can get people along to a discovery day. um which means that you can bring like six to 10 people in a room and you can work on selling them all at the same time. But in-person meetings generally the least scalable. But if you're selling something high ticket, then it's a good idea to have at least some form of in-person meeting.\"},\"action\":{\"text\":\"For high-ticket sales, consider at least some form of in-person meeting, either one-to-one or as a discovery day with roughly six to 10 people, while recognizing it is the least scalable format.\",\"quote\":\"for a high ticket sale, by far the most effective. So, you can either do this as a onetoone or you can get people along to a discovery day. um which means that you can bring like six to 10 people in a room and you can work on selling them all at the same time. But in-person meetings generally the least scalable. But if you're selling something high ticket, then it's a good idea to have at least some form of in-person meeting.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Selling something high ticket.\",\"quote\":\"if you're selling something high ticket\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"Definition or threshold for high ticket is not specified.\",\"No exact discovery day format is given.\"],\"relations\":[{\"kind\":\"alternative_to\",\"target\":\"u5\"},{\"kind\":\"alternative_to\",\"target\":\"u9\"}]},{\"id\":\"u8\",\"kind\":\"warning\",\"title\":\"Do not assume every lead or sale needs an in-person meeting\",\"claim\":{\"text\":\"The source challenges the assumption that everything needs an in-person meeting, noting Exposure Ninja regularly has clients paying £10,000 a month whom they never meet, and that the need depends on what high ticket means.\",\"quote\":\"we regularly have clients at Exposure Ninja that sign up paying us £10,000 a month and we never meet them. So depends on what high ticket is. If we were selling a yacht, we'd probably have to meet them. Although, I'm sure yachts have been purchased without the person being actually there. Um, but you know, I would I would challenge the assumption that everything needs an in-person meeting. Um, just purely because people have told us forever that we need to be meeting every lead and sale that we want to turn into a client, and we've proven that again and again to be completely untrue.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Considering making in-person meetings mandatory for all leads or sales.\",\"quote\":\"the assumption that everything needs an in-person meeting\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source does not define when in-person is necessary beyond 'depends on what high ticket is'.\"],\"relations\":[]},{\"id\":\"u9\",\"kind\":\"action\",\"title\":\"Email a presentation, proposal, mockup, or video review as a low-risk lead result\",\"claim\":{\"text\":\"The source says you might email a presentation, which could be a proposal, a mockup, or a video presentation like the Exposure Ninja free website review; this is the lowest risk for the recipient because they don't have to do anything and can avoid the awkwardness of declining on a call.\",\"quote\":\"You might email them a presentation. Now, the presentation, I don't mean like a PowerPoint or something like that, although of course it might be a PowerPoint. So, this might be a proposal that you send over via email. It might be a mockup that you send them by email. It might be the Exposure Ninja free website review, which is a video presentation that we send them by email. Now, this is the lowest risk for the person who's receiving it.\"},\"action\":{\"text\":\"Email a presentation, proposal, mockup, or video review as the lead result, because it is low risk for the recipient and avoids the awkwardness of a live refusal.\",\"quote\":\"You might email them a presentation. Now, the presentation, I don't mean like a PowerPoint or something like that, although of course it might be a PowerPoint. So, this might be a proposal that you send over via email. It might be a mockup that you send them by email. It might be the Exposure Ninja free website review, which is a video presentation that we send them by email. Now, this is the lowest risk for the person who's receiving it.\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"No details about what the presentation should contain are provided.\"],\"relations\":[{\"kind\":\"alternative_to\",\"target\":\"u5\"},{\"kind\":\"alternative_to\",\"target\":\"u7\"}]},{\"id\":\"u10\",\"kind\":\"action\",\"title\":\"Make software trial onboarding painless, fun, and step-by-step\",\"claim\":{\"text\":\"The source says offering a trial of a full product can risk losing users because the user must invest time to get the software up and running and may be daunted by the enormity of setup, not because the software is wrong; it recommends making onboarding as painless and ideally as fun as possible, game-like or very step-by-step, so users feel a strong sense of completion, and not giving massive homework straight away.\",\"quote\":\"if you offer a trial of a full product and someone looks in it and they're like, \\\"Oh, this is going to take us ages.\\\" You risk losing that person, not because your software is not right, but because the enormity of the task hits them. So it's worth thinking about how you can make the onboarding process of your software as painless as possible and ideally as fun as possible, so they actually feel kind of almost addicted and and it's it's like a game. and there's some kind of game element um or it's very very step by step so they feel a strong sense of completion as they're moving through the process. What you don't want to do is just give them a massive amount of homework straight away\"},\"action\":{\"text\":\"If offering a trial of a full product, make onboarding as painless and fun as possible, for example game-like or very step-by-step, so users feel a strong sense of completion; don't give a massive amount of homework straight away.\",\"quote\":\"if you offer a trial of a full product and someone looks in it and they're like, \\\"Oh, this is going to take us ages.\\\" You risk losing that person, not because your software is not right, but because the enormity of the task hits them. So it's worth thinking about how you can make the onboarding process of your software as painless as possible and ideally as fun as possible, so they actually feel kind of almost addicted and and it's it's like a game. and there's some kind of game element um or it's very very step by step so they feel a strong sense of completion as they're moving through the process. What you don't want to do is just give them a massive amount of homework straight away\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"Offering a trial of a full product.\",\"quote\":\"if you offer a trial of a full product\"},{\"text\":\"The user has to invest a lot of time to get the software up and running usually.\",\"quote\":\"the user has to invest a lot of time to get the software up and running usually\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[{\"text\":\"Giving users a massive amount of homework straight away.\",\"quote\":\"What you don't want to do is just give them a massive amount of homework straight away\"}]},\"completion\":[{\"text\":\"Users feel a strong sense of completion as they move through the process.\",\"quote\":\"so they feel a strong sense of completion as they're moving through the process\"}],\"unknowns\":[\"No specific onboarding tactics or metrics are provided.\",\"The source says the risk is that they just 'bulk'; the term is ambiguous.\"],\"relations\":[]},{\"id\":\"u11\",\"kind\":\"example\",\"title\":\"Infusionoft setup fee versus Zoho free trial example\",\"claim\":{\"text\":\"The source gives a CRM example: Infusionoft charges a setup fee before sale plus monthly fee, not because onboarding costs that much but because the user becomes invested and committed to setup; Zoho offers a free trial to play around with everything, but Exposure Ninja tried Zoho and was put off by the free trial. The source concludes it is about understanding your audience and testing each option to see which works best for you.\",\"quote\":\"You'll have a company like Infusionoft that will charge a setup fee. So they'll charge a large amount of money before the sale and then they'll charge you a monthly fee as well. So why are they doing this? Well, they're charging you that fee not because it cost them a load of money to on board you, but because you've then invested and you're more committed to going through the process of getting the thing set up. Whereas other companies like Zoho will offer you a free trial where you can get in and you can play around with everything. Now, on the surface, you'd say, \\\"Hey Zoho, that's a much better approach.\\\" But hey, we use Infusionoft and we've tried Zoho and we got completely put off by the um the free trial. So, you know, it's all about understanding your audience and testing each option and seeing which works best for you.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source does not state which model is better; it says to test.\"],\"relations\":[]},{\"id\":\"u12\",\"kind\":\"principle\",\"title\":\"Make the sales process a slippery slide\",\"claim\":{\"text\":\"The source states the goal is for the sales process to be a slippery slide.\",\"quote\":\"The the goal here is really that your sales process is a slippery slide.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source does not define the specific mechanics of a slippery slide sales process in this passage.\"],\"relations\":[]},{\"id\":\"u13\",\"kind\":\"action\",\"title\":\"Ask what leads are most scared of and do the opposite in the first touch\",\"claim\":{\"text\":\"The source says when people first become a lead, ask questions like what they are most scared of, then immediately do the opposite of that thing in your first touch.\",\"quote\":\"when they first become a lead, some of the questions to ask are things like what are they most scared of? Right.\"},\"action\":{\"text\":\"When people first become a lead, ask what they are most scared of and immediately do the opposite of that thing in the first thing you give them.\",\"quote\":\"So, what are they most scared of? And then how can you immediately do the opposite of that thing.\"},\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"When they first become a lead.\",\"quote\":\"when they first become a lead\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The source does not specify how to discover what leads are most scared of.\",\"The source says the first thing could be a call or an email plan, but does not give a general format.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u12\"}]},{\"id\":\"u14\",\"kind\":\"example\",\"title\":\"Claims company fear of being pitched example\",\"claim\":{\"text\":\"In the source's claims company example, the lead has filled in information but is most scared of being pitched immediately; the response starts with 'this is not a pitch', shows details about the claim, and offers a button at the bottom to work with them, which diffuses that fear.\",\"quote\":\"if it's a claims company, for example, and they've filled in their information, but you know that they're most scared of being pitched immediately. Well, you might start your the thing that you give them, whether that's a call or an email plan or whatever. You might start with this is not a pitch. We're going to show you some details about your claim. And if you'd like to work with us, you can click the button at the bottom. So immediately we've diffused that fear.\"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"No metrics for fear diffusion are provided.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u13\"}]},{\"id\":\"u15\",\"kind\":\"unresolved_claim\",\"title\":\"Spam-worry email frequency choice continuation is cut off\",\"claim\":{\"text\":\"For leads worried about being spammed, the source recommends sending an email that says, 'Hey, we don't want to spam you. Click the link to choose which frequency of emails you'd' — the passage cuts off mid-sentence.\",\"quote\":\"If they're worried about being spammed, well, send them an email that says, \\\"Hey, we don't want to spam you. Click the link to choose which frequency of emails you'd \"},\"action\":null,\"trigger\":{\"op\":\"all\",\"args\":[{\"text\":\"If they're worried about being spammed.\",\"quote\":\"If they're worried about being spammed\"}]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[],\"unknowns\":[\"The sentence is cut off after \\\"you'd\\\"; the missing continuation is not provided.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u13\"}]},{\"id\":\"u16\",\"kind\":\"action\",\"title\":\"Test each option to see what works for your audience\",\"claim\":{\"text\":\"The source says it is all about understanding your audience and testing each option and seeing which works best for you.\",\"quote\":\"it's all about understanding your audience and testing each option and seeing which works best for you.\"},\"action\":{\"text\":\"Test each option and see which works best for your audience.\",\"quote\":\"it's all about understanding your audience and testing each option and seeing which works best for you.\"},\"trigger\":{\"op\":\"all\",\"args\":[]},\"prerequisites\":{\"op\":\"all\",\"args\":[]},\"exclusions\":{\"op\":\"any\",\"args\":[]},\"completion\":[{\"text\":\"Seeing which option works best for you.\",\"quote\":\"seeing which works best for you\"}],\"unknowns\":[\"No testing method or metrics are specified.\"],\"relations\":[{\"kind\":\"depends_on\",\"target\":\"u11\"}]}],\"more_units\":true,\"unresolved\":[\"The source passage ends mid-sentence at 'Click the link to choose which frequency of emails you'd '; the missing continuation is not provided.\",\"The term 'bulk' appears in 'the risk is that they just bulk'; it is unresolved in the passage.\",\"No threshold is given for 'high ticket'.\",\"No definition is given for 'slippery slide' in this passage.\",\"No minimum information fields are specified.\"]}",
+  "input": {
+    "source": {
+      "source_id": "1Rhe979-e16InGIMPR6o6U6pkj2AGimCM",
+      "source_sha256": "c232e6ea18e30f6a87acb9437114264b7f9e7f18c9a1de8a60a9bb6ccee060b0",
+      "locator": "batch",
+      "start": 0,
+      "text": "d. Now, I would say if you're going to phone people, ask for a phone number. If you're not going to phone people, don't ask for a phone number. Let's be honest about this. If you don't have a team that's going to give them a call, it's pointless asking for their phone number. All you're going to do is suppress conversions, right? Or at least make the phone number optional so they can give you it if you need it if sorry if they want to give it to you. So, what's the minimum info that you need to proceed? So, some of this will be information about their current situation. Um, basically you're asking for enough to be able to qualify them. If you get a lot of leads, you have a high traffic site and you've got a sales team that can't keep up with everyone. You also want to ask some information that's going to allow you to filter or disqualify, right? So, this might be around budget. If you're dealing with companies, what's your budget for this thing? Then you can disqualify people that choose one of the low budget options. Okay? So, the rule here is only use the in only ask for the info that you're actually going to use. Um, don't ask for anything that you don't need because it's just going to suppress conversions, but make sure that you're asking for enough stuff that your sales team can qualify or disqualify as they need to. Okay. In this video, we're going to talk about the concepts of turning your leads into buyers and how you actually structure the thing that you're offering on your website so that it actually results in a sale and doesn't just bring you leads that you don't really know what to do with. Because the truth here is that if you've got a great process that's scalable and it's repeatable, you can actually make leads happy as they move through your sales process, right? they become more and more happy and they enjoy working with you more and more until they want to become a client. You don't really have to sell them. So, that's how we're going to do it today. Um, and by the way, obviously our Exposure Ninja sales process is the free website and marketing review. You go through that. We then have a follow-up consultation. We put together a plan. You have a follow-up consultation and then you become a client. And that's the process that we use and that's the kind of framework that this is based on. and we've worked on that process over the last eight years. Um, constantly refining and tweaking to get the best results for both ourselves and our clients, of course. So, um, let's talk about the different formats that you can give people the result. What we're really talking about here is when I become a lead or sale for when I sorry, when I become a lead for your business, this is the result that you're going to give me. What am I actually going to get? So there are some different formats that this can take. So firstly, it can be a phone, a Skype or a Zoom call. You might be offering people a free consultation through a phone, Skype or Zoom call. This is a really great thing to start with if you're experimenting with offering this type of thing because it allows you to qualify people and it also allows you to test your process. You can get live feedback from people. So, when we first started doing our website and marketing reviews, we did them over a call because we didn't know what those reviews needed to include in order to make people become a lead. So, we did them over a call so we could find out um what feedback people had, where people were at, and the sort of level that we needed to put these reviews at. So, did we need to go really technical? Did we need to go really basic? We didn't know. So, we tested on a phone call where we get that live feedback. An in-person meeting is another option. So, you might invite people to your office, you might go to their office, or you might work uh you might meet up in a neutral location that you would decide. This is the least scalable, but for a high ticket sale, by far the most effective. So, you can either do this as a onetoone or you can get people along to a discovery day. um which means that you can bring like six to 10 people in a room and you can work on selling them all at the same time. But in-person meetings generally the least scalable. But if you're selling something high ticket, then it's a good idea to have at least some form of in-person meeting. Having said that, we regularly have clients at Exposure Ninja that sign up paying us £10,000 a month and we never meet them. So depends on what high ticket is. If we were selling a yacht, we'd probably have to meet them. Although, I'm sure yachts have been purchased without the person being actually there. Um, but you know, I would I would challenge the assumption that everything needs an in-person meeting. Um, just purely because people have told us forever that we need to be meeting every lead and sale that we want to turn into a client, and we've proven that again and again to be completely untrue. You might email them a presentation. Now, the presentation, I don't mean like a PowerPoint or something like that, although of course it might be a PowerPoint. So, this might be a proposal that you send over via email. It might be a mockup that you send them by email. It might be the Exposure Ninja free website review, which is a video presentation that we send them by email. Now, this is the lowest risk for the person who's receiving it. Fill in your details here and we'll send you i.e. you're having to do all the work, they're not having to do anything at all, which is great for them. And also, if they don't like it, they can just not reply to the email. Whereas, if you don't like something that somebody's telling you on a phone call, you've got that embarrassment, that awkwardness of telling them. And when they say, \"Do you want to go ahead?\" And you're like, \"Uh, no.\" There's a perceived fear around having to even be in that situation in the first place. So, if you can just say, \"We're going to email you this thing.\" that is very compelling to people and a very attractive thing to be offering. And you can also offer a trial of a full product. So this is the typical software um sale where you'll allow people to sign up for a free trial and they might have unlimited usage or they might have very limited usage. Um depends on what you're selling. There are benefits to each one. Um so this is the typical sort of approach there. Now, it you have to exercise caution with this, particularly if you're a software business, because one of the great challenges with selling software is that the user has to invest a lot of time to get the software up and running usually. Okay? So, if we're talking about a CRM for example, the user has to spend a lot of time getting their business set up inside the CRM. So if you offer a trial of a full product and someone looks in it and they're like, \"Oh, this is going to take us ages.\" You risk losing that person, not because your software is not right, but because the enormity of the task hits them. So it's worth thinking about how you can make the onboarding process of your software as painless as possible and ideally as fun as possible, so they actually feel kind of almost addicted and and it's it's like a game. and there's some kind of game element um or it's very very step by step so they feel a strong sense of completion as they're moving through the process. What you don't want to do is just give them a massive amount of homework straight away cuz particularly if the software is even slightly complicated requires any kind of um calibration of the user to understand what they're looking at the risk is that they just bulk. It's really interesting to see how different uh CRM companies using them as an example of something where there's quite a high barrier to entry. Really interesting to see how they each pitch. You'll have a company like Infusionoft that will charge a setup fee. So they'll charge a large amount of money before the sale and then they'll charge you a monthly fee as well. So why are they doing this? Well, they're charging you that fee not because it cost them a load of money to on board you, but because you've then invested and you're more committed to going through the process of getting the thing set up. Whereas other companies like Zoho will offer you a free trial where you can get in and you can play around with everything. Now, on the surface, you'd say, \"Hey Zoho, that's a much better approach.\" But hey, we use Infusionoft and we've tried Zoho and we got completely put off by the um the free trial. So, you know, it's all about understanding your audience and testing each option and seeing which works best for you. The the goal here is really that your sales process is a slippery slide. Okay. Um so, when they first become a lead, some of the questions to ask are things like what are they most scared of? Right. So, if it's a claims company, for example, and they've filled in their information, but you know that they're most scared of being pitched immediately. Well, you might start your the thing that you give them, whether that's a call or an email plan or whatever. You might start with this is not a pitch. We're going to show you some details about your claim. And if you'd like to work with us, you can click the button at the bottom. So immediately we've diffused that fear. Okay? Because just because they've requested something from you, just because they've become a lead doesn't mean they're not scared still. They're really scared. They're really, really scared. Not like existentially, but they're really scared that you're going to pitch them or that they're going to make the wrong decision. So, what are they most scared of? And then how can you immediately do the opposite of that thing? If they're worried about being spammed, well, send them an email that says, \"Hey, we don't want to spam you. Click the link to choose which frequency of emails you'd "
+    },
+    "already_extracted_claims": [],
+    "instruction": "Extract remaining distinct task-sized units. Do not repeat already extracted claims."
+  },
+  "system_prompt_sha256": "f23d9572f5bf1b93a5822a96b30f4ea85c0469c454d5ce80d227418df3d2e25e"
+}

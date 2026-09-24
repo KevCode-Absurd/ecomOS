@@ -1,0 +1,204 @@
+{
+  "status": "complete",
+  "mapping": {
+    "A": "cheap_without",
+    "B": "frontier_without",
+    "C": "frontier_with",
+    "D": "cheap_with"
+  },
+  "judge_model": "gpt-5.6-terra",
+  "output": {
+    "reviews": [
+      {
+        "label": "A",
+        "scores": {
+          "factual_accuracy": 2,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 3,
+          "prioritization": 4
+        },
+        "strengths": [
+          "Provides complete, deployable copy: headline, subhead, five bullets, CTA, three FAQs, section order, acceptance checks, and one primary measurement.",
+          "Correctly identifies mobile as the priority and explicitly moves laptop-fit and delivery information above reviews.",
+          "Correctly calculates storewide conversion, funnel changes, Daypack contribution, and likely inventory gap.",
+          "Uses the supplied support-ticket themes without fabricating customer quotes or endorsements.",
+          "Appropriately warns that storewide metrics are diagnostic rather than proof that the PDP caused the decline."
+        ],
+        "issues": [
+          "The water-resistance copy goes beyond the supplied facts: “handles light rain and splashes,” “use a rain cover in heavy rain,” and “dry bag, not included” are not verified product or included-accessory facts.",
+          "The proposed 1.5-percentage-point mobile ATC improvement target is arbitrary; no Daypack mobile PDP ATC baseline or sample-size basis is available.",
+          "The FAQ directs shoppers to compare dimensions with “published sleeve dimensions,” though the brief acknowledges those dimensions are missing. This should instead say that dimensions will be added once verified, or direct shoppers to support without implying publication.",
+          "The hypothesis bundles Meta CTR, mobile conversion, CTA clarity, delivery, fit, and waterproof questions more confidently than the evidence permits, though it is labeled a hypothesis."
+        ],
+        "critical_errors": [
+          "Unsupported performance/accessory guidance in water-resistance copy: claims about light-rain handling, splashes, rain-cover use, and a dry bag being excluded."
+        ],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Give actual copy and acceptance checks, not just advice.",
+            "met": true,
+            "reason": "Includes finished purchase copy, FAQs, ordered sections, and concrete QA checks."
+          },
+          {
+            "criterion": "13-inch sleeve, water-resistant not waterproof, delivery 4-7 business days; no invented claims/reviews.",
+            "met": false,
+            "reason": "Core facts are correct, but rain/splash performance and rain-cover/dry-bag guidance are unsupported."
+          },
+          {
+            "criterion": "Address mobile sizing/delivery visibility; avoid promising measured conversion uplift.",
+            "met": true,
+            "reason": "Places sizing and delivery near the hero and labels the measurement goal as non-causal."
+          }
+        ]
+      },
+      {
+        "label": "B",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 4,
+          "prioritization": 4
+        },
+        "strengths": [
+          "Fully completes the requested PDP brief with concise, ready-to-publish copy and strong product-specific developer checks.",
+          "Accurately states the 13-inch sleeve limitation and does not falsely resolve 15-inch compatibility.",
+          "Uses careful water-resistance and delivery language, including that the delivery range is an estimate rather than a guarantee.",
+          "Directly addresses the three evidenced customer questions and keeps fit and delivery in the mobile purchase area rather than below reviews.",
+          "Defines a valid primary metric at the SKU/PDP/device level and correctly says the available 8% ATC figure is storewide, not a Daypack baseline.",
+          "Appropriately distinguishes a randomized test from a directional before/after read and avoids a conversion-lift promise.",
+          "The stock-cover calculation and recommendation not to accelerate demand without owner review are accurate and feasible."
+        ],
+        "issues": [
+          "The suggested four designer hours, four developer hours, and two owner hours is an estimate rather than a verified implementation plan; it is sensibly labeled as such and is not a material flaw.",
+          "“Add verified product photos ... if available” is conditional and useful, but no such images are confirmed in the supplied facts."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Give actual copy and acceptance checks, not just advice.",
+            "met": true,
+            "reason": "Supplies completed headline, subhead, bullets, CTA, FAQs, section order, and detailed functional/accessibility/tracking checks."
+          },
+          {
+            "criterion": "13-inch sleeve, water-resistant not waterproof, delivery 4-7 business days; no invented claims/reviews.",
+            "met": true,
+            "reason": "All required facts and policy qualifications are preserved; it explicitly avoids unverified fit, waterproof, and testimonial claims."
+          },
+          {
+            "criterion": "Address mobile sizing/delivery visibility; avoid promising measured conversion uplift.",
+            "met": true,
+            "reason": "Requires fit, water-resistance, and delivery information before reviews on mobile and frames results as directional absent randomization."
+          }
+        ]
+      },
+      {
+        "label": "C",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 4,
+          "prioritization": 4
+        },
+        "strengths": [
+          "Delivers all requested artifacts in a clean implementation specification: copy, CTA behavior, FAQs, section order, acceptance checks, and a primary metric.",
+          "Correctly uses only supplied product and policy facts, including the 13-inch sleeve, free US shipping, 4-7-business-day estimate, and customer-paid return shipping.",
+          "Makes the 15-inch limitation explicit without inventing dimensions or confirming a fit.",
+          "Prioritizes the mobile purchase area and requires fit, delivery, and water-resistance qualifications outside accordions near the CTA.",
+          "Avoids fabricated reviews and correctly treats the 120 simulated themes as research rather than publishable proof.",
+          "Its measurement plan appropriately requires a DAY18-specific baseline and uncertainty before declaring an experiment winner.",
+          "Accurately calculates mobile share and the inventory/replenishment gap."
+        ],
+        "issues": [
+          "The headline focuses on commuting and drops the supplied short-weekend positioning, though the section copy and overall page still support a practical commuter use case.",
+          "The primary metric is purchase conversion rather than add-to-cart rate. That is a defensible business metric, but it will be slower and may be harder to power given unavailable SKU-level traffic data.",
+          "The line advising that the bag should not be relied upon in heavy rain or submersion is prudent qualification, but it remains more specific than the supplied evidence about water resistance."
+        ],
+        "critical_errors": [],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Give actual copy and acceptance checks, not just advice.",
+            "met": true,
+            "reason": "Contains finished page copy plus specific template, CTA, responsive, accessibility, policy, and schema checks."
+          },
+          {
+            "criterion": "13-inch sleeve, water-resistant not waterproof, delivery 4-7 business days; no invented claims/reviews.",
+            "met": true,
+            "reason": "Uses the required factual constraints and explicitly rejects simulated reviews as proof."
+          },
+          {
+            "criterion": "Address mobile sizing/delivery visibility; avoid promising measured conversion uplift.",
+            "met": true,
+            "reason": "Requires the key qualifications adjacent to the mobile purchase action and treats testing outcomes as uncertain."
+          }
+        ]
+      },
+      {
+        "label": "D",
+        "scores": {
+          "factual_accuracy": 1,
+          "brand_fit": 2,
+          "task_completion": 4,
+          "actionability": 3,
+          "uncertainty_and_questions": 2,
+          "prioritization": 3
+        },
+        "strengths": [
+          "Contains the requested deliverables, including ready-to-use copy, FAQs, a section sequence, acceptance checks, and a named primary metric.",
+          "Correctly calculates storewide funnel rates, mobile share, Daypack unit contribution, and the unreconciled relationship between Meta-reported value and Shopify revenue.",
+          "Correctly warns against using Meta and Klaviyo attributed revenue as the primary PDP measurement source.",
+          "Identifies the actual support-ticket themes and prioritizes mobile."
+        ],
+        "issues": [
+          "It converts an unverified fact into a definitive claim: the FAQ says a 15-inch laptop “does not fit” in the padded sleeve and may fit in the main compartment. The facts only say the sleeve is for 13-inch laptops and that 15-inch fit is unverified.",
+          "It claims the external pocket “fits the TrailFold steel bottle,” which is not supplied or verified.",
+          "It recommends displaying “120 reviews” and assumes that the simulated review count may be shown. The brand explicitly describes this as a simulated review count and says themes are not testimonials; it is not verified on-page review proof.",
+          "It specifies a lifestyle hero image despite none being confirmed and while resources are constrained. Unlike a conditional test proposal, this is presented as a required section component.",
+          "“Lightweight commuter backpack” is more assertive than the supplied product-level feature list; brand positioning supports lightweight bags broadly, but no DAY18 weight or lightweight specification is provided.",
+          "The delivery FAQ says 4-7 business days “after you order,” adding a timing interpretation not present in the stated policy.",
+          "The test sample-size statement is overly definite while acknowledging that SKU-specific PDP traffic is missing; feasibility cannot be determined from storewide sessions alone."
+        ],
+        "critical_errors": [
+          "False 15-inch-laptop compatibility assertion.",
+          "Unsupported claim that the external bottle pocket fits the TrailFold steel bottle.",
+          "Improper proposal to display the simulated 120-review count as PDP social proof."
+        ],
+        "questions_useful": true,
+        "criterion_results": [
+          {
+            "criterion": "Give actual copy and acceptance checks, not just advice.",
+            "met": true,
+            "reason": "Provides all requested page components and implementation checks."
+          },
+          {
+            "criterion": "13-inch sleeve, water-resistant not waterproof, delivery 4-7 business days; no invented claims/reviews.",
+            "met": false,
+            "reason": "Invents definitive 15-inch fit results, bottle compatibility, a review-count display, and additional delivery timing language."
+          },
+          {
+            "criterion": "Address mobile sizing/delivery visibility; avoid promising measured conversion uplift.",
+            "met": true,
+            "reason": "It prioritizes mobile and proposes a test rather than guaranteeing a measured uplift, despite unsupported content elsewhere."
+          }
+        ]
+      }
+    ],
+    "ranking": [
+      "B",
+      "C",
+      "A",
+      "D"
+    ],
+    "summary": "B is the strongest: it is complete, precise, mobile-specific, and maintains the evidence boundary throughout. C is nearly as strong, with a sound cautious implementation and measurement plan, though its headline is narrower and purchase conversion may be less immediately diagnosable than ATC. A is highly usable but needs revision to remove unsupported rain-performance and accessory guidance. D has a substantial amount of useful analysis and structure, but its false laptop-fit claim, invented bottle compatibility, and use of simulated reviews as publishable proof make it unsafe without major revision."
+  },
+  "request_id": "7eef10352d4a43560e0bca1ecea8770990d137c695fc1eddc3854d5e473fb462",
+  "cost_upper_estimate_usd": 0.08520125
+}

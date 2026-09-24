@@ -1,0 +1,697 @@
+{
+  "cards": [
+    {
+      "title": "Build a Four-Layer Google Ads Retail Stack",
+      "summary": "Architect ecommerce Google Ads as parallel Standard Shopping, PMax, Demand Gen and brand campaigns with explicit roles rather than one campaign type.",
+      "use_when": "Structuring or restructuring the whole Google Ads account for an ecommerce catalog: deciding which campaign types to run and what job each one does.",
+      "steps": [
+        "Layer 1 — Standard Shopping: cover top-revenue SKUs and high-intent categories with tROAS targets and product-group-level manual bid levers, so you keep query-level visibility on core products.",
+        "Layer 2 — Performance Max: run a campaign focused on new-customer acquisition with audience signals built from lookalike and in-market segments, taking multi-surface discovery workloads off Shopping.",
+        "Layer 3 — Demand Gen: use as the feed-powered mid-funnel layer (YouTube, Shorts, Discover, Gmail, Maps, Display) to create demand before the user searches; layer it in only after core conversions are stable.",
+        "Layer 4 — Brand controls: run dedicated branded Search and Shopping campaigns, and exclude brand from PMax and new-customer campaigns so brand efficiency is reported separately.",
+        "Assign budget bands source suggests for ecommerce: PMax ~50-70% for catalog/multi-surface acquisition, Standard Shopping ~30-50% for brand and high-intent categories, Demand Gen ~10-20% for upper funnel; treat as a starting heuristic, not a benchmark.",
+        "Since late 2024 Google uses ad rank rather than automatic PMax prioritisation, so the highest-ad-rank campaign wins the auction regardless of type — role separation is what prevents PMax from absorbing your best Shopping traffic."
+      ],
+      "caveats": [
+        "Budget split percentages are the source's suggested structure, not measured results; adjust to catalog size and margin.",
+        "Hybrid stacks need enough conversion volume per campaign to learn; small accounts should master high-intent campaigns before adding Demand Gen."
+      ],
+      "tags": [
+        "google-ads",
+        "campaign-architecture",
+        "performance-max",
+        "standard-shopping",
+        "demand-gen",
+        "budget-allocation"
+      ],
+      "id": "07a456f35774c1b3e98a32d7",
+      "source_id": "1qHnlFZvZKsgM8ijL6P-HZpVPMRO4nrc0",
+      "source_sha256": "cf25f243e6cb523f339aa62b4f6837971558e3570404c5490db623a5340612b6",
+      "source_name": "# Google Ads for Ecommerce_ The Complete Architecture & Operations Manual (2026 Edition).docx",
+      "folder": "/12-GAD-google-ads",
+      "domain": "google-ads",
+      "section": 0
+    },
+    {
+      "title": "Standard Shopping for SKU-Level Bid Control",
+      "summary": "Use Standard Shopping when you need product-group bid control, clear per-product query data and read-clean conversions that PMax blurs.",
+      "use_when": "Deciding which products belong in Standard Shopping versus PMax, or when PMax reporting is too blended to tell what is actually working.",
+      "steps": [
+        "Route hero SKUs here when you need to defend top impression share on your most important products.",
+        "Set aggressive product-group bids on high-margin products where the unit economics can absorb higher CPCs.",
+        "Use Standard Shopping for clearance inventory you must move quickly, accepting a lower ROAS target on those product groups.",
+        "Test new arrivals here first: Standard Shopping gives per-product query and conversion data you can read before deciding what to scale into PMax.",
+        "Keep in mind both campaign types bid against the same feed; when running in parallel, duplicate the feed and give Shopping the branded/high-intent version and PMax the discovery version.",
+        "Where attribution clarity matters across multiple sales channels, prefer reading Standard Shopping conversions over PMax's blended number that mixes Shopping, Display, YouTube and Search."
+      ],
+      "caveats": [
+        "Standard Shopping only serves the Shopping surface — it does not reach YouTube, Display, Gmail or Discover.",
+        "Running Shopping and PMax on the same feed without role separation causes direct cannibalisation."
+      ],
+      "tags": [
+        "google-ads",
+        "standard-shopping",
+        "product-group-bidding",
+        "sku-management",
+        "measurement",
+        "campaign-architecture"
+      ],
+      "id": "f2e339bd5505c24c503bf11d",
+      "source_id": "1qHnlFZvZKsgM8ijL6P-HZpVPMRO4nrc0",
+      "source_sha256": "cf25f243e6cb523f339aa62b4f6837971558e3570404c5490db623a5340612b6",
+      "source_name": "# Google Ads for Ecommerce_ The Complete Architecture & Operations Manual (2026 Edition).docx",
+      "folder": "/12-GAD-google-ads",
+      "domain": "google-ads",
+      "section": 0
+    },
+    {
+      "title": "Choose Feed-Only vs Full-Asset PMax for Retail",
+      "summary": "Decide PMax asset strategy by creative quality and network-control needs, since feed-only PMax uses the product feed as the only signal.",
+      "use_when": "Configuring a new Performance Max campaign or diagnosing one that spends too much on YouTube, Display or Gmail and misses ROAS goals.",
+      "steps": [
+        "Build feed-only PMax by adding zero manual creative assets — no headlines, descriptions, lifestyle images or videos — so the feed becomes the only viable signal the algorithm can use.",
+        "Explicitly disable Google's auto-generation features; otherwise the system will scrape your site and fabricate assets, defeating the feed-only intent.",
+        "Choose feed-only when: your objective is to concentrate budget on high-intent Shopping placements; you lack strong video/lifestyle assets; you need strict isolation between Shopping spend and YouTube/Display spend; or an existing PMax is overspending on low-value networks.",
+        "Before going feed-only, verify prerequisites: a fully optimised Merchant Center linked to Google Ads, verified active purchase conversion tracking, at least 15 products for learning data, and high feed quality (optimised titles, competitive pricing, complete attributes).",
+        "Move to full-asset PMax only when you have genuinely strong lifestyle photography, UGC or brand video — the asset decision should follow creative quality, not default settings.",
+        "Expect budget drift into YouTube, Display and Gmail in accounts without conversion volume even when no assets are uploaded, so keep URL expansion and placement controls tight."
+      ],
+      "caveats": [
+        "Feed-only PMax is unforgiving: any feed error becomes a targeting and ad failure because there is no creative fallback."
+      ],
+      "tags": [
+        "google-ads",
+        "performance-max",
+        "feed-only",
+        "asset-strategy",
+        "campaign-architecture",
+        "product-feed"
+      ],
+      "id": "5269931b0500dbaddc7df24a",
+      "source_id": "1qHnlFZvZKsgM8ijL6P-HZpVPMRO4nrc0",
+      "source_sha256": "cf25f243e6cb523f339aa62b4f6837971558e3570404c5490db623a5340612b6",
+      "source_name": "# Google Ads for Ecommerce_ The Complete Architecture & Operations Manual (2026 Edition).docx",
+      "folder": "/12-GAD-google-ads",
+      "domain": "google-ads",
+      "section": 0
+    },
+    {
+      "title": "Structure PMax Asset Groups by Theme for Retail",
+      "summary": "Segment PMax asset groups by product category or performance tier instead of one generic group, and refresh creative on a cadence.",
+      "use_when": "Building PMax asset groups for a product catalog, or when a single generic asset group is producing weak or inconsistent results.",
+      "steps": [
+        "Apply the rule of one theme per asset group — never dump the whole catalog into one generic group.",
+        "Segment by product category (e.g. ‘Men's Shoes’, ‘Skincare’) or by performance tier (best sellers, mid-tier, low-margin, new arrivals) so spend and creative can be reasoned about per segment.",
+        "Use two to five well-fed asset groups per campaign as the practical range for most small-to-mid ecommerce accounts; campaigns allow up to 100 groups but assets cannot be shared between campaigns.",
+        "Populate each group per Google's creative guidance: at least 15 high-quality image assets and 5 video variations, refreshed every 4-6 weeks.",
+        "Remember quality signals in PMax are aggregated across the whole asset group, so a single weak product or asset can drag down the group's performance."
+      ],
+      "caveats": [
+        "The 15-image/5-video guidance and 4-6 week refresh cadence come from Google's creative playbook as cited by the source and may change; validate in the current interface."
+      ],
+      "tags": [
+        "google-ads",
+        "performance-max",
+        "asset-groups",
+        "creative-strategy",
+        "catalog-segmentation",
+        "merchandising"
+      ],
+      "id": "a8f7e2302cd36cb63860b74e",
+      "source_id": "1qHnlFZvZKsgM8ijL6P-HZpVPMRO4nrc0",
+      "source_sha256": "cf25f243e6cb523f339aa62b4f6837971558e3570404c5490db623a5340612b6",
+      "source_name": "# Google Ads for Ecommerce_ The Complete Architecture & Operations Manual (2026 Edition).docx",
+      "folder": "/12-GAD-google-ads",
+      "domain": "google-ads",
+      "section": 0
+    },
+    {
+      "title": "Use Demand Gen for Feed-Powered Mid-Funnel Retail",
+      "summary": "Deploy Demand Gen with product feed integration when you need placement-level creative control and upper-funnel demand creation that PMax automates away.",
+      "use_when": "Planning mid-funnel or upper-funnel YouTube/Discover coverage for an ecommerce catalog, or when you need distinct creative per placement rather than AI-combined assets.",
+      "steps": [
+        "Enable product feed integration so Demand Gen ads act as a virtual storefront, letting viewers shop the catalog on YouTube across supported formats and verticals.",
+        "Exploit the control advantage: upload, preview and edit specific ad combinations before launch, and tailor separate YouTube ads for in-feed, in-stream and Shorts — something PMax does not permit because it auto-builds ads from uploaded assets.",
+        "Position Demand Gen as the awareness and interest layer that engages users before they search; let PMax capture those users later with Shopping and Search placements once purchase intent appears.",
+        "For a fitness catalogue example, reach prospects with lifestyle video showcasing new activewear, then let PMax serve tailored Shopping/Search once intent signals fire.",
+        "Choose Demand Gen when creative precision, message testing and visual identity matter; choose PMax when automated asset combination and reach matter more.",
+        "For smaller accounts, master high-intent campaigns first and layer Demand Gen in only once core conversions are stable.",
+        "Note YouTube Video Action line items were paused/archived from 28 February 2026 — migrate ecommerce video to Demand Gen line items and verify current options in the interface."
+      ],
+      "caveats": [
+        "Demand Gen is upper/mid-funnel, so judge it on assisted demand and downstream PMax performance, not on direct last-click ROAS alone."
+      ],
+      "tags": [
+        "google-ads",
+        "demand-gen",
+        "youtube",
+        "product-feed",
+        "mid-funnel",
+        "creative-strategy"
+      ],
+      "id": "64749b0f187a57512a64e9f5",
+      "source_id": "1qHnlFZvZKsgM8ijL6P-HZpVPMRO4nrc0",
+      "source_sha256": "cf25f243e6cb523f339aa62b4f6837971558e3570404c5490db623a5340612b6",
+      "source_name": "# Google Ads for Ecommerce_ The Complete Architecture & Operations Manual (2026 Edition).docx",
+      "folder": "/12-GAD-google-ads",
+      "domain": "google-ads",
+      "section": 0
+    },
+    {
+      "title": "Match YouTube Ad Formats to Ecommerce Jobs",
+      "summary": "Pick YouTube formats by the ecommerce task each performs, from 6-second bumpers to feed placements for catalog browsing.",
+      "use_when": "Selecting video ad formats and lengths for a Demand Gen or PMax campaign in an ecommerce account.",
+      "steps": [
+        "Skippable In-Stream (no length limit, ≤3 min recommended) — product demos, unboxing and testimonials where viewers can choose to keep watching.",
+        "In-Feed (YouTube Home, Search, Watch Next; no length limit) — discovery-stage browsing and catalog browsing.",
+        "Non-Skippable In-Stream (15-60 sec, varies) — full product story or promotional offers where you need the whole message seen.",
+        "Bumper (6 sec, 5 sec min) — brand recall and sale announcements.",
+        "YouTube Shorts (≤60 sec recommended) — UGC-style content and quick product reveals.",
+        "YouTube Masthead (YouTube homepage, ≥10 sec recommended) — seasonal launches and major sales events.",
+        "For ecommerce specifically, prioritise in-stream for product demos and Shorts for UGC-style content as the highest-leverage placements within Demand Gen.",
+        "Note YouTube is now a surface inside Demand Gen and PMax rather than a standalone ecommerce destination, so format choice happens inside those campaign types."
+      ],
+      "caveats": [
+        "Length caps vary by format and change over time; verify current specs in Google Ads before producing assets."
+      ],
+      "tags": [
+        "google-ads",
+        "youtube",
+        "demand-gen",
+        "video-formats",
+        "creative-strategy",
+        "awareness"
+      ],
+      "id": "70ca3006a799213216f72200",
+      "source_id": "1qHnlFZvZKsgM8ijL6P-HZpVPMRO4nrc0",
+      "source_sha256": "cf25f243e6cb523f339aa62b4f6837971558e3570404c5490db623a5340612b6",
+      "source_name": "# Google Ads for Ecommerce_ The Complete Architecture & Operations Manual (2026 Edition).docx",
+      "folder": "/12-GAD-google-ads",
+      "domain": "google-ads",
+      "section": 0
+    },
+    {
+      "title": "Stop PMax Brand Cannibalisation in Retail Accounts",
+      "summary": "Apply three parallel controls so PMax cannot absorb branded demand and inflate reported ROAS.",
+      "use_when": "Diagnosing suspiciously strong PMax ROAS, or setting up a new ecommerce account where branded search must stay separately measured.",
+      "steps": [
+        "Add branded negative keywords and brand exclusions to PMax campaigns so PMax cannot bid on branded queries; for PMax, brand exclusions apply to Search, Shopping and YouTube search inventory, with an option to still allow Shopping ads on excluded-brand searches.",
+        "Add negative keywords to new-customer-acquisition Search and Shopping campaigns to stop them absorbing branded demand.",
+        "Create dedicated branded Search and Shopping campaigns whose only job is collecting branded traffic, using exact match and excluding non-branded terms.",
+        "Define roles explicitly: Shopping handles brand and high-intent categories with precision and cost control; PMax handles scale and new-demand discovery.",
+        "Watch for the distortion pattern: in many ecommerce accounts, brand terms take roughly 11% of search spend but carry about 34% of conversions, which flatters account ROAS and hides weak non-brand prospecting performance.",
+        "Separate reporting so you can judge whether non-brand is genuinely profitable rather than subsidised by brand efficiency — an outdoor gear retailer cited in the source shifted 30% of its brand-heavy budget to non-brand search and saw a 22% lift in new customer acquisition (a case example, not a promise)."
+      ],
+      "caveats": [
+        "The 11%/34% split and the outdoor-gear result are source-cited examples from specific accounts, not universal figures."
+      ],
+      "tags": [
+        "google-ads",
+        "performance-max",
+        "brand-exclusions",
+        "cannibalisation",
+        "measurement",
+        "campaign-architecture"
+      ],
+      "id": "a2f5b3c20d44bc2441905315",
+      "source_id": "1qHnlFZvZKsgM8ijL6P-HZpVPMRO4nrc0",
+      "source_sha256": "cf25f243e6cb523f339aa62b4f6837971558e3570404c5490db623a5340612b6",
+      "source_name": "# Google Ads for Ecommerce_ The Complete Architecture & Operations Manual (2026 Edition).docx",
+      "folder": "/12-GAD-google-ads",
+      "domain": "google-ads",
+      "section": 0
+    },
+    {
+      "title": "Read the Shopping and PMax Auction Correctly",
+      "summary": "In Shopping and PMax there are no keywords — quality signals come from feed data, so product titles and attributes drive Ad Rank.",
+      "use_when": "Explaining why a product wins or loses Shopping auctions, or deciding where to invest to improve visibility and CPC.",
+      "steps": [
+        "Recognise that Google scans your feed (titles, descriptions, attributes, pricing, availability) and decides which queries each product matches — the feed is the advertising, not just a data source.",
+        "Treat the product title as your most important line of ad copy, because that is what Google reads to determine what you sell and who sees it.",
+        "Understand Ad Rank = Max CPC Bid × Quality Score × Expected Impact of Extensions/Formats + Contextual Adjustments; the simplified form is Bid × Quality Score.",
+        "Improve the Shopping quality inputs: title relevance to query, image quality and price competitiveness (expected CTR); closeness of title/description/attributes to the query (ad relevance); and product page load speed, mobile responsiveness and content relevance (landing page experience).",
+        "For PMax, remember quality signals aggregate across the whole asset group, so one weak product drags the group — feed quality is the single biggest Ad Rank lever.",
+        "Work the CPC formula: Actual CPC = (Ad Rank of advertiser below you ÷ Your Quality Score) + $0.01. Because Ad Rank appears in both numerator and denominator, a higher Quality Score lowers your actual CPC for the same position.",
+        "Practical ecommerce consequence: accurate titles and complete attributes can cut CPC on the same products without changing bids."
+      ],
+      "caveats": [
+        "Source-cited 2026 averages (Search CPC ~$1.42, Shopping ~$0.68, PMax ~$0.82; blended ROAS 4.2×; Shopping ROAS 5.1×, Search 3.4×, PMax 4.8×) are benchmark aggregates that vary by vertical and margin — not targets.",
+        "Google Shopping CPCs were cited as up 22% year over year, making feed efficiency more important but also making old CPC assumptions unreliable."
+      ],
+      "tags": [
+        "google-ads",
+        "auction-mechanics",
+        "ad-rank",
+        "quality-score",
+        "product-feed",
+        "cpc"
+      ],
+      "id": "c7807eeedee7005d4d904acd",
+      "source_id": "1qHnlFZvZKsgM8ijL6P-HZpVPMRO4nrc0",
+      "source_sha256": "cf25f243e6cb523f339aa62b4f6837971558e3570404c5490db623a5340612b6",
+      "source_name": "# Google Ads for Ecommerce_ The Complete Architecture & Operations Manual (2026 Edition).docx",
+      "folder": "/12-GAD-google-ads",
+      "domain": "google-ads",
+      "section": 0
+    },
+    {
+      "title": "Rewrite Product Titles with Attribute Front-Loading",
+      "summary": "Front-load the attributes buyers search for in the first ~70 characters of product titles instead of leading with the brand and product name.",
+      "use_when": "Optimising product titles in Google Merchant Center for Shopping, PMax or Demand Gen visibility on a retail catalog.",
+      "steps": [
+        "Use the source's 2026 default structure: Product Type → Material → Colour → Fit/Size → Key Feature → Brand (last).",
+        "Replace the manufacturer pattern (Brand + Product Name), which buries matching attributes past the point where Google weights them. Example: ‘Aurora Lamp’ tells Google almost nothing; ‘Brass Bedside Table Lamp, Dimmable, Touch Control – Aurora’ conveys product type, material, key feature and brand.",
+        "Keep the attributes buyers type inside the first ~70 characters, since Google's matching weights that section most heavily; the first 25-30 characters matter most and optimised titles run around 120 characters.",
+        "Keep total title length between 60 and 150 characters as the working range.",
+        "Use vertical-specific alternatives where they fit: Fashion/Apparel — Brand + Product Type + Key Feature + Model + Colour/Size; Electronics — Brand + Model Number + Product Type + Colour; Seasonal — Brand + Attributes (size, description) + Type.",
+        "Apply the same attribute order across the entire catalog so the algorithm can learn reliable patterns.",
+        "Avoid keyword stuffing — unnatural attribute density is penalised. Over 80% of ecommerce brands audited in 2026 used raw Shopify manufacturer titles, missing this lever."
+      ],
+      "caveats": [
+        "The 60-150 character range and 25-30/70-character weightings are source guidance; test titles in your own auction data before rolling out catalog-wide."
+      ],
+      "tags": [
+        "google-ads",
+        "product-feed",
+        "title-optimization",
+        "merchant-center",
+        "catalog-management",
+        "seo"
+      ],
+      "id": "9983e71e8efcc3b2baedbdaf",
+      "source_id": "1qHnlFZvZKsgM8ijL6P-HZpVPMRO4nrc0",
+      "source_sha256": "cf25f243e6cb523f339aa62b4f6837971558e3570404c5490db623a5340612b6",
+      "source_name": "# Google Ads for Ecommerce_ The Complete Architecture & Operations Manual (2026 Edition).docx",
+      "folder": "/12-GAD-google-ads",
+      "domain": "google-ads",
+      "section": 0
+    },
+    {
+      "title": "Use Supplemental Feeds and Feed Duplication by Campaign Role",
+      "summary": "Override feed fields without touching the website, and duplicate the feed so Standard Shopping and PMax each get a role-matched version.",
+      "use_when": "Testing title variants, applying promotional labels, or running Shopping and PMax in parallel on the same catalog.",
+      "steps": [
+        "Create a supplemental feed in the Merchant Center UI and link it to a primary feed; use it to override titles, product types and custom labels without editing your website or primary feed.",
+        "Use supplemental feeds to test title variants, apply promotional labels, and isolate product sets for different campaign roles; tools like Channable can sync optimised titles to Merchant Center this way.",
+        "Note Content API v2.1 allows partial product data updates via supplemental feeds, modifying specific fields without affecting other data, and supplemental feed updates do not reset product expiration dates.",
+        "For parallel Shopping + PMax, duplicate the feed with distinct rules: the Shopping version optimised for branded and high-intent category terms, the PMax version optimised for discovery and scaling.",
+        "Accept that duplicate feeds let both campaigns surface products in eligible auctions more often without sacrificing efficiency; a documented case study showed Shopping coverage rising from 49% to 57% in one month after feed duplication with strict role separation (a case example, not a guarantee).",
+        "Build custom-label architecture as the bridge between feed data and campaign structure — especially separating high-ticket SKUs from low-margin products so bids can differ by segment."
+      ],
+      "caveats": [
+        "Supplemental feeds can only be created in the Merchant Center UI, not via the API, and must be linked to a primary feed."
+      ],
+      "tags": [
+        "google-ads",
+        "merchant-center",
+        "supplemental-feeds",
+        "feed-duplication",
+        "custom-labels",
+        "catalog-segmentation"
+      ],
+      "id": "59d9f9d20e0cddb6d51bba25",
+      "source_id": "1qHnlFZvZKsgM8ijL6P-HZpVPMRO4nrc0",
+      "source_sha256": "cf25f243e6cb523f339aa62b4f6837971558e3570404c5490db623a5340612b6",
+      "source_name": "# Google Ads for Ecommerce_ The Complete Architecture & Operations Manual (2026 Edition).docx",
+      "folder": "/12-GAD-google-ads",
+      "domain": "google-ads",
+      "section": 0
+    },
+    {
+      "title": "Run a Feed Health Diagnostic and Disapproval Triage",
+      "summary": "Work Merchant Center Diagnostics by severity, fix high-revenue problems first, and pre-validate to stop errors reaching Google.",
+      "use_when": "Weekly or monthly catalog hygiene for an ecommerce store running Shopping, PMax or free listings, or after a sudden drop in eligible products.",
+      "steps": [
+        "Go to Google Merchant Center → Products → Diagnostics and filter by ‘Disapproved’ first — disapproved products are ineligible for all Shopping ads and free listings, so each one is immediate lost revenue.",
+        "Then filter ‘Warnings’ and ‘Limited performance’ — these are approved but underperforming and represent optimisation opportunities rather than blockers.",
+        "Know the five most common ecommerce disapproval causes: missing or incorrect GTINs; price mismatch between feed and landing page; missing shipping information; policy violations (restricted products, misrepresentation); and incorrect feed formatting or missing required attributes.",
+        "Treat price mismatch as a top offender: if the feed says $49.99, the landing page must also show $49.99.",
+        "Use the ‘Fix type’ filter to isolate auto-fixable items (formatting errors, missing optional attributes), select all, and run Autofix; handle policy violations, price mismatches and missing required attributes manually.",
+        "Prevent rather than repair: pre-validate the whole catalog against current Google specs with tools like SmartFeed or Feedonomics before Google sees it.",
+        "For dynamic pricing, update the feed at least every 6 hours and enable automatic item updates in Merchant Center so Google can use crawled prices when feed prices lag.",
+        "Note Google's 2026 product data specification update tightened image and availability requirements, pushing more borderline listings into the ignored column."
+      ],
+      "caveats": [
+        "Diagnostics labels, Autofix scope and the 2026 spec requirements change — verify the current Merchant Center interface and Help Center before large-scale fixes."
+      ],
+      "tags": [
+        "google-ads",
+        "merchant-center",
+        "feed-health",
+        "disapprovals",
+        "product-feed",
+        "operations"
+      ],
+      "id": "82e55ef4dd2556636f71b00f",
+      "source_id": "1qHnlFZvZKsgM8ijL6P-HZpVPMRO4nrc0",
+      "source_sha256": "cf25f243e6cb523f339aa62b4f6837971558e3570404c5490db623a5340612b6",
+      "source_name": "# Google Ads for Ecommerce_ The Complete Architecture & Operations Manual (2026 Edition).docx",
+      "folder": "/12-GAD-google-ads",
+      "domain": "google-ads",
+      "section": 0
+    },
+    {
+      "title": "Build Ecommerce Conversion Tracking via GTM",
+      "summary": "Layer Conversion Linker, GA4 purchase event and Google Ads conversion tags, and pass product-level dynamic remarketing parameters.",
+      "use_when": "Setting up or auditing conversion tracking for a Shopify or WooCommerce store before scaling Google Ads spend.",
+      "steps": [
+        "Add the Conversion Linker tag and fire it on All Pages in most cases; this enables Google Ads to send data to Tag Manager.",
+        "Add a GA4 Event tag defining the key event — for ecommerce, the `purchase` event triggered on the order confirmation/thank-you page.",
+        "Add the Google Ads Conversion Tracking tag, firing on the purchase event and using the Conversion ID and label from the Google Ads account; trigger it from a purchase dataLayer event pushed from Shopify's checkout/thank_you page or via Customer Events.",
+        "Pass dynamic remarketing parameters — product ID, product category and conversion value — so remarketing audiences carry product-level signals and Smart Bidding optimises toward the right values.",
+        "Move to server-side GTM when spend exceeds roughly $50K/month per the source: host a server container on Google Cloud, Stape or similar, configure a GA4 client to receive incoming events, and forward conversions to Google Ads from the server.",
+        "Expect three server-side benefits: less page code and faster load, more durable tracking under browser restrictions, and richer data because server-side values can be enriched with CRM and backend signals."
+      ],
+      "caveats": [
+        "The $50K/month threshold is the source's rule of thumb, not a universal trigger; weigh it against technical cost and team capability."
+      ],
+      "tags": [
+        "google-ads",
+        "conversion-tracking",
+        "gtm",
+        "server-side-tracking",
+        "shopify",
+        "measurement"
+      ],
+      "id": "535e56dd51f1a507293196d6",
+      "source_id": "1qHnlFZvZKsgM8ijL6P-HZpVPMRO4nrc0",
+      "source_sha256": "cf25f243e6cb523f339aa62b4f6837971558e3570404c5490db623a5340612b6",
+      "source_name": "# Google Ads for Ecommerce_ The Complete Architecture & Operations Manual (2026 Edition).docx",
+      "folder": "/12-GAD-google-ads",
+      "domain": "google-ads",
+      "section": 0
+    },
+    {
+      "title": "Turn On Enhanced Conversions to Feed Smart Bidding",
+      "summary": "Send hashed first-party customer data with conversion tags to improve match rates and give Smart Bidding enough signal to learn.",
+      "use_when": "Ecommerce accounts with low purchase volume relative to lead-gen accounts, or any store where Smart Bidding appears starved of conversion signal.",
+      "steps": [
+        "Understand the mechanic: enhanced conversions supplement standard tags by sending hashed email, phone and name data from your site; Google compares it to hashed data from signed-in accounts and attributes ad events. Data is hashed before transmission — Google never receives raw PII.",
+        "In GTM, open the Google Ads Conversion tag and enable ‘Include user-provided data’.",
+        "Map dataLayer variables for email, phone and address fields collected during checkout so the tag can include them in the conversion ping.",
+        "For Shopify and WooCommerce, use the native Google channel or a custom GTM-based setup to forward purchase events with hashed data.",
+        "Expect the payoff to be better match rates — more usable conversion data, which matters most for ecommerce where purchase volume is low and the algorithm can otherwise be starved of signal.",
+        "Track the 2026 interface changes: from April 2026 Google Ads accepts user-provided data from website tags, Data Manager and API connections simultaneously; from June 2026 enhanced conversions for web and for leads merge into a single on/off setting and method selection disappears from the interface."
+      ],
+      "caveats": [
+        "Setup labels and settings changed in 2026 — verify the live GTM and Google Ads interfaces rather than following old step lists."
+      ],
+      "tags": [
+        "google-ads",
+        "enhanced-conversions",
+        "gtm",
+        "first-party-data",
+        "smart-bidding",
+        "measurement"
+      ],
+      "id": "80d2cbcc7a96651c435e52d9",
+      "source_id": "1qHnlFZvZKsgM8ijL6P-HZpVPMRO4nrc0",
+      "source_sha256": "cf25f243e6cb523f339aa62b4f6837971558e3570404c5490db623a5340612b6",
+      "source_name": "# Google Ads for Ecommerce_ The Complete Architecture & Operations Manual (2026 Edition).docx",
+      "folder": "/12-GAD-google-ads",
+      "domain": "google-ads",
+      "section": 0
+    },
+    {
+      "title": "Pass Real Order Revenue to Target ROAS Bidding",
+      "summary": "Send actual order values including discounts and shipping server-side, because tROAS can only hit your target if conversion values are accurate.",
+      "use_when": "Configuring conversion values for an ecommerce store running Target ROAS or Maximize Conversion Value bidding.",
+      "steps": [
+        "Use server-side tracking to pass the actual revenue of each order — including discounts and shipping — rather than a fixed value for every purchase.",
+        "Recognise the consequence of getting this wrong: reporting a fixed value actively degrades the algorithm's ability to optimise, because the bidder has no way to distinguish a $200 order from a $20 order.",
+        "Align with the value-based bidding principle behind Target ROAS: it is appropriate precisely when conversion values vary significantly, which is normal in ecommerce.",
+        "Consider passing margin-adjusted values where the business can calculate them, so the bidder optimises toward profit rather than raw revenue.",
+        "Before scaling, verify conversion values reflect real order revenue as one of the scaling gates — inaccurate conversion data teaches the algorithm to optimise for the wrong outcome."
+      ],
+      "caveats": [
+        "The source frames margin-adjusted values as ideal but does not prescribe a calculation; align the method with your finance data before changing live values."
+      ],
+      "tags": [
+        "google-ads",
+        "target-roas",
+        "conversion-value",
+        "server-side-tracking",
+        "bidding",
+        "measurement"
+      ],
+      "id": "24d517dd8fe00cdbca77f9c9",
+      "source_id": "1qHnlFZvZKsgM8ijL6P-HZpVPMRO4nrc0",
+      "source_sha256": "cf25f243e6cb523f339aa62b4f6837971558e3570404c5490db623a5340612b6",
+      "source_name": "# Google Ads for Ecommerce_ The Complete Architecture & Operations Manual (2026 Edition).docx",
+      "folder": "/12-GAD-google-ads",
+      "domain": "google-ads",
+      "section": 0
+    },
+    {
+      "title": "Tier Ecommerce Keyword Research by Buyer Intent",
+      "summary": "Organise search campaigns into four intent tiers — transactional, comparison, problem-aware and competitor — each with its own bid and landing page logic.",
+      "use_when": "Building or restructuring Search campaigns for an ecommerce store, or deciding which queries deserve their own ad groups and budgets.",
+      "steps": [
+        "Tier 1 — Transactional: queries like ‘[product type] buy’, ‘[product type] online’, ‘[product type] for [use case]’. Bid highest and send traffic to the exact product page, not the category page; this is the profit centre of the account.",
+        "Tier 2 — Comparison: ‘[brand] vs [brand]’, ‘[product type] review’, ‘[product type] alternatives’. Pair with comparison-focused ad copy and landing pages, and keep them in separate ad groups or campaigns so they can be measured and bid independently.",
+        "Tier 3 — Problem-Aware: broad need or pain-point terms. Expect lower conversion rates and the highest risk of irrelevant traffic — apply the tightest negative keyword coverage and lowest starting bids, and route to content or category pages rather than product pages.",
+        "Tier 4 — Competitor: rival product names. Isolate with their own budget cap and judge them on conversion-to-pipeline rate rather than blending them into account performance; they usually show lower CTR and higher CPC than brand campaigns.",
+        "Mine PMax Search Terms for high-quality, high-converting queries Google found for you, and build dedicated Search campaigns targeting those terms for tighter control.",
+        "Build long-tail clusters intentionally instead of chasing head terms: lower CPC, less auction pressure, cleaner conversion signal — it compounds horizontally across products, markets and variations rather than exploding vertically."
+      ],
+      "caveats": [
+        "Intent tiers are the source's organising heuristic; conversion rates and CPC expectations vary by vertical and should be validated against your own account data."
+      ],
+      "tags": [
+        "google-ads",
+        "keyword-research",
+        "search-campaigns",
+        "intent-tiering",
+        "long-tail",
+        "campaign-architecture"
+      ],
+      "id": "4c09826249af620776a63fd8",
+      "source_id": "1qHnlFZvZKsgM8ijL6P-HZpVPMRO4nrc0",
+      "source_sha256": "cf25f243e6cb523f339aa62b4f6837971558e3570404c5490db623a5340612b6",
+      "source_name": "# Google Ads for Ecommerce_ The Complete Architecture & Operations Manual (2026 Edition).docx",
+      "folder": "/12-GAD-google-ads",
+      "domain": "google-ads",
+      "section": 0
+    },
+    {
+      "title": "Separate Brand and Non-Brand Budgets for Honest ROAS",
+      "summary": "Split brand and non-brand into separate campaigns, budgets and reporting so you can tell whether prospecting actually pays.",
+      "use_when": "Reviewing account-level ROAS for an ecommerce store, or planning how much budget to shift from brand defence into category and problem-aware prospecting.",
+      "steps": [
+        "Start from the principle: brand traffic captures demand, non-brand traffic creates it; mixing the two distorts data and makes scaling decisions expensive.",
+        "Build brand campaigns to protect your product name and close variants — they are typically cheap and convert well. Split into Brand Search (text ads) and Brand Shopping (product listings), use exact match, exclude non-branded terms, and keep budget uncapped relative to search volume because losing brand impression share to a competitor is highly avoidable lost revenue.",
+        "Put most budget and testing effort into non-brand campaigns targeting category and problem-aware terms where the prospect has not chosen a vendor yet.",
+        "Segment non-brand by awareness depth — problem-aware, solution-aware, product-aware, competitor-aware — because each cluster carries different ROAS expectations, bid aggression and creative angles.",
+        "Apply the three-part separation mechanic: brand exclusions and branded negatives in PMax; negatives in new-customer campaigns; dedicated branded campaigns collecting branded traffic.",
+        "Use the distortion check: where brand is ~11% of search spend but ~34% of conversions, account ROAS is flattered and non-brand performance is hidden. Separating the two reveals whether non-brand is profitable or merely subsidised (source case: an outdoor gear retailer shifted 30% of brand-heavy spend to non-brand and reported a 22% lift in new customer acquisition — an example, not a benchmark)."
+      ],
+      "caveats": [
+        "Keep the distinction clear: brand campaigns capture existing demand and should not be credited with new-customer growth; the 11%/34% split and the retailer result are account-specific examples."
+      ],
+      "tags": [
+        "google-ads",
+        "brand-vs-non-brand",
+        "budget-allocation",
+        "measurement",
+        "acquisition",
+        "campaign-architecture"
+      ],
+      "id": "bcbe494739360c324df0ca83",
+      "source_id": "1qHnlFZvZKsgM8ijL6P-HZpVPMRO4nrc0",
+      "source_sha256": "cf25f243e6cb523f339aa62b4f6837971558e3570404c5490db623a5340612b6",
+      "source_name": "# Google Ads for Ecommerce_ The Complete Architecture & Operations Manual (2026 Edition).docx",
+      "folder": "/12-GAD-google-ads",
+      "domain": "google-ads",
+      "section": 0
+    },
+    {
+      "title": "Scale with Surface-Area Catalog Logic",
+      "summary": "Give Shopping and PMax enough catalog breadth and feed segmentation to find profitable demand pockets, and structure campaigns around commercial reality.",
+      "use_when": "Planning growth for a Google Ads ecommerce account, especially when deciding whether catalog size or campaign structure is the bottleneck.",
+      "steps": [
+        "Assess surface area first: below roughly 30 SKUs you likely do not have enough breadth for the algorithm to find viable demand pockets at scale.",
+        "Once feeds are structured correctly, campaign structure becomes far more predictable — fix the feed before restructuring campaigns.",
+        "Segment PMax by product group and intent rather than running one campaign for everything, and match asset groups to specific product segments (e.g. kids vs adults, top categories).",
+        "Use custom labels in the feed — margin tier, bestseller status, seasonality — so campaign structure reflects the commercial reality of your catalog rather than the platform's default groupings.",
+        "Expect the payoff in coverage: duplicated, role-separated feeds let both campaigns surface products more frequently across eligible auctions (source case: Shopping coverage rose from 49% to 57% in one month).",
+        "Treat catalog expansion carefully — more SKUs adds surface area only if each product has a complete, well-titled feed entry; thin listings just add disapproval risk."
+      ],
+      "caveats": [
+        "The 30-SKU threshold is the source's heuristic, not a hard rule; a well-structured small catalog can still work while a poorly structured large one will not."
+      ],
+      "tags": [
+        "google-ads",
+        "catalog-scaling",
+        "surface-area",
+        "custom-labels",
+        "performance-max",
+        "product-feed"
+      ],
+      "id": "9a7b30ebd79d741e5bcd1da7",
+      "source_id": "1qHnlFZvZKsgM8ijL6P-HZpVPMRO4nrc0",
+      "source_sha256": "cf25f243e6cb523f339aa62b4f6837971558e3570404c5490db623a5340612b6",
+      "source_name": "# Google Ads for Ecommerce_ The Complete Architecture & Operations Manual (2026 Edition).docx",
+      "folder": "/12-GAD-google-ads",
+      "domain": "google-ads",
+      "section": 0
+    },
+    {
+      "title": "Set Target ROAS and Maximize Conversion Value Guardrails",
+      "summary": "Start tROAS below current performance, step up slowly, and use Maximize Conversion Value when you will accept lower marginal ROAS for volume.",
+      "use_when": "Choosing or tuning bid strategies for ecommerce Shopping and PMax campaigns, or revalidating legacy targets after the August 2026 behaviour change.",
+      "steps": [
+        "Use Target ROAS when conversion values vary significantly — the standard ecommerce case where a $200 order and a $20 order need different bid economics — and feed it accurate, ideally margin-adjusted values.",
+        "Start tROAS 10-15% below your current actual ROAS to give the algorithm room to learn and expand; a target set too high on a cold campaign starves delivery and blocks conversion learning.",
+        "Step the target up incrementally in 15-20% increments with two to three weeks between changes, monitoring impression share and conversion volume each time.",
+        "Use Maximize Conversion Value when the goal is maximum conversion value within a set budget with no fixed ROAS constraint — appropriate in growth phases where you accept lower marginal ROAS for extra volume. In Standard Shopping it is now available without a Target ROAS requirement, extending flexibility to controlled setups.",
+        "Re-audit targets against the August 17 2026 change: budget-limited campaigns using Target ROAS or Target CPA now work more consistently toward the stated target even when budgets are adjusted. A campaign with a 500% tROAS that previously delivered 800% may now deliver closer to 500% unless you change the target.",
+        "Set targets as commercial decisions reflecting margin, stock position, product mix and promotional activity — not by copying industry ROAS averages."
+      ],
+      "caveats": [
+        "The 10-15% starting discount and 15-20% step-up cadence are source heuristics; step sizes depend on conversion volume.",
+        "The August 2026 behaviour change means legacy loose targets may need revision — verify current behaviour in the live interface."
+      ],
+      "tags": [
+        "google-ads",
+        "target-roas",
+        "maximize-conversion-value",
+        "bidding",
+        "smart-bidding",
+        "budget-management"
+      ],
+      "id": "283cece14dca0bc7260e04f3",
+      "source_id": "1qHnlFZvZKsgM8ijL6P-HZpVPMRO4nrc0",
+      "source_sha256": "cf25f243e6cb523f339aa62b4f6837971558e3570404c5490db623a5340612b6",
+      "source_name": "# Google Ads for Ecommerce_ The Complete Architecture & Operations Manual (2026 Edition).docx",
+      "folder": "/12-GAD-google-ads",
+      "domain": "google-ads",
+      "section": 0
+    },
+    {
+      "title": "Use Portfolio Bid Strategies for Caps and Floors",
+      "summary": "Pool campaigns under one strategy to share learning and gain Max CPC caps and bid floors that standalone Smart Bidding does not offer.",
+      "use_when": "Running multiple ecommerce campaigns toward the same performance goal, or when Smart Bidding causes CPC spikes that threaten budget control.",
+      "steps": [
+        "Understand what portfolio bidding does: it groups campaigns, ad groups or keywords under one automated strategy, shares performance data across them to speed learning, and reallocates budget toward better-performing campaigns.",
+        "Use it when several campaigns share one goal (e.g. a 700% ROAS across all non-brand campaigns), when you want automatic budget reallocation on real-time signals, or when you need bid caps and floors.",
+        "Apply the Max CPC cap guardrail: an ecommerce advertiser on tROAS seeing CPC spikes to $25 on low-demand days switched to portfolio bidding with a Max CPC of $9, preventing budget blowouts while still letting Smart Bidding chase the ROAS goal.",
+        "Use bid floors to compete more aggressively where that is the goal; caps and floors are only available through portfolio bidding, even for a single campaign.",
+        "Do not use portfolio bidding when campaigns have fundamentally different goals (clearance inventory vs new arrivals), when you need manual control over individual campaign bids, or when campaigns are too low-volume to benefit from pooled machine learning."
+      ],
+      "caveats": [
+        "The $25 spike and $9 cap are one advertiser's example; set caps from your own margin and CPC distribution."
+      ],
+      "tags": [
+        "google-ads",
+        "portfolio-bidding",
+        "bid-caps",
+        "smart-bidding",
+        "budget-management",
+        "cpc"
+      ],
+      "id": "b664dd686d10ba3d448dae91",
+      "source_id": "1qHnlFZvZKsgM8ijL6P-HZpVPMRO4nrc0",
+      "source_sha256": "cf25f243e6cb523f339aa62b4f6837971558e3570404c5490db623a5340612b6",
+      "source_name": "# Google Ads for Ecommerce_ The Complete Architecture & Operations Manual (2026 Edition).docx",
+      "folder": "/12-GAD-google-ads",
+      "domain": "google-ads",
+      "section": 0
+    },
+    {
+      "title": "Pass Five Gates Before Scaling Ecommerce Spend",
+      "summary": "Sequence scaling behind feed health, tracking integrity, brand separation, creative velocity and bid-strategy maturity — fix inputs before chasing outputs.",
+      "use_when": "Deciding whether to increase budget or add campaign types in an ecommerce Google Ads account.",
+      "steps": [
+        "Gate 1 — Feed health: do not scale until disapprovals are cleared and warnings addressed; disapproved products are ineligible and scale amplifies feed problems rather than solving them.",
+        "Gate 2 — Conversion tracking integrity: validate end to end before scaling — enhanced conversions active, server-side tags firing, conversion values reflecting actual order revenue. Scaling on inaccurate data teaches the algorithm the wrong outcomes.",
+        "Gate 3 — Brand/non-brand separation: keep brand and non-brand in separate campaigns with separate budgets and reporting, because blended ROAS distorts scaling decisions.",
+        "Gate 4 — Asset and creative velocity: PMax needs 15+ images and 5+ videos per asset group refreshed every 4-6 weeks, and Demand Gen needs continuous refresh; lifestyle imagery, UGC video and product demos are the highest-leverage types for ecommerce.",
+        "Gate 5 — Bid strategy maturity: wait for roughly 50 conversions per month for basic stability (more in competitive auctions) before moving from Maximize Conversions to Target ROAS.",
+        "Apply the operating principle: PMax performance is a function of input quality — feed data, conversion signals, audience signals and creative assets — not of trying to control the algorithm's output distribution.",
+        "If a gate fails, invest in better product titles, clearer attribute mapping and intent-based custom-label segmentation rather than increasing budget."
+      ],
+      "caveats": [
+        "The ~50 conversions/month threshold is a source heuristic for Smart Bidding stability; highly competitive auctions may need more."
+      ],
+      "tags": [
+        "google-ads",
+        "scaling",
+        "readiness-checklist",
+        "performance-max",
+        "smart-bidding",
+        "operations"
+      ],
+      "id": "abc2dfeeea38bbebe9a5a1cb",
+      "source_id": "1qHnlFZvZKsgM8ijL6P-HZpVPMRO4nrc0",
+      "source_sha256": "cf25f243e6cb523f339aa62b4f6837971558e3570404c5490db623a5340612b6",
+      "source_name": "# Google Ads for Ecommerce_ The Complete Architecture & Operations Manual (2026 Edition).docx",
+      "folder": "/12-GAD-google-ads",
+      "domain": "google-ads",
+      "section": 0
+    },
+    {
+      "title": "Choose Between PMax, Shopping and Demand Gen by Job",
+      "summary": "Match campaign type to the job — multi-surface acquisition, Shopping-surface precision, or upper-funnel demand creation — and keep them from competing.",
+      "use_when": "Assigning budget and roles across Google Ads campaign types for an ecommerce catalog as the account grows.",
+      "steps": [
+        "For catalog and multi-surface acquisition, run PMax at roughly 50-70% of budget, segmented by product category or performance tier; the algorithm allocates across Search, Shopping, YouTube, Discover, Display, Gmail and Maps.",
+        "For branded and high-intent category terms, run Standard Shopping at roughly 30-50% of budget with tROAS targets and manual product-group bid levers; it serves only the Shopping surface but gives control and transparency.",
+        "For upper-funnel discovery, run Demand Gen at roughly 10-20% of budget with product feed integration to create a virtual storefront.",
+        "Use the distinction that PMax automates asset combination while Demand Gen lets you upload, preview and edit specific combinations per placement.",
+        "Watch the overlap: PMax and Standard Shopping bid against the same feed, and since campaign type no longer confers auction priority, they will cannibalise without role rules.",
+        "Layer Demand Gen in only after high-intent campaigns are stable — for smaller accounts the source recommends mastering conversion campaigns first."
+      ],
+      "caveats": [
+        "Budget percentages are the source's suggested structure and vary with catalog size, margin and seasonality."
+      ],
+      "tags": [
+        "google-ads",
+        "campaign-architecture",
+        "budget-allocation",
+        "performance-max",
+        "standard-shopping",
+        "demand-gen"
+      ],
+      "id": "013bd9d694568e77de3bde75",
+      "source_id": "1qHnlFZvZKsgM8ijL6P-HZpVPMRO4nrc0",
+      "source_sha256": "cf25f243e6cb523f339aa62b4f6837971558e3570404c5490db623a5340612b6",
+      "source_name": "# Google Ads for Ecommerce_ The Complete Architecture & Operations Manual (2026 Edition).docx",
+      "folder": "/12-GAD-google-ads",
+      "domain": "google-ads",
+      "section": 0
+    },
+    {
+      "title": "Anchor ROAS Targets to Margin, Not Benchmarks",
+      "summary": "Use 2026 ecommerce ROAS/CPC benchmarks only as context, and set targets relative to gross margin, AOV and vertical economics.",
+      "use_when": "Setting or defending a target ROAS for an ecommerce account, or benchmarking account performance against market figures.",
+      "steps": [
+        "Use the source's 2026 figures as context only: median ecommerce Google Ads ROAS 557% (5.57×, Optmyzr Q2 2026), average ROAS 3.4× (COREPPC 2026), Shopping 5.1×, PMax 4.8×, non-brand Search 3.4×; average CPCs $1.42 Search, $0.68 Shopping, $0.82 PMax; ecommerce conversion rate 2.8%.",
+        "Treat the gradient as directional rather than a mandate: Shopping and PMax benchmarks read higher than non-brand Search in these sources, but that reflects surface and traffic mix, not a guarantee for your account.",
+        "Adjust every benchmark for vertical, order value and margin structure before using it as a target.",
+        "Apply the margin rule directly: a brand with 60% margins can profitably scale at a lower ROAS than a brand with 25% margins — set target ROAS relative to gross margin, not industry averages.",
+        "Note the trend context: median ecommerce Google Ads ROAS was 3.68 in 2025, down 10.03% year over year, reflecting more competition and rising CPCs, and Shopping CPCs are up 22% year over year — so targets set on older data may be too aggressive.",
+        "Combine with AOV and LTV when judging whether a given ROAS is acceptable; a low-ROAS first order can still be profitable when repeat purchase is strong."
+      ],
+      "caveats": [
+        "These are third-party benchmark aggregates from specific reports (Optmyzr, COREPPC, Web Tonic) cited by the source; they are not targets and vary widely by vertical."
+      ],
+      "tags": [
+        "google-ads",
+        "roas-benchmarks",
+        "target-roas",
+        "margin-management",
+        "measurement",
+        "aov"
+      ],
+      "id": "37a75be509aa0d4e5804c0d3",
+      "source_id": "1qHnlFZvZKsgM8ijL6P-HZpVPMRO4nrc0",
+      "source_sha256": "cf25f243e6cb523f339aa62b4f6837971558e3570404c5490db623a5340612b6",
+      "source_name": "# Google Ads for Ecommerce_ The Complete Architecture & Operations Manual (2026 Edition).docx",
+      "folder": "/12-GAD-google-ads",
+      "domain": "google-ads",
+      "section": 0
+    }
+  ],
+  "request_id": "5e42b0139294ca74a67f0d5e983c642ac23f845621b05aaf3ab1bd9b1e822fd3",
+  "ecommerce_scope_version": 1
+}

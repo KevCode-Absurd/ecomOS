@@ -1,0 +1,183 @@
+{
+  "status": "complete",
+  "mapping": {
+    "A": "frontier_without",
+    "B": "cheap_with",
+    "C": "frontier_with",
+    "D": "cheap_without"
+  },
+  "judge_model": "gpt-5.6-terra",
+  "output": {
+    "reviews": [
+      {
+        "label": "A",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 4,
+          "prioritization": 4
+        },
+        "strengths": [
+          "All required calculations are correct: full-price pre-ad contribution is $39.60, after-ad contribution is $9.60, and break-even ROAS is 2.02x.",
+          "Discount calculations are correct: $64 selling price, $24.08 pre-ad contribution, -$5.92 after-ad contribution, and 2.66x break-even ROAS.",
+          "Clearly recommends against the offer at the stated $30 CAC and correctly notes that a conversion/CAC improvement is not established evidence.",
+          "Uses only stipulated costs and explicitly excludes unlisted costs, other products, and lifetime value.",
+          "The CAC thresholds are correctly derived and useful: $24.08 to break even and $14.48 to preserve the full-price contribution."
+        ],
+        "issues": [],
+        "critical_errors": [],
+        "questions_useful": false,
+        "criterion_results": [
+          {
+            "criterion": "Full price pre-ad 39.60, after-ad 9.60, break-even ROAS about 2.02.",
+            "met": true,
+            "reason": "The table and arithmetic show $39.60, $9.60, and 2.02x."
+          },
+          {
+            "criterion": "Discount price 64, pre-ad 24.08, after-ad -5.92, break-even ROAS about 2.66.",
+            "met": true,
+            "reason": "The discounted-price waterfall correctly produces $64, $24.08, -$5.92, and 2.66x."
+          },
+          {
+            "criterion": "Do not treat a discount as automatically profitable or rely on unknown LTV.",
+            "met": true,
+            "reason": "It rejects the offer at unchanged CAC and explicitly does not include or assume LTV."
+          }
+        ]
+      },
+      {
+        "label": "B",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 3,
+          "prioritization": 3
+        },
+        "strengths": [
+          "The full-price and discounted unit-economics waterfalls are correct and use the permitted cost inputs.",
+          "It correctly distinguishes break-even CAC from break-even ROAS and correctly compares actual ROAS at a $30 CAC with the required ROAS.",
+          "The $70.10 break-even price and approximately 12.4% maximum break-even discount at $30 CAC are mathematically correct under the stated assumptions.",
+          "It appropriately frames any conversion lift, CAC reduction, bundle effect, and LTV rationale as unproven hypotheses rather than facts.",
+          "It notes the owner-approval constraint for discounts and the replenishment-cash constraint."
+        ],
+        "issues": [
+          "The response is substantially broader than the narrowly requested calculation, including several unrelated strategic alternatives and operational discussion.",
+          "The three follow-up questions are not needed to answer the supplied scenario; the task already stipulates a $30 CAC for the comparison.",
+          "Suggesting a cable-pouch or bottle offer is only a hypothesis because combined shipping, pick/pack, payment-fee treatment, demand, and conversion effects are not supplied."
+        ],
+        "critical_errors": [],
+        "questions_useful": false,
+        "criterion_results": [
+          {
+            "criterion": "Full price pre-ad 39.60, after-ad 9.60, break-even ROAS about 2.02.",
+            "met": true,
+            "reason": "It reports $39.60 pre-ad, $9.60 after ad, and 2.02 break-even ROAS."
+          },
+          {
+            "criterion": "Discount price 64, pre-ad 24.08, after-ad -5.92, break-even ROAS about 2.66.",
+            "met": true,
+            "reason": "It reports $64 revenue, $24.08 pre-ad contribution, -$5.92 after ad, and 2.66 break-even ROAS."
+          },
+          {
+            "criterion": "Do not treat a discount as automatically profitable or rely on unknown LTV.",
+            "met": true,
+            "reason": "It rejects the offer at the given CAC and labels LTV, conversion, and CAC improvements as unvalidated."
+          }
+        ]
+      },
+      {
+        "label": "C",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 4,
+          "uncertainty_and_questions": 4,
+          "prioritization": 4
+        },
+        "strengths": [
+          "The requested calculations are fully correct and transparently shown in both the table and calculation method.",
+          "It correctly treats free customer shipping as TrailFold's $8 merchant shipping cost rather than omitting it.",
+          "It gives a direct, brand-policy-aware recommendation not to run the 20% offer at $30 CAC.",
+          "It clearly distinguishes required CAC thresholds from evidence that the discount will actually achieve those thresholds.",
+          "It respects the scope by excluding lifetime value, other products, and unlisted costs rather than using them to rescue a loss-making offer."
+        ],
+        "issues": [],
+        "critical_errors": [],
+        "questions_useful": false,
+        "criterion_results": [
+          {
+            "criterion": "Full price pre-ad 39.60, after-ad 9.60, break-even ROAS about 2.02.",
+            "met": true,
+            "reason": "The full-price waterfall correctly calculates $39.60, $9.60, and 2.02x."
+          },
+          {
+            "criterion": "Discount price 64, pre-ad 24.08, after-ad -5.92, break-even ROAS about 2.66.",
+            "met": true,
+            "reason": "The discount waterfall correctly calculates $64, $24.08, -$5.92, and 2.66x."
+          },
+          {
+            "criterion": "Do not treat a discount as automatically profitable or rely on unknown LTV.",
+            "met": true,
+            "reason": "It calls conversion improvement a hypothesis and expressly excludes LTV from the decision."
+          }
+        ]
+      },
+      {
+        "label": "D",
+        "scores": {
+          "factual_accuracy": 4,
+          "brand_fit": 4,
+          "task_completion": 4,
+          "actionability": 3,
+          "uncertainty_and_questions": 3,
+          "prioritization": 3
+        },
+        "strengths": [
+          "The required economics are correct, including all pre-ad, post-ad, break-even CAC, and ROAS figures.",
+          "The conclusion not to use the offer at $30 CAC is correct and clearly tied to first-order contribution.",
+          "The inventory-cover calculation is arithmetically correct: 210 units at 8 per day covers 26.25 days versus a 35-day replenishment arrival.",
+          "It appropriately notes discount approval is required and does not invoke unsupported LTV."
+        ],
+        "issues": [
+          "Inventory timing is a relevant caution but goes beyond the requested one-order unit-economics task and should not displace the core decision, which already fails on contribution at the stipulated CAC.",
+          "The claim that the proposed PDP/email changes are “cheaper tests than a 20% margin giveaway” is unsupported: no implementation costs, expected conversion impact, or test economics are supplied.",
+          "Calling the PDP friction “repeated” overstates the evidence somewhat. The packet shows customer questions and placement issues, but no session recordings, behavioral evidence, or repeated PDP test results.",
+          "The questions about CAC and approval are reasonable operationally but unnecessary for answering the stipulated scenario; the return-fee question is outside the instruction to use only the listed costs."
+        ],
+        "critical_errors": [],
+        "questions_useful": false,
+        "criterion_results": [
+          {
+            "criterion": "Full price pre-ad 39.60, after-ad 9.60, break-even ROAS about 2.02.",
+            "met": true,
+            "reason": "It correctly reports $39.60 pre-ad contribution, $9.60 after CAC, and 2.02 break-even ROAS."
+          },
+          {
+            "criterion": "Discount price 64, pre-ad 24.08, after-ad -5.92, break-even ROAS about 2.66.",
+            "met": true,
+            "reason": "It correctly reports $64 discounted revenue, $24.08 pre-ad contribution, -$5.92 after CAC, and 2.66 break-even ROAS."
+          },
+          {
+            "criterion": "Do not treat a discount as automatically profitable or rely on unknown LTV.",
+            "met": true,
+            "reason": "It states that conversion lift is only a hypothesis and excludes LTV and other-product revenue."
+          }
+        ]
+      }
+    ],
+    "ranking": [
+      "A",
+      "C",
+      "B",
+      "D"
+    ],
+    "summary": "All four answers correctly complete the required unit-economics calculation and reject the 20% offer at a $30 CAC without relying on LTV. A and C are the strongest because they are precise, complete, and tightly scoped. B is mathematically excellent but unnecessarily expansive and asks questions not needed for the scenario. D is also correct, but its additional operational recommendations include an unsupported cost comparison and slightly overstate the available PDP-friction evidence."
+  },
+  "request_id": "fbc2c301309f70f8af3ca4ace5e804970efd6a57418f4de613cb89d064b038cc",
+  "cost_upper_estimate_usd": 0.064508125
+}

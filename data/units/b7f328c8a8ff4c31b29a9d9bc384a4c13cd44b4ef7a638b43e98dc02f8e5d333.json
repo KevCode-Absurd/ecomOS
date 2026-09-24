@@ -1,0 +1,79 @@
+{
+  "case_index": 5,
+  "evidence": [
+    {
+      "end": 18735,
+      "field": "claim",
+      "locator": "body:36/paragraph",
+      "quote": "we need to D duplicate these events because as you can see one contact form is now tracked twice and one page view is now tracked twice one via the regular pixel on the front end of our site and one through the conversion API",
+      "source_id": "1hqJghZ6POtNwWAMCKIdbJqUS7O7Y8lPK",
+      "source_sha256": "92deead23640ee35b87783d0db5f95ced759e0f56dd6be1b7131000f7349d989",
+      "start": 18510
+    },
+    {
+      "end": 18932,
+      "field": "action",
+      "locator": "body:36/paragraph",
+      "quote": "we need to make sure that these events are duplicated to make sure that we're not double counting every event on our site and we're doing that through an event ID",
+      "source_id": "1hqJghZ6POtNwWAMCKIdbJqUS7O7Y8lPK",
+      "source_sha256": "92deead23640ee35b87783d0db5f95ced759e0f56dd6be1b7131000f7349d989",
+      "start": 18770
+    },
+    {
+      "end": 18645,
+      "field": "trigger.0",
+      "locator": "body:36/paragraph",
+      "quote": "one contact form is now tracked twice and one page view is now tracked twice",
+      "source_id": "1hqJghZ6POtNwWAMCKIdbJqUS7O7Y8lPK",
+      "source_sha256": "92deead23640ee35b87783d0db5f95ced759e0f56dd6be1b7131000f7349d989",
+      "start": 18569
+    }
+  ],
+  "extraction_request": "be25aa0c53d03cd2ead5306070593022dd9890b79c37982be0086a2e87b39760",
+  "id": "b7f328c8a8ff4c31b29a9d9bc384a4c13cd44b4ef7a638b43e98dc02f8e5d333",
+  "provenance": "unverified",
+  "publication_allowed": false,
+  "schema_version": 2,
+  "semantic_review": "required",
+  "status": "held",
+  "unit": {
+    "action": {
+      "quote": "we need to make sure that these events are duplicated to make sure that we're not double counting every event on our site and we're doing that through an event ID",
+      "text": "Use an event ID to prevent double counting of the pixel and Conversion API events."
+    },
+    "claim": {
+      "quote": "we need to D duplicate these events because as you can see one contact form is now tracked twice and one page view is now tracked twice one via the regular pixel on the front end of our site and one through the conversion API",
+      "text": "The source says one more step is needed to deduplicate events because one contact form and one page view are each tracked twice, via the front-end pixel and the Conversion API, and deduplication is done through an event ID."
+    },
+    "completion": [],
+    "exclusions": {
+      "args": [],
+      "op": "any"
+    },
+    "id": "u15",
+    "kind": "action",
+    "prerequisites": {
+      "args": [],
+      "op": "all"
+    },
+    "relations": [
+      {
+        "kind": "depends_on",
+        "target": "u14"
+      }
+    ],
+    "title": "Deduplicate events with an event ID",
+    "trigger": {
+      "args": [
+        {
+          "quote": "one contact form is now tracked twice and one page view is now tracked twice",
+          "text": "The same event is tracked twice, once by the regular pixel and once by the Conversion API."
+        }
+      ],
+      "op": "all"
+    },
+    "unknowns": [
+      "Source does not finish showing how to attach the event ID to both browser and server events."
+    ]
+  }
+}
