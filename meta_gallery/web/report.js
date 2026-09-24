@@ -362,7 +362,7 @@ function reportV2(forFile) {
       <div class="rp-dates">${esc(dateLabel(r.since))} to ${esc(dateLabel(r.until))} · ${r.days} days · compared with the ${r.days} days before</div>
       <p class="rp-summary">${rpSummary(P, v.totals)}</p></header>
     ${note ? `<div class="r-note"><b>Our note:</b> ${esc(note)}</div>` : ''}
-    <section class="rp-sec"><h2>Your business at a glance</h2><p class="rp-lead">Your whole website, not only ads.${P.cut ? ` Website figures run to ${esc(dateLabel(P.cur.until))}, the latest day we have.` : ''}</p>${rpHero(P)}</section>
+    <section class="rp-sec"><h2>Your business at a glance</h2><p class="rp-lead">Your whole website, not only ads.${P.cut ? ` Website figures run to ${esc(dateLabel(P.cur.until))}, the latest day we have.` : ''}${String(SL.data.daily_pulled_at || '').slice(0, 10) === P.cur.until ? ` ${esc(shortDate(P.cur.until))} is today, so it shows sales up to ${esc(new Date(SL.data.daily_pulled_at).toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit' }))} only.` : ''}</p>${rpHero(P)}</section>
     ${rpSalesTrend(P)}${rpYear(P)}${rpMeta(P)}${rpAds()}${rpProducts(P)}${rpPeople()}${rpWorked(P)}${rpPlanHtml()}${rpWords()}${rpTeam(P)}
     <footer class="r-foot"><div>Website sales: Metabase, website orders only. Ads: ${esc(sourceLabel())}, captured ${esc(new Date(DATA.meta.captured_at).toLocaleString('en-IN'))}.${forFile ? '' : ' Read-only. Nothing in the ad account was changed.'}</div></footer>`;
 }
