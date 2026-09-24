@@ -343,6 +343,32 @@ Above about $100K a month in email revenue, source says a deeper dashboard tool 
 5. Every 30 days open the reports by inbox provider. Where one provider is weak (example: Hotmail and Outlook 46% opens and lower clicks; G Suite high bounce and unsubscribe), build very engaged segments for that provider.
 6. If opens and clicks fall steadily: move sends from the 90-day segment to 30-day or 60-day engaged. Hold until metrics recover. Then widen slowly. No recovery timeline given.
 
+### 3.32 Campaign content, copy and design checklist [3c10a64f1966] [8c9297aaf4b4] [1cddc0a49ff8] [4410834af2cb] [945e9b8a355c] [685553ea4865] [82bb67e79aeb]
+Campaign types "99% of brands" should rotate (agency data, no numbers):
+1. Product spotlight: 1 product, deep on why it beats rivals (materials, ingredients, details the PDP has but shoppers miss). Try it on non-bestsellers too. Collection spotlight: a theme across store collections.
+2. Benefit email: 1 PDP bullet becomes the whole email, aimed at the group that cares most.
+3. Content spotlight (for brands with blog or social content): first section teases the content, second section sells the product it relates to.
+4. Education spotlight: teach the ingredient or problem, let the reader connect it to the product.
+5. Weekly newsletter: created or curated (memes, a monthly playlist, industry news). Built for engagement.
+6. Cultural event: Mother's Day, Father's Day, holidays, Black Friday, tied to a reason to buy now.
+7. Promotions, 4 types: teaser (sale coming; SMS gets early access), launch (short, sell the click), reminders through a long sale (a bottom module in evergreen sends works), last chance (final day).
+8. New product launch: at least 1 email the morning of launch; say why the subscriber should care.
+Copy:
+1. Know the audience; write benefits for that group, not product details (coffee: energy for a busy parent vs late-night focus for a young man).
+2. 1 core message per email, 2 at most, from subject line to body. Cut fluff. Use icons or visuals over paragraphs.
+3. Keep one consistent brand voice.
+4. Sell the click, above all in promo and launch emails where earlier emails did the teaching. The landing page does the selling.
+5. Use real urgency or scarcity ("ends tonight", limited stock), social proof (reviews, UGC, influencers, press) and curiosity gaps (tease the blog, "read more"). Never fake them.
+6. Subject and preview under 50 characters each. Put the value first ("50% off sitewide", preview "Summer's finally here, shop now"). Do not over-invest in subject lines.
+7. Pre-send check: does it educate, entertain or solve a problem?
+Design:
+1. Scannable layout, white space, clear headers and subheaders, distinct sections.
+2. Section order: header, subheader, body copy if needed, image, CTA. Repeat in each section. Header = awareness, body = interest, CTA = ask.
+3. A CTA under each promoted product.
+4. Icons (for example check marks) instead of bullet points.
+5. Promo code in bold right before the CTA (example "use code SUMMER15 at checkout").
+6. Only sharp, relevant images (no other product next to a product, no woman as the hero of a men's email).
+
 ## 4. Rules, thresholds and numbers
 
 | rule | number or threshold | condition | source's basis | card id |
