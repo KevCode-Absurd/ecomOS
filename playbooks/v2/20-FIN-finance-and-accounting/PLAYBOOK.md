@@ -1568,3 +1568,165 @@ Merged from all 6 sources, deduplicated, with the fix.
 87. 05: FCF is operating cash flow minus capex as a positive number; "net cash flow slightly lower than FCF" holds only in a month that repays principal (C20).
 88. 03 card [8aab49e8f65e]: the 1.4 aMER is hypothetical; $100 / $50 is the blended MER of 2. Card [ac6ec12672a6]: "$15 to $27" means +$15, from $12 to $27.
 
+## 9. Deliverables
+
+Every deliverable states its definitions (scope of each margin, which CAC, which LTV window, tax excluded), its period and its data cut-off. Numbers come from code; the memo quotes them. Short sentences, digits, no inflated words.
+
+### 9.1 Weekly profit memo (from P14)
+
+Format: 1 page, sections in this order.
+1. Headline: week and month-to-date net revenue, CM2, cm3_media, cm3_loaded, each in dollars, percent of net revenue and vs goal; on track or behind, and by how much.
+2. New vs returning: new-customer revenue, new-customer count vs goal, aMER, cac_media and cac_loaded, first-order GP, CM:CAC; returning revenue vs cohort forecast; active file trend.
+3. Variance and cause: actual vs daily expectation, the named action or efficiency change behind it (fault rule).
+4. Inventory: top-10 SKU days of stock vs lead time; any sell-out risk and the decision taken; C and D funnel cash recovered.
+5. Cash: balance, lowest projected point in 13 weeks, tax and PO dates inside the window.
+6. Alerts fired (9.4) and the recommended action for each; the CAC line, unchanged unless the owner changed it.
+7. Data notes: accrual rate used, reconciliation gaps open, anything unavailable.
+
+### 9.2 SKU contribution table (from P7)
+
+Columns: SKU, category, channel, units, orders, net revenue, AOV, landed cost per unit, CM1 $ and %, fulfillment per order, CM2 per basket $ and %, CAC estimate (campaign CPA, labelled as an estimate), contribution per sale, units on hand, days of inventory, grade A to D, SKU type (champion, hidden gem, growth driver, underperformer), action. Sorted by contribution per sale. A footer states the COD scope and the period.
+
+### 9.3 Scenario answer (from P27)
+
+Format: the question; the scenarios side by side in 1 table (spend, expected aMER, new customers, new-customer revenue, CM2, cm3_media, cm3_loaded, LTGP:CAC 90-day, cohort payback, lowest cash month); the marginal read per channel; the recommendation on total CM3 at equal spend and on lowest cash; the assumptions and error bars; what test would tighten the answer; the rejected scenarios and why.
+
+### 9.4 Alerts
+
+Each alert: metric, threshold, period, what fired, the rule it comes from, the recommended action, the owner. Standard set:
+- cac_media above cm2 per new order for the month to date (R6).
+- aMER below break-even ROAS for 7 days (R37, F15).
+- LTGP:CAC 90-day below 1 (R59) or above 3 with no marginal test in the last quarter (R58).
+- CM2 percent down more than 3 points month over month with no promo explanation (R10, R25).
+- OPEX percent rising 2 consecutive months while revenue grows (R28).
+- Net income positive and FCF negative 2 months running, unexplained (R97).
+- Lowest projected cash in 13 weeks below the owner's buffer (P20).
+- Any SKU with spend and fewer days of stock than lead time (R108).
+- Any SKU above 3x lead time in days of inventory with no plan (R107, R112).
+- Processed returns used as the efficiency base (R42).
+- Unexplained reconciliation gap above 1% of net revenue (P28).
+- CAC or ROAS line lowered without an owner decision (R51).
+- New-customer count below goal 2 weeks running while revenue is on plan (R38).
+
+### 9.5 Monthly close pack (from P1, P2, P15, P19, P28)
+
+The ladder with percent and per-order columns; the 4-bucket view; the statutory-to-internal COGS bridge; the fault-rule read and the 1 constraint; new vs returning profit contribution; cohort table update, LTGP:CAC and payback; 3 statements with the profit-to-FCF reconciliation; inventory value, grades and days of inventory; the 5 reconciliation gaps with causes; the returns true-up; any restatement.
+
+### 9.6 COGS and landed-cost table (from P4, P5)
+
+Per SKU: purchase price, freight share, duty share, product packaging, landed cost, effective date, allocation basis, source invoices; per order: fulfillment lines and fee rates; the true CM2 per basket, per SKU and per channel; the written statutory policy next to the internal scope.
+
+### 9.7 Cash, inventory and PO sheet (from P20 to P22)
+
+Monthly mini cash flow with lowest cash and runway; 13-week cash by week; inventory roll by SKU with arrivals lagged; PO proposals with the demand plan (units by channel, media dollars, error bars), deposit and balance dates, CCC before and after.
+
+### 9.8 Offer and price answers (from P16, P17)
+
+For a discount: break-even ROAS and CAC at full and discounted price, the alternative shapes, the grid at equal spend, the go or no-go and the test to run. For a price: the waterfall inputs, the solved price, the market check, the decision.
+
+## 10. What needs live data or a web check
+
+**`[needs brand data]`, grouped.**
+
+Revenue and returns
+- Gross revenue, discounts, refunds, chargebacks, shipping collected by day; tax rate and whether prices include tax.
+- Return rate by month and category; return window by category; average discount by category; refund causes by product and cohort.
+- New vs returning flag per order; first-order date per customer.
+
+Costs
+- Landed cost per SKU with invoices; allocation basis in the accounting policy; cost flow method (FIFO or weighted average).
+- Fulfillment cost per order: pick and pack, packing materials, outbound shipping, 3PL storage and receiving lines, warehouse staff cost and packages per day.
+- Payment gateway and marketplace fee rates by channel; Amazon referral and FBA fees by category.
+- The written accounting policy: statutory COGS scope, outbound shipping and packaging treatment, returns cost treatment, capitalisation rules and useful lives, the accountant's view on the free-shipping and dropship exceptions.
+- 3PL invoice lines split into receiving, storage, pick and pack, outbound.
+
+Marketing
+- Ad spend by day and channel; other variable marketing (influencers, affiliates, variable agency and creative); the written variable-vs-fixed convention.
+- Daily spend and new-customer revenue for at least 1 year (aMER curve); 24+ months of monthly spend, new-customer revenue and AOV for the 3-model forecast.
+- Conversion rate by discount level (for the discount grid); sale-cohort retention.
+- Existing-customer count and the existing-customer CPM from the platform.
+- Incrementality factors per channel, if tests exist (06-MEA).
+
+Customers and cohorts
+- Cohort table by first-purchase month: customers, orders, revenue, CM2 per order by month since acquisition; the repurchase curve and plateau month.
+- Subscription counts (prior-period base, new, cancellations) and prepaid retention, if any.
+- Owner's payback tolerance and cash reserve; LTV window agreed.
+
+OPEX and people
+- Monthly OPEX by account; payroll and on-costs by role; monthly revenue for the year (lowest month); country payroll on-cost rate.
+- Net profit target and OPEX plan (for the CM3 back-solve).
+
+Cash and inventory
+- Opening cash; loan balances, interest and principal schedule; tax calendar and last 4 payments; capex list; receivables and payables balances by month.
+- Inventory units and cost by SKU with receive dates, expiry or season dates, last count results, in and out logs.
+- Supplier lead time, MOQ, deposit and balance terms per supplier; PO schedule; sell-through by SKU; grade A to D cut-offs.
+- Whether the brand capitalises any build cost.
+
+Products and pricing
+- SKU-level spend, units, revenue and stock for the SKU matrix; CAC for comparable products; courier and 3PL quotes for a new product.
+
+**`[web check]`, grouped.**
+
+Accounting standards and tax
+- US GAAP ASC 606 shipping and handling policy election; IAS 2; Ind AS 2 for Indian brands; FRS 102 in the UK; whether the standard permits shipping and handling in cost of sales by election.
+- Cost flow methods allowed under the brand's standard; capitalisation rules and useful-life norms for software.
+- Tax payment calendar and loss carryforward rules for the brand's country and entity; import VAT or GST recovery rules; customs value basis and duty rules.
+- Statutory return and refund rights for online orders in the brand's country; auto-renewal and subscription consent rules.
+- Current tariff and duty rates for the brand's import lanes.
+
+Platform fees and settings
+- Payment gateway rates; Amazon referral and FBA fee schedules by category; Shopify default sales metric and report definitions; Meta attribution settings and view-through window; Shopify inventory ranking report location.
+- Inventory apps that allocate freight and duty to SKUs and sync to Xero, QuickBooks, NetSuite or Tally; inventory and COGS journal steps in the brand's accounting system.
+
+Financing and benchmarks
+- Current inventory financing and revenue-based financing products, eligibility and fees (Clearco, Pipe and local equivalents); ESOP rules outside the US.
+- Gross margin ranges by ecommerce category; category churn benchmarks; industry guidance on minimum spend for geo-lift; current geo-test tools and DMA equivalents outside the US (cities or states for India).
+- Ecommerce and agency EBITDA multiples; Amazon share of ecommerce by market; LLM commerce protocol names.
+
+Source identification
+- Presenter name and agency for mini playbook 03 (bluesdigital.com.au); video publish dates for 03 and 06; the price-test tool, incrementality vendor, CTC data platform and liquidator named in 02; the AI creative study cited second-hand in 02; IM8 launch date.
+
+## 11. Freshness and stale-risk notes
+
+| rule or number | why it can go stale | re-verify |
+|---|---|---|
+| Statutory COGS scope, shipping and handling election, cost flow method (R11, R16, C1, C17) | Accounting standards and the brand's own policy; jurisdiction (US, UK, Australia, India) | At onboarding and whenever the accountant or standard changes; yearly |
+| Tax rate, payment calendar, loss carryforward (F39, R98) | US quarterly estimates assumed in 01 and 05; Indian and Australian calendars differ | Yearly and at entity changes |
+| Import duty and tariff rates (F4) | 04 records "a lot of discussion on tariffs"; rates moved in 2025 | Every PO on a new lane; quarterly |
+| Payment fee rates (F6) | 3% and 2.75% are US assumptions from 2020 to 2026 | Quarterly; at gateway change |
+| Amazon referral, FBA and storage fees (01 T15) | Schedule changes yearly; referral fee omitted by the source | Quarterly |
+| Shopify report definitions ("total sales", inventory ranking) (R42, P21) | Platform UI; 02 wants the default changed | Every quarter and on platform updates `[verify UI]` |
+| Meta attribution settings, view-through window, frequency and audience-segment columns (R132, P25) | Platform UI changes | Quarterly `[verify UI]` |
+| Northbeam Apex, Triple Whale, incrementality vendors, Particle, Intelligems (02) | Vendor products change; names unclear in the transcript | At use |
+| OPEX 10 to 12%, payroll 12%, revenue per employee, cost of delivery 30 to 40%, median Meta ROAS 1.7, 20/80 Meta Amazon split (section 6) | CTC portfolio opinions, US brands, 2025 to 2026 | Treat as dated; replace with brand data within 2 quarters |
+| Financing terms: Clearco, Pipe, Clear Angel, MCA and credit card costs (R120, R121) | Historical, affiliate-linked, US | At every financing decision |
+| Ordergroove claims (R139) | Vendor data, no sample, dated by the presenter's tenure | Never cite without a brand test |
+| Ecommerce and agency multiples, Amazon share, LLM protocols (02) | February 2026 views | At use |
+| Software useful life 36 months, depreciation 3 or 5 years (F39) | Policy and standard dependent | At onboarding |
+| Geo holdout units (DMAs, Australian commuting zones) (06-MEA) | US and Australian; India needs cities or states | At test design |
+| US-centric examples throughout: benefits 25%, 401k, quarterly tax, Walmart net 180, DMAs, ESOP | Do not apply to Gehna or other Indian brands without the local rate | Always swap the rate; never reuse the example as a benchmark |
+| Discount, BOGO and grid conversion lifts (F18, F19) | Assumptions in every source; never measured | Per test; 09-CRO |
+| Churn benchmarks, category margins, lapse windows | No published source given by any presenter | Replace with brand cohorts within 6 months of data |
+
+## 12. Source index
+
+| no. | title | type | credibility | contributed most |
+|---|---|---|---|---|
+| 01 | Finance for eCommerce (1) | Transcript compilation: 16 YouTube videos plus 1 live stream by Eric Andrews (startup finance channel, "Finance for Startups" course, later Director of Commerce Strategy at Ordergroove) | Standard accounting mechanics; all numbers are made-up or anonymised models; 6 segments made or sponsored by Ordergroove (subscription vendor) plus OpenStore, Bainbridge and a Clearco affiliate link; vendor claims have no sample; several transcript numbers garbled and corrected in section 8 | Per-order unit economics and the product vs fulfillment split; CAC (blended vs paid, new customers only); first order vs lifetime; cohort tables, NRR, cohort LTV; churn and lifetime; cohort CAC payback; discount vs CAC pool; percent off vs BOGO; subscription and prepaid models; inventory roll with lead time; mini cash flow and runway; FCF case (same as 05) |
+| 02 | The $3B E-Commerce Strategist | Podcast interview (about Feb 2026) with Taylor Holiday, founder of Common Thread Collective (agency sold to PE); host runs an art brand | Agency experience and portfolio observations; named client stories; 1 cross-brand study (Finaloop) and 1 partner analysis; no tables or test designs; sponsor reads ignored; strong opinions stated as rules (4 peaks, "never turn off an ad") | Daily contribution margin and the metric hierarchy; 13-week cash forecast; returns accrual; 4-bucket P&L and reference mix; OPEX and payroll heuristics; 3-model forecast from the marketing calendar; active customer file; aged inventory grades and liquidation funnels; weekly inventory and media sync; vendor terms and CCC arbitrage; demand plan before a PO; SKU matrix; constraint (the CAC line) |
+| 03 | Everything You Need to Know About Finance in eCommerce | YouTube talk, about 1.5 hours, whiteboard, Australian agency presenter (likely Blues Digital) | Client work with hundreds of 7-figure brands claimed; worked examples with made-up numbers and several arithmetic slips (corrected); sells a free financial audit; opinions on bands (LTGP:CAC above 3 is a mistake) stated firmly | P&L ladder and 3 expense buckets; gross-to-net; CM1, CM2, CM3; true gross margin per basket; warehouse staff into COD; interest below EBITDA; fault rule; CAC honesty and first-order GP; break-even ROAS and CAC under discounts; waterfall pricing; LTGP:CAC windows and bands; MER vs aMER; measurement pyramid; existing-customer budget; profit frontier; cash vs profit, inventory grades, CCC, financing risk; CFO cut scenario; new and returning forecasts |
+| 04 | Calculating COGS: What Ecommerce Businesses Get Wrong | Short video interview hosted by A2X (accounting app) with Phil Oakley of Outserve (UK accounting integrator) | Practitioner opinion for statutory accounts; both sides sell accounting tools or services; no numbers; hedged rules ("no rule is 100%") | "All in until it's in" COGS test and the "would you have paid it anyway" backup; landed cost components and invoice-to-PO capture; packaging split; outbound shipping default and exceptions; coupons reduce revenue; returns cost split; supplier discounts and credits; the quick-fire classification table |
+| 05 | Understanding Free Cash Flow for eCommerce Startups | YouTube talk, about 20 minutes, Excel three-statement model, same presenter as 01 | 1 made-up 6-month model; standard accounting; card additions marked | FCF definition and sign convention; operating, investing, financing sections; the 4 cash traps (inventory, capitalised software, principal, tax timing); profit-to-FCF reconciliation; net cash flow vs FCF |
+| 06 | Why CFOs Obsess Over COGS | YouTube talk by Bill Hannah, financial controller (Controller Academy courses) | 20 years corporate accounting; 1 data point (baby food about 30% GM); written for CPG makers and SaaS, not online retail; sells courses | COGS as delivery cost only; CPG COGS components (materials, labor, overhead, freight-in, packaging); freight-out never statutory COGS; inventory as an asset until sold; margin bands as flags; waste control (rotation, counts, fire sale); marketing partner revenue share out of COGS |
+
+**Neighbour folders and what lives there.**
+- 03-OFF-offers: bundle, gift with purchase, subscription and prepaid offer design; price changes as offers; the mechanics behind R70, R72, R139.
+- 06-MEA: attribution models, Meta attribution settings, geo holdout design, incrementality vendors, MMM; the tests behind F14 and R132.
+- 07-LPG: landing pages, subscription cart mechanics, default-to-subscription UX.
+- 09-CRO-testing: the split tests behind discount conversion lifts (R76), shipping-charge tests (R3), price tests (R81).
+- 10-MCR and 11-ADC: creative and ad copy; the "story vs iteration" material in 02.
+- 12-GAD-google-ads: branded search as a defensive tax (02).
+- 14-EML: email and SMS flows; the send calendar that feeds returning revenue (P18).
+- 18-COG: supplier sourcing, freight negotiation, factory pricing; the negotiation behind R116.
+- 22-AMZ: Amazon launch, reviews, ranking, fee schedules; the FBA model in 01 T15.
+- 24-DEP: campaign structure, bid strategies, pausing rules; the execution behind R108, R128 and C7.
