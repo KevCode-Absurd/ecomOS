@@ -2039,6 +2039,7 @@
     "01",
     "02",
     "03",
+    "04",
     "10"
    ],
    "cards": [
@@ -8239,6 +8240,1550 @@
    "rules": [
     "R99"
    ]
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "DEP-126",
+  "title": "Lock down TikTok Business Center access before adding a team",
+  "domain": "24-DEP",
+  "bottleneck": [
+   "risk_compliance",
+   "team_capacity"
+  ],
+  "lever": "Business Center access control",
+  "hypothesis": "If TikTok Business Center runs on role-based user access, two-step authentication and a domain-restricted invite list before more than one person gets in, then account takeover and accidental setting changes drop because access is controlled at the source.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A TikTok Business Center is being opened to more than one person and role access, two-step authentication, or an allowed email domain have not been set.",
+   "metrics": [
+    "other:account_health"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:account_health",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "ops"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A settings change, not a spend change."
+  },
+  "prerequisites": [
+   "A TikTok Business Center with at least one other user"
+  ],
+  "steps": [
+   "Add each team member with a named role: admin, standard, finance or financial analyst.",
+   "Turn on two-step authentication in Business Center settings.",
+   "Add an allowed email domain so only people on the brand domain can join.",
+   "Review the user list monthly and remove access that is no longer needed."
+  ],
+  "test": {
+   "method": "Review the Business Center user and role list against current staff.",
+   "measure": "other:account_health",
+   "read_point": "Monthly."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "fe05eddfed67"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "DEP-127",
+  "title": "Keep TikTok hook-test variants off the public organic profile",
+  "domain": "24-DEP",
+  "bottleneck": [
+   "trust_brand",
+   "measurement_data"
+  ],
+  "lever": "organic profile hygiene",
+  "hypothesis": "If the TikTok organic account links to Business Center as ad-only display, then hook and angle test variants stop piling up on the public profile because they show only as ads, not as posts.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "The brand plans to A/B test several hook variants of the same video as TikTok ads and the account is linked to Business Center with default display settings.",
+   "metrics": [
+    "other:profile_post_count"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:profile_post_count",
+   "direction": "down",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A display setting; organic posts can still be made deliberately when wanted."
+  },
+  "prerequisites": [
+   "TikTok account linked to Business Center"
+  ],
+  "steps": [
+   "Open the TikTok account link inside Business Center.",
+   "Set ad display to ad only instead of also showing on the profile.",
+   "Confirm hook variants no longer appear as new posts on the public profile.",
+   "Post deliberately chosen content to the profile separately when wanted."
+  ],
+  "test": {
+   "method": "Check the public profile after launching a multi-hook test batch.",
+   "measure": "other:profile_post_count",
+   "read_point": "After the next hook-variant batch launches."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "fe05eddfed67"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": false
+ },
+ {
+  "id": "DEP-128",
+  "title": "Give product-specific TikTok search keywords their own ad group",
+  "domain": "24-DEP",
+  "bottleneck": [
+   "acquisition_efficiency",
+   "conversion"
+  ],
+  "lever": "search keyword segmentation",
+  "hypothesis": "If high-intent, product-specific search keywords get their own TikTok search ad group instead of sitting inside the broad phrase-match group, then those searches get creative and bids suited to a near-ready buyer instead of blending with generic category terms.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "The search term report shows specific product or model-name searches converting differently from the account's broad keyword group, but both sit in one ad group.",
+   "metrics": [
+    "cpa",
+    "ctr"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cpa",
+   "direction": "down",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A campaign restructure, not a spend increase."
+  },
+  "prerequisites": [
+   "A running TikTok search campaign with a search term report"
+  ],
+  "steps": [
+   "Pull the search term report and flag specific product or model-name terms.",
+   "Build a new ad group targeting only those terms.",
+   "Write or select creative aimed at a near-ready buyer for that ad group.",
+   "Compare CPA and CVR against the broad phrase-match ad group after a full read window."
+  ],
+  "test": {
+   "method": "Compare CPA and conversion rate between the product-specific ad group and the broad group.",
+   "measure": "cpa",
+   "read_point": "After one full read window on the new ad group."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "3ae33f4363ac"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "DEP-129",
+  "title": "Wait for a new audience to finish populating before launching on it",
+  "domain": "24-DEP",
+  "bottleneck": [
+   "measurement_data"
+  ],
+  "lever": "audience readiness check",
+  "hypothesis": "If a new custom or lookalike audience is checked for populated status before a campaign launches on it, then the campaign never runs on an empty or partial audience because the platform can take about a day to build it.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A campaign is about to launch targeting a custom or lookalike audience built in the last day.",
+   "metrics": [
+    "other:audience_status"
+   ]
+  },
+  "expected_effect": {
+   "metric": "spend",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A launch-timing check, not a targeting change."
+  },
+  "prerequisites": [
+   "A newly built custom or lookalike audience"
+  ],
+  "steps": [
+   "Open Audience Manager and check the new audience's status.",
+   "If it reads unavailable or not yet ready, wait, checking again after a few hours.",
+   "Launch the campaign only once the audience shows as populated.",
+   "Log build time so future launches can be timed around it."
+  ],
+  "test": {
+   "method": "Track audience population time against campaign launch time.",
+   "measure": "spend",
+   "read_point": "At launch."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "1ee708d070fe"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "DEP-130",
+  "title": "Opt weak TikTok automatic placements out after a placement read",
+  "domain": "24-DEP",
+  "bottleneck": [
+   "acquisition_efficiency"
+  ],
+  "lever": "placement optimisation",
+  "hypothesis": "If a TikTok ad group running on automatic placement gets a placement-level read and the weaker placements such as Global App Bundle or Pangle are opted out, then spend concentrates on the placement that actually performs.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A TikTok ad group has run on automatic placement long enough to show a placement breakdown, and it has not been reviewed.",
+   "metrics": [
+    "cpa",
+    "roas_blended"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cpa",
+   "direction": "down",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Placement settings can be reversed on the next edit."
+  },
+  "prerequisites": [
+   "An ad group with enough spend to read a placement breakdown"
+  ],
+  "steps": [
+   "Pull the placement breakdown for the ad group.",
+   "Compare CPA or ROAS on TikTok's own feed against Global App Bundle and Pangle.",
+   "Opt out any placement clearly underperforming the native feed.",
+   "Recheck the breakdown after the next read window."
+  ],
+  "test": {
+   "method": "Compare CPA before and after removing the weak placement.",
+   "measure": "cpa",
+   "read_point": "After one full read window with the placement removed."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "b9a9580d6fee"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "DEP-131",
+  "title": "Leave spending power and household income targeting at all",
+  "domain": "24-DEP",
+  "bottleneck": [
+   "acquisition_efficiency"
+  ],
+  "lever": "demographic filter discipline",
+  "hypothesis": "If spending power and household income fields stay set to all on Meta and TikTok ad sets, then delivery stays broad enough for the algorithm to find real buyers, because narrowing by income has not been shown to help outside a luxury or considered purchase.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "Product is a luxury or considered high-price purchase where income fit is a real qualifier"
+  ],
+  "signal": {
+   "check": "An ad set narrows by spending power or household income without a stated luxury or high-price reason.",
+   "metrics": [
+    "cpa",
+    "cpm"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cpa",
+   "direction": "down",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A targeting setting, reversible on the next edit."
+  },
+  "prerequisites": [],
+  "steps": [
+   "Open the ad set and check the spending power and household income fields.",
+   "If narrowed without a luxury or high-price reason, set both back to all.",
+   "For a genuine luxury or considered product, keep the narrowing and note the reason on the ad set.",
+   "Compare CPA against a broad control ad set if one exists."
+  ],
+  "test": {
+   "method": "Compare CPA between the narrowed ad set and a broad control over the same window.",
+   "measure": "cpa",
+   "read_point": "One full read window."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01",
+    "02"
+   ],
+   "cards": [
+    "b9a9580d6fee"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "DEP-132",
+  "title": "Verify the TikTok-Shopify app is official before connecting the Shop",
+  "domain": "24-DEP",
+  "bottleneck": [
+   "measurement_data"
+  ],
+  "lever": "integration integrity check",
+  "hypothesis": "If the TikTok integration is confirmed as the official app published by TikTok Inc, and Shopify and Seller Center use the same login email, then pixel and catalogue sync failures from a wrong app or mismatched accounts stop happening.",
+  "applies_when": [
+   "any",
+   "shopify"
+  ],
+  "signal": {
+   "check": "A store is about to install a TikTok integration app or connect Seller Center to Shopify and has not confirmed the app publisher or matched the login email.",
+   "metrics": [
+    "tracking_coverage"
+   ]
+  },
+  "expected_effect": {
+   "metric": "tracking_coverage",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A verification step before install, not a live change."
+  },
+  "prerequisites": [
+   "A Shopify store and a TikTok for Business account"
+  ],
+  "steps": [
+   "Search the Shopify app store for the TikTok integration and confirm the developer is TikTok Inc.",
+   "Use the same email or phone number for the Shopify account and the Seller Center signup.",
+   "Complete the install and confirm pixel events fire correctly afterward.",
+   "If sync errors appear, check for a mismatched login or a third-party clone app first."
+  ],
+  "test": {
+   "method": "Check pixel events and catalogue sync status right after connecting.",
+   "measure": "tracking_coverage",
+   "read_point": "Immediately after connecting the integration."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "02f8e94e8978",
+    "837875464f88"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "DEP-133",
+  "title": "Test alternate TikTok Shop storefront templates against the current one",
+  "domain": "24-DEP",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "storefront template test",
+  "hypothesis": "If alternate TikTok Shop storefront templates are tried against the current one and the shop's own conversion rate is tracked, then the storefront keeps improving instead of staying on whatever template shipped first.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "The TikTok Shop storefront has run on the same template for a while with no recorded conversion-rate comparison.",
+   "metrics": [
+    "cvr_overall"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A template swap inside Seller Center marketing tools; reversible."
+  },
+  "prerequisites": [
+   "An active TikTok Shop with baseline conversion data"
+  ],
+  "steps": [
+   "Record the current storefront conversion rate from Marketing > Shop design.",
+   "Apply a new template that fits the brand.",
+   "Track the storefront conversion rate for a full read window after the change.",
+   "Keep the template that reads higher, or revert if it reads lower."
+  ],
+  "test": {
+   "method": "Compare storefront conversion rate before and after the template change.",
+   "measure": "cvr_overall",
+   "read_point": "One full read window after the change."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "d7bbe2fbdade"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "DEP-134",
+  "title": "Seed TikTok lookalikes from video engagement, not only website visits",
+  "domain": "24-DEP",
+  "bottleneck": [
+   "acquisition_efficiency"
+  ],
+  "lever": "on-platform engagement audience",
+  "hypothesis": "If a TikTok custom audience of people who watched a high share of the brand's videos feeds a lookalike alongside the usual website-visitor and purchaser audiences, then prospecting reaches people who showed on-platform intent even if they never visited the site.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "TikTok lookalikes are built only from website-pixel visitors or purchasers, and no engagement-based audience is used as a seed.",
+   "metrics": [
+    "cpa"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cpa",
+   "direction": "down",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "An extra audience test, capped like any other prospecting sandbox."
+  },
+  "prerequisites": [
+   "Organic or ad video views with enough volume to build a custom audience"
+  ],
+  "steps": [
+   "Build a custom audience of people who watched a set share of the brand's videos, such as 100 percent completion, over the last 30 days.",
+   "Use it as a lookalike seed alongside the existing website and purchaser seeds.",
+   "Launch the new lookalike in a capped sandbox ad group.",
+   "Compare its CPA against the website-visitor-seeded lookalike after a full read window."
+  ],
+  "test": {
+   "method": "Compare CPA between the engagement-seeded lookalike and the website-visitor-seeded lookalike.",
+   "measure": "cpa",
+   "read_point": "One full read window."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "f10b4c010429"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "DEP-135",
+  "title": "Build a TikTok retargeting audience directly from Shop activity",
+  "domain": "24-DEP",
+  "bottleneck": [
+   "acquisition_efficiency",
+   "conversion"
+  ],
+  "lever": "Shop-native retargeting",
+  "hypothesis": "If a TikTok Shop seller builds a retargeting audience from Shop activity such as product views and cart adds inside the Shop, then shoppers who never left TikTok still get retargeted, since website-pixel audiences alone would miss them.",
+  "applies_when": [
+   "any",
+   "marketplace_heavy"
+  ],
+  "signal": {
+   "check": "A brand runs TikTok Shop and retargets only from website-pixel visitors, with no audience built from in-Shop activity.",
+   "metrics": [
+    "cpa"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cpa",
+   "direction": "down",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "An additional audience source, not a change to existing retargeting."
+  },
+  "prerequisites": [
+   "An active TikTok Shop with product view or cart data"
+  ],
+  "steps": [
+   "Open Audience Manager and build a shop activity custom audience: product views or cart adds inside TikTok Shop.",
+   "Exclude buyers from the same window.",
+   "Run it as its own retargeting ad group alongside the website-visitor retargeting.",
+   "Compare CPA and conversion rate between the two retargeting sources."
+  ],
+  "test": {
+   "method": "Compare CPA between the Shop-activity retargeting ad group and the website-pixel retargeting ad group.",
+   "measure": "cpa",
+   "read_point": "One full read window."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "1ee708d070fe",
+    "e65261264f64"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "DEP-136",
+  "title": "Do not split ad accounts by country except to bill in local currency",
+  "domain": "24-DEP",
+  "bottleneck": [
+   "team_capacity",
+   "measurement_data"
+  ],
+  "lever": "ad account consolidation by country",
+  "hypothesis": "If country-specific ad accounts are opened only when a local billing currency is required, and country-level reporting is solved with campaign names or country filters instead, then account management stays simple without losing per-country visibility.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "A genuine local billing entity requires its own currency"
+  ],
+  "signal": {
+   "check": "The account is split into several country-specific ad accounts with no local billing-currency reason.",
+   "metrics": [
+    "other:account_count"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:account_count",
+   "direction": "down",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "medium",
+   "reversible": false,
+   "note": "Consolidating ad accounts can lose campaign history; plan the merge carefully."
+  },
+  "prerequisites": [
+   "Multiple country ad accounts without a billing-currency reason"
+  ],
+  "steps": [
+   "List every ad account and the reason it exists.",
+   "Flag any account split by country with no local billing-currency reason.",
+   "Plan consolidation into one account, using campaign names or country filters for reporting.",
+   "Keep separate pages and store backends per region as needed, even inside one ad account."
+  ],
+  "test": {
+   "method": "Compare reporting clarity and management overhead before and after consolidation.",
+   "measure": "other:account_count",
+   "read_point": "After the consolidation is complete."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "b8c4642d637c"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "DEP-137",
+  "title": "Check Google cold campaign search terms for brand-term leakage",
+  "domain": "24-DEP",
+  "bottleneck": [
+   "measurement_data",
+   "acquisition_efficiency"
+  ],
+  "lever": "Google brand and non-brand separation",
+  "hypothesis": "If every Google cold or non-brand campaign's search terms are checked for the brand's own name pulling through, then non-brand ROAS stops being inflated by cheap, high-intent brand clicks that were never really cold traffic.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A Google non-brand or cold campaign's search terms have not been reviewed for brand-term leakage.",
+   "metrics": [
+    "roas_blended"
+   ]
+  },
+  "expected_effect": {
+   "metric": "roas_blended",
+   "direction": "down",
+   "size": "unknown; a corrected read, not a real performance change",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A reporting and negative-keyword check, not a spend change."
+  },
+  "prerequisites": [
+   "Access to Google Ads search terms report"
+  ],
+  "steps": [
+   "Open each cold or non-brand campaign's search terms report.",
+   "Check for the brand's own name or close variants pulling through.",
+   "Add brand terms as negatives on non-brand campaigns if found.",
+   "Re-read non-brand ROAS after the fix and compare to acquisition MER."
+  ],
+  "test": {
+   "method": "Compare non-brand ROAS before and after removing brand-term leakage.",
+   "measure": "roas_blended",
+   "read_point": "One full read window after the negative-keyword fix."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "03"
+   ],
+   "cards": [
+    "89ab42bd67bc"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": false
+ },
+ {
+  "id": "DEP-138",
+  "title": "Audit the Google Merchant Center feed and use a multi-currency feed abroad",
+  "domain": "24-DEP",
+  "bottleneck": [
+   "measurement_data",
+   "acquisition_efficiency"
+  ],
+  "lever": "product feed quality",
+  "hypothesis": "If the Merchant Center feed runs with optimised titles, complete required fields, zero warnings and errors, and a true multi-currency feed when selling in several countries, then Shopping ads stop underperforming from a fixable feed problem instead of a targeting one.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "Selling in only one country with one currency"
+  ],
+  "signal": {
+   "check": "The Merchant Center feed has open warnings or errors, thin titles, or one currency serving several countries with auto-conversion.",
+   "metrics": [
+    "other:feed_errors"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:feed_errors",
+   "direction": "down",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A feed and catalogue fix, not a bidding or targeting change."
+  },
+  "prerequisites": [
+   "Access to Google Merchant Center diagnostics"
+  ],
+  "steps": [
+   "Open Merchant Center diagnostics and list every warning and error.",
+   "Optimise thin product titles and fill every relevant attribute.",
+   "If selling in multiple countries, set up a true multi-currency feed instead of one currency with auto-conversion.",
+   "Recheck diagnostics after the fix and monitor Shopping ROAS for the next read window."
+  ],
+  "test": {
+   "method": "Recheck Merchant Center diagnostics and Shopping ROAS after the feed fix.",
+   "measure": "other:feed_errors",
+   "read_point": "One full read window after the fix."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "03"
+   ],
+   "cards": [
+    "ce1358ea9d05"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": false
+ },
+ {
+  "id": "DEP-139",
+  "title": "Rule out three causes before calling a Google non-brand gap an attribution issue",
+  "domain": "24-DEP",
+  "bottleneck": [
+   "measurement_data"
+  ],
+  "lever": "Google non-brand diagnosis order",
+  "hypothesis": "If a Google non-brand ROAS that does not match acquisition MER is checked against three explanations in order, real outperformance, halo capture of bottom-of-funnel or branded-title traffic, then setup or attribution, then the fix targets the real cause instead of the first guess.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Google non-brand campaign ROAS does not correlate with acquisition MER and no cause has been ruled out yet.",
+   "metrics": [
+    "roas_blended"
+   ]
+  },
+  "expected_effect": {
+   "metric": "roas_blended",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A diagnostic sequence before any setting change."
+  },
+  "prerequisites": [
+   "Google non-brand ROAS and acquisition MER for the same period"
+  ],
+  "steps": [
+   "Check whether non-brand really is a strong, underspent channel worth more budget.",
+   "If not, check whether the campaign is picking up product-title or bottom-of-funnel traffic that Meta already drove.",
+   "Only if both are ruled out, treat it as a setup or attribution issue and investigate settings.",
+   "Document which cause explained the gap before changing anything."
+  ],
+  "test": {
+   "method": "Track whether the diagnosis (outperformance, halo, or setup) predicted the outcome of the fix applied.",
+   "measure": "roas_blended",
+   "read_point": "One full read window after the diagnosis."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "03"
+   ],
+   "cards": [
+    "ce1358ea9d05"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "DEP-140",
+  "title": "Audit which Meta targeting fields are real controls versus suggestions",
+  "domain": "24-DEP",
+  "bottleneck": [
+   "acquisition_efficiency",
+   "measurement_data"
+  ],
+  "lever": "targeting control audit",
+  "hypothesis": "If an ad set audit separates the fields that truly restrict delivery, exclusions, minimum age, locations and languages, from fields Meta can override, age bands, gender and interests, then time stops going into tuning settings that never really controlled who saw the ad.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Time is being spent adjusting age bands, gender or interest fields expecting them to hard-restrict delivery.",
+   "metrics": [
+    "other:targeting_hours"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:targeting_hours",
+   "direction": "down",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A review of understanding, not a live setting change by itself."
+  },
+  "prerequisites": [],
+  "steps": [
+   "List every targeting field currently set on cold ad sets.",
+   "Mark each as a hard control (exclusions, minimum age, locations, languages) or a soft suggestion (age bands, gender, interests, lookalikes).",
+   "Redirect time spent tuning soft-suggestion fields toward creative and exclusions instead.",
+   "Keep only the hard controls actively managed going forward."
+  ],
+  "test": {
+   "method": "Compare time spent on settings work before and after the audit, and track whether removing soft-suggestion tuning changed CPA.",
+   "measure": "cpa",
+   "read_point": "One full read window after the change."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "04"
+   ],
+   "cards": [
+    "48728b3abcdf",
+    "071837c01e9b"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "DEP-141",
+  "title": "Test whether a higher on-page action rate lowers CPM",
+  "domain": "24-DEP",
+  "bottleneck": [
+   "acquisition_efficiency",
+   "conversion"
+  ],
+  "lever": "CPM arbitrage hypothesis test",
+  "hypothesis": "If two funnels sending the same ad to the same event are compared on landing-page action rate and CPM, then it becomes clear whether raising on-page action rate through easier or clearer landing pages can lower CPM, instead of assuming CPM is fixed by bid alone.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "The account has two or more funnels or landing pages firing the same optimisation event with different on-page conversion rates, and CPM has never been compared across them.",
+   "metrics": [
+    "cpm",
+    "cvr_pdp_to_cart"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cpm",
+   "direction": "down",
+   "size": "unknown; unproven hypothesis from a non-ecommerce example",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "An observational test using existing funnels; no account setting changes needed."
+  },
+  "prerequisites": [
+   "At least two live funnels or landing pages firing the same event"
+  ],
+  "steps": [
+   "List every live funnel or landing page firing the same optimisation event.",
+   "Record each one's on-page action rate and CPM for the same period.",
+   "Look for a pattern: higher action rate paired with lower CPM.",
+   "If the pattern holds, prioritise landing-page work as a CPM lever; if not, drop the hypothesis."
+  ],
+  "test": {
+   "method": "Correlate on-page action rate with CPM across the account's live funnels.",
+   "measure": "cpm",
+   "read_point": "After enough spend to compare funnels over the same period."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "04"
+   ],
+   "cards": [
+    "c7223bce696a"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "DEP-142",
+  "title": "Run a 4-week TikTok targeting ladder, one layer added per week",
+  "domain": "24-DEP",
+  "bottleneck": [
+   "acquisition_efficiency",
+   "measurement_data"
+  ],
+  "lever": "staged targeting ladder",
+  "hypothesis": "If TikTok targeting adds exactly one new layer each week, broad first, then an interest, then a lookalike, then stacked winners, with ad group budget held steady, then each week's read stays independent because no two layers are tested in the same window.",
+  "applies_when": [
+   "any",
+   "new_store"
+  ],
+  "signal": {
+   "check": "A new TikTok account is testing several targeting layers at once instead of adding them on a fixed weekly schedule.",
+   "metrics": [
+    "cpa"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cpa",
+   "direction": "down",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A scheduling discipline, not a spend change."
+  },
+  "prerequisites": [
+   "A running TikTok conversion ad group"
+  ],
+  "steps": [
+   "Week 1: run broad targeting only, budget held steady.",
+   "Week 2: add one broad interest layer as a second ad group, same budget rule.",
+   "Week 3: build and add a lookalike audience as a third ad group.",
+   "Week 4: stack the winning layers from weeks 1 to 3 into a combined ad group and compare CPA across all four."
+  ],
+  "test": {
+   "method": "Compare CPA across the four weekly ad groups at the end of the ladder.",
+   "measure": "cpa",
+   "read_point": "End of week 4."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "05"
+   ],
+   "cards": [
+    "27e3b9f1f613"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "DEP-143",
+  "title": "Audit the creative library by awareness stage against an 80/10/10 split",
+  "domain": "24-DEP",
+  "bottleneck": [
+   "acquisition_volume",
+   "conversion"
+  ],
+  "lever": "awareness-stage volume audit",
+  "hypothesis": "If active creatives are tagged by awareness stage and counted against an 80 percent unaware plus problem aware, 10 percent solution aware, 10 percent product plus most aware starting split, then production gets redirected to whichever stage is underweighted before frequency and cold reach become a problem.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "No recent count exists of active creatives by awareness stage, or the count has not been compared to a target split.",
+   "metrics": [
+    "frequency",
+    "hook_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "frequency",
+   "direction": "down",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "An audit and production-brief exercise, not an account setting change."
+  },
+  "prerequisites": [
+   "A list of active creatives with enough context to judge awareness stage"
+  ],
+  "steps": [
+   "List every active ad and assign it an awareness stage from when the product first appears and what the copy assumes.",
+   "Count the split across the five stages and compare to the 80/10/10 starting target.",
+   "Flex the target from account data: raise a stage's share if it is underperforming, drop it if a stage is oversupplied.",
+   "Brief the next production batch to correct the biggest gap first."
+  ],
+  "test": {
+   "method": "Recount the stage mix after the next production batch and compare to the target split.",
+   "measure": "frequency",
+   "read_point": "After the next monthly creative batch ships."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "06"
+   ],
+   "cards": [
+    "b81e94d98fa2",
+    "59dbcd6956ee"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "DEP-144",
+  "title": "Treat daily ROAS swings under about $1,000 a day as normal noise",
+  "domain": "24-DEP",
+  "bottleneck": [
+   "measurement_data"
+  ],
+  "lever": "daily noise tolerance",
+  "hypothesis": "If daily ROAS and CPA swings are expected as normal noise, especially under about $1,000 a day of spend, and every performance call waits for a 7-day or larger window, then good ads and ad sets stop getting killed on a single bad day.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A keep, kill or budget decision is being made from a single day's ROAS or CPA, especially at daily spend under about $1,000.",
+   "metrics": [
+    "roas_blended",
+    "cpa"
+   ]
+  },
+  "expected_effect": {
+   "metric": "roas_blended",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A decision-timing rule, not a spend change."
+  },
+  "prerequisites": [],
+  "steps": [
+   "Before any keep or kill call, check the daily spend level.",
+   "If under about $1,000 a day, expect the daily number to swing like a sine wave.",
+   "Pull at least 7 days, or the largest available spend window, before deciding.",
+   "If results are still poor over that window, treat it as a real signal, not noise."
+  ],
+  "test": {
+   "method": "Compare decisions made on a single day against the same ad set's 7-day read.",
+   "measure": "roas_blended",
+   "read_point": "7 days or the largest available window."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "07"
+   ],
+   "cards": [
+    "c8f9d9634c5f"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "DEP-145",
+  "title": "Audit unintended buyer signals a creative sends before launch",
+  "domain": "24-DEP",
+  "bottleneck": [
+   "acquisition_efficiency",
+   "conversion"
+  ],
+  "lever": "creative signal audit",
+  "hypothesis": "If every new ad is checked for who it visually and verbally signals as the buyer, on-screen age, gender, tone and setting, before launch, then delivery stops narrowing away from the intended buyer through casting or tone the team never meant as targeting.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A new ad is about to launch and no one has checked whether its cast, tone or setting signals a narrower buyer than intended.",
+   "metrics": [
+    "frequency",
+    "ctr"
+   ]
+  },
+  "expected_effect": {
+   "metric": "frequency",
+   "direction": "down",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A pre-launch review step."
+  },
+  "prerequisites": [
+   "A finished ad ready for launch"
+  ],
+  "steps": [
+   "List who appears on screen (age, gender, setting) and what tone the copy uses.",
+   "Compare that against the intended buyer for this concept.",
+   "If they do not match, recast, reshoot, or rewrite before launch rather than after a narrow delivery pattern shows up.",
+   "After launch, check the age and gender breakdown against what was intended."
+  ],
+  "test": {
+   "method": "Compare the post-launch age and gender breakdown to the intended buyer profile.",
+   "measure": "frequency",
+   "read_point": "After the first read window."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "07"
+   ],
+   "cards": [
+    "32581af3f424"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "DEP-146",
+  "title": "Set each product category's ROAS target from its own gross margin",
+  "domain": "24-DEP",
+  "bottleneck": [
+   "margin_cogs",
+   "acquisition_efficiency"
+  ],
+  "lever": "margin-based category targets",
+  "hypothesis": "If each product category gets its own ROAS or CPA target derived from that category's gross margin instead of one blanket account-wide target, then a higher-margin category can carry a lower ROAS and a lower-margin category is held to a higher one, matching spend to what each category can actually afford.",
+  "applies_when": [
+   "catalogue",
+   "any"
+  ],
+  "signal": {
+   "check": "Every category or ad set is judged against the same ROAS or CPA target even though gross margin differs a lot by category.",
+   "metrics": [
+    "gross_margin",
+    "roas_blended"
+   ]
+  },
+  "expected_effect": {
+   "metric": "gross_margin",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "finance"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A target-setting exercise, not a live spend change."
+  },
+  "prerequisites": [
+   "Gross margin by category"
+  ],
+  "steps": [
+   "Pull gross margin percent and dollars for each product category.",
+   "Set a target ROAS or CPA per category so a higher-margin category can run a lower ROAS and a lower-margin category needs a higher one.",
+   "Apply the category-specific target at the campaign or ad set level that maps to that category.",
+   "Recheck targets when margin or discounting patterns change by category."
+  ],
+  "test": {
+   "method": "Compare contribution margin per category before and after moving to category-specific targets.",
+   "measure": "gross_margin",
+   "read_point": "One full read window after applying the category targets."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "08"
+   ],
+   "cards": [
+    "1ed05eaf4fa7"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": false
+ },
+ {
+  "id": "DEP-147",
+  "title": "Favor static ads over video when creative capacity is limited",
+  "domain": "24-DEP",
+  "bottleneck": [
+   "acquisition_efficiency",
+   "team_capacity"
+  ],
+  "lever": "format capacity choice",
+  "hypothesis": "If a team with limited creative capacity favors statics over video, then it can ship far more variants for the same effort, which may earn more delivery per dollar under a creative-hungry algorithm, though the delivery-preference claim itself is unproven.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "Proven organic video already exists and is cheap to turn into an ad"
+  ],
+  "signal": {
+   "check": "The team is choosing between investing limited creative time in fewer polished videos or more statics, with no test run to compare.",
+   "metrics": [
+    "hook_rate",
+    "cpm"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cpm",
+   "direction": "down",
+   "size": "unknown; presenter opinion, not a documented Meta mechanic",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "designer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A creative-mix choice, not an account setting."
+  },
+  "prerequisites": [
+   "Limited creative production time or budget"
+  ],
+  "steps": [
+   "For the next production batch, shift more of the budget of time toward statics instead of a small number of videos.",
+   "Ship a higher count of static variants for the same effort.",
+   "Compare CPM and cost per result between the static-heavy batch and prior video-heavy batches.",
+   "Keep the mix that performs, without dropping video entirely if it already works."
+  ],
+  "test": {
+   "method": "Compare CPM and cost per result between a static-heavy batch and a video-heavy batch of similar spend.",
+   "measure": "cpm",
+   "read_point": "One full read window per batch."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "09"
+   ],
+   "cards": [
+    "5a4c1bc7103b"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "DEP-148",
+  "title": "Mirror the best ad headline on the landing page within a day",
+  "domain": "24-DEP",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "ad-to-page message match",
+  "hypothesis": "If the best-performing ad headline is mirrored on the landing page headline and subheadline quickly, and landing-page split tests keep running on the insights from ad headline tests, then conversion rate rises because the page stops promising something different from what the ad said.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A top-performing ad's headline does not match the landing page headline or subheadline it sends traffic to.",
+   "metrics": [
+    "cvr_pdp_to_cart",
+    "ctr"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_pdp_to_cart",
+   "direction": "up",
+   "size": "unknown; source reports at least 15 to 20 percent in its own accounts, not verified",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "designer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A copy change on the landing page."
+  },
+  "prerequisites": [
+   "A clear top-performing ad headline"
+  ],
+  "steps": [
+   "Open the top 3 ads by spend or conversion rate and note their headlines.",
+   "Compare each to the landing page headline and subheadline it sends traffic to.",
+   "Fix any mismatch within a day by mirroring the ad headline on the page.",
+   "Keep at least one landing-page split test running, fed by insights from ad headline tests."
+  ],
+  "test": {
+   "method": "Compare landing-page conversion rate before and after matching the headline.",
+   "measure": "cvr_pdp_to_cart",
+   "read_point": "One full read window after the headline match."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "09"
+   ],
+   "cards": [
+    "1fa8a27d2993"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "DEP-149",
+  "title": "Flag high frequency on a top-spending prospecting ad before scaling it",
+  "domain": "24-DEP",
+  "bottleneck": [
+   "measurement_data",
+   "acquisition_efficiency"
+  ],
+  "lever": "top-ad frequency flag",
+  "hypothesis": "If unusually high frequency on a single top-spending prospecting ad is treated as a flag to run the audience breakdown, then a prospecting ad that is secretly behaving like retargeting gets caught before more budget or creative gets briefed toward it.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "The top-spending ad in a broad or top-of-funnel scaling campaign shows frequency that looks high for a cold campaign, and no audience breakdown has been run.",
+   "metrics": [
+    "frequency",
+    "roas_blended"
+   ]
+  },
+  "expected_effect": {
+   "metric": "roas_blended",
+   "direction": "down",
+   "size": "unknown; a corrected read, not a real performance change",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A diagnostic check before any scale-up decision."
+  },
+  "prerequisites": [
+   "Ad-level frequency and an audience segment breakdown"
+  ],
+  "steps": [
+   "Sort the scaling campaign's ads by spend and note the top spender's frequency.",
+   "If frequency looks high for a cold campaign, run the audience breakdown for that ad.",
+   "Read the new-audience ROAS row separately from the blended ROAS.",
+   "Do not scale or brief more creative toward this ad until the new-audience number is confirmed."
+  ],
+  "test": {
+   "method": "Compare blended ROAS to new-audience ROAS on the flagged ad.",
+   "measure": "roas_blended",
+   "read_point": "Before any scale-up decision on that ad."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "10"
+   ],
+   "cards": [
+    "8c6833a8cd30"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": false
+ },
+ {
+  "id": "DEP-150",
+  "title": "Run a dedicated lapsed-customer campaign with its own strategy",
+  "domain": "24-DEP",
+  "bottleneck": [
+   "repeat_retention"
+  ],
+  "lever": "lapsed-customer segmentation",
+  "hypothesis": "If customers who have not bought in a long time, such as over 2 years, get their own campaign with a distinct win-back strategy instead of being folded into either the cold-audience exclusion list or active retargeting, then win-back spend gets judged and improved on its own terms.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "Repurchase cycle is short enough that a 2-year lapsed window rarely applies"
+  ],
+  "signal": {
+   "check": "Customers who have not purchased in a long time are either fully excluded from all spend or mixed into active retargeting, with no distinct win-back campaign.",
+   "metrics": [
+    "repeat_rate_365d"
+   ]
+  },
+  "expected_effect": {
+   "metric": "repeat_rate_365d",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A small, capped campaign separate from core prospecting and retargeting."
+  },
+  "prerequisites": [
+   "A customer file with last-purchase date"
+  ],
+  "steps": [
+   "Build a lapsed-customer audience of buyers with no purchase in the set window, such as over 2 years.",
+   "Set the window from the brand's own repurchase cycle rather than copying the 2-year example.",
+   "Build a distinct win-back offer or message for this campaign, separate from cold prospecting and active retargeting creative.",
+   "Judge it on its own repeat-purchase and revenue read, not folded into either cold or retargeting numbers."
+  ],
+  "test": {
+   "method": "Track repeat purchase rate and revenue from the lapsed-customer campaign against a holdout or its own baseline.",
+   "measure": "repeat_rate_365d",
+   "read_point": "One full read window after launch."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "10"
+   ],
+   "cards": [
+    "cf3aa44a7de1"
+   ],
+   "rules": []
   },
   "confidence": "low",
   "general_practice": true
