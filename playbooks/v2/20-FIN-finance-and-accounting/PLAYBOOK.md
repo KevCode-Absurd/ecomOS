@@ -826,3 +826,182 @@ Every gap is explained by a named cause (tax, timing, processed vs accrued retur
 
 **R142. Post-advertising CM in a subscription launch may not cover payroll for a year or more; size the raise to the lowest cash month, not to the P&L.** 01's T10: CM covers nothing until month 11, payroll from month 14 to 15; $500,000 raised, about $1.5M needed to reach profitability. Condition: any subscription launch model. Source: 01 only. Cards: [9d2823e98694] [f39ad32b21d7].
 
+## 4. Procedures (implementation)
+
+Each procedure: goal, preconditions, numbered steps, checks, rollback. All calculations call the F formulas; the agent never does arithmetic in prose. Mini playbook numbers in the heading show where the steps come from.
+
+### P1. Build the monthly P&L ladder (03, 01)
+
+Goal: 1 ladder in dollars and percent of net revenue for each month, with the scope of every margin labelled.
+Preconditions: gross-to-net data by day, landed cost table (P4), fulfillment cost per order (P5), marketing by type, OPEX by account, accounting policy on variable vs fixed marketing (R27).
+Steps:
+1. Pull gross revenue (F1), discounts, refunds accrued (F31), chargebacks, shipping collected. Compute net revenue (F2). Exclude sales tax (R2).
+2. Compute product COGS (F5) from units sold by SKU times landed cost. Compute CM1 (F8).
+3. Compute fulfillment and variable delivery (F6 summed), COD (F7), CM2 (F9).
+4. Compute variable marketing per the written convention; CM3 media-only and CM3 loaded (F10).
+5. Compute OPEX, EBITDA, interest, tax, D&A, net profit (F11).
+6. Add a percent-of-revenue column for every line (F13) and the 4-bucket shares (F12).
+7. Add a per-order column (line / orders) and a trailing-3-month per-order column (F13).
+8. Set a target per line from the owner's net target and OPEX plan (F27) `[needs brand data: targets]`.
+Checks: 4 buckets sum to 100%; rolled-up CM2 percent per segment equals the unit-economics CM2 percent (R32); net revenue ties to the reconciliation (P28); every margin carries its scope label.
+Rollback: if landed costs are missing for any SKU, publish the ladder with CM1 marked "unavailable" for that SKU share rather than a guess.
+
+### P2. Build the 4-bucket view and pick the bucket to work on (02)
+
+Goal: 4 totals per month: cost of delivery, CAC (variable media), OPEX, profit.
+Preconditions: P1.
+Steps:
+1. COD = product COGS + fulfillment and variable delivery. CAC bucket = pure variable media; creative only if truly variable; agencies and contractors on retainer go to OPEX (R27).
+2. Compute shares (F12). Compare to the reference mix (COD 30 to 40%, CAC 25 to 30%, OPEX 10 to 15%, profit 15 to 20%) and to the 25/25/25/25 picture, remembering that industry average COGS is about 58% (C5).
+3. Name the 1 bucket most out of line. Apply the fault rule (R25) to that bucket's lines only.
+4. Track net shipping cost (F30) and shipping percent monthly inside the COD bucket.
+Checks: the profit share equals EBITDA / net revenue when variable marketing is media only.
+Rollback: none; this is a read.
+
+### P3. Classify any cost: statutory COGS, internal COD, variable marketing or OPEX (04, 06, 03)
+
+Goal: every account in the chart of accounts mapped to 1 statutory bucket and 1 internal bucket.
+Preconditions: chart of accounts, accounting policy, the accountant's treatment of outbound shipping, packaging and returns `[needs brand data]`.
+Steps:
+1. Is the cost part of buying the product or getting it onto the shelf ready to sell? Yes: statutory COGS (R11).
+2. If unsure: would you have paid it if you had not bought these goods? Yes: expense. No: COGS.
+3. Incurred after the sale (delivery, shipping carton, return shipping)? Statutory expense, unless the written policy elects free-shipping or dropship freight into cost of sales (R16, C17). Internal view: COD.
+4. Varies with revenue (payment fees, marketplace fees, pick and pack, warehouse staff per order)? Internal COD (R17, R18). Statutory: follow policy.
+5. Reduces the price the customer pays (coupon)? Reduces revenue (R19).
+6. Marketing, PPC, marketing-only partner revenue share? Variable marketing if it flexes with demand, OPEX if fixed (R20, R27).
+7. Return costs: return shipping to overhead; repackaging to make sellable can be COGS; other return handling to expense (R21).
+8. Interest: below EBITDA (R26).
+9. Write the mapping in the brand record. Do not change it mid-year.
+Checks: run checklist 5.3 after mapping.
+Rollback: keep the previous mapping version; restate only when the accountant agrees.
+
+### P4. Build the landed cost and COGS table (04, 06)
+
+Goal: landed cost per unit for every SKU, tied to invoices.
+Preconditions: POs, supplier invoices, freight and duty invoices, packaging invoices, allocation basis in the policy.
+Steps:
+1. At PO time record the agreed unit price per SKU.
+2. When the supplier invoice arrives, compare it to the PO price. Resolve differences (commodity, currency) before posting.
+3. When each freight or duty invoice arrives, link it to its PO(s) the same day. Never file to sort later.
+4. Allocate shipment freight and duty across the SKUs in it by the 1 documented basis (F4). Record duty as the amount paid.
+5. Split mixed packaging invoices: retail box to product packaging (COGS), shipping carton to fulfillment.
+6. Apply supplier discounts to product cost; check credits for a matching stock return.
+7. Post purchases to inventory (asset), not to expense; move cost to COGS when units sell (R22) `[web check: inventory and COGS journal steps in Xero, QuickBooks, NetSuite or Tally]` `[verify UI]`.
+8. Recalculate landed cost when supplier price, exchange rate or freight changes; version the table with an effective date.
+9. Above a few dozen SKUs or several shipments a month, move from a spreadsheet to inventory software and check its totals tie back to invoices.
+Checks: sum of allocated freight and duty equals invoice totals; every SKU has purchase price + freight share + duty share + product packaging; the basis is the same across the last 3 shipments.
+Rollback: if an allocation basis changes, restate the affected shipments and note it in the close.
+
+### P5. Compute true gross margin (CM2) per basket, SKU and channel (03, 01)
+
+Goal: the margin that sets the CAC ceiling.
+Preconditions: P4, fulfillment quotes, fee rates, refund and discount rates by category.
+Steps:
+1. Price paid by the customer, excluding sales tax.
+2. Subtract landed cost per unit times units in the basket (F4, F3).
+3. Subtract outbound shipping per order, pick and pack per order, packing materials, storage per order, warehouse staff per order (F6).
+4. Subtract payment fee (rate times revenue collected) and, for marketplace orders, the marketplace fee.
+5. Subtract a refund and discount allowance per order `[needs brand data: refund rate and average discount by category]`.
+6. CM2 basket dollars and percent (F9). Repeat per SKU and per channel (Shopify, Amazon, marketplace).
+7. Repeat for new-customer baskets only (F3 aov_new) to get first-order GP for CAC work (R48).
+8. Document the definition next to the number.
+Checks: compare with the margin the team quotes; if the team's number is CM1, reset marketing budgets and CAC targets off CM2 (R5).
+Rollback: none.
+
+### P6. Reclassify warehouse staff into cost of delivery (03)
+
+Goal: gross margin includes the people who fulfill orders.
+Steps: 1. Daily cost of each fulfilment staff member. 2. Divide by packages shipped per day (03: $400 / 100 = $4 an order). 3. Bookkeeper tags the staff in the accounting system and builds a custom P&L moving them into COD `[verify UI: Xero or QuickBooks tracking categories]`. 4. Add the per-order figure to F6.
+Checks: OPEX falls and COD rises by the same amount; CM2 percent falls.
+Rollback: keep the statutory P&L unchanged if the accountant rejects the reclass; apply it in the internal view only.
+
+### P7. Per-order unit economics and the SKU contribution table (01, 03)
+
+Goal: CM2 per order overall, per SKU and per product category, with contribution per sale after CAC.
+Preconditions: P1, P5, CAC by product from the scaling campaign (estimate).
+Steps:
+1. AOV, product COGS per order, fulfillment per order, CM2 per order (F9); trailing 3-month versions (F13).
+2. Divide each fulfillment line by revenue to see which charge moved (R9).
+3. Per SKU: revenue, units, landed cost, CM1, CM2 per unit and per basket; rank by dollars and by percent (01's SKU A: $92 CM at 40%; SKU B: $74 at 61%).
+4. Per product or category: CM2 per order, CAC estimate (campaign CPA), contribution per sale = CM2 minus CAC (F29). Rank by contribution per sale.
+5. Flag products whose low CPA hides low contribution, and products that would sell without ads (R128).
+6. Add units on hand and days of inventory (F34) so the table also serves P21.
+Checks: sum of SKU revenue ties to net revenue; per-order CM2 ties to the ladder.
+Deliverable 9.2.
+
+### P8. Compute CAC, 4 ways, and first-order GP (01, 03, 02)
+
+Goal: labelled CAC figures for the period.
+Preconditions: new vs returning flag per order `[needs brand data]`, spend by channel, other variable marketing, first-order discounts.
+Steps:
+1. Count customers whose first order fell in the period (store data, never platform).
+2. cac_media = ad spend / new customers. cac_blended = all variable marketing / new customers. cac_loaded adds first-order discount cost. cac_paid = paid spend / paid-attributed new customers (F16).
+3. First-order GP = CM2 per new order (P5 step 7).
+4. First-order test (F21): CM:CAC and first-order profit for each CAC definition.
+5. Break-even ROAS and CAC, and the operating CAC ceiling (F15) using the owner's net target and OPEX (F27).
+6. Compare cac_media with the ceiling monthly; a month where CAC exceeds CM2 per new order is a loss month on acquisition (01's July).
+Checks: no platform CPA anywhere in the output; every figure labelled.
+Rollback: none.
+
+### P9. Build the cohort table: retention, NRR, cumulative GP and LTV (01, 02, 03)
+
+Goal: the source table for LTV, LTGP:CAC, payback and the returning-revenue forecast.
+Preconditions: order history with customer id, first-order date, order date, net revenue and CM2 per order.
+Steps:
+1. Assign each customer to the cohort of their first order month. They never move.
+2. Build 3 grids by cohort and month since first order: customers ordering, orders, net revenue. Divide every cell by the original cohort size (F22). Lock the denominator.
+3. Retention percent grid; NRR grid; cumulative revenue per customer; cumulative GP per customer (revenue times CM2 percent or summed order-level CM2); orders per customer.
+4. Leave future cells empty. The table is a triangle.
+5. Read a calendar month diagonally and check the diagonal ties to reported returning orders (01: 122 in June).
+6. Compare cohorts at the same age; a cohort far below others (01: January 74% vs July 91%) prompts a question about acquisition source or promo.
+7. Take lifetime orders from the cohort with the most history, not an extrapolation.
+8. Find the plateau month where cumulative revenue stops rising; that is the brand's LTV window ceiling (R55).
+Source: SQL by an analyst, a cohort app, or the analytics tool's cohort report `[verify UI]`.
+Checks: month 0 retention is 1.0 everywhere; sum of cohort revenue across a diagonal equals that month's revenue.
+
+### P10. LTGP:CAC in fixed windows (03, 01)
+
+Goal: 30-day, 90-day (and 365-day when acquisition is aggressive) LTGP:CAC for new customers.
+Steps: 1. From P9, cumulative GP per customer at 30, 90 and 365 days (F23). 2. Divide by cac_media (03's bands) and by cac_loaded (report both) (F24). 3. Read against the bands (R58). 4. If above 3, run the marginal test (P27) before recommending more spend. 5. If below 1, check first-order GP and COD before calling it a lifetime play (R59).
+Checks: the window is printed with every ratio.
+
+### P11. Cohort CAC payback (01)
+
+Goal: months (or orders) to recover the cohort's CAC outlay and the profit tail after.
+Steps: 1. Pick 1 cohort of N customers; outlay = N x CAC (F25). 2. Survivors per period from P9; GP per period = survivors x GP per order. 3. Cumulative GP; payback = first period at or above outlay. 4. Report the tail profit to the plateau month. 5. Re-run at CAC plus and minus 25% and at churn plus 5 points (R126). 6. Report the naive figure only as the lower bound (R60).
+Checks: payback in orders when customers skip or ship every 2 to 3 months.
+
+### P12. Churn, lifetime and subscription LTV (01)
+
+Goal: churn stated with its period, lifetime, and LTV checked 2 ways.
+Steps: 1. Per period: subscribers at end of prior period, new, cancellations. 2. Churn = cancellations / prior-period base (F26). 3. Lifetime = 1 / churn; convert annual to monthly with the stated method (C13). 4. Churn LTV = GP per order x orders per period / churn. 5. Cohort LTV: start 1,000, apply survivorship each period, sum GP, divide by 1,000. 6. The 2 must agree within rounding (01: $92 both ways). 7. Transactional customers: rolling 6-month return rate (F40), not churn.
+Checks: the period is printed; no churn figure for a non-subscription store.
+
+### P13. Daily contribution dashboard with returns accrual (02)
+
+Goal: cm3_media by day against a monthly goal, with the hierarchy below it.
+Preconditions: daily gross revenue, discounts, shipping collected, orders with new flag, daily ad spend, product cost per order, fulfillment per order, return rate.
+Steps:
+1. Daily net revenue with refunds accrued at the historical rate (F31), not processed refunds (R41, R42).
+2. Daily cm3_media = net revenue minus product COGS minus fulfillment minus ad spend (F10).
+3. Monthly CM goal = OPEX plus the profit target (F27); daily pacing line = goal x (day of month / days in month) or the 3-model expectation (F43).
+4. Rows below CM: revenue, spend, MER, AOV; then new-customer revenue, aMER, new-customer CM, ad spend; then channel ROAS last (R35).
+5. No fixed costs in the daily view (R34).
+6. Month end: true up accrued refunds to processed refunds; post the difference to the month.
+7. The CEO or CFO keeps a separate rolling 13-week cash forecast (P20); the source gives no template.
+Checks: month-to-date cm3_media ties to the monthly ladder within the accrual difference; MER and aMER are period totals, not averaged days.
+`[verify UI: Shopify default sales metric]`
+
+### P14. Weekly contribution readout (02, 03, 01)
+
+Goal: the weekly profit memo (deliverable 9.1).
+Steps:
+1. Week and month-to-date: net revenue, CM2, cm3_media, cm3_loaded, each in dollars, percent of revenue and vs goal.
+2. New vs returning split: new-customer revenue, aMER, cac_media, first-order GP, CM:CAC, new-customer count vs goal; returning revenue vs cohort forecast (F41).
+3. Variance vs the daily expectation (F43) and the named cause (action added or missed, efficiency, AOV, returns).
+4. Fault-rule read (R25): which line above the missed line moved.
+5. Inventory line: days of stock on the top 10 SKUs vs lead time; any SKU that will sell out before restock; any C or D stock funnel and its cash recovered.
+6. Cash line: cash balance, lowest projected point in the next 13 weeks, tax and PO payments due.
+7. Alerts fired (9.4) and the recommended action for each, with the CAC line unchanged unless the owner changes it (R51).
+Checks: every number carries its definition label and period.
+
