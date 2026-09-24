@@ -732,6 +732,10 @@ table.sheat td.heat { min-width: 58px; }
 .rp-words dt { font-weight: 700; font-size: 13px; } .rp-words dd { margin: 0; font-size: 13px; color: var(--muted); }
 .vtag { position: absolute; top: 10px; right: 10px; z-index: 2; font: 700 12px var(--display); padding: 4px 10px; border-radius: 999px; box-shadow: 0 1px 4px rgba(0,0,0,.2); }
 .vt-scale { background: var(--gold); color: var(--on-gold); } .vt-cut { background: var(--bad); color: #fff; } .vt-watch { background: var(--ink); color: var(--surface); }
+.vt-relaunch { background: var(--good); color: #fff; } .card.vc-relaunch { box-shadow: inset 0 3px 0 var(--good); }
+.grid-sec { grid-column: 1 / -1; font: 700 12px var(--display); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-top: 18px; }
+.relaunch-row { all: unset; cursor: pointer; display: grid; gap: 2px; padding: 8px 10px; border-radius: 10px; background: var(--good-soft); color: var(--ink); font-size: 13.5px; }
+.relaunch-row:hover, .relaunch-row:focus-visible { outline: 2px solid var(--good); }
 .card.vc-scale { box-shadow: inset 0 3px 0 var(--gold); } .card.vc-cut { box-shadow: inset 0 3px 0 var(--bad); } .card.vc-watch { box-shadow: inset 0 3px 0 var(--ink); }
 .grid-group { grid-column: 1 / -1; margin: 14px 0 0; font: 700 15px var(--display); text-transform: none; letter-spacing: normal; display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: baseline; scroll-margin-top: 170px; border-top: 1px solid var(--line); padding-top: 12px; }
 .grid-group:first-child { border-top: 0; margin-top: 0; padding-top: 0; }
@@ -839,7 +843,7 @@ table.sheat td.heat { min-width: 58px; }
           <section id="demo" class="panel-box" aria-label="Spend and ROAS by age and gender"></section>
           <section class="gridhead">
             <div class="controls">
-              <label>Show <select id="rankSet"><option value="spend">Top 30 by spend</option><option value="health">All ads, by verdict</option><option value="roas2">Top 100 by ROAS, 2+ purchases</option><option value="roas1">Top 100 by ROAS, 1+ purchase</option><option value="roas0">Top 100 by ROAS, any spend</option></select></label>
+              <label>Show <select id="rankSet"><option value="spend">Top 30 by spend</option><option value="health">All ads: live by verdict, then relaunch</option><option value="roas2">Top 100 by ROAS, 2+ purchases</option><option value="roas1">Top 100 by ROAS, 1+ purchase</option><option value="roas0">Top 100 by ROAS, any spend</option></select></label>
               <label>Format <select id="format"></select></label>
               <label>Sort
                 <select id="sort">
@@ -851,10 +855,12 @@ table.sheat td.heat { min-width: 58px; }
               <label>Verdict
                 <select id="verdict">
                   <option value="">All</option>
-                  <option value="scale">Scale</option>
-                  <option value="watch">Watch</option>
-                  <option value="cut">Cut</option>
-                  <option value="not_enough_data">Not enough data</option>
+                  <option value="scale">Scale (live)</option>
+                  <option value="watch">Watch (live)</option>
+                  <option value="cut">Cut (live)</option>
+                  <option value="not_enough_data">Too little spend (live)</option>
+                  <option value="relaunch">Relaunch (off, did well)</option>
+                  <option value="off">Off</option>
                 </select>
               </label>
               <label>Min spend <input id="minSpend" type="number" min="0" step="100" placeholder="0"></label>

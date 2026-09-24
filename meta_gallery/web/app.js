@@ -461,6 +461,22 @@ const items = () => collection().ad_ids.map((id) => VIEW.ads[id]);
 // Campaign on or paused. The data has each ad's effective status; CAMPAIGN_PAUSED means its campaign is off.
 // Any other status means the campaign itself is on (the ad or its ad set may still be paused).
 const campState = (ad) => (ad.effective_status === 'CAMPAIGN_PAUSED' ? 'paused' : 'on');
+// Health groups. Scale, Cut, Watch and Too little spend are for live ads only (status ACTIVE: ad, ad set
+// and campaign all on). Ads that are off go to Relaunch when they did well in these dates (ROAS at or above
+// target with 2+ purchases), otherwise to Off.
+const HEALTH = [
+  ['scale', 'Scale', 'Live and beating the ROAS target. Give these more budget, slowly.'],
+  ['cut', 'Cut', 'Live, but more than 30% below target, or no sale after 2x target cost per purchase. Pause or fix.'],
+  ['watch', 'Watch', 'Live and close to target, or still early. Check again in a few days.'],
+  ['not_enough_data', 'Too little spend', 'Live, but not enough spend or sales yet to judge.'],
+  ['relaunch', 'Relaunch', 'Off now, but it beat the ROAS target with 2 or more sales in these dates. Worth running again, with a fresh copy of the creative.'],
+  ['off', 'Off', 'Off now and did not do well enough to bring back.'],
+];
+function healthGroup(ad) {
+  const v = ad.view, m = v.metrics, T = VIEW.targets.roas;
+  if (ad.effective_status === 'ACTIVE') return v.verdict.code;
+  return m.roas !== null && T && m.roas >= T && (m.purchases || 0) >= 2 ? 'relaunch' : 'off';
+}
 function fillFilters() {
   const all = items();
   const keep = (sel, values) => {
@@ -486,7 +502,7 @@ function renderGrid() {
     if (camp && ad.campaign_id !== camp) return false;
     if (campSt && campState(ad) !== campSt) return false;
     if (status && ad.effective_status !== status) return false;
-    if (verdict && ad.view.verdict.code !== verdict) return false;
+    if (verdict && healthGroup(ad) !== verdict) return false;
     return true;
   });
   const chg = (ad) => { const p = ad.view.prev_metrics; return p && p.spend ? (ad.view.metrics.spend - p.spend) / p.spend : Infinity; };
@@ -495,7 +511,7 @@ function renderGrid() {
   else list.sort((a, b) => b.view.metrics.spend - a.view.metrics.spend);
   const scope = fmtKey === 'all' ? 'across all formats' : `${col.label.toLowerCase()} ads only`;
   const byRoas = col.by === 'roas', byVerdict = col.by === 'verdict';
-  $('collectionLabel').textContent = byVerdict ? `All ${col.size} ads that spent in these dates, ${scope}, grouped by verdict · showing ${list.length}` : byRoas
+  $('collectionLabel').textContent = byVerdict ? `All ${col.size} ads that spent in these dates, ${scope}: live ads by verdict, then ads that are off · showing ${list.length}` : byRoas
     ? `Top ${col.limit} by ROAS, ${scope}${col.min_purchases ? `, ${col.min_purchases}+ purchase${col.min_purchases > 1 ? 's' : ''}` : ''}` + (col.extra_images ? ` + ${col.extra_images} more image ad${col.extra_images === 1 ? '' : 's'}` : '')
       + (col.size - col.extra_images < col.limit ? ` · ${col.size} qualify in these dates` : ` · ${col.available} qualify`) + ` · showing ${list.length} of ${col.size}`
     : `Top 30 by spend, ${scope}` + (col.size < 30 ? ` · only ${col.size} spent in these dates` : '') + ` · showing ${list.length} of ${col.size}`;
@@ -510,18 +526,18 @@ function renderGrid() {
   if (hidden) notes.push(`${hidden} ads hidden by the ROAS filter because Meta reported no purchase value for them.`);
   $('sortNote').innerHTML = notes.map((n) => (n.startsWith('<button') ? n : esc(n))).join(' ');
   const t = col.totals, vc = {};
-  for (const ad of items()) vc[ad.view.verdict.code] = (vc[ad.view.verdict.code] || 0) + 1;
-  $('totals').innerHTML = `This set (all ${col.size} ads, filters ignored): spend ${fmt(t.spend, 'money')} · purchase value ${fmt(t.purchase_value, 'money')} · ROAS ${fmt(t.roas, 'x')} · Verdicts: ${vc.scale || 0} scale, ${vc.watch || 0} watch, ${vc.cut || 0} cut, ${vc.not_enough_data || 0} not enough data`;
+  for (const ad of items()) { const k = healthGroup(ad); vc[k] = (vc[k] || 0) + 1; }
+  $('totals').innerHTML = `This set (all ${col.size} ads, filters ignored): spend ${fmt(t.spend, 'money')} · purchase value ${fmt(t.purchase_value, 'money')} · ROAS ${fmt(t.roas, 'x')} · Live: ${vc.scale || 0} scale, ${vc.cut || 0} cut, ${vc.watch || 0} watch, ${vc.not_enough_data || 0} too little spend · Off: ${vc.relaunch || 0} to relaunch, ${vc.off || 0} other`;
   $('demo').innerHTML = demoBlock(list.map((ad) => ad.view.demographics), bucketNote(VIEW.demographics_buckets, VIEW.demographics_exact, VIEW.range) + ` Follows the format and filters: ${list.length} ads shown below.`);
   if (byVerdict) {
-    // Scale first, then Cut, then Watch, then Too new. Biggest spend first inside each group.
-    const G = [['scale', 'Scale', 'Beating the ROAS target. Give these more budget, slowly.'], ['cut', 'Cut', 'More than 30% below target, or no sale after 2x target cost per purchase. Pause or fix.'],
-      ['watch', 'Watch', 'Close to target, or still early. Leave them and check again in a few days.'], ['not_enough_data', 'Too little spend', 'Not enough spend or sales yet to judge. Most are small or old tests.']];
-    $('grid').innerHTML = G.map(([code, label, note]) => {
-      const g = list.filter((a) => a.view.verdict.code === code).sort((a, b) => b.view.metrics.spend - a.view.metrics.spend);
-      if (!g.length) return '';
+    // Live ads first (Scale, Cut, Watch, Too little spend), then ads that are off (Relaunch, Off).
+    // Relaunch is sorted by ROAS, the rest by spend.
+    $('grid').innerHTML = HEALTH.map(([code, label, note], gi) => {
+      const g = list.filter((a) => healthGroup(a) === code).sort((a, b) => (code === 'relaunch' ? b.view.metrics.roas - a.view.metrics.roas : b.view.metrics.spend - a.view.metrics.spend));
+      const head = gi === 0 || gi === 4 ? `<div class="grid-sec">${gi === 0 ? 'Live now' : 'Off now'}</div>` : '';
+      if (!g.length) return head;
       const sp = g.reduce((s, a) => s + a.view.metrics.spend, 0);
-      return `<h3 class="grid-group v-${code}" id="grp-${code}"><span class="chip ${VCLASS[code] || ''}">${esc(label)}</span> ${g.length} ad${g.length === 1 ? '' : 's'} · ${money(sp)} spent <span class="muted small">${esc(note)}</span></h3>` + g.map(card).join('');
+      return head + `<h3 class="grid-group v-${code}" id="grp-${code}"><span class="chip ${VCLASS[code] || ''}">${esc(label)}</span> ${g.length} ad${g.length === 1 ? '' : 's'} · ${money(sp)} spent <span class="muted small">${esc(note)}</span></h3>` + g.map(card).join('');
     }).join('');
   } else $('grid').innerHTML = list.map(card).join('');
   $('empty').hidden = list.length > 0;
@@ -644,8 +660,8 @@ function card(ad) {
   const picked = state.compare.includes(ad.id);
   const badge = c.type === 'video' ? `<span class="play">▶ ${secs(c.video && c.video.length)}</span>` : c.type === 'carousel' ? `<span class="play">${c.cards.length} cards</span>` : '';
   const d = (cur, prev, good) => (p ? delta(cur, prev, good) : '');
-  const vt = { scale: 'Scale', cut: 'Cut', watch: 'Watch' }[v.verdict.code];
-  return `<article class="card${vt ? ' vc-' + v.verdict.code : ''}"><div class="thumb"><span class="rank">#${v.rank_by_spend} by spend</span>${vt ? `<span class="vtag vt-${v.verdict.code}" title="${esc(v.verdict.reason)}">${vt}</span>` : ''}${badge}${thumbHtml(ad.id, c.headline || ad.name)}</div>
+  const hg = healthGroup(ad), vt = { scale: 'Scale', cut: 'Cut', watch: 'Watch', relaunch: 'Relaunch' }[hg];
+  return `<article class="card${vt ? ' vc-' + hg : ''}"><div class="thumb"><span class="rank">#${v.rank_by_spend} by spend</span>${vt ? `<span class="vtag vt-${hg}" title="${esc(hg === 'relaunch' ? 'Off now, beat the ROAS target in these dates' : v.verdict.reason)}">${vt}</span>` : ''}${badge}${thumbHtml(ad.id, c.headline || ad.name)}</div>
     <div class="body"><div class="name" title="${esc(ad.name)}">${esc(ad.name)}</div><div class="chips">${chips.join('')}</div>
       <dl class="stats"><div><dt>Spend</dt><dd>${fmt(m.spend, 'money')} ${d(m.spend, p && p.spend, 0)}</dd></div><div><dt>Purchases</dt><dd>${fmt(m.purchases, 'int')}</dd></div>
       <div><dt>CPA</dt><dd>${fmt(m.cpa, 'money')} ${d(m.cpa, p && p.cpa, -1)}</dd></div><div><dt>Purchase ROAS</dt><dd>${fmt(m.roas, 'x')} ${d(m.roas, p && p.roas, 1)}</dd></div></dl>

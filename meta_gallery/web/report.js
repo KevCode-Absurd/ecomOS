@@ -279,7 +279,7 @@ function rpAds() {
   const tagWhy = (a) => { const tg = a.tags || {}; const bits = []; if (tg.angle && tg.angle.code !== 'other') bits.push(`the message is about ${tg.angle.label.toLowerCase()}`); if (tg.product && tg.product.label && !/mixed|other/i.test(tg.product.label)) bits.push(`it shows ${tg.product.label.toLowerCase()}`); return bits.length ? ' T' + bits.join(' and ').slice(1) + '.' : ''; };
   return `<section class="rp-sec"><h2>Ads that worked, and ads that did not</h2>
     <div class="rp-two"><div><h3 class="good">Worked best</h3>${good.map((a) => rpAdCard(a, `Made ₹${a.view.metrics.roas.toFixed(2)} for every ₹1${T ? `, ${(a.view.metrics.roas / T).toFixed(1)} times the account's usual` : ''}.${esc(tagWhy(a))}`)).join('') || '<p class="muted">No ad had 2 or more orders in these days.</p>'}</div>
-    <div><h3 class="bad">Spent money, sold little</h3>${bad.map((a) => rpAdCard(a, `Spent ${esc(compact(a.view.metrics.spend))} ${a.view.metrics.purchases ? `for ${a.view.metrics.purchases} order${a.view.metrics.purchases === 1 ? '' : 's'}` : 'with no orders counted'}. We will stop or change it.`)).join('') || '<p class="muted">No big ad was losing money. Good.</p>'}</div></div></section>`;
+    <div><h3 class="bad">Spent money, sold little</h3>${bad.map((a) => rpAdCard(a, `Spent ${esc(compact(a.view.metrics.spend))} ${a.view.metrics.purchases ? `for ${a.view.metrics.purchases} order${a.view.metrics.purchases === 1 ? '' : 's'}` : 'with no orders counted'}. ${a.effective_status === 'ACTIVE' ? 'We will stop or change it.' : 'It is already switched off.'}`)).join('') || '<p class="muted">No big ad was losing money. Good.</p>'}</div></div></section>`;
 }
 function rpProducts(P) {
   const c = P.cur;

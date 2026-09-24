@@ -128,9 +128,12 @@ function spotlightTile() {
   </button>`;
 }
 function healthTile() {
-  const top = (VIEW.collections.health || VIEW.collections.all).ad_ids.map((id) => VIEW.ads[id]);
+  // Verdicts cover live ads only. Ads that are off show as Relaunch (did well) or Off.
+  const every = (VIEW.collections.health || VIEW.collections.all).ad_ids.map((id) => VIEW.ads[id]);
+  const top = every.filter((a) => a.effective_status === 'ACTIVE');
   const total = top.reduce((s, a) => s + a.view.metrics.spend, 0) || 1;
   const groups = [['scale', 'Scale', 'seg-scale'], ['cut', 'Cut', 'seg-cut'], ['watch', 'Watch', 'seg-watch'], ['not_enough_data', 'Too little spend', 'seg-ned']];
+  const relaunch = every.filter((a) => healthGroup(a) === 'relaunch'), off = every.length - top.length - relaunch.length;
   const g = groups.map(([code, label, cls]) => {
     const list = top.filter((a) => a.view.verdict.code === code);
     return { code, label, cls, n: list.length, spend: list.reduce((s, a) => s + a.view.metrics.spend, 0) };
@@ -140,10 +143,11 @@ function healthTile() {
   const noted = top.filter((a) => (NOTES[a.id] || []).length).length;
   const tg = VIEW.targets;
   return `<section class="tile health c-4" aria-label="Ad health">
-    <div class="tile-head"><div><h2>Ad health, all ${top.length} ads</h2><div class="sub">Share of spend on ads beating ${tg.roas ? tg.roas.toFixed(2) + 'x' : 'the target'} ROAS</div></div><button class="go" type="button" data-health="all" aria-label="See every ad grouped by verdict">${ARROW}</button></div>
+    <div class="tile-head"><div><h2>Live ads health, ${top.length} ads</h2><div class="sub">Share of live spend on ads beating ${tg.roas ? tg.roas.toFixed(2) + 'x' : 'the target'} ROAS</div></div><button class="go" type="button" data-health="all" aria-label="See every ad grouped by verdict">${ARROW}</button></div>
     <div class="big">${scaleShare.toFixed(0)}%</div>
     <div class="segbar" role="img" aria-label="Spend by verdict">${g.filter((x) => x.spend > 0).map((x) => `<span class="${x.cls}" style="flex:${x.spend}" data-health="${x.code}" data-tip="${esc(`${x.label}|Ads|${x.n}|Spend|${money(x.spend)}|Share|${(x.spend / total * 100).toFixed(1)}%`)}">${x.spend / total > 0.12 ? (x.spend / total * 100).toFixed(0) + '%' : ''}</span>`).join('')}</div>
     <div class="seg-legend">${g.map((x) => `<button type="button" data-health="${x.code}" aria-label="See the ${x.n} ${x.label} ads"><span><i class="${x.cls}"></i>${x.label}</span><b>${x.n} ads</b></button>`).join('')}</div>
+    <button class="relaunch-row" type="button" data-health="relaunch"><span><b>${relaunch.length}</b> ads to relaunch</span><span class="muted small">Off now, did well in these dates · ${off} more are off</span></button>
     <div class="meter"><div style="display:flex;justify-content:space-between"><span>Showing fatigue</span><b>${tired} of ${top.length}</b></div><div class="bar"><i style="width:${top.length ? tired / top.length * 100 : 0}%"></i></div></div>
     <div class="meter"><div style="display:flex;justify-content:space-between"><span>With team notes</span><b>${noted} of ${top.length}</b></div><div class="bar"><i style="width:${top.length ? noted / top.length * 100 : 0}%"></i></div></div>
   </section>`;
