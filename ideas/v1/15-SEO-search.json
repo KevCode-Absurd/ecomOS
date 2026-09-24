@@ -7290,9 +7290,10 @@
   "sources": {
    "mini_playbooks": [
     "02",
-    "08",
+    "03",
     "05",
-    "03"
+    "08",
+    "13"
    ],
    "cards": [
     "102c5f4bc1f8",
@@ -7361,9 +7362,10 @@
   },
   "sources": {
    "mini_playbooks": [
-    "09",
     "02",
-    "03"
+    "03",
+    "05",
+    "09"
    ],
    "cards": [
     "88997600260b",
@@ -7430,6 +7432,7 @@
   "sources": {
    "mini_playbooks": [
     "02",
+    "05",
     "13"
    ],
    "cards": [
@@ -7774,9 +7777,10 @@
   },
   "sources": {
    "mini_playbooks": [
+    "04",
+    "08",
     "09",
     "10",
-    "08",
     "12"
    ],
    "cards": [
@@ -7909,7 +7913,10 @@
    "read_point": "2 to 3 months after prioritizing"
   },
   "sources": {
-   "mini_playbooks": [],
+   "mini_playbooks": [
+    "04",
+    "09"
+   ],
    "cards": [],
    "rules": [
     "R118",
@@ -8113,9 +8120,10 @@
   },
   "sources": {
    "mini_playbooks": [
-    "09",
-    "04",
     "02",
+    "04",
+    "05",
+    "09",
     "13"
    ],
    "cards": [],
@@ -8972,6 +8980,7 @@
    "mini_playbooks": [
     "01",
     "02",
+    "08",
     "13"
    ],
    "cards": [
@@ -9525,5 +9534,3134 @@
   },
   "confidence": "high",
   "general_practice": false
+ },
+ {
+  "id": "SEO-142",
+  "title": "Deploy analytics tags through Google Tag Manager, not direct code",
+  "domain": "15-SEO",
+  "bottleneck": [
+   "measurement_data"
+  ],
+  "lever": "no-code analytics deployment",
+  "hypothesis": "If we install GA4 or another analytics tag through Google Tag Manager instead of pasting code directly into the theme, then a store without developer access can still get accurate tracking live, because GTM needs no further code changes to add or adjust tags later.",
+  "applies_when": [
+   "any",
+   "custom_platform",
+   "shopify"
+  ],
+  "signal": {
+   "check": "No developer is available to edit theme code, or analytics tags keep breaking on theme updates.",
+   "metrics": [
+    "tracking_coverage",
+    "event_match_quality"
+   ]
+  },
+  "expected_effect": {
+   "metric": "tracking_coverage",
+   "direction": "up",
+   "size": "unknown, depends on prior tracking gaps",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "GTM tags can be paused or removed without touching theme code."
+  },
+  "prerequisites": [
+   "A Google Tag Manager account",
+   "Access to add one script snippet to the site head and body"
+  ],
+  "steps": [
+   "Create a GTM container and add the two required snippets to the site head and body.",
+   "Add a GA4 configuration tag inside GTM instead of pasting the GA4 script directly.",
+   "Set the trigger to fire on all pages, then publish the container.",
+   "Verify the tag fires in GTM Preview mode and confirm data appears in GA4."
+  ],
+  "test": {
+   "method": "Compare GA4 session and event counts before and after the GTM switch for a known traffic period.",
+   "measure": "tracking_coverage, event_match_quality",
+   "read_point": "2 weeks after publishing the GTM container"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "d0575f65e6d3"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "SEO-143",
+  "title": "Track add-to-cart and checkout clicks with Tag Manager, no dev code",
+  "domain": "15-SEO",
+  "bottleneck": [
+   "measurement_data"
+  ],
+  "lever": "code-free event tracking",
+  "hypothesis": "If we set up click-based triggers in Google Tag Manager for the add-to-cart, checkout and purchase buttons, then we get a usable funnel view in analytics, because no backend code change is required to capture the clicks.",
+  "applies_when": [
+   "any",
+   "custom_platform"
+  ],
+  "does_not_apply_when": [
+   "The platform already emits native ecommerce events analytics can use directly"
+  ],
+  "signal": {
+   "check": "Analytics shows no add-to-cart, checkout or purchase events, and no developer time is available to instrument them natively.",
+   "metrics": [
+    "tracking_coverage",
+    "cvr_cart_to_checkout"
+   ]
+  },
+  "expected_effect": {
+   "metric": "tracking_coverage",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "Click-text triggers break silently if a button's label or element changes, so funnel data can go stale without warning."
+  },
+  "prerequisites": [
+   "GTM already installed with a working GA4 configuration tag",
+   "Access to preview and publish the GTM container"
+  ],
+  "steps": [
+   "In GTM Preview mode, click the target button and read its exact click text or element selector.",
+   "Create a GA4 event tag named for the action, such as add_to_cart.",
+   "Create a matching click trigger using the captured click text or selector.",
+   "Repeat for checkout and purchase buttons, then publish.",
+   "Re-verify in Preview mode and confirm the events appear in GA4 reports."
+  ],
+  "test": {
+   "method": "Watch the add-to-cart, checkout and purchase event counts in GA4 for two weeks after publishing.",
+   "measure": "cvr_cart_to_checkout, tracking_coverage",
+   "read_point": "2 weeks after publishing"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "7234716f3e22",
+    "59a0144c8001"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "SEO-144",
+  "title": "Pitch your page as the replacement for a competitor's broken backlink",
+  "domain": "15-SEO",
+  "bottleneck": [
+   "acquisition_volume"
+  ],
+  "lever": "broken-link outreach",
+  "hypothesis": "If we find external pages linking to a dead or broken competitor page and offer our own equivalent, live page as the replacement, then we earn a relevant backlink at low cost, because the site owner already wants to fix a link that no longer works.",
+  "applies_when": [
+   "any",
+   "organic_led"
+  ],
+  "signal": {
+   "check": "No process exists for finding broken external links pointing at rivals in the category.",
+   "metrics": [
+    "organic_clicks",
+    "other:referring_domains"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:referring_domains",
+   "direction": "up",
+   "size": "unknown, typically low volume and slow",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Outreach can be ignored with no downside; do not pay for placement without disclosure."
+  },
+  "prerequisites": [
+   "A site audit or backlink tool that surfaces competitor broken links",
+   "A live page that genuinely covers the same topic"
+  ],
+  "steps": [
+   "Run a site audit or backlink check on a relevant competitor or industry hub.",
+   "Filter its backlinks to ones pointing at pages that now return a 404.",
+   "Confirm your own site has an equivalent, live page on the same topic.",
+   "Email the linking site's owner, name the broken link and offer your page as the replacement.",
+   "Track replies and confirm the link goes live once accepted."
+  ],
+  "test": {
+   "method": "Track how many broken-link pitches convert to a live backlink over a quarter.",
+   "measure": "other:referring_domains",
+   "read_point": "3 months after starting outreach"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01",
+    "05"
+   ],
+   "cards": [
+    "f2d9c44191c1",
+    "03b3bc6a6a34"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SEO-145",
+  "title": "Submit to a small number of relevant, high-authority directories only",
+  "domain": "15-SEO",
+  "bottleneck": [
+   "acquisition_volume"
+  ],
+  "lever": "selective directory submission",
+  "hypothesis": "If we submit the store to a handful of genuinely relevant, high-authority directories instead of mass-submitting to hundreds, then we avoid low-value or spammy listings while still building the citation signals that help a new site look like a real entity.",
+  "applies_when": [
+   "new_store",
+   "any"
+  ],
+  "does_not_apply_when": [
+   "The store already has strong domain authority and an established citation profile"
+  ],
+  "signal": {
+   "check": "The store has few or no directory or citation listings, or has been submitted in bulk to unrelated directories.",
+   "metrics": [
+    "other:referring_domains",
+    "organic_clicks"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:referring_domains",
+   "direction": "up",
+   "size": "unknown, small",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Listings can be removed or updated later; the risk is wasted time on low-value directories, not penalty."
+  },
+  "prerequisites": [
+   "A short list of niche-relevant, high-authority directories",
+   "Consistent business name, address and description to submit"
+  ],
+  "steps": [
+   "List directories that are genuinely relevant to the store's niche or region.",
+   "Check each one for real traffic or authority before submitting.",
+   "Fill out every field completely rather than dropping a bare URL.",
+   "Skip mass or unrelated directory submissions entirely."
+  ],
+  "test": {
+   "method": "Track referring domains and any direct traffic from the submitted directories.",
+   "measure": "other:referring_domains",
+   "read_point": "2 months after submission"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "a3d1dead77d7"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SEO-146",
+  "title": "Diagnose wrong-audience targeting with three traffic signals",
+  "domain": "15-SEO",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "audience-fit diagnostic",
+  "hypothesis": "If we check for three specific signals, no traffic at all, traffic that never converts, or traffic that bounces on a mismatched page, then we can tell whether a page's problem is targeting rather than content quality, because each signal points to a different fix.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A page or keyword gets traffic but conversion is far below the store average, and the cause has not been diagnosed.",
+   "metrics": [
+    "cvr_overall",
+    "bounce_rate_pdp",
+    "sessions"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "This is a decision check, not a change to the live site."
+  },
+  "prerequisites": [
+   "Access to analytics for the page or keyword in question"
+  ],
+  "steps": [
+   "Check whether the term or page gets any traffic at all.",
+   "If it gets traffic, check whether visitors ever convert.",
+   "If traffic does not convert, check whether the page content matches what the query implied, such as an outdated product version.",
+   "Match the diagnosis to a fix: retarget the keyword, fix the page, or narrow who the content should be for."
+  ],
+  "test": {
+   "method": "Re-check the three signals after the matched fix is live.",
+   "measure": "cvr_overall",
+   "read_point": "4 to 6 weeks after the fix"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "161352fce48c"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "SEO-147",
+  "title": "Exclude a page from the sitemap without forcing it noindex",
+  "domain": "15-SEO",
+  "bottleneck": [
+   "acquisition_volume"
+  ],
+  "lever": "sitemap exclusion without index loss",
+  "hypothesis": "If we exclude a canonicalized or duplicate page from the sitemap through a code-level fix instead of a platform's default hidden toggle, then we keep the page's intended index status, because the default hidden setting also forces noindex, nofollow as an unwanted side effect.",
+  "applies_when": [
+   "shopify"
+  ],
+  "signal": {
+   "check": "A page needs to disappear from the sitemap, such as a canonicalized product variant, but should stay indexed or crawlable.",
+   "metrics": [
+    "indexed_pages"
+   ]
+  },
+  "expected_effect": {
+   "metric": "indexed_pages",
+   "direction": "down",
+   "size": "small, targeted",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "Using the platform's default hidden toggle instead of the code fix will accidentally noindex the page."
+  },
+  "prerequisites": [
+   "Theme code access",
+   "A list of pages that need sitemap exclusion without index loss"
+  ],
+  "steps": [
+   "Identify pages that should drop out of the sitemap but keep their current index status.",
+   "Confirm the platform's built-in exclusion toggle also sets noindex, nofollow as a side effect.",
+   "Edit the theme's sitemap output section to exclude the specific page without touching its index tag.",
+   "Re-request the sitemap and confirm the page is absent from it and unaffected in index status."
+  ],
+  "test": {
+   "method": "Check the live sitemap file and the page's index status in Search Console after the fix.",
+   "measure": "indexed_pages",
+   "read_point": "1 to 2 weeks after the fix"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "9dc7ea365326"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "SEO-148",
+  "title": "Defer non-essential scripts and add resource hints to speed rendering",
+  "domain": "15-SEO",
+  "bottleneck": [
+   "site_speed"
+  ],
+  "lever": "script loading order",
+  "hypothesis": "If we add async or defer to non-essential third-party scripts and add preload, prefetch and preconnect hints for known assets and domains, then pages render faster, because the browser stops waiting on scripts that do not need to block the page.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "PageSpeed Insights or a similar tool flags render-blocking third-party scripts.",
+   "metrics": [
+    "lcp_mobile_p75",
+    "ttfb"
+   ]
+  },
+  "expected_effect": {
+   "metric": "lcp_mobile_p75",
+   "direction": "down",
+   "size": "unknown, depends on script count",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "Deferring a script that cart or checkout logic depends on can break functionality; test the cart flow after the change."
+  },
+  "prerequisites": [
+   "A page speed audit listing render-blocking scripts",
+   "Developer access to the theme head"
+  ],
+  "steps": [
+   "Run a speed test and list every third-party script flagged as render-blocking.",
+   "Add async or defer to scripts not needed for the first paint, such as chat widgets and non-critical trackers.",
+   "Add preload for immediately needed assets and preconnect or dns-prefetch for known third-party domains.",
+   "Test cart, checkout and variant-picker behavior after the change.",
+   "Re-run the speed test to confirm the improvement."
+  ],
+  "test": {
+   "method": "Compare Core Web Vitals scores before and after the change on the same key pages.",
+   "measure": "lcp_mobile_p75",
+   "read_point": "1 week after deployment"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "5fe9759a8a5c",
+    "edcb1a9b8cef"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "SEO-149",
+  "title": "Remove orphaned app code and load remaining scripts by page type",
+  "domain": "15-SEO",
+  "bottleneck": [
+   "site_speed"
+  ],
+  "lever": "app script cleanup",
+  "hypothesis": "If we remove leftover code from uninstalled apps and load the scripts of remaining apps only on the page templates that use them, then the store gets faster, because fewer unnecessary scripts run on every page.",
+  "applies_when": [
+   "any",
+   "shopify"
+  ],
+  "signal": {
+   "check": "A page speed report flags third-party code impact, or apps have been uninstalled in the past without a code cleanup.",
+   "metrics": [
+    "page_weight_kb",
+    "third_party_kb"
+   ]
+  },
+  "expected_effect": {
+   "metric": "third_party_kb",
+   "direction": "down",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Removing a script still in use will break that app's feature; confirm each app is genuinely uninstalled first."
+  },
+  "prerequisites": [
+   "A speed report flagging third-party code",
+   "A list of currently installed apps and which pages use each one"
+  ],
+  "steps": [
+   "Run a speed test and open the section flagging third-party code impact.",
+   "Cross-check flagged scripts against the current list of installed apps to find orphaned code.",
+   "Remove code from apps that are no longer installed.",
+   "For remaining apps, wrap their script include in a page-type condition so it only loads where needed.",
+   "Re-run the speed test to confirm the drop in third-party weight."
+  ],
+  "test": {
+   "method": "Compare third-party script weight and page weight before and after cleanup.",
+   "measure": "third_party_kb",
+   "read_point": "1 week after cleanup"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "959f69db4f65",
+    "504893b96bd4"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "SEO-150",
+  "title": "Build foundational entity links before guest posts or journalist outreach",
+  "domain": "15-SEO",
+  "bottleneck": [
+   "acquisition_volume"
+  ],
+  "lever": "link-building sequencing",
+  "hypothesis": "If we build a base layer of complete social profiles, business directory citations and web 2.0 profiles before starting guest posts or journalist outreach, then later link building performs better, because the brand already reads as a real, established entity.",
+  "applies_when": [
+   "new_store",
+   "any"
+  ],
+  "signal": {
+   "check": "The store has little or no presence on social profiles, citation directories or web 2.0 profiles before starting outreach-based link building.",
+   "metrics": [
+    "other:referring_domains"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:referring_domains",
+   "direction": "up",
+   "size": "unknown, small baseline lift",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Profiles can be updated or abandoned later with no penalty."
+  },
+  "prerequisites": [
+   "Business name, address, phone, description and logo ready to reuse across profiles"
+  ],
+  "steps": [
+   "List the social profiles, citation directories and web 2.0 profiles worth claiming for the niche.",
+   "Fill out each profile fully with business info, images and a real description, not a bare link.",
+   "Set a baseline target, such as 20 to 30 completed foundational profiles.",
+   "Only after this base layer is in place, start guest post or journalist outreach."
+  ],
+  "test": {
+   "method": "Track completed foundational profiles against the target before starting outreach-based link building.",
+   "measure": "other:referring_domains",
+   "read_point": "Before starting the next link-building phase"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "9ef468a1aa73",
+    "d00b480b316f9"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SEO-151",
+  "title": "Diversify backlink anchor text against competitors' own anchor mix",
+  "domain": "15-SEO",
+  "bottleneck": [
+   "acquisition_volume"
+  ],
+  "lever": "anchor text profile management",
+  "hypothesis": "If we track the anchor text used in our earned backlinks and keep the mix mostly partial-match, URL, brand and topic anchors calibrated against what our top competitors use, then we avoid looking artificially over-optimized, because an unnatural anchor profile is a known risk signal.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "No one has reviewed the anchor text mix of the store's existing backlinks against competitors.",
+   "metrics": [
+    "other:referring_domains"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:referring_domains",
+   "direction": "up",
+   "size": "unknown, protective rather than growth-driving",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "An anchor profile heavy in exact-match keyword anchors is a known over-optimization signal; fixing it takes new, differently anchored links, not edits to old ones."
+  },
+  "prerequisites": [
+   "A backlink report for the store and for 2 to 3 top competitors"
+  ],
+  "steps": [
+   "Pull the anchor text list for the store's own backlinks and for top competitors.",
+   "Categorize each anchor as exact-match, partial-match, brand, URL or topic.",
+   "Compare the store's ratio against competitors' typical mix.",
+   "Set future outreach anchor requests toward the underused categories to correct the mix."
+  ],
+  "test": {
+   "method": "Recheck the anchor text ratio after a new batch of links goes live.",
+   "measure": "other:referring_domains",
+   "read_point": "Each quarter"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "fab6f93fabc4"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SEO-152",
+  "title": "Run a backlink gap analysis and set a monthly pace to close it",
+  "domain": "15-SEO",
+  "bottleneck": [
+   "acquisition_volume"
+  ],
+  "lever": "backlink gap targeting",
+  "hypothesis": "If we compare the store's referring domains against named competitors and find sites that link to several of them but not to us, then we get a prioritized, high-probability outreach list, because those sites have already shown willingness to link to businesses like ours.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "No one has compared the store's referring-domain count or overlap against named competitors.",
+   "metrics": [
+    "other:referring_domains"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:referring_domains",
+   "direction": "up",
+   "size": "unknown, depends on the size of the gap",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "This is research and outreach, not a site change."
+  },
+  "prerequisites": [
+   "A backlink tool covering the store and named competitor domains"
+  ],
+  "steps": [
+   "Pull referring domains for the store and 3 to 5 named competitors.",
+   "Filter to domains that link to several competitors but not to the store.",
+   "Filter further by authority score and relevance before outreach.",
+   "Set a monthly link-building pace based on the size of the gap.",
+   "Refresh the gap analysis each quarter, since the domain mix shifts."
+  ],
+  "test": {
+   "method": "Track referring-domain count against the gap-closing pace each month.",
+   "measure": "other:referring_domains",
+   "read_point": "Monthly"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02",
+    "08"
+   ],
+   "cards": [
+    "be35a345338047d5",
+    "c5e862cbcad9"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "SEO-153",
+  "title": "Automate posting Instagram media to Google Business Profile photos",
+  "domain": "15-SEO",
+  "bottleneck": [
+   "acquisition_volume"
+  ],
+  "lever": "no-code local visibility automation",
+  "hypothesis": "If we automatically push new Instagram posts into the Google Business Profile photo library, then the profile builds toward a healthy image count with no manual upload work, because most stores already generate real photos for social media anyway.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "The store has no physical location and no Google Business Profile"
+  ],
+  "signal": {
+   "check": "The Google Business Profile has few photos and no process feeds it from existing content.",
+   "metrics": [
+    "other:free_listing_impressions"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:free_listing_impressions",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "The automation can be turned off at any time; review the first several auto-posted images for quality."
+  },
+  "prerequisites": [
+   "Admin access to both the Instagram account and the Google Business Profile",
+   "A no-code automation tool"
+  ],
+  "steps": [
+   "Connect the Instagram account and Google Business Profile to a no-code automation tool.",
+   "Set the trigger to new media on the Instagram account.",
+   "Set the action to upload the media as a Google Business Profile photo.",
+   "Test with one post, confirm it appears correctly, then turn the automation on."
+  ],
+  "test": {
+   "method": "Track the Google Business Profile photo count and image-driven views over 2 months.",
+   "measure": "other:free_listing_impressions",
+   "read_point": "2 months after enabling"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "03"
+   ],
+   "cards": [
+    "41e2681a11a9995fd68be679"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SEO-154",
+  "title": "Turn each new blog post into a Google Business Profile update",
+  "domain": "15-SEO",
+  "bottleneck": [
+   "acquisition_volume"
+  ],
+  "lever": "automated GBP content refresh",
+  "hypothesis": "If we automatically rewrite each new blog post into a short Google Business Profile update within the platform's character limit and link it back to the full post, then the profile posts regularly with no extra manual work, because it reuses content already being produced.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "The store has no physical location and no Google Business Profile"
+  ],
+  "signal": {
+   "check": "The Google Business Profile posts rarely or not at all, and new blog content is not being repurposed into it.",
+   "metrics": [
+    "other:free_listing_impressions",
+    "organic_clicks"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:free_listing_impressions",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "An AI rewrite should be reviewed before it posts publicly under the brand name; add a review step if quality is uncertain."
+  },
+  "prerequisites": [
+   "A blog RSS feed",
+   "A no-code automation tool with an AI step and Google Business Profile access"
+  ],
+  "steps": [
+   "Trigger the automation on new items in the blog's RSS feed.",
+   "Have an AI step rewrite the post in brand voice, under the profile's character limit, with an optional call to action.",
+   "Post the rewrite to Google Business Profile with a call-to-action button linking to the full post.",
+   "Spot-check the first several auto-posted updates before trusting the automation fully."
+  ],
+  "test": {
+   "method": "Track Google Business Profile post frequency and click-throughs to the blog for 2 months.",
+   "measure": "other:free_listing_impressions",
+   "read_point": "2 months after enabling"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "03"
+   ],
+   "cards": [
+    "6ab4afca17efd77cfb87fc0b"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SEO-155",
+  "title": "Auto-reply to positive Google reviews only, route the rest to a human",
+  "domain": "15-SEO",
+  "bottleneck": [
+   "trust_brand"
+  ],
+  "lever": "review response automation with a safety gate",
+  "hypothesis": "If we auto-generate replies only to reviews above a star-rating threshold and send everything below it to a person, then review response rate goes up without the risk of an automated reply mishandling a negative review.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "The store has no physical location and does not use Google reviews"
+  ],
+  "signal": {
+   "check": "Reviews are going unanswered, or an AI reply tool is being considered without a safety gate for negative reviews.",
+   "metrics": [
+    "review_rating",
+    "review_count"
+   ]
+  },
+  "expected_effect": {
+   "metric": "review_count",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "support"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "Never let an automated reply post to a negative review without human review; reputational risk if a bad automated reply goes live."
+  },
+  "prerequisites": [
+   "A review-response tool or automation platform connected to the review source"
+  ],
+  "steps": [
+   "Set a star-rating filter, such as 4 stars and above, for automatic replies.",
+   "Below that threshold, route the review to a person instead of auto-posting.",
+   "Draft a reply template or AI prompt for the positive-review case.",
+   "Test on a handful of reviews before enabling fully."
+  ],
+  "test": {
+   "method": "Track response rate and time-to-reply on reviews for 2 months after enabling.",
+   "measure": "review_count",
+   "read_point": "2 months after enabling"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "03"
+   ],
+   "cards": [
+    "3707612ddae8e67144e67fb7"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "SEO-156",
+  "title": "Seed a Google Business Profile Q&A with a real customer question",
+  "domain": "15-SEO",
+  "bottleneck": [
+   "trust_brand"
+  ],
+  "lever": "Q&A seeding",
+  "hypothesis": "If we ask a real customer to post one of the store's most frequently asked questions to the Google Business Profile Q&A section and then answer it publicly ourselves, then shoppers researching the store see a real answer to a real question instead of an empty section.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "The store has no physical location and no Google Business Profile"
+  ],
+  "signal": {
+   "check": "The Google Business Profile Q&A section is empty or has no answered questions from the business.",
+   "metrics": [
+    "other:free_listing_impressions"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:free_listing_impressions",
+   "direction": "up",
+   "size": "unknown, small",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Do not post fake questions from the business's own account; ask a real past customer to post it."
+  },
+  "prerequisites": [
+   "A list of the store's most frequently asked questions",
+   "A willing customer or contact of the business"
+  ],
+  "steps": [
+   "Pick 1 to 3 of the most common questions customers ask before buying.",
+   "Ask a real customer or contact to post one as a question on the Google Business Profile.",
+   "Answer it publicly and thoroughly from the business account.",
+   "Repeat for the other common questions over time."
+  ],
+  "test": {
+   "method": "Check whether the Q&A section shows up in the listing and monitor profile views.",
+   "measure": "other:free_listing_impressions",
+   "read_point": "1 month after seeding"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "03"
+   ],
+   "cards": [
+    "dbf8e0a7dc443faa44051a7e"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SEO-157",
+  "title": "Ask for reviews in person right after service, not by automated text",
+  "domain": "15-SEO",
+  "bottleneck": [
+   "trust_brand"
+  ],
+  "lever": "in-person review request",
+  "hypothesis": "If staff ask for a review in person right after a service or delivery instead of relying only on an automated text reminder, then more reviews come in, because a direct human ask converts better than an automated prompt.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "The business has no in-person or live service touchpoint with the customer"
+  ],
+  "signal": {
+   "check": "Review volume is low despite an automated review-request text or email already running.",
+   "metrics": [
+    "review_count"
+   ]
+  },
+  "expected_effect": {
+   "metric": "review_count",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "support"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "No downside beyond staff time; keep the ask genuine and not pressured."
+  },
+  "prerequisites": [
+   "A review link or QR code staff can hand to the customer"
+  ],
+  "steps": [
+   "Print or display the review link's QR code at the point of service.",
+   "Train staff to ask for a review verbally right after service is complete.",
+   "Keep the automated text reminder running alongside the in-person ask, not instead of it.",
+   "Track whether review volume rises after staff start asking."
+  ],
+  "test": {
+   "method": "Compare weekly review volume before and after staff start asking in person.",
+   "measure": "review_count",
+   "read_point": "1 month after staff start asking"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "03"
+   ],
+   "cards": [
+    "dbf8e0a7dc443faa44051a7e"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SEO-158",
+  "title": "Cross-check an automated SEO tool's score against a second tool",
+  "domain": "15-SEO",
+  "bottleneck": [
+   "measurement_data"
+  ],
+  "lever": "tool cross-validation",
+  "hypothesis": "If we check a page's speed grade or schema validity in a second, independent tool before acting on the first tool's result, then we avoid chasing a false positive or false negative, because different tools sometimes disagree on the same page.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A decision to fix or not fix a page is being made from a single automated tool's score, with no second check.",
+   "metrics": [
+    "other:tool_score_variance"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:tool_score_variance",
+   "direction": "down",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "This is a verification step, not a site change on its own."
+  },
+  "prerequisites": [
+   "Access to at least 2 independent audit tools for speed or schema"
+  ],
+  "steps": [
+   "Run the page through the primary audit tool and note the score or flagged issues.",
+   "Run the same page through a second, independent tool.",
+   "Where the two disagree, treat the disagreement as a signal to investigate manually before acting.",
+   "Only commit developer time to fixes both tools agree matter, or that manual inspection confirms."
+  ],
+  "test": {
+   "method": "Track how often the two tools disagree and whether that changed which fixes got prioritized.",
+   "measure": "other:tool_score_variance",
+   "read_point": "After each audit cycle"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "03"
+   ],
+   "cards": [
+    "07eb3c368d7af47fb8a3e8fb",
+    "1da946decc85bb358ebbb31b"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SEO-159",
+  "title": "Screenshot the homepage fold and get an AI critique of the CTA",
+  "domain": "15-SEO",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "first-fold conversion check",
+  "hypothesis": "If we screenshot the homepage above the fold and ask an AI assistant to critique the hero copy and call to action, then we can quickly spot a vague headline or competing CTAs before a first-time visitor ever does, because a fast outside read catches what a founder stops noticing.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "No one has recently reviewed whether a first-time visitor can tell what the store sells and what to do next, without scrolling.",
+   "metrics": [
+    "cvr_overall",
+    "bounce_rate_pdp"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "This is a review step; any resulting copy change should still go through normal QA before publishing."
+  },
+  "prerequisites": [
+   "A full-page screenshot tool",
+   "Access to edit the homepage hero section"
+  ],
+  "steps": [
+   "Take a full-page screenshot of the homepage and crop to what shows without scrolling.",
+   "Ask an AI assistant to critique the headline clarity and the call to action.",
+   "Reduce to one clear headline naming the actual offer and one visible primary CTA.",
+   "Re-screenshot after the change and confirm the fix reads clearly to a first-time viewer."
+  ],
+  "test": {
+   "method": "Compare bounce rate and conversion rate on the homepage before and after the fix.",
+   "measure": "cvr_overall",
+   "read_point": "4 weeks after publishing the change"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "03"
+   ],
+   "cards": [
+    "abc8640905828cd106a0656a"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SEO-160",
+  "title": "Investigate a small, high-engagement referral source as a partnership",
+  "domain": "15-SEO",
+  "bottleneck": [
+   "acquisition_volume"
+  ],
+  "lever": "referral-source partnership scouting",
+  "hypothesis": "If we review small referral traffic sources for above-average engagement instead of judging them by volume alone, then we can find a partnership opportunity a volume-only view would miss, because a smaller source that converts well can be a better acquisition channel than a bigger one that does not.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Referral traffic sources are ranked only by session volume, with no engagement or conversion review.",
+   "metrics": [
+    "sessions",
+    "cvr_overall"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "This is a research step; outreach to the referral source is a separate, low-cost follow-up."
+  },
+  "prerequisites": [
+   "Access to traffic-source and engagement reporting"
+  ],
+  "steps": [
+   "List referral traffic sources for the last quarter, sorted by session volume.",
+   "Re-sort by engagement or conversion rate instead of volume.",
+   "Flag any small source with above-average engagement relative to its size.",
+   "Reach out to that source about a partnership or expanded placement."
+  ],
+  "test": {
+   "method": "Track sessions and conversion rate from the flagged source after outreach.",
+   "measure": "sessions",
+   "read_point": "1 quarter after outreach"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "03"
+   ],
+   "cards": [
+    "411ebd9a5b1eaec0f5f27e08"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SEO-161",
+  "title": "Compare device traffic against device conversion every quarter",
+  "domain": "15-SEO",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "device-mismatch diagnostic",
+  "hypothesis": "If we compare the device split of traffic against the device split of conversions each quarter, then we catch a device-specific UX problem early, because a mismatch such as desktop-heavy traffic but mobile-heavy conversion points to a fixable gap on one device.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Device performance has not been reviewed separately from overall conversion rate in the last quarter.",
+   "metrics": [
+    "cvr_overall",
+    "sessions"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "This is a reporting check; any resulting fix is a separate project."
+  },
+  "prerequisites": [
+   "Analytics with device-level session and conversion data"
+  ],
+  "steps": [
+   "Pull session share and conversion rate by device for the quarter.",
+   "Compare where traffic concentrates against where conversion concentrates.",
+   "If a mismatch appears, investigate the underperforming device's experience specifically.",
+   "Repeat the check every quarter as a standing routine."
+  ],
+  "test": {
+   "method": "Track whether the device-level gap narrows after any fix is applied.",
+   "measure": "cvr_overall",
+   "read_point": "Each quarter"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "03"
+   ],
+   "cards": [
+    "411ebd9a5b1eaec0f5f27e08"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SEO-162",
+  "title": "Blend AI citation exports with SERP results to find outreach targets",
+  "domain": "15-SEO",
+  "bottleneck": [
+   "acquisition_volume"
+  ],
+  "lever": "cross-surface citation blending",
+  "hypothesis": "If we combine which domains AI answers cite for our core queries with which domains rank in traditional search for the same queries, then domains that repeat across both surfaces become the highest-priority outreach targets, because that repetition is the strongest signal of where AI and search both look for answers.",
+  "applies_when": [
+   "any",
+   "organic_led"
+  ],
+  "signal": {
+   "check": "No one has combined AI-citation exports and traditional SERP exports into one prioritized outreach list for the store's core queries.",
+   "metrics": [
+    "ai_citations",
+    "organic_clicks"
+   ]
+  },
+  "expected_effect": {
+   "metric": "ai_citations",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "This is research and outreach planning, not a site change."
+  },
+  "prerequisites": [
+   "A tool or manual process that can export AI citations and traditional search results for the same queries"
+  ],
+  "steps": [
+   "Pick at least 5 core queries covering different buyer intents in the category.",
+   "For each query, export the domains AI answers cite and the domains ranking in traditional search.",
+   "Merge both exports into one sheet with a column recording which surface each domain appeared on.",
+   "Sort by domain and flag any domain that repeats across both surfaces as a priority outreach target.",
+   "Refresh the blended list periodically, since citation sets drift over time."
+  ],
+  "test": {
+   "method": "Track how many priority-flagged domains convert into an earned mention or link within a quarter.",
+   "measure": "ai_citations",
+   "read_point": "1 quarter after starting outreach"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "04",
+    "09"
+   ],
+   "cards": [
+    "c65599bce8db",
+    "cb73ca87f670",
+    "46a784e2d55c"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SEO-163",
+  "title": "Repeat the same category queries as content across every owned channel",
+  "domain": "15-SEO",
+  "bottleneck": [
+   "acquisition_volume"
+  ],
+  "lever": "cross-channel topic repetition",
+  "hypothesis": "If we publish the same core category queries as content on the site, then on other owned channels in an order set by which channel already indexes well, then the same research pays off across more surfaces, because a query that already works on one channel is likely to work on the next once it is indexed there too.",
+  "applies_when": [
+   "any",
+   "organic_led"
+  ],
+  "signal": {
+   "check": "Core category content exists only on the site's own blog, with no equivalent version on other owned channels such as video or a company page.",
+   "metrics": [
+    "organic_clicks",
+    "ai_citations"
+   ]
+  },
+  "expected_effect": {
+   "metric": "organic_clicks",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "L",
+   "owner": "marketer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Publishing on an owned channel carries little downside beyond production time."
+  },
+  "prerequisites": [
+   "A finished on-site article or page for the query",
+   "Access to at least one other owned channel, such as a video platform or a company social page"
+  ],
+  "steps": [
+   "Start with the site version of the query-focused content.",
+   "Search the brand and query on Google to check whether existing content on another owned channel already indexes.",
+   "Publish the same core topic in the next channel's native format only where indexation already looks likely or already exists.",
+   "Verify the new placement is indexed and ranking before investing in the following channel.",
+   "Move to the next channel in the same order, repeating the same query set."
+  ],
+  "test": {
+   "method": "Track indexation and ranking for the same query across each channel after publishing.",
+   "measure": "organic_clicks",
+   "read_point": "6 to 8 weeks after each channel's publish"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "04"
+   ],
+   "cards": [
+    "4b1cf178dc33"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SEO-164",
+  "title": "Amplify an on-site article on the company LinkedIn page",
+  "domain": "15-SEO",
+  "bottleneck": [
+   "acquisition_volume"
+  ],
+  "lever": "LinkedIn authority borrowing",
+  "hypothesis": "If we publish a rewritten variant of an on-site article on the company LinkedIn page and have high-follower employees share or comment on it, then the piece can rank for the target query on the strength of LinkedIn's domain authority, because employee engagement drives the crawl and ranking signals a brand-new page usually lacks.",
+  "applies_when": [
+   "any",
+   "organic_led"
+  ],
+  "does_not_apply_when": [
+   "The company has no active LinkedIn page or no employees willing to amplify posts"
+  ],
+  "signal": {
+   "check": "A target query has a finished on-site article but no LinkedIn-native variant, and the site has low domain authority for that query.",
+   "metrics": [
+    "organic_clicks"
+   ]
+  },
+  "expected_effect": {
+   "metric": "organic_clicks",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "The LinkedIn post can be edited or removed at any time; no ad spend is involved."
+  },
+  "prerequisites": [
+   "A finished on-site article to rewrite as a variant",
+   "At least one employee willing to share or comment on the post"
+  ],
+  "steps": [
+   "Write a variant of the on-site article for the same target query, not a direct copy-paste.",
+   "Publish it on the company LinkedIn page with links back to the site and related pages.",
+   "Have employees, especially higher-follower ones, share, like or comment on the post.",
+   "Search the target query across a few search engines to confirm the post is indexed and ranking.",
+   "Move to the next target query once this one is confirmed indexed."
+  ],
+  "test": {
+   "method": "Track the LinkedIn post's search ranking for the target query over time.",
+   "measure": "organic_clicks",
+   "read_point": "4 to 6 weeks after publishing"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "04"
+   ],
+   "cards": [
+    "70d7dddf86e4"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SEO-165",
+  "title": "Prioritize contributing to Reddit threads already cited by AI answers",
+  "domain": "15-SEO",
+  "bottleneck": [
+   "acquisition_volume"
+  ],
+  "lever": "AI-retrieval-aware Reddit participation",
+  "hypothesis": "If we identify Reddit threads that AI citation exports already show being retrieved for our category queries and contribute genuinely there, plus watch relevant subreddits daily for new threads, then we earn AI-visible mentions more efficiently, because contributing to an already-cited thread beats posting into an arbitrary one with no retrieval signal.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "The store has no process for finding which Reddit threads already appear in AI citation exports for its category.",
+   "metrics": [
+    "ai_citations"
+   ]
+  },
+  "expected_effect": {
+   "metric": "ai_citations",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "Contribute with genuine expertise and disclose any brand affiliation; undisclosed promotional posting risks platform and reputational consequences."
+  },
+  "prerequisites": [
+   "An AI citation export covering the category's core queries"
+  ],
+  "steps": [
+   "Pull the AI citation export for core category queries and filter to Reddit threads.",
+   "Prioritize contributing genuine, disclosed expertise to threads already showing up in that export.",
+   "Set a recurring daily check of relevant subreddits for new threads before they close or fill up.",
+   "Track which contributions later appear as AI citations."
+  ],
+  "test": {
+   "method": "Recheck AI citation exports for the same queries after a period of active, disclosed participation.",
+   "measure": "ai_citations",
+   "read_point": "6 to 8 weeks after starting"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "04"
+   ],
+   "cards": [
+    "e54f1c0e014f"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SEO-166",
+  "title": "Map category content to the 5-stage customer-awareness ladder",
+  "domain": "15-SEO",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "awareness-stage content planning",
+  "hypothesis": "If we plan category content across the 5 awareness stages, from unaware to most-aware, and build the most-aware topics first, then content investment pays back faster, because most-aware topics are closest to a purchase decision and are the easiest to justify producing first.",
+  "applies_when": [
+   "any",
+   "catalogue",
+   "hero_sku"
+  ],
+  "signal": {
+   "check": "Content is planned as a flat topic list with no mapping to how close each topic is to a purchase decision.",
+   "metrics": [
+    "organic_clicks",
+    "cvr_overall"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "This is a content-planning method, not a site change."
+  },
+  "prerequisites": [
+   "A list of candidate topics for the category",
+   "The category's core money page"
+  ],
+  "steps": [
+   "Build a five-column template covering unaware, problem aware, solution aware, product aware and most aware.",
+   "Sort existing and candidate topics into the stage they best fit.",
+   "Start production with most-aware topics, since they are closest to a purchase decision.",
+   "Work backward toward earlier stages as most-aware topics are completed and published."
+  ],
+  "test": {
+   "method": "Track conversion rate and assisted conversions from most-aware content versus earlier-stage content.",
+   "measure": "cvr_overall",
+   "read_point": "8 to 12 weeks after publishing the first most-aware pieces"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "04"
+   ],
+   "cards": [
+    "f7f0469f3f8a"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "SEO-167",
+  "title": "Run one combined audit for search and AI-retrieval readiness per page",
+  "domain": "15-SEO",
+  "bottleneck": [
+   "measurement_data"
+  ],
+  "lever": "combined technical and AI-retrieval audit",
+  "hypothesis": "If we audit a page's topic coverage, crawlability, content freshness and load speed in one pass alongside checks specific to AI retrieval, such as stale code and agent access, then we fix both traditional and AI visibility issues together, because the two overlap on most technical fundamentals.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Technical SEO audits and AI-retrieval readiness checks are run separately, or AI-retrieval readiness is not checked at all.",
+   "metrics": [
+    "indexed_pages",
+    "ai_citations"
+   ]
+  },
+  "expected_effect": {
+   "metric": "ai_citations",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "This is an audit process, not a site change on its own."
+  },
+  "prerequisites": [
+   "A page audit tool or checklist covering both traditional technical SEO and AI-retrieval signals"
+  ],
+  "steps": [
+   "Pick a core category or product page to audit.",
+   "Check topic coverage against the core keyword and note missing subtopics.",
+   "Check crawling, indexing, on-page structure and load speed as usual.",
+   "Check literal page-source freshness, since AI crawlers read code, not just visible design.",
+   "Check that AI crawlers and retrieval bots are not blocked, then prioritize the single biggest gap first."
+  ],
+  "test": {
+   "method": "Re-run the combined audit after fixes and track both indexing and AI citation status for the page.",
+   "measure": "ai_citations",
+   "read_point": "4 to 6 weeks after fixes"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "04"
+   ],
+   "cards": [
+    "29ea2467bb38",
+    "87b0e16b4d08"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SEO-168",
+  "title": "Study a single-focus competitor and consider a matching micro-brand",
+  "domain": "15-SEO",
+  "bottleneck": [
+   "acquisition_efficiency"
+  ],
+  "lever": "focused-competitor structural response",
+  "hypothesis": "If we study a competitor that sells only our target category, especially with a partial-match brand name, and weigh launching a dedicated micro-brand or niche site to match that focus, then we can compete more directly on that category's search terms, because a single-focus site has a structural advantage over a broader multi-category store on narrow category queries.",
+  "applies_when": [
+   "catalogue",
+   "hero_sku"
+  ],
+  "does_not_apply_when": [
+   "The store is already hero-SKU or single-category focused"
+  ],
+  "signal": {
+   "check": "A single-focus, narrow-name competitor consistently outranks the store's broader site on the store's most important category terms.",
+   "metrics": [
+    "organic_clicks"
+   ]
+  },
+  "expected_effect": {
+   "metric": "organic_clicks",
+   "direction": "up",
+   "size": "unknown, a considered strategic option, not a guaranteed lift",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "L",
+   "owner": "founder"
+  },
+  "cost": "medium",
+  "risk": {
+   "level": "medium",
+   "reversible": false,
+   "note": "Launching a micro-brand is a real operational commitment; treat as a considered option to evaluate, not a default action."
+  },
+  "prerequisites": [
+   "A competitive analysis of narrow-name, single-category competitors in the store's core category"
+  ],
+  "steps": [
+   "Identify competitors that sell only the store's target category, especially with a partial-match brand name.",
+   "Compare their ranking strength on category terms against the store's own broader site.",
+   "Weigh the cost and operational fit of a dedicated micro-brand or niche site against the size of the ranking gap.",
+   "If pursued, treat the micro-brand as its own focused project with its own content and link plan."
+  ],
+  "test": {
+   "method": "Track category-term rankings for the store and the narrow-name competitor over the following quarters.",
+   "measure": "organic_clicks",
+   "read_point": "1 to 2 quarters"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "04"
+   ],
+   "cards": [
+    "bb34ff423064"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SEO-169",
+  "title": "Average the top 3 ranking pages to set the spec for a new page",
+  "domain": "15-SEO",
+  "bottleneck": [
+   "acquisition_volume"
+  ],
+  "lever": "competitor-averaged content spec",
+  "hypothesis": "If we average the top 3 non-forum ranking pages' word count, heading count and covered subtopics for a target keyword before drafting, then the new page starts from a realistic comprehensiveness target, because matching the format and depth already succeeding for that query is a practical starting heuristic, not a guarantee.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "New pages are drafted without first checking what length, structure and subtopics the current top-ranking pages already cover.",
+   "metrics": [
+    "organic_clicks"
+   ]
+  },
+  "expected_effect": {
+   "metric": "organic_clicks",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "This is a research step before drafting, not a claim that matching length alone guarantees ranking."
+  },
+  "prerequisites": [
+   "Access to the live SERP for the target keyword"
+  ],
+  "steps": [
+   "Identify the top 3 non-forum results for the target keyword.",
+   "Record each page's word count, heading count, image count and covered subtopics.",
+   "Average these into a target spec for the new page.",
+   "Draft to at least match that spec, then add what the existing pages are missing."
+  ],
+  "test": {
+   "method": "Track the new page's ranking against the target keyword after publishing.",
+   "measure": "organic_clicks",
+   "read_point": "8 to 12 weeks after publishing"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "05"
+   ],
+   "cards": [
+    "5e49646f576c"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SEO-170",
+  "title": "Build a reusable brand-voice reference file for AI content prompts",
+  "domain": "15-SEO",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "brand-voice reference file",
+  "hypothesis": "If we build a reusable file of real writing samples, stats and anecdotes and attach it to every AI content-generation prompt, then AI-drafted content reads less generically, because the model has real brand material to imitate instead of defaulting to generic phrasing.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "AI-drafted content reads as generic or interchangeable with any other brand's copy.",
+   "metrics": [
+    "cvr_overall"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "This is a content-input asset, not a site change."
+  },
+  "prerequisites": [
+   "A handful of real writing samples, stats and anecdotes from the brand"
+  ],
+  "steps": [
+   "Collect real writing samples the brand likes, such as past posts, emails or transcripts.",
+   "Collect real numbers, tenure facts and anecdotes the brand can draw on.",
+   "Save these as a standing reference file, updated as new material becomes available.",
+   "Attach the file to every AI content-generation prompt going forward.",
+   "Review whether drafts sound more like the brand after adopting the file."
+  ],
+  "test": {
+   "method": "Have a human reviewer rate draft quality and voice fit before and after adopting the reference file.",
+   "measure": "cvr_overall",
+   "read_point": "After the next 5 to 10 drafts"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "05"
+   ],
+   "cards": [
+    "24994938e6b4"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SEO-171",
+  "title": "A/B test money-page templates, then standardize the winner",
+  "domain": "15-SEO",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "template-level conversion testing",
+  "hypothesis": "If we test several money-page layout variants with paid traffic and then standardize the best-converting layout across every similar page, then average conversion rate rises across the whole set of pages, because one proven template replaces many unvalidated ones.",
+  "applies_when": [
+   "any",
+   "paid_social_led"
+  ],
+  "signal": {
+   "check": "Money pages such as service or category landing pages use ad hoc layouts that have never been tested against each other.",
+   "metrics": [
+    "cvr_overall"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "medium",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Testing requires some paid traffic spend; losing variants can simply be retired."
+  },
+  "prerequisites": [
+   "Several layout variants of a money page",
+   "Paid traffic budget to send to each variant"
+  ],
+  "steps": [
+   "Build several layout variants of the same money page.",
+   "Send paid traffic to each variant for a defined test window.",
+   "Identify the variant with the best visitor-to-customer conversion rate.",
+   "Roll out that layout as the standard template for every similar page."
+  ],
+  "test": {
+   "method": "Compare conversion rate across all pages before and after standardizing on the winning template.",
+   "measure": "cvr_overall",
+   "read_point": "4 to 8 weeks after rollout"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "05"
+   ],
+   "cards": [
+    "79879edd876d"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SEO-172",
+  "title": "Package the content pipeline into one repeatable, reviewed automation",
+  "domain": "15-SEO",
+  "bottleneck": [
+   "team_capacity"
+  ],
+  "lever": "content pipeline automation",
+  "hypothesis": "If we package the recurring steps of keyword selection, drafting, imagery, brand voice and on-page checks into one repeatable automation with a human review step, then content production takes less manual coordination each time, because the same sequence no longer has to be reassembled by hand for every piece.",
+  "applies_when": [
+   "any",
+   "organic_led"
+  ],
+  "signal": {
+   "check": "The same multi-step content production sequence is being manually reassembled for every new piece.",
+   "metrics": [
+    "other:content_output_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:content_output_rate",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "Keep a human review step before publishing; a fully hands-off pipeline can publish an error or off-brand piece at scale."
+  },
+  "prerequisites": [
+   "A documented, working content production sequence to automate",
+   "An automation or workflow tool"
+  ],
+  "steps": [
+   "Run the full content sequence manually at least once, end to end, to confirm it works.",
+   "Package the repeated steps, such as keyword pull, draft, imagery and on-page check, into one workflow.",
+   "Add a human approval step before anything publishes.",
+   "Trigger the workflow for the next few pieces and spot-check the output."
+  ],
+  "test": {
+   "method": "Track time spent per piece and output volume before and after packaging the pipeline.",
+   "measure": "other:content_output_rate",
+   "read_point": "After the next 5 to 10 pieces"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "05"
+   ],
+   "cards": [
+    "cd866609b795"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SEO-173",
+  "title": "Verify AI-applied SEO changes on the live rendered page, not a summary",
+  "domain": "15-SEO",
+  "bottleneck": [
+   "measurement_data"
+  ],
+  "lever": "rendered-output verification",
+  "hypothesis": "If we inspect the live rendered page after an AI or automated tool applies on-page or technical SEO changes, instead of trusting the tool's own summary of what it did, then we catch a change that silently failed or only partly applied, because a tool's self-reported summary is not proof the change is actually live.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "On-page or technical changes made by an AI assistant or automated tool are accepted based on the tool's own summary, with no spot-check of the live page.",
+   "metrics": [
+    "other:verified_change_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:verified_change_rate",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "This is a verification step; it adds a few minutes per change."
+  },
+  "prerequisites": [
+   "Access to view the live page's rendered HTML or metadata"
+  ],
+  "steps": [
+   "After a tool reports a change, open the live page and confirm the element actually changed.",
+   "Check counts specifically, such as internal and external link numbers, not just presence.",
+   "Check meta title and description in the page source or browser tools, not the tool's summary alone.",
+   "Only mark the task complete once the live page confirms the change."
+  ],
+  "test": {
+   "method": "Track how often a spot-check finds a discrepancy between the tool's summary and the live page.",
+   "measure": "other:verified_change_rate",
+   "read_point": "Ongoing, each batch of changes"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "05"
+   ],
+   "cards": [
+    "df678a626742"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SEO-174",
+  "title": "Keep platform brand information current for sales-channel sync",
+  "domain": "15-SEO",
+  "bottleneck": [
+   "trust_brand"
+  ],
+  "lever": "brand information hygiene",
+  "hypothesis": "If we keep the platform's brand information, such as logo, colors and identity assets, filled in and current, then other sales channels that pull from it represent the brand correctly, because Facebook, Google and similar channels sync this data automatically when products sync.",
+  "applies_when": [
+   "any",
+   "shopify"
+  ],
+  "signal": {
+   "check": "The platform's brand settings are blank, outdated or use an old logo, and products already sync to other sales channels.",
+   "metrics": [
+    "other:brand_consistency_score"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:brand_consistency_score",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "This is a settings update with no functional risk."
+  },
+  "prerequisites": [
+   "Current logo files, brand colors and identity assets"
+  ],
+  "steps": [
+   "Locate the platform's brand information settings.",
+   "Upload the current logo, brand colors and identity assets.",
+   "Confirm the update reflects correctly on any connected sales channel.",
+   "Review this setting whenever the brand's visual identity changes."
+  ],
+  "test": {
+   "method": "Check how the brand appears on each connected sales channel after the update.",
+   "measure": "other:brand_consistency_score",
+   "read_point": "Immediately after updating, and after any rebrand"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "07"
+   ],
+   "cards": [
+    "334b579ab43691191b44f8f1"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SEO-175",
+  "title": "Set AI-visibility measurement to the brand's real primary market",
+  "domain": "15-SEO",
+  "bottleneck": [
+   "measurement_data"
+  ],
+  "lever": "region-correct AI visibility measurement",
+  "hypothesis": "If we set an AI-visibility tool's region to the brand's actual primary market instead of leaving it on a worldwide default, then the visibility score reflects reality, because a worldwide default can dilute and understate a brand that is concentrated in one country.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "An AI-visibility score is being read at its worldwide default without checking whether the brand's traffic is concentrated in one region.",
+   "metrics": [
+    "ai_citations"
+   ]
+  },
+  "expected_effect": {
+   "metric": "ai_citations",
+   "direction": "up",
+   "size": "unknown, a measurement correction, not a real change",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "This is a measurement setting, not a site change."
+  },
+  "prerequisites": [
+   "An AI-visibility tool with a region selector",
+   "Knowledge of the brand's primary market"
+  ],
+  "steps": [
+   "Confirm the brand's actual primary market from existing traffic or sales data.",
+   "Open the AI-visibility tool's region setting and switch it from worldwide to that market.",
+   "Re-read the visibility score and mention trend under the corrected region.",
+   "Use the region-corrected score as the baseline for future tracking."
+  ],
+  "test": {
+   "method": "Compare the worldwide score against the region-corrected score and track the corrected score going forward.",
+   "measure": "ai_citations",
+   "read_point": "Immediately, then monthly"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "08"
+   ],
+   "cards": [
+    "7a78cc5341fe"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "SEO-176",
+  "title": "Use an AI brand-performance report to close a specific positioning gap",
+  "domain": "15-SEO",
+  "bottleneck": [
+   "trust_brand"
+  ],
+  "lever": "AI-perception gap correction",
+  "hypothesis": "If we read an AI-visibility brand-performance report to find a specific perception gap, such as being seen as a specialty upgrade rather than an everyday choice, then we can fix that gap directly in product and category copy, because AI answers reflect language already on the web rather than the brand's own intended positioning.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "An AI-visibility brand-performance report shows a specific, named perception weakness that has not been addressed in on-site copy.",
+   "metrics": [
+    "ai_citations"
+   ]
+  },
+  "expected_effect": {
+   "metric": "ai_citations",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "This is a copy change; revert is straightforward if it does not help."
+  },
+  "prerequisites": [
+   "An AI-visibility or brand-performance report covering the brand and named competitors"
+  ],
+  "steps": [
+   "Read the brand-performance report's sentiment and key-business-driver sections.",
+   "Identify the single most urgent, specific perception gap named.",
+   "Rewrite product or category copy to directly address that gap, such as sharpening an everyday-use case.",
+   "Re-run the report after the copy change to see whether the gap narrows."
+  ],
+  "test": {
+   "method": "Re-run the AI brand-performance report after the copy change and compare the flagged gap.",
+   "measure": "ai_citations",
+   "read_point": "6 to 8 weeks after the copy change"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "08"
+   ],
+   "cards": [
+    "37ca9b962b23"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SEO-177",
+  "title": "Feed your sitemap and GSC query data to an AI to find content gaps",
+  "domain": "15-SEO",
+  "bottleneck": [
+   "acquisition_volume"
+  ],
+  "lever": "AI-assisted content-gap mining",
+  "hypothesis": "If we feed the site's own sitemap and exported Search Console query data, or a named competitor's sitemap, to an AI assistant and ask it to identify content-coverage gaps, then we surface topics the site already earns visibility for but does not properly cover, because these are queries already showing real demand rather than guesses.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "No process exists for checking whether queries the site already ranks or shows impressions for actually have a matching page.",
+   "metrics": [
+    "organic_clicks",
+    "indexed_pages"
+   ]
+  },
+  "expected_effect": {
+   "metric": "organic_clicks",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "This is a research step; every suggested gap should be validated for real demand before committing production time."
+  },
+  "prerequisites": [
+   "The site's sitemap.xml",
+   "An exported Search Console query list or a named competitor's sitemap"
+  ],
+  "steps": [
+   "Export the site's sitemap and, separately, a recent Search Console query list.",
+   "Paste both into an AI assistant and ask it to identify queries with no clearly matching page.",
+   "Optionally repeat with a named competitor's sitemap to find topics they cover that the site does not.",
+   "Validate each suggested gap for real demand and difficulty before committing content budget."
+  ],
+  "test": {
+   "method": "Track how many AI-flagged gaps turn into published content and their resulting organic clicks.",
+   "measure": "organic_clicks",
+   "read_point": "8 to 12 weeks after publishing gap-filling content"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "09",
+    "10"
+   ],
+   "cards": [
+    "0648fb2c0ce2",
+    "d2808d386582"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SEO-178",
+  "title": "Mine subreddits for exact customer phrasing to inform content",
+  "domain": "15-SEO",
+  "bottleneck": [
+   "acquisition_volume"
+  ],
+  "lever": "community-language keyword mining",
+  "hypothesis": "If we read subreddits where customers discuss the product category and note their exact problem-phrasing, then keyword and content planning better matches how real buyers actually search and talk, because community language often mirrors search-query phrasing more closely than a marketer's own wording.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Keyword and content ideas come only from keyword tools, with no review of how customers actually phrase the problem in community discussions.",
+   "metrics": [
+    "organic_clicks"
+   ]
+  },
+  "expected_effect": {
+   "metric": "organic_clicks",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "This is a research step with no site change involved."
+  },
+  "prerequisites": [
+   "Access to subreddits or forums where the store's customers discuss the category"
+  ],
+  "steps": [
+   "Find subreddits or forums where customers discuss the product category.",
+   "Read threads and note the exact phrasing customers use to describe their problem or need.",
+   "Compare this phrasing against existing target keywords and headings.",
+   "Fold any better-matching phrasing into keyword lists, titles or FAQ content."
+  ],
+  "test": {
+   "method": "Track engagement or ranking on content updated with community-sourced phrasing versus the prior version.",
+   "measure": "organic_clicks",
+   "read_point": "6 to 8 weeks after the update"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "09"
+   ],
+   "cards": [
+    "0648fb2c0ce2"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SEO-179",
+  "title": "Check GSC's Discover and Google News reports for non-query traffic",
+  "domain": "15-SEO",
+  "bottleneck": [
+   "acquisition_volume"
+  ],
+  "lever": "non-search traffic surface review",
+  "hypothesis": "If we regularly check Search Console's Discover and Google News reports for timely, visual or list-driven content, then we find a traffic surface separate from search queries, because these reports show pages and impressions from Google's interest-based feeds that never appear in standard query-level reporting.",
+  "applies_when": [
+   "any",
+   "organic_led"
+  ],
+  "signal": {
+   "check": "Content is timely, visual or list-driven, but the Discover and Google News reports in Search Console have never been checked.",
+   "metrics": [
+    "organic_clicks"
+   ]
+  },
+  "expected_effect": {
+   "metric": "organic_clicks",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "This is a reporting check with no site change."
+  },
+  "prerequisites": [
+   "A verified Search Console property"
+  ],
+  "steps": [
+   "Open the Discover report in Search Console and review pages and impressions.",
+   "Open the Google News report the same way.",
+   "Note which content formats, such as timely or list-driven pieces, perform well in these reports.",
+   "Repeat those formats where they fit the content calendar."
+  ],
+  "test": {
+   "method": "Track Discover and Google News impressions after publishing more of the well-performing formats.",
+   "measure": "organic_clicks",
+   "read_point": "Monthly"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "10"
+   ],
+   "cards": [
+    "b978f1f1601a"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SEO-180",
+  "title": "Use the generative AI performance report to find and replicate AI magnets",
+  "domain": "15-SEO",
+  "bottleneck": [
+   "measurement_data"
+  ],
+  "lever": "AI-impression diagnostic",
+  "hypothesis": "If we use Search Console's generative AI performance report to find pages heavily consumed inside AI answers, then replicate their structured, direct-answer format on adjacent buyer topics, then we grow AI visibility deliberately, because a page already working as an AI magnet shows what structure the format rewards.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A page holds a stable ranking position but click-through has fallen, and the generative AI performance report has not been checked for that page.",
+   "metrics": [
+    "organic_clicks",
+    "ai_citations"
+   ]
+  },
+  "expected_effect": {
+   "metric": "ai_citations",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "This is a diagnostic and content-format decision, not a site-wide change."
+  },
+  "prerequisites": [
+   "Access to Search Console's generative AI performance report"
+  ],
+  "steps": [
+   "Open the generative AI performance report and sort pages by AI impressions.",
+   "Cross-check heavy-AI-impression pages against pages losing clicks despite stable position.",
+   "Study the structure of the heavy-AI-impression pages, such as direct answers and clear headings.",
+   "Apply the same structure to adjacent buyer topics that are not yet AI magnets."
+  ],
+  "test": {
+   "method": "Recheck the generative AI performance report and organic clicks for the adjacent topics after the format change.",
+   "measure": "ai_citations",
+   "read_point": "6 to 8 weeks after publishing"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "10"
+   ],
+   "cards": [
+    "cc309b3d5cf7",
+    "178afbabc0bc"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SEO-181",
+  "title": "Add social accounts as Search Console platform properties",
+  "domain": "15-SEO",
+  "bottleneck": [
+   "measurement_data"
+  ],
+  "lever": "social-post search visibility tracking",
+  "hypothesis": "If we add the store's social accounts as Search Console platform properties where the feature is available, then we can see which search terms lead people to individual posts, because this data is otherwise invisible in standard Search Console or social analytics.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "The platform properties feature has not yet rolled out to the account"
+  ],
+  "signal": {
+   "check": "Social posts get search and Discover visibility with no way to see which queries drive it.",
+   "metrics": [
+    "organic_clicks"
+   ]
+  },
+  "expected_effect": {
+   "metric": "organic_clicks",
+   "direction": "up",
+   "size": "unknown, a measurement gain, not a traffic driver on its own",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "This is a reporting setup step with no downside."
+  },
+  "prerequisites": [
+   "Access to Search Console's platform properties feature, where available",
+   "Admin access to the social accounts to add"
+  ],
+  "steps": [
+   "Check whether the platform properties feature has reached the Search Console account.",
+   "If available, add the relevant social accounts, such as Instagram, TikTok, X or YouTube, as properties.",
+   "Review which search terms lead to individual posts and how those posts perform.",
+   "Pair this data with a separate social analytics tool for a fuller picture."
+  ],
+  "test": {
+   "method": "Review query-level performance for social posts after the properties are added.",
+   "measure": "organic_clicks",
+   "read_point": "1 month after setup"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "10"
+   ],
+   "cards": [
+    "e1582b8051f0"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SEO-182",
+  "title": "Find a stale linked page and pitch a current replacement",
+  "domain": "15-SEO",
+  "bottleneck": [
+   "acquisition_volume"
+  ],
+  "lever": "content-upgrade outreach",
+  "hypothesis": "If we find a page a target site already links to that has gone stale or outdated and pitch a current, better replacement instead of a bare link request, then the outreach converts more often, because we are offering the site owner a genuine upgrade to content they already chose to link.",
+  "applies_when": [
+   "any",
+   "organic_led"
+  ],
+  "signal": {
+   "check": "No process exists for finding outdated (but still live) pages that target sites already link to.",
+   "metrics": [
+    "other:referring_domains"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:referring_domains",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Outreach can be ignored with no downside; only pitch when a genuinely better, current page exists."
+  },
+  "prerequisites": [
+   "A backlink or content tool that can surface a target site's outbound links",
+   "A genuinely more current, thorough page to offer"
+  ],
+  "steps": [
+   "Identify a target site relevant to the category and review the pages it already links to.",
+   "Find a linked page that is outdated, thin, or several years old.",
+   "Confirm the store has a genuinely better, current replacement on the same topic.",
+   "Pitch the site owner the specific outdated link and the replacement, not a generic link request.",
+   "Track which pitches convert to an updated link."
+  ],
+  "test": {
+   "method": "Track pitch-to-link conversion rate over a quarter of outreach.",
+   "measure": "other:referring_domains",
+   "read_point": "1 quarter after starting"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "11"
+   ],
+   "cards": [
+    "1293de3e1c27"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SEO-183",
+  "title": "Repurpose the blog's RSS feed into cross-channel social posts",
+  "domain": "15-SEO",
+  "bottleneck": [
+   "acquisition_volume"
+  ],
+  "lever": "content repurposing via RSS",
+  "hypothesis": "If we feed the blog's own RSS feed into a social content generation step instead of researching social topics separately, then social posting stays consistent with the site's SEO research and drives traffic back into the same loop, because it reuses the same bottom-of-funnel keyword work already done.",
+  "applies_when": [
+   "any",
+   "organic_led"
+  ],
+  "signal": {
+   "check": "Social content topics are chosen separately from blog and money-page keyword research, with no shared pipeline.",
+   "metrics": [
+    "organic_clicks"
+   ]
+  },
+  "expected_effect": {
+   "metric": "organic_clicks",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Review generated captions before scheduling; an unreviewed automated post can misrepresent the brand."
+  },
+  "prerequisites": [
+   "A blog RSS feed",
+   "A social scheduling or automation tool"
+  ],
+  "steps": [
+   "Point a content or automation tool at the blog's RSS feed as its input.",
+   "Generate social captions and titles consistent in format across channels.",
+   "Review and approve captions before they are sent to scheduling.",
+   "Link each social post back to the source blog article and relevant money pages."
+  ],
+  "test": {
+   "method": "Track referral traffic from social posts back to the blog and money pages over 2 months.",
+   "measure": "organic_clicks",
+   "read_point": "2 months after starting"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "12"
+   ],
+   "cards": [
+    "845f4874cb616d2d8e8a7e40"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SEO-184",
+  "title": "Auto-generate on-brand infographics from existing content",
+  "domain": "15-SEO",
+  "bottleneck": [
+   "acquisition_volume"
+  ],
+  "lever": "automated visual content generation",
+  "hypothesis": "If we auto-generate on-brand infographics from existing written content and schedule them alongside social posts, then the store gets visual social content without a dedicated designer, because a template-based generator can turn already-written material into a usable graphic quickly.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Social posts are text-only or use stock imagery, with no visual content drawn from the store's own written material.",
+   "metrics": [
+    "other:content_output_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:content_output_rate",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Review the generated graphic for brand fit and accuracy before it is scheduled."
+  },
+  "prerequisites": [
+   "A content or scheduling tool with an infographic template library",
+   "Brand images or a chosen visual style"
+  ],
+  "steps": [
+   "Choose a piece of existing content to summarize visually.",
+   "Send it to an infographic generation tool or template library.",
+   "Review the generated graphic for brand fit, accuracy and readability.",
+   "Schedule the approved graphic alongside the related social post."
+  ],
+  "test": {
+   "method": "Compare engagement on infographic-paired posts against text-only posts over a month.",
+   "measure": "other:content_output_rate",
+   "read_point": "1 month after starting"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "12"
+   ],
+   "cards": [
+    "03ac780b7ba97b7e24b8304e"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SEO-185",
+  "title": "Keep a human-approval gate in every automated content pipeline",
+  "domain": "15-SEO",
+  "bottleneck": [
+   "trust_brand"
+  ],
+  "lever": "pipeline approval gate",
+  "hypothesis": "If we keep a human-approval step between each stage of an automated content pipeline, such as titles before drafting, drafts before publishing, and captions before scheduling, then the pipeline stays safe to run even when full automation is technically possible, because a person catches an off-brand or inaccurate output before it goes live.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "An automated content or publishing pipeline runs end to end with no review step before content goes live.",
+   "metrics": [
+    "other:published_error_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:published_error_rate",
+   "direction": "down",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Adding review steps costs review time but reduces the risk of a bad automated publish."
+  },
+  "prerequisites": [
+   "An existing or planned automated content pipeline"
+  ],
+  "steps": [
+   "Map every stage of the pipeline, such as title generation, drafting, imagery and scheduling.",
+   "Insert an explicit approval checkpoint after each stage that produces something publishable.",
+   "Route each checkpoint to a specific person responsible for reviewing it.",
+   "Only let a stage proceed automatically once its output has been approved."
+  ],
+  "test": {
+   "method": "Track how many issues the approval gates catch before publishing over a month.",
+   "measure": "other:published_error_rate",
+   "read_point": "1 month after implementing the gates"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "12"
+   ],
+   "cards": [
+    "6e4f81398cf7963239d1f89a"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "SEO-186",
+  "title": "Link from money pages out to your best-performing supporting articles",
+  "domain": "15-SEO",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "bidirectional internal linking",
+  "hypothesis": "If money and product pages link out to the best-performing supporting articles, not only the reverse direction from articles into money pages, then shoppers researching on the money page get a path to the content that convinced them, because the internal-linking loop currently only runs one way.",
+  "applies_when": [
+   "any",
+   "catalogue"
+  ],
+  "signal": {
+   "check": "Money and product pages link out to almost nothing, while articles link inward to money pages.",
+   "metrics": [
+    "cvr_overall"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "This is a content edit with no functional risk."
+  },
+  "prerequisites": [
+   "A list of the best-performing supporting articles for each money page's category"
+  ],
+  "steps": [
+   "Identify the money pages currently receiving links from supporting articles.",
+   "Find the best-performing article for each money page's topic.",
+   "Add a contextual link from the money page out to that article.",
+   "Repeat across the store's top money pages."
+  ],
+  "test": {
+   "method": "Track engagement and conversion on money pages before and after adding the outbound links.",
+   "measure": "cvr_overall",
+   "read_point": "6 to 8 weeks after adding the links"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "12"
+   ],
+   "cards": [
+    "d03002241ed37acc19c3616e"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SEO-187",
+  "title": "Prefer a link insertion over a new guest post",
+  "domain": "15-SEO",
+  "bottleneck": [
+   "acquisition_volume"
+  ],
+  "lever": "link insertion over guest posting",
+  "hypothesis": "If we pay for a link insertion into an already-published, already-trafficked page instead of writing a brand-new guest post, then we get a link at lower cost and with less uncertainty, because an inserted link sits on a page with proven traffic while a new guest post has no traffic guarantee.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Link-building budget is being spent mostly on new guest posts, with no comparison against insertion pricing and traffic certainty.",
+   "metrics": [
+    "other:referring_domains"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:referring_domains",
+   "direction": "up",
+   "size": "unknown, insertions run roughly 20 to 30 percent cheaper on average per one source",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "medium",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Qualify any paid placement with a sponsored or nofollow attribute rather than buying an unqualified link to manipulate rankings."
+  },
+  "prerequisites": [
+   "A list of relevant sites open to link insertions or guest posts",
+   "A budget for paid placements"
+  ],
+  "steps": [
+   "Compile a list of relevant sites in the niche and check whether they accept insertions or only guest posts.",
+   "For insertion candidates, evaluate the specific page's domain rating, traffic and topical relevance.",
+   "Compare the insertion's quoted price against an equivalent guest post's price and likely traffic.",
+   "Choose the insertion when the page already has proven traffic and the price is lower.",
+   "Qualify the paid placement with the correct link attribute before publishing."
+  ],
+  "test": {
+   "method": "Track referring-domain growth and cost per link across insertions versus guest posts over a quarter.",
+   "measure": "other:referring_domains",
+   "read_point": "1 quarter after starting"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "13"
+   ],
+   "cards": [
+    "6b66d770867bdff19877f6fd"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "SEO-188",
+  "title": "Test AI crawler access with a spoofed bot user-agent fetch",
+  "domain": "15-SEO",
+  "bottleneck": [
+   "measurement_data"
+  ],
+  "lever": "AI crawler access test",
+  "hypothesis": "If we fetch the site with a command-line request that impersonates a named AI crawler's user-agent, then we get a direct, concrete signal of whether that crawler can access the site, because reading robots.txt alone does not prove a real fetch actually succeeds.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "No one has directly tested whether a named AI crawler can fetch the site, beyond reading the robots.txt file.",
+   "metrics": [
+    "ai_citations"
+   ]
+  },
+  "expected_effect": {
+   "metric": "ai_citations",
+   "direction": "up",
+   "size": "unknown, a diagnostic step, not a direct traffic driver",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "This is a read-only diagnostic command with no effect on the live site."
+  },
+  "prerequisites": [
+   "Command-line access with a tool such as curl"
+  ],
+  "steps": [
+   "Confirm the robots.txt file does not appear to block major AI agents.",
+   "Run a command-line fetch of the site using a named AI crawler's user-agent string.",
+   "Read whether the response returns real page content or a block.",
+   "Treat the result as a diagnostic signal, not final proof, and re-check after any robots.txt or app change."
+  ],
+  "test": {
+   "method": "Re-run the fetch test after any robots.txt or crawler-related change.",
+   "measure": "ai_citations",
+   "read_point": "Immediately after any related change"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "15"
+   ],
+   "cards": [
+    "9ccea10d00bf"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SEO-189",
+  "title": "Audit product metafields for stale data left by uninstalled apps",
+  "domain": "15-SEO",
+  "bottleneck": [
+   "acquisition_volume"
+  ],
+  "lever": "back-end catalog data hygiene",
+  "hypothesis": "If we audit product metafields for stale data left behind by uninstalled apps, then AI shopping catalogs that read directly from back-end fields show accurate data, because these catalogs do not read the same front-end page content a human visitor sees.",
+  "applies_when": [
+   "shopify",
+   "catalogue"
+  ],
+  "signal": {
+   "check": "Apps have been uninstalled in the past with no check of whether their metafields were removed, and the store is checked in an AI or global product catalog.",
+   "metrics": [
+    "other:catalog_data_quality"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:catalog_data_quality",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Confirm a metafield is genuinely orphaned before removing it, in case another part of the theme still reads it."
+  },
+  "prerequisites": [
+   "Access to product metafields in the platform admin",
+   "A list of apps installed and uninstalled over the store's history"
+  ],
+  "steps": [
+   "List every product metafield currently in use.",
+   "Cross-check each one against currently installed apps to find orphaned fields from removed apps.",
+   "Remove or correct fields left behind by uninstalled apps, such as an old review app's data.",
+   "Re-check catalog eligibility or data quality after the cleanup."
+  ],
+  "test": {
+   "method": "Compare catalog data accuracy or eligibility status before and after the metafield cleanup.",
+   "measure": "other:catalog_data_quality",
+   "read_point": "2 to 4 weeks after cleanup"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "15"
+   ],
+   "cards": [
+    "c0a13e75f012"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SEO-190",
+  "title": "Publish a temporary placeholder article on a high-authority platform",
+  "domain": "15-SEO",
+  "bottleneck": [
+   "acquisition_volume"
+  ],
+  "lever": "third-party placeholder publishing",
+  "hypothesis": "If we publish a short article on a high-authority third-party publishing platform as a temporary stand-in for a brand or bottom-funnel term while the real on-site page is built, then the store may get faster visibility for that term, because the placeholder benefits from the third-party platform's own domain authority rather than the store's own, unproven one.",
+  "applies_when": [
+   "new_store",
+   "any"
+  ],
+  "does_not_apply_when": [
+   "The store can build and publish the real on-site page within a day or two anyway"
+  ],
+  "signal": {
+   "check": "A brand or bottom-funnel term has no ranking page yet, and the real on-site page will take more than a day or two to ship.",
+   "metrics": [
+    "organic_clicks"
+   ]
+  },
+  "expected_effect": {
+   "metric": "organic_clicks",
+   "direction": "up",
+   "size": "unknown, unverified and speculative in the source",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "high",
+   "reversible": true,
+   "note": "The store does not control the third-party platform; the page can be removed, deindexed, or violate that platform's usage policies, and the content should never invent claims or fake testimonials."
+  },
+  "prerequisites": [
+   "Real homepage copy, testimonials and reviews to draw from",
+   "A publishing-capable third-party platform with a public-share option"
+  ],
+  "steps": [
+   "Gather real homepage copy, marketing material and testimonials into one document.",
+   "Draft a factual article about the brand or the bottom-funnel term using only real, existing material.",
+   "Review the draft for accuracy and brand voice before publishing.",
+   "Publish it on the third-party platform's public-share feature and track its ranking for the target term.",
+   "Retire or de-link the placeholder once the real on-site page is built and ranking."
+  ],
+  "test": {
+   "method": "Track the placeholder's ranking for the target term until the real on-site page takes over.",
+   "measure": "organic_clicks",
+   "read_point": "2 to 4 weeks after publishing"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "16"
+   ],
+   "cards": [
+    "3adc2f4b92d2"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "SEO-191",
+  "title": "Verify AI citations directly, not from crawler hits in server logs",
+  "domain": "15-SEO",
+  "bottleneck": [
+   "measurement_data"
+  ],
+  "lever": "citation-versus-crawl verification",
+  "hypothesis": "If we verify AI citations through citation exports or manual answer checks instead of treating AI-bot crawler hits in server logs as proof of recommendation, then AI-visibility reporting stays honest, because a crawl only shows a bot fetched the page, not that a model actually used or cited it in an answer.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "AI visibility is being reported based on server-log crawler hits alone, with no check of whether the content was actually cited in an answer.",
+   "metrics": [
+    "ai_citations"
+   ]
+  },
+  "expected_effect": {
+   "metric": "ai_citations",
+   "direction": "up",
+   "size": "unknown, a reporting correction, not a real change",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "This is a measurement correction, not a site change."
+  },
+  "prerequisites": [
+   "Access to server logs or crawler-hit data",
+   "A citation export tool or manual AI-answer check process"
+  ],
+  "steps": [
+   "Stop treating a crawler hit in server logs as proof of an AI citation on its own.",
+   "Use a citation export tool, or manually ask AI assistants relevant questions, to confirm actual citation.",
+   "Report AI visibility using confirmed citations, not raw crawl activity.",
+   "Repeat the citation check periodically, since AI answers and citations shift over time."
+  ],
+  "test": {
+   "method": "Compare crawler-hit counts against confirmed citation counts for the same period.",
+   "measure": "ai_citations",
+   "read_point": "Monthly"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "10"
+   ],
+   "cards": [
+    "05e68a491915"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
  }
 ]
