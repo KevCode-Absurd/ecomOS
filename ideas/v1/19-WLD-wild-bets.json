@@ -4030,11 +4030,13 @@
   },
   "sources": {
    "mini_playbooks": [
+    "02",
     "03"
    ],
    "cards": [
     "e29188eb0294",
-    "63f18883754c"
+    "63f18883754c",
+    "ca8e2e37165b"
    ],
    "rules": [
     "P7"
@@ -9102,10 +9104,12 @@
   },
   "sources": {
    "mini_playbooks": [
-    "01"
+    "01",
+    "03"
    ],
    "cards": [
-    "2d99a5dbeda9"
+    "2d99a5dbeda9",
+    "aa796ddf08a2"
    ],
    "rules": [
     "P21"
@@ -9172,6 +9176,1419 @@
    ],
    "rules": [
     "P13"
+   ]
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "WLD-141",
+  "title": "Personally recruit the first customers one by one before paid acquisition",
+  "domain": "19-WLD",
+  "bottleneck": [
+   "acquisition_volume",
+   "team_capacity"
+  ],
+  "lever": "manual first-user recruiting",
+  "hypothesis": "If the founder or team personally recruits and onboards the first customers one at a time, in person or by direct outreach, then the store learns what makes people say yes before spending on paid acquisition.",
+  "applies_when": [
+   "new_store"
+  ],
+  "does_not_apply_when": [
+   "The store already has a proven paid acquisition channel and an established customer base"
+  ],
+  "signal": {
+   "check": "The store has never tried a manual, one by one push to land its first customers before turning on paid ads.",
+   "metrics": [
+    "sessions",
+    "other:manual_touch_share"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cpa",
+   "direction": "down",
+   "size": "unknown; no source measures this for ecommerce, only startup anecdotes outside the category",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "founder"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Limited to the founder's own time and a small target list, so a weak response costs little beyond the hours spent."
+  },
+  "prerequisites": [
+   "A short list of target customers or a place they already gather",
+   "Founder or team time set aside"
+  ],
+  "steps": [
+   "Pick a small target list or a place where the exact target customer already spends time.",
+   "Reach out to or visit each one individually instead of running an ad to them.",
+   "Do whatever it takes by hand to get the first sale or signup, such as a personal demo or manual setup.",
+   "Log what worked and what each person said before growing the effort.",
+   "Add paid acquisition only once the manual push shows real demand."
+  ],
+  "test": {
+   "method": "Compare early retention and word of mouth from the manually recruited cohort against the first cohort acquired through paid ads.",
+   "measure": "other:manual_touch_share",
+   "read_point": "After the first 20 to 50 customers are acquired"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01",
+    "03"
+   ],
+   "cards": [
+    "68c4bfa88afe",
+    "2d99a5dbeda9",
+    "aa796ddf08a2"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "WLD-142",
+  "title": "Personally ask top customers for referrals instead of an automated ask",
+  "domain": "19-WLD",
+  "bottleneck": [
+   "acquisition_efficiency",
+   "repeat_retention"
+  ],
+  "lever": "personal referral ask",
+  "hypothesis": "If the founder or team personally asks a small set of loyal customers for a referral, one at a time, instead of relying only on an automated referral email, then the personal ask may convert better than the generic program alone.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "The store runs an automated referral program but no one has personally asked its best customers for a referral by name.",
+   "metrics": [
+    "other:referral_share"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:referral_share",
+   "direction": "up",
+   "size": "unknown; no source measures this beyond the general advice to ask personally",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "founder"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A personal ask that gets no response costs only the time it took to send."
+  },
+  "prerequisites": [
+   "List of top repeat buyers",
+   "A specific referral reward already in place"
+  ],
+  "steps": [
+   "Pick the top 20 to 50 repeat buyers by lifetime spend.",
+   "Write or call each one personally, naming a specific reason they are a good fit to ask.",
+   "Ask directly for a referral and explain the reward.",
+   "Make sending the referral as easy as one click or one forward.",
+   "Track how many personally asked customers refer someone against a matched control who only see the standard program."
+  ],
+  "test": {
+   "method": "Compare referral rate of the personally asked group against a matched control that only sees the standard referral program.",
+   "measure": "other:referral_share",
+   "read_point": "30 to 60 days after the personal ask"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "68c4bfa88afe"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "WLD-143",
+  "title": "Build a content-first storefront around the brand's own worldview",
+  "domain": "19-WLD",
+  "bottleneck": [
+   "acquisition_efficiency",
+   "trust_brand"
+  ],
+  "lever": "content-first commerce model",
+  "hypothesis": "If the store defines what it believes about its category and customers, publishes content that gives value on its own, and curates products to match that voice instead of leading with them, then it can act as a search and discovery surface without paying for every visitor.",
+  "applies_when": [
+   "organic_led",
+   "any"
+  ],
+  "does_not_apply_when": [
+   "The founder or team has no capacity to publish content on a regular schedule"
+  ],
+  "signal": {
+   "check": "The store's only content is product and category pages; there is no editorial voice a reader would follow on its own.",
+   "metrics": [
+    "organic_sessions",
+    "organic_clicks"
+   ]
+  },
+  "expected_effect": {
+   "metric": "organic_sessions",
+   "direction": "up",
+   "size": "unknown; the source case cited for this model gives no numbers",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "L",
+   "owner": "marketer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Content spend does not touch existing revenue and can be scaled back if it does not draw readers."
+  },
+  "prerequisites": [
+   "A written statement of what the brand believes about its category and customers",
+   "Someone to write or produce content on a schedule"
+  ],
+  "steps": [
+   "Write down what the brand believes about its category, its customers and the world.",
+   "Ask what content the target customer would consume even if they never bought anything.",
+   "Publish that content on a regular schedule, curating products to fit the voice instead of leading with them.",
+   "Include links off the store's own site when they genuinely help the reader.",
+   "Track organic sessions and search visibility over months, not weeks.",
+   "Compare LTV of content-engaged customers against ad-only customers, controlling for prior spend."
+  ],
+  "test": {
+   "method": "Track organic traffic growth and compare LTV of content-engaged customers against ad-only customers, controlling for prior spend.",
+   "measure": "organic_sessions",
+   "read_point": "6 to 12 months after publishing starts"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "e5e13b0a3007"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "WLD-144",
+  "title": "Spotlight real customers instead of paid influencers",
+  "domain": "19-WLD",
+  "bottleneck": [
+   "acquisition_efficiency",
+   "trust_brand"
+  ],
+  "lever": "real-person storytelling",
+  "hypothesis": "If the brand cuts paid sponsored-influencer spend and instead spotlights real customers or community members as its storytellers, then content reads as more authentic and may cost less than a sponsored influencer program.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Most brand storytelling comes from paid sponsored influencers, and no real customer has been featured as a subject in the brand's own content.",
+   "metrics": [
+    "ctr",
+    "cpm"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cpm",
+   "direction": "down",
+   "size": "unknown; the source gives no numbers for this case, only that spend was cut dramatically",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Reversible by resuming influencer spend; the main risk is a slower content pipeline while the switch is tested."
+  },
+  "prerequisites": [
+   "A short list of real customers or community members willing to be featured",
+   "Consent from each person to be shown"
+  ],
+  "steps": [
+   "Identify real customers or community members whose story fits the brand voice.",
+   "Ask permission to feature them, on camera or in writing.",
+   "Publish their story in place of a planned sponsored influencer post.",
+   "Compare engagement and cost per result against recent sponsored influencer posts.",
+   "Shift budget toward whichever format performs better, and keep testing."
+  ],
+  "test": {
+   "method": "Compare engagement, cost and attributed orders of real-customer content against a matched set of recent paid influencer posts.",
+   "measure": "cpm",
+   "read_point": "After a comparable number of posts of each type"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "409a5642f1ed"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "WLD-145",
+  "title": "Give away a fun branded item at a public moment of collective joy",
+  "domain": "19-WLD",
+  "bottleneck": [
+   "acquisition_volume",
+   "trust_brand"
+  ],
+  "lever": "joyful event insertion",
+  "hypothesis": "If the brand hands out a fun, low-cost, on-brand physical item at a public event where people are already celebrating, timed to add to the joy rather than interrupt it, then it can earn attention without feeling like an ambush.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "The brand cannot get permission to distribute at the event or venue"
+  ],
+  "signal": {
+   "check": "The brand's public event presence, if any, is limited to booths or ads rather than a generous, in-the-moment gesture.",
+   "metrics": [
+    "other:earned_media_value"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:earned_media_value",
+   "direction": "up",
+   "size": "unknown; the source case gives no sales numbers, only that it won a creative award",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "A poorly timed or intrusive version can read as an ambush; needs venue permission and a genuinely generous framing."
+  },
+  "prerequisites": [
+   "A public event where the exact target customers already gather and celebrate",
+   "Venue or event permission secured"
+  ],
+  "steps": [
+   "Find a public moment where the target audience is already celebrating, not just present.",
+   "Design a fun, cheap, on-brand item that adds to the moment rather than interrupting it.",
+   "Secure venue or organizer permission before distributing.",
+   "Distribute the item generously, with no purchase requirement or hard sell attached.",
+   "Carry the moment to digital and social afterward and track shares."
+  ],
+  "test": {
+   "method": "Track shares, mentions and any redeemed offer tied to the item, compared against a normal marketing spend of the same budget.",
+   "measure": "other:earned_media_value",
+   "read_point": "1 to 2 weeks after the event"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "WLD-146",
+  "title": "Place real products as findable items inside a popular game",
+  "domain": "19-WLD",
+  "bottleneck": [
+   "acquisition_volume",
+   "acquisition_efficiency"
+  ],
+  "lever": "native in-game placement",
+  "hypothesis": "If real, purchasable products are placed as findable items inside an existing popular video game or live event experience instead of running a display ad, then the brand can reach an engaged audience through play instead of interruption.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "The store has no budget or partner to build a real in-game integration, not just a sponsorship logo"
+  ],
+  "signal": {
+   "check": "The brand has never tested a native placement inside a game or interactive experience its audience already uses.",
+   "metrics": [
+    "other:earned_media_value",
+    "sessions"
+   ]
+  },
+  "expected_effect": {
+   "metric": "sessions",
+   "direction": "up",
+   "size": "one reported case: a large campaign drove over 7 million currency units in sales, 5.2 million views and 600,000 real-time interactions; not a benchmark for a small store",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "L",
+   "owner": "marketer"
+  },
+  "cost": "high",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "Needs a game or platform partner and real budget; a small store cannot expect the scale of the large-brand example."
+  },
+  "prerequisites": [
+   "A game or interactive platform the target audience already plays",
+   "A partner or developer able to build the placement"
+  ],
+  "steps": [
+   "Identify a game or interactive experience the target audience already spends time in.",
+   "Design a way for a real, purchasable product to appear as a findable in-game item.",
+   "Partner with the platform or a developer to build the integration.",
+   "Link the in-game moment to a real place to buy.",
+   "Track views, interactions and orders attributed to the placement."
+  ],
+  "test": {
+   "method": "Track views, interactions and orders attributed to the placement against its production and media cost.",
+   "measure": "other:earned_media_value",
+   "read_point": "At the end of the campaign window"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "8f2e2350741b"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "WLD-147",
+  "title": "Tie a promotion to a cultural moment only when the fit is authentic",
+  "domain": "19-WLD",
+  "bottleneck": [
+   "trust_brand",
+   "acquisition_volume"
+  ],
+  "lever": "cultural moment tie-in",
+  "hypothesis": "If a promotion aligns with a cultural, seasonal or political moment only when the brand has a real, authentic connection to it, and makes participating easy, then it can win attention without reading as opportunistic.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "The brand has no genuine connection to the moment being used"
+  ],
+  "signal": {
+   "check": "A planned tie-in to a cultural or seasonal moment has no real link to what the brand actually does or believes.",
+   "metrics": [
+    "other:earned_media_value"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:earned_media_value",
+   "direction": "up",
+   "size": "unknown; source cases report traffic surges or usage numbers with no method given",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "An inauthentic tie-in can draw backlash; the check must happen before launch, not after."
+  },
+  "prerequisites": [
+   "A stated, real connection between the brand and the moment",
+   "A simple way for the customer to participate"
+  ],
+  "steps": [
+   "Name the specific cultural, seasonal or political moment under consideration.",
+   "Write down the brand's real, provable connection to that moment.",
+   "If there is no real connection, skip the tie-in.",
+   "Make participating simple: a curated collection, a themed offer or a simple gesture, not a complex campaign.",
+   "Track traffic, shares and sales during the moment against a normal week."
+  ],
+  "test": {
+   "method": "Compare traffic, shares and sales during the tie-in window against a normal week and against the campaign's cost.",
+   "measure": "other:earned_media_value",
+   "read_point": "During and 1 week after the moment"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "4dc56ea887bf"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "WLD-148",
+  "title": "Send personalized mail as one touch in a B2B account-based sequence",
+  "domain": "19-WLD",
+  "bottleneck": [
+   "acquisition_efficiency"
+  ],
+  "lever": "B2B account-based mail",
+  "hypothesis": "If a small set of high-value wholesale, corporate-gifting or trade prospects gets personalized direct mail as one touch inside a multi-touch account-based sequence, then it can move a B2B deal forward better than digital touches alone.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "The store has no wholesale, corporate or trade sales motion"
+  ],
+  "signal": {
+   "check": "B2B or wholesale prospects only receive digital emails and calls, with no physical touch in the sequence.",
+   "metrics": [
+    "other:mail_response_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:mail_response_rate",
+   "direction": "up",
+   "size": "unknown; source case reports 'sales skyrocketing' with no number given",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "medium",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Cost is bounded by the small prospect list; a weak response does not affect the rest of the sequence."
+  },
+  "prerequisites": [
+   "A defined set of buyer personas",
+   "A short list of high-value prospects",
+   "An existing multi-touch outreach sequence"
+  ],
+  "steps": [
+   "Define 2 to 3 buyer personas for the wholesale or corporate segment.",
+   "Build a short list of high-value prospects, on the order of 100.",
+   "Send personalized mail as 1 touch inside the existing outreach sequence.",
+   "Follow with the rest of the digital sequence.",
+   "Track response rate and deals opened against a prospect list that received the digital sequence only."
+  ],
+  "test": {
+   "method": "Compare response rate and deals opened for the mail-plus-sequence list against a matched list on the digital sequence alone.",
+   "measure": "other:mail_response_rate",
+   "read_point": "60 to 90 days after the mail send"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "f53e738ee3e7"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "WLD-149",
+  "title": "Target competitor customers with third-party data direct mail",
+  "domain": "19-WLD",
+  "bottleneck": [
+   "acquisition_efficiency"
+  ],
+  "lever": "competitor conquest mail",
+  "hypothesis": "If a vetted third-party spend-data segment of competitor customers gets a switching-focused direct mail piece kept separate from win-back creative, then the store can reach a qualified conquest audience it cannot target through its own list.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "No third-party data partner with verified, legal address or spend data is available in the brand's market"
+  ],
+  "signal": {
+   "check": "The store only mails its own customer list and has never tested a vetted third-party segment of competitor customers.",
+   "metrics": [
+    "other:mail_response_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:mail_response_rate",
+   "direction": "up",
+   "size": "unknown; source case gives no numbers for this play",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "medium",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "Depends on legal, verified data provenance; using unverified third-party address or spend data risks a privacy or compliance problem."
+  },
+  "prerequisites": [
+   "A vetted third-party data partner with verified, legal address or spend data",
+   "A confirmed GDPR or local privacy review"
+  ],
+  "steps": [
+   "Engage a data partner to build a behavioral segment of competitor customers.",
+   "Confirm how the segment and addresses were obtained and that using them is legal.",
+   "Write switching-focused messages for this segment, kept separate from any win-back creative for lapsed own-customers.",
+   "Send the mail with a trackable response device.",
+   "Compare response and orders against the cost of the data and the mail program."
+  ],
+  "test": {
+   "method": "Track response and orders from the conquest segment against the combined cost of the data partner and the mail program.",
+   "measure": "other:mail_response_rate",
+   "read_point": "30 to 60 days after the mail send"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "49715f3b64de"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "WLD-150",
+  "title": "Raise price instead of discounting on the year's biggest sale day",
+  "domain": "19-WLD",
+  "bottleneck": [
+   "trust_brand",
+   "margin_cogs"
+  ],
+  "lever": "contrarian pricing stunt",
+  "hypothesis": "If the brand raises its price instead of discounting on the year's biggest retail sale day, as a deliberate anti-marketing statement, then it can earn attention and reinforce a confident brand voice without training customers to wait for a discount.",
+  "applies_when": [
+   "dtc_only"
+  ],
+  "does_not_apply_when": [
+   "The brand's voice is serious or premium in a way that a joke price move would not fit"
+  ],
+  "signal": {
+   "check": "The brand runs the same discount every peak sale day as every competitor, with no distinct voice of its own.",
+   "metrics": [
+    "other:earned_media_value"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:earned_media_value",
+   "direction": "up",
+   "size": "one reported case: a price raise kept the product at number 1 on a bestseller list; not a benchmark",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "Confuses customers if the brand's voice is not already playful; run only after a written voice-fit check."
+  },
+  "prerequisites": [
+   "A confirmed, playful or irreverent brand voice",
+   "A legal and brand-risk review completed"
+  ],
+  "steps": [
+   "Confirm the brand voice can carry a joke about pricing without confusing loyal customers.",
+   "Pick the peak sale day and announce a price raise instead of a discount, with a clear, funny rationale.",
+   "Run a legal and brand-risk review before launch.",
+   "Budget the move as a marketing cost, not a pricing decision meant to hold.",
+   "Track units sold, price realized, coverage and complaints against a normal sale day."
+  ],
+  "test": {
+   "method": "Compare units sold, revenue and earned media on the price-raise day against the same day last year and against the cost of the campaign.",
+   "measure": "other:earned_media_value",
+   "read_point": "The sale day plus 1 week"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "0874da44648a"
+   ],
+   "rules": [
+    "P18"
+   ]
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "WLD-151",
+  "title": "Sell a stunt product that is literally nothing, with proceeds disclosed",
+  "domain": "19-WLD",
+  "bottleneck": [
+   "trust_brand",
+   "acquisition_volume"
+  ],
+  "lever": "sell-nothing stunt",
+  "hypothesis": "If the brand sells an absurdist product that is literally nothing for a small fee, and is transparent about where the money goes, then it can generate attention and goodwill as a one-off stunt without misleading anyone about what they are buying.",
+  "applies_when": [
+   "dtc_only"
+  ],
+  "does_not_apply_when": [
+   "The brand's voice is serious in a way that an absurdist sale would confuse customers"
+  ],
+  "signal": {
+   "check": "The brand has never run a purely attention-driven stunt product and relies only on real product sales for word of mouth.",
+   "metrics": [
+    "other:earned_media_value"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:earned_media_value",
+   "direction": "up",
+   "size": "one reported case: about 11,000 buyers paid a small fee for nothing, with proceeds paid out as staff bonuses; figures vary by outlet, treat as unaudited",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "Could be read as a scam if the joke and the payout are not made completely clear up front; needs a legal and platform review."
+  },
+  "prerequisites": [
+   "A confirmed playful brand voice",
+   "A clear, disclosed plan for where the proceeds go",
+   "A legal and platform review completed"
+  ],
+  "steps": [
+   "Confirm the brand voice can carry an absurdist, self-aware stunt.",
+   "Set a small, capped price for the item and a clear cap on quantity.",
+   "State up front, in plain words, that the buyer receives nothing and where the money will go.",
+   "Run a legal and platform review before launch.",
+   "Track sign-ups, revenue, coverage and complaints against the campaign's cost."
+  ],
+  "test": {
+   "method": "Track total revenue, coverage and complaints against the campaign's production and platform cost.",
+   "measure": "other:earned_media_value",
+   "read_point": "1 to 2 weeks after the stunt ends"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "0874da44648a"
+   ],
+   "rules": [
+    "P18"
+   ]
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "WLD-152",
+  "title": "Run a rare, extreme-discount stunt on a few real high-value items",
+  "domain": "19-WLD",
+  "bottleneck": [
+   "acquisition_volume",
+   "trust_brand"
+  ],
+  "lever": "extreme-discount viral stunt",
+  "hypothesis": "If the brand offers a small, fixed quantity of real, high-value items at a rare, extreme discount as a one-off stunt, with clear rules and a hard cap, then it can earn attention and traffic without training customers to expect it again.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "The brand cannot absorb the margin cost of the giveaway items or a traffic spike on its site"
+  ],
+  "signal": {
+   "check": "The brand has never run an attention-driven, rare extreme-discount event separate from its normal promotional calendar.",
+   "metrics": [
+    "sessions",
+    "other:earned_media_value"
+   ]
+  },
+  "expected_effect": {
+   "metric": "sessions",
+   "direction": "up",
+   "size": "one reported case: about 50,000 simultaneous page views during the event; site and stock must be ready for that kind of spike",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "medium",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "Site and fulfilment must be ready for a spike; repeating it too often trains customers to wait for the next one."
+  },
+  "prerequisites": [
+   "A fixed, small quantity of real high-value items to discount",
+   "Site and ops capacity confirmed for a traffic spike",
+   "Clear, published rules and a hard cap"
+  ],
+  "steps": [
+   "Pick a small, fixed quantity of real, high-value items and set a rare, deep discount.",
+   "Publish the exact quantity, rules and end time before launch.",
+   "Confirm site and fulfilment can handle a large simultaneous spike.",
+   "Run it once, and cap how often this specific stunt repeats in a year.",
+   "Track traffic, sell-through, new customers and coverage against the margin given up."
+  ],
+  "test": {
+   "method": "Compare margin given up against new customers acquired, traffic and coverage earned, and track whether it trains repeat buyers to wait for the next one.",
+   "measure": "other:earned_media_value",
+   "read_point": "Immediately after the event and again at 90 days for repeat-buyer behavior"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "0874da44648a"
+   ],
+   "rules": [
+    "P18"
+   ]
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "WLD-153",
+  "title": "Use humorous public roasting of customers as a social voice",
+  "domain": "19-WLD",
+  "bottleneck": [
+   "trust_brand",
+   "acquisition_efficiency"
+  ],
+  "lever": "roast marketing",
+  "hypothesis": "If a brand whose voice can carry it replies to its own customers on social media with self-aware, humorous roasting instead of standard customer service replies, then it can build an engaged, talked-about presence at low cost.",
+  "applies_when": [
+   "dtc_only"
+  ],
+  "does_not_apply_when": [
+   "The brand voice is not already playful or the audience does not expect to be teased"
+  ],
+  "signal": {
+   "check": "Social replies are all standard and polite, with no distinct comic voice, and engagement on replies is low.",
+   "metrics": [
+    "ctr",
+    "other:earned_media_value"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:earned_media_value",
+   "direction": "up",
+   "size": "unknown; the source case gives no numbers, only that the approach built a following",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "Can offend or alienate customers if the tone misjudges the moment; needs a clear line on what is never roasted, such as a real complaint."
+  },
+  "prerequisites": [
+   "A confirmed, established playful brand voice",
+   "A written line on topics or complaints that are never joked about"
+  ],
+  "steps": [
+   "Confirm the brand voice already supports teasing humor with its audience.",
+   "Write a short list of topics and situations that are never joked about, such as a real complaint or a safety issue.",
+   "Reply to selected customer posts with self-aware, good-natured humor instead of a standard reply.",
+   "Watch replies and shares for backlash and stop immediately if the tone lands badly.",
+   "Track engagement and follower growth on roasted posts against standard posts."
+  ],
+  "test": {
+   "method": "Compare engagement rate and follower growth on humor-led replies against standard replies over the same period.",
+   "measure": "ctr",
+   "read_point": "After 4 to 8 weeks of trying the tone"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "0874da44648a"
+   ],
+   "rules": [
+    "P18"
+   ]
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "WLD-154",
+  "title": "Send cold traffic to a quiz landing page instead of a product page",
+  "domain": "19-WLD",
+  "bottleneck": [
+   "conversion",
+   "acquisition_efficiency"
+  ],
+  "lever": "quiz-first acquisition funnel",
+  "hypothesis": "If cold paid traffic lands on a personalized quiz page instead of a product page, then the store captures a useful zero-party answer and can make a more relevant offer before asking for the sale.",
+  "applies_when": [
+   "paid_social_led",
+   "catalogue"
+  ],
+  "does_not_apply_when": [
+   "The product is simple enough that a quiz adds friction with no real personalization to offer back"
+  ],
+  "signal": {
+   "check": "All cold paid traffic lands on a standard product or category page with no segmenting step before the offer.",
+   "metrics": [
+    "cvr_overall",
+    "bounce_rate_pdp"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown; presented as a framework in the source, not a tested win",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Reversible by routing traffic back to product pages if conversion drops."
+  },
+  "prerequisites": [
+   "A quiz or landing page tool",
+   "A defined set of outcomes the quiz can route to specific products or offers"
+  ],
+  "steps": [
+   "Design a short quiz that asks a real segmenting question relevant to the product line.",
+   "Route each answer to a matched product recommendation and a relevant offer.",
+   "Send a portion of cold paid traffic to the quiz page instead of the product page.",
+   "Store the zero-party answers for retargeting and personalization.",
+   "Compare conversion rate and cost per order between the quiz path and the direct product page path."
+  ],
+  "test": {
+   "method": "Split cold traffic between the quiz landing page and the standard product page, and compare conversion rate and cost per order.",
+   "measure": "cvr_overall",
+   "read_point": "After enough traffic for a reliable split, typically 2 to 4 weeks"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "daa23b9732b1"
+   ],
+   "rules": [
+    "P23"
+   ]
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "WLD-155",
+  "title": "Reply personally to individual customers on social media",
+  "domain": "19-WLD",
+  "bottleneck": [
+   "repeat_retention",
+   "trust_brand"
+  ],
+  "lever": "1:1 social engagement",
+  "hypothesis": "If the brand replies personally to individual customers on social media instead of only broadcasting posts, then social becomes a community hub that builds identity and loyalty instead of a one-way channel.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Social accounts only post outward and rarely or never reply to individual customer comments or messages.",
+   "metrics": [
+    "other:earned_media_value"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:earned_media_value",
+   "direction": "up",
+   "size": "unknown; source gives case examples only, no numbers",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "support"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk; the main cost is staff time to reply personally instead of using templates."
+  },
+  "prerequisites": [
+   "Staff time set aside for personal social replies",
+   "A tone guide for personal replies"
+  ],
+  "steps": [
+   "Set aside regular time for a team member to reply personally to individual comments and messages.",
+   "Reply with the customer's specific comment in mind, not a template.",
+   "Use humor, education or genuine interest to build identity, matching the brand voice.",
+   "Track which customers get personal replies and watch for repeat engagement from them.",
+   "Compare engagement and repeat purchase of customers who received a personal reply against those who did not."
+  ],
+  "test": {
+   "method": "Compare repeat purchase and engagement of customers who received a personal reply against a matched group who only saw broadcast posts.",
+   "measure": "other:earned_media_value",
+   "read_point": "60 to 90 days after starting personal replies"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "b5a1ffc627e1"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "WLD-156",
+  "title": "Offer an approved remedy when a customer volunteers hardship at cancellation",
+  "domain": "19-WLD",
+  "bottleneck": [
+   "repeat_retention",
+   "trust_brand"
+  ],
+  "lever": "hardship-sensitive cancellation",
+  "hypothesis": "If a customer volunteers a hardship reason while cancelling, and the store offers an approved remedy such as a pause or an eligible refund without inferring the reason or delaying the cancellation, then the moment builds trust instead of feeling either cold or invasive.",
+  "applies_when": [
+   "subscription"
+  ],
+  "does_not_apply_when": [
+   "The customer has not volunteered any reason for cancelling"
+  ],
+  "signal": {
+   "check": "Cancellation flows either delay the cancel to push a save offer, or ignore a volunteered hardship reason completely.",
+   "metrics": [
+    "subscription_churn",
+    "csat"
+   ]
+  },
+  "expected_effect": {
+   "metric": "csat",
+   "direction": "up",
+   "size": "unknown; source gives no measured lift, only a company-reported loyalty claim",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "support"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "Inferring grief or hardship from data instead of a stated reason risks feeling invasive; the remedy must stay optional and never delay the cancel."
+  },
+  "prerequisites": [
+   "An optional reason field in the cancellation flow",
+   "A defined, approved remedy list such as pause or eligible refund",
+   "Trained support staff"
+  ],
+  "steps": [
+   "Let cancellation complete on request every time, with an optional reason field.",
+   "Never infer grief or hardship from order or account data; only act on what the customer states.",
+   "If hardship is volunteered, offer 1 approved remedy from a defined list, such as a pause or an eligible refund.",
+   "Send a gesture, such as a note, only when it fits and is clearly welcomed, with no upsell or templated sympathy.",
+   "Train staff on the script and track how often hardship is volunteered and which remedy was used."
+  ],
+  "test": {
+   "method": "Track win-back rate and customer sentiment for cancellations where a remedy was offered against cancellations with no hardship disclosed.",
+   "measure": "csat",
+   "read_point": "30 to 90 days after the cancellation"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "dee4592d0973"
+   ],
+   "rules": [
+    "P14"
+   ]
+  },
+  "confidence": "medium",
+  "general_practice": false
+ },
+ {
+  "id": "WLD-157",
+  "title": "Build a habit loop with fast, frequent new-SKU release cadence",
+  "domain": "19-WLD",
+  "bottleneck": [
+   "aov",
+   "cash_inventory"
+  ],
+  "lever": "fast-cadence release habit loop",
+  "hypothesis": "If the store releases new SKUs or bundles on a fast, frequent, predictable cadence, backed by a supply chain that can keep up, then customers form a habit of checking back, unlike a one-off scarcity drop of the same product.",
+  "applies_when": [
+   "catalogue",
+   "scaling_store"
+  ],
+  "does_not_apply_when": [
+   "The supply chain cannot design and produce new SKUs on a short, predictable cycle"
+  ],
+  "signal": {
+   "check": "New products launch rarely and unpredictably, and customers have no reason to check back on a regular schedule.",
+   "metrics": [
+    "repeat_rate_90d",
+    "days_of_stock"
+   ]
+  },
+  "expected_effect": {
+   "metric": "repeat_rate_90d",
+   "direction": "up",
+   "size": "one reported case: 15 to 20 days from design to shelf, 200 to 250 new styles a month; not a benchmark outside that supply chain",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "L",
+   "owner": "ops"
+  },
+  "cost": "medium",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "A fast cadence without matching supply chain speed creates stockouts or rushed quality; scale back if visit frequency does not follow the cadence."
+  },
+  "prerequisites": [
+   "A supply chain that can design and produce on a short cycle",
+   "A way to announce the schedule in advance"
+  ],
+  "steps": [
+   "Confirm the supply chain can design and produce new SKUs on a short, predictable cycle.",
+   "Set a fixed, announced release schedule for new SKUs or bundles.",
+   "Release on schedule, treating each release as a small event, not a full drop launch.",
+   "Track visit frequency and purchase frequency against the release calendar.",
+   "Cut back to fewer, better releases if frequency does not track with visits, or if ops strain shows up."
+  ],
+  "test": {
+   "method": "Track visit frequency and purchase frequency around each release against the weeks between releases.",
+   "measure": "repeat_rate_90d",
+   "read_point": "After 8 to 12 weeks of the release cadence"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "03"
+   ],
+   "cards": [
+    "b7edaaaeed23"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "WLD-158",
+  "title": "Remove time limits on support calls and treat extra time as brand spend",
+  "domain": "19-WLD",
+  "bottleneck": [
+   "fulfilment_cx",
+   "trust_brand"
+  ],
+  "lever": "uncapped support time",
+  "hypothesis": "If support reps have no handle-time target and extra time on a call is treated as a brand investment rather than a cost to minimize, then customers with complex problems get real resolution instead of a rushed handoff.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "Ticket volume is high enough that removing time targets would blow out the whole team's backlog"
+  ],
+  "signal": {
+   "check": "Support reps are measured on average handle time, and long or complex calls are rushed or transferred to hit that target.",
+   "metrics": [
+    "csat",
+    "ticket_backlog"
+   ]
+  },
+  "expected_effect": {
+   "metric": "csat",
+   "direction": "up",
+   "size": "unknown; source gives 1 anecdote of an unusually long call with no measured effect on loyalty",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "support"
+  },
+  "cost": "medium",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "Without a backlog cap, removing time targets can let queue times grow for other customers; needs a plan for the rest of the queue."
+  },
+  "prerequisites": [
+   "Support ticket backlog under control",
+   "Leadership sign-off to drop handle-time as a rep metric"
+  ],
+  "steps": [
+   "Confirm current ticket backlog and staffing can absorb some longer calls without the queue growing unmanageably.",
+   "Drop average handle time as a rep performance metric for complex or emotional calls.",
+   "Train reps to solve the problem fully in 1 call instead of rushing to close it.",
+   "Track first-contact resolution and customer effort score instead of call length.",
+   "Watch queue time and backlog weekly and add a cap if it grows past a set limit."
+  ],
+  "test": {
+   "method": "Compare first-contact resolution, customer effort score and repeat contact rate before and after removing the handle-time target.",
+   "measure": "csat",
+   "read_point": "8 to 12 weeks after the change"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "03"
+   ],
+   "cards": [
+    "aa796ddf08a2"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "WLD-159",
+  "title": "Question a category assumption competitors treat as fixed",
+  "domain": "19-WLD",
+  "bottleneck": [
+   "acquisition_volume",
+   "margin_cogs"
+  ],
+  "lever": "structural assumption bet",
+  "hypothesis": "If the store identifies a category assumption competitors treat as fixed, such as needing a middleman or a physical store, and builds direct infrastructure to bet against it, then it can win a structural cost or access advantage instead of competing on the same terms as everyone else.",
+  "applies_when": [
+   "scaling_store"
+  ],
+  "does_not_apply_when": [
+   "The assumption exists for a real regulatory or safety reason, not just habit"
+  ],
+  "signal": {
+   "check": "The category has a widely held assumption, such as a required channel or middleman, that no competitor has tested breaking.",
+   "metrics": [
+    "gross_margin"
+   ]
+  },
+  "expected_effect": {
+   "metric": "gross_margin",
+   "direction": "up",
+   "size": "one reported case: rising gross margins as fixed costs fell after going direct to manufacturers; not a benchmark outside that case",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "L",
+   "owner": "founder"
+  },
+  "cost": "high",
+  "risk": {
+   "level": "high",
+   "reversible": false,
+   "note": "Building direct infrastructure, such as an own tech stack or direct manufacturer relationships, is a real capital commitment, not a small test."
+  },
+  "prerequisites": [
+   "A clearly named category assumption to bet against",
+   "Capital or partnerships to build the direct infrastructure"
+  ],
+  "steps": [
+   "Name the specific category assumption competitors treat as fixed.",
+   "Check whether the assumption is a real constraint, such as regulation or safety, or just habit.",
+   "Design a smaller, reversible test of the direct approach before committing full capital.",
+   "Build the direct infrastructure only after the small test shows real demand and a cost or margin gain.",
+   "Track gross margin and unit economics against the old model over time."
+  ],
+  "test": {
+   "method": "Compare gross margin and unit economics under the direct model against the old model on a matched product set.",
+   "measure": "gross_margin",
+   "read_point": "After the first 2 to 3 quarters of the direct model"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "53352d5eca9e"
+   ],
+   "rules": [
+    "P23"
+   ]
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "WLD-160",
+  "title": "Gate an invite-only club with an aspirational criterion, not just spend",
+  "domain": "19-WLD",
+  "bottleneck": [
+   "trust_brand",
+   "repeat_retention"
+  ],
+  "lever": "aspirational gating criterion",
+  "hypothesis": "If an invite-only club gates membership on an aspirational qualifying criterion, such as a verified status or an application, instead of only lifetime spend at the store, then it can build status appeal that attracts new customers, not just reward existing top spenders.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "The store has no way to verify the qualifying criterion, which risks the club feeling arbitrary or fake"
+  ],
+  "signal": {
+   "check": "The only gated tier the store offers is based on lifetime spend, with no version that appeals to a new customer who is not yet a top spender.",
+   "metrics": [
+    "other:signup_desire"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:signup_desire",
+   "direction": "up",
+   "size": "one reported case: over 13 million monthly active users on an aspirational, application-gated model; a large-scale example, not a benchmark",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "A criterion the store cannot verify, or one that feels unfair once it leaks, can damage trust instead of building it."
+  },
+  "prerequisites": [
+   "A verifiable aspirational criterion or application process",
+   "Benefits inside the tier worth the friction of applying"
+  ],
+  "steps": [
+   "Pick an aspirational criterion that fits the brand and can be verified, such as an application, a referral, or a stated status.",
+   "Design real benefits inside the tier that are worth the friction of qualifying.",
+   "Publish clear, honest rules for who gets in and why.",
+   "Launch the gated tier and track application volume and signup desire.",
+   "Compare retention and spend of members against a matched group of non-members."
+  ],
+  "test": {
+   "method": "Track application volume, approval rate and the retention and spend of accepted members against a matched non-member group.",
+   "measure": "other:signup_desire",
+   "read_point": "90 days after launch"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "03"
+   ],
+   "cards": [
+    "11a4bf90d117"
+   ],
+   "rules": [
+    "P9"
+   ]
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "WLD-161",
+  "title": "Run a paid contest where winners publicly document using the product",
+  "domain": "19-WLD",
+  "bottleneck": [
+   "acquisition_volume",
+   "trust_brand"
+  ],
+  "lever": "paid product-use contest",
+  "hypothesis": "If the brand runs a paid contest that pays a small number of people to publicly use and document the product over a set period, then it can generate free, wide-reaching attention and applications without any paid ad spend.",
+  "applies_when": [
+   "dtc_only"
+  ],
+  "does_not_apply_when": [
+   "The product has no natural, ongoing use that is interesting to document publicly"
+  ],
+  "signal": {
+   "check": "The brand has no earned-media plan beyond ads and standard influencer seeding.",
+   "metrics": [
+    "other:earned_media_value"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:earned_media_value",
+   "direction": "up",
+   "size": "one reported case: 170,000 applications from 30 countries with zero paid ads for the first run of a paid product-use contest",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "medium",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "Needs legal review for contest and paid-participation rules, and a plan if applicant volume is far larger than expected."
+  },
+  "prerequisites": [
+   "A clear public-use theme tied to the product",
+   "A defined prize or pay structure",
+   "Legal and platform review of contest rules"
+  ],
+  "steps": [
+   "Pick a public-use theme that ties naturally to what the product does.",
+   "Set a small number of paid spots, the pay amount and the documentation requirement.",
+   "Run a legal and platform review of the contest rules before launch.",
+   "Open applications and publicize the contest.",
+   "Track applications, resulting content reach and coverage against the total cost of pay and production."
+  ],
+  "test": {
+   "method": "Track application volume, content reach, coverage and any attributed sales against the total pay and production cost.",
+   "measure": "other:earned_media_value",
+   "read_point": "At the end of the contest period"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "03"
+   ],
+   "cards": [
+    "f3d618345541"
+   ],
+   "rules": [
+    "P18"
    ]
   },
   "confidence": "low",
