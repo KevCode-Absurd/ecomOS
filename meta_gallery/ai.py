@@ -518,7 +518,7 @@ def variant_path(ad_id, name, out_dir=None):
 # ---------- ads for a best-selling product, from its site photos ----------
 PRODUCT_ADS = DATA / 'product_ads'
 SAFE_SLUG = re.compile(r'^[a-z0-9][a-z0-9-]{1,120}$')
-COPY_FIELDS = ('primary_text', 'headline', 'description')
+COPY_FIELDS = ('primary_text', 'primary_alt', 'headline', 'headline_alt', 'description', 'uses')
 PRODUCT_SHAPE = '''{"concepts": [
   {"name": "2 to 4 word concept name",
    "angle": "the selling angle in a few words, for example proof it sells, gifting, everyday wear, price, craft",
@@ -526,8 +526,11 @@ PRODUCT_SHAPE = '''{"concepts": [
    "scene": "what the photo shows: setting, model or no model, props, light",
    "layout": "where product, text and proof sit",
    "text_on_image": "exact short text to print on the image, or empty",
+   "uses": ["the page facts this ad is built on, copied short"],
    "primary_text": "Meta primary text: 2 to 4 short lines",
+   "primary_alt": ["2 more primary texts that test other page facts"],
    "headline": "Meta headline, 40 characters or less",
+   "headline_alt": ["2 more headlines, 40 characters or less"],
    "description": "Meta link description, 30 characters or less"}
 ]}'''
 
@@ -543,7 +546,10 @@ def _facts_line(p):
     if p.get('badge'):
         bits.append(f"Site badge: {p['badge']}")
     if p.get('sold'):
-        bits.append(f"Website sales: {p['sold']}")
+        bits.append(f"Website sales (context for you, not a claim for the ads): {p['sold']}")
+    facts = [str(x)[:400] for x in p.get('facts') or [] if str(x).strip()][:40]
+    if facts:
+        bits.append('Facts from the product page (the only claims you may use):\n' + '\n'.join(f'- {x}' for x in facts))
     return '\n'.join(bits)
 
 
@@ -556,12 +562,14 @@ def product_prompt(p, n, n_photos, has_ref, fmt='square'):
         + (f"Image {n_photos + 1} is a style reference: borrow its layout, framing, text style and mood only. Never copy its product, text, logo, models or faces.\n" if has_ref else "\n")
         + f"Format: {fmt} ({SIZES.get(fmt, SIZES['square'])}).\n\n"
         + _facts_line(p) + "\n"
-        + (f"Site description: {p.get('description')}\n" if p.get('description') else '')
-        + "\nMake each concept test a different angle: 1 close to a clean product ad, then gifting, worn on the body, proof that people buy it, "
-        "craft and stones, or price and EMI. Pick the best angles for this piece.\n"
+        + (f"Site description: {p.get('description')}\n" if p.get('description') and not p.get('facts') else '')
+        + "\nMake each concept test a different angle, and build each one on a different group of page facts: 1 close to a clean product ad, "
+        "then for example craft and stones, trust (hallmark, exchange, returns), reviews and ratings, price and EMI, fast delivery, gifting "
+        "or worn on the body. Pick the angles the facts support best. Quote customer words only without names.\n"
         "Rules: the piece shown is always this exact piece. Use only facts given here: never invent discounts, ratings, "
         "certifications, stock claims or delivery promises. A price may be used only as given. Copy: plain short sentences, "
-        "digits for numbers, no em dashes, no hashtags, at most 1 emoji in primary text, and no words like elevate, timeless or stunning.\n\n"
+        "digits for numbers, no em dashes, no hashtags, at most 1 emoji in primary text, and no words like elevate, timeless or stunning. "
+        "Headlines and names in sentence case, never Title Case. Never claim a rank like number 1 or best seller unless a page fact says it.\n\n"
         f"Brand kit (JSON):\n{json.dumps(load_brand(), ensure_ascii=False)[:4000]}\n\n"
         f"Reply with only this JSON:\n{PRODUCT_SHAPE}"
     )
@@ -579,6 +587,7 @@ def product_image_prompt(p, c, n_photos, has_ref):
         + (f"Scene: {c['scene']}\n" if c.get('scene') else '')
         + (f"Layout: {c['layout']}\n" if c.get('layout') else '')
         + (f"Text on the image, exactly: \"{text}\". No other text.\n" if text else "No text on the image.\n")
+        + (f"This ad is built on: {'; '.join(c['uses'][:4])}.\n" if isinstance(c.get('uses'), list) and c.get('uses') else '')
         + "Never add discounts, ratings, certifications or claims. Spell text correctly. Photographic, premium, clear space near the edges, no watermarks.\n"
         + brand_brief()
     )
@@ -591,7 +600,9 @@ def _product_concepts(text, n):
         if isinstance(c, dict) and _txt(c.get('idea'), 400):
             item = {k: _txt(c.get(k), 400) for k in ('name', 'angle', 'idea', 'scene', 'layout', 'text_on_image')}
             lines = [re.sub(r'[ \t]+', ' ', x).strip() for x in str(c.get('primary_text') or '').splitlines()]
-            item.update({'primary_text': '\n'.join(x for x in lines if x)[:700], 'headline': _txt(c.get('headline'), 60), 'description': _txt(c.get('description'), 60)})
+            lst = lambda v, n, m: [(_txt(x, m) if m < 200 else '\n'.join(y.strip() for y in str(x).splitlines() if y.strip())[:m]) for x in (v if isinstance(v, list) else [])[:n] if str(x).strip()]
+            item.update({'primary_text': '\n'.join(x for x in lines if x)[:700], 'headline': _txt(c.get('headline'), 60), 'description': _txt(c.get('description'), 60),
+                         'primary_alt': lst(c.get('primary_alt'), 2, 700), 'headline_alt': lst(c.get('headline_alt'), 2, 60), 'uses': lst(c.get('uses'), 6, 160)})
             out.append(item)
     return out
 

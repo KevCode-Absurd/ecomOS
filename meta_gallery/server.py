@@ -446,7 +446,7 @@ def make_handler(gallery):
             return {'made': made, 'all': ai.list_variants(ad_id)}
 
         def ai_product_ads(self, body):
-            """body: {name, code, picks, n, size, quality, ref_image | ref_ad_id, sold, copy_only}.
+            """body: {name, code, picks, facts, n, size, quality, ref_image | ref_ad_id, sold, copy_only}.
             Photos come from the product's page on gehnaindia.com. The style reference is a pasted image or one of the account's ads."""
             name = str(body.get('name') or '')[:200]
             if not name.strip():
@@ -458,7 +458,10 @@ def make_handler(gallery):
             ref_id = str(body.get('ref_ad_id') or '')
             if not ref and SAFE_ID.match(ref_id):
                 ref, _ = image_bytes(gallery.ad(ref_id))
-            p = dict(meta, sold=str(body.get('sold') or '')[:160])
+            # facts: the page facts the user kept ticked (default all). Only text, size-capped.
+            picked = body.get('facts')
+            facts = [str(x)[:400] for x in picked if isinstance(x, str)][:40] if isinstance(picked, list) else [x['text'] for x in meta.get('facts', [])]
+            p = dict(meta, sold=str(body.get('sold') or '')[:160], facts=facts)
             n = max(1, min(5, int(body.get('n') or 4)))
             size = body.get('size') if body.get('size') in ai.SIZES else 'square'
             if body.get('copy_only'):

@@ -41,7 +41,9 @@ function topProducts(days) {
 // Best image ads to borrow a style from: same category first, then the account's best by ROAS.
 function pbRefAds(cat) {
   // Sale and countdown ads are left out: their look is the offer, not a style to reuse.
-  const sale = (id) => VIEW.ads[id].tags && VIEW.ads[id].tags.angle.code === 'offer';
+  const SALE = /\b(sale|eoss|% ?off|off on|discount|offer|coupon|hours left|days left|last \d+ (days|hours)|flat \d+)/i;
+  const sale = (id) => { const a = ENGINE.c.ads[id] || DATA.ads[id] || {}, c = a.creative || {};
+    return (VIEW.ads[id].tags && VIEW.ads[id].tags.angle.code === 'offer') || SALE.test([a.name, c.name, c.headline, c.primary_text].join(' ')); };
   const all = ((VIEW.collections.static_image || {}).ad_ids || []).filter((id) => VIEW.ads[id] && VIEW.ads[id].view.metrics.roas !== null && VIEW.ads[id].view.metrics.purchases >= 1);
   const ids = all.filter((id) => !sale(id)).length ? all.filter((id) => !sale(id)) : all;
   const by = (l) => l.sort((a, b) => VIEW.ads[b].view.metrics.roas - VIEW.ads[a].view.metrics.roas);
@@ -50,7 +52,7 @@ function pbRefAds(cat) {
   return [...inCat, ...rest].slice(0, 4);
 }
 function pbOpt(p) {
-  if (!PB.opt[p.code]) { const refs = pbRefAds(p.cat); PB.opt[p.code] = { n: 4, size: 'square', quality: 'medium', ref: refs.length ? 'ad' : 'none', refAd: refs[0] || null, picks: [1, 2] }; }
+  if (!PB.opt[p.code]) { const refs = pbRefAds(p.cat); PB.opt[p.code] = { n: 4, size: 'square', quality: 'medium', ref: refs.length ? 'ad' : 'none', refAd: refs[0] || null, picks: [1, 2], off: [], paste: '' }; }
   return PB.opt[p.code];
 }
 function pbFind(code) { const t = topProducts(PB.days); return t ? t.list.find((p) => p.code === code) : null; }
@@ -90,19 +92,45 @@ function pbRowHtml(p, i) {
 }
 
 // ---------- the builder ----------
+const PB_GROUPS = [['product', 'The piece'], ['price', 'Price and EMI'], ['delivery', 'Delivery'], ['proof', 'Proof'], ['trust', 'Promises on every page'], ['faq', 'FAQ on the page'], ['review', 'Customer words'], ['story', 'Story']];
+function pbFacts(p) {
+  const info = PB.info[p.code];
+  return info && info.status === 'ok' ? info.product.facts || [] : [];
+}
+function pbChosenFacts(p) {
+  const o = pbOpt(p);
+  if (IS_CLAUDE) return o.paste.trim() ? [o.paste.trim().slice(0, 6000)] : [];
+  return pbFacts(p).filter((f, i) => !o.off.includes(i)).map((f) => f.text);
+}
+function pbFactsHtml(p) {
+  const o = pbOpt(p), url = PB_SITE + pbSlug(p.name);
+  if (IS_CLAUDE) {
+    return `<div class="pb-sec"><h4>Page facts</h4><p class="small muted">The shared page cannot read the website. Open <a href="${esc(url)}" target="_blank" rel="noopener">the product page</a>, select all (Ctrl+A), copy and paste it here. Claude uses only what you paste. The local gallery pulls this for you.</p>
+      <textarea class="pb-paste" data-pbpaste rows="4" placeholder="Paste the product page text here">${esc(o.paste)}</textarea></div>`;
+  }
+  const facts = pbFacts(p);
+  if (!facts.length) return '';
+  const on = facts.length - o.off.length;
+  return `<div class="pb-sec"><h4>Page facts <span class="muted small">${on} of ${facts.length} ticked. Untick anything you do not want in the ads. The AI builds each ad on different facts and may use only these.</span></h4>
+    <div class="pb-facts">${PB_GROUPS.map(([g, label]) => {
+      const rows = facts.map((f, i) => [f, i]).filter(([f]) => f.group === g);
+      return rows.length ? `<div class="pb-fg"><span class="pb-fgl">${label}</span>${rows.map(([f, i]) => `<label class="pb-fact"><input type="checkbox" data-pbfact="${i}" ${o.off.includes(i) ? '' : 'checked'}><span>${esc(f.text)}</span></label>`).join('')}</div>` : '';
+    }).join('')}</div>
+    <div class="row" style="gap:8px"><button class="linkbtn" type="button" data-pbfacts="all">Tick all</button><button class="linkbtn" type="button" data-pbfacts="none">Untick all</button><button class="linkbtn" type="button" data-pbfacts="refresh">Pull again from the site</button></div></div>`;
+}
 function pbPhotosHtml(p) {
   const url = PB_SITE + pbSlug(p.name);
   if (IS_CLAUDE) {
     return `<div class="pb-sec"><h4>Product photos</h4><p class="small muted">The shared page cannot load photos from the website. Here Claude writes the copy and image briefs. Open the local gallery to make the images from the <a href="${esc(url)}" target="_blank" rel="noopener">site photos</a>.</p></div>`;
   }
   const info = PB.info[p.code];
-  if (!info || info.status === 'loading') return `<div class="pb-sec"><h4>Product photos</h4><p class="small muted">Loading photos from gehnaindia.com…</p></div>`;
+  if (!info || info.status === 'loading') return `<div class="pb-sec"><h4>From the website</h4><p class="small muted">Pulling photos and facts from gehnaindia.com…</p></div>`;
   if (info.status === 'error') return `<div class="pb-sec"><h4>Product photos</h4><p class="small bad-text">${esc(info.error)}</p><p class="small muted">You can still write copy, or <a href="${esc(url)}" target="_blank" rel="noopener">check the page</a>.</p></div>`;
   const pr = info.product, o = pbOpt(p);
-  return `<div class="pb-sec"><h4>Product photos <span class="muted small">from <a href="${esc(pr.url)}" target="_blank" rel="noopener">the site</a>. Pick up to 3.</span></h4>
+  return `<div class="pb-sec"><h4>Product photos <span class="muted small">from <a href="${esc(pr.url)}" target="_blank" rel="noopener">the product page</a>, pulled ${esc(pr.fetched || '')}. Pick up to 3.</span></h4>
     ${pr.code_match === false ? `<p class="small bad-text">The page shows code ${esc(pr.code)}, not ${esc(p.code)}. Check it is the same piece before you use these.</p>` : ''}
     <div class="pb-photos">${pr.photos.map((ph, i) => `<label class="pb-ph${o.picks.includes(i + 1) ? ' on' : ''}"><input type="checkbox" data-pbpick="${i + 1}" ${o.picks.includes(i + 1) ? 'checked' : ''}><img src="${esc(ph.src)}" alt="Site photo ${i + 1} of ${esc(pr.name)}"></label>`).join('') || '<span class="small muted">No photos on the page.</span>'}</div>
-    <p class="small muted">${pr.price ? `Site price ${money(pr.price)}. ` : ''}${pr.emi_months ? `EMI up to ${pr.emi_months} months. ` : ''}The AI may use only these facts.</p></div>`;
+    </div>`;
 }
 function pbRefHtml(p) {
   const o = pbOpt(p), refs = pbRefAds(p.cat);
@@ -116,7 +144,7 @@ function pbBuildHtml(p) {
   const o = pbOpt(p), busy = PB.busy[p.code];
   const sel = (key, list) => `<select data-pbset="${key}">${list.map(([v, l]) => `<option value="${v}"${String(o[key]) === String(v) ? ' selected' : ''}>${l}</option>`).join('')}</select>`;
   const canImg = !IS_CLAUDE && LABST.status && LABST.status.variants;
-  return `${pbPhotosHtml(p)}${pbRefHtml(p)}
+  return `${pbPhotosHtml(p)}${pbFactsHtml(p)}${pbRefHtml(p)}
     <div class="pb-sec"><h4>Options</h4><div class="row pb-opts">
       <label>Number of ads ${sel('n', [[1, '1'], [2, '2'], [3, '3'], [4, '4'], [5, '5']])}</label>
       <label>Format ${sel('size', PB_SIZES)}</label>
@@ -129,7 +157,8 @@ function pbBuildHtml(p) {
 }
 function pbCopyBlock(c) {
   const row = (label, v) => (v ? `<div class="pb-cp"><span class="muted small">${label}</span><p>${esc(v).replace(/\n/g, '<br>')}</p><button class="linkbtn" type="button" data-pbcopy="${esc(v)}">Copy</button></div>` : '');
-  return row('Primary text', c.primary_text) + row('Headline', c.headline) + row('Description', c.description);
+  const alts = (label, l) => (Array.isArray(l) ? l : []).map((v, i) => row(`${label} option ${i + 2}`, v)).join('');
+  return row('Primary text', c.primary_text) + alts('Primary text', c.primary_alt) + row('Headline', c.headline) + alts('Headline', c.headline_alt) + row('Description', c.description);
 }
 function pbResultsHtml(p) {
   const list = PB.res[p.code] || [];
@@ -137,11 +166,13 @@ function pbResultsHtml(p) {
   return `<div class="pb-grid">${list.map((c, i) => {
     if (c.error && !c.headline) return `<figure class="vcard err"><b>${esc(c.label || c.name || 'Ad ' + (i + 1))}</b><span>${esc(c.error)}</span></figure>`;
     const img = c.src ? `<a href="${esc(c.src)}" target="_blank" rel="noopener" download><img src="${esc(c.src)}" alt="${esc(c.label || c.name)}"></a>` : '';
-    const all = [c.primary_text, '', 'Headline: ' + (c.headline || ''), 'Description: ' + (c.description || '')].join('\n');
+    const all = [c.primary_text, ...(c.primary_alt || []).map((v, j) => `\nPrimary text ${j + 2}:\n${v}`), '', 'Headline: ' + (c.headline || ''),
+      ...(c.headline_alt || []).map((v, j) => `Headline ${j + 2}: ${v}`), 'Description: ' + (c.description || '')].join('\n');
     return `<figure class="vcard pb-ad">${img}<figcaption><div class="row" style="gap:6px"><b>${esc(c.label || c.name || 'Ad ' + (i + 1))}</b>${c.angle ? `<span class="chip fmt">${esc(c.angle)}</span>` : ''}</div>
       ${c.error ? `<span class="small bad-text">Image failed: ${esc(c.error)}</span>` : ''}
       ${!c.src ? `<p class="small"><b>Image brief:</b> ${esc([c.idea, c.scene, c.layout].filter(Boolean).join(' '))}</p>` : `<p class="small muted">${esc(c.idea || '')}</p>`}
       ${c.text_on_image ? `<p class="small"><b>On the image:</b> ${esc(c.text_on_image)}</p>` : ''}
+      ${Array.isArray(c.uses) && c.uses.length ? `<p class="small pb-uses"><b>Built on:</b> ${c.uses.map((u) => `<span class="chip">${esc(u)}</span>`).join(' ')}</p>` : ''}
       ${pbCopyBlock(c)}
       <div class="act-btns"><button class="btn ghost small-btn" type="button" data-pbcopy="${esc(all)}">Copy all</button><button class="btn ghost small-btn" type="button" data-pbtrack="${i}">Add to tests</button></div></figcaption></figure>`;
   }).join('')}</div><p class="small muted">Check each image against the real piece before launch. Launch them yourself in Ads Manager. This page never changes the ad account.</p>`;
@@ -155,24 +186,31 @@ const PB_SHAPE = `{"concepts": [
    "scene": "what the photo shows: setting, model or no model, props, light",
    "layout": "where product, text and proof sit",
    "text_on_image": "exact short text to print on the image, or empty",
+   "uses": ["the page facts this ad is built on, copied short"],
    "primary_text": "Meta primary text: 2 to 4 short lines",
+   "primary_alt": ["2 more primary texts that test other page facts"],
    "headline": "Meta headline, 40 characters or less",
+   "headline_alt": ["2 more headlines, 40 characters or less"],
    "description": "Meta link description, 30 characters or less"}
 ]}`;
 function pbPrompt(p, o, hasRef) {
+  const facts = pbChosenFacts(p);
   const size = { square: '1024x1024', portrait: '1024x1280', story: '1024x1824' }[o.size];
   return 'You are a creative director and copywriter for Meta ads at Gehna, an Indian fine jewellery brand. '
     + `Write ${o.n} ad concepts for 1 best-selling piece, each with its own Meta copy.\n\n`
     + 'No product photo is attached; describe the piece only from the facts. '
     + (hasRef ? 'Image 1 is a style reference: borrow its layout, framing, text style and mood only. Never copy its product, text, logo, models or faces.\n' : '\n')
     + `Format: ${o.size} (${size}).\n\n`
-    + `Product: ${p.name}\nCode: ${p.code}\nWebsite sales: ${soldLine(p)}\n`
+    + `Product: ${p.name}\nCode: ${p.code}\nWebsite sales (context for you, not a claim for the ads): ${soldLine(p)}\n`
     + (p.avg ? `Average price paid: Rs ${Math.round(p.avg).toLocaleString('en-IN')}\n` : '')
-    + '\nMake each concept test a different angle: 1 close to a clean product ad, then gifting, worn on the body, proof that people buy it, '
-    + 'craft and stones, or price and EMI. Pick the best angles for this piece.\n'
+    + (facts.length ? `Text pasted from the product page (the only claims you may use; ignore other products, menus and reviewer names on it):\n${facts.join('\n')}\n` : '')
+    + '\nMake each concept test a different angle, and build each one on a different group of page facts: 1 close to a clean product ad, '
+    + 'then for example craft and stones, trust (hallmark, exchange, returns), reviews and ratings, price and EMI, fast delivery, gifting '
+    + 'or worn on the body. Pick the angles the facts support best. Quote customer words only without names.\n'
     + 'Rules: the piece shown is always this exact piece. Use only facts given here: never invent discounts, ratings, '
     + 'certifications, stock claims or delivery promises. A price may be used only as given. Copy: plain short sentences, '
-    + 'digits for numbers, no em dashes, no hashtags, at most 1 emoji in primary text, and no words like elevate, timeless or stunning.\n\n'
+    + 'digits for numbers, no em dashes, no hashtags, at most 1 emoji in primary text, and no words like elevate, timeless or stunning. '
+    + 'Headlines and names in sentence case, never Title Case. Never claim a rank like number 1 or best seller unless a page fact says it.\n\n'
     + `Brand kit (JSON):\n${JSON.stringify(BRAND || {}).slice(0, 4000)}\n\n`
     + `Reply with only this JSON:\n${PB_SHAPE}`;
 }
@@ -180,14 +218,19 @@ function pbClean(list, n) {
   const s = (v, m) => String(v ?? '').replace(/[\u0000-\u0009\u000b-\u001f\u007f]/g, ' ').trim().slice(0, m);
   return (Array.isArray(list) ? list : []).slice(0, n).filter((c) => c && s(c.idea, 400))
     .map((c) => ({ name: s(c.name, 80), angle: s(c.angle, 80), idea: s(c.idea, 400), scene: s(c.scene, 400), layout: s(c.layout, 400), text_on_image: s(c.text_on_image, 200),
-      primary_text: s(c.primary_text, 700), headline: s(c.headline, 60), description: s(c.description, 60) }));
+      primary_text: s(c.primary_text, 700), headline: s(c.headline, 60), description: s(c.description, 60),
+      primary_alt: (Array.isArray(c.primary_alt) ? c.primary_alt : []).slice(0, 2).map((x) => s(x, 700)).filter(Boolean),
+      headline_alt: (Array.isArray(c.headline_alt) ? c.headline_alt : []).slice(0, 2).map((x) => s(x, 60)).filter(Boolean),
+      uses: (Array.isArray(c.uses) ? c.uses : []).slice(0, 6).map((x) => s(x, 160)).filter(Boolean) }));
 }
 
-async function pbLoadInfo(p) {
-  if (IS_CLAUDE || (PB.info[p.code] && PB.info[p.code].status !== 'error')) return;
+async function pbLoadInfo(p, refresh) {
+  if (IS_CLAUDE || (!refresh && PB.info[p.code] && PB.info[p.code].status !== 'error')) return;
   PB.info[p.code] = { status: 'loading' };
+  pbOpt(p).off = [];
+  pbRerender();
   try {
-    const r = await fetch(`/api/product?name=${encodeURIComponent(p.name)}&code=${encodeURIComponent(p.fullCode || p.code)}`);
+    const r = await fetch(`/api/product?name=${encodeURIComponent(p.name)}&code=${encodeURIComponent(p.fullCode || p.code)}${refresh ? '&refresh=1' : ''}`);
     const j = await r.json().catch(() => ({}));
     if (!r.ok) throw new Error(j.error || 'Could not load the product page.');
     PB.info[p.code] = { status: 'ok', product: j.product };
@@ -213,7 +256,7 @@ async function pbRun(p, mode) {
       PB.res[p.code] = pbClean(out && out.concepts, o.n);
       PB.msg[p.code] = PB.res[p.code].length ? `${PB.res[p.code].length} ideas with copy. Make the images in the local gallery, or brief a designer.` : 'No ideas came back. Try again.';
     } else {
-      const body = { name: p.name, code: p.fullCode || p.code, picks: o.picks, n: o.n, size: o.size, quality: o.quality, ref_image: refB64, ref_ad_id: refAd, sold: soldLine(p), copy_only: mode === 'copy' };
+      const body = { name: p.name, code: p.fullCode || p.code, picks: o.picks, facts: pbFacts(p).length ? pbChosenFacts(p) : null, n: o.n, size: o.size, quality: o.quality, ref_image: refB64, ref_ad_id: refAd, sold: soldLine(p), copy_only: mode === 'copy' };
       const r = await fetch('/api/product-ads', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
       const j = await r.json().catch(() => ({}));
       if (!r.ok) throw new Error(j.error || 'Something went wrong. Try again.');
@@ -257,6 +300,12 @@ document.addEventListener('click', async (e) => {
   if ((x = b('[data-pbref]'))) { o.ref = x.dataset.pbref; pbRerender(); return; }
   if ((x = b('[data-pbrefad]'))) { o.refAd = x.dataset.pbrefad; pbRerender(); return; }
   if ((x = b('[data-pbgo]'))) { pbRun(p, x.dataset.pbgo); return; }
+  if ((x = b('[data-pbfacts]'))) {
+    const how = x.dataset.pbfacts;
+    if (how === 'refresh') { pbLoadInfo(p, true); return; }
+    o.off = how === 'none' ? pbFacts(p).map((f, i) => i) : [];
+    pbRerender(); return;
+  }
   if ((x = b('[data-pbcopy]'))) {
     try { await navigator.clipboard.writeText(x.dataset.pbcopy); x.textContent = 'Copied'; } catch (err) { x.textContent = 'Copy blocked here'; }
     setTimeout(() => { x.textContent = x.classList.contains('linkbtn') ? 'Copy' : 'Copy all'; }, 1600);
@@ -277,10 +326,18 @@ document.addEventListener('change', (e) => {
   const o = pbOpt(p);
   const s = e.target.closest('[data-pbset]');
   if (s) { o[s.dataset.pbset] = s.dataset.pbset === 'n' ? Number(s.value) : s.value; pbRerender(); return; }
+  const f = e.target.closest('[data-pbfact]');
+  if (f) { const i = Number(f.dataset.pbfact); o.off = f.checked ? o.off.filter((v) => v !== i) : [...o.off, i]; pbRerender(); return; }
   const k = e.target.closest('[data-pbpick]');
   if (k) {
     const i = Number(k.dataset.pbpick);
     o.picks = k.checked ? [...new Set([...o.picks, i])].sort().slice(0, 3) : o.picks.filter((v) => v !== i);
     pbRerender();
   }
+});
+document.addEventListener('input', (e) => {
+  const t = e.target.closest && e.target.closest('[data-pbpaste]');
+  if (!t) return;
+  const p = PB.open && pbFind(PB.open);
+  if (p) pbOpt(p).paste = t.value.slice(0, 20000);
 });
