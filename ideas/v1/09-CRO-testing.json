@@ -9673,5 +9673,1223 @@
   },
   "confidence": "medium",
   "general_practice": false
+ },
+ {
+  "id": "CRO-149",
+  "title": "Run the CLOSER six-part audit before writing a page hypothesis",
+  "domain": "09-CRO",
+  "bottleneck": [
+   "conversion",
+   "trust_brand"
+  ],
+  "lever": "structured page audit",
+  "hypothesis": "If any page that asks a shopper to act is scored on credibility, lure, objection handling, social proof, ease of use and result, then missing persuasion elements surface before a hypothesis is written, because a page can look fine and still be missing one of these six things.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "No page in the backlog has been scored against the six CLOSER elements before a hypothesis was written for it.",
+   "metrics": [
+    "cvr_overall"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown; a qualitative audit, not a lift estimate",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "An audit method, not a site change."
+  },
+  "prerequisites": [
+   "Access to the page being audited"
+  ],
+  "steps": [
+   "Pick the exact page a visitor lands on, not the homepage by default.",
+   "Score credibility: is there a clear reason to believe the business is good at this?",
+   "Score lure: does the CTA offer something the visitor actually wants?",
+   "Score objection handling: are fears about acting removed?",
+   "Score social proof, ease of use and result the same way.",
+   "Mark each element present, weak or missing, then rank gaps by likely effect and cost."
+  ],
+  "test": {
+   "method": "Not a test on its own; feed the gaps into the normal hypothesis and prioritisation process.",
+   "measure": "Number of CLOSER elements present per audited page",
+   "read_point": "Before any hypothesis for that page enters the backlog"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "bdded17187e0",
+    "095620484975"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": false
+ },
+ {
+  "id": "CRO-150",
+  "title": "Write proof copy with specific, named detail instead of vague praise",
+  "domain": "09-CRO",
+  "bottleneck": [
+   "conversion",
+   "trust_brand"
+  ],
+  "lever": "proof specificity",
+  "hypothesis": "If testimonials and proof copy carry specific, checkable detail such as an age, a number or a named use case, then shoppers find the proof more believable, because vague praise gives no reason to trust it while a concrete detail builds belief even when it did not cause the result.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Testimonials and proof statements on the PDP use generic praise (great product, love it) with no specific, checkable detail.",
+   "metrics": [
+    "review_rating",
+    "cvr_pdp_to_cart"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_pdp_to_cart",
+   "direction": "up",
+   "size": "unknown; the source claims specifics build belief, not a measured lift",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A copy edit, easy to revert."
+  },
+  "prerequisites": [
+   "A pool of real reviews or testimonials to mine for specific detail"
+  ],
+  "steps": [
+   "Pull real reviews or testimonials and find any specific, checkable detail: a number, an age, a named use case.",
+   "Rewrite featured proof to lead with that detail instead of general praise.",
+   "Show a few different kinds of customers, not one repeated profile.",
+   "Only use details that are true and permissioned."
+  ],
+  "test": {
+   "method": "Ship as a copy repair, or A/B test if the page has enough traffic.",
+   "measure": "cvr_pdp_to_cart",
+   "read_point": "2 to 4 weeks after the change"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "f95f16ca7611",
+    "4428427c21f5"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "CRO-151",
+  "title": "Build credibility with niche language or founder story before reviews exist",
+  "domain": "09-CRO",
+  "bottleneck": [
+   "trust_brand",
+   "conversion"
+  ],
+  "lever": "credibility without reviews",
+  "hypothesis": "If a new store with few or no reviews builds credibility through narrow, customer-specific language or a founder story instead of waiting for review volume, then shoppers get a reason to trust the page sooner, because a very specific description of the customer's exact problem can stand in for review proof.",
+  "applies_when": [
+   "new_store"
+  ],
+  "does_not_apply_when": [
+   "Store already has a working review volume"
+  ],
+  "signal": {
+   "check": "The store has fewer than about 20 reviews and PDP copy reads as generic rather than speaking to one specific customer situation.",
+   "metrics": [
+    "cvr_pdp_to_cart",
+    "review_count"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_pdp_to_cart",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A copy change with no reviews at stake."
+  },
+  "prerequisites": [
+   "A clear picture of the store's narrowest, most specific customer"
+  ],
+  "steps": [
+   "Write the product description to nail one narrow customer's exact situation, not a broad audience.",
+   "Add the founder's own relevant story where it is true and relevant.",
+   "Use a trusted endorser the audience already knows, if one exists.",
+   "Replace this with review-based proof once review volume builds."
+  ],
+  "test": {
+   "method": "Ship as a copy repair; not a test at zero review volume.",
+   "measure": "cvr_pdp_to_cart",
+   "read_point": "2 to 4 weeks after the change"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "6247dfe184a2",
+    "502dbeee4943"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "CRO-152",
+  "title": "Build a credibility asset inventory mapped to specific shopper doubts",
+  "domain": "09-CRO",
+  "bottleneck": [
+   "trust_brand",
+   "conversion"
+  ],
+  "lever": "credibility asset mapping",
+  "hypothesis": "If every credibility asset (reviews, certifications, press mentions, warranty terms, years trading, customer counts) is listed and matched to the specific doubt it answers, then proof gets placed where it answers a real question instead of sitting on one hub page, because a doubt with no matching asset next to it stays unanswered.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "No inventory exists of the store's credibility assets and which shopper doubt each one answers.",
+   "metrics": [
+    "cvr_pdp_to_cart",
+    "review_count"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_pdp_to_cart",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A cataloguing exercise before any page change."
+  },
+  "prerequisites": [
+   "List of top shopper doubts from surveys, reviews or support tickets"
+  ],
+  "steps": [
+   "List every credibility asset the store has: reviews, certifications, ingredient or material facts, press mentions, warranty terms, customer counts, years trading.",
+   "List the top shopper doubts from surveys, reviews and support tickets.",
+   "Match each asset to the doubt it answers.",
+   "Place each asset next to the moment that doubt comes up, not only on an About or proof page.",
+   "Update the inventory as new proof arrives."
+  ],
+  "test": {
+   "method": "Not a test; a mapping exercise that feeds page placement changes.",
+   "measure": "Share of top doubts with a matching asset placed at the decision point",
+   "read_point": "After the inventory is built and placed"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "0ae2ac29bac6"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": false
+ },
+ {
+  "id": "CRO-153",
+  "title": "Show product-matched proof on collection and bundle pages, not only the PDP",
+  "domain": "09-CRO",
+  "bottleneck": [
+   "conversion",
+   "trust_brand"
+  ],
+  "lever": "proof placement beyond PDP",
+  "hypothesis": "If collection and bundle pages carry reviews or proof matched to the specific products shown, not just the PDP, then shoppers get a reason to trust items before they click through, because proof placed only on individual PDPs misses shoppers who decide while still browsing.",
+  "applies_when": [
+   "catalogue"
+  ],
+  "signal": {
+   "check": "Collection and bundle pages show products with no matched rating, review count or proof, while PDPs carry this proof.",
+   "metrics": [
+    "cvr_pdp_to_cart",
+    "review_count"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_pdp_to_cart",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "designer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "An additive display change on existing pages."
+  },
+  "prerequisites": [
+   "Review data available per SKU or product"
+  ],
+  "steps": [
+   "Check whether collection and bundle pages show a rating or review count per product.",
+   "Add SKU-matched rating and review count to collection grid cards.",
+   "Add matched proof, such as a rating or a key review quote, to bundle pages for each included product.",
+   "Avoid showing generic, unmatched proof; keep it specific to the product shown."
+  ],
+  "test": {
+   "method": "Ship as a repair, or A/B test if collection traffic is high enough.",
+   "measure": "cvr_pdp_to_cart and click-through from collection to PDP",
+   "read_point": "2 to 4 weeks after the change"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "4be25816f37b",
+    "ba8350548af5"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "CRO-154",
+  "title": "Keep primary navigation and CTA patterns conventional, not novel",
+  "domain": "09-CRO",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "familiar conversion UI",
+  "hypothesis": "If primary navigation and the main call-to-action use familiar, recognisable patterns instead of novel or clever UI, then more shoppers find and use them, because an unfamiliar menu icon or interaction can hide the exact controls a distracted, unfamiliar visitor needs.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "Non-critical design areas away from navigation and the main CTA, where novelty is lower risk"
+  ],
+  "signal": {
+   "check": "The main navigation or CTA uses a non-standard icon, label or interaction that user tests or recordings show visitors missing or hesitating over.",
+   "metrics": [
+    "cvr_overall"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "designer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Reverting to a standard pattern is low risk."
+  },
+  "prerequisites": [
+   "Recordings or a user test showing hesitation on the current pattern"
+  ],
+  "steps": [
+   "Watch recordings or run a small user test on the current navigation and main CTA.",
+   "Flag any novel icon, label or interaction that causes hesitation or a miss.",
+   "Replace it with the familiar, expected pattern, such as a standard menu icon or a clearly labelled button.",
+   "Reserve novelty for non-critical design areas away from navigation and the main CTA."
+  ],
+  "test": {
+   "method": "Ship as a repair; test only if the change is large enough to size properly.",
+   "measure": "cvr_overall, or task success rate in a user test",
+   "read_point": "After the change, or after the next user-test round"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "d4484bf96e29"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "CRO-155",
+  "title": "Use dynamic call tracking for phone-assisted ecommerce purchases",
+  "domain": "09-CRO",
+  "bottleneck": [
+   "measurement_data",
+   "acquisition_efficiency"
+  ],
+  "lever": "phone-order attribution",
+  "hypothesis": "If a store that takes orders by phone uses dynamic number insertion instead of one static number, then each call can be attributed to its traffic source and keyword, because a single phone number gives no channel or campaign data on its own.",
+  "applies_when": [
+   "high_aov",
+   "luxury_considered"
+  ],
+  "does_not_apply_when": [
+   "Store takes no phone orders and has no phone-assisted buying path"
+  ],
+  "signal": {
+   "check": "The store lists one static phone number as a buying channel, with no way to see which channel or keyword drove the call.",
+   "metrics": [
+    "spend",
+    "cpa"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cpa",
+   "direction": "down",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A tracking change, not a purchase-path change."
+  },
+  "prerequisites": [
+   "A phone-order buying path already in use",
+   "Ad platform and analytics accounts to connect call data to"
+  ],
+  "steps": [
+   "Confirm the store has a real phone-assisted buying path worth attributing.",
+   "Set up dynamic number insertion so each visitor session sees a temporary tracking number.",
+   "Connect call data to analytics and ad platforms so a call counts as a conversion.",
+   "Record calls, where legal, to review lead and sales quality by channel."
+  ],
+  "test": {
+   "method": "Not an A/B test; a measurement setup change.",
+   "measure": "Calls attributed by channel and keyword",
+   "read_point": "After setup, ongoing"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "af7a5ac33e5f"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "CRO-156",
+  "title": "Add live chat with clearly stated staffed hours, not an always-on widget",
+  "domain": "09-CRO",
+  "bottleneck": [
+   "conversion",
+   "trust_brand"
+  ],
+  "lever": "live chat trust",
+  "hypothesis": "If a live chat widget states its actual staffed hours and takes messages outside them, instead of looking permanently available with nobody behind it, then shoppers do not lose trust from an unanswered chat, because a widget that looks live but never answers reads as a broken promise.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A live chat widget shows no stated hours and goes unanswered outside business hours.",
+   "metrics": [
+    "cvr_overall"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "support"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A settings and copy change on an existing or new widget."
+  },
+  "prerequisites": [
+   "Someone able to staff chat during defined hours"
+  ],
+  "steps": [
+   "Decide the real hours someone will answer chat.",
+   "Set the widget to show live status only during those hours and a message-taking mode outside them.",
+   "State the hours next to the widget.",
+   "Route unstaffed messages to email or a ticket queue with a response-time promise."
+  ],
+  "test": {
+   "method": "Not a test; a configuration and trust repair.",
+   "measure": "Chat response rate and cvr_overall",
+   "read_point": "2 to 4 weeks after setup"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "b29734279da6"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "CRO-157",
+  "title": "Check review dates for suspicious clustering before trusting review proof",
+  "domain": "09-CRO",
+  "bottleneck": [
+   "trust_brand"
+  ],
+  "lever": "review authenticity",
+  "hypothesis": "If review dates are checked for an unnatural cluster on the same day or week, then the store catches a pattern that makes shoppers doubt the reviews, because reviews bunched around identical dates read as bought or imported rather than earned over time.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Reviews on the PDP show many reviews dated on the same day or a narrow window, with no explanation.",
+   "metrics": [
+    "review_count",
+    "review_rating"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_pdp_to_cart",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A review-request timing change."
+  },
+  "prerequisites": [
+   "Access to the review app's date data"
+  ],
+  "steps": [
+   "Pull the date distribution of current reviews.",
+   "Flag any unnatural cluster on one day or a narrow window.",
+   "If the cluster came from a bulk import, add context or hide the raw import date.",
+   "Space out future review requests over the normal order timeline instead of batch-sending them."
+  ],
+  "test": {
+   "method": "Not a test; a review-authenticity repair.",
+   "measure": "Review date distribution",
+   "read_point": "After the next review-request batch"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "e24c4415d85e"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "CRO-158",
+  "title": "Add demonstration proof showing the product succeeding under the exact worry",
+  "domain": "09-CRO",
+  "bottleneck": [
+   "conversion",
+   "trust_brand"
+  ],
+  "lever": "demonstration proof",
+  "hypothesis": "If the PDP includes a photo or video demonstrating the product succeeding under the exact condition buyers worry about, then the top objection gets answered by evidence instead of a claim, because a demonstration shows the result under real stress instead of describing it in words.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "The top purchase objection from survey or review data has no matching demonstration photo or video on the PDP.",
+   "metrics": [
+    "cvr_pdp_to_cart"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_pdp_to_cart",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "An added media asset, easy to remove."
+  },
+  "prerequisites": [
+   "Top objection identified from post-purchase or exit survey data",
+   "Ability to produce or source a demonstration photo or video"
+  ],
+  "steps": [
+   "Identify the top objection from survey, review or support data.",
+   "Plan a photo or video that shows the product succeeding under that exact condition.",
+   "Produce or source the demonstration asset.",
+   "Place it in the PDP gallery near the top, not buried below other images."
+  ],
+  "test": {
+   "method": "Ship as a repair, or A/B test if PDP traffic is high enough.",
+   "measure": "cvr_pdp_to_cart",
+   "read_point": "2 to 4 weeks after the change"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "e24c4415d85e"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "CRO-159",
+  "title": "Set signup and quiz forms to a middle field count with dropdowns, not free text",
+  "domain": "09-CRO",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "lead-capture form design",
+  "hypothesis": "If signup, quiz and contact forms sit at a middle field count and use multiple choice or dropdown instead of free-text fields, then completion rises without the form looking like a bare data grab, because both too few fields and too many free-text fields have been linked to lower completion.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "Checkout forms, which are covered by checkout-specific field rules"
+  ],
+  "signal": {
+   "check": "A signup, quiz or contact form has only 1 to 2 fields, has more than about 10, or uses free-text boxes where a choice would do.",
+   "metrics": [
+    "cvr_overall"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A form-field change, easy to revert."
+  },
+  "prerequisites": [
+   "Access to edit the form"
+  ],
+  "steps": [
+   "Count the current fields and note which are free text.",
+   "Remove any field the store will not act on.",
+   "Convert free-text fields to multiple choice or dropdown where possible.",
+   "Aim for a middle field count, neither 1 to 2 nor 8 to 10 or more.",
+   "Make optional any field that is not essential to serve the shopper."
+  ],
+  "test": {
+   "method": "Ship as a repair, or A/B test the field count and type if traffic allows.",
+   "measure": "Form completion rate",
+   "read_point": "2 to 4 weeks after the change"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "4ae56138baa5",
+    "8accb09355e6"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "CRO-160",
+  "title": "Choose PDP, advertorial, listicle or quiz format by traffic awareness level",
+  "domain": "09-CRO",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "landing page format choice",
+  "hypothesis": "If the landing format, a direct PDP, an advertorial, a listicle or a quiz, is chosen by how aware the traffic is, and unaware cold traffic gets a structured advertorial (hook, problem, mechanism, objections, proof, risk reversal, CTA), then the page argument matches what that visitor still needs, because a shopper with no context needs a different argument than one who already knows the product.",
+  "applies_when": [
+   "paid_social_led"
+  ],
+  "does_not_apply_when": [
+   "Warm or returning traffic that already knows the product"
+  ],
+  "signal": {
+   "check": "Cold, unaware traffic lands on a plain PDP with no story-led argument, while the ad itself carries most of the persuasion.",
+   "metrics": [
+    "cvr_pdp_to_cart",
+    "ctr"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_pdp_to_cart",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A new landing page variant, tested against the existing path."
+  },
+  "prerequisites": [
+   "Knowledge of the ad angle's awareness level",
+   "Copywriting resource to build the advertorial"
+  ],
+  "steps": [
+   "Classify each ad concept by the audience's awareness: unaware, problem-aware, or product-aware.",
+   "For unaware or highly cold traffic, build a structured advertorial: hook in the audience's language, agitate the problem, explain the mechanism, answer about 3 common objections, show proof, offer a risk reversal, then one clear CTA.",
+   "For product-aware traffic, keep a message-matched PDP or short landing page.",
+   "Route each ad concept to the page format that matches its awareness level."
+  ],
+  "test": {
+   "method": "A/B test the advertorial format against the current landing path for the same ad concept, sized for the traffic.",
+   "measure": "cvr_pdp_to_cart or purchase conversion",
+   "read_point": "At planned sample"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "8bfe80b22edc",
+    "23bbae178981",
+    "aa0e72b56778"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "CRO-161",
+  "title": "Build one-of-one positioning from benefit combinations or audience white space",
+  "domain": "09-CRO",
+  "bottleneck": [
+   "conversion",
+   "trust_brand"
+  ],
+  "lever": "differentiated positioning",
+  "hypothesis": "If review mining finds no unique angle, the store instead combines two real benefits into one claim or repositions the product for an underserved audience, then the product gets a differentiated position, because most products are not actually unique and free shipping, service and delivery speed are given, not differentiators.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "A genuinely unique mechanism already exists and is already the headline claim"
+  ],
+  "signal": {
+   "check": "PDP copy strings together given benefits such as free shipping, great service and fast delivery, with no differentiated angle, and review mining found no strong unique theme.",
+   "metrics": [
+    "cvr_pdp_to_cart"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_pdp_to_cart",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A positioning and copy change, easy to revert."
+  },
+  "prerequisites": [
+   "Review mining already attempted",
+   "List of the product's real benefits"
+  ],
+  "steps": [
+   "List every real benefit and check whether any two combine into a claim competitors cannot honestly make.",
+   "If not, look for an underserved audience the same product could serve, as a repositioning, not a new product.",
+   "Draft the new one-of-one claim from real customer words where possible.",
+   "Put the claim high on the page and move table-stakes benefits into small, low-page dot points."
+  ],
+  "test": {
+   "method": "Ship as a repair, or A/B test the new positioning against the current copy.",
+   "measure": "cvr_pdp_to_cart",
+   "read_point": "2 to 4 weeks or at planned sample"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "cf0bc0f31721"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "CRO-162",
+  "title": "Rewrite PDP feature bullets as outcome-first copy with a so-what test",
+  "domain": "09-CRO",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "outcome-first copywriting",
+  "hypothesis": "If every feature bullet on the PDP passes a so-what test and is rewritten to lead with the outcome and follow with the feature as proof, then shoppers understand what the product does for them, because a feature list with no stated outcome makes the shopper do the translation themselves.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "PDP copy lists features such as materials, specs or ingredients with no stated outcome or benefit attached.",
+   "metrics": [
+    "cvr_pdp_to_cart"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_pdp_to_cart",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A copy edit, easy to revert."
+  },
+  "prerequisites": [
+   "List of current feature bullets"
+  ],
+  "steps": [
+   "List every feature bullet currently on the page.",
+   "Ask so what for each one until it reaches a real outcome the shopper cares about.",
+   "Rewrite each line outcome first, feature second as the proof.",
+   "Move remaining table-stakes claims into small dot points lower on the page."
+  ],
+  "test": {
+   "method": "Ship as a repair, or A/B test if the page has enough traffic.",
+   "measure": "cvr_pdp_to_cart",
+   "read_point": "2 to 4 weeks after the change"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "790f6b3372c2",
+    "cf0bc0f31721"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "CRO-163",
+  "title": "Choose a backlog-scoring framework by testing programme maturity",
+  "domain": "09-CRO",
+  "bottleneck": [
+   "team_capacity",
+   "conversion"
+  ],
+  "lever": "prioritisation framework choice",
+  "hypothesis": "If the backlog-scoring framework is chosen for the programme's stage, ICE for a small team building the habit, PIE to force a look at page traffic, PXL for a mature evidence-driven programme, RICE when audience reach varies a lot, instead of using one framework by default, then the score better fits what the team actually needs to decide, because each framework trades speed for rigour differently.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "The backlog uses one scoring framework by habit, chosen with no regard for team maturity or how much reach and evidence varies across ideas.",
+   "metrics": [
+    "cvr_overall"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A process change to how ideas get scored."
+  },
+  "prerequisites": [
+   "An existing or planned idea backlog"
+  ],
+  "steps": [
+   "Assess programme maturity: a small team just building the testing habit, or a mature evidence-driven programme.",
+   "For a small team, use ICE (Impact, Confidence, Ease) to move fast, knowing owners can inflate their own scores.",
+   "For a page-traffic-first view, use PIE (Potential, Importance, Ease), which forces a look at page traffic and value.",
+   "For a mature programme, use PXL-style evidence-gated criteria tied to heatmaps, surveys and analytics.",
+   "For ideas with very different audience reach, use RICE (Reach, Impact, Confidence, Effort)."
+  ],
+  "test": {
+   "method": "Not a test; a prioritisation process change.",
+   "measure": "Whether the scoring framework matches the programme's stated maturity",
+   "read_point": "At the next backlog review"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02",
+    "03",
+    "05"
+   ],
+   "cards": [
+    "a56c27356031",
+    "4a2e3d77d68e",
+    "aad25dea9ed9"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "CRO-164",
+  "title": "Turn on CUPED only with returning, identified users, not anonymous cold traffic",
+  "domain": "09-CRO",
+  "bottleneck": [
+   "measurement_data"
+  ],
+  "lever": "variance reduction eligibility",
+  "hypothesis": "If CUPED is turned on only where the platform supports it and the store has returning, identified users to supply a pre-experiment covariate, then the store gets a real, if modest, sample-size saving instead of an assumed one, because CUPED needs a stable identity across sessions and mostly new, anonymous DTC checkout traffic gives it a missing or weak covariate.",
+  "applies_when": [
+   "scaling_store"
+  ],
+  "does_not_apply_when": [
+   "Mostly new, anonymous, single-session traffic with no logged-in or stable device identity"
+  ],
+  "signal": {
+   "check": "CUPED is enabled or planned with no check for whether the tested traffic is mostly returning and identified.",
+   "metrics": [
+    "cvr_overall"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "vendors claim 30 to 50 percent lower sample needs on strongly correlated metrics; one large platform found only about 16 percent variance reduction on volatile revenue",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A test-engine setting, not a site change."
+  },
+  "prerequisites": [
+   "A testing platform that offers CUPED",
+   "A meaningful share of returning, identified traffic on the tested page"
+  ],
+  "steps": [
+   "Check whether the testing platform offers CUPED.",
+   "Check the share of returning, identified users on the page being tested.",
+   "If the share is low or traffic is mostly new and anonymous, do not expect a meaningful sample-size saving from CUPED.",
+   "If returning identified users are common, turn it on and recompute the expected sample size."
+  ],
+  "test": {
+   "method": "Not a test on its own; a setting decision made before sizing a test.",
+   "measure": "Actual variance reduction observed versus the vendor's claimed range",
+   "read_point": "After enough tests have run with CUPED on"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "05",
+    "06"
+   ],
+   "cards": [
+    "0bda3b4d7e04",
+    "7eeb62d20124",
+    "300b03fc0354"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": false
+ },
+ {
+  "id": "CRO-165",
+  "title": "Winsorize outlier orders or use a proportion metric to steady a revenue test",
+  "domain": "09-CRO",
+  "bottleneck": [
+   "measurement_data"
+  ],
+  "lever": "revenue-metric variance control",
+  "hypothesis": "If a test's revenue metric is winsorized to cap outlier orders, or replaced with a proportion metric, then the read is steadier and needs less traffic to power, because raw average revenue per visitor is highly skewed, with most visitors spending nothing and a few large orders swinging the mean.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A test's primary or guardrail metric is raw mean revenue per visitor with no cap on outlier orders and no pre-registered method.",
+   "metrics": [
+    "other:rpv"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:rpv_variance",
+   "direction": "down",
+   "size": "unknown reduction; the method must be pre-registered, not chosen after seeing results",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A metric-definition choice, not a site change."
+  },
+  "prerequisites": [
+   "Order-level revenue data for the tested traffic",
+   "Ability to define the metric before launch"
+  ],
+  "steps": [
+   "Look at the order-value distribution on the tested page to see how skewed it is.",
+   "Pick either a winsorization cap on outlier order values, or a proportion metric such as purchased or not, before the test launches.",
+   "Pre-register the choice in the test brief so it is not changed after seeing results.",
+   "Apply the same method consistently across the test's catalogue."
+  ],
+  "test": {
+   "method": "Not a test on its own; a metric-definition step inside test sizing.",
+   "measure": "Sample size needed with the chosen metric versus raw mean revenue",
+   "read_point": "Before the test launches"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "05"
+   ],
+   "cards": [
+    "7eeb62d20124"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "CRO-166",
+  "title": "Layer real-time intent signals into reassurance, not only past-browsing personalisation",
+  "domain": "09-CRO",
+  "bottleneck": [
+   "conversion",
+   "repeat_retention"
+  ],
+  "lever": "real-time reassurance",
+  "hypothesis": "If a hesitating shopper, shown by a repeated PDP visit, cart abandonment or exit intent, sees reassurance tied to a real-time signal such as fit, shipping time, returns or compatibility, then more of them convert, because this responds to what is stopping them right now, not only to what they browsed in the past.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "Stores with too little traffic to build or justify a real-time trigger"
+  ],
+  "signal": {
+   "check": "Personalisation on the store uses only past browsing or purchase history, with nothing triggered by the shopper's real-time hesitation signal.",
+   "metrics": [
+    "cvr_cart_to_checkout",
+    "cvr_pdp_to_cart"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_cart_to_checkout",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "dev"
+  },
+  "cost": "medium",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "An added on-page or on-exit message, easy to remove."
+  },
+  "prerequisites": [
+   "Ability to detect a real-time hesitation signal such as repeat PDP visit, exit intent or time on page",
+   "Known top objections by category: fit, shipping, returns, compatibility"
+  ],
+  "steps": [
+   "Identify the top real-time hesitation signals available on the store: repeat PDP visit, exit intent, long dwell with no add to cart.",
+   "Match each signal to the objection it most likely represents: fit, shipping time, returns, compatibility.",
+   "Trigger a targeted reassurance message for that objection when the signal fires.",
+   "Keep the base page's trust signals and design solid for everyone first; treat this as a layer on top."
+  ],
+  "test": {
+   "method": "A/B test the triggered reassurance against no trigger, on the segment where the signal fires.",
+   "measure": "cvr_cart_to_checkout or cvr_pdp_to_cart on the triggered segment",
+   "read_point": "At planned sample for that segment"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "06"
+   ],
+   "cards": [
+    "5e578ca91bcc",
+    "e46b405d55df"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "CRO-167",
+  "title": "Segment AI-referred sessions in analytics before changing pages for them",
+  "domain": "09-CRO",
+  "bottleneck": [
+   "measurement_data",
+   "conversion"
+  ],
+  "lever": "AI-referral measurement",
+  "hypothesis": "If AI-referred sessions are segmented in analytics and compared with other channels on conversion, AOV and refund rate, then page or bidding changes for this traffic are based on its real behaviour, because AI-referred visitors reportedly convert and spend differently and start on different pages than organic search traffic.",
+  "applies_when": [
+   "organic_led"
+  ],
+  "does_not_apply_when": [
+   "Stores with too little AI-referral traffic to segment meaningfully"
+  ],
+  "signal": {
+   "check": "AI-referred traffic is not segmented in analytics, so its conversion, AOV and refund rate cannot be compared with other channels.",
+   "metrics": [
+    "cvr_overall",
+    "aov",
+    "refund_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown; a measurement step, not a page change on its own",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A reporting change, not a site change."
+  },
+  "prerequisites": [
+   "Analytics able to identify AI-referral sources through referrer or UTM data"
+  ],
+  "steps": [
+   "Identify AI referral sources in analytics through referrer patterns or UTM tagging.",
+   "Build a segment or report comparing AI-referred sessions with other channels on landing page, conversion, AOV and refund rate.",
+   "Compare which pages AI-referred sessions land on most, often product pages, against organic search.",
+   "Use this data, not assumption, to decide whether product pages need AI-referral-specific facts."
+  ],
+  "test": {
+   "method": "Not a test; a segmentation and reporting step.",
+   "measure": "Conversion, AOV and refund rate by channel, AI-referred versus others",
+   "read_point": "Once enough AI-referred sessions accumulate to compare"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "06"
+   ],
+   "cards": [
+    "86c233f0eb39"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
  }
 ]
