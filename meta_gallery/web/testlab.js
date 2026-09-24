@@ -275,9 +275,8 @@ document.addEventListener('click', async (e) => {
   const na = e.target.closest('[data-noad]');
   if (na && TL.noAd) {
     const r = TL.noAd[Number(na.dataset.noad)];
-    STUDIO.base = bestImageAd(typeCat(r.name)); STUDIO.ref = ''; STUDIO.refRole = 'product';
-    STUDIO.hint = `Paste the site photo of "${r.name}". Your best ad gives the layout.`;
-    setTab('studio'); setTimeout(() => { const el = $('comp-tool'); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 400);
+    // Opens the product ad builder in the Creative studio: site photos, facts, number, size and quality.
+    window.pbOpenInStudio(r);
     return;
   }
   const t = (attr) => { const b = e.target.closest(`[${attr}]`); return b ? [b, (TL.list || []).find((x) => x.id === b.getAttribute(attr))] : [null, null]; };

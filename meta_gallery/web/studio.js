@@ -201,6 +201,7 @@ window.renderStudio = async function renderStudio() {
   await labBoot(); await docsBoot();
   const busy = STUDIO.busy.playbook;
   $('studioView').innerHTML = `<div class="ins">
+    ${window.pbStudioHtml ? window.pbStudioHtml() : ''}
     ${toolHtml()}
     <section class="panel-box"><div class="row" style="justify-content:space-between;align-items:center"><h2>Creative playbook</h2>
       <button class="btn${PLAYBOOK ? ' ghost' : ''}" type="button" id="runPlaybook"${!aiReady() || busy ? ' disabled' : ''}>${busy ? 'Writing the playbook…' : PLAYBOOK ? 'Update playbook' : 'Build playbook'}</button></div>

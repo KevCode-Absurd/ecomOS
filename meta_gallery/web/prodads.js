@@ -5,7 +5,7 @@
 // On the shared page, Claude writes the copy and image briefs (no image making there).
 // Uses sales.js (SL, baseCode, cleanName, typeCat, inAds, dailyDays, addDays, dateLabel), lab.js (askAI, REF, refSlotHtml, thumbBlob, aiErr) and studio.js (baseAds).
 
-const PB = { days: 30, by: 'n', showHidden: {}, closed: {}, open: null, info: {}, opt: {}, busy: {}, res: {}, msg: {} };
+const PB = { days: 30, by: 'n', extra: {}, studio: null, showHidden: {}, closed: {}, open: null, info: {}, opt: {}, busy: {}, res: {}, msg: {} };
 const PB_SIZES = [['square', 'Square 1:1'], ['portrait', 'Portrait 4:5'], ['story', 'Story 9:16']];
 const PB_Q = [['low', 'Low (fast)'], ['medium', 'Medium'], ['high', 'High']];
 const PB_SITE = 'https://www.gehnaindia.com/';
@@ -57,8 +57,8 @@ function pbOpt(p) {
   if (!PB.opt[p.code]) { const refs = pbRefAds(p.cat); PB.opt[p.code] = { n: 4, size: 'square', quality: 'medium', ref: refs.length ? 'ad' : 'none', refAd: refs[0] || null, picks: [1, 2], off: [], paste: '' }; }
   return PB.opt[p.code];
 }
-function pbFind(code) { const t = topProducts(PB.days); return t ? t.list.find((p) => p.code === code) : null; }
-function soldLine(p) { return `${p.n} sold in the last ${PB.days} days on the website (${compact(p.v)}), number ${PB.top ? PB.top.list.findIndex((q) => q.code === p.code) + 1 : 1} by ${PB.by === 'n' ? 'pieces sold' : 'sales value'}`; }
+function pbFind(code) { const t = topProducts(PB.days); return (t && t.list.find((p) => p.code === code)) || PB.extra[code] || null; }
+function soldLine(p) { if (p.soldTxt) return p.soldTxt; return `${p.n} sold in the last ${PB.days} days on the website (${compact(p.v)}), number ${PB.top ? PB.top.list.findIndex((q) => q.code === p.code) + 1 : 1} by ${PB.by === 'n' ? 'pieces sold' : 'sales value'}`; }
 
 // ---------- batches and hidden ads ----------
 // Each result carries a batch id and a key. New batches go on top; older ones stay below.
@@ -315,18 +315,40 @@ async function pbRun(p, mode) {
   pbRerender();
 }
 function pbRerender() {
-  const card = $('pb-card');
-  if (!card) return;
   const y = window.scrollY;
-  card.outerHTML = window.top5CardHtml();
+  const card = $('pb-card');
+  if (card) card.outerHTML = window.top5CardHtml();
+  const st = $('pb-studio');
+  if (st) st.outerHTML = window.pbStudioHtml();
   window.scrollTo(0, y);
 }
+// Creative studio: the same builder for 1 product sent from "Best sellers with no ad".
+window.pbStudioHtml = function pbStudioHtml() {
+  const p = PB.studio && PB.extra[PB.studio];
+  if (!p) return '';
+  return `<section class="panel-box pb pb-studio" id="pb-studio"><div class="row" style="justify-content:space-between;align-items:flex-start;gap:10px">
+      <div><h2>Build ads for ${esc(p.name)}</h2><p class="lead">${esc(p.code)} · ${esc(p.cat)} · ${esc(p.soldTxt || '')}. No ad names this piece yet. Photos and facts come from its page on the website.</p></div>
+      <button class="btn ghost small-btn" type="button" data-pbstudioclose>Close</button></div>
+    <div class="pb-build">${pbBuildHtml(p)}</div></section>`;
+};
+window.pbOpenInStudio = async function pbOpenInStudio(r) {
+  const code = baseCode(r.code);
+  PB.extra[code] = { code, fullCode: r.code, name: r.name, metal: r.metal, cat: typeCat(r.name), n: r.n, v: r.v, avg: r.n ? r.v / r.n : null, inAds: false,
+    soldTxt: `${r.n} sold in the last 3 months on the website (${compact(r.v)})` };
+  PB.studio = code;
+  setTab('studio');
+  setTimeout(() => { const el = $('pb-studio'); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 400);
+  if (!IS_CLAUDE) { await labBoot(); pbLoadInfo(PB.extra[code]); }
+};
+// Which product a click belongs to: the studio panel or the open row of the top 5 card.
+function pbCur(e) { return e.target.closest('#pb-studio') ? pbFind(PB.studio) : PB.open && pbFind(PB.open); }
 window.pbRerender = pbRerender;
 
 document.addEventListener('click', async (e) => {
-  if (!e.target.closest('#pb-card')) return;
+  if (!e.target.closest('#pb-card, #pb-studio')) return;
   const b = (sel) => e.target.closest(sel);
   let x;
+  if (b('[data-pbstudioclose]')) { PB.studio = null; const st = $('pb-studio'); if (st) st.remove(); return; }
   if ((x = b('[data-pbdays]'))) { PB.days = Number(x.dataset.pbdays); PB.open = null; pbRerender(); return; }
   if ((x = b('[data-pbby]'))) { PB.by = x.dataset.pbby; PB.open = null; pbRerender(); return; }
   if ((x = b('[data-pbopen]'))) {
@@ -337,7 +359,7 @@ document.addEventListener('click', async (e) => {
     if (p) { if (!IS_CLAUDE) { await labBoot(); pbLoadInfo(p); } }
     return;
   }
-  const p = PB.open && pbFind(PB.open);
+  const p = pbCur(e);
   if (!p) return;
   const o = pbOpt(p);
   if ((x = b('[data-pbref]'))) { o.ref = x.dataset.pbref; pbRerender(); return; }
@@ -367,8 +389,8 @@ document.addEventListener('click', async (e) => {
   }
 });
 document.addEventListener('change', (e) => {
-  if (!e.target.closest('#pb-card')) return;
-  const p = PB.open && pbFind(PB.open);
+  if (!e.target.closest('#pb-card, #pb-studio')) return;
+  const p = pbCur(e);
   if (!p) return;
   const o = pbOpt(p);
   const s = e.target.closest('[data-pbset]');
@@ -385,6 +407,6 @@ document.addEventListener('change', (e) => {
 document.addEventListener('input', (e) => {
   const t = e.target.closest && e.target.closest('[data-pbpaste]');
   if (!t) return;
-  const p = PB.open && pbFind(PB.open);
+  const p = pbCur(e);
   if (p) pbOpt(p).paste = t.value.slice(0, 20000);
 });
