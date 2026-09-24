@@ -1,6 +1,6 @@
 # Playbooks v2 build progress
 
-Started 24 Sep 2026. Method in `TEMPLATE.md`. Source list per folder in `_batch_plan.json`. Pass 1 runs one agent per source (256 runs); the batch grouping in that file is only a size guide.
+Started 24 Sep 2026. Method in `TEMPLATE.md`. Source list per folder in `_batch_plan.json`. Pass 1 runs one agent per source (256 runs); the batch grouping in that file is only a size guide. From 24 Sep, pass 1 runs on Sonnet (extraction into a fixed format); pass 2 merges stay on the stronger model.
 
 Pass 1 = mini playbook per source. Pass 2 = folder playbook. Status: todo, running, done, reviewed.
 
