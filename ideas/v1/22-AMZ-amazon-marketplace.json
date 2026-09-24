@@ -7679,5 +7679,1098 @@
   },
   "confidence": "medium",
   "general_practice": false
+ },
+ {
+  "id": "AMZ-123",
+  "title": "Fund the first production run with a pre-order crowdfunding campaign, not personal capital",
+  "domain": "22-AMZ",
+  "bottleneck": [
+   "cash_inventory",
+   "team_capacity"
+  ],
+  "lever": "pre-launch financing",
+  "hypothesis": "If we fund the first production run through a pre-order crowdfunding campaign instead of the founder's own capital, then launch capital risk falls because backers pay before manufacturing starts and cash is not tied up in speculative stock.",
+  "applies_when": [
+   "new_store",
+   "hero_sku"
+  ],
+  "does_not_apply_when": [
+   "the product cannot be demonstrated with a prototype or has no story or audience to rally around it"
+  ],
+  "signal": {
+   "check": "A new, untested product needs a first production run and the founder has little capital to risk on unsold inventory.",
+   "metrics": [
+    "other:launch_capital_available"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:launch_capital_available",
+   "direction": "up",
+   "size": "unknown, source cases raised from about $1,500 up to over $100,000 across two campaign rounds",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "founder"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "medium",
+   "reversible": false,
+   "note": "A failed or under-funded campaign delays the launch and is public. Back it with a real prototype and an existing audience, not just an idea."
+  },
+  "prerequisites": [
+   "a physical prototype or sample",
+   "some audience or content channel to drive traffic to the campaign"
+  ],
+  "steps": [
+   "Build a low-cost prototype, even a paper or hand-made sample, to show in the campaign.",
+   "Set the funding goal against the next specific cost, such as a design deposit or the first production run.",
+   "Launch the campaign on a pre-order platform and drive traffic from the brand's own content and audience.",
+   "Fulfil backers directly once the run is manufactured, then send remaining stock into FBA."
+  ],
+  "test": {
+   "method": "Track campaign funding against the goal and compare the effective cost of this capital against a loan or self-funded run.",
+   "measure": "other:launch_capital_available",
+   "read_point": "at campaign close"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "bd7b6cb00090",
+    "cfd113d1ee3b",
+    "5c218c90e46e"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": false
+ },
+ {
+  "id": "AMZ-124",
+  "title": "Ask a manufacturer for a referral to cover a production step they cannot do themselves",
+  "domain": "22-AMZ",
+  "bottleneck": [
+   "cash_inventory",
+   "team_capacity"
+  ],
+  "lever": "supplier network referral",
+  "hypothesis": "If we ask an existing manufacturer for a referral when they cannot handle a production step, then finding a trustworthy second vendor takes less time, because a referral already carries some vetting.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [],
+  "signal": {
+   "check": "A manufacturer can do part of the production, such as blending, but not another part, such as packaging.",
+   "metrics": [
+    "other:sourcing_lead_time_days"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:sourcing_lead_time_days",
+   "direction": "down",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "sourcing"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A referral still needs its own vetting before a production order."
+  },
+  "prerequisites": [
+   "an existing relationship with a primary manufacturer"
+  ],
+  "steps": [
+   "Ask the primary manufacturer directly whether they know a vendor for the step they cannot cover.",
+   "Request contact details or a direct introduction rather than starting a cold search.",
+   "Vet the referred vendor the same way as any new supplier before committing.",
+   "Note the referral source in the supplier record for future sourcing."
+  ],
+  "test": {
+   "method": "Compare time to first usable quote for a referred vendor against a cold-sourced vendor on a comparable gap.",
+   "measure": "other:sourcing_lead_time_days",
+   "read_point": "once the second vendor is confirmed"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "52da1e0b76d9"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "AMZ-125",
+  "title": "Run a tracked, mass cold-outreach campaign to 50 or more manufacturers for a hard-to-source product",
+  "domain": "22-AMZ",
+  "bottleneck": [
+   "cash_inventory",
+   "team_capacity"
+  ],
+  "lever": "supplier outreach volume",
+  "hypothesis": "If we send one templated outreach message to 50 or more manufacturers and track replies in a spreadsheet, then we find a willing supplier for a novel product faster, because most manufacturers refuse a new process and a handful of contacts is not enough.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "a standard, widely-manufactured product where a normal Alibaba or ThomasNet search already returns willing suppliers"
+  ],
+  "signal": {
+   "check": "Normal supplier search returns mostly refusals for a novel product or an unusual manufacturing process.",
+   "metrics": [
+    "other:willing_suppliers_found"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:willing_suppliers_found",
+   "direction": "up",
+   "size": "unknown, one case found 1 to 2 willing suppliers out of 50 to 60 contacted",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "sourcing"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Time cost only. Treat a refusal call as free technical education to refine the pitch for the next batch."
+  },
+  "prerequisites": [
+   "a list of 50 or more candidate manufacturers, including results beyond the first page of search"
+  ],
+  "steps": [
+   "Write one outreach template describing the product and the ask.",
+   "Build a list of 50 or more candidate manufacturers, paging well past the first page of search results.",
+   "Send the same template to every contact and log outreach and replies in a spreadsheet.",
+   "Call any manufacturer who refuses to learn their technical reason and refine the pitch for the next batch.",
+   "Follow up with every willing respondent on minimum order quantity, lead time and options."
+  ],
+  "test": {
+   "method": "Track reply rate and number of willing suppliers found per 50 contacted.",
+   "measure": "other:willing_suppliers_found",
+   "read_point": "after the full contact list is worked"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "eb3555923ac1",
+    "d17ff4715cfa"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": false
+ },
+ {
+  "id": "AMZ-126",
+  "title": "Ask a manufacturer making an adjacent product for a free leftover sample to prototype cheaply",
+  "domain": "22-AMZ",
+  "bottleneck": [
+   "cash_inventory"
+  ],
+  "lever": "cheap prototyping",
+  "hypothesis": "If we ask a manufacturer already producing something adjacent for a free leftover or blank sample instead of commissioning a custom one, then prototype cost falls, because we pay only shipping instead of a full custom production run.",
+  "applies_when": [
+   "new_store",
+   "hero_sku"
+  ],
+  "does_not_apply_when": [
+   "the product needs a fully custom mould or spec with no adjacent product to draw a sample from"
+  ],
+  "signal": {
+   "check": "A product idea needs a physical prototype before validating demand or running a crowdfunding campaign, and no sample exists yet.",
+   "metrics": [
+    "other:prototype_cost"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:prototype_cost",
+   "direction": "down",
+   "size": "about $50 in shipping only, in one sourced example",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "sourcing"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A leftover sample may not exactly match the final spec. Treat it as a directional prototype, not a production-ready sample."
+  },
+  "prerequisites": [
+   "a manufacturer identified who makes a similar or adjacent product"
+  ],
+  "steps": [
+   "Search a supplier directory for a manufacturer making an adjacent, not exact, version of the product.",
+   "Ask if they have a leftover or blank sample from a past project and request it, offering to pay shipping only.",
+   "Use the sample to build a prototype, pitch deck or crowdfunding campaign visual.",
+   "Commission a custom sample only once demand looks real."
+  ],
+  "test": {
+   "method": "Compare cost and time to first prototype using this method against commissioning a custom sample directly.",
+   "measure": "other:prototype_cost",
+   "read_point": "once the prototype is in hand"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "0508b31155e4"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "AMZ-127",
+  "title": "Widen manufacturer search to supplier databases, trade shows, directories and agents when Alibaba stalls",
+  "domain": "22-AMZ",
+  "bottleneck": [
+   "cash_inventory",
+   "team_capacity"
+  ],
+  "lever": "supplier search channels",
+  "hypothesis": "If we widen manufacturer search beyond Alibaba and direct outreach to supplier-lookup databases, trade convention exhibitor lists, regional B2B directories and paid sourcing agents, then we find a willing manufacturer faster, because each channel reaches a different pool of suppliers.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "a standard product where Alibaba search already returns several qualified, willing suppliers"
+  ],
+  "signal": {
+   "check": "Alibaba search and direct cold outreach have not produced a qualified, willing manufacturer.",
+   "metrics": [
+    "other:willing_suppliers_found"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:willing_suppliers_found",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "sourcing"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A sourcing agent or concierge service carries a fee. Confirm current pricing before committing."
+  },
+  "prerequisites": [],
+  "steps": [
+   "Search a supplier-lookup database by competitor ASIN or company name to see who manufactures a similar product.",
+   "Search for the product's industry trade conventions and contact or attend the exhibitor list of a relevant show.",
+   "Search a regional B2B directory if sourcing outside Alibaba's main pool.",
+   "Consider a paid sourcing agent or concierge service to search and vet suppliers directly.",
+   "Log every new lead the same way as an Alibaba lead for vetting."
+  ],
+  "test": {
+   "method": "Track the number of qualified leads found per channel used.",
+   "measure": "other:willing_suppliers_found",
+   "read_point": "after working each channel"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "bfd58753bfa0",
+    "088df087220a",
+    "92fe3ae2bbcc",
+    "00a90593aced"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "AMZ-128",
+  "title": "Negotiate manufacturer price with a volume-commitment quote and by citing a competing offer",
+  "domain": "22-AMZ",
+  "bottleneck": [
+   "margin_cogs"
+  ],
+  "lever": "supplier price negotiation",
+  "hypothesis": "If we ask for pricing at a large target volume and then cite a competing supplier's quote, then per-unit cost falls, because manufacturers price more aggressively for a larger eventual order and to win against a named competitor.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "a manufacturer with fixed, non-negotiable published pricing"
+  ],
+  "signal": {
+   "check": "A shortlisted manufacturer's first quote has not been tested against a larger volume ask or a competing quote.",
+   "metrics": [
+    "other:landed_cost_per_unit"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:landed_cost_per_unit",
+   "direction": "down",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "sourcing"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Only quote a volume the store genuinely intends to reach eventually."
+  },
+  "prerequisites": [
+   "at least 2 shortlisted manufacturer quotes"
+  ],
+  "steps": [
+   "Ask for pricing at a large target volume the store genuinely intends to reach eventually.",
+   "After the quote, ask to start with a smaller test order and see if the manufacturer holds the quoted rate.",
+   "Tell the manufacturer the specific per-unit price another shortlisted supplier quoted and ask if they can match or beat it.",
+   "Weigh any price win against quality and reliability before deciding, not on price alone."
+  ],
+  "test": {
+   "method": "Compare the final negotiated per-unit price against the manufacturer's first quoted price.",
+   "measure": "other:landed_cost_per_unit",
+   "read_point": "once the order is placed"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "8115f16806de"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "AMZ-129",
+  "title": "Ask the manufacturer to execute product design changes before hiring a separate CAD designer",
+  "domain": "22-AMZ",
+  "bottleneck": [
+   "margin_cogs",
+   "team_capacity"
+  ],
+  "lever": "design cost sequencing",
+  "hypothesis": "If we describe a product change directly to the manufacturer first, then design cost falls, because most manufacturers can execute a described or sketched change themselves as part of their normal service.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "the manufacturer states the change is outside their capability"
+  ],
+  "signal": {
+   "check": "A product needs a design or dimension change and the default plan is to hire an outside CAD designer first.",
+   "metrics": [
+    "other:design_cost"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:design_cost",
+   "direction": "down",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "sourcing"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Asking first costs nothing and does not block hiring a designer afterward if needed."
+  },
+  "prerequisites": [],
+  "steps": [
+   "Describe the desired change in words and simple sketches to the manufacturer.",
+   "Ask directly whether they can execute it as part of their normal service.",
+   "Hire an outside CAD designer only if the manufacturer says the change is outside their capability.",
+   "Confirm the final design with a sample before the bulk order."
+  ],
+  "test": {
+   "method": "Track design cost and turnaround time using this sequencing against hiring a CAD designer first.",
+   "measure": "other:design_cost",
+   "read_point": "once the design is finalized"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "63e7361bc930"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "AMZ-130",
+  "title": "Test converting an existing FBM SKU to FBA and measure the sales change from Prime eligibility",
+  "domain": "22-AMZ",
+  "bottleneck": [
+   "conversion",
+   "acquisition_volume"
+  ],
+  "lever": "fulfilment channel test",
+  "hypothesis": "If we convert an existing FBM SKU to FBA and measure the before-and-after sales change, then we learn whether Prime eligibility is driving a sales gap on that SKU, because Prime badge and delivery speed are reported to lift conversion meaningfully.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "the SKU is already on FBA",
+   "a product too heavy, fragile or made-to-order for FBA economics"
+  ],
+  "signal": {
+   "check": "An existing FBM SKU sells below what its traffic or category would suggest, and it has not been tested on FBA.",
+   "metrics": [
+    "other:fulfilment_model_set",
+    "cvr_overall"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "source claims several times more sales after conversion in one case; unverified for other products",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "ops"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "FBA fees replace FBM shipping cost. Model both before committing stock to the change."
+  },
+  "prerequisites": [
+   "an existing FBM listing with some sales history"
+  ],
+  "steps": [
+   "Record the FBM SKU's current sessions, conversion rate and monthly units.",
+   "Model FBA fees against the product's price and margin before converting.",
+   "Convert the fulfilment channel to FBA and send stock in.",
+   "Compare sessions, conversion rate and units for a comparable period after conversion."
+  ],
+  "test": {
+   "method": "Before-and-after comparison of conversion rate and units on the same SKU across an equal time window.",
+   "measure": "cvr_overall",
+   "read_point": "30 days after the FBA listing goes live"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "a4c6fdf106db",
+    "fa55e3951630"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": false
+ },
+ {
+  "id": "AMZ-131",
+  "title": "Proactively contact a buyer behind a negative review or account defect to try to resolve it",
+  "domain": "22-AMZ",
+  "bottleneck": [
+   "trust_brand",
+   "risk_compliance"
+  ],
+  "lever": "reactive customer recovery",
+  "hypothesis": "If we proactively reach out to a buyer who left a negative review or an order defect to resolve the underlying issue, then order defect rate and average rating improve, because some buyers update or remove a complaint once the problem is actually fixed.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "the review or defect type breaches Amazon's own rules for seller-initiated contact on that case type"
+  ],
+  "signal": {
+   "check": "A new negative review, defect or A-to-z claim appears with no outreach yet from the seller.",
+   "metrics": [
+    "review_rating",
+    "other:order_defect_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "review_rating",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "support"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Never offer a refund or incentive in exchange for changing or removing a review. Resolve the underlying issue only."
+  },
+  "prerequisites": [
+   "weekly Account Health and review monitoring already in place"
+  ],
+  "steps": [
+   "Check Account Health and new reviews weekly for a negative review or defect.",
+   "Contact the buyer through Amazon's permitted messaging channel to understand the issue.",
+   "Offer a genuine fix, such as a replacement or usage guidance, without asking for a review change.",
+   "Log the resolution and watch whether the rating or defect status updates."
+  ],
+  "test": {
+   "method": "Track review rating and order defect rate over the following month against the prior month.",
+   "measure": "review_rating",
+   "read_point": "30 days after starting proactive outreach"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "AMZ-132",
+  "title": "Commission a factory audit or a sourcing-agent visit before a large order with an unfamiliar manufacturer",
+  "domain": "22-AMZ",
+  "bottleneck": [
+   "risk_compliance",
+   "trust_brand"
+  ],
+  "lever": "supplier legitimacy verification",
+  "hypothesis": "If we commission a factory audit or a local sourcing agent's visit before a large order with an unfamiliar overseas manufacturer, then fraud and quality risk falls, because a platform profile alone cannot confirm the supplier is a real factory or check labor conditions.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "a manufacturer with an established, multi-order track record with the brand"
+  ],
+  "signal": {
+   "check": "A large first order is planned with a manufacturer in an unfamiliar country and no independent, in-person verification has happened.",
+   "metrics": [
+    "other:supplier_verified"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:supplier_verified",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "sourcing"
+  },
+  "cost": "medium",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "An audit or agent visit adds cost and lead time but is far cheaper than a failed production run or a labor-condition problem."
+  },
+  "prerequisites": [
+   "a shortlisted manufacturer with no prior order history"
+  ],
+  "steps": [
+   "Commission a factory audit covering production capability and labor conditions before a large order.",
+   "Or hire a local sourcing agent to physically visit and confirm the supplier is a real factory, not a reselling middleman.",
+   "Walk away from a manufacturer that scores poorly on the audit, regardless of price.",
+   "Record the audit or agent findings in the supplier file for future orders."
+  ],
+  "test": {
+   "method": "Track defect rate and delivery reliability on orders from audited versus non-audited new suppliers.",
+   "measure": "defect_rate",
+   "read_point": "after the first large order is received"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "3aa386e7b617",
+    "30cfab7b2654",
+    "458ab7dcf449"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": false
+ },
+ {
+  "id": "AMZ-133",
+  "title": "Ship the first production run to yourself first for a personal quality check before forwarding it to Amazon",
+  "domain": "22-AMZ",
+  "bottleneck": [
+   "margin_cogs",
+   "trust_brand"
+  ],
+  "lever": "self-inspection before FBA",
+  "hypothesis": "If we ship the first production run to ourselves before sending it on to Amazon, then defective units reaching customers fall, because a personal check catches problems a photo report or a rushed inspection might miss.",
+  "applies_when": [
+   "new_store",
+   "hero_sku"
+  ],
+  "does_not_apply_when": [
+   "the manufacturer relationship is already established and a paid third-party inspection is already in place"
+  ],
+  "signal": {
+   "check": "A first production run from a new or overseas manufacturer is about to ship straight to an Amazon warehouse with no personal check.",
+   "metrics": [
+    "defect_rate",
+    "return_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "defect_rate",
+   "direction": "down",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "founder"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Adds shipping time and cost against shipping direct to Amazon. Weigh this against launch date pressure."
+  },
+  "prerequisites": [],
+  "steps": [
+   "Ship the first production run to the founder or a trusted address instead of directly to Amazon.",
+   "Open and check a sample of units against the approved sample and the product brief.",
+   "Fix or reject the batch before it reaches Amazon if defects are found.",
+   "Repack and forward the approved units into the FBA inbound shipment."
+  ],
+  "test": {
+   "method": "Track return rate and 1 to 3 star review rate on self-checked shipments against direct-to-Amazon shipments.",
+   "measure": "return_rate",
+   "read_point": "90 days after the shipment goes live for sale"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "AMZ-134",
+  "title": "Fund the first production run with a private investor for repayment plus a profit share",
+  "domain": "22-AMZ",
+  "bottleneck": [
+   "cash_inventory"
+  ],
+  "lever": "alternative launch financing",
+  "hypothesis": "If we fund the first production run with a private investor who is repaid plus a share of ongoing profit, then the founder can launch without draining personal savings or waiting to save enough capital.",
+  "applies_when": [
+   "new_store"
+  ],
+  "does_not_apply_when": [
+   "the founder already has enough capital, or crowdfunding is a better fit for the product"
+  ],
+  "signal": {
+   "check": "A validated product idea is stalled only by a lack of launch capital, and neither savings nor a loan is available or wanted.",
+   "metrics": [
+    "other:launch_capital_available"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:launch_capital_available",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "founder"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "medium",
+   "reversible": false,
+   "note": "Put the profit-share agreement and repayment terms in writing, with real diligence, before accepting money from a private individual."
+  },
+  "prerequisites": [
+   "a validated product idea",
+   "an individual willing to invest"
+  ],
+  "steps": [
+   "Approach an individual investor, such as a friend, family member or relevant community, with the product idea and numbers.",
+   "Offer repayment of principal plus an agreed share of ongoing profit.",
+   "Put the agreement and repayment terms in writing before accepting funds.",
+   "Track and report actual results against the agreement."
+  ],
+  "test": {
+   "method": "Track whether the investor is repaid on schedule and compare the effective cost of this capital against a loan or crowdfunding.",
+   "measure": "other:launch_capital_available",
+   "read_point": "once the investor is fully repaid"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "482f30b7ca",
+    "555c1a9c93"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "AMZ-135",
+  "title": "Enrol a qualifying low-price, lightweight SKU in Amazon's Small and Light program to cut the FBA fee",
+  "domain": "22-AMZ",
+  "bottleneck": [
+   "margin_cogs"
+  ],
+  "lever": "FBA fee reduction program",
+  "hypothesis": "If we enrol an eligible low-price, lightweight SKU in Amazon's Small and Light program, then per-unit FBA fee falls, because that program's fee schedule runs lower than the standard tier for qualifying products.",
+  "applies_when": [
+   "low_aov"
+  ],
+  "does_not_apply_when": [
+   "the SKU does not meet the program's current price, weight or dimension eligibility"
+  ],
+  "signal": {
+   "check": "A low-price, lightweight SKU is on the standard FBA fee tier and has not been checked against Small and Light eligibility.",
+   "metrics": [
+    "contribution_margin"
+   ]
+  },
+  "expected_effect": {
+   "metric": "contribution_margin",
+   "direction": "up",
+   "size": "about $0.50 per unit in one cited example",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "ops"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Program eligibility rules and pricing change. Re-check current terms before enrolling."
+  },
+  "prerequisites": [
+   "a SKU under the program's current price and weight limits"
+  ],
+  "steps": [
+   "Check the SKU's price, weight and dimensions against the current Small and Light eligibility rules.",
+   "Enrol the SKU in the program through Seller Central if eligible.",
+   "Compare the new per-unit fee against the standard tier fee.",
+   "Monitor for any change in delivery speed or customer experience after enrolling."
+  ],
+  "test": {
+   "method": "Compare per-unit FBA fee and net margin before and after enrollment.",
+   "measure": "contribution_margin",
+   "read_point": "one full month after enrollment"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "AMZ-136",
+  "title": "Use Amazon's AI listing generator from an existing DTC product page instead of a blank new listing",
+  "domain": "22-AMZ",
+  "bottleneck": [
+   "team_capacity",
+   "conversion"
+  ],
+  "lever": "listing creation speed",
+  "hypothesis": "If we paste an existing DTC product page URL into Amazon's new-listing flow instead of starting from a blank form, then listing build time falls, because the tool drafts title, description and attributes for editing rather than writing them from scratch.",
+  "applies_when": [
+   "dtc_only",
+   "shopify"
+  ],
+  "does_not_apply_when": [
+   "no existing DTC product page to draw from",
+   "the feature is unavailable in the current Seller Central account"
+  ],
+  "signal": {
+   "check": "A new Amazon listing is about to be built from a blank form for a product that already has a live DTC product page.",
+   "metrics": [
+    "other:listing_build_hours"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:listing_build_hours",
+   "direction": "down",
+   "size": "unknown, feature availability and output quality need a live check",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Always edit the draft for keyword placement, benefit-led bullets and accuracy before publishing. Do not publish it unedited."
+  },
+  "prerequisites": [
+   "an existing DTC product page for the same product",
+   "confirm the feature is available in the current Seller Central account"
+  ],
+  "steps": [
+   "Confirm the AI listing generator is available in the current Add Products flow.",
+   "Paste the brand's own DTC product page URL when prompted.",
+   "Review the auto-generated draft title, bullets, description and attributes.",
+   "Rewrite the title and bullets for the target keyword and benefit-first copy before publishing."
+  ],
+  "test": {
+   "method": "Compare time spent building the listing this way against building one from a blank form.",
+   "measure": "other:listing_build_hours",
+   "read_point": "once the listing is published"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "AMZ-137",
+  "title": "Test the same logo brief across several design-sourcing price tiers before picking a designer",
+  "domain": "22-AMZ",
+  "bottleneck": [
+   "trust_brand",
+   "team_capacity"
+  ],
+  "lever": "design vendor selection",
+  "hypothesis": "If we run one identical design brief across several logo-sourcing price tiers and always check portfolios first, then brand image quality per dollar improves, because output quality does not scale smoothly with price and the cheapest tier can still work if vetted.",
+  "applies_when": [
+   "new_store"
+  ],
+  "does_not_apply_when": [
+   "the brand already has an established, trusted designer relationship"
+  ],
+  "signal": {
+   "check": "A new brand or product needs a logo and no design-sourcing comparison has been run yet.",
+   "metrics": [
+    "other:design_cost"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:design_cost",
+   "direction": "down",
+   "size": "unknown, one source's own 5-tier test ranged $10 to $900 for very different results",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "founder"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A rejected logo at any tier costs only that tier's fee and time, not the whole budget."
+  },
+  "prerequisites": [
+   "one written brief covering the product, tone, 1 to 2 keywords and 2 to 3 preferred colors"
+  ],
+  "steps": [
+   "Write one identical brief covering the product, tone, keywords and colors.",
+   "Post it to at least 2 different price tiers, such as a freelance marketplace and a design contest platform.",
+   "Review each freelancer's portfolio before hiring, even at the cheapest tier.",
+   "Compare results and pick by output quality against the brief, not by price alone."
+  ],
+  "test": {
+   "method": "Compare cost per usable logo option across the tiers tested.",
+   "measure": "other:design_cost",
+   "read_point": "once a final logo is chosen"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "8dd41b666ba3",
+    "804fb246ea8e",
+    "e975701c837b"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "AMZ-138",
+  "title": "Run an Amazon Live stream demonstrating the product around launch day",
+  "domain": "22-AMZ",
+  "bottleneck": [
+   "acquisition_volume",
+   "conversion"
+  ],
+  "lever": "live video launch channel",
+  "hypothesis": "If we run an Amazon Live stream demonstrating the product around launch day, then launch-week traffic and conversion improve, because a live demo adds a visible, interactive proof point competitors without one do not have.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "Amazon Live is not available for the seller's account or category"
+  ],
+  "signal": {
+   "check": "A launch plan includes static content and ads but no live demonstration channel.",
+   "metrics": [
+    "other:launch_week_sessions"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:launch_week_sessions",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Confirm current Amazon Live eligibility and format before planning the launch around it."
+  },
+  "prerequisites": [
+   "Amazon Live eligibility confirmed for the account"
+  ],
+  "steps": [
+   "Confirm the seller account is eligible for Amazon Live.",
+   "Plan a short demo script covering the product's main benefit and use case.",
+   "Schedule and promote the stream around the planned launch window.",
+   "Compare launch-week sessions and conversion against a prior launch without a live stream."
+  ],
+  "test": {
+   "method": "Compare launch-week sessions and conversion rate for a launch with an Amazon Live stream against one without.",
+   "measure": "other:launch_week_sessions",
+   "read_point": "7 days after the stream"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "AMZ-139",
+  "title": "Use your own Amazon Associates link on your own external traffic to recapture an affiliate commission",
+  "domain": "22-AMZ",
+  "bottleneck": [
+   "acquisition_efficiency",
+   "margin_cogs"
+  ],
+  "lever": "affiliate commission recapture",
+  "hypothesis": "If we route our own external traffic to our Amazon listing through our own Associates affiliate link, then net acquisition cost falls, because we recapture a commission on top of the referral fee we already pay, on sales we drove ourselves.",
+  "applies_when": [
+   "paid_social_led",
+   "organic_led"
+  ],
+  "does_not_apply_when": [
+   "already enrolled in the Brand Referral Bonus Program for the same traffic, since the two may not stack"
+  ],
+  "signal": {
+   "check": "External traffic from content, social or email is sent to the Amazon listing with a plain product link, not an Associates affiliate link.",
+   "metrics": [
+    "cpa",
+    "other:affiliate_commission_recaptured"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:affiliate_commission_recaptured",
+   "direction": "up",
+   "size": "about 5% cited in one case",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Confirm current Associates program terms and whether it can run alongside the Brand Referral Bonus Program before relying on both."
+  },
+  "prerequisites": [
+   "an approved Amazon Associates account"
+  ],
+  "steps": [
+   "Apply for or confirm an Amazon Associates account.",
+   "Generate an Associates link for the brand's own ASIN.",
+   "Replace plain product links with the Associates link in the brand's own external content and ads where allowed.",
+   "Check current program rules for whether this can run alongside the Brand Referral Bonus Program.",
+   "Track the resulting commission against the referral fee already paid."
+  ],
+  "test": {
+   "method": "Track affiliate commission earned on self-driven traffic over a month.",
+   "measure": "other:affiliate_commission_recaptured",
+   "read_point": "30 days after switching links"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
  }
 ]
