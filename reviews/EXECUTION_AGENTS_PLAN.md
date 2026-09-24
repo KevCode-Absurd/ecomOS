@@ -1,249 +1,360 @@
-# Execution layer: agent catalogue, ranking and build plan
+# Execution layer: the agent stack, designed for the full system
 
-Date: 24 Sep 2026. Companion to `INTELLIGENCE_REVIEW.md`. Planning only; nothing built.
+Date: 24 Sep 2026. Companion to `INTELLIGENCE_REVIEW.md`. Planning only; nothing built. This version replaces the earlier draft that ranked by what data exists today.
 
-Kevin's ask: list every agent the execution layer could offer, rank them from most to least useful, and for each say what it draws from the data layer, brand brain, intelligence layer and inspiration layer, and which playbooks it needs. Then decide whether working backwards from agents to playbooks is the right approach.
+**Assumption, as Kevin set it:** the data warehouse is built and trusted (Meta, Google, GA4, Klaviyo, Shopify, support tickets, reviews, all reconciled daily, gross margin and marketing efficiency computed in code and passed through CAPI). The brand brain is built (facts, claims, offers, voice, competitors, past winners, assets, preferences). The inspiration library is built (own and competitor statics, videos, pages, emails, with structured descriptions and performance). The intelligence layer holds a distilled playbook per workflow plus cards for lookup. The question is only: what are the best possible agents on top, and in what order do they matter.
 
-## 1. Is this the right approach?
+## 1. How the layer is organised
 
-Yes, with 3 conditions.
+Three levels. Kevin's 24 subsections live at the middle level.
 
-1. **Rank by value to a paying user and by data reach, not by folder.** 24 folders do not mean 24 equal agents. An agent that reads real ad and sales data for a live brand is worth more today than one that needs a business that does not exist yet. So the ranking below puts "brand already running" agents first and "start a business" agents later, even though Kevin's 2-year vision starts at product research.
-2. **Every agent starts in draft mode.** It reads, diagnoses, drafts and proposes. A human clicks before anything is published, paused, spent or sent. This is already the Meta rule in `CLAUDE.md`. Keep it for Shopify, Klaviyo and Google too. Autonomous writes come only after the experiment registry shows an agent's proposals were accepted often.
-3. **One shared spine, many thin agents.** The agents differ in playbook, inputs and tools. They should share one orchestrator, one brand record, one experiment registry, one audit log and one review gate. Building 20 separate agents each with its own plumbing is how this fails.
+```
+Level 3  PROGRAMS         long-running goals that chain many agents
+         Weekly growth review, Launch program (new brand), Quarterly plan, Client report
+                |
+Level 2  DOMAIN AGENTS    one per use case (the 24 subsections, merged to 20)
+         Paid media, Creative, CRO, Profit, Lifecycle, Offer, Landing, Voice of customer ...
+                |
+Level 1  WORKERS          small, single-purpose, mostly code
+         metric puller, sample-size calculator, page fetcher, claim checker, image matcher,
+         Lighthouse runner, cohort builder, critic, fact checker, registry writer
+```
 
-Working backwards then gives a clean list: the top 8 agents define the first 12 playbooks, the first 6 data tables and the first inspiration fields. That is a better build order than "finish the data layer, then the intelligence layer, then agents".
+**The orchestrator** sits above all three. It takes a request or a schedule tick, picks the program or agent, loads the brand brain slice and the playbook, routes the model tier, runs the agent's shape, logs everything, and hands the result to the approval gate. There is one orchestrator, not one per agent.
 
-## 2. Design rules for the execution layer
+**Five agent shapes.** Every domain agent is built from one. The shape is built once.
 
-**Four agent shapes.** Every agent below is one of these. Build the shape once, reuse it.
-
-| Shape | How it runs | Used by |
+| Shape | What it does | Model use |
 |---|---|---|
-| A. Checklist fan-out | Deterministic tools check each item (a page, a script, a setting, a permission). Sub-workers run in parallel. One model call summarises, ranks and writes the fix list. | Speed, security, store launch, measurement audit, brand consistency |
-| B. Diagnose, hypothesise, propose | Pull numbers from the data layer. Do arithmetic in code. One model call reads the numbers with a diagnostics playbook and writes ranked hypotheses and next actions. | Paid media, finance, Google Ads, retention, SEO |
-| C. Research, draft, critique, variants | Load brand record and avatar. Retrieve inspiration matches. Draft with a playbook. A second pass (critic) checks facts, claims, offer rules and voice. Return 3 variants plus an audit of what was used. | Ad copy and creative, landing pages, email, offers, organic content |
-| D. Experiment loop | Read the registry. Propose a test with a hypothesis, metric, sample size and stop rule. Human approves. Agent tracks results from the data layer and writes the decision back. | CRO, creative testing, offer testing, promotions |
+| A. Audit | Workers check each item against a checklist from the playbook. One model call ranks and explains. | Cheap model |
+| B. Diagnose | Workers pull numbers and do the arithmetic. One model call reads them with a diagnostics playbook and writes ranked causes and next actions. | Cheap model; strong model when the numbers conflict |
+| C. Create | Load brand brain and avatar, retrieve inspiration matches, draft with a playbook, critic pass, return ranked variants with an audit trail. | Strong model to draft, cheap model to critique |
+| D. Experiment | Read the registry, design a test with hypothesis, metric, guardrails, sample size and stop rule, get approval, monitor, write the decision back. | Cheap model, strong model for the hypothesis |
+| E. Deliberate | Proposer writes options, challenger attacks them with the brand brain and data, a judge with a fixed checklist scores, human decides. For high-stakes, low-frequency calls only. | Two strong models plus a cheap judge |
 
-**On agents that debate each other.** Do not start there. The repo's evidence shows AI judges move 10 points on unchanged text, so 3 models voting mostly averages noise at 3x the cost. Use a single critic pass with a fixed checklist (facts, claims, offer rules, voice, completeness) plus deterministic checks (prices, arithmetic, banned words). Reserve a 2-model "propose and challenge" round for high-stakes calls only: budget reallocation over a set amount, offer changes, pricing. Even there, the human decides.
+**Where debate earns its place.** Shape E costs about 3x a single pass and, per the repo's evidence, AI judges are noisy. So it is reserved for decisions that are rare, expensive and hard to reverse: pricing and offer changes, budget shifts above a threshold, positioning, killing a product, entering a channel. Everything else uses a single critic with a fixed checklist plus code-based checks (prices, arithmetic, banned claims, offer rules).
 
-**What every agent must produce.** A deliverable, a short "why" with the numbers used, the list of cards and playbook version used, the brand facts relied on, cost and time, and a line in the experiment registry when a test is proposed. No customer-facing output mentions the source library.
+**Autonomy ladder.** Every agent is born at L1 and earns its way up per action type through the registry.
 
-**Model routing.** Shape A and B run on a cheap model with a playbook; the tools do the hard work. Shape C uses a strong model for the draft and a cheap model for the critic. Shape D uses a cheap model except for the hypothesis step.
-
-## 3. Shared infrastructure (build once, before any agent)
-
-| Component | What it does | Exists today? |
+| Level | Meaning | Example |
 |---|---|---|
-| Orchestrator | Takes a request, picks the agent, loads brand record and playbook, routes the model, runs the shape, logs the run | No. Task 7 in the review memo is the seed |
-| Brand record (brand brain v1) | Facts, prices, costs, approved claims, offer rules, proof, voice examples, competitors, exclusions, learned preferences | Partial: `data/meta-gallery/brand.json` for Gehna, ad hoc sheets for Peach Bucket and TrailFold |
-| Experiment registry | Hypothesis, brand, channel, assets, dates, budget, metric, result, decision. Read by every agent before it proposes a test | No. The gallery's action plan lists tests but does not store results |
-| Data access layer | Typed readers for daily metrics, funnel, customers, catalog, support text, site audit | Partial: `meta_gallery/metrics.py` and the Metabase pull, for 1 brand |
-| Audit log | One row per run: inputs, playbook version, cards, model, tokens, cost, output hash, human decision | Partial: `intelligence/budget.py` tracks cost only |
-| Review gate | Blind side-by-side sheet and a ship / edit / rewrite label. Feeds learned preferences back to the brand record | No. Task 8 in the review memo |
-| Critic and fact checker | Deterministic price, claim and arithmetic checks plus one cheap-model checklist pass | Partial: `scripts/owner_validation.py` and benchmark validators, not reusable yet |
+| L0 | Read and report | Weekly diagnosis memo |
+| L1 | Draft for approval | Proposed budget change, ad copy, flow email |
+| L2 | Act inside guardrails, report after | Pause an ad above a CPA ceiling for 3 days, add a negative keyword, send a flow email already approved as a template |
+| L3 | Act and only report exceptions | Bid and budget pacing inside a monthly cap |
 
-## 4. Agent catalogue
+Promotion rule: an action type moves up one level when at least 30 of its proposals were approved unchanged and none caused a logged loss. Anything touching money, customers or public claims never skips a level. Meta stays read-only until Kevin decides otherwise.
 
-Scores are 1 to 5. **Value** is how often a running brand needs it times how much money it touches. **Data** is how much of the input exists today for Gehna or Peach Bucket. **Knowledge** is the card-sample quality of the folders it draws on (from the review). **Risk** is how badly a wrong output hurts (5 is worst). Rank score = Value + Data + Knowledge minus Risk, then adjusted by my judgement where noted.
+**What every agent returns.** The deliverable. The numbers used and the arithmetic. The brand facts relied on. The playbook version and cards used. Cost, tokens and time. A registry entry when a test or action is proposed. Nothing customer-facing mentions the source library.
 
-Inputs use these codes. D = data layer, B = brand record, I = intelligence layer (playbooks plus lookup cards), N = inspiration layer, R = experiment registry.
+## 2. Ranking method
 
-### Tier 1: build first (weeks 1 to 8). Serve brands that already sell.
+Four scores, 1 to 5 each.
 
-**1. Paid media performance agent** (Shape B, then D). Folders 10-MCR, 11-ADC, 06-MEA, 20-FIN. Value 5, Data 5, Knowledge 4, Risk 2.
-- Job: weekly and on-demand read of Meta results. Answers "ROAS dropped, what do I check", finds fatigue, spend concentration, creative winners and losers, audience overlap, attribution gaps. Ranks the next 5 tests. Drafts budget and pause proposals for approval.
-- Sub-agents: metrics puller (code), fatigue and frequency checker (code), creative ranker (code plus vision model on thumbnails), hypothesis writer (model), test ranker (model, reads R).
-- Inputs: D daily spend, revenue, orders by campaign, ad set and ad, plus impressions, frequency, CTR, CPM; D brand sales by day from Metabase; B margin and target contribution; I diagnostics playbook; R past tests.
-- Outputs: diagnosis memo, ranked test list, proposed changes as a draft JSON. No writes to Meta.
-- Playbooks needed: `paid-media.diagnose-performance-drop`, `paid-media.rank-creative-tests`, `paid-media.scale-or-cut`.
-- Exists today: most of the data path, in the gallery's overview, insights and action plan tabs. This agent is the gallery made general and given a playbook.
+- **Money.** How much profit the agent can move per year for a typical brand.
+- **Frequency.** How often a brand needs it: 5 daily, 4 weekly, 3 monthly, 2 quarterly, 1 once.
+- **AI leverage.** How much of the work an agent can do end to end with full data, versus how much still needs human taste or hands.
+- **Compounding.** How much this agent improves the other agents through the brand brain and the registry.
 
-**2. Creative and ad copy agent** (Shape C). Folders 11-ADC, 10-MCR, 02-AVT, 04-BRD. Value 5, Data 4, Knowledge 3, Risk 2.
-- Job: from a brief, produce static ad concepts and copy variants that fit the brand, the avatar and the offer. Match winners in the account against the inspiration library to propose formats. Build variants of a reference image with the real product locked.
-- Sub-agents: brief checker (code, against B), inspiration matcher (embedding over N), concept writer (strong model, playbook), copy writer (strong model, ad-copy v2 playbook), critic (cheap model plus deterministic claim check), image variant builder (existing studio path).
-- Inputs: B facts, claims, offer rules, voice; D ad-level winners and losers with metrics; N statics with structured descriptions and performance; I ad-copy v2 and creative-concept playbooks; R what was already tested.
-- Outputs: 3 concepts, each with copy variants, format, reference match, and a claim audit. Draft only.
-- Playbooks: `ad-copy.write-static-copy` (v1.2 is the base), `creative.concept-from-winners`, `creative.variant-plan`.
-- Exists today: creative studio in the gallery, ad-copy v1.2, `creative_retrieval.py`. Missing: brand record, inspiration descriptions, critic.
+Rank score is the sum. Ties are broken by Money, then Compounding.
 
-**3. Profit and finance agent** (Shape B). Folders 20-FIN, 06-MEA. Value 5, Data 4, Knowledge 5, Risk 3.
-- Job: turn orders, spend, COGS and fees into contribution margin, MER, contribution after ads, cash tied in stock, by day, week and product. Reconcile platform numbers to the P&L. Flag missing days and duplicates. This is the base for Kevin's plan to send gross profit through CAPI: the numbers must be right in a table before they go anywhere.
-- Sub-agents: data integrity checker (code), margin calculator (code), reconciler (code), narrator (cheap model, playbook).
-- Inputs: D orders, refunds, spend by channel, COGS per SKU, shipping and payment fees; B cost assumptions and tax rules; I finance playbook.
-- Outputs: a weekly profit memo, a per-SKU contribution table, alerts. All arithmetic in code.
-- Playbooks: `finance.weekly-contribution-readout`, `finance.reconcile-platform-to-pnl`, `finance.unit-economics-by-sku`.
-- Exists today: Metabase sales pull, Peach Bucket unit economics in the handoff. Missing: COGS table, reconciliation.
+## 3. The stack, ranked
 
-**4. Measurement and tracking agent** (Shape A). Folders 06-MEA, 12-GAD, 23-SEC (store security cards only). Value 4, Data 3, Knowledge 4 with stale risk, Risk 3.
-- Job: audit pixel, CAPI, GA4 and Google Ads conversion setup. Check event coverage, duplicates, deduplication keys, attribution windows, consent. Later: draft the CAPI enrichment (gross profit, COGS) as a spec for a developer.
-- Sub-agents: event fetcher (Meta dataset stats via MCP, GA4 export), checklist runner (code), gap explainer (cheap model, playbook).
-- Inputs: D event counts by source, purchase counts by platform vs Shopify; B attribution settings; I measurement playbook with a "verify the current UI" rule.
-- Outputs: audit table with pass, fail and unknown; fix list; CAPI spec draft.
-- Playbooks: `measurement.audit-tracking`, `measurement.capi-enrichment-spec`.
-- Caution: the folder's cards name menu paths that go stale. The playbook must state checks, not clicks.
+### Rank 1. Paid media performance and budget agent
 
-**5. CRO and experiment agent** (Shape D). Folders 09-CRO, 07-LPG, 03-OFF. Value 4, Data 3, Knowledge 5, Risk 2.
-- Job: read the funnel, find the biggest drop, propose 3 tests with hypothesis, metric, guardrails, sample size and stop rule. Register them. Track results and write the decision. Kevin's "suggest experiments, run them, keep results" agent.
-- Sub-agents: funnel reader (code), test designer (model, playbook), sample size calculator (code), result reader (code), decision writer (model).
-- Inputs: D sessions, ATC, checkout, purchase by device and source; page inventory; B margins, offer rules; I CRO playbook; R everything tried before.
-- Outputs: test proposals, registry entries, readouts. Implementation stays human or a later landing-page agent.
-- Playbooks: `cro.find-biggest-drop`, `cro.design-test`, `cro.read-result`.
-- Exists today: 09-CRO is the strongest folder. Missing: funnel data feed and registry.
+Shape B, then D, with E for large reallocations. Score 19: Money 5, Frequency 5, AI leverage 5, Compounding 4.
 
-**6. Email and SMS lifecycle agent** (Shape C). Folders 14-EML, 17-CXP, 03-OFF. Value 4, Data 3, Knowledge 4, Risk 2.
-- Job: audit existing flows, draft missing ones (welcome, abandoned checkout, post-purchase, win-back), write the emails in brand voice, propose send logic and tests.
-- Sub-agents: flow auditor (Klaviyo export reader, code), gap finder (model), copy writer (strong model, playbook), critic.
-- Inputs: D flow performance, list size, segments; B voice, claims, offers, product facts; I lifecycle playbook; N email references; R.
-- Outputs: flow map, email drafts, test plan.
-- Playbooks: `email.audit-flows`, `email.write-flow-emails`, `email.plan-campaign-calendar`.
-- Missing: Klaviyo or equivalent read access.
+- **Mission.** Run the paid engine day to day across Meta, Google and any other channel: find what is wasting money, what is winning, what is fatiguing, where to move budget, and what to test next. Report in contribution terms, not ROAS alone.
+- **Runs.** Daily pacing check, weekly deep read, on demand for "what happened".
+- **Sub-agents.** Channel readers (Meta, Google Search and Shopping, PMax, TikTok) as workers. Fatigue and frequency worker. Audience overlap worker. Search-term waste worker. Feed health worker. Creative ranker (code plus vision model over own statics and videos). Incrementality reader (holdout and geo tests from the registry). Budget allocator (code: marginal contribution per channel and campaign). Hypothesis writer (model). Test ranker (model, reads registry).
+- **Inputs.** Data: ad metrics at ad level with attribution, blended MER and contribution by day, incrementality results, funnel by source. Brand brain: margin targets, cash limits, seasonality, launch calendar, excluded audiences. Intelligence: diagnostics playbooks per channel, scaling gates, fatigue rules. Inspiration: own winners for the creative ranker. Registry: past tests and decisions.
+- **Outputs.** Daily exception list. Weekly diagnosis memo with ranked causes. Budget proposal by campaign with expected contribution. Kill, keep, scale list for ads. Top 5 tests. Creative briefs handed to Rank 2. Landing issues handed to Rank 7.
+- **Playbooks.** `paid.diagnose-drop`, `paid.pace-budget`, `paid.scale-or-cut`, `paid.rank-tests`, `paid.google-search-hygiene`, `paid.shopping-vs-pmax`, `paid.feed-health`, `paid.incrementality-plan`.
+- **Autonomy target.** L2 for pausing above a CPA ceiling and negative keywords; L3 for pacing inside a cap; L1 forever for new campaigns and reallocations above a threshold.
+- **Quality gate.** Every number in the memo traces to a query. No recommendation without the contribution effect stated. Guardrail: never propose more than a set percent shift in one day.
 
-**7. Landing page and PDP agent** (Shape C, uses A for audit). Folders 07-LPG, 09-CRO, 03-OFF, 08-SPD. Value 4, Data 3, Knowledge 4, Risk 2.
-- Job: audit a page against the offer, avatar and traffic source. Draft a new section order and copy. Later, produce a page draft in the store's section format.
-- Sub-agents: page fetcher and structure reader (code), audit checklist (model with playbook), copy drafter (strong model), critic, speed check (calls agent 11).
-- Inputs: D page funnel by source; B facts, proof, offer; I landing-page playbook; N landing page references (later).
-- Outputs: audit, wireframe as text, section copy, test proposal to agent 5.
-- Playbooks: `landing.audit-page`, `landing.draft-cold-traffic-page`, `landing.pdp-rebuild`.
+### Rank 2. Creative and ad production agent
 
-**8. Offer and pricing agent** (Shape C, D for tests). Folders 03-OFF, 20-FIN, 02-AVT. Value 4, Data 3, Knowledge 4, Risk 4.
-- Job: design or improve the offer: bundles, guarantees, tiers, promotions. Every option costed before it is proposed. Respect fixed-offer rules.
-- Sub-agents: economics calculator (code), option writer (strong model), critic against B offer rules, test designer (agent 5).
-- Inputs: D price, COGS, AOV, conversion, refunds by SKU; B offer rules, policies; I offers playbook; R.
-- Outputs: 3 costed options with contribution per order, a presentation fix list for fixed offers, a test proposal.
-- Playbooks: `offers.design-offer`, `offers.audit-fixed-offer`, `offers.plan-promotion`.
+Shape C. Score 18: Money 5, Frequency 5, AI leverage 4, Compounding 4.
 
-### Tier 2: build next (weeks 8 to 16). High value, but needs data or knowledge work first.
+- **Mission.** Keep the account fed with concepts, statics, video scripts and copy that fit the brand, the avatar and the offer, and that learn from what won. Kevin's "match our winners against good formats" idea lives here.
+- **Runs.** Weekly batch from Rank 1's briefs, on demand for launches.
+- **Sub-agents.** Winner analyst (vision model describes own top and bottom ads, code finds what the winners share). Inspiration matcher (embedding and field match over the library, own and competitor, competitor as layout and mood only). Concept writer (strong model, playbook). Copy writer (strong model, ad-copy playbook from v1.2). Script writer for video and UGC briefs. Static builder (image model with the real product locked as a layer). Claim and offer checker (code). Critic (cheap model, checklist: avatar fit, credible before and after, one clear benefit, no invented claims, voice). Variant planner (one variable per variant).
+- **Inputs.** Data: ad-level results, hook and hold rates for video, comment text. Brand brain: facts, claims and proof, offer rules, voice examples, liked and disliked outputs, product photos. Intelligence: copy, concept, hook, UGC and static-format playbooks. Inspiration: everything, with performance. Registry: which angles and formats were already tested.
+- **Outputs.** Concept board: 5 concepts, each with the winner pattern it draws on, 3 copy variants, format, reference match, static mockups, video script or UGC brief, and a claim audit. Test plan handed to Rank 3 or Rank 1.
+- **Playbooks.** `creative.analyse-winners`, `creative.concept-board`, `creative.static-copy`, `creative.video-script`, `creative.ugc-brief`, `creative.variant-plan`, `creative.hook-library`.
+- **Autonomy target.** L1 always for anything public. L2 for internal mockup generation.
+- **Quality gate.** Blind pairwise review by Kevin or the client for a rolling sample. Ship, edit or rewrite label feeds learned preferences back to the brand brain.
 
-**9. Google Ads agent** (Shape B). Folder 12-GAD, 06-MEA. Value 4, Data 2 (no Google connector yet), Knowledge 4 with stale risk, Risk 3. Same shape as agent 1 for Search, Shopping and PMax: search-term waste, feed issues, brand exclusions, scaling gates. Playbooks: `google.diagnose-account`, `google.shopping-vs-pmax`, `google.search-term-cleanup`. Blocked on read access to Google Ads.
+### Rank 3. Growth experimentation agent (CRO and beyond)
 
-**10. Avatar and customer research agent** (Shape C). Folders 02-AVT, 01-PRD. Value 4, Data 3, Knowledge 2 (weak folder), Risk 2. Mines reviews, support tickets and comments into an evidence-led avatar with verbatim language and objections. Feeds agents 2, 6, 7, 8. The folder is weak, so the playbook should come mostly from the review-mining and jobs-to-be-done cards, and the strength comes from the brand's own text. Playbooks: `avatar.build-from-evidence`, `avatar.mine-objections`. Missing: review and support text feed.
+Shape D. Score 17: Money 4, Frequency 4, AI leverage 4, Compounding 5.
 
-**11. Site speed agent** (Shape A). Folder 08-SPD. Value 3, Data 4 (public URLs suffice), Knowledge 4, Risk 1. Kevin's example. Sub-agents: Lighthouse and CrUX runner per template (code), script and app inventory (code), image audit (code), fix ranker (cheap model, playbook). Mostly deterministic. Playbook: `speed.audit-and-prioritise`. Cheap to build and a good first Shape A.
+- **Mission.** Own the test programme across site, offer, creative and lifecycle. Find the biggest drop, propose tests that are worth running, size them properly, watch them, call them honestly and write the decision back so nothing is tested twice by accident.
+- **Runs.** Weekly review, event-driven when a test reaches its sample size.
+- **Sub-agents.** Funnel reader (code, by device, source, page template). Opportunity sizer (code: visitors times drop times margin). Test designer (strong model, playbook). Sample size and duration worker (code). Guardrail monitor (code: revenue per visitor, refunds, speed). Result reader (code, with uncertainty). Decision writer (model). Registry keeper.
+- **Inputs.** Data: funnel, page performance, experiment platform results, margins. Brand brain: offer rules, constraints, traffic level. Intelligence: CRO playbooks (test selection by traffic, pre-registration, holdouts, reading results). Registry.
+- **Outputs.** Ranked test backlog with expected value. Test specs ready for a developer or the landing agent. Readouts with a decision: ship, kill, rerun. A living map of what is known about the funnel.
+- **Playbooks.** `exp.find-biggest-drop`, `exp.design-test`, `exp.size-and-guardrails`, `exp.read-result`, `exp.holdout-plan`, `exp.low-traffic-alternatives`.
+- **Autonomy target.** L2 for stopping a test that breaches a guardrail. L1 for launching.
+- **Quality gate.** No test without a pre-registered metric and stop rule. No "winner" without the uncertainty stated.
 
-**12. Retention and post-purchase agent** (Shape B plus C). Folders 17-CXP, 14-EML, 19-WLD. Value 3, Data 3, Knowledge 3, Risk 2. Cohort repeat rate, LTV window, delivery and support issue patterns, replenishment timing, a bounded "wild bet" test. Playbooks: `retention.cohort-readout`, `retention.post-purchase-flow`. Fold 19-WLD into this agent.
+### Rank 4. Profit and marketing efficiency agent
 
-**13. Brand brain keeper** (Shape C, but its main job is upkeep). Folder 04-BRD. Value 4 as infrastructure, Data 3, Knowledge 2, Risk 2. Onboards a brand through the sequence Kevin described (site, ads, tone, competitors), drafts the brand record and voice guide, and updates learned preferences from the review gate. 04-BRD is the weakest folder, so the playbook should lean on Kevin's taste and the brand's approved copy. Playbooks: `brand.onboard-brand-record`, `brand.voice-guide`, `brand.consistency-audit`.
+Shape B, with E for pricing and cash calls. Score 17: Money 5, Frequency 4, AI leverage 5, Compounding 3.
 
-**14. SEO agent** (Shape A plus B). Folder 15-SEO, 08-SPD. Value 3, Data 2 (needs Search Console), Knowledge 4, Risk 1. Indexability, page titles, collection content, query demand, rewrite manufacturer copy. Playbooks: `seo.technical-audit`, `seo.collection-and-pdp-content`.
+- **Mission.** Be the CFO view. Contribution by SKU, channel and cohort. MER and contribution after ads by week. Cash tied in stock. Forecasts. Reconcile platform claims to the P&L. Tell the owner where profit is leaking and what it would take to fix.
+- **Runs.** Weekly readout, monthly close, on demand.
+- **Sub-agents.** Contribution calculator (code). Reconciler (code: platform-reported purchases versus store orders). Cohort LTV worker (code). Forecast worker (code, simple models with error bands). Cash and inventory worker (code). Scenario worker (code: what if price, CAC or return rate changes). Narrator (cheap model, playbook). Anomaly flagger.
+- **Inputs.** Data: orders, refunds, COGS, fees, spend, inventory, cash. Brand brain: targets, tax, payment terms. Intelligence: finance playbooks. Registry: which tests changed margin.
+- **Outputs.** Weekly profit memo. SKU contribution table. Efficiency dashboard numbers. Scenario answers. Alerts with the arithmetic shown.
+- **Playbooks.** `profit.weekly-readout`, `profit.reconcile`, `profit.sku-economics`, `profit.forecast`, `profit.cash-and-inventory`, `profit.scenario`.
+- **Autonomy target.** L0 and L1. It never acts; it informs everyone else's guardrails.
+- **Quality gate.** Every figure computed in code and traceable. Missing data shown as unavailable, never zero.
 
-### Tier 3: build later (after 16 weeks). For new businesses, or thin evidence.
+### Rank 5. Lifecycle agent (email, SMS, push)
 
-**15. Product research agent** (Shape C). Folder 01-PRD. Value 3 for new businesses, 1 for running brands. Data 2 (needs external market data). Knowledge 3. Risk 3. Validation checklist, competitor offer research, expansion prioritisation. Playbooks: `product.validate-opportunity`, `product.research-competition`. First step of the 2-year vision, but not the first agent to build.
+Shape C with D for send tests. Score 16: Money 4, Frequency 4, AI leverage 4, Compounding 4.
 
-**16. Store setup and launch agent** (Shape A). Folder 05-SET. Value 3 new, 1 running. Data 3. Knowledge 4 but the highest stale risk. Risk 2. Launch checklist, test purchase walk, payments, shipping, policies, domain. Playbook: `store.launch-checklist` with "verify the current UI" on every step.
+- **Mission.** Own the owned channels. Right flows, right segments, right message, in the brand's voice, tested and measured in contribution, with deliverability protected.
+- **Runs.** Weekly flow health, monthly calendar, on demand for campaigns.
+- **Sub-agents.** Flow auditor (code over the email platform's data: coverage, gaps, timing, revenue per recipient). Segment builder (code over customer table: RFM, replenishment timing, at-risk). Copy writer (strong model, playbook). Critic. Deliverability monitor (code). Calendar planner (model). Send-time and content test designer (hands to Rank 3).
+- **Inputs.** Data: customer events, flow and campaign performance, consent, complaints, product replenishment cycles. Brand brain: voice, offers, product facts, launch calendar. Intelligence: lifecycle playbooks. Inspiration: email references. Registry.
+- **Outputs.** Flow map with gaps and fixes. Full email drafts with subject lines and preview text. Segment definitions. Monthly calendar. Test proposals.
+- **Playbooks.** `life.audit-flows`, `life.welcome-and-nurture`, `life.abandoned-checkout`, `life.post-purchase`, `life.winback`, `life.campaign-calendar`, `life.sms-rules`, `life.deliverability`.
+- **Autonomy target.** L2 for sending emails from approved templates to approved segments; L1 for new copy.
 
-**17. Organic content agent** (Shape C). Folder 13-ORG. Value 3. Data 2. Knowledge 2 (creator philosophy, thin). Risk 1. Hooks, content calendar, repurposing. Playbook: `organic.content-plan`. Low priority until the folder improves or the brand supplies its own winning posts.
+### Rank 6. Offer and pricing agent
 
-**18. Answer engine (AEO) agent** (Shape A). Folder 16-AEO. Value 2 today. Data 2. Knowledge 3 with high stale risk. Risk 2. Observe how AI answers mention the brand, find mention gaps, propose page fixes. Playbook: `aeo.visibility-audit`. Keep as an observation tool until there is evidence it moves sales.
+Shape C and E. Score 15: Money 5, Frequency 2, AI leverage 4, Compounding 4.
 
-**19. Amazon marketplace agent** (Shape B). Folder 22-AMZ. Value 2 unless a client sells on Amazon. Data 1. Knowledge 4 but reseller-shaped (90% one FBA course). Risk 3. Build only when a brand needs it.
+- **Mission.** Design and improve the offer: price points, bundles, tiers, guarantees, subscriptions, promotions. Every option costed at contribution per order and per visitor before it is proposed. Respect fixed-offer rules.
+- **Runs.** Quarterly review, on demand before launches and promotions.
+- **Sub-agents.** Economics worker (code). Elasticity reader (code, from past price tests in the registry). Option writer (strong model, playbook). Challenger (second strong model, attacks with data and brand constraints). Judge (cheap model, checklist). Presentation auditor (code plus model: is the offer explained the same across ad, page and checkout). Promotion planner with cannibalisation model (code).
+- **Inputs.** Data: price, COGS, AOV, conversion, refunds, repeat rate by SKU and bundle. Brand brain: offer rules, policies, positioning. Intelligence: offer playbooks. Registry.
+- **Outputs.** 3 costed options with contribution, risk and a test design. Fixed-offer presentation fixes. Promotion plan with stop rules.
+- **Playbooks.** `offer.design`, `offer.bundle-economics`, `offer.guarantee-and-risk-reversal`, `offer.audit-fixed-offer`, `offer.promotion-plan`, `offer.subscription-design`.
+- **Autonomy target.** L1 forever.
 
-**20. Security and bot agent** (Shape A). Folder 23-SEC. Value 2. Data 3. Knowledge 2 for operators (79% developer course). Risk 2. Admin access, permissions, app scopes, payment fraud settings, bot signs in analytics. Playbook: `security.store-hygiene-checklist` from the roughly 90 store-security and agent cards only.
+### Rank 7. Landing page and PDP agent
 
-**21. Team and operations agent** (Shape C). Folder 21-OPS. Value 2. Data 2. Knowledge 3. Risk 1. Weekly task board, agency update, process checklists. Useful for the agency side of Kevin's business, not for the brand. Playbook: `ops.weekly-update-and-board`.
+Shape C plus A. Score 15: Money 4, Frequency 4, AI leverage 3, Compounding 4.
 
-**Excluded for now:** sourcing (Kevin will outsource it; the agent 3 COGS table is the only hook), wild bets (folded into 12), and fully autonomous execution (any writes to ad accounts, stores or email tools).
+- **Mission.** Make every page match its traffic and its avatar. Audit, rewrite, and produce page drafts in the store's section format, with the test handed to Rank 3.
+- **Runs.** On demand, and triggered by Rank 1 when a campaign's landing conversion falls.
+- **Sub-agents.** Page fetcher and structure reader (code). Message-match checker (model: does the page answer the ad's promise). Audit checklist (model with playbook). Section-order planner. Copy drafter (strong model). Proof and claim checker (code). Speed and mobile check (calls Rank 17). Layout matcher (inspiration library of pages). Draft builder in theme sections.
+- **Inputs.** Data: page funnel by source and device, scroll and click data where available. Brand brain: facts, proof, offer, voice, avatar. Intelligence: landing playbooks (cold traffic pages, PDP rebuild, advertorials, quiz funnels). Inspiration: page references. Registry.
+- **Outputs.** Audit with ranked fixes. Wireframe as an ordered section list with copy. Theme-ready draft. Test spec.
+- **Playbooks.** `page.audit`, `page.cold-traffic-landing`, `page.pdp-rebuild`, `page.advertorial`, `page.message-match`, `page.mobile-first`.
+- **Autonomy target.** L1. L2 later for publishing an approved draft to a hidden preview.
+
+### Rank 8. Voice of customer and avatar agent
+
+Shape C (research). Score 15: Money 3, Frequency 3, AI leverage 4, Compounding 5.
+
+- **Mission.** Turn the brand's own words from customers into a living avatar: situations, desired outcomes, objections, verbatim language, buying triggers, by segment. Feed every creating agent. Refresh as new text arrives.
+- **Runs.** Monthly refresh, event-driven when a review or ticket theme spikes.
+- **Sub-agents.** Text collector (code over reviews, tickets, ad comments, survey answers, chat logs). Theme clusterer (embedding plus model). Objection ranker (code: frequency times buying relevance). Verbatim picker. Avatar writer (strong model, playbook). Evidence auditor (code: every claim in the avatar links to quotes). Interview planner for gaps.
+- **Inputs.** Data: all customer text with dates and order links, cohort behaviour. Brand brain: current avatar, positioning. Intelligence: research playbooks (review mining, jobs and circumstances, interview design).
+- **Outputs.** Avatar record in the brand brain with quotes. Objection map. Language bank for copy. Alerts when a new theme appears. Interview plan when evidence is thin.
+- **Playbooks.** `voc.mine-text`, `voc.build-avatar`, `voc.objection-map`, `voc.interview-plan`, `voc.theme-alerts`.
+- **Autonomy target.** L2 for updating the brand brain's avatar section with evidence attached; human approves the summary.
+
+### Rank 9. Retention and customer experience agent
+
+Shape B plus C. Score 14: Money 4, Frequency 4, AI leverage 3, Compounding 3.
+
+- **Mission.** Grow repeat contribution. Read cohorts, replenishment timing, support patterns, delivery issues and refund reasons. Fix the experience causes, then design retention plays and bounded loyalty or surprise tests.
+- **Runs.** Weekly cohort and support read, monthly plays.
+- **Sub-agents.** Cohort worker (code). Support theme worker (shares with Rank 8). Delivery and refund analyst (code). Play designer (model, playbook). Test designer (hands to Rank 3). Support macro drafter (model, voice).
+- **Inputs.** Data: orders, cohorts, tickets, delivery events, refunds, NPS. Brand brain: policies, product lifecycle. Intelligence: post-purchase, retention and wild-bet playbooks. Registry.
+- **Outputs.** Cohort readout. Top 3 experience fixes with expected effect. Retention play with test design. Support reply templates in voice.
+- **Playbooks.** `retain.cohort-readout`, `retain.experience-fixes`, `retain.replenishment-timing`, `retain.loyalty-or-surprise-test`, `retain.support-macros`.
+- **Autonomy target.** L1; L2 for support macros once approved.
+
+### Rank 10. Measurement and data trust agent
+
+Shape A. Score 14: Money 3, Frequency 4, AI leverage 5, Compounding 2 (with the warehouse assumed built, its job is to keep it trusted).
+
+- **Mission.** Watch that the numbers stay right. Event coverage, duplicate purchases, attribution drift, consent changes, CAPI match quality, margin fields flowing, platform versus store gaps. Raise the flag before Ranks 1 and 4 act on bad data.
+- **Runs.** Daily checks, weekly report.
+- **Sub-agents.** Coverage checker, dedup checker, reconciliation worker, drift detector (all code). Explainer (cheap model, playbook, states checks not clicks).
+- **Outputs.** Trust score per source per day. Fix list with owner. Block signal to other agents when trust drops.
+- **Playbooks.** `measure.daily-trust-checks`, `measure.attribution-drift`, `measure.capi-quality`, `measure.new-source-onboarding`.
+- **Autonomy target.** L2: it can put a source into "untrusted" and stop other agents using it.
+
+### Rank 11. Organic search agent (SEO)
+
+Shape A plus B plus C. Score 13: Money 3, Frequency 3, AI leverage 4, Compounding 3.
+
+- **Mission.** Grow qualified organic visits and purchases. Technical health, collection and PDP content, query demand, internal links, content briefs written for buying intent.
+- **Sub-agents.** Crawler and index checker (code). Query demand worker (Search Console). Content gap worker. Brief and copy writer (strong model). Link planner. Speed check via Rank 17.
+- **Outputs.** Technical fix list. Prioritised page and content plan. Drafts.
+- **Playbooks.** `seo.technical-audit`, `seo.collection-content`, `seo.pdp-copy`, `seo.query-demand-map`, `seo.internal-links`.
+- **Autonomy target.** L1; L2 for metadata fixes.
+
+### Rank 12. Organic content and social agent
+
+Shape C. Score 12: Money 3, Frequency 5, AI leverage 2, Compounding 2.
+
+- **Mission.** Plan and draft organic content that answers the avatar's questions in the brand's voice, repurpose winners across formats, and learn from engagement. Human filming and taste stay human.
+- **Sub-agents.** Question miner (from Rank 8). Winner analyst (own posts). Hook and script writer. Repurposer (one asset into many). Calendar planner. Engagement reader.
+- **Outputs.** Monthly calendar, hooks, scripts, captions, repurposing plan.
+- **Playbooks.** `organic.question-bank`, `organic.hooks-and-scripts`, `organic.repurpose`, `organic.calendar`.
+- **Autonomy target.** L1.
+
+### Rank 13. Product research and expansion agent
+
+Shape C plus E. Score 12: Money 5, Frequency 1, AI leverage 3, Compounding 3.
+
+- **Mission.** For a new brand: validate an opportunity with evidence, not popularity. For a running brand: prioritise expansions and kill weak SKUs. First stage of Kevin's start-a-business path.
+- **Sub-agents.** Demand reader (search and marketplace signals). Competitor offer mapper (public pages). Unit economics worker (code, with sourcing quotes as inputs). Customer evidence worker (from Rank 8). Validation designer (small paid test through Rank 1 and 2). Challenger and judge for the go or no-go.
+- **Outputs.** Opportunity memo with a go, no-go or test decision. Expansion ranking. Validation test plan.
+- **Playbooks.** `product.validate-opportunity`, `product.competitor-offer-map`, `product.expansion-ranking`, `product.kill-or-keep`.
+- **Autonomy target.** L1.
+
+### Rank 14. Brand positioning and voice agent
+
+Shape C plus E. Score 12: Money 3, Frequency 2, AI leverage 2, Compounding 5.
+
+- **Mission.** Keep the brand brain's positioning and voice sharp and consistent. Onboard a new brand through the question sequence, draft positioning options, build the voice guide from approved examples, audit consistency across ads, pages and emails.
+- **Sub-agents.** Onboarding interviewer (model, structured questions). Positioning writer and challenger. Voice guide builder (from liked and disliked examples). Consistency auditor (code plus model across touchpoints). Preference learner (from the review gate).
+- **Outputs.** Brand brain sections: positioning, voice guide with good and bad examples, claim register, consistency report.
+- **Playbooks.** `brand.onboard`, `brand.positioning-options`, `brand.voice-guide`, `brand.consistency-audit`, `brand.claim-register`.
+- **Autonomy target.** L2 for writing to the brand brain with a diff the owner approves.
+
+### Rank 15. Store build and launch agent
+
+Shape A plus C. Score 11: Money 3, Frequency 1, AI leverage 4, Compounding 3.
+
+- **Mission.** Take a brand from nothing to a buyable store: domain, theme, catalog, payments, shipping, taxes, policies, tracking, test purchase, launch blockers. Then keep the store healthy.
+- **Sub-agents.** Launch checklist runner (code against the platform API). Catalog builder (from product facts). Policy drafter. Test-purchase walker (browser automation in a test environment). Blocker ranker.
+- **Outputs.** Launch readiness report. Configured store draft. Policies. Blocker list.
+- **Playbooks.** `store.launch-checklist`, `store.catalog-setup`, `store.shipping-and-tax`, `store.policies`, `store.health-check`. Every step says "verify the current UI".
+- **Autonomy target.** L2 inside a development store; L1 on a live store.
+
+### Rank 16. Answer engine visibility agent (AEO)
+
+Shape A. Score 10: Money 2, Frequency 3, AI leverage 4, Compounding 1.
+
+- **Mission.** Watch how AI answer engines describe the brand and category, find mention and accuracy gaps, propose page and schema fixes, track change over time. Treated as an observation tool until it shows sales effect.
+- **Playbooks.** `aeo.visibility-audit`, `aeo.accuracy-fixes`, `aeo.tracking`.
+- **Autonomy target.** L0 and L1.
+
+### Rank 17. Site speed and reliability agent
+
+Shape A. Score 10: Money 2, Frequency 3, AI leverage 5, Compounding 2. Kevin's example agent.
+
+- **Mission.** Keep every template fast on real devices. Lab and field scores per template, script and app inventory, image weight, third-party impact, regression after changes. Rank fixes by revenue at risk.
+- **Sub-agents.** Lighthouse and CrUX runner per template. Script inventory. App audit. Image audit. Regression watcher. Fix ranker (cheap model, playbook).
+- **Outputs.** Speed report with fixes ranked by pages times revenue. Regression alerts.
+- **Playbooks.** `speed.audit`, `speed.third-party-triage`, `speed.image-policy`, `speed.regression-watch`.
+- **Autonomy target.** L2 for image compression and lazy loading rules; L1 for removing apps.
+
+### Rank 18. Marketplace agent (Amazon and others)
+
+Shape B plus C. Score 9: Money 4 where used, Frequency 4, AI leverage 3, Compounding 1. Only when a brand sells there.
+
+- **Mission.** Listing quality, advertising, inventory placement, fees, reviews, and the store-to-marketplace pricing relationship.
+- **Playbooks.** `market.listing-optimise`, `market.ads`, `market.inventory-and-fees`, `market.reviews`.
+- **Autonomy target.** L1.
+
+### Rank 19. Security, fraud and bot agent
+
+Shape A. Score 9: Money 2, Frequency 3, AI leverage 4, Compounding 1.
+
+- **Mission.** Admin access and permissions, app scopes, payment fraud settings, checkout skimming signs, bot and scraper traffic in analytics, incident checklist. Operator-level, not developer-level.
+- **Playbooks.** `sec.access-and-permissions`, `sec.payment-fraud-settings`, `sec.bot-traffic-check`, `sec.incident-checklist`.
+- **Autonomy target.** L1; L2 for flagging suspicious sessions to the measurement agent.
+
+### Rank 20. Operations and team agent
+
+Shape C. Score 9: Money 2, Frequency 4, AI leverage 3, Compounding 1.
+
+- **Mission.** For the agency or the in-house team: weekly task board from all agents' proposals, owner assignment, client update, process checklists, recurring error log.
+- **Playbooks.** `ops.weekly-board`, `ops.client-update`, `ops.process-checklist`.
+- **Autonomy target.** L2 for drafting the update; human sends.
+
+**Excluded.** Sourcing, per Kevin (only the COGS and lead-time inputs to Ranks 4 and 13 remain). Wild bets are folded into Rank 9.
 
 ### Ranking table
 
-| Rank | Agent | Shape | Value | Data | Knowledge | Risk | Score | Tier |
-|---|---|---|---|---|---|---|---|---|
-| 1 | Paid media performance | B, D | 5 | 5 | 4 | 2 | 12 | 1 |
-| 2 | Creative and ad copy | C | 5 | 4 | 3 | 2 | 10 | 1 |
-| 3 | Profit and finance | B | 5 | 4 | 5 | 3 | 11 | 1 |
-| 4 | Measurement and tracking | A | 4 | 3 | 4 | 3 | 8 | 1 |
-| 5 | CRO and experiments | D | 4 | 3 | 5 | 2 | 10 | 1 |
-| 6 | Email and SMS lifecycle | C | 4 | 3 | 4 | 2 | 9 | 1 |
-| 7 | Landing page and PDP | C, A | 4 | 3 | 4 | 2 | 9 | 1 |
-| 8 | Offer and pricing | C, D | 4 | 3 | 4 | 4 | 7 | 1 |
-| 9 | Google Ads | B | 4 | 2 | 4 | 3 | 7 | 2 |
-| 10 | Avatar and research | C | 4 | 3 | 2 | 2 | 7 | 2 |
-| 11 | Site speed | A | 3 | 4 | 4 | 1 | 10 | 2 |
-| 12 | Retention and post-purchase | B, C | 3 | 3 | 3 | 2 | 7 | 2 |
-| 13 | Brand brain keeper | C | 4 | 3 | 2 | 2 | 7 | 2 |
-| 14 | SEO | A, B | 3 | 2 | 4 | 1 | 8 | 2 |
-| 15 | Product research | C | 3 | 2 | 3 | 3 | 5 | 3 |
-| 16 | Store setup and launch | A | 3 | 3 | 4 | 2 | 8 | 3 |
-| 17 | Organic content | C | 3 | 2 | 2 | 1 | 6 | 3 |
-| 18 | Answer engines | A | 2 | 2 | 3 | 2 | 5 | 3 |
-| 19 | Amazon | B | 2 | 1 | 4 | 3 | 4 | 3 |
-| 20 | Security and bots | A | 2 | 3 | 2 | 2 | 5 | 3 |
-| 21 | Team and operations | C | 2 | 2 | 3 | 1 | 6 | 3 |
+| Rank | Agent | Shape | Money | Freq | AI lev. | Comp. | Score |
+|---|---|---|---|---|---|---|---|
+| 1 | Paid media performance and budget | B, D, E | 5 | 5 | 5 | 4 | 19 |
+| 2 | Creative and ad production | C | 5 | 5 | 4 | 4 | 18 |
+| 3 | Growth experimentation (CRO) | D | 4 | 4 | 4 | 5 | 17 |
+| 4 | Profit and marketing efficiency | B, E | 5 | 4 | 5 | 3 | 17 |
+| 5 | Lifecycle (email, SMS) | C, D | 4 | 4 | 4 | 4 | 16 |
+| 6 | Offer and pricing | C, E | 5 | 2 | 4 | 4 | 15 |
+| 7 | Landing page and PDP | C, A | 4 | 4 | 3 | 4 | 15 |
+| 8 | Voice of customer and avatar | C | 3 | 3 | 4 | 5 | 15 |
+| 9 | Retention and customer experience | B, C | 4 | 4 | 3 | 3 | 14 |
+| 10 | Measurement and data trust | A | 3 | 4 | 5 | 2 | 14 |
+| 11 | Organic search (SEO) | A, B, C | 3 | 3 | 4 | 3 | 13 |
+| 12 | Organic content and social | C | 3 | 5 | 2 | 2 | 12 |
+| 13 | Product research and expansion | C, E | 5 | 1 | 3 | 3 | 12 |
+| 14 | Brand positioning and voice | C, E | 3 | 2 | 2 | 5 | 12 |
+| 15 | Store build and launch | A, C | 3 | 1 | 4 | 3 | 11 |
+| 16 | Answer engine visibility | A | 2 | 3 | 4 | 1 | 10 |
+| 17 | Site speed and reliability | A | 2 | 3 | 5 | 2 | 10 |
+| 18 | Marketplace | B, C | 4 | 4 | 3 | 1 | 9 (conditional) |
+| 19 | Security, fraud and bots | A | 2 | 3 | 4 | 1 | 9 |
+| 20 | Operations and team | C | 2 | 4 | 3 | 1 | 9 |
 
-Where the score and the rank disagree, I moved the agent by hand. Site speed scores 10 but sits at 11 because it touches little money. Measurement scores 8 but sits at 4 because agents 1, 3 and 5 all depend on clean tracking. Brand brain keeper is infrastructure and belongs in the shared spine; it is ranked here only for its onboarding job.
+Notes on the order. Ranks 1 to 5 are the weekly operating loop of any brand that spends on ads; they move the most money most often, and with the warehouse assumed, AI can carry most of the work. Rank 6 moves a lot of money rarely, so it sits below the weekly loop. Rank 8 scores lower on money but has the highest compounding; it feeds 2, 5, 6, 7, 12 and 13. Rank 13 is the first step in the "start a business" story but happens once, so it ranks mid-table. Rank 17 is the easiest to build well, but it protects revenue more than it creates it.
 
-## 5. What each layer must provide
+## 4. Programs: chaining agents for goals
 
-This is the contract the top 8 agents need. Build these tables and fields first.
+Programs are where the "operating system" feeling comes from. Each is an orchestrator script over the agents above.
 
-**Data layer (per brand, daily grain, one currency, one timezone, with a missingness flag on every row)**
-1. `ad_metrics`: date, platform, campaign, ad set, ad, spend, impressions, clicks, frequency, purchases, value, attribution window. Agents 1, 2, 9.
-2. `sales`: date, orders, gross, discounts, refunds, net, new vs returning, by product. Agents 1, 3, 5, 12.
-3. `costs`: SKU, COGS, shipping, payment fee rate, platform fees, RTO rate. Agent 3, 8.
-4. `funnel`: date, source, device, sessions, product views, ATC, checkout, purchase. Agents 5, 7.
-5. `customers`: customer id, first order date, orders, LTV, last order, consent. Agents 6, 12.
-6. `catalog`: SKU, title, price, inventory, URL, images. Agents 2, 7, 8.
-7. `text`: reviews, support tickets, ad comments, with dates. Agent 10.
-8. `site_audit`: URL, template, Lighthouse and CrUX scores, scripts, apps. Agents 7, 11.
-9. `events`: pixel and CAPI counts by event and source. Agent 4.
-Integrity checks run before any agent reads: missing days, duplicates, currency, negative values, platform totals versus store totals.
+| Program | Cadence | Agents in order | Output |
+|---|---|---|---|
+| **Weekly growth review** | Weekly | 10 (trust) then 4 (profit) then 1 (paid) then 3 (tests) then 5 (lifecycle) then 9 (retention); 20 compiles | One memo: what happened, why, what we do this week, what we test, with every proposal linked to approval |
+| **Launch a new brand** | Once, 8 to 12 weeks | 13 then 8 then 6 then 14 then 15 then 7 then 2 then 1 then 5 then 10 | A buyable, tracked, advertised store with flows live and the first tests registered. Sourcing is a human step between 13 and 15. |
+| **Launch a product or collection** | Per launch | 8, 6, 7, 2, 5, 1, 3 | Offer, page, creative, emails, budget and tests, all from one brief |
+| **Fix a profit problem** | On demand | 4 diagnoses, then routes to 1, 6, 9 or 15 as the cause dictates; 6 with Shape E if pricing | A diagnosis and a costed plan |
+| **Quarterly plan** | Quarterly | 4, 8, 3 (what we learned), 6, 13, then 1, 2, 5 set targets | Targets, budget by channel, test roadmap, content and creative themes |
+| **Client report** | Monthly | 4, 1, 3, 5, 9; 20 writes | Plain-language report with numbers computed in code, no source library mentioned |
 
-**Brand record (brand brain v1)**
-Facts and products, prices and costs, approved claims and proof, offer rules (fixed offers, allowed discounts, guarantees), voice examples (liked and disliked), avatar summaries, competitors, attribution settings, exclusions, learned preferences from the review gate, version and date.
+## 5. What each lower layer must expose to the agents
 
-**Intelligence layer**
-One distilled playbook per agent workflow (about 40 playbooks for the top 14 agents; 24 for Tier 1). Each 2,000 to 4,000 tokens, with rule-to-card links for lookup, a "verify the current UI" line where platforms change, and a version. Cards stay as the lookup store with the fixes from the review memo.
+With the layers assumed built, this is the interface the agents need from them. It is what to check the data and brand-brain work against.
 
-**Inspiration layer**
-Statics first: image, brand, date, format, hook type, product placement, text density, colour, offer shown, people or not, performance if known, source (own account or competitor). Own-account assets carry ad-level metrics. Competitor assets are marked signal only. Later: emails and landing pages with the same idea. Video after statics show use.
+**Data layer.** Typed, versioned readers with a trust flag: `ad_metrics` (ad level, all channels, attribution window stated), `blended_daily` (spend, revenue, orders, MER, contribution after ads), `sales_by_sku`, `costs_by_sku`, `funnel_by_source_device_template`, `customers_and_cohorts`, `email_events`, `support_and_review_text`, `site_audit`, `events_and_capi_quality`, `inventory_and_cash`. Every reader returns unavailable for missing values and never silently fills zeros.
 
-**Experiment registry**
-id, brand, agent, hypothesis, channel, assets, start, end, budget, metric, guardrails, sample size, result, decision, notes. Written by agents 1, 2, 5, 8, 12. Read by all.
+**Brand brain.** Read slices per agent, write with diffs and approval: facts and products, prices and costs, claim register with proof, offer rules, positioning, voice guide with liked and disliked examples, avatar with quotes, competitors, launch calendar, targets and guardrails, learned preferences (from the review gate), asset locations.
 
-## 6. Playbook backlog derived from Tier 1
+**Intelligence layer.** `get_playbook(agent, workflow, version)` returns 2,000 to 4,000 tokens with rule-to-card links. `lookup(question, filters)` returns up to 4 cards. Playbooks carry a "verify current UI" flag where platforms change.
 
-In build order. The first 6 come straight from the agents that can run on Gehna data today.
+**Inspiration layer.** `match(asset_or_brief, filters)` over own and competitor assets with structured fields and performance; competitor assets marked signal only and never returned for text or product copying. `describe(asset)` for new assets.
 
-1. `paid-media.diagnose-performance-drop` (agent 1)
-2. `ad-copy.write-static-copy` v2 from v1.2 (agent 2)
-3. `finance.weekly-contribution-readout` (agent 3)
-4. `paid-media.rank-creative-tests` (agent 1)
-5. `creative.concept-from-winners` (agent 2)
-6. `measurement.audit-tracking` (agent 4)
-7. `cro.design-test` and `cro.read-result` (agent 5)
-8. `email.write-flow-emails` (agent 6)
-9. `landing.audit-page` (agent 7)
-10. `offers.design-offer` and `offers.audit-fixed-offer` (agent 8)
-11. `finance.unit-economics-by-sku` (agent 3)
-12. `paid-media.scale-or-cut` (agent 1)
+**Experiment registry.** `propose`, `approve`, `start`, `read`, `decide`, `search_similar`. Every agent calls `search_similar` before proposing.
 
-Each playbook: distil from the folder through search and the markdown exports, Kevin edits once, link rules to card ids, keep under 4,000 tokens, version it. That is the task shape from the review memo.
+**Approval gate.** `submit(action, level, evidence)`; returns approved, edited or rejected, and records the human's edit so the brand brain and playbooks can learn.
 
-## 7. Build plan
+## 6. Playbook backlog by rank
 
-**Wave 0 (weeks 1 to 3): the spine.** Brand record schema and 2 records. Orchestrator with routing and audit log. Experiment registry table. Review gate sheet. Retrieval fixes and corpus exclusions from the review memo. Data readers for `ad_metrics` and `sales` lifted from the gallery. Acceptance: one end-to-end run of a stub agent on Gehna data, logged, reviewed by Kevin.
+About 95 playbooks across the 20 agents, listed under each agent above. The first 30, in the order the weekly loop needs them: the 8 paid playbooks, the 7 creative playbooks, the 6 experimentation playbooks, the 6 profit playbooks, and the first 3 lifecycle playbooks. Each is distilled from its folder, edited once by Kevin, linked to cards, versioned, and under 4,000 tokens.
 
-**Wave 1 (weeks 3 to 8): agents 1, 2, 3.** Paid media performance on Gehna. Creative and ad copy on Gehna or Peach Bucket. Finance readout on Gehna once a COGS table exists. Six playbooks. The experiment from the review memo runs inside this wave. Acceptance: Kevin ships or lightly edits at least half the outputs in the blind review.
+## 7. Build order, given the full stack
 
-**Wave 2 (weeks 8 to 12): agents 4, 5, 11.** Measurement audit, CRO experiment loop and site speed. These are the checklist and registry shapes, so they prove the shared spine handles Shape A and D. Needs the funnel feed.
+Build the shapes, not the agents, first. Then fill agents in rank order.
 
-**Wave 3 (weeks 12 to 16): agents 6, 7, 8, 10.** Email, landing page, offers, avatar. Needs Klaviyo read access, page fetcher and the review or support text feed.
+1. Orchestrator, approval gate, registry client, audit log, model router. Shape B and Shape C as reusable runners.
+2. Rank 1 and Rank 2 on Shape B and C. Rank 4 on Shape B. These three prove the weekly loop.
+3. Shape D and Shape A. Rank 3 and Rank 10.
+4. Rank 5, 7, 8, 6 (Shape E arrives with Rank 6).
+5. The Weekly growth review program.
+6. Ranks 9 to 14 in order, then the Launch program.
+7. Ranks 15 to 20 as clients need them.
 
-**Wave 4 (after 16 weeks): Tier 2 and 3** in rank order, as data access arrives. Google Ads waits on a connector. Product research and store launch wait for a new-business client. Inspiration layer descriptions for the 3,000 to 4,000 statics can start any time as a background job, since agent 2 gets better as it fills.
+Promotion up the autonomy ladder happens per action type from the registry record, never by a decision to "turn on autonomy".
 
-**Client interface.** After Wave 1 works for 1 brand, wrap the orchestrator in the gallery's server so the owner asks in plain words and the orchestrator picks the agent. Hosting, auth and tenant separation are their own project before a second client sees it.
+## 8. Questions for Kevin
 
-## 8. Are we on the right path?
-
-Yes, if the next thing built is the spine plus agents 1 to 3 on one brand, and not a full data warehouse or 21 agents in parallel. The vision of one person starting and running a store from this system is reachable, but it is reached by making a live brand's weekly work better first. That earns the data, the brand records and the learned preferences that the new-business agents will need later.
-
-Three things would put it on the wrong path: building agents before the brand record and registry exist, letting any agent write to a platform before its proposals have a track record in the review gate, and judging agents by AI scores instead of by whether Kevin or the client ships the output.
-
-## 9. Questions for Kevin
-
-1. Which brand runs Wave 1: Gehna (most data) or Peach Bucket (copy work already started)?
-2. Can we get read access to Klaviyo (or the email tool) and Shopify analytics for that brand by week 8? That decides whether Wave 3 is on time.
-3. For the profit agent: does a COGS per SKU table exist for that brand, or must it be built by hand first?
-4. Is the client interface a chat box, a dashboard with buttons per agent, or both? It changes how the orchestrator exposes agents.
-5. Agency use: do you want the team and operations agent early because your agency runs the accounts, even though it scored low for the brand itself?
+1. Which channels does the paid media agent own on day one: Meta and Google only, or also TikTok, Pinterest and affiliates? It changes the channel workers.
+2. For Shape E, who is the final judge on pricing and offer changes: always the owner, or can the agency approve inside a band?
+3. Video creative: does the creative agent produce finished videos, or scripts and briefs for humans and tools? The full pipeline is a large build.
+4. Should the Launch program include sourcing as a human checkpoint with an API later, or leave it fully outside?
+5. Client-facing: do clients see all 20 agents, or a smaller set with the rest behind the agency?
