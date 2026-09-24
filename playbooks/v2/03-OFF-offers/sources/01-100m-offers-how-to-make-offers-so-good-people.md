@@ -41,7 +41,7 @@ It gives an operator a complete method to build and present a "Grand Slam Offer"
 16. **Do not compete on price unless your costs are 1/10th of competitors'.** Kennedy quote: "There is no strategic benefit to being the second cheapest in the marketplace, but there is for being the most expensive." Raise price only after raising value (example: $100,000 of value for $10,000, "money at a discount"). [d1d1f8ddde9a] [582ef3d59a15]
 17. **The common pricing process is a trap.** Look at the market, see offers, take the average, go slightly below, add "a little more", end at "more for less". The competitors you copy "are dead broke". The bottom 10% to 20% of operators wash out, new ones enter, and the cycle repeats. [d1d1f8ddde9a]
 18. **Virtuous cycle of price.** Lower price: less emotional investment, lower perceived value, worse results, worst clients ("never satisfied until your service is free"), no margin to serve well. Higher price: the reverse, plus best clients who "cost less to fulfill", and margin to invest in systems, people and experience. Condition: the claim that low-price buyers are worse is the source's framing, not universal (card caveat). [8d158317a17c]
-19. **Higher price can raise perceived value.** Evidence: an uncited wine study where tasters rated the same wine by its shown price. Goal: be priced so far above market that buyers think "there must be something entirely different going on here". `[web check: wine price study source and findings]` [50211f2484835] [8d158317a17c]
+19. **Higher price can raise perceived value.** Evidence: an uncited wine study where tasters rated the same wine by its shown price. Goal: be priced so far above market that buyers think "there must be something entirely different going on here". `[web check: wine price study source and findings]` [50211f248483] [8d158317a17c]
 20. **Price so it "stings a little" when customer effort drives the result.** "Those who pay the most, pay the most attention." Condition: only where the customer must do something to get the result, and only if you can deliver ("your product must deliver"). Conviction comes from having done it many times. **[text: service/info]** [8d158317a17c]
 21. **Charge far more than your cost to fulfill.** "Think up to a hundred times more, not just two or three times more." But "never charge more than your product is worth", and the buyer should still get "a steal". Examples: phone companies, drug makers and media companies charge far above marginal cost. Condition: card says the 100x spread is not an ecommerce margin benchmark. [b93a4e79ec81]
 22. **"99 percent of businesses need to raise their prices to grow, not lower them." "Profit is oxygen."** Condition: strong opinion, not a universal rule (card caveat). [582ef3d59a15]
@@ -64,29 +64,27 @@ It gives an operator a complete method to build and present a "Grand Slam Offer"
 ### 2.5 Building the offer
 
 35. **Use divergent thinking to build the offer.** Convergent problems have 1 answer (math). Offers have many right answers and 1 "way more right". Warm up with the 2-minute brick exercise (section 3.2). [81b1872a99e6]
-37. **Sell the vacation, not the plane flight.** "No one wants a membership; they want to lose weight." The dream outcome is the buyer arriving at their destination. [adcf603d84ff]
-38. **Solve every perceived problem.** "If only one of these needs is missing in a solution, it can cause someone not to buy." Evidence: Hormozi refused clients who ate out, lost sales, then wrote an eating-out guide to close 1 sale and never lost that objection again. "Don't get romantic about how you want to solve the problem." Goal: sell the most people, at the highest price, with the highest margin. [cd4c2dd6a329] [d49905c44a5d]
-39. **Sales-to-fulfillment continuum.** Doing less makes the offer harder to sell. Doing more makes it easier to sell but harder to fulfill. Find the spot that sells well and is easy to fulfill. Mantra: "Create flow. Monetize flow. Then add friction." [369bd294c7db]
-40. **Over-deliver on your first Grand Slam Offer, then systematize.** "Maybe flying out isn't such a bad idea in the beginning." Use the cash flow to fix operations. The promise can stay the same while the "how" changes (Gym Launch kept "I will fill your gym in 30 days" when it moved from done-for-you to teaching). Condition: launch-phase opinion, not a sustainable default (card caveat). **[text: service/info]** [369bd294c7db]
-41. **Favor high-value "one to many" solutions.** They have the biggest gap between cost and value. High one-time creation cost, then near-zero extra cost ("exactly why software becomes so valuable"). Save 1-on-1 for big value adds. [4febc6c2f078] [aeea5b86423d]
-42. **A stacked bundle does 3 things.** Solves all perceived problems, gives you conviction it is one of a kind, and makes it impossible to compare with "the one down the street". [de5a81dc7f90] [e141a5bda4f3]
+36. **Sell the vacation, not the plane flight.** "No one wants a membership; they want to lose weight." The dream outcome is the buyer arriving at their destination. [adcf603d84ff]
+37. **Solve every perceived problem.** "If only one of these needs is missing in a solution, it can cause someone not to buy." Evidence: Hormozi refused clients who ate out, lost sales, then wrote an eating-out guide to close 1 sale and never lost that objection again. "Don't get romantic about how you want to solve the problem." Goal: sell the most people, at the highest price, with the highest margin. [cd4c2dd6a329] [d49905c44a5d]
+38. **Sales-to-fulfillment continuum.** Doing less makes the offer harder to sell. Doing more makes it easier to sell but harder to fulfill. Find the spot that sells well and is easy to fulfill. Mantra: "Create flow. Monetize flow. Then add friction." [369bd294c7db]
+39. **Over-deliver on your first Grand Slam Offer, then systematize.** "Maybe flying out isn't such a bad idea in the beginning." Use the cash flow to fix operations. The promise can stay the same while the "how" changes (Gym Launch kept "I will fill your gym in 30 days" when it moved from done-for-you to teaching). Condition: launch-phase opinion, not a sustainable default (card caveat). **[text: service/info]** [369bd294c7db]
+40. **Favor high-value "one to many" solutions.** They have the biggest gap between cost and value. High one-time creation cost, then near-zero extra cost ("exactly why software becomes so valuable"). Save 1-on-1 for big value adds. [4febc6c2f078] [aeea5b86423d]
+41. **A stacked bundle does 3 things.** Solves all perceived problems, gives you conviction it is one of a kind, and makes it impossible to compare with "the one down the street". [de5a81dc7f90] [e141a5bda4f3]
 
 ### 2.6 Supply, demand and the enhancers
 
-43. **All marketing moves supply and demand.** More demand sells more units. Less supply sells units for more. "Perfect profit combination": lots of demand, little (perceived) supply. Condition: "assumes a regular business who is not trying to gain mass market penetration". [47afc4b21d24] [b83b87f23486]
-44. **Demand is fractal (80/20).** "One fifth of the prospects are willing to pay five times the price (or more)." Keep supply below demand so unmet desire carries into the next round. Satisfy all demand and each later promotion sells fewer units. Condition: illustrative framing, not a demand law (card caveat). **[text: service/info]** (workshop example) [47afc4b21d24]
-45. **"Hormozi Law: The longer you delay the ask, the bigger the ask you can make."** "The longer the runway, the bigger the plane that can take off." [47afc4b21d24]
-46. **5 enhancers, each with a job.** Scarcity lowers supply to raise price (and raises demand through exclusivity). Urgency raises demand by lowering the prospect's action threshold. Bonuses raise demand and exclusivity. Guarantees raise demand by reversing risk. Names re-stimulate demand and widen awareness. The book says these outside forces "are often more powerful than your core offer". [65ce1e16b1ce]
-47. **The person who needs the exchange less has the upper hand.** Hormozi turned down 2 offers of $50,000 for a day because he made more than $50,000 a day in profit. Rarity and value compound to set premium prices. [318cf833322]
-48. **Fear of loss is stronger than desire for gain.** Scarcity uses this. [b83b87f23486] [e456aab8c58a]
-49. **Scarcity is quantity. Urgency is time.** They are often combined but are separate levers. [9264ceff1dcd]
-50. **Never discount the core offer to close. Add bonuses instead.** Discounting "teaches your customers that your prices are negotiable". Bonuses put you in "a position of strength and goodwill". Condition: strong opinion; card notes it is not a ban on sound markdowns. Note the book itself uses discounts as a promotional "magnet" in names ("88% off", "$2,000-Off") and in pricing urgency (see section 9). [39853dac592]
-51. **A single offer is worth less than the same offer split into parts and stacked as bonuses.** Anchor price to the core offer, then widen the value gap with each bonus. Evidence: infomercials, "every second of air time costs money and must be justified with ROI". [39853dac592]
-52. **Risk is the single greatest objection.** Reversing it is "an immediate way to make any offer more attractive" and "the number one way to increase the conversion of an offer". Spend "a disproportionate amount of time" on the guarantee. Jason Fladlien said he saw conversion rise 2x to 4x from changing only the guarantee's quality (second-hand, no data). [4d72bb91baae] [eaf3e7847805]
-53. **Guarantees are enhancers, not a business.** Used to cover a poor sales team or poor product, they backfire into refunds. [eaf3e7847805]
-54. **Naming changes the wrapper, not the offer.** Offers fatigue over years, faster in local markets. Rename to refresh. Claim: good naming gets "the same offer 2x, 3x, or 10x the response rate" (no data). [f2d527d24cc0] [b261bc411259]
-
-(Principle numbering skips 36 by error in drafting; no content is missing.)
+42. **All marketing moves supply and demand.** More demand sells more units. Less supply sells units for more. "Perfect profit combination": lots of demand, little (perceived) supply. Condition: "assumes a regular business who is not trying to gain mass market penetration". [47afc4b21d24] [b83b87f23486]
+43. **Demand is fractal (80/20).** "One fifth of the prospects are willing to pay five times the price (or more)." Keep supply below demand so unmet desire carries into the next round. Satisfy all demand and each later promotion sells fewer units. Condition: illustrative framing, not a demand law (card caveat). **[text: service/info]** (workshop example) [47afc4b21d24]
+44. **"Hormozi Law: The longer you delay the ask, the bigger the ask you can make."** "The longer the runway, the bigger the plane that can take off." [47afc4b21d24]
+45. **5 enhancers, each with a job.** Scarcity lowers supply to raise price (and raises demand through exclusivity). Urgency raises demand by lowering the prospect's action threshold. Bonuses raise demand and exclusivity. Guarantees raise demand by reversing risk. Names re-stimulate demand and widen awareness. The book says these outside forces "are often more powerful than your core offer". [65ce1e16b1ce]
+46. **The person who needs the exchange less has the upper hand.** Hormozi turned down 2 offers of $50,000 for a day because he made more than $50,000 a day in profit. Rarity and value compound to set premium prices. [318cf8333224]
+47. **Fear of loss is stronger than desire for gain.** Scarcity uses this. [b83b87f23486] [e456aab8c58a]
+48. **Scarcity is quantity. Urgency is time.** They are often combined but are separate levers. [9264ceff1dcd]
+49. **Never discount the core offer to close. Add bonuses instead.** Discounting "teaches your customers that your prices are negotiable". Bonuses put you in "a position of strength and goodwill". Condition: strong opinion; card notes it is not a ban on sound markdowns. Note the book itself uses discounts as a promotional "magnet" in names ("88% off", "$2,000-Off") and in pricing urgency (see section 9). [39853dac5920]
+50. **A single offer is worth less than the same offer split into parts and stacked as bonuses.** Anchor price to the core offer, then widen the value gap with each bonus. Evidence: infomercials, "every second of air time costs money and must be justified with ROI". [39853dac5920]
+51. **Risk is the single greatest objection.** Reversing it is "an immediate way to make any offer more attractive" and "the number one way to increase the conversion of an offer". Spend "a disproportionate amount of time" on the guarantee. Jason Fladlien said he saw conversion rise 2x to 4x from changing only the guarantee's quality (second-hand, no data). [4d72bb91baae] [eaf3e7847805]
+52. **Guarantees are enhancers, not a business.** Used to cover a poor sales team or poor product, they backfire into refunds. [eaf3e7847805]
+53. **Naming changes the wrapper, not the offer.** Offers fatigue over years, faster in local markets. Rename to refresh. Claim: good naming gets "the same offer 2x, 3x, or 10x the response rate" (no data). [f2d527d24cc0] [b261bc411259]
 
 ## 3. Procedures
 
@@ -135,7 +133,7 @@ Source is thin on how to measure each indicator. It gives no data sources or thr
 **Step 4. Create delivery vehicles ("the how").**
 1. For each solution, brainstorm everything you could possibly do, even things you would not actually do. Aim for "All that? Seriously? Yes, I'm in."
 2. Group ideas by how many people you serve at once: 1-on-1, small group, one-to-many. Grocery example: 6 one-on-one ideas (in-store shopping, personal list, full-service shopping, orientation, text support, phone call while shopping), 4 small group, 6 one-to-many (live virtual tour, recorded tour, DIY grocery calculator, predetermined weekly lists, buddy system, pre-made Instacart carts).
-3. Use the 6 "cheat codes" (section 4 table and section 6).
+3. Use the 6 "cheat codes" (section 6).
 4. Do this for every problem before, during and after use. "You only need to do this once."
 **[text: service/info]** The delivery-vehicle grid is built for services. One idea (pre-made Instacart carts) touches physical delivery. [aeea5b86423d]
 
@@ -205,7 +203,7 @@ Group selling is "beyond the scope of this book".
 9. A bonus can be the next thing they will need. "Solve their next problem before they even encounter it."
 10. Total bonus value should exceed the core offer's value.
 11. Add scarcity or urgency to the bonuses themselves. Scarcity version 1: bonuses "never for sale or available anywhere else". Scarcity version 2: "I have 3 tickets left to my $5,000 virtual event". Urgency: "If you buy today, I will add in XYZ bonus that normally costs $1,000."
-[7d21455c5598] [39853dac592] [cadfc89e4c1d]
+[7d21455c5598] [39853dac5920] [cadfc89e4c1d]
 
 **Other people's products as bonuses:**
 1. Find adjacent, non-competing businesses that solve the next need.
@@ -224,11 +222,11 @@ Good fits: info products (high perceived value, low cost, "zero operational effo
 
 1. Identify the client's biggest fears: "What do they not want to have happen if they pay you? What are they most afraid of?" Include time, emotion and outside costs.
 2. Reverse the fear into a promise using the form: "If you do not get X result in Y time period, we will Z." Without the "or what" it "sounds weak and diluted". Bad: "We will get you 20 clients guaranteed." Better: "You will get 20 clients in your first 30 days, or we give you your money back + your advertising dollars spent with us."
-3. Choose a type: unconditional, conditional, anti-guarantee, implied (section 4 table).
+3. Choose a type: unconditional, conditional, anti-guarantee, implied (section 4.1).
 4. If fulfillment cost is high, prefer conditional or anti, because you would eat both the refund and the fulfillment cost.
 5. Tie conditions to the actions that make customers succeed.
-6. Consider stacking (section 4).
-7. Name it (section 3.8).
+6. Consider stacking (section 4.1).
+7. Name it (section 4.1, naming guarantees).
 8. "Always hit your guarantee hard, even if you don't have one. Say it boldly and give the reason why."
 9. Do the refund math (section 4) before deciding. "Don't be emotional, just do the math."
 Source's starting advice: begin with service guarantees or performance partnerships (which make sales final, so no refund fear), then keep them or move to less restrictive guarantees for more volume. [eaf3e7847805] [0a29207c3138] [da1973ba6fc3] [264e18c4c7be] [4d72bb91baae]
@@ -254,7 +252,7 @@ Change things in this order. Go lower only after the earlier items stop working:
 4. Change the duration of the offer (six weeks to 28 days or eight weeks).
 5. Change the enhancer (the free or discount component).
 6. Change the monetization structure, the series of offers and the price points (Volume II/III).
-"The lower on the list you go, the more operationally heavy it is." "Once you've monetized an offer, rarely should you change it." Rotate among proven offers only if it does not create operational drag. Do not call an offer fatigued because the audience saw it once; "most people don't even notice an offer on the first mention". (The book numbers this list 1 to 8 with the 2 wrapper examples counted as items 4 and 5; the 6 steps above are the actual changes.) [b261bc411259] [1874fa3ba154]
+"The lower on the list you go, the more operationally heavy it is." "Once you've monetized an offer, rarely should you change it." Rotate among proven offers only if it does not create operational drag. Do not call an offer fatigued because the audience saw it once; "most people don't even notice an offer on the first mention". (The book numbers this list 1 to 8 with the 2 wrapper examples counted as items 4 and 5; the 6 steps above are the actual changes.) [b261bc411259] [1874fa3ba153]
 
 ## 4. Rules, thresholds and numbers
 
@@ -302,12 +300,39 @@ Change things in this order. Go lower only after the earlier items stop working:
 | Name length | 3 to 5 of 5 M-A-G-I-C parts | all names | author rule | [f2d527d24cc0] |
 | Name tests | run best 2 to 3 names; winner = control | ads | author practice | [f2d527d24cc0] |
 | Naming lift | "2x, 3x, or 10x the response rate" | claim | no data | [f2d527d24cc0] |
-| Local reach cost | 1,000 people for about $20; 200,000 people "would only cost you $10,000" once | local, 2021 | author estimate (the book's own math gives $4,000) | [1874fa3ba154] `[web check: current CPM]` |
+| Local reach cost | 1,000 people for about $20; 200,000 people "would only cost you $10,000" once | local, 2021 | author estimate (the book's own math gives $4,000) | [1874fa3ba153] `[web check: current CPM]` |
+
+### 4.1 Guarantee types and options (Chapter 15)
+
+All are framed for services, coaching, courses and events **[text: service/info]**, except where the text names "consumable" items under anti-guarantees. The card adaptations for physical goods (return windows, fit and damage promises, legal review) are the card writer's. [da1973ba6fc3] [0a29207c3138] [eaf3e7847805]
+
+| type | what the client gets | when the source uses it | source's warnings | card id |
+|---|---|---|---|---|
+| Unconditional, "no questions asked" | full refund; or 50% refund; or refund of ad spend and other costs; or you pay for a competitor's program; or money back plus an extra amount (e.g. $1,000) | strongest; a pay-first trial; best for lower-ticket B2C | "very risky"; people refund even when it was not your fault; each added condition takes away force; entitlement culture | [da1973ba6fc3] [7b7abfbdcab4] |
+| Unconditional, satisfaction-based | refund at any time if not satisfied with the service level | his weight-loss offer; pairs with a best-case/worst-case close | only if you are good at fulfilling; risky as ticket and fulfillment cost rise | [7b7abfbdcab4] |
+| Conditional, outsized refund | 2x or 3x money back, or a set payout far above the price | high margins; add a "consumption condition" (they must do set actions) | none beyond the conditions | [da1973ba6fc3] |
+| Conditional, service | keep working free until X is achieved | his "personal favorite"; add key actions (web page, calls, workouts, weigh-ins, data) | none reported: "I have yet to have a single person say a client took them up on it" | [da1973ba6fc3] |
+| Conditional, modified service | another period of service free; at least 2x the original duration | easier first step than the full service guarantee | finite exposure | [da1973ba6fc3] |
+| Conditional, credit-based | refund as credit toward any service | upsells, where they already like the core | keeps goodwill | [da1973ba6fc3] |
+| Conditional, personal service | owner works 1-on-1 free until the result | "one of the strongest"; add strict conditions (24-hour replies, use the products told, prior spend) | "would also be a nightmare" without conditions | [da1973ba6fc3] |
+| Conditional, hotel and airfare | refund of product plus hotel and airfare | workshops, in-person events | author says he has used every listed guarantee "except for the hotel and phone call one" | [da1973ba6fc3] |
+| Conditional, wage-payment | pay their hourly rate if the session is not valuable | calls and sessions | ask for tax return / 1,960; "no one asking for a refund will actually do that"; likely the "phone call one" he says he has not used (inference) | [da1973ba6fc3] |
+| Conditional, release of service | let them out of the contract free | businesses with commitment or cancellation fees | if you do not enforce contracts, "nothing to lose" | [da1973ba6fc3] |
+| Conditional, delayed second payment | no further billing until the first outcome (first 5 lbs, first sale, website live) | a systematized path to the first result; you know the activation metric | shifts cash later (card caveat) | [25a056b9198f] |
+| Conditional, first outcome | you pay their ancillary costs (ad spend, hotel) until the first outcome; e.g. first sale in 14 days | same as above | none stated | [25a056b9198f] |
+| Anti-guarantee, "all sales final" | access to something that "once seen cannot be unseen" | copyable value (a line of checkout code, message scripts, a proprietary process); consumable items; high-ticket, customized work needing motivated buyers | needs a strong reason why; source says "just make one up", which this repo does not allow (section 9) | [9413eb3d3ddf] |
+| Implied (performance) | pay only on results: per sale or show; $XX per lb lost; revshare; profit share; ratchets; triggers | measurable outcomes, transparency and control over collection; "one of, if not THE most desirable setup" | drawbacks: tracking and collection; can add a minimum | [da1973ba6fc3] |
+
+**Stacking guarantees.** Examples: an unconditional 30-day no-questions guarantee plus a conditional triple-your-money-back 90-day guarantee; or 2 sequential conditional guarantees ("$10,000 by 60 days, $30,000 by 90 days as long as you do thing 1, 2, and 3"). Purpose: future-pace the buyer and shift risk to the seller. The card adds: give each layer a different risk and model combined worst-case cost. [5450fc48fb31]
+
+**Naming guarantees.** Bad: "30 Day Money Back Satisfaction Guarantee". Good: "In 30 days, if you wouldn't jump into shark infested waters to get our product back, we will return every dollar you paid." "Great" (the source's word): the "Club a Baby Seal Guarantee". The card says keep memorability but stay on brand and clear; the source's shock wording is style, not required. [1890fdd95d42]
+
+**Wording model (Fladlien, quoted in full in the book).** Frames the unconditional guarantee as a way to "make a fully informed decision" from "the inside", like looking inside a house before buying; "whether it's 29 min or 29 days from now ... if you ain't happy, I ain't happy"; refund by emailing support; backed by a stated support response average of 61 minutes, 24/7. Card: cite service metrics only if your records prove them. [7b7abfbdcab4]
 
 ## 5. Diagnostics and checks
 
 1. **Is the offer a commodity?**
-   How: read comparisons in sales calls, reviews, comments and support. Bad: buyers say "these are the same, I'll buy the cheaper one", or price objections dominate. Good: buyers compare you with doing nothing. Next: rebuild with the 5-step process and the enhancers; do not cut price. [61f1c72af108] [78a797a2bccee] `[needs brand data: review and support text, competitor price map]`
+   How: read comparisons in sales calls, reviews, comments and support. Bad: buyers say "these are the same, I'll buy the cheaper one", or price objections dominate. Good: buyers compare you with doing nothing. Next: rebuild with the 5-step process and the enhancers; do not cut price. [61f1c72af108] [78a797a2bcce] `[needs brand data: review and support text, competitor price map]`
 2. **Is the market the problem?**
    How: rate market, offer, persuasion (great/normal/bad) in order. Check the 4 indicators. Bad: market shrinking (the newspaper case, -25% a year). Next: if the market is bad, no offer fixes it; if normal, fix the offer before the copy. Do not blame the market after 1 failed offer. [6fdb3e4dcd6e] [3e5ddfe3f852] [4efb9577e16a]
 3. **Value Equation audit.**
@@ -343,7 +368,7 @@ Change things in this order. Go lower only after the earlier items stop working:
 
 All are examples reported by the author. None is a promise. None comes with controls.
 
-1. **Lead-gen agency software (service).** Old offer: $1,000 down, then $1,000/mo retainer; at 0.5 to 1 return on ad spend, 5 customers break even in month 2 ($10,000 total). New offer: pay once, cover ad spend, pay only if people show up, "20 people in your first month, or you get your next month free", plus daily sales coaching, tested scripts, tested price points, sales recordings and the full playbook. Claimed result: 2.5x response x 2.5x close rate x 4x price = "22.4x" more cash up front; "you spent $10,000 to make $112,000". Arithmetic check: 2.5 x 2.5 x 4 = 25, and $112,000 / $10,000 = 11.2x, so the book's figures do not agree with each other. [78a797a2bccee]
+1. **Lead-gen agency software (service).** Old offer: $1,000 down, then $1,000/mo retainer; at 0.5 to 1 return on ad spend, 5 customers break even in month 2 ($10,000 total). New offer: pay once, cover ad spend, pay only if people show up, "20 people in your first month, or you get your next month free", plus daily sales coaching, tested scripts, tested price points, sales recordings and the full playbook. Claimed result: 2.5x response x 2.5x close rate x 4x price = "22.4x" more cash up front; "you spent $10,000 to make $112,000". Arithmetic check: 2.5 x 2.5 x 4 = 25, and $112,000 / $10,000 = 11.2x, so the book's figures do not agree with each other. [78a797a2bcce]
 2. **Gym Launch launch month.** January 2017, $100,117 collected while spending $3,300 a day across 6 gym launches; $3,000,000 profit in the first 12 months; $1,500,000+/mo by year end; $4,400,000/mo 12 months later. First 18 months: $500k/yr to $28,000,000/yr on less than $1M ad spend.
 3. **Gym Launch pricing.** Competitors: $500/mo full-service marketing, 1 high competitor at $5,000. Gym Launch: $16,000 for a 16-week done-with-you intensive (3x the highest, 32x the lowest). 35% upsold into a 3-year, $42,000/yr agreement. Average gym owner take-home: $35,280/yr. [50211f248483]
 4. **Gym Launch client survey** (voluntary, 158 gyms, 11 months in program): top line +$19,932/mo (+$239,000/yr); recurring revenue +$13,339/mo (+$160,068/yr); profit $2,943 to $8,940/mo ("3.1x"; computed 3.04x); +67 clients; monthly churn 10.7% to 6.8%; retail product sales +$4,400/mo **[text: physical, as a gym side line]**; price $129 to $167/mo. Self-reported.
@@ -352,13 +377,13 @@ All are examples reported by the author. None is a promise. None comes with cont
 7. **Early weight-loss offer.** Could not sell a $99/mo bootcamp against LA Fitness at $29/mo, even free to start. Rebuilt as "Lose 20lbs in 6 weeks". Stack value $4,351 sold for $599; facilities later sold the bundle for $2,400 to $5,200 over longer terms. Bundle names and stated values: Foolproof Bargain Grocery System ($1,000), Ready in 5min Busy Parent Cooking Guide ($600, "200 hours per year back"), Personalized Lick Your Fingers Good Meal Plan ($500), Fat Burning Workouts ($699), Ultimate Tone Up While You Travel Blueprint ($199), "Never Fall Off" Accountability System ($1,000), "Live It Up While Slimming Down" Eating Out System ($349). Meal plans later used by 4,000+ gyms. [de5a81dc7f90]
 8. **Charity fundraiser (Arnold Schwarzenegger's After School All Stars, May 2019).** Ticket raised from $15,000 to $25,000 with fewer tickets; 100 invitees; extra $1M raised before the event; nearly $5,400,000 total ($54,000 per head); items auctioned as one-of-a-kind; "an item that wouldn't sell at a different venue for $10,000 sold for $100,000". Advice from a luxury jewelry and watch donor: "When demand increases, cut supply." **[text: physical, luxury goods and auction items]** [b83b87f23486]
 9. **Workshop supply example.** 10 seats at $500 each versus 2 one-day 1-on-1 workshops at $5,000 each (80% do not buy); next round opens 3 spots at the same price. [47afc4b21d24]
-10. **Infomercial knives.** 1 knife at $38.95, then 37 other knives, sharpeners, pans and guarantees. **[text: physical]** [39853dac592]
+10. **Infomercial knives.** 1 knife at $38.95, then 37 other knives, sharpeners, pans and guarantees. **[text: physical]** [39853dac5920]
 11. **Partner bonuses for a pain clinic.** Chiropractor 2 adjustments ($100), low-inflammation food company ($50 savings), braces and orthotics ($150 savings), health club session and pool month ($100), pharmacy ($100/mo). On a $400 offer the bonuses alone exceed the price. Commissions: chiro $100/person, orthotics $100, health club $50 or free membership, pharmacy $100: "an extra $350" on a $400 offer. **[text: service/info, with physical partner goods]** [99765539fc85]
 12. **Prestige Labs supplements.** Gym clients' sponsored athletes' clients get 30% off; the sponsored athlete gets 40% of sales net of the discount. This is the book's only worked example of its own physical-product partner economics. **[text: physical]** [99765539fc85]
 13. **Fladlien outsized guarantee.** A $2,997 course on advertising an ecommerce store: "spend $X on advertising ... and don't make money, I will buy your store from you for $25,000". Claimed +$3M in sales; 10 payouts of $25,000; net +$2.75M. Fladlien is described as having done "$27M in a single day". The product is a course sold to ecommerce owners, not a physical product guarantee. [da1973ba6fc3]
 14. **Hormozi's satisfaction guarantee (weight loss).** Guaranteed "$500 worth of value and service", not the weight goal. Best-case/worst-case close. 2 claims in 4,000 sales over 3.5 years. [7b7abfbdcab4]
 15. **Agencies moving to performance pricing.** "Countless agencies go from $20k/mo to $200k+/mo in a matter of a few months." No data. [da1973ba6fc3]
-16. **$5M pricing fix.** A 60-minute engagement changed a pricing model and "resulted in exactly $5M in bottom line profit". [318cf833322]
+16. **$5M pricing fix.** A 60-minute engagement changed a pricing model and "resulted in exactly $5M in bottom line profit". [318cf8333224]
 17. **Toilet paper during COVID** at $100+ a roll: a starving crowd needs no offer. Card: not a repeatable strategy. **[text: physical]** [c6f5c92f4d60]
 
 ## 8. Mistakes the source warns about
@@ -376,7 +401,7 @@ All are examples reported by the author. None is a promise. None comes with cont
 11. Fake countdowns: "you'll lose credibility and just look like every other wannabe marketer". [4fc1b785cdaa]
 12. Fearing lost sales from deadlines; the source says those buyers "were never going to buy". [9264ceff1dcd]
 13. Raising prices without telling the pipeline first. [676632fcde7f]
-14. Discounting the core offer to close. [39853dac592]
+14. Discounting the core offer to close. [39853dac5920]
 15. A guarantee with no "or what". A generic "30 Day Money Back Satisfaction Guarantee" name. [eaf3e7847805] [1890fdd95d42]
 16. Using a guarantee to cover a poor product or sales team. [eaf3e7847805]
 17. Unconditional guarantees on high-ticket, high-fulfillment-cost offers. [da1973ba6fc3]
@@ -416,9 +441,10 @@ All are examples reported by the author. None is a promise. None comes with cont
 **What is missing**
 - No method to measure the 4 market indicators or the 4 value drivers.
 - No test design, sample sizes or significance for any claim.
-- No margin math for bundles beyond "cost to you" and the refund example. The extractor note says offer advice without margin math should be skipped; this book's margin math is limited to gross profit, LTGP and the refund example.
+- No margin math for bundles beyond "cost to you" and the refund example. The contribution-margin gate for discounts, bundles, bonuses and guarantees is a card adaptation, not in the text [c8b36a7d028e]. The extractor note says offer advice without margin math should be skipped; this book's margin math is limited to gross profit, LTGP and the refund example.
 - Group selling and presenting stacks one-to-many are out of scope ("beyond the scope of this book").
 - Money models (upsells, downsells, payment terms, free and discount offers) are deferred to later volumes.
+- Anchoring appears only as "we anchor the price we tell them to the core offer" and a passing mention that bonuses can "price anchor and product anchor (little known)". Tiered decoy layouts are a card adaptation, not in the text [e94ecf5a6435].
 
 **Brand data needed before an agent applies this**
 `[needs brand data: gross margin and contribution per order]` `[needs brand data: lifetime gross profit by cohort]` `[needs brand data: refund and return rate and reasons]` `[needs brand data: real inventory and production limits for any scarcity claim]` `[needs brand data: objection list from reviews, support, chat]` `[needs brand data: competitor price map]` `[needs brand data: sales by hour in past launches]` `[needs brand data: ad reach and frequency before calling fatigue]`
@@ -479,7 +505,7 @@ All are examples reported by the author. None is a promise. None comes with cont
 - [318cf8333224] Build Premium Product Price Power Through Specialized Outcomes
 - [9264ceff1dcd] Use Genuine Time Deadlines to Turn Product Interest Into Decisions
 - [676632fcde7f] Refresh Seasonal Promotion Wrappers Without Pretending the Offer Disappears
-- [39853dac5928] Use Bonus Stacks Instead of Automatically Discounting the Core Product
+- [39853dac5920] Use Bonus Stacks Instead of Automatically Discounting the Core Product
 - [7d21455c5598] Design Ecommerce Bonuses That Answer Purchase Objections
 - [99765539fc85] Build a Reusable Bonus Vault and Adjacent-Brand Partner Offers
 - [4d72bb91baae] Model Guarantee Economics Before Strengthening Refund Terms
@@ -493,5 +519,5 @@ All are examples reported by the author. None is a promise. None comes with cont
 - [f2d527d24cc0] Name offers with the M-A-G-I-C formula
 - [a354c944e694] Name bundle components to raise perceived value
 - [b261bc411259] Refresh offer fatigue from creative to economics
-- [1874fa3ba154] Adapt offer rotation for local and geographically limited ecommerce
+- [1874fa3ba153] Adapt offer rotation for local and geographically limited ecommerce
 - [65ce1e16b1ce] Audit an ecommerce offer before scaling traffic
