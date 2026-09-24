@@ -988,3 +988,279 @@ Confidence: number of independent sources that state the value or a close value.
 | Stock-out example: 15% of PMax spend out 4 days hurts the campaign | PMax | 05 | 1 |
 | Seasonality adjustment 1 to 7 days only | Smart bidding | 06/09 | 1 weak |
 | Portfolio CPC cap example $9 after spikes to $25 | Portfolio | 06/09 | 1 weak |
+
+## 7. Where sources disagree
+
+Each conflict: what each side says, when each is right, what the agent should do. Sources are kept apart; nothing is averaged.
+
+### 7.1 PMax as the start point vs after 100 purchases vs 20% to 40% at scale
+
+- Source 07: a lean feed-only PMax limited to Search and Shopping is the main campaign from day 1, no target for about 3 months, 1 campaign until $5k to $10k a day. Source 10: PMax is "a solid starting point" for beginners and time-poor operators. Source 06: PMax 50% to 70% of budget; source 09: 70% to 80% (1 weak source, and it also warns that low-volume accounts drift into YouTube and Display).
+- Source 08: Search and Shopping first; add PMax at about 100 purchases. Source 02: not for beginners; $100 a day and 3x non-brand CPA minimum; PMax after Shopping and Search work. Source 01: qualify at $50 to $100 a day and 30 to 50 conversions a month; PMax is the "big spender" in the mid funnel yet a "healthy" share is 20% to 30%. Source 03: PMax only as a feed-only layer after 4 to 6 weeks, never the acquisition engine. Source 04: PMax gets small accounts moving under $15k to $20k a month, plateaus at $100k to $300k, and should hold 20% to 40% at scale with Standard Shopping doing cold growth.
+- When each is right: source 07 and 10 fit a solo operator with little time and a clean feed, where PMax's automation is the only way the account gets built. Sources 01, 02, 08 fit an operator who will do the work and wants to read what converts. Source 04 fits any account past about $15k to $20k a month.
+- What the agent should do: for a new account run Standard Shopping (bestsellers), brand Search and brand Shopping first; add PMax when 2 of these hold: 30 to 50 purchases a month in the account, $100 a day available, non-brand CPA known. If the operator cannot run Standard Shopping and Search (no time, 1 hero SKU), a lean PMax with brand excluded is acceptable from the start with feed-only as a test and a channel check every week. At any scale, cap PMax at 20% to 40% of Google spend unless the account's own new-customer data and MER show PMax is incremental; put the rest in Standard Shopping and Search. Write the chosen share and the evidence into the structure proposal (9.3).
+
+### 7.2 Brand campaigns always vs skip when no one bids
+
+- Always: source 01 ("every single ecom brand needs a branded search campaign", 3% to 8% of spend), source 03 (the cheapest data to train the algorithm; never seen a top account without one), source 06/09 (uncapped relative to search volume, judged on impression share). Skip or minimise: source 02 (skip when no competitor bids and organic ranks first), source 07 (about 1% of revenue, defensive), source 01 itself for Meta-heavy brands (1% to 5% or 0, "just turn your brand off" and test). Source 05 notes about half of a small Google budget is often brand and not new-customer acquisition.
+- When each is right: run it when competitors or resellers bid on the name, the account is new and needs cheap conversions, or an offer converts researchers. Skip it when the brand owns the organic result, no one bids, and spend is needed for cold traffic.
+- What the agent should do: check the live SERP and auction insights for brand bidders. If bidders exist, run brand Search on impression-share or manual bidding at a small budget that is not limited on brand-intent terms, and cap brand at 10% of Google spend. If no one bids, propose a brand pause test (2 to 4 weeks, compare branded organic clicks plus total brand conversions and MER) and let the result decide. Never count brand conversions as growth.
+
+### 7.3 Brand name first vs last in titles
+
+- Last: source 01 (small brand pushing cold traffic), source 02 (last unless a market leader like Nike), source 03 (always last), source 04 (last or removed; brand shows under the listing anyway), source 06/09 default order. First: source 01 for a big brand, source 02 for a market leader, source 06/09 vertical alternatives (fashion, electronics, seasonal) without saying why.
+- When each is right: brand first only when shoppers search the brand name plus product and the brand is widely known. Otherwise last.
+- What the agent should do: default brand last. Brand first only when the brand's own search term report shows brand-plus-product queries as a top converting pool for that product type. Keep 1 order per catalog and test in batches (4.6).
+
+### 7.4 Standard Shopping High priority vs PMax
+
+- Source 03: set the non-brand Shopping campaign to High priority so it serves before PMax on the same query. Source 02: priority only routes between Standard Shopping campaigns (High non-brand with brand negatives, Low brand). Source 06/09: since late 2024 PMax and Standard Shopping compete on ad rank; the higher ad rank wins regardless of type. Source 10: control which wins by the gap in ROAS targets (manual 300% to 400%, PMax 600% to 700%). Source 04: same mechanism as a feeder with a very low Shopping target.
+- What the agent should do: use priority only for the brand and non-brand Shopping split. Do not expect priority to hold back PMax. To steer share between Shopping and PMax, use the target gap (lower target on the campaign that should win) and product scope (feed roles or listing group splits), then read spend share by campaign weekly. `[web check: Google's current rule for Standard Shopping vs PMax serving]`
+
+### 7.5 Feed-only PMax as a remarketing layer
+
+- Source 03: feed-only PMax "laps up" past visitors and is the remarketing layer beside new-customer Shopping. Source 04: feed-only forces spend toward Shopping and stopped drift into YouTube and Gmail in 1 case. Source 07: feed-only is the main acquisition campaign. Source 06/09: choose feed-only by creative quality and isolation needs. The cards in 02, 03, 04, 06 and 09 carry Google Help corrections: omitting assets does not guarantee Shopping-only delivery; audience signals do not restrict targeting; Merchant Center data can generate assets.
+- What the agent should do: treat feed-only as a test with a stated purpose (stop drift, push Shopping, less manual creative), never as "remarketing only". Check channel delivery, product results and new vs returning every week; compare contribution and acquisition cost against the existing Shopping or full-asset PMax; keep brand excluded. Report it as "feed-only PMax" with its measured channel split.
+
+### 7.6 Headlines and pinning
+
+- Source 03: 3 to 5 headlines, pin brand to position 1, pin when useful. Source 02: 7 to 9 headlines, 2 to 4 descriptions, pin only for a promotion or a proven angle; brand ads pin headline 1. Source 10: 8 headlines and 2 descriptions. Source 01: fill all 15 in PMax; pin a DKI headline in cold Search. Source 04: RSAs with 15 headlines need about 250,000 impressions to learn. Source 06/09: PMax minimum 3, maximum 15. Google's UI pushes 15 and no pins.
+- What the agent should do: Search RSAs 7 to 9 distinct headlines and 2 to 4 descriptions, at least 2 ads per ad group; pin only headline 1 on brand ads, a must-show promotion, or a DKI headline on problem-aware terms. PMax asset groups 6 to 15 headlines depending on how many real angles exist. Ignore ad strength. Move toward 15 only when impressions per ad group are high enough to test them.
+
+### 7.7 Manual CPC before smart bidding
+
+- Manual or Maximize Clicks first: source 01 (phase 1), source 02 (manual CPC 70% to 80% of the time, or Maximize Clicks), source 03 (Maximize Clicks), source 04 (only for new accounts; never in established accounts; never broad match with Maximize Clicks). Skip the manual stage: source 07 (PMax on Maximize Conversion Value from day 1, no target), source 06/09 (no manual stage described). Brand campaigns: manual or impression share for good (01, 02).
+- What the agent should do: new account with no conversions, manual CPC with a cap or Maximize Clicks on Search and Shopping for the first 30 to 60 days; brand campaigns stay manual or impression share. Established account with conversion history: no manual CPC except a deliberate test. A lean PMax cannot run manual, so if PMax is the first campaign start on Maximize Conversion Value without a target.
+
+### 7.8 Break-even on gross vs contribution margin
+
+- Sources 01, 08 and 06/09 compute break-even from gross margin (100 / gross margin %; AOV x gross margin %). Source 01 mumbles about "minus fixed cost of COGS". Card 7f0f4a47add4 rewrites it to contribution margin. Sources 04 and 10 note Google is blind to margin.
+- What the agent should do: always contribution margin after COGS, shipping, payment fees, fulfilment, packaging and returns. State the margin basis in every proposal. When a source's case says "profitable at 1.29x", check it against the brand's margin before copying any target (1.29x needs a margin above about 78%).
+
+### 7.9 Conversion counts to switch bidding (15 to 50 and beyond)
+
+- Source 03: 10 to 15 (Search) or 15 to 20 (Shopping) to Maximize Conversion Value; 30 or more a month with steady ROAS to tROAS. Source 02: about 30 a month to value bidding; 30 to 50 (over 50 in the mind map) to tROAS; 50 a month in 1 PMax; header claims 15 to 30 (unsupported). Source 01: 1 a day for 30 days before any smart bidding; 30 to 50 a month before PMax. Source 06/09: about 50 a month, more in competitive auctions. Source 07: learning is 30 in 30 days; PMax target only after about 3 months. Source 08: about 100 purchases in the account before PMax.
+- What the agent should do: value bidding at 30 conversions in 30 days in the campaign (the median position; source 03's 10 to 20 is the loosest and its only rationale is speed); Target ROAS at 50 in 30 days per campaign (the strictest common figure); PMax launch when the account has about 30 to 50 a month and $100 a day; if a campaign cannot reach 50, expand budget or pool it in a portfolio rather than adding a target. Keep each figure tied to its campaign; never average.
+
+### 7.10 Audience signals and search themes in PMax
+
+- Source 01: "no audience signals as much as you can" in one video and "strong audience signals" plus up to 50 search themes in another. Source 02: first-party lists learn faster; skip search themes by default (they cannibalise Search and DSA). Source 03: leave both blank. Source 04: directions only; useful for the first 30 days, a 1% lever on mature accounts. Source 06/09: use first-party data and custom segments.
+- What the agent should do: at launch add first-party customer lists and search themes built only from converting terms; after 30 days of conversion data, stop tuning them and do not pay for audits that only tweak signals. If PMax search is eating a Search campaign, remove search themes.
+
+### 7.11 Demand Gen: product feed, audiences, channels
+
+- Feed: sources 01 and 02 run Demand Gen without the product feed ("never worth running", "impressive performance without it"); sources 03 and 06/09 turn it on. Audiences: source 01 fully broad; source 02 narrow then wider (search-term segments, competitor sites, lookalikes, demographics, never in-market or affinity); source 03 open with a few external signals and never your own lists. Channels: prospecting on in-stream and Shorts only (01), Shorts only (02), remarketing on YouTube plus Discover and Gmail with Display off (02), Display included in the source 06/09 inventory list.
+- What the agent should do: prospecting starts without the feed, in-stream and Shorts only, mobile only with Meta creative, all-time customers excluded, optimised targeting off; run 2 ad groups if budget allows (broad vs 1 custom segment) and let results decide. Remarketing: Demand Gen with your own segments, Display off, feed off first, feed on as a second test for product-demo creative.
+
+### 7.12 Consolidation vs tiered segmentation
+
+- Sources 04 and 07: as close to 1 campaign as possible; every split needs a reason. Source 10: 3 to 5 margin tiers or 4 ROAS tiers as separate campaigns. Source 06/09: 4 layers plus a "prospecting" and a "remarketing or brand defence" PMax (which contradicts its own brand-exclusion rule). Source 02: consolidate below $50k to $500k a month.
+- What the agent should do: start consolidated; add a tier only when it maps to a margin or efficiency difference big enough to change the target (source 04's 70% vs 35% example) and the tier will still get 30 to 50 conversions a month. Never a "brand defence PMax".
+
+### 7.13 Budget step size and speed
+
+- Source 01: 10% to 20% a week, "cut fast, scale slow", but also scale clear winners fast and a 10x jump on a real demand spike. Source 04: about 20% steps, never double overnight. Source 02: $50 to $60 to $70 to $100, or double or triple at any time. Source 06/09: Demand Gen bids 5% to 10% every 5 to 7 days.
+- What the agent should do: 10% to 20% per week in steady state; wait 2 to 4 weeks after a bid strategy change; fast raises only for a verified outside demand spike with a converting mechanism, and only while backend results hold.
+
+### 7.14 Display and DSA
+
+- Source 01 says Display for cold only at tens of thousands a day, yet lists Display as top-of-funnel "if you have the balls"; sources 02, 03 use Display for remarketing only; sources 04 and 05 say Display off on Search always. DSA: source 02 uses it after RSAs as a PMax proxy; source 01 calls it a stock-agency mistake unless there is a large content site; source 04 says it is being deprecated.
+- What the agent should do: Display remarketing only, after video remarketing, $10 to $15 a day; Display Network off on every Search campaign; DSA only with a large content site and after a web check that it still exists.
+
+### 7.15 Competitor campaigns
+
+- Source 01: a waste when brand protection works (but "if it works well" in the mid funnel). Source 06/09: tier 4 with its own capped campaign. Source 02 lists "[competitor] vs [brand]" as commercial intent.
+- What the agent should do: only as a separate capped campaign judged on its own conversion rate, and only after non-brand Shopping and Search have budget to spare.
+
+### 7.16 GA4 gap size and Shopify app sufficiency
+
+- Source 02: GA4 under-counts by about 20%; the Shopify app gets 80% to 90% of the way. Source 04: 10% to 15%, sometimes more. Source 06/09: GTM plus server-side.
+- What the agent should do: never GA4 as primary; start with the app for small accounts; move to GTM with enhanced conversions when spend or discrepancies grow; server-side above about $50k a month.
+
+### 7.17 Fewer campaigns for signal vs feed duplication by role
+
+- Source 06/09: duplicate the feed so Shopping and PMax each get a role-tuned copy (no rules given; 1 case of Shopping coverage 49% to 57%). Sources 01, 04: fewer, fuller campaigns.
+- What the agent should do: do not duplicate feeds until the account is large enough to prove overlap, and never without rules that stop the same product serving twice. Split product scope by listing group and custom label first.
+
+## 8. Common mistakes
+
+Merged from all 10 sources, deduplicated, with the fix.
+
+Economics and strategy
+1. Treating Google as a fix for a weak offer or no product-market fit. Fix: prove the offer and page first (R1). [447589198c09]
+2. Starting with bids and budget instead of offer, page, economics, KPIs and tracking. Fix: R2 order. [fa9689ea4d16]
+3. Not knowing break-even; using gross margin or benchmarks as targets. Fix: contribution margin math in code (R3, R4). [7f0f4a47add4] [37a75be509aa]
+4. Chasing front-end ROAS or a 15% to 20% CPA cut instead of new customers and LTV. Fix: R5, R6. [e97aeff823a5] [ef1555c15a96]
+5. Judging Google on in-platform ROAS while MER is flat. Fix: R7. [fb0673e2ae6d]
+6. Raising budget on an unprofitable campaign. Fix: fix offer, copy and structure first (R130). [af051bd7984a]
+7. Blanket discounting into zero gross profit; free-plus-shipping without cash flow. Fix: R9. [38b728817a44] [5632d9d930a2]
+
+Tracking
+8. Broken or missing tracking; 2 primary purchase actions; GA4 as primary; add to cart as a goal; fixed conversion values. Fix: 4.2, 4.3. [30fdf39203d6] [a3831e8b2c64] [d9dc799b0bcb] [24d517dd8fe0]
+9. Judging the last 3 to 7 days on click-date columns. Fix: conversion-time columns (R19). [d2bb52998ad7] [62403f6f3b48]
+10. Trusting a ROAS doubling after linking GA4. Fix: 1 primary. [a3831e8b2c64]
+11. Turning on Google's customer acquisition setting instead of a new-customer tag and better positioning. Fix: 4.4. [69caeee85e5f]
+
+Merchant Center and feed
+12. Default titles with brand or internal names first; missing GTINs; wrong attributes; keyword stuffing; promotional text; text overlays on images. Fix: 4.6, R33, R35. [ac32e7e0613d] [35ccb3d32bf5] [27a887849ed2] [d633238d5060]
+13. Editing price or availability in Merchant Center; changing product IDs. Fix: change in Shopify (R25). [c32fb2d0de63]
+14. Shipping, returns or contact details that differ from the site; not updating Merchant Center after a courier change; no policies on the site. Fix: 4.5, 4.8. [7255257382d0] [9de75b008814]
+15. Fake or stale reviews; exaggerated claims. Fix: R27. [a9d854c2d98d]
+16. Leaving disapprovals unfixed; relying on Autofix for policy or price. Fix: 4.7. [82e55ef4dd25]
+17. Switching all titles at once. Fix: batches with a baseline (R34). [18d6b809b70b]
+18. 1 feed for all currencies. Fix: R39. [d68cec537fb6]
+19. Duplicating the same product at several prices. Fix: R38. [fe7e30671299]
+20. Promotions that do not match the site. Fix: R27, 4.5. [c9b580a81edf]
+
+Structure
+21. Mixing brand and non-brand in 1 campaign; no brand negatives or exclusions on cold campaigns. Fix: R53, R54, 4.17. [cd05d756f069] [a2f5b3c20d44]
+22. Overspending on brand (over 10%), or running brand at low impression share with automated bidding. Fix: R56, R58, R59. [e248a09cecef] [a56ce106bb55]
+23. Skipping brand campaigns because "they would buy anyway" without testing it, or letting an agency claim brand demand as growth. Fix: R55 test. [4b15db679fc4] [a56ce106bb55]
+24. Accepting the preselected PMax on a new account; putting the whole catalog in the first Shopping campaign; spreading a small budget across all campaign types. Fix: R64, R65, R42. [11a3baaf5810] [4995c5440e92] [b7bf73d92363]
+25. 10 campaigns split by niche with no reason; SKAGs; 2 collections in 1 ad group. Fix: R44, R72. [e5ab20feaa14] [61f688e47745] [bca4ccb4fceb]
+26. Splitting fashion or 5 to 10 product stores into top-seller campaigns; labelizer below thousands of SKUs. Fix: R66. [e2e3fde986ec]
+27. Search Partners on; Display Network on Search; Presence or interest; tablets and TV on; auto-apply recommendations on; AI keywords and assets accepted; no naming convention. Fix: R51, R52. [7640dc7d9a25] [35e595666320] [18f7a08a224c] [bdfbb0a5fb12]
+28. Tiny orphan campaigns; no universal negative list. Fix: R50, R124. [2792071d2d2e] [12e5a4881580]
+29. Copying a stock agency setup (DSA on a 1-page funnel; many Search campaigns for a Meta-heavy brand). Fix: R43, R80. [e0e3cef53d9f]
+
+PMax
+30. PMax as set and forget; 90% to 100% of budget in many PMax campaigns; brand clicks at $5 to $10 inside PMax. Fix: R84 to R89. [329599511dc8]
+31. 1 default asset group; many groups all holding every product; 1-product groups; 200 to 400 groups. Fix: R85. [fd408fa56660]
+32. Final URL expansion and text customisation on (ads land on size charts and blog posts); auto-created assets on in a feed-only build; Google's auto video. Fix: R84, 4.16. [64c009e7bc50] [5858ab16c0d1] [8e3ee156ad91]
+33. Calling feed-only PMax "remarketing only" or promising Shopping-only delivery. Fix: 7.5. [0ac64f9f98bb] [2fcfa24a9f1f]
+34. Scaling a plateaued PMax by budget or by raising target ROAS and calling the higher ROAS good media buying. Fix: R89, R111, 4.18. [8ac98b834d71] [29bf1d1ed526]
+35. Paying for audits that only tweak signals on a mature PMax. Fix: R88. [903e91b5cc9d]
+36. Letting high-spend products churn in and out of stock; letting PMax spend on SKUs that never convert. Fix: R91. [4e3675b7a020] [7a8f73110a88]
+37. Expecting Shopping High priority to hold back PMax. Fix: 7.4. [70544247c36d]
+
+Bidding and budgets
+38. Smart bidding on an account with no conversions; manual CPC or Maximize Clicks in an established account; broad match with Maximize Clicks. Fix: 4.21. [a3bf86a930b0] [9b1a4ac01c87]
+39. Target ROAS far above actual (700% on a 200% campaign); a target on a cold campaign; a target set too early on PMax. Fix: R110. [5da4b51eabe6] [d4494776c11a]
+40. Timid cuts in a death spiral; staying restrictive for years. Fix: R113, R114. [3001e5a56d5d] [07bdd8638a6a]
+41. Max conversions or tCPA on a mixed-price catalog. Fix: R109. [ed1a69221ddc]
+42. Doubling budgets or halving targets overnight; trusting "limited by budget" and Google's forecasts. Fix: R121 to R123. [7003ff9f69ce] [a36358d5ff15] [96b95d8a8ec0]
+43. Chasing the lowest CPC. Fix: R82. [087445947ca9]
+44. Pooling different goals or tiny campaigns in a portfolio; seasonality adjustments for holidays. Fix: R115, R116. [b664dd686d10] [44615a608690]
+45. Scaling before the 5 gates pass; trying to control PMax outputs instead of inputs. Fix: R129. [abc2dfeeea38]
+
+Search ads
+46. Filling all 15 headlines to please ad strength; pinning without reason; 1 ad per ad group; set-and-forget copy. Fix: R74, R143. [bfa79d563469] [e5912712faf6]
+47. Keyword stuffing ads; guessing keywords by volume; trusting competitor bids; broad match outside a test. Fix: R70, R73. [287eff9e6167] [a223f5b65ca8]
+48. Sending problem-aware or informational searches to a product page or bare buy box. Fix: R71, R78. [68c39167796f] [4691ad952431]
+49. Over-editing negatives after month 1; no negatives in month 1. Fix: R126. [12e5a4881580]
+50. Over-investing in ad copy tests and under-investing in landing page relevance, speed and mobile. Fix: R77, R79. [1267e0489b18] [bd9b251ac5b1]
+
+YouTube, Demand Gen, remarketing
+51. Testing Demand Gen at $50 a day for $500 and calling it tested; taking budget from a working channel; YouTube at $25 to $30 AOV; validating an offer on YouTube. Fix: R97, R100. [e0e3cef53d9f] [1abd0e7f1e7c]
+52. Homepage as the YouTube final URL; sitelinks, in-feed, Discover, Gmail or Display on in prospecting; optimised targeting on in remarketing; product feed on when it hurts. Fix: R98. [87c6c1776dbe] [4cbf20c9e261]
+53. Not excluding existing customers from prospecting; feeding own lists into Demand Gen prospecting; in-market or affinity segments alone. Fix: R62, R99. [5d0be265e08e] [12168d012cf1]
+54. Starting Demand Gen on target CPA without data; 1 large bid jump. Fix: R103. [dc729c544305] [1990ef8e4d09]
+55. Demographic callouts instead of situation callouts; lazy AI voice ads; hiring an actor as "the founder"; using another creator's video. Fix: R101. [d2116e31fe30] [2d25e7734ec7]
+56. Judging YouTube per ad instead of campaign-level new-customer CPA; judging on daily swings. Fix: R102. [b934c312198e] [031ec7c8b2d2]
+57. Remarketing before lists populate; high Display budgets pulling junk placements; one-and-done remarketing with cold statics. Fix: R104, R105. [3f75b0b24b85] [e69a94e940ad] [74a36fd11057]
+58. Cutting the Demand Gen assist layer and not linking a later brand drop to it. Fix: watch brand volume for weeks (source 06/09 claim). [61d89a7caa36]
+
+Diagnosis and operations
+59. Changing Google when the dip came from Meta, a sale ending or the site; a 5-hour diagnostic on a seasonal dip; starting at the metric a client names. Fix: 4.25. [7c50191f8854] [e2a87175fcd5]
+60. Rebuilding instead of fixing; kitchen-sink fixes on a mild dip; overrating a headline change. Fix: R141. [5df8489778d1] [817f1a421116]
+61. Matching a competitor's discount into near-zero margin. Fix: R69. [caf9cb9b298e]
+62. Checking the account weekly and missing a demand spike; micromanaging or giving Google total freedom. Fix: R142, R51. [d40cdd66a2bc] [b8508808a53a]
+
+## 9. Deliverables
+
+Every deliverable is a Markdown document for a human to act on. Plain English, short sentences, digits. Each recommendation carries the rule number, the sources and the data it used. Nothing is written to Google Ads or Merchant Center by the agent.
+
+### 9.1 Account diagnosis
+- Header: brand, date range (90 to 180 days), spend share by platform, MER trend, conversion-time caveat.
+- Level 1 findings: outside changes, revenue equation split, seasonality vs forecast, decision "Google issue: yes or no".
+- Level 2 to 5 findings: inflection date, top 5 campaigns table (spend, conversions, value, ROAS, CTR before vs after), campaign-type failure checks with evidence, metric and sub-metric split.
+- Root-cause sentence. Severity. Candidate fixes ranked by expected size, each with an isolation plan and a read window.
+- Tracking audit result (5.1) and structure audit result (5.3) as appendices.
+
+### 9.2 Negative and exclusion lists
+- Universal account negative list (with match types).
+- Brand list for exclusion lists and brand negatives (all variants, source of each variant).
+- Campaign-level negatives from search terms with cost, clicks and conversions per term and the reason (irrelevant, brand, no conversions after N clicks).
+- PMax URL exclusions, SKU exclusions (listing groups), placement exclusions, customer list exclusions.
+- Products to pause or de-prioritise (competitor price undercut, stock churn, weak ROAS with spend).
+- Format: CSV-ready tables plus a note on where each list is applied.
+
+### 9.3 Structure and bidding proposal
+- Current vs proposed campaign map with 1 role per campaign and the reason for every split (brand, country, margin tier, category, clearance, hero).
+- PMax plan: campaign count, asset groups and listing groups, full vs feed-only with the stated purpose, exclusions, signals, share of budget (with the 7.1 evidence).
+- Bid strategy per campaign with its stage (conversions per 30 days), target and the margin basis, hold periods, portfolio groupings and CPC caps.
+- Brand decision (run, cap or test pause) with the SERP and auction insight evidence.
+- Migration order, 1 change at a time, 2 to 4 weeks apart, with rollback per step.
+
+### 9.4 Feed fix list
+- Disapprovals and warnings with cause and fix owner (Shopify, feed tool, Merchant Center).
+- Title rewrites per SKU in batches: current title, proposed title, converting keyword used, batch number, baseline metrics.
+- Description fixes, image fixes (overlays, crops, backgrounds to test), GTIN gaps, custom labels to add, policy mismatches (shipping, returns, contact, promotions).
+- Product ratings and store quality actions.
+
+### 9.5 Budget proposal
+- Break-even ROAS and CPA with the contribution margin used; LTV allowance if retention data exists.
+- Daily budget per campaign sized from AOV and CPA, the share by role, the brand cap, the PMax share.
+- Scaling rules: step size, wait time, KPI gates, spend anomaly rule.
+- Expected read dates and what will be measured (MER, new-customer CPA, backend revenue).
+
+### 9.6 Test plan
+- Each test: hypothesis, the conflict or rule it resolves (for example 7.2 brand pause, 7.5 feed-only channel split, 7.11 Demand Gen feed on vs off, title batch, landing page rotation), design (what changes, what stays), metric, minimum window (30 to 60 days for landing pages; 2 to 4 weeks after bid changes), stop rule, owner.
+- A register entry for the experiment memory once it exists (see CLAUDE.md next steps).
+
+## 10. What needs live data or a web check
+
+### 10.1 `[needs brand data]`
+Economics: contribution margin per order and per SKU or collection; AOV; break-even ROAS and CPA; cohort revenue and margin at 30, 60, 90, 180 and 365 days; repeat rate; cash available to fund a low-ROAS cold leg; pricing rules (tiered variants allowed or not); approved claims, voice and proof.
+Brand and market: brand name variants and misspellings from search terms; brand search volume and organic rank; countries, currencies and languages; share of orders that are bulk or trade; offers, shipping threshold, returns window, couriers, warranty; founder story.
+Account data: spend, conversions and value by campaign, weekly, 90 to 180 days; campaign-level conversions per 30 days; search terms with conversions (Search, Shopping, PMax); product-level spend, clicks, conversions, value and margin; PMax channel split, asset group results, audience report; new vs returning by campaign; brand vs non-brand spend, conversions and value; spend share by platform; MER and aMER by week; Google spend vs backend revenue over time; device split; CPC distribution by day; impression share and lost IS by campaign.
+Tracking: Shopify orders vs Google purchases by day; time from first click to purchase; which checkout fields the data layer exposes; enhanced conversions diagnostics; who else edits the account and the site; change history; promo calendar; site change log; price history.
+Feed and store: Merchant Center diagnostics and product status; active product count; SKU count per product type; stock status history for top-spend products; image counts per product; load times; review counts; competitor prices on shared SKUs; site traffic for list sizes; customer list with consent.
+Creative: Meta winners; PMax asset performance; videos per concept; page speed on ad landing pages; on-time delivery rate.
+
+### 10.2 `[web check]`
+Platform rules: current Google Ads, Merchant Center and Shopify menus before any UI step; Google's current rule for Standard Shopping vs PMax serving (ad rank vs priority); PMax channel performance report and search term reporting depth; PMax brand exclusion and negative keyword list support; Google Help 14530785 and 15865151 on feed-only PMax and audience signals; PMax placement exclusion scope and surfaces (Maps, Waze claim); PMax asset limits and Google's asset recommendations; PMax customer acquisition goal options; whether lookalike segments exist as PMax signals.
+Bidding: smart bidding eligibility for new accounts; Standard Shopping Maximize Conversion Value without tROAS (July 2026 claim); the 17 Aug 2026 Target ROAS change; June 2026 bid strategy relabel; smart bidding exploration name and availability; portfolio bid limit support by strategy; Google's learning period definition; bid strategy status behaviour.
+Campaign types: AI Max for Search behaviour and controls; Demand Gen placements and whether single placements can be turned off; Demand Gen product feed requirements; Video Action campaign status (paused or archived 28 Feb 2026 claim); DSA deprecation status; current exact and phrase match definitions; RSA asset limits; YouTube format length specs.
+Tracking: enhanced conversions single setting (June 2026 claim) and Data Manager (April 2026 claim); Conversion Linker function; native new-customer metrics; how to detect first orders in Shopify customer events; Customer Match eligibility and consent; list-size minimums per network; consent mode requirements; Feed Army pixel; Hyros, Triple Whale, Northbeam integrations.
+Merchant Center: title and description limits and stuffing policy; image policy and recommended aspect ratio (4:5 claim); duplicate product and misrepresentation policies; small business attribute definition; product ratings thresholds; Top Quality Store criteria; multi-country and currency feed setup; tax settings per country; 2026 product data specification changes; Content API v2.1 vs Merchant API for supplemental feeds; 30-day reversal claim; price competitiveness report; misrepresentation and healthcare policies; Google statements on landing page speed and store badges.
+Scripts and tools: Mike Rhodes' PMax script; brand-only Shopping negative script; labelizer tools; Simprosys, DataFeedWatch, Channable, Feedonomics, SmartFeed pricing and names.
+Evidence: Optmyzr 2024 PMax study; DOJ trial exhibits on Google's ad score; YouTube TV-screen share and incrementality studies; Starbucks LTV figures; presenter names and agencies where unnamed.
+
+## 11. Freshness and stale-risk notes
+
+| Area | Why it goes stale | Re-verify |
+|---|---|---|
+| Every menu path and setting name (Goals, Conversions, Data manager, Audience manager, Add-ons, Diagnostics, campaign creation flow) | Google renames menus several times a year; sources span late 2024 to Sep 2026 | Before every build; note the date checked in the deliverable |
+| PMax controls: brand exclusions, negative keyword lists, channel reporting, search term depth, placement exclusions, auto-asset toggles, URL expansion, customer acquisition goals, surfaces (Maps, Waze) | Rolled out between 2024 and 2026 and still changing; source 03 recorded a support-form workaround that is likely gone | Monthly, and before any PMax proposal |
+| Priority between campaign types (Standard Shopping vs PMax vs Search) | Sources disagree (7.4); source 06/09 dates a change to late 2024 | Before any structure proposal |
+| Feed-only PMax behaviour | Google Help says no placement isolation; assets can be auto-generated | Every time it is proposed; read the channel report weekly while it runs |
+| Bidding features: Maximize Conversion Value on Standard Shopping without tROAS (July 2026 claim), 17 Aug 2026 tROAS change, June 2026 relabel, smart bidding exploration, new-account smart bidding eligibility, portfolio bid limits, seasonality adjustments | Only 1 weak source dates them; behaviour affects every target | Quarterly, and when a target behaves unexpectedly |
+| Demand Gen: placements, feed options, single-placement controls, Video Action migration, lookalike reach settings | Video campaigns were being folded into Demand Gen through 2025 and 2026 | Before any Demand Gen build |
+| AI Max for Search, DSA status, match type definitions | New in 2025; DSA deprecation reported | Before any Search build |
+| Enhanced conversions and Data Manager settings, consent mode, GA4 link routes | 2026 changes claimed by 1 weak source | Before any tracking build |
+| Merchant Center limits and policies: title and description length, image rules, ratings thresholds, store badge criteria, identity attributes, multi-currency, Content API vs Merchant API | Policy and spec updates yearly (2026 spec update claimed) | Quarterly, and after any wave of disapprovals |
+| Scripts (PMax script, brand-only Shopping script, labelizer) | Maintained by third parties | Before installing; check the last update date |
+| Benchmarks (CPC, ROAS, CTR by type, conversion lag) | Move yearly and by market; sources are US and UK, one Australian | Never use as targets; refresh context yearly |
+| Tool names and pricing (Simprosys, DataFeedWatch, Channable, Feedonomics, Feed Army, Hyros, Triple Whale, Northbeam, Blotout) | Commercial products change | When recommending a tool |
+
+## 12. Source index
+
+Credibility scale: primary practitioner with click paths and own account screenshots; primary practitioner with logic but few settings; secondary compilation.
+
+| # | Title | Type | Credibility and bias | Contributed most |
+|---|---|---|---|---|
+| 01 | Ecommerce Google Ads Free Course (4+ Hours): Google and Shopify (Demand Capture, Jordan) | Course, about 12 videos, 2025, 100 cards | Primary practitioner; supplement and health agency; strong commercial bias (course, audits, done-for-you); own account screenshots, no controlled tests; internal contradictions on brand, PMax share, signals and phrase match | Tracking build (GTM plus Shopify pixel), Merchant Center SOP and 34-item anti-suspension list, brand Search and brand Shopping settings, PMax setup and routines, Demand Gen and YouTube KPIs, Meta-heavy plan, break-even scaling rules |
+| 02 | Ecommerce Google Ads 2026 Free Course (Vulcan Digital) | Course, about 25 lessons, mid-2025, 86 cards | Primary practitioner; agency selling management; click-by-click paths; heuristics without sample sizes; thresholds differ between lessons; header claims (feed-only PMax, 15 to 30) unsupported by the text | Primary and secondary actions, GA4 link, remarketing and customer lists, Standard Shopping build and 6-step optimisation, brand and non-brand priority split, Search build, STAGs, keyword method, bid progression, PMax budget floor, Demand Gen remarketing, YouTube Shorts fit and setup, impression share reading |
+| 03 | Full Ecom Google Ads Course 2026 (Max) | Course, 6 modules, likely late 2024, 44 cards | Primary practitioner; agency pitch; demo account, no results; dated (Video campaigns, PMax negative workaround, priority claim); its own cards dispute the feed-only isolation claim | Launch order and settings to switch off, bestsellers-only Shopping with item ID subdivision, brand negatives path, budgets by AOV, Display and Video remarketing, feed-only PMax procedure, Demand Gen cold setup, naming pattern |
+| 04 | The Only Google Ads Strategy You Need for 2026 (Blue Sense Digital) | Talk, whiteboard, 2025 or 2026, 32 cards | Primary practitioner at scale (PMax on 250+ accounts claimed); audit pitch; illustrations labelled as such; internal ramp tests across accounts, no holdout; thin on click paths | Consolidation and the 4 split reasons, PMax ceiling and 20% to 40% share, asset and listing group structure, feed-only as drift control, target ROAS trap and death spiral, expansive vs restrictive, feeder strategy, portfolio bidding, negatives discipline, 20% budget steps, title batching, 4:5 images, feed per currency, 90-day order |
+| 05 | How To Fix An Underperforming Google Ads Account (Blue Sense Digital) | Talk, 1 hour, late 2025 or 2026, 15 cards | Primary practitioner; same agency as 04; audit pitch; 1 client example, no numbers; strong on method, gives no fixes | Top-down diagnostic order, 3 pre-diagnosis rules, conversion latency, top 5 by spend, failure modes by campaign type, the 2 formulas, CPC and conversion rate and volume branches, fix vs rebuild, root-cause sentence, competitor price response |
+| 06 | Google Ads for Ecommerce: The Complete Architecture and Operations Manual (2026 Edition) | Compiled article, unsigned, Sep 2026, 22 cards | Secondary, likely generated or derivative; sells nothing; second-hand benchmarks with no links; repeated passages; technical slips (Ad Rank formula, Conversion Linker, lookalikes in PMax); many dated 2026 claims unverified | 5 scaling gates, feed health triage, GTM tag list, enhanced conversions and server-side outline, intent tiers, tROAS start and step heuristics, portfolio caps, supplemental feeds and custom labels, brand distortion pattern |
+| 07 | ENTIRE Google Ads algorithm explained in 24 mins | Talk, undated (2024 or later), 16 cards | Primary operator (multi-store, US); coaching pitch; unverified DOJ formula; organic click chart applied to ads; keyword stuffing and price-tier duplicates conflict with policy; single-operator playbook | Relevance as the lever at every stage, lean PMax click path with enhancements off, no target for 3 months, weekly Sunday review, Keyword Planner to title workflow (cards' readable version), learning phase view, spend triggers for layering Shopping |
+| 08 | Google Ads For Ecommerce: 9 Keys To Success (Ben) | Talk, undated (2023 or later), 11 cards | Primary practitioner; agency pitch plus Hyros affiliate; illustrations only; strategy level, almost no settings | Search and Shopping first with PMax after about 100 purchases, hero products on cold traffic and full catalog on warm, AOV and margin and LTV math, scale from strength and ROAS falls with spend, tactical discounting, review mining, founder story |
+| 09 | The Complete Google Ads Architecture and Operations Manual (2026 Edition) | Compiled article, unsigned, Sep 2026, 22 cards | Secondary, likely generated or derivative of 06 (same title, same 11%/34%, 49% to 57%, $0.68, 5 gates); header describes a different document (source 07's content); SaaS examples inside an ecommerce manual; unsourced formulas and averages. Counted with 06 as 1 weak source everywhere in this playbook | 4-layer stack wording, Demand Gen assist-layer rules (50 conversions, 30 days, 5% to 10% bid steps), Quality Score component weights (unpublished), seasonality adjustment rule, MCC portfolio note, YouTube format table |
+| 10 | The Best E-commerce Google Ads Strategy for 2026 (Big Flare) | Talk, 2026, 14 cards | Primary practitioner (12+ years claimed); managed-service pitch; 2 case claims with no detail; structure logic strong, settings thin | PMax internal spend split, ROAS-tier and margin-tier Shopping structures, brand vs non-brand ROAS targets, 8 headlines and 2 descriptions, Demand Gen retargeting by audience and network, PMax safety net with a high target |
+
+Independent sources for confidence tallies: 01, 02, 03, 04, 05, 07, 08, 10 (8 primary) plus 06/09 as 1 weak secondary. Sources 04 and 05 share an agency; they are counted as 2 because they cover different topics with different presenters, but their agreement on tROAS narrowing is 1 agency view.
+
+Neighbour folders: 24-DEP-ad-deployment (Meta, TikTok, account audits, multi-platform structure, brand holdout tests); 10-MCR (video and static creative craft, UGC briefs); 11-ADC (ad copywriting, ad-copy-v1.2 playbook); 06-MEA (measurement, MER, attribution, incrementality design, GA4 reporting); 07-LPG and 09-CRO (landing pages, CRO tests, page speed); 08-SPD (site speed); 15-SEO (organic titles, product data outside the feed); offer and pricing folders (discount strategy, bundles, LTV programmes); retention folder (email and SMS flows named in R107).
