@@ -753,3 +753,238 @@ Goal: fewer, fuller campaigns with a reason for each. Source: 04, with 01 and 02
 5. Fix the 7 common setup faults while there: GA4 as primary, 1 PMax asset group, broad match with Maximize Clicks, Display on Search, no negatives, auto-apply recommendations on, no naming convention.
 6. Change in stages: 1 merge at a time, 2 to 4 weeks apart; judge on backend revenue, not only in-platform ROAS.
 7. Rollback: re-enable the paused campaigns; history is intact if nothing was deleted.
+
+## 5. Diagnostic checklists
+
+Written for a worker. Each row: what to check | how | good | bad | fix | source. `[verify UI]` applies to every "how" that names a screen.
+
+### 5.1 Tracking audit
+
+| Check | How | Good | Bad | Fix | Source |
+|---|---|---|---|---|---|
+| Primary purchase actions | Goals > Conversions; filter Purchase; read Action optimization on each | Exactly 1 primary | 2 or more primary; ROAS or purchases doubled overnight | Set extras to Secondary | 02 [30fdf39203d6] |
+| Source of the primary | Same list; source column | Google Ads tag (GTM or app) with enhanced conversions | GA4 import primary | Switch primary; keep GA4 secondary | 02, 04 [a3831e8b2c64] [18f7a08a224c] |
+| Non-purchase actions | Same list; account default goals | All secondary; not in default goals | Add to cart, checkout, page view primary or default | Set secondary; remove from goals | 02, 03 [30fdf39203d6] [d9dc799b0bcb] |
+| Campaign goals | Each campaign > Settings > Conversion goals | Purchase only | Other goals attached | Remove them | 01, 02, 03 [d9dc799b0bcb] |
+| Value passing | Conversion action settings; recent conversion values | Different values per order, equal to order revenue | Fixed value; zero values | Fix the tag value variable | 02, 06/09 [24d517dd8fe0] |
+| Enhanced conversions | Goals > Settings; enhanced conversions diagnostics | On; diagnostics clean | Off; missing or malformed user data | Turn on; map email, phone, address | 01, 02, 06/09 [80d2cbcc7a96] [f866b580a9ae] |
+| Tag firing | Tag Assistant on a test order | Purchase fires once with value | Missing, double, wrong value | Fix trigger or dedupe | 06/09 [56853873c2c8] |
+| Conversion Linker and auto-tagging | GTM tags; account settings | Linker on all pages; auto-tagging on | Missing | Add and enable | 04, 06/09 [2792071d2d2e] [535e56dd51f1] |
+| Dynamic remarketing parameters | Tag parameters | Product ID, category, value present | Missing | Add to the tag | 06/09 [535e56dd51f1] |
+| Backend reconciliation | Google purchases (conversion time) vs Shopify orders, same 7 to 14 days | Close match | Large gap either way | Check windows, tag, consent, duplicates | 01, 08 [fff2f5c0c47c] [d7752a494148] `[needs brand data]` |
+| Recent-days read | Columns include conversions and value by conversion time | Recent days read on conversion time | Judging last 3 to 7 days on click-date columns | Add the columns; ROAS-by-time custom column | 02, 05 [d2bb52998ad7] [62403f6f3b48] |
+| New-customer visibility | First-order event or attribution tool | New-customer CPA visible by campaign | Only blended purchases | Build the tag (4.4) or connect the tool | 01, 05 [a336449b068e] [4e3675b7a020] |
+| Windows | Conversion action windows vs purchase cycle | Windows fit the cycle; checked vs Shopify | Maximum windows with no check | Adjust and re-reconcile | 01 [fff2f5c0c47c] |
+| Master account | Who owns Ads, Merchant Center, GA4 | 1 master account | Scattered owners | Consolidate access | 02 [52efc5146531] |
+
+### 5.2 Merchant Center health
+
+| Check | How | Good | Bad | Fix | Source |
+|---|---|---|---|---|---|
+| Disapprovals | Products > Diagnostics > Disapproved | 0 | Any | Triage per 4.7 (GTIN, price mismatch, shipping, policy, attributes) | 06/09, 01 [82e55ef4dd25] [5157f5f5a687] |
+| Warnings and limited performance | Same screen | Shrinking | Growing | Fix missing attributes; Autofix formatting only | 06/09 [9972bf6ca8cf] |
+| Feed freshness | Data sources; last update | Updates daily; every 6 hours if prices move; automatic item updates on | Stale; price mismatches | Fix sync; enable automatic item updates | 01, 06/09 [5fa36e157a58] [82e55ef4dd25] |
+| Price and availability sync | Page vs checkout vs feed on 10 SKUs | Identical | Any mismatch | Change in Shopify only; never in Merchant Center | 01 [c32fb2d0de63] |
+| Shipping policy | Merchant Center vs site for every country | Match; couriers named | Mismatch | Update Merchant Center; set Shopify sync to manual | 01 [7255257382d0] [9de75b008814] |
+| Returns policy | Merchant Center vs site; links | Match; direct link works; 30 days or more | Missing or mismatched | Fix and link | 01, 02 [9de75b008814] [c9b580a81edf] |
+| Business info | Name, address, phone, checkout link, payment methods vs site | Identical everywhere | Differences | Align across Merchant Center, Ads, site | 01 [bb3574f9e67a] |
+| Add-ons | Settings > Add-ons | Dynamic remarketing, customer reviews, product ratings, promotions active | Missing or "available" only | Enrol | 01 [5fa36e157a58] |
+| Product ratings | Reviews > Product reviews | Ratings showing | Not showing after 4 weeks | Check 50 total and 3 per product; review feed sync | 02 [69bd2ba35622] |
+| Promotions | Promotions vs site codes and dates | Exact match; codes tested | Rejected or expired | Fix details; remove expired | 01, 02 [c9b580a81edf] |
+| Store quality | Shopping experience scorecard | Exceptional or improving | Missing components | Fix the listed items | 01, 02 [8a99ccae1285] [c9b580a81edf] |
+| Titles | Sample 20 titles | Searched attributes first 70 characters; 60 to 150; 1 order; brand last unless known | Brand or internal name first; raw Shopify titles; stuffing | Rewrite in batches (4.6) | 01, 02, 04, 06/09 [a1c3cff78bf2] [9983e71e8efc] |
+| Images | Sample listings vs competitors | High-res, product the subject, no overlays, not auto-cropped | Overlays, blurry, cropped, identical to neighbours | Replace; 4:5 via supplementary feed; test lifestyle | 02, 04 [d633238d5060] [829c77305316] |
+| GTIN | Diagnostics; sample variants | Every variant its own GTIN (or none for custom-made) | Missing or shared | Get from supplier | 01, 02 [61f93049590a] [21229935ad81] |
+| Currency | Listings per market | Local currency | "Converted from" label | 1 feed per currency | 04 [d68cec537fb6] |
+| Custom labels | Feed attributes | Margin tier, bestseller, seasonality, stock priority set | None | Add labels | 06/09, 01 [59d9f9d20e0c] [61f93049590a] |
+| Claims and reviews | Listings, descriptions, landing pages | Supported claims; real reviews | Exaggerated claims; fake or stale reviews | Remove; add sources; collect real reviews | 01 [a9d854c2d98d] |
+| Site trust | Theme, links, apps, speed, contact, footer policies | No default theme, no broken links, phone works, policies present, SSL sitewide | Any missing | Fix per 4.8 | 01 [173c252bafd5] [f7f63ab97480] |
+| Duplicates | Products list | 1 listing per real variant | Same item at several prices | Remove duplicates | 07 (cards) [fe7e30671299] |
+
+### 5.3 Account structure audit
+
+| Check | How | Good | Bad | Fix | Source |
+|---|---|---|---|---|---|
+| Role map | List campaigns; assign 1 funnel job each | Every campaign has 1 job; no 2 chasing the same traffic | Overlaps; campaigns with no job | Merge or pause (4.26) | 03, 06/09, 04 [3aeb15c6850e] [379b1f714127] |
+| Split reasons | For each campaign name the reason | Brand vs non-brand, country, margin tier, category, clearance, hero | None | Consolidate | 04 [a715afa0c38a] |
+| Brand vs non-brand | Campaign list; search terms of cold campaigns | Separate brand Search and brand Shopping; brand excluded from cold | Brand terms in PMax, Shopping or non-brand Search | Brand campaigns plus exclusions (4.9, 4.10, 4.17) | all except 05, 07 [f6230028c4ce] [c4b8343d0510] [cd05d756f069] [a2f5b3c20d44] |
+| Brand share | Brand spend / total | 3% to 8% (growth); not budget-limited on brand terms | Over 10%; or brand starved with low impression share | Cap or fund per R58 | 01, 06/09 [e248a09cecef] [bcbe49473936] |
+| Country | Locations per campaign | 1 country per campaign; Presence | 2 countries in 1 PMax; Presence or interest | Split; change option | 01, 04, 02, 03 [329599511dc8] [535fcd04bd8b] |
+| Networks | Search campaign settings | Search Partners off; Display off | On | Turn off | 02, 03, 04, 05 [7640dc7d9a25] [141c23b0306c] |
+| Devices | Device settings and device report | Tablets and TV off unless data says otherwise | On with poor data | Turn off | 01, 07 [4184750845e0] [08b3d9f85868] |
+| PMax structure | Asset groups and listing groups | 2 to 20 themed groups, listing groups filtered, 15 or more products each | 1 default group; groups all holding every product; 1-product groups; 200 or more groups | Rebuild (4.15) | 04, 06/09, 01 [fd408fa56660] [a8f7e2302cd3] |
+| PMax controls | Settings | Brand exclusions and negatives; URL expansion off or ruled; auto assets off | Any missing | Set them | 01, 03, 04 [903e91b5cc9d] [64c009e7bc50] [f06749b19e9b] |
+| PMax share and plateau | Spend share; budget steps vs backend revenue | Share fits stage (conflict 7.1); revenue follows budget | ROAS holds while revenue is flat; PMax 90% to 100% of budget across many campaigns | Layer Standard Shopping; feeder (4.18) | 04, 01 [8ac98b834d71] [329599511dc8] |
+| Shopping structure | Product groups, campaigns, labels | Bestsellers first; consolidated or tiered by margin or ROAS with a reason | Whole catalog in the first campaign; fashion top-seller split; labelizer under thousands of SKUs | Restructure (R66) | 02, 03, 04, 10 [11a3baaf5810] [e2e3fde986ec] |
+| Search ad groups | Keywords per ad group; themes | 3 to 10 themed keywords; 1 collection per group | SKAGs; mixed intents; 2 collections in 1 group | Move to STAGs | 02, 03, 04, 10 [1b793cd8bbb3] [61f688e47745] |
+| Match types and bidding | Keyword match types; bid strategy | Exact on converters; broad only with smart bidding | Broad match with Maximize Clicks | Fix | 04 [18f7a08a224c] |
+| Bid strategy by stage | Strategy vs 30-day conversions | Matches 4.21 stage; brand on manual or impression share | Smart bidding with no data; manual in a mature account; tROAS far above actual | Move per 4.21 | 01, 02, 03, 04 [805871e8952b] [9b1a4ac01c87] [5da4b51eabe6] |
+| Negatives | Lists applied | Universal list at account level; brand list on cold campaigns | None | Build lists | 04, 02 [12e5a4881580] [423e6a50781c] |
+| Recommendations | Auto-apply settings | Off | On | Turn off | 01, 04 [b8508808a53a] [18f7a08a224c] |
+| Naming | Campaign names | 1 pattern | None | Rename | 03, 04 [d9dc799b0bcb] [18f7a08a224c] |
+| Orphans | Spend by campaign | No tiny campaigns without a role | $400 a month campaigns | Kill and roll up | 04 [2792071d2d2e] |
+| Assets | Sitelinks, callouts, promotions per campaign | Filled, current, per asset group | Missing or stale promos | Fill and update | 01, 04 [2792071d2d2e] [8e3ee156ad91] |
+| Customer exclusions | Audience exclusions on cold campaigns | Customer list excluded | Not excluded | Upload and exclude | 01, 02 [a2427f18e5fe] [ce4012235cdc] |
+
+### 5.4 Weekly account read
+
+| Check | How | Good | Bad | Fix | Source |
+|---|---|---|---|---|---|
+| Spend pacing | Spend vs budget per campaign, 7 days | 80% to 100% and at KPI | Under 80% and weak; or capped at KPI | Loosen target; or raise 10% to 20% | 01 [4175eb319be4] |
+| ROAS vs break-even | Conversion-time ROAS, 7 and 28 days, vs break-even | Above | Below for 2 weeks | Pause, adjust or optimise | 01 [7f0f4a47add4] |
+| New-customer CPA | Attribution tool or first-order tag, campaign level | At or under break-even CPA | Above | Improve mechanism, creative, targets | 01 [b934c312198e] `[needs brand data]` |
+| MER | Total revenue / total marketing spend, weekly | Stable or rising as Google spend rises | Google spend up, MER flat | Test incrementality; cut or restructure | 01, 04 [e97aeff823a5] [fb0673e2ae6d] |
+| Impression share | Search IS, lost IS (rank), lost IS (budget), click share | Brand 90% to 95% absolute top; others 50% to 60% (source 01 opinion) | Large lost share | Rank: quality; budget: raise if at KPI | 01, 02 [36a8c46cb661] [ffbb287b9903] |
+| Brand leakage | Cold campaign search terms | No brand terms | Brand terms present | Fix exclusions (4.17) | 01, 02, 03 [a5827fbc8126] [23298f395683] |
+| PMax products | Campaign > Products | Spend on bestsellers and high-margin SKUs | Spend on non-converting SKUs | Exclude via listing groups | 01 [5ebe76f05300] |
+| PMax assets | Asset details per group | Spend and conversions per asset | No spend or low rating | Replace | 01, 02 [64c009e7bc50] [2bf868bfb28d] |
+| PMax landing pages | Landing page and placement reports | Sales pages only | Blog, size chart, contact, out-of-stock pages | Exclude URLs; URL expansion off | 01 [64c009e7bc50] |
+| PMax channels | Channel report or script | Most spend in Shopping for ecommerce | Drift to YouTube, Gmail, Display | Feed-only test (4.16); exclusions | 04, 02 [d4571d60eeee] [2bf868bfb28d] |
+| Search terms | Reports for Search, Shopping, PMax | Converting terms; no waste | Clicks without conversions; irrelevant terms | Negatives; promote winners to exact | 01, 02, 04 [68c39167796f] [423e6a50781c] |
+| Quality Score | Keyword columns | Above average components | Below average | Fix the weakest component | 02, 05 [be07dfd74db8] [6ff74a04932d] |
+| Auction insights | Before vs after | Same competitors, stable share | New entrant, share falling | Feeds CPC and rank work | 05 [141c23b0306c] |
+| Merchant Center | Diagnostics | No new red or yellow | New issues | Fix per 4.7 | 01, 06/09 [5157f5f5a687] |
+| Stock on top products | Product status for top-spend SKUs | In stock | Out of stock or churning | Restock; move spend; zombie group | 05 [4e3675b7a020] |
+| YouTube | View rate, CTR, conversion rate, new-customer CPA per ad | Per R102 ranges | Below | Pause, hook-test, fix page | 01, 02 [b934c312198e] [c93a353df47a] |
+| Death spiral watch | Spend, ROAS, conversions trend on tROAS campaigns | Stable volume | ROAS dip then falling spend | Cut target aggressively; check stock and season | 04 [3001e5a56d5d] |
+
+### 5.5 PMax brand-cannibalisation check
+
+| Check | How | Good | Bad | Fix | Source |
+|---|---|---|---|---|---|
+| Brand exclusion list | PMax settings > Brand exclusions | Present with all variants | Missing or partial | Add (4.17) | 04, 02, 06/09 [903e91b5cc9d] [8e83ab723ce9] |
+| Brand negatives | PMax negative keywords or list | Present | Missing | Add | 03 [ae212dfcabdd] |
+| Search terms | PMax search term insights, 7 and 28 days | No brand terms; no branded conversions | Brand terms among top converters | Fix both controls; re-check monthly for variants | 01, 05 [a5827fbc8126] [4e3675b7a020] |
+| Audience skew | PMax audience report or new vs returning | Healthy new-customer share | Mostly existing customers (source 04 says 50% or more is common) | Lower target; move budget to Standard Shopping; feeder | 04, 05 [b390a3400b4f] [4e3675b7a020] |
+| Brand campaign health | Brand Search impression share and volume | 90% to 95%, volume stable | Brand campaign starved while PMax ROAS looks unusually strong | Exclusions; fund brand | 06/09, 01 [a2f5b3c20d44] [a56ce106bb55] |
+| Non-brand campaigns | Brand negatives on non-brand Shopping and Search | Present | Missing | Attach the list | 03, 02 [23298f395683] [f52ecc6c8839] |
+| Blended vs split ROAS | Report brand and non-brand separately | Non-brand clears break-even on its own | Account only looks fine blended (pattern: brand 11% of spend, 34% of conversions) | Judge and fund non-brand alone | 06/09, 10 [bcbe49473936] [51226e3b8539] |
+| Target ROAS level | PMax target vs new-customer ROAS | Target not so high it turns PMax into retargeting | High target, spend pulled back, weak new-customer ROAS | Lower target | 04, 05 [29bf1d1ed526] [4e3675b7a020] |
+| Overlap test | Pause or split, compare Google purchases from brand-unaware buyers | Source 01 case: 87% of purchases from brand-unaware after the split | About 50% overlap before | Segment | 01 [a56ce106bb55] |
+
+### 5.6 Scaling readiness (the 5 gates)
+
+| Gate | How | Pass | Fail | Fix | Source |
+|---|---|---|---|---|---|
+| 1 Feed health | Diagnostics | No disapprovals; warnings worked down | Disapprovals; growing warnings | 4.7 | 06/09, 01 [abc2dfeeea38] [5157f5f5a687] |
+| 2 Tracking | 5.1 | 1 primary; enhanced conversions on; real values; reconciled with backend; server-side above about $50k a month | Any fail | 4.2, 4.3 | 06/09, 01, 02 [daa2070d28bf] [fff2f5c0c47c] |
+| 3 Brand split | 5.5 | Separate campaigns, budgets, reports; brand excluded from cold | Mixed | 4.9, 4.10, 4.17 | 06/09, 01, 02, 03 [abc2dfeeea38] [f6230028c4ce] |
+| 4 Creative supply | Asset counts and age | Full PMax groups with 15 or more images and 5 or more videos (or feed-only by choice), refreshed every 4 to 6 weeks; Demand Gen refreshed continuously | Stale or thin | Brief creative (10-MCR) | 06/09, 01 [abc2dfeeea38] [8e3ee156ad91] |
+| 5 Bid maturity | 30-day conversions per campaign | About 50 a month (30 to 50 per sources 01 and 02) before tROAS; ROAS at target at current budget | Under; or not at target | Stay on Maximize Conversion Value; fix the campaign before budget | 06/09, 02, 08 [daa2070d28bf] [5d9dd44f8d9a] [af051bd7984a] |
+
+Any fail: invest in inputs (titles, attributes, labels, tracking, creative), not budget.
+
+### 5.7 Underperformance diagnosis order
+
+| Step | Check | Good | Bad | Next | Source |
+|---|---|---|---|---|---|
+| 0 | Change history; window length; conversion-time columns | No unexplained changes; 90 to 180 day view; recent days match on conversion time | Changes just made; 1-day read; click-date dip only | Wait; zoom out; it is lag | 05 [62403f6f3b48] |
+| 1 | Spend share by platform; outside changes; revenue = CVR x AOV x sessions; true KPI vs attributed; seasonality vs forecast | Google is the bigger spender, nothing else changed, dip outside forecast | Google small share; Meta, offer, sale or site changed; dip inside forecast | Diagnose the other cause or stop | 05 [7fe2bb1f5bff] [e2a87175fcd5] |
+| 2 | Overview 90 to 180 days weekly; inflection date | 1 clear date | No inflection | Re-check step 1 | 05 [31ee29611482] |
+| 3 | Top 5 campaigns by cost; ad or asset groups | 1 or 2 campaigns changed after the date | All flat | Not a campaign issue | 05 [26676d575992] |
+| 4 | Campaign-type failure checks (R139) | Cause found | None | Go to 5 | 05 [4e3675b7a020] [141c23b0306c] |
+| 5 | CPA = CPC / CVR; clicks = impressions x CTR | Sub-metric named | Unclear | Split further (Quality Score, competitor, premium auctions; tracking, page, audience, learning, offer; budget vs rank; copy, audience, competitor price) | 05 [2069300bf455] [6ff74a04932d] [86ca17cab286] [2795573cf2d6] |
+| 8 | Root-cause sentence; severity; fix size | Sentence complete; fix big enough | Cannot finish | Do not touch the account | 05 [7c50191f8854] [5df8489778d1] [817f1a421116] |
+
+## 6. Thresholds and benchmarks
+
+Confidence: number of independent sources that state the value or a close value. 06/09 count as 1 weak source. "1 source" means opinion or heuristic unless a formula. Every number is USD or the source's currency; convert before use. None of the ROAS or CTR benchmarks are targets; targets come from margin (R3, R4).
+
+| Value | Condition | Source | Confidence |
+|---|---|---|---|
+| Break-even ROAS = 1 / contribution margin; break-even CPA = AOV x margin | Every account | 01, 08, 06/09 (all say gross margin; ecomOS uses contribution) | 3, formula |
+| First-order ROAS floor about 0.8x with strong measured LTV, recovered within 12 months | Repeat product | 01 | 1 |
+| LTV doubled allows ROAS floor 1.5x or 1.2x | Measured LTV | 08 | 1 |
+| Realistic LTV lift 4x to 5x | Most businesses | 08 | 1 |
+| AOV over $100 makes ads much easier; dollar-off offers above $100 AOV | Offer and economics | 01, 08 | 2 |
+| Google share of ecommerce revenue 20% to 30% when done right | Multi-channel brand | 01 | 1 |
+| Google at 20% to 30% of spend is rarely the cause of a business dip | Diagnosis | 05 | 1 |
+| Smart bidding readiness: 1 conversion a day for 30 days (30 a month) | Before PMax, YouTube, smart bidding | 01, 02 (30 a month to value bidding), 07 (learning phase 30 in 30 days) | 3 |
+| Switch to conversion or value bidding at 10 to 15 (Search) or 15 to 20 (Shopping) conversions | New account | 03 | 1, loosest |
+| Switch from Maximize Clicks at 15 to 30 conversions a month | Header only | 02 (header) | 0, unsupported |
+| Target ROAS at 30 to 50 conversions a month per campaign (over 50 in the mind map) | Shopping, Search | 02, 03 (30 or more with steady ROAS) | 2 |
+| Target ROAS at about 50 conversions a month, more in competitive auctions | PMax and general | 02 (PMax), 06/09 | 2 (1 weak) |
+| No PMax target for about 3 months, then only at a plateau | PMax | 07 | 1 |
+| PMax no target for the first 2 to 4 weeks; learning up to 4 to 6 weeks | PMax launch | 02 | 1 |
+| Add PMax after about 100 purchases in the account | New advertiser | 08 | 1 |
+| PMax minimum $50 to $100 a day and 30 to 50 conversions a month | Before PMax | 01 | 1 |
+| PMax minimum $100 a day and at least 3x non-brand CPA | Before PMax | 02 | 1 |
+| First Target ROAS at or 10% to 15% below trailing actual | Any switch to tROAS | 02, 04, 06/09, 03 | 4 |
+| Hold a new target 2 to 3 weeks; wait 2 to 4 weeks after any bid change | After change | 02, 01, 06/09 | 3 |
+| Step target ROAS 15% to 20% per step, 2 to 3 weeks apart | Raising targets | 06/09 | 1 weak |
+| Target ROAS models from the last 30 to 90 days | Mechanism | 04 | 1 |
+| Death spiral trigger example 100 to 80 conversions a month | tROAS | 04 | 1 |
+| Feeder: cold Shopping at about 50% tROAS, PMax at about 600% | Plateaued PMax | 04 | 1 |
+| Safety net: manual campaigns 300% to 400%, PMax 600% to 700% | Advanced rebuild | 10 | 1 |
+| Expansive bidding puts about 30% of budget into testing; restrictive about 0% | Concept | 04 | 1 |
+| Value bidding about 90% of the time in ecommerce | Bid type | 04 | 1 (02 and 06/09 agree in direction) |
+| Budget for a Maximize Conversion Value launch about 3 to 4x AOV a day | New campaign | 02 | 1 |
+| YouTube budget about 3x AOV a day; at least $100 a day | Demand Gen | 02, 01 | 2 |
+| Demand Gen $50 a day at $10 to $20 AOV; $100 or more at $50 AOV | New Demand Gen | 03 | 1 |
+| $50 a day for about $500 total is not a YouTube test | Demand Gen | 01 | 1 |
+| Budget raise 10% to 20% a week; 10% to 15% when capped at KPI | Scaling | 01, 04 (about 20%) | 2 |
+| Loosen target when spending under 80% of budget | Pacing | 01 | 1 |
+| Demand Gen bid raises 5% to 10%, max 15%, every 5 to 7 days; run 30 days before changes | Demand Gen | 06/09 | 1 weak |
+| Cold traffic 80% to 90% of budget | Growth account | 01 | 1 |
+| Brand 3% to 8% of spend, max 10%; 1% to 5% or 0 for Meta-heavy brands | Brand spend | 01 | 1 |
+| Brand Search budget $25 a day (01); $10 to $20 small, up to $50 large (03); brand Shopping $50 (01) or $20 (03) a day | Brand campaigns | 01, 03 | 2 |
+| Brand Search: Target Impression Share 95% absolute top, max CPC about $3; real CPC 1 to 50 cents; impression share over 90% | Brand Search | 01, 02 | 2 |
+| Brand under 10% to 14% impression share gives no benefit | Brand Search | 01 | 1 |
+| Brand pattern: about 11% of search spend, 34% of conversions | Distortion flag | 06/09 | 1 weak |
+| Non-brand Shopping tROAS example 200% to 300% | Brand split | 02 | 1 |
+| Shopping share of ecommerce Google: 60% to 80% (01); 80% to 90% (04); "lion's share" (10); 50% or more of budget (03) | Consumer ecommerce | 01, 03, 04, 10 | 4 in direction |
+| PMax share: 20% to 30% (01); 20% to 40% at scale (04); 50% to 70% (06); 70% to 80% (09) | Conflict 7.1 | 01, 04, 06/09 | split |
+| PMax internal split: 60% to 70% Shopping, 20% to 30% Search, 5% to 10% image and video | Typical PMax | 10 | 1 |
+| 80% to 90% of PMax performance from Shopping in ecommerce | Claim | 05 | 1 |
+| PMax good under about $15k to $20k a month; plateau at $100k to $300k a month | Account scale | 04 | 1 |
+| Single lean PMax until $5k to $10k a day; layer Standard Shopping above $20k to $25k a day | Account scale | 07 | 1 |
+| PMax asset groups 3 to 20 (04); 2 to 5 practical, 100 max (06/09); at least 15 products per group, never 1 (04) | PMax | 04, 06/09 | 2 |
+| PMax assets: 15 headlines, 5 long, 5 descriptions, 20 images (01); 6 to 7 headlines, 3 to 4 descriptions (02); 15 images and 5 videos per group (06/09); refresh every 4 to 6 weeks | PMax | 01, 02, 06/09 | 3, disagree on counts |
+| Search themes up to 50 (01); avoid by default (02); needed only in the first 30 days (04) | PMax | 01, 02, 04 | conflict 7.10 |
+| Audience signals a 1% lever after 30 days on $30k to $100k a month PMax | PMax | 04 | 1 |
+| Feed-only PMax minimum 15 products | Feed-only | 06/09 | 1 weak |
+| Under 30 SKUs limits scale | Catalog | 06/09 | 1 weak |
+| Bestsellers campaign 5 to 10 products, usually under 10 | First Shopping | 03, 08 (1 or a handful) | 2 |
+| Top-seller split: 80% of spend on top 20% of products; not fashion, not 5 to 10 product stores | Large catalog | 04, 01 (80/20) | 2 |
+| Margin tiers 3 to 5 when margins vary (30% to 70%); ROAS tiers when within 10% | Shopping structure | 10 | 1 |
+| Labelizer 5 tiers on 30-day rolling data; thousands of SKUs only | Shopping structure | 04 | 1 |
+| Consolidate below about $50k to $500k a month | Segmentation | 02 | 1 |
+| RSA headlines 7 to 9 (02); 8 and 2 descriptions (10); 3 to 5 (03); 15 max | Search ads | 02, 03, 10 | conflict 7.6 |
+| RSA needs about 250,000 to 270,000 impressions to exit learning | Search | 04 | 1 |
+| Keywords per ad group 2 to 8 (02); 3 to 10 (03); 10 to 20 (04) | STAGs | 02, 03, 04 | 3, range 3 to 20 |
+| Seeds 20 to 30; launch with about 20 to 25 keywords | Keyword research | 02 | 1 |
+| About 80% exact plus core broad | Match mix | 02 | 1 |
+| Callouts 25 characters, up to 10; headlines 30; descriptions 90; Demand Gen headlines 40 | Assets | 02, 01 | 2 |
+| Non-brand Search CTR 7% to 8% or more; Shopping about 1%; Display under 1% | Read by type only | 02 | 1 |
+| Quality Score fix example: CPC $5.84 to $2.38 | Case | 02 | 1 |
+| Landing page experience recovery weeks to months | After site fix | 05 | 1 |
+| CPC extremes: about $100 never profitable; about 10 cents junk | CPC read | 04 | 1 |
+| CPC benchmarks 2026: Search $1.42, Shopping $0.68, PMax $0.82; ROAS medians 3.4x to 5.57x | Context only | 06/09 | 1 weak, internally inconsistent |
+| Negatives: daily in new campaigns; PMax every 48 to 72 hours when new; weekly in month 1; twice a week when stable | Cadence | 02, 04 | 2 |
+| Title 60 to 150 characters (06/09); 130 to 150 (01); up to 150, first 70 visible (02); first 70 carry the match | Titles | 01, 02, 06/09 | 3 |
+| Description about 1,000 characters (01); up to 5,000 (02); 2,000 in a prompt (03); about 2 paragraphs (07) | Feed | 01, 02, 03, 07 | 4, disagree |
+| Images: main plus 8 to 10; load under 2 seconds; returns 30 days or more; Top Quality Store lift at least 20% | Store badge | 02 | 1 |
+| Lifestyle images win about 90% of CTR tests | Feed images | 02 | 1 (01 found the opposite for its brand) |
+| Product ratings: 50 reviews total, 3 per product, 2 to 4 weeks | Merchant Center | 02 | 1 |
+| Feed refresh at least every 6 hours with dynamic pricing | Merchant Center | 06/09 | 1 weak |
+| GA4 under-count 20% (02) or 10% to 15% (04) | Tracking | 02, 04 | 2 |
+| Server-side GTM default above $50k a month | Tracking | 06/09 | 1 weak |
+| Micro-conversion exception: $10k to $15k product, 8 to 20 conversions a month | Tracking | 02 | 1 |
+| Remarketing list about 1,000 to 1,500 people to serve | Audiences | 02 | 1, not universal |
+| Visitor list 3 to 7 days normally; cart abandoners 30 days, 60 for low traffic | Audiences | 02 | 1 |
+| Valuable customers: 3 or more purchases or top 5% revenue | Customer list | 02 | 1 |
+| YouTube AOV $75 to $100 ideal; over $50 workable; $25 to $30 poor | Fit | 02 | 1 |
+| YouTube: view rate 20% in-stream, 10% Shorts; CTR over 1% in-stream, 0.6% to 1% Shorts; conversion rate 0.05% or more; Shorts CPM about $17 vs $8 horizontal | KPIs | 01 | 1 |
+| Shorts 20 to 60 seconds, never over 60; Shorts eligibility about 60 seconds | Creative | 02, 01 | 2 |
+| YouTube learning 4 to 6 weeks; tCPA after 2 to 4 weeks with steady CPA over 3 to 5 days | Demand Gen | 02 | 1 |
+| Video remarketing frequency cap 3 a day; budget $10 to $20 a day or 10% to 15% of account; Display remarketing $10 to $15 a day | Remarketing | 03 | 1 |
+| Retargeting CPV 10 to 30 cents | YouTube Video views | 02 | 1 |
+| Mobile only until about $1,000 a day, then 16:9 | Meta-heavy YouTube | 01 | 1 |
+| Meta-heavy split: 80% Demand Gen, 10% to 15% mid, 1% to 5% brand | Meta-heavy DR brand | 01 | 1 |
+| Phases: 30 to 60 days foundation; months 2 to 6 smart bidding and PMax; after 6 months scale; step 2 after 4 to 6 weeks (03) | Launch order | 01, 03 | 2 |
+| Top 5 campaigns by spend; 90 to 180 day weekly scan; last 3 to 7 days lag | Diagnosis | 05 | 1 |
+| Competitor discount 20% to 30% triggers pulling a shared SKU | Shopping | 05 | 1 |
+| Landing page test 30 to 60 days | Search | 04 | 1 |
+| Stock-out example: 15% of PMax spend out 4 days hurts the campaign | PMax | 05 | 1 |
+| Seasonality adjustment 1 to 7 days only | Smart bidding | 06/09 | 1 weak |
+| Portfolio CPC cap example $9 after spikes to $25 | Portfolio | 06/09 | 1 weak |
