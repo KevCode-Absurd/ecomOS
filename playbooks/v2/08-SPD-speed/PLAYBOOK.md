@@ -1140,3 +1140,230 @@ One table for the folder. Confidence = number of the 9 mini playbooks that state
 | Source 01 client store | mobile 33 to 58, desktop to 93 | several changes together | 01 | 1 (case) | |
 | PetSmart Black Friday | 7.7 to 13.84 s | | 06 | 1 | |
 | Marketers prioritizing speed | 3% top priority; 81% know it matters but do not prioritize | survey | 06 | 1 (uncited) | |
+
+## 7. Where sources disagree
+
+Each conflict: what each side says, when each is right, what the agent should do. Nothing here is averaged into section 3.
+
+**7.1 Image file size ceilings.** Source 04: product images under 100 KB, hero under 200 KB. Source 05: LCP image below 250 KB. Source 01, across its videos: 500 KB max; 500 to 600 KB and never over 600; prefer 100 to 200 KB; under 1 MB for section images; a full HD JPEG under 1 MB is enough for mobile-majority stores. Source 04 writes for 2026 and modern formats; source 01's looser numbers come from JPEG-only advice on Shopify, where the platform recompresses. What the agent should do: set targets at 100 KB (product) and 200 KB (hero), a 250 KB cap on the LCP image, and treat 500 KB as the hard stop for any image on any template. Report which images exceed each line separately, so the owner can see the strict and the lenient view. [8883db1cfb1d] [eb9525bda54a] [21698bb77d52] [cfa3fe76f953] [3a99be49f292] [cce38d9369f2]
+
+**7.2 The 7% figures.** Source 09 quotes Akamai: a 100 ms delay costs up to 7% conversion. Source 04 quotes Cloudflare: a 1 s delay costs about 7%. Source 08: a 1 s delay cuts conversion by up to 7% (no study named). Same percentage, 10x different delay. What the agent should do: never quote either in a client deliverable without checking the original study's wording [web check: Akamai 2017 "100 ms" study; Cloudflare source]. In the business case (P6) use a range and label it; prefer the brand's own before and after over any of them. [af5fd5b1745b] [41ce06260ce9] [f8bdb58727f9]
+
+**7.3 Load-time targets.** Source 03: 2 s or less (attributed to Google). Source 04: under 3 s, 2 s for competitive stores. Source 06: 3 s is "Google's recommended mobile load time". Source 01: under 3 s, "Google says". The "Google target" attributions are old; Google's current public thresholds are per metric (LCP 2.5 s), not a page load time. What the agent should do: set targets on LCP, INP and CLS (section 6), and use "under 3 s on mobile, under 2 s where competitors are fast" only as a plain-language summary for owners, marked as a summary. [web check: current Google guidance] [b36e60f619f7] [b147e14a22ec] [d6ae849bc093]
+
+**7.4 Order of work.** Four sequences. Source 04's ladder: images, third-party scripts, hosting and CDN, then code. Sources 02 and 08: fundamentals first, caching and server last; source 02 calls caching "a band-aid" and source 08 says the host will blame unoptimized content. Source 01 gives 3 orders of its own: the 7-step framework (apps, residual code, images, fonts, defer, non-critical CSS, lazy-load apps last); the client case (defer, lazy-load apps, then CLS, then LCP); and the LCP/CLS video (fix LCP and CLS first because they dominate the score and the app snippet helps little while they are large). When each is right: source 04's ladder is for self-hosted stores where hosting is a real lever; sources 02 and 08 are right that infrastructure work before content work wastes the host's time; source 01's LCP/CLS-first order is right on Shopify when the report shows a large CLS or LCP, and its apps-first order is right when blocking time dominates. What the agent should do: baseline (P1); then whichever of "images", "CLS/LCP" or "apps" the report shows as the biggest single cause (R2); then the other two; then fonts, CSS and code; then caching, CDN and host. On Shopify, skip the hosting step. Never call the host before images and scripts are done. [c35b62b83860] [1b50d0611dc3] [0709d6cdeb98] [cce38d9369f2] [dca8734ae894] [4e05290f17d5] [37d2f02ad647]
+
+**7.5 What to optimize against: slow-4G visual test vs lab scores.** Source 02 says tool scores "are not the best way" to judge and ranks the slow-connection visual test first. Source 05 says optimize against lab data and let field follow. Source 01 uses PSI averages as the yardstick but hunts CLS on throttled 3G. When each is right: the visual test catches hidden-hero and jump problems scores miss and matches what shoppers feel; lab data is the only repeatable comparison and the only thing that maps to Google's report. What the agent should do: both, every time (R19). A page that looks broken on slow 4G fails even with a good score; a page with a bad score is not "fine" because it looks OK on office Wi-Fi. [29d73beaf348] [085b91000740] [a5d2c3aee970]
+
+**7.6 AVIF vs WebP, and who converts.** Source 02: AVIF has "really good browser support" and is preferred at 50% quality; WebP is the acceptable alternative. Source 04: WebP is the default (25% to 35% smaller than JPEG, all modern browsers); AVIF compresses better but "support is narrower", so optional. Source 01: do not upload WebP to Shopify at all; upload JPEG and let Shopify convert. Source 08: WebP by default, AVIF named. When each is right: on WordPress you control the file and can pick AVIF with a fallback; on Shopify and Shopware the platform converts, so the upload format is JPEG or PNG. What the agent should do: platform converts where it can; where the agent controls delivery, AVIF with a WebP or JPEG fallback after checking current support. [web check: AVIF support; Shopify automatic WebP/AVIF delivery] [f50e2bf2a5c4] [8883db1cfb1d] [21698bb77d52] [baaf2f6aee4e]
+
+**7.7 Tracking pixels: never delay vs test each integration.** Source 01 (transcript): never defer Facebook or Google pixels or Hotjar; keep them in the initial load because deferring can corrupt data. Cards [ef51a42e0e16] and [20821a7ae674] (editorial): not a universal rule; use Shopify's supported pixel integration (Web Pixels API and standard events) and verify each. Source 09's card: payment and fraud scripts may need to load early; check analytics fire after deferring. What the agent should do: leave pixels as they are by default; if a pixel is the blocking problem, move it to the platform's supported integration or delay it only after the event tests in R48 pass with consent on and off. Never change pixels and app scripts in the same batch. Pixel setup lives in 06-MEA. [15d23b16ff3c] [adc3ea59042a] [dc6cd41ae52d] [web check: Shopify Web Pixels guidance]
+
+**7.8 Core Web Vitals as a ranking factor.** Source 08: official ranking factors; a slow store "will rank lower... even if its content or products are excellent". Source 09: an important ranking factor but not the only one. Sources 04 and 05: a tie-breaker between pages of similar quality; content depth drives rankings. Source 06 infers ranking from first-page results averaging 1.96 s (correlation). What the agent should do: describe CWV as a tie-breaker with a real effect on mobile-first indexing, never promise ranking gains, and let the shopper-experience case (bounce, conversion) carry the argument. [f8bdb58727f9] [04439b080448] [693051f7daf7] [0e0cdcf93746]
+
+**7.9 Fast vs slow conversion multiples.** 1 s vs 5 s: 2.5x (source 03, Portent; its own chart shows 3.05% at 1 s vs 1.68% at 2 s, which is a different comparison). Under 1 s vs 5 s: up to 3x (source 08, uncited). 1 s vs 10 s: about 5x (sources 04 and 06; source 04 credits Cloudflare in the body and Queue-it in the summary). What the agent should do: quote at most 1 with its study name and comparison points; mark it as direction. [b36e60f619f7] [f8bdb58727f9] [41ce06260ce9] [fa57997432c4]
+
+**7.10 Is the server the problem?** Source 08: poor TTFB means slow hosting or an overloaded database; front-end work can only do so much on a weak base. Source 05: poor FCP is usually the theme, plugins and page elements, not the web server. Source 04 lists slow server response among LCP causes. When each is right: on Shopify the server is not yours to fix and source 05's view applies; on shared WordPress hosting with a TTFB over 800 ms, source 08's applies. What the agent should do: read TTFB. Under 800 ms: front end only. Over 800 ms: still do the front end first (R4), then take the 4 questions to the host (R93). [a10a7445f2a3] [dfde1d811af8] [2969a152a99d]
+
+**7.11 defer vs async.** Source 01: defer first, async fallback, defer is "more powerful". Source 03: either, and check the site still works; its card adds defer for scripts that need order, async for independent ones (not in the article). Source 05: plugin setting "Load JavaScript deferred" with exclusions. What the agent should do: R46's sequence (defer, then async, then leave it). For scripts that depend on each other keep defer so order holds. [1dffb0dd47d1] [e42f2f04f259] [8f0d567d9844]
+
+**7.12 Speed apps and plugins.** Source 01: no magic app; speed apps help returning users at best; caching scripts on Shopify add nothing; some specialists game the score. Source 04 names Hyperspeed and TinyIMG for minification on Shopify and WP Rocket and Autoptimize on WordPress. Source 05 fixes TBT with WP Rocket settings (69 to 99 on 1 page). Source 02 refuses to teach a plugin and reaches 98% without one. When each is right: on WordPress a cache and optimization plugin is standard tooling and source 05's 1-setting-at-a-time loop makes it safe; on Shopify the platform already caches and minifies theme assets, so an app mostly adds scripts. What the agent should do: on Shopify, no speed app unless a specific measured gain justifies it; on WordPress, one optimization plugin, settings tested 1 at a time; on both, measure with the app's own scripts included. [web check: whether speed apps only help returning users] [5f44ccb5ead1] [cdc61c33e699] [c067983b290a] [8f0d567d9844] [1b50d0611dc3]
+
+**7.13 How big to export an image.** Source 01: display box plus 100 to 300 px. Source 02: 2x the rendered size for retina. Source 04: resize to display dimensions. What the agent should do: 2x rendered width, capped at 2,000 px (R29); never below the box. Report intrinsic-to-rendered ratio so the owner can see the waste. [7558889b0856] [b783c30c2217] [8883db1cfb1d]
+
+**7.14 App delay snippet gain.** Source 01 claims 10 to 20%, 10 to 15% and 15 to 20% in different videos, and also says it is "not as effective" while CLS or LCP are large. The presenter sells the snippet. What the agent should do: expect a blocking-time drop, measure it, and promise no percentage. [b7d4c6046a25] [dca8734ae894] [4e05290f17d5]
+
+**7.15 Native lazy loading vs lazysizes.** Source 01 calls the lazysizes plugin "bulletproof" and slightly better than native `loading="lazy"`; every other source uses native. What the agent should do: native first; lazysizes only where native is proven not to work, and never on in-view images. [web check: lazysizes in current browsers] [3c9bddfb47c1] [51db910ccfc8]
+
+**7.16 Tag manager "one request".** Source 03 says a tag manager "condenses all your tags into one JavaScript request"; the card correction says a container does not make vendor tags 1 request. What the agent should do: use a tag manager for inventory and kill switch, measure the waterfall. [78f603581ed4]
+
+**7.17 Quick View heading vs body.** Source 03's heading says "Enable quick view"; its body argues to remove it. Follow the body (R61). [6f05e9392e74]
+
+**7.18 CLS target.** Source 01: under 0.25, ideally 0.1 or 0. Sources 04, 05, 08: under 0.1. What the agent should do: 0.1 is the target; 0.25 is "poor", not acceptable. [80a761efcb18] [883371c7111c]
+
+**7.19 Page weight budget.** Source 01: "the entire store around 2 or 3 MB" in one video, "a page can have like 2 MB, maybe a bit bigger" in another. No other source gives a total. What the agent should do: budget 2 MB per page as source 01's working figure; write the store's own budget in P29 and label it as chosen, not sourced. [621e302f651f] [3a99be49f292]
+
+**7.20 Mobile average load times.** Source 06 gives "around 15 s" average mobile load, 8.6 s for the top 100 sites, 6.3 s for US retail and 27.3 s "fully loaded" on mobile, with no definitions. What the agent should do: do not quote any of these as "average"; use the store's own numbers. [2bb637e027c0] [4c4de77e3eae]
+
+**7.21 Card vs transcript in source 01.** Card [fde546149035] names Yotpo as the uninstall example; the transcript's example is Loox. Card [867a3ac29ede] calls the cookie banner fix "a different property"; in context it is `defer`. Neither changes a rule; noted so the agent does not cite the wrong app or fix.
+
+**7.22 Pop-up trigger sentence in source 03.** The text reads "display immediately upon page load, such as exit intent or time delay", which is garbled; the intent is not on load. Rule R68 follows the intent. [a459458a1b47]
+
+## 8. Common mistakes
+
+Merged and deduplicated. Each with the fix.
+
+**Method**
+- Changing things before recording a baseline and a change log. Fix: P1 (08, 01).
+- Trusting 1 test run, or retesting right after a change. Fix: 3 runs, 1 to 2 minute wait, averages (01, 02, 04).
+- Reading field and lab data as the same thing; reading Origin as the page's data. Fix: P3 (05).
+- Testing only the home page, or only 1 template of a page type; trusting "vitals passed". Fix: R16 (01).
+- Testing only on fast Wi-Fi or a developer machine; judging mobile by desktop; testing only 1 device tab. Fix: P2, R10 (01, 04, 06).
+- Testing without confirming the tool saw the new version. Fix: P4 (05).
+- Chasing 100 or a CWV pass at the cost of content and journey; stripping UI that sells. Fix: R6, R11 (05, 03, 02).
+- Turning on several JS settings or removing several scripts at once. Fix: R26 (05, 01).
+- Treating a cache-disabled test as the typical visitor. Fix: also run the cached repeat view (02).
+- Working from PSI's list in order instead of the biggest lever. Fix: R23 (05).
+- Quoting a source's case or example as the store's forecast. Fix: P6, P30 (all).
+
+**Images**
+- Uploading camera, DSLR or design-tool originals; believing higher resolution always looks better. Fix: P14 (01, 04).
+- Believing "Shopify optimizes images automatically" is enough. Fix: R28 (01).
+- Exporting photos as PNG (Canva banners), using animated GIFs, hand-uploading WebP to Shopify. Fix: R32 (01).
+- Lazy-loading the hero, logo, first slide, main product image or first card; or making everything eager; or preloading too many assets. Fix: P17, P18 (01, 02, 04, 07).
+- Leaving a logo or hero on a plugin's default lazy setting. Fix: explicit eager (02).
+- Fade-in, slide-in, preloader or placeholder on in-view images; main image trapped in a carousel plugin. Fix: P18 (01).
+- Images without width and height. Fix: P20 step 1 (01, 02, 05, 07).
+- Compressing the same image several times; exporting at raw rendered size (soft on retina). Fix: R33, R30 (04, 02).
+- Batch cropping; mixed aspect ratios in one grid. Fix: P14 step 2 (01).
+- Uploading the same image twice instead of Replace; empty `src`; 4 to 5 slide auto-rotating sliders; standard YouTube embeds; mobile autoplay. Fix: R40, R41, P24 (01, 03).
+- Bulk compressor run and assumed complete while section images stay at 5 MB. Fix: P15 (01).
+- Overwriting alt text when pasting builder settings; ad copy in alt text. Fix: R40 (02, 01).
+
+**Apps, scripts and third parties**
+- Keeping trial, unused or purely visual apps; using an app for a theme feature (announcement bar, discount code). Fix: P7 (01, 03, 08).
+- Deactivating instead of deleting a plugin. Fix: R7 (08).
+- Assuming uninstalling removes the code. Fix: P8 (01, 03).
+- Installing apps without a before and after test; ignoring reviews about speed. Fix: R45 (04, 01).
+- Pasting scripts straight into `<head>` without defer or async. Fix: P9 (03, 01).
+- Adding defer or async to a script without knowing what it does; not testing the feature after. Fix: R46 (01).
+- Commenting out `content_for_header` on a live theme. Fix: R52 (01).
+- Loading jQuery or other libraries from outside CDNs; removing jQuery for logged-in WordPress users. Fix: P12, P13 (01, 02).
+- Forgetting what you unloaded, then adding a cart feature that needs it. Fix: write it down (02).
+- Deferring or delaying pixels, consent banners or payment scripts without testing events and consent rules. Fix: R48, R76 (01, 09).
+- Buying speed apps, caching scripts or "specialists" that game the score. Fix: R55 (01).
+- Believing a tag manager makes all tags 1 request. Fix: R54 (03).
+- Line-by-line edits to app code you do not own after a "reduce unused JavaScript" flag. Fix: remove, delay or load conditionally (01).
+
+**Theme, CSS, fonts**
+- Picking a theme for "bells and whistles"; rushing a Dawn to Horizon migration; relying on hacks instead of theme architecture. Fix: R13, P32 (01, 03).
+- Hardcoding asset URLs inside CSS so the CDN serves old files. Fix: P23 step 1 (03).
+- Running the same Liquid loop several times; Quick View that pre-loads the whole grid. Fix: P23 (03).
+- Applying the media=print trick to visible CSS; lazy-loading theme CSS with incomplete critical CSS. Fix: P22 (01).
+- Contradicting CSS rules; late inline styles in the body; desktop styles applied to mobile. Fix: P20 (01).
+- Missing `font-display: swap`; 5 to 10 font variations; fonts from Google's servers; swap without matched fallback metrics. Fix: P21 (01, 02, 04).
+- Themes loading every feature on every page. Fix: R49, R62 (08, 04).
+- Running JavaScript before the main image can display; single-page app rendering that waits on JS. Fix: R66 (07).
+
+**Caching, CDN, hosting**
+- Relying on caching, compression or CDN before fixing heavy images and extra assets. Fix: R91 (02, 08, 09).
+- Reading `cache-control` as proof of caching. Fix: P26 step 1 (02).
+- Caching cart, checkout or account pages; caching so hard that prices and stock go stale, or so little that nothing is gained; full purge on every change. Fix: P26 (04, 08).
+- Tracking parameters in CDN cache keys. Fix: P27 step 3 (04).
+- Calling the host before fixing images and plugins; blaming the server for FCP before checking theme and plugins. Fix: R93, 7.10 (08, 05).
+- Ignoring database bloat and uncached heavy plugin queries on WooCommerce. Fix: P28 step 6 (04, 08).
+- Assuming high traffic only causes crashes; slowdowns in cart, search and login are more common. Fix: P31 (06).
+- No performance budget; adding features and animations without a speed review. Fix: P29 (04, 06).
+
+## 9. Deliverables
+
+| Task | Deliverable | Format |
+|---|---|---|
+| First audit | Speed audit report: baseline table (per template, mobile and desktop, 3-run averages, LCP element, CLS source), slow-connection observations, top 3 causes ranked by expected effect, the fix list in order with owner (agent, developer, host), budget proposal, what needs brand data or a web check | Markdown; tables; PSI report links attached; dated |
+| Business case | Revenue model from brand inputs with assumptions labelled, plus 1 to 3 named benchmarks marked as direction | Markdown or sheet; arithmetic in code |
+| Image audit | List of images over each ceiling (100, 200, 250, 500 KB) per template, intrinsic vs rendered ratio, format, lazy or eager, dimensions present; fix per image; theme sections lacking responsive widths | Table; before and after weights |
+| App and script audit | Inventory with revenue role, route to page (async function, hardcoded, embed), load decision (keep, template-only, delay, remove), residual code found, duplicate pixels | Table; change log entries |
+| Developer brief | Per item: page, element, measured before state, target, the rule (R number), the procedure (P number), acceptance test, rollback | Markdown; 1 brief per fix or batch |
+| Host brief | TTFB per template, headers seen, the 4 questions (PHP, Redis or Varnish, full-page cache, HTTP/3), peak-event dates and expected load | Short email or ticket text |
+| Fix proof | Change log entry: date, page, device, tool, before and after averages, other changes in the batch, function tests passed, event tests passed, freshness confirmed, field check date | Table row plus notes |
+| Monitoring setup | Cadence, tool, budget values, alert thresholds, re-check dates (28 days after each fix) | Markdown or config |
+| Peak readiness note | At-risk steps, capacity confirmation, load test result, freeze window, fallback decision per step | Markdown |
+| Client page copy | Plain English summary: what was slow, what changed, what shoppers will notice, what is next; no tool names the client does not know, no GPT or .env mentions | Short text, digits, no em dashes |
+
+## 10. What needs live data or a web check
+
+**Brand data (from brand record, data layer or owner)**
+- Installed apps, plugins, app embeds and external scripts, and the revenue role of each (R7, P7). [01, 03, 08]
+- Which widgets must show at first paint (R47, P10). [01]
+- Pixel, tag manager and consent setup; consent rules by market (R48, R76). [01]
+- Paid vs organic share of sessions (R5). [01]
+- Pages ads land on (R3). [01]
+- Mobile share of sessions and revenue (R10). [01, 09]
+- Sessions and revenue by template; page views by template (R3). [04, 06]
+- AOV, daily sessions, conversion rate, margin, current average load time (P6). [03, 04, 06]
+- Monthly orders, AOV, cart abandonment rate (hosting tier, R92). [04]
+- Visitor connection and device mix (throttle profile, P2). [02]
+- Theme name, version, who built it, customization history (R28, R34). [01]
+- Baseline PSI averages per template (P1). [01]
+- Dynamic checkout button usage (R56). [01]
+- Quick View click usage; scroll heatmaps (R61; neighbour 09-CRO). [03, 01]
+- Conversion rate by load time, if analytics can segment it (P6). [03]
+
+**Web checks (dated or platform-dependent claims)**
+- Current Core Web Vitals list and thresholds (LCP, INP, CLS; FID retired; TTI dropped) at web.dev/articles/vitals. [05, 06, 07, 08, 09, 03, 01]
+- Current INP thresholds specifically. [07, 05]
+- Current Google guidance on load-time targets (the "2 s" and "3 s" attributions). [03, 06]
+- Whether Shopify still serves WebP and AVIF automatically, and whether hand-uploaded WebP is still a problem. [01]
+- Current AVIF browser support. [02, 04]
+- Whether Shopify admin still shows a composite speed score, and how its web performance report is calculated. [01]
+- Current Shopify Web Pixels API guidance. [01]
+- Current state of Dawn updates and Horizon version; Horizon release date. [01]
+- Whether speed-optimization apps "only work for returning users". [01]
+- The "8-second attention span", 50 ms and 0.1 s first-impression figures. [01, 03]
+- Original studies behind every figure in source 06 before quoting to a client. [06]
+- Akamai "100 ms = 7%" wording; Cloudflare "1 s = 7%" source. [09, 04]
+- Behaviour of the media=print onload trick and lazysizes in current browsers. [01]
+- `fetchpriority` and preload syntax and support. [07]
+- Web Vitals Chrome extension features; whether Chrome moved them into DevTools. [07]
+- Unlighthouse flags and SDK. [07]
+- GTmetrix engine (Lighthouse, not YSlow) and plan limits. [03, 04]
+- Whether AMP and the named AMP apps (AMP, Fire AMP, The AMP App) still exist or are worth using. [03]
+- Whether Hyperspeed, TinyIMG, Tiny SEO Speed and Image Optimizer, SEOAnt, ShortPixel, Imagify are still listed. [04, 01, 02]
+- CDN plans and prices (Cloudflare, Fastly, Akamai, CloudFront, BunnyCDN). [04]
+- Hosting prices (shared $1 to $15, VPS $20 to $50) and current PHP and HTTP/3 recommendations. [04, 08]
+- Monitoring tool prices (DebugBear, SpeedCurve, Calibre). [04]
+- Shopify URL filters and image size parameter syntax. [03]
+- WordPress hook name `wp_enqueue_scripts` and the dequeue pattern. [02]
+
+## 11. Freshness and stale-risk notes
+
+| Rule or procedure | Depends on | Re-verify |
+|---|---|---|
+| R18, section 6 CWV rows | Google's metric list and thresholds | Every audit (quick) and at every Google announcement; 5 of 9 sources already use retired metrics |
+| P1, P3, P4 (PSI layout: hover hint, Diagnostics, URL/Origin, copy link) | PageSpeed Insights UI | Every 3 months |
+| P1 step 11, P19 step 3 (Lighthouse panel, View Original Trace) | Chrome DevTools UI | Every 3 months |
+| P2 (throttling profiles, device toolbar) | Chrome DevTools UI | Every 6 months |
+| R27, P30 step 5 (Shopify admin speed score, web performance report) | Shopify admin | Every 3 months; already changed once in source 01's span |
+| P7 step 6, P10c (App embeds toggle) | Shopify Customize UI | Every 3 months |
+| P8 (Edit code search, editor defer warnings, Download theme file) | Shopify code editor | Every 3 months |
+| P10 (content_for_header structure, async load function) | Shopify platform internals | Every 3 months and after any Shopify platform update; undocumented behaviour, high stale risk |
+| R32, 7.6 (Shopify WebP and AVIF delivery; hand-uploaded WebP) | Shopify image CDN behaviour | Every 6 months |
+| R48, 7.7 (Web Pixels API) | Shopify pixel platform | Every 6 months, with 06-MEA |
+| P32 (Dawn and Horizon versions, 23 free themes) | Shopify theme store | Every 6 months |
+| P13 (Oxygen settings, Asset CleanUp metabox, WP Rocket tabs and setting names) | Plugin UIs | Every 6 months and at major plugin versions |
+| P21 step 3 (Google Web Fonts Helper, Font Squirrel) | Third-party tools | Yearly |
+| R39, R55, 7.12 (named apps: Tiny SEO, SEOAnt, TinyIMG, Hyperspeed, ShortPixel, Imagify) | App store listings and prices | Every 6 months |
+| R90, R92, P27, P28 (CDN and hosting prices, PHP 8.2+, HTTP/3) | Vendor pricing and platform versions | Every 6 months; prices are 2026 figures |
+| P29 (PSI API, GTmetrix monitoring, Lighthouse CI, DebugBear, SpeedCurve, Calibre) | Tool plans | Yearly |
+| P5 (Unlighthouse command and flags) | Open-source tool | Every 6 months |
+| P18 step 2 (Web Vitals extension) | Chrome extension and DevTools | Every 6 months |
+| R37, P18 step 7 (fetchpriority, preload) | Browser support | Yearly |
+| R63, R35 step 7 (media=print trick, lazysizes) | Browser behaviour | Yearly |
+| R97, P25 (Shopify Navigation redirects) | Shopify admin | Yearly |
+| R98 (Shop Pay availability and vendor figure) | Shopify | Yearly |
+| Section 6 conversion and behaviour statistics | Third-party studies, several undated | Before every client use; treat as direction only |
+| Ecomhint 1,533-store benchmark (R7, R57) | Vendor dataset, method unpublished | Check for a newer edition yearly |
+
+## 12. Source index
+
+| No. | Title | Type | Credibility and bias | What it contributed most |
+|---|---|---|---|---|
+| 01 | Page speed (Shopify speed optimization video compilation) | Transcript, about 19 YouTube videos, 59,341 words, 129 cards | One freelance Shopify developer (Christian). Sells a speed course, paid delay snippets, a done-for-you service and a community; affiliate links to Tiny SEO and SEOAnt. Evidence: live demos on demo and client stores, single-store PSI runs, several changes made together. No conversion or revenue data. Metric names dated (no INP); videos span years so UI steps differ. Strongest numeric claims promote his own products. | Nearly all Shopify mechanics: 3 routes app scripts take, content_for_header override method, per-app delay, residual code search, defer-then-async loop, image pipeline and Shopify image behaviour, responsive width check, first-item-eager loop logic, CLS hunting (filmstrip, trace, throttling, body styles, critical CSS), LCP hidden by carousel, fonts, media=print trick, testing protocol (3 runs, wait, duplicate theme), theme choice and benchmark method. Also the widest spread of image ceilings (7.1). |
+| 02 | WordPress Speed Optimization (step-by-step) | Transcript, YouTube tutorial, 6,521 words, 17 cards | Presenter Elijah; builds with Oxygen and hosts on Cloudways (promotional context). Evidence: 1 image-heavy landing page, before and after in PSI, GTmetrix, Gift of Speed and a slow-4G visual test. No client data. No date; AVIF praised. | Slow-4G visual test as the primary judgment; explicit eager on in-view images; width and height from rendered size; 2x rendered export; AVIF at 50%; waterfall asset audit; unloading WordPress bloat, jQuery (logged-out only) and WooCommerce files per page; local WOFF2 fonts; verifying cache and compression from headers; fundamentals before caching (98% with no cache). |
+| 03 | Website Speed Optimization Tips for Shopify Stores | Article, Shopify Plus blog, 5,767 words, 15 cards | Vendor (Shopify). Sells Shopify Plus, Storefront Renderer, Shop Pay, Plus Partners. Evidence: third-party studies (Deloitte, Portent), Shopify-reported numbers, merchant cases and agency quotes. Dated in places (AMP, "first meaningful paint", CWV described wrongly). | Business case framing and benchmarks; more than 20 apps warning; asset_url and CDN versioning; Liquid loop clean-up; Quick View removal; slider and pop-up rules; lite embeds and mobile autoplay; redirects and 404; tag manager caveat; checkout in scope; peak capacity planning; the 3 test tools and why scores do not compare. |
+| 04 | Ecommerce Site Speed Optimization: Complete Guide for 2026 | Article, Ecomhint, 5,492 words, 17 cards | Jakub Rusniok, sells speed and conversion audits ("Run Free Audit" 3 times). Evidence: cited research (Google, Cloudflare, HTTP Archive, web.dev cases) plus a 1,533-store Shopify benchmark with no method shown. Published March 2026; uses INP. The most current source. | Current CWV thresholds and INP; PSI score bands; priority ladder (images, scripts, hosting, code); image size targets (100 KB, 200 KB) and JPEG 80%; third-party count correlation and industry medians; caching rules (never cache cart, checkout, account; 1-year static; short TTL for prices); CDN configuration and 80% hit rate; hosting tiers by orders; testing toolchain; monitoring and performance budget; page priority by traffic. |
+| 05 | Google PageSpeed Insights: Step-by-Step Tutorial | Transcript, YouTube, 4,649 words, 10 cards | Jack from Rank Math (WordPress SEO plugin vendor); uses WP Rocket (paid) for fixes. Evidence: walkthrough of PSI plus 1 before and after (69 to 99). Around 2024: INP present, FID still shown. | How to read PSI (field vs lab, URL vs Origin, hover hint, LCP element, score bands); Good / Needs improvement / Poor bands for LCP, INP, CLS, FCP, TTFB; freshness marker trick; 1-setting-at-a-time plugin loop for TBT; reserved space for injected content; 250 KB LCP image guidance; sharing a frozen report. |
+| 06 | 93 Powerful Statistics That Show Why Your Ecommerce Site Speed Matters in 2026 | Article, statistics roundup, 2,446 words, 10 cards | Queue-it, sells virtual waiting rooms; last section supports its product. 93 figures with no study names, years or samples; several dated (FID, AMP, "3 s Google recommendation"). | Business-case numbers (patience, bounce, conversion, pages per visit), revenue model template, PDP and category 72% of views, mobile vs desktop gap, 34.1 ms per third-party script, brownout risk at peak. All as direction only. |
+| 07 | The Ultimate Guide to Web Performance | Transcript, YouTube (Fireship), 1,993 words, 9 cards | Developer education channel; sells a Pro membership. Aimed at developers, not stores. Evidence: definitions, a Web Vitals extension demo, quick Unlighthouse runs. Dated (FID). | Waterfall bottleneck reading; Web Vitals extension for the exact LCP and CLS elements; preload and fetchpriority; aspect-ratio and srcset for CLS; render-blocking JS before the main image; SSR vs SPA; Partytown; Unlighthouse site-wide audits; "scores are for triage". |
+| 08 | Page Speed Guide for Ecommerce Store Operators: Diagnosis and Actions | Article, Shopware point of view, 1,815 words, 9 cards | Platform vendor; closing section promotes Shopware 6 features. Evidence: unnamed benchmarks (7% per second, 3x, 66% mobile revenue). States INP replaced FID in March 2024. | The 4-step operator roadmap (baseline, images, extension audit, server); the rule to call the host only after steps 1 to 3 and the 4 questions to ask (PHP 8.2+, Redis or Varnish, full-page cache, HTTP/3); delete not deactivate; dated change log; intelligent cache invalidation; TTFB under 800 ms as diagnostic. |
+| 09 | Page Speed Optimization: How to Improve the Loading Time of Your Online Shop | Article, unnamed European platform vendor, 1,770 words, 10 cards | Vendor blog with a lead-magnet plug; vendor unnamed. Evidence: 1 named study (Akamai) plus uncited surveys. Old metric model (TTI, TBT misdefined; no INP or CLS). | Architecture levers: SSR vs CSR and hybrid, CDN for static files, browser and server caching, APIs with field selection; load third-party integrations after product images and information; lite embeds; measure on both devices and cross-check with a second tool; the Akamai 100 ms = 7% figure (conflict 7.2). |
+
+**Credibility summary.** 5 of 9 sources sell something in the domain (01 snippets and services, 03 Shopify Plus, 04 audits, 06 waiting rooms, 08 Shopware; 05 and 07 sell adjacent products; 09 is an unnamed vendor). Only source 04 uses current metric names throughout. No source has controlled conversion tests of its own; every conversion figure is third-party or vendor-reported. The strongest agreement across sources is on 4 things: images first, every third-party script must earn its place, never lazy-load in-view images, and reserve space for anything that arrives late. Treat single-source numbers as working rules, not laws.
+
+**Neighbour folders and what lives there.**
+- 15-SEO-search: keywords, titles, descriptions, H1s, URL handles, sitemaps, rich snippets, blogs, backlinks, alt text and file names as SEO (source 01 sections 3.20 and 3.32).
+- 09-CRO-testing: product page layout, buy button reach, promo copy, image set and gallery order, Quick View usage as a UX question (source 01 sections 3.21 and 3.31; source 03 Quick View).
+- 07-LPG-landing-pages: ad landing page structure; this playbook only sets its speed targets.
+- 06-MEA-measurement: pixel, Web Pixels API, CAPI, tag manager and consent setup; event testing method.
+- 05-SET-store-setup: theme selection and migration as a project, media library setup, domains, headless and Commerce Components, infrastructure, load balancers, waiting rooms.
+- 12-GAD: Google Ads landing page requirements.

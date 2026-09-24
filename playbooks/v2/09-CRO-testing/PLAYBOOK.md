@@ -739,3 +739,187 @@ Goal: the right design for the question, and the right folder.
 9. Whatever the route, write the question, method, result with interval and decision into the shared log (P18).
 Cards: [0eca60fd9161] [ddbbe8061d10] [e353aade03ae] [04a08881ac09] [2b951af15841].
 
+## 5. Diagnostic checklists
+
+Written for a worker. Columns: what to check, how, good, bad, fix, source. "Fix" means the hypothesis or repair to raise, not a promise. Case figures are examples. Anything from 01 is a lead-gen adaptation.
+
+### 5.1 Funnel read
+
+| what to check | how | good | bad | fix | source |
+|---|---|---|---|---|---|
+| Tracking health | Compare funnel event counts with backend orders for the same period | Within a few % | Missing or inconsistent events | Fix tracking first (06-MEA); no test until fixed | 07 [382d08d3f6aa], 05 [3eca46fe9ba3] |
+| Session and revenue definitions | Check that sessions are GA4 and revenue excludes tax, includes shipping collected | Corrected figures used | Shopify raw totals | Rebuild with P1 | 02 [91d639e7e2e2] |
+| Overall conversion band | Orders / GA4 sessions vs 06 bands | 3 to 5% "good" | Under 1% | Check traffic quality and mix (P3) before page work | 06 [25f9d85cd8e3] |
+| Add-to-cart rate | Add to cart / PDP views | 12 to 18% | Under 5% | PDP work (5.4) | 06 [25f9d85cd8e3] [fc7c739888fc] |
+| Cart-to-checkout rate | Checkout starts / carts | 60 to 70% | Under 30% | Cart work: cost transparency, reassurance (5.5) | 06 [25f9d85cd8e3] |
+| Checkout completion | Purchases / checkout starts | 70 to 80% | Under 50% | Checkout audit (5.6), mostly repairs | 06 [d4104b13110f] |
+| Biggest weighted leak | Multiply each drop by sessions and revenue passing through it | One stage clearly dominates | Working on a low-traffic page while the hero PDP leaks | Re-point the backlog | 03 [bbe716a39c74], 05 [f856d689f3d8] |
+| Mix effect | Split conversion by cold, warm, returning; check cold share over time | Segment rates steady; blend moved by mix | A segment's own rate fell with steady creative | Audit the page only in the second case | 02 [953e03390b0d] |
+| Device split | Stage rates by device | Mobile close to half desktop or better (06) | Mobile far below | Mobile checklist (5.7) | 06 [1e03a58f6fe1] |
+| Category exit rate | Exit rate on collections vs site average | Near average | Well above | Check traffic intent, then 5.3 | 06 [1e03a58f6fe1] |
+| Direct entrances | Landing-page report: which PDPs and collections get direct entries | Those pages carry their own proof and delivery info | Proof only on homepage | Audit them as landing pages | 01 [3127398d2368] |
+
+### 5.2 Homepage
+
+| what to check | how | good | bad | fix | source |
+|---|---|---|---|---|---|
+| Share of sessions that start here | Landing-page report | Known before any homepage work | Assumed | Work the real entry pages first | 01 [3127398d2368] |
+| 3-second hero | Show the hero to a stranger for 3 seconds: who, what, why | They can say it | Vague line ("Expert hand, human touch") | Rewrite hero (07-LPG); hypothesis on clarity | 06 [5e578ca91bcc], 04 [bc5a8130eee9], 01 |
+| Hero drop | Scroll map reach just below the hero | About 93 to 95% still scrolling (04 demo) | Large drop right after hero | Hero clarity plus proof above the fold | 04 [bc5a8130eee9] |
+| Curation | Count promoted items and categories in the first 2 screens | Focused selection, clear category entry points | Head-to-toe assortment across many categories | Test a curated set (06 example: broad set cut ATC 6.07%) | 06 [5e578ca91bcc] |
+| New-visitor merchandising | What do visitors with no history see | Bestsellers | Static featured products | Test bestsellers for new visitors (06 example +23.01% CTR) | 06 [5e578ca91bcc], 03 [1823c8a7c180] |
+| Mega menu | Recordings: do new visitors open it; what is on top | Bestsellers carousel, icons, proof; non-money links at the bottom | Plain default links; contact and FAQ on top | Mega menu test (03 case) | 03 [033531683bba] |
+| Menu structure | Count options; check labels; click each | Customer words; under about 6 top options; clicks land on useful pages | Alphabetical, jargon, "commercial home" style intermediate pages | Restructure menu | 01 [f5942adec72b] |
+| Menu icon | Mobile: is the menu control familiar | Standard icon and position | Quirky icon or hidden control | Repair | 01 [d4484bf96e29] |
+| Hidden demand | Area map click share vs scroll reach per module | Most-clicked modules sit where most people reach | High click share, low reach (07: 10.41% clicks, 30 to 35% reach) | Test moving the module up alone | 07 [de4dfe536e94] |
+| Ignored modules | Area map: highly visible modules with few clicks | Every module earns clicks | Static banners that look like buttons; dead modules | Make it work, restyle or remove; confirm in recordings | 04 [09583734387e], 07 [3043da84ee0c] |
+| Proof above the fold | Is social proof visible before scrolling | Rating, review count, press or customer count in the hero | Proof only on About or reviews page | Test proof in hero | 04 [bc5a8130eee9], 01 [ba8350548af5] |
+| One conversion offer | Count offers competing in the first screen | One newsletter or promo offer with a concrete incentive | Several competing offers | Reduce to one | 06 [5e578ca91bcc], 03 [4653645c47ac] |
+| Popups and chat | Recordings and rage clicks in the first 5 seconds | Nothing covers the hero CTA or menu in the first seconds | Popup within 5 s; chat covering a button | Repair: delay or move | 04 [9d9871ee324b] |
+
+### 5.3 Collection page
+
+| what to check | how | good | bad | fix | source |
+|---|---|---|---|---|---|
+| Page job | Decide: browsing, deciding or buying, from traffic and recordings | Design matches the job | Add to Cart buttons on a browsing page | Test removing them; or, for repeat-buy consumables, test price on card plus add to cart (C14) | 06 [1e03a58f6fe1], 03 [6f635b9d003d] |
+| Products above the fold (mobile) | Open on a phone | 2 x 2 grid, 4 products visible | Hero banner or text block hides products | Cut banner to 30 to 40% of first view or less; "start again" (03) | 03 [6f635b9d003d], 06 [1e03a58f6fe1] |
+| Labels | Count labelled cards | A few products labelled (bestseller, new, low stock); labels true | Every product labelled; invented scarcity | Reduce; only real data | 03 [6f635b9d003d], 06 [e18bae3af3dd] |
+| Filters on mobile | Recordings: do shoppers scroll back to the top to refine | Sticky bottom filter bar or floating pill | Filter only at the top; hidden in hamburger | Test sticky filter, after confirming across several sessions | 04 [11e64288067b], 06 [1e03a58f6fe1] |
+| Tap targets | Measure controls | At least 44px with whitespace | Tiny thumbnails, cramped desktop grid | Resize | 06 [1e03a58f6fe1] |
+| Subcategory entry | Page review | Clear subcategories, visual hierarchy, swipeable carousels | Wall of undifferentiated products | Add structure | 06 [1e03a58f6fe1] |
+| Promo consistency | Compare promo message on collection and on its PDPs | Same promo reinforced | Promo vanishes on PDP | Align messaging | 06 [1e03a58f6fe1] |
+| Exit rate | Analytics | Near site average | Well above | Check traffic intent; then design | 06 [1e03a58f6fe1] |
+| Image weight | Grid image sizes | Under 60KB, WebP, lazy-loaded below the fold | Heavy images | 08-SPD | 06 [9461d45dfbe7] |
+
+### 5.4 Product page
+
+| what to check | how | good | bad | fix | source |
+|---|---|---|---|---|---|
+| 4 questions above the fold | Open on a phone; ask what is it, why this one, why now, why trust | All 4 answered; order value, proof, price, CTA | Generic title ("Face serum 30 ml"), no reason to choose, no urgency, no proof | Hero rewrite (07-LPG); headline framing test | 02 [bb761687ad68] [36f1d8130259] |
+| Above-fold clutter | Count pickers in the hero | No SKU details, size or quantity pickers in the hero (or defaulted) | Pickers push proof and CTA down | Move pickers to cart or default them | 02 [e10616e94452] |
+| Scroll cue | Look at the fold | Cue that more is below | Page looks finished at the fold | Add cue | 02 [36f1d8130259] |
+| Add to Cart position | Scroll map reach at the CTA | CTA above the fold and sticky | Reached by 25% (04 example) | Sticky add to cart; move up | 06 [fc7c739888fc], 03 [116d1016fa3b], 04 [edd07a1a15f6] |
+| CTA click share | Click map: sum clicks on and around the CTA | 5 to 7% (04 heuristic) | Under 1 to 3% | Emphasise, move, redesign; test | 04 [09583734387e] |
+| Reviews position | Where do stars and count first appear | In the hero | Reviews only far below | Move stars up | 03 [116d1016fa3b], 02 [36f1d8130259] |
+| Review count and mix | Review widget | About 100+ reviews; media reviews first; mix of 4 and 5 stars; 4.8 reads real | 0 reviews; wall of 5.0; text only | Get reviews first; sort media first; show real distribution | 02 [a507cc86ec03] [0a1f9ee893a3], 06 [e18bae3af3dd] |
+| Proof matches claim | Read the featured reviews against the hero claim | Reviews prove the specific claim; specifics (age, result, time) | Generic "great product" wall | Curate claim-matched reviews and before-and-afters | 02 [1d5e67c73cdd], 01 [f95f16ca7611] |
+| Review authenticity cues | Review dates | Spread over time | Bunched around the same dates | Fix collection cadence; do not fake | 01 [e24c4415d85e] |
+| Gallery | Swipe the carousel | Thumbnails, not dots; gallery sells (benefits, UGC, video, guarantee) | Dots; product-only shots | Test gallery as mini landing page | 03 [116d1016fa3b] |
+| Guarantee visibility | Find the guarantee | Visible next to the CTA (older or risk-averse audiences) | Collapsed accordion | Un-collapse; test | 03 [116d1016fa3b] |
+| Trust elements | List every badge and statement near the CTA | Specific policy and proof statements (returns, guarantee, customer count) | Generic security seals as the only "proof" | Remove generic seals; test policy statements (C1) | 02 [cdd5df001439], 03 [84ebf548938d], 06 [e18bae3af3dd] |
+| Price, shipping, returns, delivery | Find each without clicking | All visible; consistent currency and origin | "Add to cart to see shipping"; $ note on a £ price; inconsistent times | Surface and align | 06 [fc7c739888fc], 01 [e24c4415d85e] |
+| Long copy block | Scroll map section by section | Smooth decay | Steep drop after one paragraph (04: about 30%) | Bullets, bold, restructure | 04 [edd07a1a15f6], 03 [116d1016fa3b] |
+| "So what" on every line | Read each feature line | Outcome first, feature as proof | "30 ml, vegan, triple peptide" as headlines | Rewrite (07-LPG) | 02 [790f6b3372c2] |
+| Table stakes given hero space | Look for free shipping, fast dispatch, great service as headlines | Shrunk to small points low on the page | Given hero space as differentiators | Shrink | 02 [cf0bc0f31721] |
+| Top objection answered | Compare "almost did not buy" themes with hero and CTA area | Top objection answered in hero or beside CTA | Objection unanswered (leather quality; time to results) | Hero or section test (03 cases) | 03 [d8e9c11154e5] [109929fb0656] |
+| FAQ content | Read the FAQ | Top 3 real objections from research | Shipping policy, brand story | Rebuild from research | 02 [499b4e67252a] |
+| Alternatives handled | Read the end of the copy | Every other solution addressed | Silent on cheaper or existing options | Add section | 02 [9f610afef497] |
+| Message match | Open each active ad next to the page | Same persona, promise, words | Specific ad into a generic 9-benefit PDP | Message-matched page per persona or offer | 02 [a5cf6ee34972], 03 [6695665021f2] |
+| Cold-traffic format | Where does unaware or VSL traffic land | Landing page or advertorial with hook, problem, mechanism, objections, proof, risk reversal, CTA | Plain PDP | Pre-sell page test (C2 for traffic) | 02 [aa0e72b56778], 03 [2d977920a505] |
+| Dead clicks | Insights, click map, recordings | Static items do not block purchase | Images that do not open, logo that does not go home, pricing block with 1 live button | Add the expected action | 04 [0eae610ddc62] |
+| Quick backs and hunting | Insights, recordings | Normal comparison shopping | Leaving within seconds; racing to find price, reviews, delivery | Surface the missing item sooner | 04 [5b9da7dd1967] |
+| Popups and chat | Recordings, rage clicks | Nothing covers ATC in the first 5 s | Popup within 5 s; chat over ATC; cookie bar over button | Repair | 04 [9d9871ee324b], 03 [a2d5c573076a] |
+| Demographic fit | Fonts, images, readability vs buyer | Target-age images, larger fonts, scannable text for older buyers | Young models for a pro-age brand; small text | Redesign (07-LPG); test | 03 [116d1016fa3b] [6695665021f2] |
+| AI-referred visitors | Segment AI referral traffic; read landing mix and conversion | PDP confirms product type, size, price, delivery, use case at once | Generic page forces re-browsing | Tailor PDP facts; measure RPS | 06 [86c233f0eb39] |
+| Load time | Real-user LCP on mobile | Under 2 s | 2.5 s+ | 08-SPD; isolate revenue with a test or holdout | 06 [9461d45dfbe7], 02 [36f1d8130259] |
+
+### 5.5 Cart
+
+| what to check | how | good | bad | fix | source |
+|---|---|---|---|---|---|
+| Coupon field | Is a discount-code box shown with no live promo | Hidden when no promo; working when one is | Box shown, no promo | Remove (03 case) | 03 [19e8c5c27387] |
+| Reassurance | Is there a returns, support, guarantee bar | Present near the checkout button | None | Add trust policy bar; test (C1) | 03 [84ebf548938d] |
+| Free-shipping progress | Add an item below threshold | "Spend $12 more" message | No message; threshold too low or absent | Add message; set threshold above typical cart | 02 [c6984ab0f0cc] [23f840cd83b0] |
+| Upgrade path | Add a single item | 1-click upgrade to routine or bundle that unlocks gift and shipping | Nothing | Cart drawer offer test | 02 [6baa7dce36c7] |
+| Gift thresholds | Raise cart value | Gifts unlock as spend rises (low COGS, high perceived value) | None | Gamification test (03 case) | 03 [e3ba0fb7d6f6], 02 [0ca0ef2a3d5d] |
+| In-cart upsells | Review cart | Relevant, low-friction add-ons | None, or irrelevant | Test | 03 [e3ba0fb7d6f6] |
+| Cost preview | Look for shipping, tax, fees | Shown or estimated before checkout | Appear only at last step | Show early (39% abandon for late costs) | 06 [d4104b13110f], 02 [27026398ed8a] |
+| Cart wipe or state bugs | Recordings; self-purchase; switch menus and variants at checkout | Cart persists | Silent cart wipe (04 case) | Repair immediately | 04 [0b8d2f6cc4d1] |
+| Cookie bar over cart button | Phone test | Clear | Covered | Repair | 03 [a2d5c573076a] |
+| Judge on | Metrics for any cart test | RPV and contribution | AOV alone | Set metrics per R1, R9 | 02 [0ca0ef2a3d5d] |
+
+### 5.6 Checkout
+
+| what to check | how | good | bad | fix | source |
+|---|---|---|---|---|---|
+| Testability | Plan tier and checkout extensibility status | Known before hypotheses are written | Client-side checkout test planned on a standard plan | Ship as repairs; Plus for tests (P22) | 05 [7c932a3b4986] |
+| Total extras | Sum shipping, tax, fees on a typical order | Under about 10% of AOV | $26 of extras on a $100 order (02 mockup) | Cut or fold into price; threshold shipping | 02 [27026398ed8a] |
+| Total shown early | Walk through | Total before checkout; no drip pricing | Monthly price on page, quarterly in cart (02 IM8) | Show true total | 02 [8b2d9df04dfb] |
+| Tax line | Look at the order summary | Included tax labelled clearly | Looks like a new charge | Label | 02 [8b2d9df04dfb] |
+| Guest checkout | Walk through as a new user | Guest is default and prominent; email collected during it | Forced or hidden account step (62% of sites, Baymard) | Turn off forced accounts `[verify UI]` | 02 [94a63f9f740b], 06 [d4104b13110f] |
+| Express pay | Look at the top of checkout | Shop Pay, Apple Pay, Google Pay first; UPI in India | Missing or buried; redirects | Enable and move up `[verify UI]` | 02 [a5c46083a30f], 06 [d4104b13110f] |
+| Field count | Count fields | Essentials only; optional marked; autofill works | Baymard average 11.3; bloated address block | Cut fields | 02 [c6984ab0f0cc], 06, 05 |
+| Progress indicator | Multi-step flow | Present | Absent | Add | 06 [d4104b13110f] |
+| Returns policy | Find it during checkout | Stated plainly ("30-day returns") | Hidden | Surface; do not rush free returns in fashion | 02 [1e401776f34b], 06 |
+| Delivery expectations | Read the delivery options | Realistic dates; fast options offered | Slow only; or dates hidden without legal review | Add fast options; hide-dates test only sized and reviewed (R122) | 02 [27026398ed8a] |
+| Payment trust cues | Look for payment logos, security indicators | Recognisable brands present | Startup-looking checkout with no brand presence | Add proof and brand presence, not generic seals (C1) | 06 [d4104b13110f], 02 [cdd5df001439] |
+| One-page vs multi-step | Note current design | Decided by a test or held constant | Changed on opinion | Test on Plus or server-side (C15) | 02 [c6984ab0f0cc], 06 [04a08881ac09] |
+| Mobile checkout | Phone walk-through | Large tap targets; wallet or one-page | Tiny fields; redirects | Mobile repairs | 06 [d4104b13110f] |
+| Abandonment flows | Are email and SMS recovery flows live | Live, measured against a holdout, not discount-only | Absent, or discount-only with no holdout | 14-EML build; P20 holdout | 02 [3163cc34fa79], 06 [e46b405d55df] |
+| Payment errors and completion tracked | Separate events for checkout start, payment error, completion by device | Tracked before and after changes | Only purchases tracked | 06-MEA | 06 [d4104b13110f] |
+
+### 5.7 Mobile
+
+| what to check | how | good | bad | fix | source |
+|---|---|---|---|---|---|
+| Effort split | Where is CRO time going | About 90% mobile | Desktop first | Re-plan | 02 [a56c27356031] |
+| Device conversion gap | Mobile vs desktop conversion | Mobile near half of desktop or better (06) | Far below | Mobile audit | 06 [1e03a58f6fe1] |
+| Mobile cart abandonment | Carts vs purchases on mobile | Better than about 85% (06) | Worse | Cart and checkout mobile fixes | 06 [d4104b13110f] |
+| Thumb zone | Where are key actions on a phone | Lower half; floating CTA; sticky filter | Top-only controls | Move controls | 06 [1e03a58f6fe1] |
+| Tap targets | Measure | At least 44px | Cramped | Resize | 06 [1e03a58f6fe1] |
+| Desktop grid squeezed | Compare layouts | Mobile-designed grid | Tiny thumbnails, unreadable text | Redesign | 06 [1e03a58f6fe1] |
+| Clickable phone and email | Tap them | Open dialler and mail | Static text | Repair | 06 [d4104b13110f] |
+| Wallets | Checkout on phone | Apple Pay, Google Pay, Shop Pay | Card entry only | Enable | 02 [a5c46083a30f], 06 |
+| LCP and INP | Chrome UX Report, Shopify Web Performance, PageSpeed Insights (real-user) `[verify UI]` | LCP under 2 s | 2.5 s+ | 08-SPD | 06 [9461d45dfbe7] |
+| Image weights | Inspect | Hero under 100KB, grid under 60KB, WebP, lazy-load | Heavy | 08-SPD | 06 [9461d45dfbe7] |
+| Hero check on a phone | Open every PDP on a phone, not a computer | 4 questions answered (5.4) | Only checked on desktop | Re-audit | 02 [36f1d8130259] |
+| Test segment | Every brief pre-registers device | Mobile read separately | Blended read only | Add to brief | 05 [1f26cd618e2d] |
+
+### 5.8 Behaviour signals (Clarity or Hotjar)
+
+| what to check | how | good | bad | fix | source |
+|---|---|---|---|---|---|
+| Rage clicks | Insights rate, then camera icon to recordings | Under about 1 to 2% and no blocking cause | Repeated clicks on a popup close, chat widget, or a control in the buy path | Remove or delay the blocker; recheck | 04 [9d9871ee324b] |
+| Dead clicks | Insights, click map, recordings | Static items do not block purchase (press logos) | Pricing blocks, logo, product images, check marks clicked with no action | Add the expected action or make static nature clear | 04 [0eae610ddc62] |
+| Excessive scrolling | Insights, recordings, scroll map | Very low rate; no hunting | Racing to find reviews, price, ATC; skipping a text wall | Move the item up or shorten | 04 [5b9da7dd1967] |
+| Quick backs | Insights, recordings | Normal comparison | Leaving a PDP within seconds for missing info | Surface price, reviews, delivery, sizing sooner | 04 [5b9da7dd1967] |
+| False clicks | Click map vs live page | Clicks sit on real controls | Clicks on button-styled non-buttons; clicks in empty space | Make them work or restyle; "massive" wins reported (03) | 03 [9568c40e1d88], 04 [09583734387e] |
+| Screenshot validity | Heatmap screenshot vs live page | Real page captured | Popup or broken layout captured | Change screenshot | 04 [09583734387e] |
+| Scroll checkpoints | Top, average fold, 75%, 50%, 25% | Key proof and CTA where most reach | Reviews or ATC reached by 25 to 30% | Move up | 04 [bc5a8130eee9] [edd07a1a15f6] |
+| Reach vs clicks | Area map click share vs scroll reach | Aligned | High clicks, low reach; or high reach, no clicks | Placement test; relevance check | 07 [de4dfe536e94] [3043da84ee0c] |
+| Engaged vs disengaged | Sort recordings by clicks and pages both ways | Clear difference in what engaged shoppers use | Sorts reflect page complexity, not intent | Read with caution; add filters | 04 [a1a3e1f62713] |
+| Pattern confirmation | Count sessions and devices showing the pattern | Several sessions, 2+ devices | 1 recording | Keep watching before writing a hypothesis | 04 [11e64288067b] |
+| Post-ship recheck | Fresh recordings of the new version | Friction gone; next issue found | Not rechecked | Schedule the recheck | 04 [0b8d2f6cc4d1] |
+| Tool cost | Daily sessions vs plan allowance | Paying only for jobs used | Hotjar bill or sampling at high traffic for heatmaps alone | Move heatmaps and recordings to Clarity `[web check: pricing]` | 07 [3728f5d4ae33] |
+| Survey coverage | Is there a post-purchase and an exit survey | Both live | Neither | P7 | 07 [f89dbadb9131], 03 [b4505f6c4061] |
+
+### 5.9 Test validity (run before, during and after every test)
+
+| what to check | how | good | bad | fix | source |
+|---|---|---|---|---|---|
+| Repair or test | Is the current state objectively broken | Both versions viable | Bug, broken tracking, blocked CTA | Repair; do not test | 05 [3eca46fe9ba3] |
+| Evidence gate | Count evidence points in the brief | 2 or more | Opinion only | Back to research | 05 [aad25dea9ed9], 03 [25979af2691c] |
+| Powered | Sample table or calculator vs weekly page traffic | Planned sample in 2 to 4 weeks | Needs months; MDE under 10% at low volume | Bolder change, bigger page, micro primary, or research only | 05 [00c82f0de25d] [67f74e89d43e] |
+| Relative vs absolute MDE | Read calculator input | Matches plan | +0.4 points confused with +20% | Recompute | 05 [00c82f0de25d] |
+| Tails | Brief | Two-sided, or one-sided with documented reason | One-sided to hit significance | Revert, recompute | 05 [517a8bce6324] |
+| Stopping rule | Brief names fixed horizon or a sequential engine | Named and followed | Stopped at first p < 0.05 | Result unreliable; re-run | 05 [e3ee87a025c5], 02 [699a7cd5ac4c] |
+| Bayesian prior | Vendor docs | Prior and stopping protection stated | Flat hidden prior; stopped on a peek | Treat as peeked; re-run | 05 [e3ee87a025c5] |
+| Runtime | Dates | 2 full weeks or more; each weekday twice; sample met | Under 1 week; split weeks | Extend only if pre-planned | 05 [5fae1beab1ba], 03 [7d481c590b57] |
+| SRM | Chi-square on users | p above 0.001 | p < 0.001 or visible skew | Do not trust; find cause | 05 [370ed8c02e34] |
+| Flicker | Load variant on slow mobile | No original flash | Flash then swap | Server-side; record anti-flicker cost | 05 [370ed8c02e34] |
+| Tracking | Tool conversions vs backend orders per arm | Match | Pixel broke mid-test | Invalidate | 05 [3eca46fe9ba3] |
+| Contamination | Traffic sources in the test | Retention traffic excluded or isolated; sticky bucketing | Klaviyo sends in the test; multi-click exposure to both arms | Cold-only page or ad-set split | 02 [699a7cd5ac4c] |
+| Bots | Filter applied | Yes | No | Filter and re-read | 05 [370ed8c02e34] |
+| Promo overlap | Marketing calendar vs dates | Clean window | Sale or holiday inside | Note confound; consider re-run | 05 [062507c94ee4] |
+| QA | 2 to 3 passes on devices | Done | Bug in variant | Fix and restart | 03 [4d0785cdcf2b] |
+| Concurrent tests | Test calendar | No overlap on the same page area | Two tests on one PDP area | Serialise | 03 [7d481c590b57] |
+| Multiple comparisons | Count metrics and segments read | 1 primary; pre-registered segments; correction applied | Many metrics; post-hoc slices | Bonferroni or FDR; slices seed new tests | 05 [1f26cd618e2d] |
+| Device direction | Pre-registered mobile vs desktop | Same direction | Blended win hides mobile loss | Investigate before shipping | 05 [1f26cd618e2d] |
+| Guardrails | AOV, margin, returns, refunds, load, ATC | Flat or better | Any worse | Not a win | 05 [7eeb62d20124], 02 [dad9c85ea261] |
+| Plausibility | Lift vs page maturity | 1 to 5% mature; 10 to 20% unoptimised | 50%+ | Twyman audit; replicate or hold out | 05 [370ed8c02e34] [8dc46d4893e1] |
+| Novelty | Daily plot; first vs repeat exposure | Stable | Early spike that fades | Judge on stable period | 05 [5fae1beab1ba] |
+| Inconclusive handling | Decision at full power | Recorded as "smaller than MDE"; not extended | Extended to chase significance | Close it | 05 [70db51ffb976] |
+| Winner still live | Live-winner register vs site | Live | Overwritten by theme or team change | Restore | 03 [f09cfbc3ef44] |
+| Platform sanity | A/A test | No difference | Significant A/A | Fix platform | 05 [0bda3b4d7e04] |
+| Case study claim | Baseline, sample, runtime, validity stated | Stated | Not stated | Hypothesis only | 05 [370ed8c02e34], 06 |
+
