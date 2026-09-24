@@ -2403,6 +2403,7 @@
    "mini_playbooks": [
     "02",
     "05",
+    "07",
     "09"
    ],
    "cards": [
@@ -8036,5 +8037,782 @@
   },
   "confidence": "medium",
   "general_practice": false
+ },
+ {
+  "id": "AVT-122",
+  "title": "Write a mock press release naming the job before building a new avatar-targeted line",
+  "domain": "02-AVT",
+  "bottleneck": [
+   "team_capacity",
+   "conversion"
+  ],
+  "lever": "alignment before build",
+  "hypothesis": "If the team writes a short customer-facing press release naming the avatar's job before building a new product line or campaign, then every function aligns to the same job from day one instead of drifting during build.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A new product line or campaign kicks off with a brief or spec but no one-page statement of the job it solves for a named avatar.",
+   "metrics": [
+    "other:evidence_quality"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:evidence_quality",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "founder"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "None. This only changes a planning document, not any live asset."
+  },
+  "prerequisites": [
+   "A named avatar candidate with at least a rough job statement"
+  ],
+  "steps": [
+   "Pick the avatar and state their job in one sentence before drafting anything else.",
+   "Write a short, plain press release as if the launch already happened, naming the job it solves and the proof it works.",
+   "Circulate the draft to everyone building the line: product, creative, copy, ops.",
+   "Flag any planned feature or claim that the press release does not support.",
+   "Keep the press release next to the brief and revise it only if the job itself changes."
+  ],
+  "test": {
+   "method": "No paid test; compare the finished launch assets against the press release for drift.",
+   "measure": "other:evidence_quality",
+   "read_point": "At launch review, before the campaign goes live."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "9246aff2271c"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "AVT-123",
+  "title": "Mine on-site search terms and browse-without-buy sessions for job clues",
+  "domain": "02-AVT",
+  "bottleneck": [
+   "conversion",
+   "acquisition_efficiency"
+  ],
+  "lever": "nonconsumption mining",
+  "hypothesis": "If we treat visitors who search the site or browse a category without buying as a job-discovery source, then we surface real, unserved jobs that buyer interviews and competitor reviews miss.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Avatar research draws only on buyers and competitor customers, with no review of on-site search terms or browse-without-buy sessions from people who did not purchase.",
+   "metrics": [
+    "other:evidence_quality",
+    "cvr_overall"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:evidence_quality",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "None. This only reads existing analytics data."
+  },
+  "prerequisites": [
+   "Site analytics with on-site search logging and category page tracking"
+  ],
+  "steps": [
+   "Pull on-site search terms that returned no purchase in the same session.",
+   "Pull category or product-page browse sessions that ended without an add to cart.",
+   "Group the terms and pages by theme and note what job each theme implies.",
+   "Cross-check the themes against known avatar records for a job the record is missing.",
+   "Log each new theme as a candidate job with the session count behind it."
+  ],
+  "test": {
+   "method": "No paid test; add this as a step in the monthly research review.",
+   "measure": "other:evidence_quality",
+   "read_point": "During the next avatar record review."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "35de9821d183"
+   ],
+   "rules": [
+    "R18"
+   ]
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "AVT-124",
+  "title": "Tag PDP reviews by use case so buyers find a matching reviewer",
+  "domain": "02-AVT",
+  "bottleneck": [
+   "conversion",
+   "trust_brand"
+  ],
+  "lever": "review curation",
+  "hypothesis": "If product page reviews are tagged and filterable by use case, then a visitor can find a reviewer who bought the product for their own job, which builds trust faster than an unsorted review list.",
+  "applies_when": [
+   "any",
+   "catalogue"
+  ],
+  "signal": {
+   "check": "The product page shows all reviews in one unsorted list with no way to filter or find a reviewer in a similar situation.",
+   "metrics": [
+    "cvr_overall",
+    "other:evidence_quality"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "dev"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Reversible. Only changes how reviews display, not the reviews themselves."
+  },
+  "prerequisites": [
+   "A review platform that supports tags or filters",
+   "Known avatar or use-case labels from the research file"
+  ],
+  "steps": [
+   "List the distinct use cases or jobs the product already serves, from the avatar record.",
+   "Tag existing reviews by use case where the text makes it clear.",
+   "Add a filter or highlighted section on the product page so a visitor can see reviews matching their own situation.",
+   "Ask new reviewers a short question that captures their use case for future tagging.",
+   "Recheck the tags each quarter as new use cases show up in reviews."
+  ],
+  "test": {
+   "method": "Run 2 versions of the product page, one with use-case filtered reviews and one with the standard list.",
+   "measure": "cvr_overall",
+   "read_point": "After the store's normal test spend or sample size."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "541818498033"
+   ],
+   "rules": [
+    "R73"
+   ]
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "AVT-125",
+  "title": "Use the 30-second riff test as a readiness gate before writing copy",
+  "domain": "02-AVT",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "research readiness gate",
+  "hypothesis": "If a writer must riff for 30 seconds unprompted on the avatar's identity, hopes, situation and problem before drafting copy, then failing the test catches a research gap before it becomes weak copy.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A writer starts a copy round without being able to describe the avatar's situation, hopes and problem out loud, unscripted, for 30 seconds.",
+   "metrics": [
+    "other:editing_effort",
+    "cvr_overall"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:editing_effort",
+   "direction": "down",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "None. This is a self-check, not a live change."
+  },
+  "prerequisites": [
+   "At least one avatar record, even a preliminary one"
+  ],
+  "steps": [
+   "Before drafting, set a 30-second timer.",
+   "Riff out loud, unscripted, on who the avatar is, their hopes, situation, problem and what they would wish for if they could snap their fingers.",
+   "If the riff runs dry or defaults to a demographic label, stop and run another research pass first.",
+   "If the riff is fluent and specific, proceed to draft copy from it.",
+   "Log a pass or fail for each writer and round to see if the gate catches real gaps."
+  ],
+  "test": {
+   "method": "No paid test; a pass or fail self-check logged before each copy round.",
+   "measure": "other:editing_effort",
+   "read_point": "Before the round's copy is drafted."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "03"
+   ],
+   "cards": [
+    "0d27b0e8ba75"
+   ],
+   "rules": [
+    "R32"
+   ]
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "AVT-126",
+  "title": "Use a competitor demographic lookup as a starting point when no avatar exists",
+  "domain": "02-AVT",
+  "bottleneck": [
+   "conversion",
+   "acquisition_efficiency"
+  ],
+  "lever": "cold-start avatar seed",
+  "hypothesis": "If a brand with no customers yet pulls its largest competitor's top customer demographic from a traffic tool or a direct chatbot query, then research starts from a real seed instead of a guess.",
+  "applies_when": [
+   "new_store",
+   "any"
+  ],
+  "signal": {
+   "check": "A brand has no buyers yet and avatar work starts from an assumed demographic instead of a competitor lookup.",
+   "metrics": [
+    "other:evidence_quality"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:evidence_quality",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "None. This only informs where to start researching."
+  },
+  "prerequisites": [
+   "At least one identifiable larger competitor selling the same or a similar product"
+  ],
+  "steps": [
+   "Identify the largest visible competitor in the category.",
+   "Look up its estimated visitor demographic in a traffic or audience tool, or ask an AI chatbot directly for the competitor's likely customer profile.",
+   "Treat the result as a rough starting seed, not a confirmed avatar.",
+   "Immediately follow with review mining, forum mining or interviews to confirm or correct the seed.",
+   "Mark the record provisional until real buyer evidence replaces the seed."
+  ],
+  "test": {
+   "method": "No paid test; a documentation step at the start of a research sprint.",
+   "measure": "other:evidence_quality",
+   "read_point": "Before the first research sprint on a new product or market."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "03",
+    "04"
+   ],
+   "cards": [
+    "d75e33882fdb",
+    "b399ed19a017"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "AVT-127",
+  "title": "Read competitor page polish as a market-health signal before committing",
+  "domain": "02-AVT",
+  "bottleneck": [
+   "acquisition_efficiency",
+   "cash_inventory"
+  ],
+  "lever": "market health check",
+  "hypothesis": "If we check whether category competitors look like real, professional, sustained businesses instead of amateur or struggling ones, then we get an early signal on whether the market can support a new avatar-based offer before spending on research or media.",
+  "applies_when": [
+   "any",
+   "new_store"
+  ],
+  "signal": {
+   "check": "The team commits research or media budget to a niche without ever assessing whether competitor pages look professional and sustained versus amateur.",
+   "metrics": [
+    "other:evidence_quality"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:evidence_quality",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "None. This is a read-only competitor scan."
+  },
+  "prerequisites": [
+   "A list of visible competitors in the category"
+  ],
+  "steps": [
+   "Pull up every visible competitor site or page in the category.",
+   "Note whether the pages look professionally produced and appear to be running as a real, ongoing business.",
+   "Note the diversity of branding and framing across competitors as a sign of how deep the market is.",
+   "Flag the category as healthy if most competitors look real and diverse; flag it as a caution if most look amateur or abandoned.",
+   "Use the flag to decide how much further research or spend the candidate avatar deserves."
+  ],
+  "test": {
+   "method": "No paid test; a documentation step during category research.",
+   "measure": "other:evidence_quality",
+   "read_point": "Before committing budget to a new avatar or niche."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "05"
+   ],
+   "cards": [
+    "2ce06b2439fa"
+   ],
+   "rules": [
+    "R46"
+   ]
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "AVT-128",
+  "title": "Survey existing customers with a short form to name the avatar",
+  "domain": "02-AVT",
+  "bottleneck": [
+   "conversion",
+   "measurement_data"
+  ],
+  "lever": "first-party identity survey",
+  "hypothesis": "If existing customers get a short, free-form survey asking how they describe themselves and what specifically works for them, then repeating identity-plus-reason pairs across responses name a real avatar without a live interview.",
+  "applies_when": [
+   "any",
+   "dtc_only"
+  ],
+  "signal": {
+   "check": "The brand has an existing customer list but has never asked them directly how they would describe themselves or why the product works for them.",
+   "metrics": [
+    "other:evidence_quality"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:evidence_quality",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "None. This is a one-way survey to existing customers."
+  },
+  "prerequisites": [
+   "An email or messaging channel to reach existing customers",
+   "A free-form survey tool"
+  ],
+  "steps": [
+   "Build a short free-form survey asking how the customer would describe themselves and their situation.",
+   "Ask what specifically about the product works for them.",
+   "Send it to the existing customer list through the channel already in use.",
+   "Group answers that pair an identity with a specific reason it works.",
+   "Treat a pairing that repeats across many respondents as an avatar candidate, not a single aspirational answer."
+  ],
+  "test": {
+   "method": "No paid test; a one-time or recurring survey send.",
+   "measure": "other:evidence_quality",
+   "read_point": "After the survey closes, during avatar record review."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "06"
+   ],
+   "cards": [
+    "d287ab9044c4"
+   ],
+   "rules": [
+    "R59"
+   ]
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "AVT-129",
+  "title": "Tally unprompted self-description in customer calls to find the dominant avatar",
+  "domain": "02-AVT",
+  "bottleneck": [
+   "conversion",
+   "team_capacity"
+  ],
+  "lever": "dominant avatar detection",
+  "hypothesis": "If every customer call or community conversation logs how the customer describes themselves unprompted, then the identity phrase with the largest share of mentions names the brand's real dominant avatar.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "The team believes it knows its dominant avatar but has never tallied how customers actually describe themselves across calls or community conversations.",
+   "metrics": [
+    "other:evidence_quality"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:evidence_quality",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "None. This only logs existing conversations."
+  },
+  "prerequisites": [
+   "A regular cadence of customer calls or community conversations"
+  ],
+  "steps": [
+   "During every customer call or group conversation, note any unprompted self-description the customer uses.",
+   "Log each phrase in a running tally, not just as a memorable quote.",
+   "After enough calls, check whether one identity phrase clearly dominates the tally.",
+   "If one dominates, point outward content and messaging at that identity.",
+   "Re-run the tally periodically, since the mix can shift."
+  ],
+  "test": {
+   "method": "No paid test; a tally kept alongside the standing call cadence.",
+   "measure": "other:evidence_quality",
+   "read_point": "After a batch of calls, at the quarterly avatar review."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "06"
+   ],
+   "cards": [
+    "bccb9c4b4dab"
+   ],
+   "rules": [
+    "R19",
+    "R83"
+   ]
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "AVT-130",
+  "title": "Mine competing book titles and subtitles for pre-tested headline language",
+  "domain": "02-AVT",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "pre-tested copy mining",
+  "hypothesis": "If we read the titles and subtitles of the best-selling books in the category, then we get headline and offer language that authors and publishers already tested hard, since a book takes far longer to produce than a post.",
+  "applies_when": [
+   "any",
+   "catalogue"
+  ],
+  "signal": {
+   "check": "Headline and offer language is brainstormed from scratch with no check against how the category's best-selling books already frame the same promise.",
+   "metrics": [
+    "other:evidence_quality"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:evidence_quality",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "None. This only reads public book listings."
+  },
+  "prerequisites": [
+   "A category with an identifiable set of best-selling books, or the most optimized listings as a fallback"
+  ],
+  "steps": [
+   "Search the main category keyword on Amazon or another book retailer.",
+   "Find the top-selling books in the niche.",
+   "Read every title and subtitle for the promise, the constraint and the audience it names.",
+   "If the niche has no meaningful book presence, apply the same read to the most heavily optimized product listings instead.",
+   "Log the strongest phrases as candidate headline or offer language to adapt, not to copy directly."
+  ],
+  "test": {
+   "method": "No paid test; a research-log step feeding the next headline test.",
+   "measure": "other:evidence_quality",
+   "read_point": "During the research sprint, before writing headlines."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "08"
+   ],
+   "cards": [
+    "bb02448d1007"
+   ],
+   "rules": [
+    "R44"
+   ]
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "AVT-131",
+  "title": "Compare review counts across listings as a rough demand proxy",
+  "domain": "02-AVT",
+  "bottleneck": [
+   "cash_inventory",
+   "acquisition_efficiency"
+  ],
+  "lever": "demand sizing",
+  "hypothesis": "If we compare review counts across competing listings for a candidate avatar's product, then we get a rough, low-cost read on relative demand before committing research or media budget.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A candidate avatar or product idea moves toward deeper research or spend with no check on review counts across competing listings as a demand proxy.",
+   "metrics": [
+    "other:evidence_quality"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:evidence_quality",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "None. This only reads public listing data."
+  },
+  "prerequisites": [
+   "A set of comparable competing listings for the candidate product"
+  ],
+  "steps": [
+   "Identify the competing listings for the product category or the closest comparable product.",
+   "Record the review count for each listing.",
+   "Treat higher review counts as a rough proxy for higher relative sales volume, not an exact figure.",
+   "Compare the read against keyword volume or subreddit size for the same candidate to cross-check.",
+   "Log the comparison as one input to the demand line, not a final answer."
+  ],
+  "test": {
+   "method": "No paid test; a documentation step before committing spend.",
+   "measure": "other:evidence_quality",
+   "read_point": "Before committing media spend to a new avatar or product."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "08"
+   ],
+   "cards": [
+    "8a7237ef9555"
+   ],
+   "rules": [
+    "R44"
+   ]
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "AVT-132",
+  "title": "Answer 3 questions about the avatar before writing new creative",
+  "domain": "02-AVT",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "research readiness gate",
+  "hypothesis": "If a writer must answer what the avatar vents to a friend about, what they have already tried, and what promises they are sick of hearing before writing new creative, then a vague answer catches a research gap before it becomes another generic ad.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A new round of creative starts and the writer cannot give specific, sourced answers to what the avatar vents about, has tried, or is tired of hearing.",
+   "metrics": [
+    "other:editing_effort",
+    "hook_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:editing_effort",
+   "direction": "down",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "None. This is a self-check before writing."
+  },
+  "prerequisites": [
+   "At least one round of review, forum or call research on the avatar"
+  ],
+  "steps": [
+   "Before writing new creative, ask what the avatar vents to a friend about.",
+   "Ask what they have already tried and how it failed.",
+   "Ask what promises or claims they are sick of hearing from this category.",
+   "If any answer is generic or unknown, run another research pass on that gap first.",
+   "Only draft new creative once all 3 answers are specific and sourced."
+  ],
+  "test": {
+   "method": "No paid test; a pass or fail self-check logged before each creative round.",
+   "measure": "other:editing_effort",
+   "read_point": "Before the round's creative is drafted."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "09"
+   ],
+   "cards": [
+    "f6f18000b06c"
+   ],
+   "rules": [
+    "R32"
+   ]
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "AVT-133",
+  "title": "Verify avatar phrasing is attested on the cohort's own platform",
+  "domain": "02-AVT",
+  "bottleneck": [
+   "conversion",
+   "trust_brand"
+  ],
+  "lever": "cohort phrasing check",
+  "hypothesis": "If avatar phrasing is checked against where that specific age cohort actually posts before it goes into copy, then the brand avoids borrowing one generation's platform language for another and sounding out of touch.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Copy uses phrasing pulled from a platform the avatar's own age cohort does not actually use, such as slang from a younger platform aimed at an older buyer.",
+   "metrics": [
+    "other:evidence_quality",
+    "cvr_overall"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:evidence_quality",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "None. This is a source check before copy ships."
+  },
+  "prerequisites": [
+   "A named age cohort for the avatar",
+   "Research quotes tagged by their source platform"
+  ],
+  "steps": [
+   "Confirm which platform the avatar's specific age cohort actually uses, from analytics or a platform demographics check.",
+   "Trace every candidate phrase back to whether that cohort actually said it on that platform.",
+   "Reject a phrase borrowed from a different generation's platform, even if it sounds catchy.",
+   "Re-source phrasing from the cohort's own posts, reviews or calls instead.",
+   "Log the source platform next to each phrase in the record."
+  ],
+  "test": {
+   "method": "No paid test; a source check during copy review.",
+   "measure": "other:evidence_quality",
+   "read_point": "During copy review, before the round ships."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "09"
+   ],
+   "cards": [
+    "9b44ebb5a6e9"
+   ],
+   "rules": [
+    "R48"
+   ]
+  },
+  "confidence": "medium",
+  "general_practice": true
  }
 ]
