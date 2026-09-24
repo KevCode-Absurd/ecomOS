@@ -470,6 +470,7 @@
    "mini_playbooks": [
     "02",
     "04",
+    "05",
     "09"
    ],
    "cards": [
@@ -3745,7 +3746,8 @@
   "sources": {
    "mini_playbooks": [
     "01",
-    "03"
+    "03",
+    "07"
    ],
    "cards": [
     "8946e9e66b01",
@@ -4450,6 +4452,7 @@
    "mini_playbooks": [
     "01",
     "02",
+    "06",
     "07"
    ],
    "cards": [
@@ -6954,7 +6957,8 @@
    "mini_playbooks": [
     "01",
     "04",
-    "06"
+    "06",
+    "07"
    ],
    "cards": [
     "753e79e5c3d8",
@@ -9171,5 +9175,4547 @@
   },
   "confidence": "low",
   "general_practice": false
+ },
+ {
+  "id": "ADC-139",
+  "title": "Distill the brand's own video content into a copy compile doc with an LLM",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "team_capacity",
+   "conversion"
+  ],
+  "lever": "content mining process",
+  "hypothesis": "If the team runs the brand's own video, podcast or livestream transcripts through an LLM distillation prompt, then the copy compile document gets built faster because the tool extracts hooks, stories and phrases instead of a writer re-watching hours of footage.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "The team has hours of the brand's or founder's own video or audio content but no written compile document of its hooks, stories and phrases.",
+   "metrics": [
+    "other:production_time_hours"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:production_time_hours",
+   "direction": "down",
+   "size": "unknown; source reports a 17-minute video distilled to key points in about 30 seconds with the right prompt",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Distilled output still needs a human writer to verify quotes, stories and numbers before use."
+  },
+  "prerequisites": [
+   "Existing video, podcast or livestream content from the brand or founder",
+   "Access to an LLM tool"
+  ],
+  "steps": [
+   "Pull transcripts of the brand's or founder's most-watched videos or livestreams.",
+   "Feed each transcript to an LLM asking for main points, common phrases, stories and lines that show audience understanding.",
+   "Ask a follow-up prompt for angles, justifications and short story summaries.",
+   "Save the extracted material into the brand's compile document for reuse in ads and emails.",
+   "Verify every quote, story and number against the original transcript before it ships."
+  ],
+  "test": {
+   "method": "Compare the time to draft a new asset using the distilled compile document against the old method of re-watching content from scratch.",
+   "measure": "other:production_time_hours",
+   "read_point": "After the next few assets are drafted using the distilled document."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "4e85d10ef802",
+    "243af58d06bd"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "ADC-140",
+  "title": "Mine competitor video transcripts with an LLM for angles, never wording",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "conversion",
+   "acquisition_efficiency"
+  ],
+  "lever": "competitor research method",
+  "hypothesis": "If the team distills close competitors' or category leaders' video transcripts with an LLM for angles and structure, then new ad ideas surface faster because the pattern behind a rival's pitch becomes visible without copying its wording.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Competitor research today is limited to reading landing pages and ad screenshots, and video or podcast content from rivals goes unmined.",
+   "metrics": [
+    "other:content_backlog"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:ideas_generated",
+   "direction": "up",
+   "size": "unknown; no test given in source",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Use only for structure and angle ideas; never copy a rival's exact wording, claims, logo or product."
+  },
+  "prerequisites": [
+   "A close competitor or category leader with public video or podcast content"
+  ],
+  "steps": [
+   "Pull transcripts of a close competitor's or category leader's top-performing videos.",
+   "Feed each transcript to an LLM asking for the angle, structure, claims and stories used.",
+   "List the pattern (not the wording) as a candidate structure to reskin with the brand's own facts.",
+   "Rewrite with the brand's own proof, numbers and voice before any use."
+  ],
+  "test": {
+   "method": "Compare ideas generated from transcript mining against ideas generated from a cold brainstorm on the same brief.",
+   "measure": "other:ideas_generated",
+   "read_point": "After the next angle-generation session."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "42ebacbe34c3"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "ADC-141",
+  "title": "Segment welcome emails by how the subscriber joined the list",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "repeat_retention",
+   "conversion"
+  ],
+  "lever": "welcome email segmentation",
+  "hypothesis": "If the first welcome email matches how someone joined the list (newsletter opt-in, lead magnet, or purchase), then early opens and clicks rise because each new subscriber gets the specific thing they expected instead of a generic hello.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "One welcome email or flow is sent to every new subscriber regardless of whether they opted in for a newsletter, a lead magnet, or just made a purchase.",
+   "metrics": [
+    "email_click_rate",
+    "cvr_overall"
+   ]
+  },
+  "expected_effect": {
+   "metric": "email_click_rate",
+   "direction": "up",
+   "size": "unknown; source gives no measured lift",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Requires the list platform to tag or track the join source."
+  },
+  "prerequisites": [
+   "Ability to tag or segment new subscribers by their join source"
+  ],
+  "steps": [
+   "Identify the distinct ways people join the list (newsletter signup, lead magnet, discount popup, first purchase).",
+   "Write a separate first email for each join source that delivers exactly what was promised.",
+   "Route new subscribers into the matching welcome email by their join source tag.",
+   "Track open and click rate by join-source segment for the first email."
+  ],
+  "test": {
+   "method": "Compare open and click rate of the segmented first emails against the prior single generic welcome email.",
+   "measure": "email_click_rate",
+   "read_point": "After enough new subscribers have passed through each segment."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "3ce42487fd05",
+    "8a4864a0a123"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "ADC-142",
+  "title": "Design a three-part lifecycle email system: welcome, sell, and revive",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "repeat_retention",
+   "conversion"
+  ],
+  "lever": "email lifecycle architecture",
+  "hypothesis": "If a list has a written welcome sequence, a sales or promo sequence, and a re-engagement sequence, then retention revenue is more predictable because every subscriber has a defined next email regardless of where they are in the relationship.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "The list has an ad hoc mix of promo blasts with no dedicated value-only welcome sequence and no defined re-engagement sequence for inactive subscribers.",
+   "metrics": [
+    "email_click_rate",
+    "flow_revenue_share"
+   ]
+  },
+  "expected_effect": {
+   "metric": "flow_revenue_share",
+   "direction": "up",
+   "size": "unknown; source gives no measured lift for the full system",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": ""
+  },
+  "prerequisites": [
+   "An email platform that supports automations and segmentation"
+  ],
+  "steps": [
+   "Map the three stages: welcome (value only, train opens and clicks), sales or promo plus deadline, and re-engagement for inactive subscribers.",
+   "Write or confirm content for each stage rather than only ad hoc promo sends.",
+   "Set the trigger for each stage (signup, time since signup, inactivity window).",
+   "Track revenue share coming from these automations versus one-off broadcast sends."
+  ],
+  "test": {
+   "method": "Compare flow revenue share and list engagement before and after all three stages are live.",
+   "measure": "flow_revenue_share",
+   "read_point": "One full quarter after all three stages are live."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "e326516d4bdb",
+    "71a40b459b34"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "ADC-143",
+  "title": "Trigger a re-engagement sequence for subscribers inactive 30 to 60 days",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "repeat_retention"
+  ],
+  "lever": "list hygiene automation",
+  "hypothesis": "If subscribers with no opens in 30 to 60 days get a short re-engagement sequence ending in a plain opt-out ask, then sender reputation and deliverability improve because unengaged addresses are removed instead of dragging down inbox placement.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "No automation exists to catch subscribers who have stopped opening emails, and the list keeps growing in size but not in engagement rate.",
+   "metrics": [
+    "email_click_rate",
+    "list_size"
+   ]
+  },
+  "expected_effect": {
+   "metric": "email_click_rate",
+   "direction": "up",
+   "size": "unknown; source's own spam-folder clients saw opens fall to 1% to 3%",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Since Apple Mail Privacy Protection, opens are an unreliable trigger by themselves; consider clicks or purchases too, and note a recent buyer may simply not need more emails yet."
+  },
+  "prerequisites": [
+   "An email platform that supports inactivity-based automation triggers"
+  ],
+  "steps": [
+   "Define an inactivity window (30 to 60 days with no opens or clicks) for the list.",
+   "Build an automation that sends 1 to 2 re-engagement emails to that segment.",
+   "End the sequence with a plain question: do they still want to hear from the brand.",
+   "Remove or suppress subscribers who do not respond, and keep those who do."
+  ],
+  "test": {
+   "method": "Track inbox placement and overall open rate before and after the sequence has run for a full cycle.",
+   "measure": "email_click_rate",
+   "read_point": "One full inactivity cycle after the sequence launches."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "5e43074e0a7e"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": false
+ },
+ {
+  "id": "ADC-144",
+  "title": "Branch automated sends by engagement: openers get sold faster",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "repeat_retention",
+   "conversion"
+  ],
+  "lever": "engagement-based automation branching",
+  "hypothesis": "If an automation checks whether a subscriber opened the prior email and branches accordingly, then conversion improves because engaged subscribers move faster to an offer while unengaged ones get more value first instead of being pushed to sell too soon.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Every subscriber in an automation gets the same next email regardless of whether they opened or clicked the previous one.",
+   "metrics": [
+    "email_click_rate",
+    "cvr_overall"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown; source gives no measured lift",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": ""
+  },
+  "prerequisites": [
+   "An email platform with if/else branching on open or click behavior"
+  ],
+  "steps": [
+   "Add an if/else step after each email checking whether the prior email was opened.",
+   "Route openers to a faster path toward a soft or hard sell.",
+   "Route non-openers to another value email before any sell attempt.",
+   "Review conversion by branch after enough volume has passed through."
+  ],
+  "test": {
+   "method": "Compare conversion rate of the branched automation against the old single-path version.",
+   "measure": "cvr_overall",
+   "read_point": "After a full automation cycle at current volume."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "7ef08521112a",
+    "be2cafef8511"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "ADC-145",
+  "title": "Add a one-click post-purchase checkout upsell to raise AOV",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "aov"
+  ],
+  "lever": "post-purchase upsell",
+  "hypothesis": "If checkout offers a one-click upsell right after payment with no new card entry, then average order value rises because the buyer has already committed to paying and faces almost no added friction to add one more item.",
+  "applies_when": [
+   "any",
+   "shopify"
+  ],
+  "signal": {
+   "check": "Checkout ends at the confirmation page with no additional offer, even though the buyer has just entered payment details.",
+   "metrics": [
+    "aov",
+    "units_per_order"
+   ]
+  },
+  "expected_effect": {
+   "metric": "aov",
+   "direction": "up",
+   "size": "unknown; no measured lift given in source",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "dev"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Test with a genuinely relevant add-on; an irrelevant upsell can hurt trust right after a purchase."
+  },
+  "prerequisites": [
+   "A checkout platform or app that supports post-purchase one-click upsells"
+  ],
+  "steps": [
+   "Pick a genuinely relevant add-on product or bundle for the post-purchase offer.",
+   "Add a one-click upsell step after payment that does not require re-entering card details.",
+   "Set the offer's price and margin so it is worth the added checkout step.",
+   "Track AOV and upsell take rate after launch."
+  ],
+  "test": {
+   "method": "Compare AOV on orders with the post-purchase upsell live against a holdout period or segment without it.",
+   "measure": "aov",
+   "read_point": "After 2 to 4 weeks of the upsell being live."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "be8e1c2afb00"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "ADC-146",
+  "title": "Compute cost per lead, conversion rate, AOV and ROAS by funnel stage",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "measurement_data",
+   "acquisition_efficiency"
+  ],
+  "lever": "funnel-stage metric tracking",
+  "hypothesis": "If the team computes cost per lead, lead-to-buyer conversion, AOV and ROAS by funnel stage each period, then wasted spend gets found faster because the exact stage where money leaks becomes visible instead of judging the funnel only on blended ROAS.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "The team reviews only blended ROAS or total spend and revenue, with no breakdown of cost per lead, conversion rate or AOV by funnel stage.",
+   "metrics": [
+    "roas_blended",
+    "cpa"
+   ]
+  },
+  "expected_effect": {
+   "metric": "roas_blended",
+   "direction": "up",
+   "size": "unknown; no measured lift given in source",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Do the arithmetic in code from real spend, lead and order data, not by hand."
+  },
+  "prerequisites": [
+   "Spend, lead, and order data broken out by funnel stage or channel"
+  ],
+  "steps": [
+   "Pull spend, leads, buyers and order values for the period by funnel stage.",
+   "Compute cost per lead, lead-to-buyer conversion rate, AOV and ROAS for each stage.",
+   "Compare stages to find where the largest drop or cost increase sits.",
+   "Route the next fix (creative, offer, page) to the specific leaking stage."
+  ],
+  "test": {
+   "method": "Track whether the fixed stage's own metric improves in the following period.",
+   "measure": "roas_blended",
+   "read_point": "The next full reporting period after a stage fix."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "43446f25064d"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": false
+ },
+ {
+  "id": "ADC-147",
+  "title": "Gate a discount behind email capture at the buy or exit moment",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "acquisition_volume",
+   "repeat_retention"
+  ],
+  "lever": "exit-intent list building",
+  "hypothesis": "If a discount is offered only in exchange for an email at the buy or exit moment rather than displayed sitewide, then list size grows without discounting every visitor, because only shoppers close to leaving see the offer.",
+  "applies_when": [
+   "any",
+   "dtc_only"
+  ],
+  "signal": {
+   "check": "A discount is shown to every visitor sitewide with no email capture step, so the brand both discounts broadly and fails to grow its list from the offer.",
+   "metrics": [
+    "list_size",
+    "discount_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "list_size",
+   "direction": "up",
+   "size": "unknown; no measured lift given in source",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": ""
+  },
+  "prerequisites": [
+   "A popup or exit-intent tool tied to the email platform"
+  ],
+  "steps": [
+   "Pick a real, affordable discount to offer in exchange for an email address.",
+   "Trigger the offer only at exit intent or at a defined point near the buy decision, not sitewide.",
+   "Confirm the discount code sends automatically once the email is captured.",
+   "Track list growth rate and discount redemption after launch."
+  ],
+  "test": {
+   "method": "Compare list growth rate and discount rate before and after gating the offer behind email capture.",
+   "measure": "list_size",
+   "read_point": "After 2 to 4 weeks of the gated offer running."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "58af3dd961fe"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "ADC-148",
+  "title": "Point every acquisition channel at one shared front-end offer",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "acquisition_efficiency"
+  ],
+  "lever": "channel consolidation",
+  "hypothesis": "If every acquisition channel (ads, organic content, email signup) points to the same front-end offer instead of a different one per channel, then message clarity and funnel measurement improve because every channel feeds one measurable path instead of many fragmented ones.",
+  "applies_when": [
+   "scaling_store",
+   "new_store"
+  ],
+  "signal": {
+   "check": "Different channels each promote their own separate offer or landing page, making it hard to compare channel performance on one funnel.",
+   "metrics": [
+    "cpa",
+    "roas_blended"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cpa",
+   "direction": "down",
+   "size": "unknown; no measured lift given in source",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "Fine for a single hero offer or launch; revert if the brand's catalogue genuinely needs multiple distinct funnels."
+  },
+  "prerequisites": [
+   "A defined front-end offer that fits most acquisition channels"
+  ],
+  "steps": [
+   "Pick one front-end offer (a hero SKU, a starter bundle, or a lead magnet) as the shared entry point.",
+   "Point ads, organic content and email signup flows at that one offer's landing page.",
+   "Track cost per lead and cost per acquisition across channels on this one shared funnel.",
+   "Only add a second front-end offer once the first is proven and measured."
+  ],
+  "test": {
+   "method": "Compare cost per acquisition across channels once they all point at the shared offer versus the prior fragmented setup.",
+   "measure": "cpa",
+   "read_point": "After one full month of the consolidated funnel."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "ab161338ac21",
+    "70cb58d82d58"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "ADC-149",
+  "title": "Use a small commitment step to raise follow-through on an entry offer",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "aov",
+   "conversion"
+  ],
+  "lever": "commitment device on entry offer",
+  "hypothesis": "If a low-price entry offer requires a small paid step or a stated public commitment before delivery, then follow-through and upsell acceptance rise because the buyer has already invested something and is less likely to walk away.",
+  "applies_when": [
+   "low_aov",
+   "one_off"
+  ],
+  "signal": {
+   "check": "A free or very low commitment entry offer sees low follow-through or low uptake on the next-tier offer that depends on it.",
+   "metrics": [
+    "cvr_overall",
+    "aov"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown; source frames this as untested opinion",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "medium",
+   "reversible": false,
+   "note": "This is an untested framing choice from one source; watch for it reading as a gimmick if overused."
+  },
+  "prerequisites": [],
+  "steps": [
+   "Identify a free or near-free entry offer with low follow-through.",
+   "Add a small paid step (even a token amount) or a stated commitment before delivery.",
+   "Frame the paid step as an investment in the buyer's own outcome, not a fee.",
+   "Track follow-through and next-tier conversion after the change."
+  ],
+  "test": {
+   "method": "Compare follow-through rate on the entry offer before and after adding the commitment step.",
+   "measure": "cvr_overall",
+   "read_point": "After the next batch of entry-offer buyers has had time to follow through."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "828588e0b5a5"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "ADC-150",
+  "title": "Build a swipe file from niche brands' own email and post-purchase flows",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "team_capacity"
+  ],
+  "lever": "competitive research routine",
+  "hypothesis": "If the team signs up for niche or adjacent brands' email lists and buys their low-ticket products, then the swipe file of real, working copy gets richer because it captures full post-purchase flows instead of just landing pages and single ads.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Competitor research stops at homepages and ad screenshots, with no visibility into rivals' actual email flows or post-purchase sequences.",
+   "metrics": [
+    "other:ideas_generated"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:ideas_generated",
+   "direction": "up",
+   "size": "unknown; no measured lift given in source",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Never copy wording, logos, products or claims; use for structure and pacing ideas only."
+  },
+  "prerequisites": [
+   "A budget for a few low-ticket purchases from adjacent or niche brands"
+  ],
+  "steps": [
+   "Pick a short list of niche or adjacent brands worth studying.",
+   "Sign up for their email lists and follow their social accounts.",
+   "Buy 1 to 2 low-ticket products from a few of them to see the full post-purchase flow.",
+   "Save the strongest structural ideas (not wording) into a shared swipe file."
+  ],
+  "test": {
+   "method": "Track how many swipe-file structures get adapted into the brand's own briefs over a quarter.",
+   "measure": "other:ideas_generated",
+   "read_point": "Quarterly review of the swipe file's use."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "78b0365368fe"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "ADC-151",
+  "title": "Mock up a new page's structure in a plain document before building it",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "team_capacity"
+  ],
+  "lever": "page-building workflow",
+  "hypothesis": "If a new landing or sales page is mocked up as headline and block text in a plain document first, then build time drops because the page builder is used only after the structure and copy order are already agreed.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Pages are drafted directly inside the page builder, causing rework each time the copy order or block structure changes.",
+   "metrics": [
+    "other:production_time_hours"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:production_time_hours",
+   "direction": "down",
+   "size": "unknown; no measured lift given in source",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": ""
+  },
+  "prerequisites": [],
+  "steps": [
+   "Open a plain document and list the page's blocks in order (hero, so-what, proof, offer, FAQ).",
+   "Write placeholder headline and body copy for each block in the document.",
+   "Get the structure approved before opening the page builder.",
+   "Build the page in the builder only after the document version is agreed."
+  ],
+  "test": {
+   "method": "Compare time to launch a page built this way against the prior direct-in-builder process.",
+   "measure": "other:production_time_hours",
+   "read_point": "After the next 2 to 3 pages are built this way."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "8574c8647abb"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "ADC-152",
+  "title": "Run new landing pages through a heatmap tool before launch",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "pre-launch attention QA",
+  "hypothesis": "If a new landing page is run through a heatmap or attention-tracking tool before launch, then the headline and CTA get seen first because the page is rebuilt around wherever the tool shows eyes actually land, instead of assuming the layout works.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "New landing pages ship without any check of where a viewer's attention actually lands first.",
+   "metrics": [
+    "cvr_overall",
+    "bounce_rate_pdp"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown; source's own example found eyes went to a face and an unlabeled button, not the headline",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": ""
+  },
+  "prerequisites": [
+   "A heatmap or attention-tracking tool"
+  ],
+  "steps": [
+   "Run the near-final page through a heatmap or attention-tracking tool.",
+   "Check whether the headline gets the first look, and whether the CTA is clearly seen.",
+   "If attention lands elsewhere (a face, a bare button), rebuild so the headline leads.",
+   "Re-run the check after the rebuild before launch."
+  ],
+  "test": {
+   "method": "Compare conversion rate on pages checked this way against pages that skipped the check.",
+   "measure": "cvr_overall",
+   "read_point": "After enough traffic has visited the launched page."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "22214793398e"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "ADC-153",
+  "title": "Warm up a new sending domain before high-volume email sends",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "repeat_retention"
+  ],
+  "lever": "email deliverability process",
+  "hypothesis": "If a new sending domain or address is warmed up gradually before high-volume sends, then more emails reach the primary inbox because a fresh domain sending at full volume immediately looks like spam to inbox providers.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A new sending domain or ESP account is about to send at full list volume with no gradual warm-up period.",
+   "metrics": [
+    "email_click_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "email_click_rate",
+   "direction": "up",
+   "size": "unknown; no measured lift given in source",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "dev"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": ""
+  },
+  "prerequisites": [
+   "A new sending domain or email service provider account"
+  ],
+  "steps": [
+   "Start sends at a small daily volume on the new domain or address.",
+   "Increase volume gradually over 1 to 2 weeks rather than jumping to full list size.",
+   "Use a warm-up tool or service if available to accelerate the process.",
+   "Monitor inbox placement and spam complaint rate throughout the ramp."
+  ],
+  "test": {
+   "method": "Track inbox placement rate during and after the warm-up period.",
+   "measure": "email_click_rate",
+   "read_point": "After the full warm-up period is complete."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "ADC-154",
+  "title": "Hold a new copy or marketing method steady as a control for a set period",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "measurement_data"
+  ],
+  "lever": "test discipline",
+  "hypothesis": "If a new copy or marketing method is held steady as a control for a fixed period (at least a month) before switching to something else, then results become attributable because the method was not changed mid-measurement.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "The team switches copy angles, formats or methods frequently, making it unclear which change caused any result.",
+   "metrics": [
+    "other:test_validity"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:test_validity",
+   "direction": "up",
+   "size": "unknown; source frames this as opinion, not a tested rule",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": ""
+  },
+  "prerequisites": [],
+  "steps": [
+   "Pick the method or angle to test and define the control period length in advance.",
+   "Hold that method steady for the full period without swapping mid-way.",
+   "Track the metric it is meant to move throughout the period.",
+   "Only compare against a new method once the control period has run its course."
+  ],
+  "test": {
+   "method": "Compare the metric's trend during the held-steady period against periods where methods were switched frequently.",
+   "measure": "other:test_validity",
+   "read_point": "At the end of the defined control period."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "07386e6caf36",
+    "6649b7b1fce5"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "ADC-155",
+  "title": "Build a three-tier offer ladder from entry product to premium tier",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "aov",
+   "repeat_retention"
+  ],
+  "lever": "offer ladder architecture",
+  "hypothesis": "If the catalogue is organized into an entry product, a mid-price upsell, and a premium tier with each stage's copy pointing to the next, then AOV and LTV rise because every buyer has a clear next step instead of a flat one-and-done catalogue.",
+  "applies_when": [
+   "catalogue",
+   "subscription"
+  ],
+  "signal": {
+   "check": "The catalogue has no defined path from a low-price entry item to a higher-value tier; each product is sold on its own with no next-step messaging.",
+   "metrics": [
+    "aov",
+    "ltv_180d"
+   ]
+  },
+  "expected_effect": {
+   "metric": "aov",
+   "direction": "up",
+   "size": "unknown; no measured lift given in source",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": ""
+  },
+  "prerequisites": [
+   "A catalogue with at least 3 distinct price points or a bundling option"
+  ],
+  "steps": [
+   "Identify a low-price entry product, a mid-price upsell or bundle, and a premium tier or subscription.",
+   "Write copy at each stage that names the next step (an upsell prompt, an upgrade message).",
+   "Add the next-step message to post-purchase emails and confirmation pages.",
+   "Track AOV and tier progression rate after the ladder is in place."
+  ],
+  "test": {
+   "method": "Compare AOV and repeat purchase rate before and after the ladder's copy is live.",
+   "measure": "aov",
+   "read_point": "After 4 to 8 weeks of the ladder being live."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "9ceab8e3bd4d",
+    "c598568de7df"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "ADC-156",
+  "title": "Use a one-word reply CTA in email to gauge warm interest",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "low-friction qualifying CTA",
+  "hypothesis": "If a warm email asks for a one-word reply to gauge interest before pushing a full landing-page ask, then qualified interest gets measured cheaply because responding by reply email is a much lower-friction action than clicking through and filling out a form.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Every email CTA sends straight to a landing page or product page, with no lower-friction way to signal interest first.",
+   "metrics": [
+    "email_click_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "email_click_rate",
+   "direction": "up",
+   "size": "unknown; no measured lift given in source",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": ""
+  },
+  "prerequisites": [],
+  "steps": [
+   "Pick a warm segment or a new offer where interest is uncertain.",
+   "Write an email asking the reader to reply with one word (or a specific word) if interested.",
+   "Follow up personally or with a tailored next email to everyone who replies.",
+   "Compare reply rate against the click rate of a normal landing-page CTA."
+  ],
+  "test": {
+   "method": "Compare reply rate on the one-word CTA email against click rate on a matched normal CTA email.",
+   "measure": "email_click_rate",
+   "read_point": "After the send and its direct replies are collected."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "744657e341ac"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "ADC-157",
+  "title": "Repeat the same CTA a second time in deadline emails",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "deadline email structure",
+  "hypothesis": "If a deadline or closing email repeats the same CTA a second time (or adds a P.S. with the same ask) instead of introducing a new ask, then conversion on the closing email rises because repetition of one clear action reinforces it instead of splitting attention.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Deadline or closing emails state the offer and CTA only once, with no repeated reminder later in the same email.",
+   "metrics": [
+    "cvr_overall",
+    "email_click_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown; no measured lift given in source",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "This repeats the same single ask; it is not permission to add a second, different action."
+  },
+  "prerequisites": [],
+  "steps": [
+   "Write the deadline email with the offer, the time left, and the CTA as usual.",
+   "Add a second instance of the exact same CTA later in the email, or in a P.S.",
+   "Do not introduce a different or additional ask in the second instance.",
+   "Compare conversion against a matched deadline email with only one CTA instance."
+  ],
+  "test": {
+   "method": "Compare conversion rate of deadline emails with a repeated CTA against ones with a single CTA.",
+   "measure": "cvr_overall",
+   "read_point": "After the next few deadline sends."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "3afc3ff48150"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "ADC-158",
+  "title": "Add a low-pressure P.S. soft-sell line to value-only emails",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "repeat_retention",
+   "conversion"
+  ],
+  "lever": "soft-sell email structure",
+  "hypothesis": "If a value-only email ends with a low-pressure P.S. line mentioning an offer, then awareness of the offer builds without turning the whole email into a pitch, because the main content stays focused on value while the P.S. plants the reminder.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Value emails contain no mention of any current offer at all, so subscribers who only read value emails never hear about what is for sale.",
+   "metrics": [
+    "flow_revenue_share"
+   ]
+  },
+  "expected_effect": {
+   "metric": "flow_revenue_share",
+   "direction": "up",
+   "size": "unknown; no measured lift given in source",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": ""
+  },
+  "prerequisites": [],
+  "steps": [
+   "Write the value email's main content with no sales pitch in the body.",
+   "Add a short P.S. line mentioning the current offer and a link.",
+   "Keep the P.S. low-pressure, not a repeated hard sell.",
+   "Track click-through from the P.S. line separately from the main content links."
+  ],
+  "test": {
+   "method": "Track P.S.-link click rate and downstream conversion after adding it to value emails.",
+   "measure": "flow_revenue_share",
+   "read_point": "After a few value emails include the P.S. line."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "22a2130d998e"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "ADC-159",
+  "title": "Use identity or ego appeal for status-driven, image-led products",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "conversion",
+   "trust_brand"
+  ],
+  "lever": "identity appeal",
+  "hypothesis": "If a status-driven or image-led product leans on aspirational identity imagery instead of functional feature copy, then it converts better with that segment because the buyer is not choosing a feature, they are choosing who they get to be seen as.",
+  "applies_when": [
+   "high_aov",
+   "luxury_considered",
+   "impulse"
+  ],
+  "signal": {
+   "check": "The product is bought partly for image or status (fashion, accessories, cars, fragrance) but ads and pages still lead with functional specs instead of identity or aspiration.",
+   "metrics": [
+    "cvr_overall"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown; source gives category anecdotes, no measured lift",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Only use where the product can honestly support the identity claim; do not force this onto a purely functional or low-price commodity purchase."
+  },
+  "prerequisites": [],
+  "steps": [
+   "Confirm the product is genuinely bought partly for image, status or self-expression.",
+   "Pick a trait the buyer wants to project (success, taste, belonging) that the product can credibly support.",
+   "Lead ad and page imagery with that aspiration rather than a feature list.",
+   "Keep functional details available lower on the page for buyers who still want them."
+  ],
+  "test": {
+   "method": "Compare conversion and AOV on identity-led creative against feature-led creative for the same product.",
+   "measure": "cvr_overall",
+   "read_point": "After the identity-led creative has run for a full test period."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "52d902a537ae",
+    "e7d2a6958db3"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "ADC-160",
+  "title": "Display a real earned certification or seal for low-involvement purchases",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "trust_brand"
+  ],
+  "lever": "borrowed credibility",
+  "hypothesis": "If a real, earned certification, seal or endorsement logo is shown near the offer for a low-involvement purchase, then trust rises faster because a shopper who is not weighing the decision carefully leans on the symbol instead of reading every claim.",
+  "applies_when": [
+   "impulse",
+   "low_aov"
+  ],
+  "signal": {
+   "check": "The product has a real certification, safety seal, or recognized endorsement, but it is not displayed anywhere near the offer or CTA.",
+   "metrics": [
+    "cvr_overall"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown; no measured lift given in source",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "designer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "Use only certifications and seals the brand has actually earned; a fake or borrowed seal is a compliance and trust risk."
+  },
+  "prerequisites": [
+   "A real, verifiable certification, seal or endorsement the brand holds"
+  ],
+  "steps": [
+   "Confirm the certification or seal is real, current and permitted for use in ads.",
+   "Place the seal or logo near the price or CTA on the page or ad.",
+   "Keep the seal legible at small sizes for mobile and feed placements.",
+   "Track conversion before and after adding it."
+  ],
+  "test": {
+   "method": "Compare conversion rate on pages with the seal displayed against a version without it.",
+   "measure": "cvr_overall",
+   "read_point": "After the seal has been live for a full test period."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "f530f60c2969",
+    "ac7fd5aceb1e"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "ADC-161",
+  "title": "Match appeal and imagery to the buyer's reference-group type",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "reference-group targeting",
+  "hypothesis": "If ad and page imagery matches whether the target buyer wants to join a group, share its values, or distance from another group, then the message lands harder because it speaks to the specific social pull that is actually driving that segment's decision.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "The brand uses the same generic lifestyle imagery for every segment without checking whether that segment is drawn toward a group, held by shared values, or driven by wanting to be unlike another group.",
+   "metrics": [
+    "cvr_overall",
+    "ctr"
+   ]
+  },
+  "expected_effect": {
+   "metric": "ctr",
+   "direction": "up",
+   "size": "unknown; no measured lift given in source",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A dissociative angle (defining the brand against another group) can alienate that group on purpose; use only where the brand can accept that trade-off."
+  },
+  "prerequisites": [],
+  "steps": [
+   "Identify whether the target segment is aspirational (wants to join a group), associative (shares its values), or dissociative (wants to avoid another group).",
+   "Pick imagery and language that matches that pull rather than generic lifestyle shots.",
+   "Make sure people shown in aspirational imagery are ones the target segment can realistically identify with.",
+   "Track CTR and conversion by creative variant matched to each reference-group type."
+  ],
+  "test": {
+   "method": "Compare CTR and conversion across creative variants built for different reference-group types on the same audience.",
+   "measure": "ctr",
+   "read_point": "After each variant has run long enough to compare."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "545774aaa2ca"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "ADC-162",
+  "title": "Show many testimonials at once for peripheral, low-involvement buys",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "trust_brand",
+   "conversion"
+  ],
+  "lever": "proof volume",
+  "hypothesis": "If a low-involvement product page shows many testimonials or reasons at once instead of just one, then trust builds faster for a peripheral-route buyer because volume itself signals credibility even before each individual testimonial is read closely.",
+  "applies_when": [
+   "impulse",
+   "low_aov"
+  ],
+  "signal": {
+   "check": "The page shows only 1 or 2 testimonials or proof points even though the brand has many more available.",
+   "metrics": [
+    "cvr_overall"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown; source names this a shortcut for peripheral thinkers, not a measured test",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Do not pad with fake or duplicate testimonials; use only real ones, and disclose if any are incentivized where required."
+  },
+  "prerequisites": [
+   "A bank of at least 5 to 10 real testimonials or proof points"
+  ],
+  "steps": [
+   "Gather all available real testimonials, reviews or proof points for the product.",
+   "Display several at once on the page (a grid, a carousel, or a long list) instead of just 1 or 2.",
+   "Keep the display scannable so it reads as volume, not clutter.",
+   "Track conversion on the page before and after adding more testimonials."
+  ],
+  "test": {
+   "method": "Compare conversion rate on the page before and after showing many testimonials at once.",
+   "measure": "cvr_overall",
+   "read_point": "After the expanded testimonial section has been live for a test period."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "952aca21b0fb"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "ADC-163",
+  "title": "Test headlines built from a bank of proven opener words",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "headline generation technique",
+  "hypothesis": "If new headline candidates are generated from a fixed bank of proven opener words (Free, New, How, Warning, At Last) instead of starting from a blank page, then more usable headline variants get written faster because each opener forces a different angle.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Headline drafting starts from a blank page each time instead of running the offer through a set of known opener words.",
+   "metrics": [
+    "ctr"
+   ]
+  },
+  "expected_effect": {
+   "metric": "ctr",
+   "direction": "up",
+   "size": "unknown; source calls these starters tested with no data shown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": ""
+  },
+  "prerequisites": [],
+  "steps": [
+   "List the offer's core benefit in one sentence.",
+   "Run it through a bank of opener words (Free, New, At Last, Warning, How, Would You, If You).",
+   "Write 1 headline candidate per opener that keeps the claim true.",
+   "Pick the shortest of the equally good candidates to test."
+  ],
+  "test": {
+   "method": "Compare CTR of the opener-generated headline against the current control headline.",
+   "measure": "ctr",
+   "read_point": "After the new headline has run long enough for a fair comparison."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "935888c8c1f1"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "ADC-164",
+  "title": "Match price-ending style to positioning: charm pricing or round numbers",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "aov",
+   "conversion"
+  ],
+  "lever": "price-ending psychology",
+  "hypothesis": "If a value-positioned product uses a charm price ending in 9 and a premium-positioned product uses a round number, then each price reads correctly for its position because charm pricing signals a deal while round numbers signal quality and confidence.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Prices are set with no deliberate choice between a charm ending (like .99) and a round number, regardless of whether the product is positioned as value or premium.",
+   "metrics": [
+    "aov",
+    "cvr_overall"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown; source cites mixed and even conflicting test results for charm pricing",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "The source's own cited test found one charm ending (88) performed the same as a round number, so this needs the brand's own test, not blind adoption."
+  },
+  "prerequisites": [],
+  "steps": [
+   "Classify the product or line as value-positioned or premium-positioned.",
+   "Set value-line prices with a charm ending (such as .99) where currently round.",
+   "Set premium-line prices as round numbers where currently a charm ending.",
+   "Test one changed price point against its prior price for conversion and AOV."
+  ],
+  "test": {
+   "method": "Compare conversion and AOV on the changed price point against its prior price.",
+   "measure": "aov",
+   "read_point": "After enough orders have passed through at the new price."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "a5e12a547cc8"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "ADC-165",
+  "title": "Reframe price as a small recurring cost per day or per use",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "aov",
+   "conversion"
+  ],
+  "lever": "price framing",
+  "hypothesis": "If a higher-priced item's cost is reframed as a small amount per day or per use instead of the total price, then the price feels smaller because the buyer compares it to a familiar daily expense instead of a lump sum.",
+  "applies_when": [
+   "high_aov",
+   "subscription"
+  ],
+  "signal": {
+   "check": "A higher-priced product or subscription is shown only as its total or monthly price, with no per-day or per-use framing offered alongside it.",
+   "metrics": [
+    "cvr_overall"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown; no measured lift given in source",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "The per-day math must be honest and clearly explained; do not hide the real total price."
+  },
+  "prerequisites": [],
+  "steps": [
+   "Divide the product's price by its expected days or uses of value.",
+   "State both the real total price and the per-day or per-use framing together, never the framing alone.",
+   "Place the per-day framing near the price on the page or in the ad.",
+   "Track conversion before and after adding the framing."
+  ],
+  "test": {
+   "method": "Compare conversion rate on pages with the per-day framing added against the prior total-price-only version.",
+   "measure": "cvr_overall",
+   "read_point": "After the framing has been live for a test period."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "a5e12a547cc8"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "ADC-166",
+  "title": "State the honest reason when a price is unusually low",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "trust_brand",
+   "conversion"
+  ],
+  "lever": "low-price justification",
+  "hypothesis": "If an unusually low price is explained with the real reason (overstock, factory-direct, end of season) instead of left unexplained, then conversion holds up because shoppers stop reading the low price as a sign of low quality.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A price is noticeably lower than the category norm with no explanation on the page for why, risking shoppers assuming a quality problem.",
+   "metrics": [
+    "cvr_overall",
+    "bounce_rate_pdp"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown; no measured lift given in source",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "The reason given must be true and checkable; never invent a reason for a low price."
+  },
+  "prerequisites": [
+   "A real, checkable reason for the low price (overstock, direct sourcing, seasonal clearance, factory direct)"
+  ],
+  "steps": [
+   "Identify the real, honest reason the price is lower than the category norm.",
+   "Write a short line stating that reason near the price on the page.",
+   "Avoid vague reassurance; state the specific fact (overstock quantity, sourcing model, season).",
+   "Track conversion and return rate before and after adding the explanation."
+  ],
+  "test": {
+   "method": "Compare conversion and return rate on the low-priced item before and after the price is explained.",
+   "measure": "cvr_overall",
+   "read_point": "After the explanation has been live for a test period."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "ADC-167",
+  "title": "State the exact ordering steps and payment options in the copy itself",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "friction-reducing copy",
+  "hypothesis": "If the ad or page copy states the exact steps to order and every payment or shipping option available, then perceived friction drops before the shopper even reaches checkout because the path forward is already clear in their mind.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Copy states the offer and CTA but never spells out the actual steps to buy or the payment and shipping options available.",
+   "metrics": [
+    "cvr_overall",
+    "cvr_checkout_to_order"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown; no measured lift given in source",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": ""
+  },
+  "prerequisites": [],
+  "steps": [
+   "List every payment method and shipping option actually available at checkout.",
+   "Write a short numbered set of ordering steps (for example: pick your size, enter shipping, confirm).",
+   "Place the steps and options near the CTA on the page or in a longer-form ad.",
+   "Track checkout completion rate after adding this."
+  ],
+  "test": {
+   "method": "Compare checkout completion rate before and after the ordering steps and payment options are stated in the copy.",
+   "measure": "cvr_checkout_to_order",
+   "read_point": "After the change has been live for a test period."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "3d848b082e13"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "ADC-168",
+  "title": "Give the guarantee a repeated visual identity across the page",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "trust_brand"
+  ],
+  "lever": "guarantee visual execution",
+  "hypothesis": "If the guarantee gets its own visual identity (a badge, border, or signature) repeated across the page instead of appearing once in small text, then it does more trust-building work because it reads as a real promise instead of buried legal boilerplate.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "The guarantee exists in the terms or FAQ but has no visual treatment and appears only once, in small text, far from the buy decision.",
+   "metrics": [
+    "cvr_overall"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown; no measured lift given in source",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "designer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Wording must still match the brand's real eligibility limits exactly, wherever the badge appears."
+  },
+  "prerequisites": [
+   "An existing guarantee whose exact wording and limits are confirmed"
+  ],
+  "steps": [
+   "Design a simple badge or seal for the guarantee's exact wording.",
+   "Place it near the price or CTA, not only in the footer or FAQ.",
+   "Repeat it at each key decision point on longer pages.",
+   "Keep the wording behind the badge identical to the brand's real guarantee terms everywhere it appears."
+  ],
+  "test": {
+   "method": "Compare conversion rate on pages with the repeated guarantee badge against the prior single small-text mention.",
+   "measure": "cvr_overall",
+   "read_point": "After the badge has been live for a test period."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "83551014328e"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "ADC-169",
+  "title": "Write paid content in the platform's native editorial or creator style",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "acquisition_efficiency",
+   "conversion"
+  ],
+  "lever": "native content format",
+  "hypothesis": "If paid content is written in the platform's own native editorial or creator style, clearly labeled as sponsored, then it earns more attention than a standard display-style ad because it reads like the content the audience already came for.",
+  "applies_when": [
+   "paid_social_led"
+  ],
+  "signal": {
+   "check": "Paid content looks like a standard ad unit (product shot, price, CTA button) rather than matching the native editorial or creator format of the platform it runs on.",
+   "metrics": [
+    "ctr",
+    "cpm"
+   ]
+  },
+  "expected_effect": {
+   "metric": "ctr",
+   "direction": "up",
+   "size": "unknown; no measured lift given in source",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "Must carry a clear sponsored or ad label; a hypey native ad that hides its nature reads as deceptive and can breach platform disclosure rules."
+  },
+  "prerequisites": [
+   "Access to the platform's native content style (an editorial format, or a creator to work with)"
+  ],
+  "steps": [
+   "Study the platform's native content format for tone, pacing and structure.",
+   "Write the paid piece in that same format instead of a display-ad format.",
+   "Keep the label clearly marked as sponsored or paid partnership.",
+   "Compare CTR and cost per result against a standard display-style ad on the same platform."
+  ],
+  "test": {
+   "method": "Compare CTR and cost per result of the native-style paid content against a matched standard ad unit.",
+   "measure": "ctr",
+   "read_point": "After both formats have run to a comparable spend level."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "0073339a70d1"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "ADC-170",
+  "title": "End a customer survey with a reward only for respondents by a deadline",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "measurement_data",
+   "repeat_retention"
+  ],
+  "lever": "survey-plus-offer research",
+  "hypothesis": "If a short customer survey ends with a small reward available only to respondents by a set deadline, then response rate and goodwill both rise because the survey feels like an exchange instead of a one-sided ask.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Customer surveys go out with no reward at all, or the reward is offered to everyone regardless of whether they responded.",
+   "metrics": [
+    "other:survey_response_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:survey_response_rate",
+   "direction": "up",
+   "size": "unknown; no measured lift given in source",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": ""
+  },
+  "prerequisites": [
+   "A survey tool and a small reward the brand can afford to offer to respondents"
+  ],
+  "steps": [
+   "Write a short survey (5 to 6 questions) about price, preferences or product feedback.",
+   "Offer a small, real reward only to people who complete it, by a stated deadline.",
+   "Send it to the target segment (recent buyers, a specific list segment).",
+   "Compare response rate against the brand's past unrewarded surveys."
+  ],
+  "test": {
+   "method": "Compare response rate of the rewarded, deadlined survey against a past unrewarded survey.",
+   "measure": "other:survey_response_rate",
+   "read_point": "After the survey's deadline has passed."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "2995d9888762"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "ADC-171",
+  "title": "Run a pre-promotion survey before designing a sale or discount",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "measurement_data",
+   "margin_cogs"
+  ],
+  "lever": "offer research",
+  "hypothesis": "If a short structured survey asks the target segment about price ceiling and wanted extras before a sale is designed, then the resulting offer converts better because it is built from stated preferences instead of a guessed discount percentage.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Sales and promotions are designed from habit or competitor copying, with no survey of the target segment's price ceiling or preferred extras beforehand.",
+   "metrics": [
+    "cvr_overall",
+    "discount_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown; no measured lift given in source",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": ""
+  },
+  "prerequisites": [
+   "A survey tool and access to the target segment (email list, recent buyers)"
+  ],
+  "steps": [
+   "Draft a short survey asking what they like, dislike, the most they'd pay, and what extra would bring them back.",
+   "Send it to the target segment ahead of designing the next sale or promotion.",
+   "Build the offer's discount, bundle or extra from the actual answers.",
+   "Compare the resulting offer's conversion against a past offer designed without a survey."
+  ],
+  "test": {
+   "method": "Compare conversion and margin on the survey-informed offer against a past offer built without one.",
+   "measure": "cvr_overall",
+   "read_point": "After the survey-informed promotion has run."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "e0ea9b58d9ae"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "ADC-172",
+  "title": "Mail a real physical sample as a teaser to high-value or lapsed customers",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "acquisition_efficiency",
+   "repeat_retention"
+  ],
+  "lever": "direct mail teaser",
+  "hypothesis": "If a real physical sample or small relevant object is mailed to a high-value prospect or lapsed customer alongside the pitch, then response rate rises because a tactile, unexpected object earns attention that a digital touchpoint alone would not.",
+  "applies_when": [
+   "high_aov",
+   "dtc_only"
+  ],
+  "signal": {
+   "check": "High-value prospects or lapsed customers are only re-engaged through digital channels (email, retargeting ads), with no physical touchpoint tried.",
+   "metrics": [
+    "other:direct_mail_response_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:direct_mail_response_rate",
+   "direction": "up",
+   "size": "unknown; no measured lift given in source",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "high",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Cost per piece is high; reserve for a small, high-value list where the economics can work."
+  },
+  "prerequisites": [
+   "A short list of high-value prospects or lapsed customers with mailing addresses",
+   "A budget for physical samples and postage"
+  ],
+  "steps": [
+   "Pick a small, high-value segment (top lapsed customers, or top prospects).",
+   "Choose a real, relevant physical sample or small object tied to the pitch.",
+   "Mail it with a short personal note tying the object to the offer.",
+   "Track response and reactivation rate for the mailed segment against a matched digital-only control."
+  ],
+  "test": {
+   "method": "Compare reactivation or response rate of the mailed segment against a matched digital-only control group.",
+   "measure": "other:direct_mail_response_rate",
+   "read_point": "After the mailing has had time to be received and acted on."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "1557d7445b77"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "ADC-173",
+  "title": "Name a proprietary system so buyers compare methods, not commodities",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "trust_brand",
+   "conversion"
+  ],
+  "lever": "proprietary naming",
+  "hypothesis": "If the brand's method or process gets a named, proprietary-sounding system name, then price comparison shifts away from a commodity basis because buyers now compare the named system against rivals' generic approach instead of item to item.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "The brand's actual process or method for making or delivering the product has no name, so buyers compare it as a plain commodity against rivals.",
+   "metrics": [
+    "cvr_overall"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown; no measured lift given in source",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "The named system must describe something real the brand actually does differently; a named system with nothing behind it is a false claim."
+  },
+  "prerequisites": [
+   "A real, distinct method, process or approach the brand uses"
+  ],
+  "steps": [
+   "Identify a real step, process or approach that differs from how competitors do it.",
+   "Give it a short, ownable name (a named method, system or technology).",
+   "Explain what it is and why it works in plain terms wherever the product is described.",
+   "Use the named system consistently across ads, PDP and packaging."
+  ],
+  "test": {
+   "method": "Compare conversion or price perception before and after the process is named and explained.",
+   "measure": "cvr_overall",
+   "read_point": "After the named system has been used consistently for a test period."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "6468d5100e59",
+    "902431ce25d6"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "ADC-174",
+  "title": "Publish short authority-building reports under the founder's real name",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "trust_brand",
+   "acquisition_volume"
+  ],
+  "lever": "authority content lead magnet",
+  "hypothesis": "If the founder publishes short numbered tip reports or Q&A columns under their real name and photo, offered free, then trust builds ahead of the pitch because the brand demonstrates expertise before ever asking for a sale.",
+  "applies_when": [
+   "dtc_only"
+  ],
+  "signal": {
+   "check": "The brand has no free, named-authority content (short reports, Q&A columns) that demonstrates expertise ahead of the sales pitch.",
+   "metrics": [
+    "list_size",
+    "other:authority_content_count"
+   ]
+  },
+  "expected_effect": {
+   "metric": "list_size",
+   "direction": "up",
+   "size": "unknown; no measured lift given in source",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Use a real named person and real photo; an invented authority figure breaks trust and can breach platform policy."
+  },
+  "prerequisites": [
+   "A real founder or expert willing to be named and photographed"
+  ],
+  "steps": [
+   "Pick a topic the founder has real expertise in, related to the product category.",
+   "Write a short numbered tip report or a Q&A column under the founder's real name and photo.",
+   "Offer it free in exchange for an email, or run it as short-form content.",
+   "Track list growth and engagement from the authority content."
+  ],
+  "test": {
+   "method": "Track list growth rate and content engagement from the authority-content lead magnet.",
+   "measure": "list_size",
+   "read_point": "After the content has been live for a month."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "4036507c46bc"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "ADC-175",
+  "title": "Offer a frequency reward as a stated reason to return",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "repeat_retention"
+  ],
+  "lever": "frequency loyalty mechanic",
+  "hypothesis": "If copy states a frequency reward (every Nth purchase free or discounted) as a concrete reason to return, then repeat purchase rate rises because the customer now has a specific, counted incentive to come back instead of a vague loyalty appeal.",
+  "applies_when": [
+   "one_off",
+   "impulse"
+  ],
+  "signal": {
+   "check": "The brand has no stated frequency-based reward (like every 5th purchase free), so repeat customers get no specific incentive tied to purchase count.",
+   "metrics": [
+    "repeat_rate_90d"
+   ]
+  },
+  "expected_effect": {
+   "metric": "repeat_rate_90d",
+   "direction": "up",
+   "size": "unknown; no measured lift given in source",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "medium",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": ""
+  },
+  "prerequisites": [
+   "A way to track purchase count per customer"
+  ],
+  "steps": [
+   "Decide the frequency reward (for example every 5th purchase free or a set discount).",
+   "State it clearly in post-purchase emails and on the site.",
+   "Track and remind customers of their progress toward the reward.",
+   "Compare repeat purchase rate before and after launch."
+  ],
+  "test": {
+   "method": "Compare 90-day repeat purchase rate before and after the frequency reward launches.",
+   "measure": "repeat_rate_90d",
+   "read_point": "After 90 days of the reward being live."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "ADC-176",
+  "title": "Add a small welcome gift or note to a new customer's first order",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "repeat_retention"
+  ],
+  "lever": "post-purchase welcome gesture",
+  "hypothesis": "If a new customer's first order includes a small personal welcome gift or note, then the brand wins the reorder over other options that shopper is also weighing, because a tangible welcome gesture tips the comparison in the brand's favor.",
+  "applies_when": [
+   "dtc_only",
+   "new_store"
+  ],
+  "signal": {
+   "check": "New customers receive their first order with no personal welcome note or small gift, even though they may be comparing the brand against similar options.",
+   "metrics": [
+    "repeat_rate_90d"
+   ]
+  },
+  "expected_effect": {
+   "metric": "repeat_rate_90d",
+   "direction": "up",
+   "size": "unknown; source example is a mail-order catalog case with no numbers given",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "ops"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": ""
+  },
+  "prerequisites": [
+   "A small, affordable item or note that can be added to first orders"
+  ],
+  "steps": [
+   "Design a short personal welcome note for first-time customers.",
+   "Pick a small, low-cost item or perk to include (a sample, a discount for next time, a handwritten thank you).",
+   "Add it to the fulfillment process for first orders only.",
+   "Track repeat purchase rate for customers who received it against those who did not."
+  ],
+  "test": {
+   "method": "Compare 90-day repeat purchase rate between first orders with the welcome gesture and those without.",
+   "measure": "repeat_rate_90d",
+   "read_point": "After 90 days of first orders with the gesture."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "03"
+   ],
+   "cards": [
+    "af42faf22ef2"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "ADC-177",
+  "title": "Continue the same specific argument in every follow-up or retargeting message",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "conversion",
+   "acquisition_efficiency"
+  ],
+  "lever": "follow-up continuity",
+  "hypothesis": "If a follow-up email or retargeting ad continues the exact argument or product that earned the original click, then conversion improves because the message picks up the same thread of interest instead of resetting to a generic new pitch.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Follow-up emails or retargeting ads show a generic pitch or a different product than what the person originally clicked on or showed interest in.",
+   "metrics": [
+    "cvr_overall",
+    "roas_retargeting"
+   ]
+  },
+  "expected_effect": {
+   "metric": "roas_retargeting",
+   "direction": "up",
+   "size": "unknown; no measured lift given in source",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": ""
+  },
+  "prerequisites": [
+   "Ability to track what specific product, page or ad a person interacted with"
+  ],
+  "steps": [
+   "Track which specific product, offer or angle the person clicked or engaged with.",
+   "Write the follow-up email or retargeting ad to continue that same specific argument.",
+   "Avoid switching to a different product or a generic message in the follow-up.",
+   "Track conversion on continuity-matched follow-ups against generic ones."
+  ],
+  "test": {
+   "method": "Compare conversion rate of continuity-matched follow-ups against generic follow-up messages.",
+   "measure": "roas_retargeting",
+   "read_point": "After both approaches have run for a comparable period."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "03"
+   ],
+   "cards": [
+    "3cdc738f5682",
+    "d6fff31fe51f"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "ADC-178",
+  "title": "Check cost per convert against lifetime value before funding category education",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "margin_cogs",
+   "acquisition_efficiency"
+  ],
+  "lever": "category-education spend check",
+  "hypothesis": "If the team estimates cost per convert for category-education advertising and compares it to customer lifetime value before funding it, then wasted spend is avoided because education-heavy campaigns often cost more per convert than the category alone can repay.",
+  "applies_when": [
+   "new_store"
+  ],
+  "signal": {
+   "check": "The brand is considering or running advertising meant to teach the market a new habit or category, with no estimate of cost per convert against lifetime value.",
+   "metrics": [
+    "cpa",
+    "ltv_180d"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cpa",
+   "direction": "down",
+   "size": "unknown; source cites a $20 to $25 per-convert habit-change case with no repeat data",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": ""
+  },
+  "prerequisites": [
+   "An estimate of customer lifetime value for the category"
+  ],
+  "steps": [
+   "Estimate the likely cost per convert for a category-education campaign.",
+   "Compare it against the brand's known or estimated customer lifetime value.",
+   "If the cost exceeds lifetime value, redirect spend toward audiences who already understand the category.",
+   "If proceeding anyway, track actual cost per convert against the estimate."
+  ],
+  "test": {
+   "method": "Track actual cost per convert against the lifetime-value estimate after the campaign runs.",
+   "measure": "cpa",
+   "read_point": "After the campaign has enough spend and conversions to measure."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "03"
+   ],
+   "cards": [
+    "50fbb6ee4040"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "ADC-179",
+  "title": "Compute lifetime revenue per customer before scaling a low-repeat product",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "margin_cogs",
+   "cash_inventory"
+  ],
+  "lever": "LTV check before scale",
+  "hypothesis": "If lifetime revenue per customer is computed for a low-consumption or one-time-purchase product before scaling its acquisition spend, then the brand avoids a product line whose customer acquisition cost can never be repaid by that product's typical revenue per customer.",
+  "applies_when": [
+   "one_off"
+  ],
+  "signal": {
+   "check": "A product with low repeat purchase or one-time use is being scaled in ad spend with no check of whether typical lifetime revenue per customer exceeds acquisition cost.",
+   "metrics": [
+    "ltv_180d",
+    "cpa"
+   ]
+  },
+  "expected_effect": {
+   "metric": "ltv_180d",
+   "direction": "up",
+   "size": "unknown; source's own example projects a low-use product might never repay acquisition cost",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "finance"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": ""
+  },
+  "prerequisites": [
+   "Order history and repeat rate data for the product"
+  ],
+  "steps": [
+   "Pull historical repeat purchase rate and average revenue per customer for the product.",
+   "Compute expected lifetime revenue per customer over a realistic window.",
+   "Compare it against current cost per acquisition for that product.",
+   "Do not scale spend on the product if lifetime revenue cannot cover acquisition cost."
+  ],
+  "test": {
+   "method": "Track whether cost per acquisition stays below computed lifetime revenue as spend scales.",
+   "measure": "cpa",
+   "read_point": "Reviewed each time spend is increased on the product."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "03"
+   ],
+   "cards": [
+    "e9d818096148"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "ADC-180",
+  "title": "Name a new product so the name itself tells the benefit or story",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "trust_brand",
+   "conversion"
+  ],
+  "lever": "product naming",
+  "hypothesis": "If a new product or line is given a name that tells its own benefit or story instead of a meaningless invented word, then it needs less paid advertising to build recognition, because a descriptive name starts selling on its own from the first time it's seen.",
+  "applies_when": [
+   "new_store"
+  ],
+  "signal": {
+   "check": "A new product or line is about to be named with an invented, meaningless word purely for trademark uniqueness, with no benefit or story built into the name itself.",
+   "metrics": [
+    "cpa"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cpa",
+   "direction": "down",
+   "size": "unknown; source gives historical naming cases with no controlled comparison",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Check trademark availability for any descriptive name before committing to it."
+  },
+  "prerequisites": [],
+  "steps": [
+   "List name candidates that describe the benefit, ingredient story, or use case.",
+   "Check each candidate is legally available to trademark or use.",
+   "Prefer the name that tells the most about the product's benefit at a glance.",
+   "Avoid a name that only a large ad budget could ever make meaningful."
+  ],
+  "test": {
+   "method": "Track brand recall or click-through on the name in early ads compared to an invented-name alternative if one was tested.",
+   "measure": "cpa",
+   "read_point": "After the naming decision and initial launch period."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "03"
+   ],
+   "cards": [
+    "8b2bcdb87528",
+    "4afe300cc039"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "ADC-181",
+  "title": "Attach a real person's name to a generic or common product name",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "trust_brand"
+  ],
+  "lever": "ownable naming",
+  "hypothesis": "If a product must use a common or generic category name, then attaching a real person's name to it (a founder or creator name) gives it an ownable identity, because a bare generic name invites easy substitution by rivals selling the same category.",
+  "applies_when": [
+   "dtc_only"
+  ],
+  "signal": {
+   "check": "The product's name is a generic or ingredient-based category name with no person's name attached, making it easy for shoppers to substitute a rival's version.",
+   "metrics": [
+    "trust_brand"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:brand_recall",
+   "direction": "up",
+   "size": "unknown; no measured lift given in source",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Only use a real, real named person actually connected to the brand."
+  },
+  "prerequisites": [],
+  "steps": [
+   "Identify a real founder or creator connected to the product.",
+   "Attach their name to the generic product or line name (for example a founder's first name plus the category).",
+   "Use the combined name consistently across packaging, ads and the PDP.",
+   "Track whether the named version reduces price-only comparison shopping."
+  ],
+  "test": {
+   "method": "Track search and direct-traffic share for the named product versus the generic category name over time.",
+   "measure": "other:brand_recall",
+   "read_point": "After the named version has been in market for a quarter."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "03"
+   ],
+   "cards": [
+    "38681f6fc896"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "ADC-182",
+  "title": "Run a small representative test before scaling any new offer or claim",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "acquisition_efficiency",
+   "cash_inventory"
+  ],
+  "lever": "staged rollout testing",
+  "hypothesis": "If a new offer, claim or channel is run first in a small representative segment with cost-per-customer and payback tracked, then scaling decisions get safer because the economics are proven small before real budget is committed at full scale.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "New offers, claims or channels are rolled out at full budget or across all segments immediately, with no small representative test run first.",
+   "metrics": [
+    "cpa",
+    "cash_conversion_days"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cpa",
+   "direction": "down",
+   "size": "unknown; source gives historical test-campaign costs with no percentage lift",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": ""
+  },
+  "prerequisites": [
+   "A way to isolate a small representative segment, channel or budget"
+  ],
+  "steps": [
+   "Pick a small, representative segment, channel, or budget slice for the new offer or claim.",
+   "Run it there first and compute cost per customer and payback time.",
+   "Only scale to full budget once the small test proves the economics work.",
+   "Keep testing new variants in the small slice alongside the scaled main campaign."
+  ],
+  "test": {
+   "method": "Compare cost per customer and payback time from the small test against results once scaled.",
+   "measure": "cpa",
+   "read_point": "After the small test has run long enough to compute cost per customer."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "03"
+   ],
+   "cards": [
+    "69712b9b3086"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "ADC-183",
+  "title": "Embed a hidden verification phrase to measure real copy read-through",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "measurement_data"
+  ],
+  "lever": "read-through verification",
+  "hypothesis": "If a hidden verification phrase or code is embedded partway through a long piece of copy and its redemption is tracked, then real read-through gets measured directly because a redemption count shows how many people actually reached that point, not just how long the page was open.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "The team has no way to tell whether long-form copy (an email, a long PDP, a review-gate) is actually being read to the point where key claims sit.",
+   "metrics": [
+    "other:read_through_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:read_through_rate",
+   "direction": "up",
+   "size": "unknown; no source data given",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Keep the phrase and its reward small so it does not distort the message; disclose it as a real code, not a trick."
+  },
+  "prerequisites": [],
+  "steps": [
+   "Pick a point partway through a long asset where a key claim sits.",
+   "Embed a short phrase or code there, with instructions to use it for a small reward or discount.",
+   "Track how many people redeem the code over the send or page's traffic.",
+   "Use the redemption rate as a proxy for real read-through at that point."
+  ],
+  "test": {
+   "method": "Track redemption rate of the embedded phrase relative to total sends or page views.",
+   "measure": "other:read_through_rate",
+   "read_point": "After the asset has run long enough to gather redemptions."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "03"
+   ],
+   "cards": [],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "ADC-184",
+  "title": "Compare total sales, not just share shift, when testing a promotion",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "measurement_data",
+   "acquisition_efficiency"
+  ],
+  "lever": "cannibalization check",
+  "hypothesis": "If a promotion or channel push is tested in some markets or segments and total sales are compared, not just the share shift between channels, then the brand avoids crediting a promotion that only moves existing customers around instead of growing revenue.",
+  "applies_when": [
+   "scaling_store"
+  ],
+  "signal": {
+   "check": "A promotion or new channel push is judged only by its own channel's sales lift, with no check on whether total sales across all channels actually grew.",
+   "metrics": [
+    "roas_blended"
+   ]
+  },
+  "expected_effect": {
+   "metric": "roas_blended",
+   "direction": "up",
+   "size": "unknown; source gives a dealer-display example, not an ecommerce test",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": ""
+  },
+  "prerequisites": [
+   "Ability to compare total sales across channels or markets, not just the promoted channel"
+  ],
+  "steps": [
+   "Pick a set of markets or segments to run the promotion in, and a matched set to hold out.",
+   "Track total sales across all channels in both groups, not just the promoted channel.",
+   "Compare total sales growth between the promoted group and the holdout group.",
+   "If total sales did not grow more than the holdout, treat the promotion as a shift, not a gain."
+  ],
+  "test": {
+   "method": "Compare total sales growth in the promoted group against the holdout group over the test period.",
+   "measure": "roas_blended",
+   "read_point": "After the promotion's test period ends."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "03"
+   ],
+   "cards": [
+    "88abb52004b4"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "ADC-185",
+  "title": "Swap a literal word for a more visual word to make a benefit stick",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "metonymy in copy",
+  "hypothesis": "If a literal but flat word in a benefit line is swapped for a more visual, surprising word that carries the same true meaning, then the line is more memorable because a concrete picture word sticks in a way a technical or generic term does not.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A key benefit line uses a flat, literal or technical word where a more visual word could carry the same true meaning.",
+   "metrics": [
+    "ctr"
+   ]
+  },
+  "expected_effect": {
+   "metric": "ctr",
+   "direction": "up",
+   "size": "unknown; no measured lift given in source",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "The swapped word must still be true in spirit; do not let a vivid word cross into a claim that is not actually accurate."
+  },
+  "prerequisites": [],
+  "steps": [
+   "Identify the flat or technical word in the benefit line.",
+   "Brainstorm a more visual or surprising word that carries the same real meaning.",
+   "Check the new word does not overstate or misrepresent the actual benefit.",
+   "Test the visual version against the original flat wording."
+  ],
+  "test": {
+   "method": "Compare CTR or engagement on the visual-word version against the original flat wording.",
+   "measure": "ctr",
+   "read_point": "After both versions have run long enough to compare."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "04"
+   ],
+   "cards": [
+    "fc16ebab7e1b"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "ADC-186",
+  "title": "Position the product as replacing a cluttered current routine",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "conversion",
+   "aov"
+  ],
+  "lever": "replacement positioning",
+  "hypothesis": "If the product is positioned as replacing several current steps or products at once, naming exactly what gets replaced, then it converts better because the buyer pictures a concrete simplification instead of adding one more item to an already cluttered routine.",
+  "applies_when": [
+   "catalogue",
+   "subscription"
+  ],
+  "signal": {
+   "check": "The product's copy describes only what it does, without naming the specific steps, products or routine it lets the buyer stop doing.",
+   "metrics": [
+    "cvr_overall"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown; no measured lift given in source",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": ""
+  },
+  "prerequisites": [],
+  "steps": [
+   "List the specific steps or products in the buyer's current routine that this product replaces.",
+   "Name them explicitly in the copy (for example naming each supplement it replaces).",
+   "State the one thing the buyer does instead, in contrast to that list.",
+   "Test the replacement-framed copy against the current feature-only version."
+  ],
+  "test": {
+   "method": "Compare conversion rate of the replacement-framed copy against the current feature-only version.",
+   "measure": "cvr_overall",
+   "read_point": "After both versions have run long enough to compare."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "04"
+   ],
+   "cards": [
+    "c78fe9d7b47e"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "ADC-187",
+  "title": "Preview a new ad surrounded by real feed or rival clutter before sign-off",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "in-context creative QA",
+  "hypothesis": "If a near-final ad is previewed surrounded by real competing ads or a live feed's clutter instead of on a blank canvas, then weak creative gets caught before launch because it must prove it can still grab attention in the actual environment it will run in.",
+  "applies_when": [
+   "paid_social_led"
+  ],
+  "signal": {
+   "check": "New ads or billboards are approved after being viewed alone, on a blank background, with no mock-up of the real feed or placement clutter around them.",
+   "metrics": [
+    "ctr"
+   ]
+  },
+  "expected_effect": {
+   "metric": "ctr",
+   "direction": "up",
+   "size": "unknown; no measured lift given in source",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "designer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": ""
+  },
+  "prerequisites": [],
+  "steps": [
+   "Take a screenshot of the real feed, page, or placement the ad will run in.",
+   "Place the draft ad into that context, surrounded by real other content or ads.",
+   "Review whether the ad still grabs attention in that cluttered context.",
+   "Revise and re-check before final sign-off."
+  ],
+  "test": {
+   "method": "Compare CTR of ads approved with this in-context preview against ads approved on a blank canvas.",
+   "measure": "ctr",
+   "read_point": "After a batch of ads has run using the in-context preview step."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "04"
+   ],
+   "cards": [
+    "220e0eb8c1d5"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "ADC-188",
+  "title": "Write a 3-part brief (reader, belief, line) before drafting any ad",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "team_capacity",
+   "conversion"
+  ],
+  "lever": "creative brief structure",
+  "hypothesis": "If a brief names the exact reader and moment, states the belief or reason behind the product, and only then asks for the clever line, then drafts need fewer rounds of revision because the writer starts from a real point instead of guessing at tone first.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Copy briefs jump straight to asking for a headline or hook with no stated audience moment or underlying belief behind the product.",
+   "metrics": [
+    "other:production_time_hours"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:production_time_hours",
+   "direction": "down",
+   "size": "unknown; no measured lift given in source",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": ""
+  },
+  "prerequisites": [],
+  "steps": [
+   "Write who the reader is and the specific moment they're in (a scroll, an inbox, a store aisle).",
+   "Write the belief or reason the product exists, in the founder's or team's own words.",
+   "Only after both are written, ask for the clever line or headline.",
+   "Use this 3-part brief format for every new ad or page brief."
+  ],
+  "test": {
+   "method": "Compare number of revision rounds needed on briefs using this format against prior briefs.",
+   "measure": "other:production_time_hours",
+   "read_point": "After a few briefs have used the new format."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "04"
+   ],
+   "cards": [
+    "6645e37e12f9"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "ADC-189",
+  "title": "Show reviewers 3 or more line versions instead of just 1",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "team_capacity"
+  ],
+  "lever": "feedback process",
+  "hypothesis": "If a reviewer is shown 3 or more versions of a line at once instead of just 1, then feedback becomes more useful because a reviewer can only say which is better among options, while a single version only gets a like or dislike.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Copy drafts are sent to reviewers as a single version at a time, and feedback comes back as only a like or dislike with little direction.",
+   "metrics": [
+    "other:production_time_hours"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:production_time_hours",
+   "direction": "down",
+   "size": "unknown; no measured lift given in source",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": ""
+  },
+  "prerequisites": [],
+  "steps": [
+   "Write 3 to 5 versions of the line or headline before sending for review.",
+   "Send all versions together to the reviewer, not one at a time.",
+   "Ask the reviewer to rank or pick a favorite and say why.",
+   "Combine the best elements of the top picks into the final version."
+  ],
+  "test": {
+   "method": "Compare how many review rounds are needed with multi-version review against single-version review.",
+   "measure": "other:production_time_hours",
+   "read_point": "After a few review cycles use the multi-version format."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "04"
+   ],
+   "cards": [
+    "189a7e6d8231"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "ADC-190",
+  "title": "Default paid ad objectives to purchase intent unless budget is monopoly-scale",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "acquisition_efficiency"
+  ],
+  "lever": "campaign objective default",
+  "hypothesis": "If every paid ad's objective defaults to purchase intent instead of brand awareness, then ad spend converts more efficiently because a challenger brand's budget rarely supports pure awareness spend the way a monopoly or duopoly player's does.",
+  "applies_when": [
+   "new_store",
+   "scaling_store"
+  ],
+  "signal": {
+   "check": "The brand runs awareness-objective or logo-only campaigns without the budget scale that makes pure awareness spend pay off.",
+   "metrics": [
+    "roas_blended",
+    "cpa"
+   ]
+  },
+  "expected_effect": {
+   "metric": "roas_blended",
+   "direction": "up",
+   "size": "unknown; source gives no measured lift, and this conflicts with some full-funnel media views",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "This is one practitioner's opinion and conflicts with common full-funnel media advice; test against the brand's own funnel data before adopting broadly."
+  },
+  "prerequisites": [],
+  "steps": [
+   "Review current campaign objectives across active ads.",
+   "Switch any pure awareness or reach objective to a purchase or conversion objective, unless the brand has monopoly-level budget.",
+   "Track cost per acquisition and ROAS after the switch.",
+   "Revert only where the brand's own data shows awareness spend paying off."
+  ],
+  "test": {
+   "method": "Compare cost per acquisition and blended ROAS before and after switching objectives.",
+   "measure": "roas_blended",
+   "read_point": "After a full budget cycle on the new objective."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "05"
+   ],
+   "cards": [
+    "f27174953be4"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "ADC-191",
+  "title": "Resend an unopened launch email with a new subject and preview line",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "repeat_retention",
+   "conversion"
+  ],
+  "lever": "launch email resend",
+  "hypothesis": "If a launch or promo email is resent to unopened recipients with a new subject and preview line instead of sent only once, then total reach and revenue from the launch rise because a large share of any list never sees the first send at all.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Launch or promo emails are sent once to the full list with no resend to the portion that did not open it.",
+   "metrics": [
+    "email_click_rate",
+    "flow_revenue_share"
+   ]
+  },
+  "expected_effect": {
+   "metric": "flow_revenue_share",
+   "direction": "up",
+   "size": "unknown; no measured lift given in source",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": ""
+  },
+  "prerequisites": [
+   "An email platform that can filter by open status for a resend"
+  ],
+  "steps": [
+   "Send the launch or promo email as usual.",
+   "Wait 1 to 2 days, then filter the list to non-openers.",
+   "Write a new subject line and preview text for the same content.",
+   "Send the resend only to the non-opener segment."
+  ],
+  "test": {
+   "method": "Compare total revenue and reach from the launch with resends against a past launch sent only once.",
+   "measure": "flow_revenue_share",
+   "read_point": "After the resend has gone out and had time to be opened."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "05"
+   ],
+   "cards": [
+    "3375be5b64cd"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "ADC-192",
+  "title": "Send three closing-day emails at different times on the final sale day",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "closing-day email cadence",
+  "hypothesis": "If a sale or launch's final day includes three sales emails sent at different times (morning, afternoon, late night), then closing-day revenue rises because it reaches subscribers across time zones and inbox-checking habits instead of relying on a single send to catch everyone.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "The final day of a sale or launch gets only 1 or 2 emails, leaving many subscribers in different time zones or routines without a timely reminder.",
+   "metrics": [
+    "email_click_rate",
+    "flow_revenue_share"
+   ]
+  },
+  "expected_effect": {
+   "metric": "flow_revenue_share",
+   "direction": "up",
+   "size": "unknown; source's own claim (final day matched all prior days combined) is unverified",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Watch unsubscribe and complaint rate; a heavy closing-day cadence can cost list health if overused."
+  },
+  "prerequisites": [],
+  "steps": [
+   "Plan 3 sales emails for the final day of the sale or launch: morning, afternoon, and late evening.",
+   "Vary the subject and framing slightly across the 3 so they don't feel identical.",
+   "Track unsubscribe and complaint rate alongside revenue for the closing day.",
+   "Compare closing-day revenue against a past launch's closing day with fewer emails."
+  ],
+  "test": {
+   "method": "Compare closing-day revenue and unsubscribe rate against a past closing day that used fewer emails.",
+   "measure": "flow_revenue_share",
+   "read_point": "The day after the closing-day sends."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "05"
+   ],
+   "cards": [
+    "8046e8352c3b",
+    "8ccd32a8db57"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "ADC-193",
+  "title": "Position price with an apples-to-oranges comparison, not itemized value",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "aov",
+   "conversion"
+  ],
+  "lever": "price anchoring by unrelated comparison",
+  "hypothesis": "If the price is compared to an unrelated bundle of alternatives the buyer would otherwise need, or to the cost of inaction, then the price reads as smaller because the buyer is anchored to a different, higher reference number instead of judging the product's own components.",
+  "applies_when": [
+   "high_aov",
+   "subscription"
+  ],
+  "signal": {
+   "check": "Price is positioned only by itemizing the product's own features and their individual values, with no comparison to an unrelated alternative cost or the cost of inaction.",
+   "metrics": [
+    "cvr_overall"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown; no measured lift given in source",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Any comparison figure used must be real and checkable, not an invented or inflated number."
+  },
+  "prerequisites": [],
+  "steps": [
+   "Identify a real, relevant unrelated alternative the buyer would otherwise pay for (or the real cost of the problem continuing).",
+   "State that comparison figure next to the product's actual price.",
+   "Keep the comparison honest and checkable, not inflated.",
+   "Test the comparison-framed price against the current itemized framing."
+  ],
+  "test": {
+   "method": "Compare conversion rate of the comparison-framed price against the itemized-value framing.",
+   "measure": "cvr_overall",
+   "read_point": "After both framings have run long enough to compare."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "05"
+   ],
+   "cards": [
+    "c7a79cc9ee3e"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "ADC-194",
+  "title": "Check a long page's structure by reading only its headers in order",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "header through-line QA",
+  "hypothesis": "If a long page's headers and subheads are read in sequence on their own, then structural gaps get caught before launch because a reader who only skims headers should still get the complete story without reading any body text.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Long sales or landing pages are reviewed by reading the full body copy, with no separate check of whether the headers alone tell a coherent story.",
+   "metrics": [
+    "cvr_overall"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown; no measured lift given in source",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": ""
+  },
+  "prerequisites": [],
+  "steps": [
+   "Copy every header and subhead from the page in order into a separate list.",
+   "Read only that list, ignoring the body copy.",
+   "Check the list tells a complete, logical story from problem to offer on its own.",
+   "Rewrite any header that breaks the flow or repeats without adding new information."
+  ],
+  "test": {
+   "method": "Check whether the through-line reads cleanly after each major page revision.",
+   "measure": "cvr_overall",
+   "read_point": "Each time a long page is revised before launch."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "05"
+   ],
+   "cards": [
+    "457ab3b6b02d",
+    "caee8d24b0f0"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "ADC-195",
+  "title": "Make sure a quiz or interactive funnel step delivers a real personalized result",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "trust_brand",
+   "conversion"
+  ],
+  "lever": "interactive funnel integrity",
+  "hypothesis": "If a quiz or interactive tool used as a funnel step actually delivers the promised personalized result, then trust holds through the funnel because the buyer's investment of time is honored instead of ending in a generic pitch that feels like a bait and switch.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A quiz or interactive tool is used as a funnel step but ends in a generic offer rather than a personalized result matching what was promised.",
+   "metrics": [
+    "cvr_overall"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown; no measured lift given in source",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "A quiz that promises a result and doesn't deliver one reads as deceptive and can damage trust broadly, not just on that page."
+  },
+  "prerequisites": [
+   "An existing or planned quiz or interactive funnel tool"
+  ],
+  "steps": [
+   "Review the quiz or tool's promise (a personalized recommendation, type, or plan).",
+   "Confirm the end result is genuinely personalized to the answers given, not a generic pitch.",
+   "If it currently ends generically, build in real branching logic to personalize the result.",
+   "Track completion rate and conversion after the result is made genuinely personalized."
+  ],
+  "test": {
+   "method": "Compare completion and conversion rate before and after the quiz delivers a genuinely personalized result.",
+   "measure": "cvr_overall",
+   "read_point": "After the personalized version has been live for a test period."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "05"
+   ],
+   "cards": [
+    "dda3430eb956"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "ADC-196",
+  "title": "Choose email software by list size and feature need against fixed thresholds",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "team_capacity",
+   "repeat_retention"
+  ],
+  "lever": "tool selection",
+  "hypothesis": "If email software is chosen against fixed list-size and feature-need thresholds instead of by habit or brand reputation, then the brand avoids both being under-tooled at scale and over-paying for features it doesn't yet need.",
+  "applies_when": [
+   "scaling_store",
+   "new_store"
+  ],
+  "signal": {
+   "check": "The brand's email platform was chosen by habit or reputation, with no check against its actual list size and required features (automation complexity, segmentation).",
+   "metrics": [
+    "other:esp_fit"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:esp_fit",
+   "direction": "up",
+   "size": "unknown; no measured lift given in source",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "medium",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": ""
+  },
+  "prerequisites": [],
+  "steps": [
+   "List the brand's current list size and required features (automation, segmentation, integrations).",
+   "Compare against the current platform's stated limits and pricing tiers at that size.",
+   "If mismatched, evaluate a platform sized for the current list size and needs.",
+   "Reassess this choice again as the list crosses each major size threshold."
+  ],
+  "test": {
+   "method": "Review platform fit (cost, deliverability, feature gaps) at each major list-size milestone.",
+   "measure": "other:esp_fit",
+   "read_point": "At each major list-size milestone."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "05"
+   ],
+   "cards": [
+    "eb63418c5804"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "ADC-197",
+  "title": "Write a one-paragraph messaging strategy before drafting any copy",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "team_capacity"
+  ],
+  "lever": "messaging strategy document",
+  "hypothesis": "If a short one-paragraph messaging strategy (tone, style, message-medium principles) is written before any copy, then drafts stay consistent and get judged against a real standard, because writers stop picking words just because they like the sound of them.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Copy gets written and reviewed with no written guiding principles for tone, style, or how copy should match the medium and the moment.",
+   "metrics": [
+    "other:brand_voice_consistency"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:brand_voice_consistency",
+   "direction": "up",
+   "size": "unknown; no measured lift given in source",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": ""
+  },
+  "prerequisites": [],
+  "steps": [
+   "Write a single paragraph stating the brand's guiding copy principles (tone, clarity over cleverness, proof standards).",
+   "Share it with everyone who writes or reviews copy, including freelancers and designers.",
+   "Use it to judge whether a draft is working, not personal taste alone.",
+   "Update it as the brand's voice and products change."
+  ],
+  "test": {
+   "method": "Check reviewer agreement on drafts before and after the strategy document exists.",
+   "measure": "other:brand_voice_consistency",
+   "read_point": "After the strategy has been in use for a month."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "06"
+   ],
+   "cards": [
+    "20fa6900506f"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "ADC-198",
+  "title": "Test candidate product names or pain-angle headlines with small paid spend",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "conversion",
+   "acquisition_efficiency"
+  ],
+  "lever": "cheap pre-launch name test",
+  "hypothesis": "If 2 or more candidate product names or pain-angle headlines are tested with a small paid-ad budget before committing everywhere, then the brand avoids locking in a weaker name or angle across packaging and pages based on internal opinion alone.",
+  "applies_when": [
+   "new_store"
+  ],
+  "signal": {
+   "check": "A new product name or headline angle is chosen by internal preference with no small paid test comparing candidates first.",
+   "metrics": [
+    "ctr",
+    "cpa"
+   ]
+  },
+  "expected_effect": {
+   "metric": "ctr",
+   "direction": "up",
+   "size": "unknown; no measured lift given in source",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": ""
+  },
+  "prerequisites": [
+   "A small budget for a short paid-ad test"
+  ],
+  "steps": [
+   "Write 2 or more candidate names or pain-angle headlines for the same offer.",
+   "Run each as a small paid ad test to a similar audience.",
+   "Compare CTR and cost per result across candidates.",
+   "Commit the winning candidate to packaging, PDP and future ads."
+  ],
+  "test": {
+   "method": "Compare CTR and cost per click across the candidate name or headline test ads.",
+   "measure": "ctr",
+   "read_point": "After the small test has enough spend to compare candidates."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "06"
+   ],
+   "cards": [
+    "45fdf8131aa8"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "ADC-199",
+  "title": "Test candidate product images by placing them among real competing products",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "in-context creative testing",
+  "hypothesis": "If candidate product images or packaging are placed among real competing products (a store shelf, a marketplace grid) and observed for which one people pick, then the winning creative gets chosen from real behavior instead of an internal opinion in isolation.",
+  "applies_when": [
+   "catalogue",
+   "marketplace_heavy"
+  ],
+  "signal": {
+   "check": "A new product image, packaging design, or thumbnail is chosen by internal review alone, never observed against real competing options in context.",
+   "metrics": [
+    "cvr_overall"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown; source example is a physical bookstore test with no numbers given",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": ""
+  },
+  "prerequisites": [
+   "Access to a real shelf, marketplace grid, or catalog page to place candidates in context"
+  ],
+  "steps": [
+   "Prepare 2 or more candidate images or packaging designs.",
+   "Place them among real competing products (a physical display, a marketplace search result page, a catalog spread).",
+   "Observe or measure which one people naturally pick or click.",
+   "Commit the winning candidate before wider production or listing."
+  ],
+  "test": {
+   "method": "Compare pick rate or click rate of each candidate when placed in the real competitive context.",
+   "measure": "cvr_overall",
+   "read_point": "After the in-context test has enough observations to compare."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "06"
+   ],
+   "cards": [
+    "45fdf8131aa8"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "ADC-200",
+  "title": "Separate pain-stating copy from motivation-reflecting copy",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "conversion",
+   "trust_brand"
+  ],
+  "lever": "pain versus motivation messaging",
+  "hypothesis": "If pain is stated plainly in copy while deeper personal motivation is only ever reflected, never bluntly stated, then messaging lands more naturally because customers rarely admit their real motivation even to themselves, and stating it outright can feel invasive or cheesy.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Copy either states only the surface pain or tries to name the buyer's deep motivation outright (calling out an insecurity or aspiration directly), rather than treating the two differently.",
+   "metrics": [
+    "cvr_overall"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown; no measured lift given in source",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": ""
+  },
+  "prerequisites": [
+   "Customer research identifying both the stated pain and the likely deeper motivation"
+  ],
+  "steps": [
+   "Write the pain the product solves as a plain, concrete statement.",
+   "Separately, identify the deeper motivation behind the purchase (status, belonging, self-image).",
+   "Reflect the motivation through imagery, testimonials or a mood, without stating it bluntly.",
+   "Review draft copy and flag any line that states the deep motivation too directly."
+  ],
+  "test": {
+   "method": "Compare conversion or engagement on copy using this separation against copy that states motivation outright.",
+   "measure": "cvr_overall",
+   "read_point": "After both versions have run long enough to compare."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "06"
+   ],
+   "cards": [
+    "fb5fb47770a9"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "ADC-201",
+  "title": "Use a reminder message instead of building motivation the category already built",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "team_capacity",
+   "conversion"
+  ],
+  "lever": "motivation piggybacking",
+  "hypothesis": "If a category or trend has already built the customer's motivation (through competitors, media or a broader trend), then a short reminder message below the hero does the same job as a full narrative build-up, saving copywriting effort without losing conversion.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Copy builds a full motivational narrative from scratch even when the category's need is already well established by competitors, media coverage or an existing trend.",
+   "metrics": [
+    "other:production_time_hours"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:production_time_hours",
+   "direction": "down",
+   "size": "unknown; no measured lift given in source",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": ""
+  },
+  "prerequisites": [],
+  "steps": [
+   "Check whether the category's core motivation is already well established by competitors, media or trend coverage.",
+   "If so, replace a long motivational build-up with a short reminder line below the hero.",
+   "Redirect the copywriting effort saved into the product's specific differentiation instead.",
+   "Revisit if category awareness later declines."
+  ],
+  "test": {
+   "method": "Compare conversion between a full motivational build-up and a short reminder line for an already-educated category.",
+   "measure": "cvr_overall",
+   "read_point": "After both versions have run long enough to compare."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "06"
+   ],
+   "cards": [
+    "17b8f4f12a1d"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "ADC-202",
+  "title": "Map a launch's traffic waves and match message specificity to each",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "acquisition_efficiency",
+   "conversion"
+  ],
+  "lever": "launch wave messaging",
+  "hypothesis": "If a launch's traffic waves (early insiders, press-driven niche audience, mass launch audience, latecomers) are mapped and each gets message specificity matched to what they already know, then the launch converts better because early insiders and cold latecomers are not shown the exact same copy.",
+  "applies_when": [
+   "new_store"
+  ],
+  "signal": {
+   "check": "A product launch sends the same message to early insiders, press-referred visitors, and later mass-audience traffic with no adjustment for what each group already knows.",
+   "metrics": [
+    "cvr_overall"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown; no measured lift given in source",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": ""
+  },
+  "prerequisites": [],
+  "steps": [
+   "Map the expected traffic waves for the launch (insiders/friends, press-referred niche audience, mass launch traffic, latecomers).",
+   "Write more basic, need-to-know copy for early insider waves.",
+   "Write more specific, detailed copy for later waves who need convincing rather than just support.",
+   "Route each wave to the messaging suited to it where the channel allows."
+  ],
+  "test": {
+   "method": "Compare conversion by traffic wave against a single-message launch used previously.",
+   "measure": "cvr_overall",
+   "read_point": "After the full launch sequence completes."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "06"
+   ],
+   "cards": [
+    "718d826f9fb7"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "ADC-203",
+  "title": "Point a photographed person's gaze toward the CTA",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "visual attention direction",
+  "hypothesis": "If a photo of a person placed near the CTA has them looking toward the button instead of at the camera or elsewhere, then more eyes follow to the CTA because readers' attention naturally follows a photographed person's gaze direction.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A page or ad uses a photo of a person near the CTA, but the person is looking at the camera or away from the button rather than toward it.",
+   "metrics": [
+    "cvr_overall"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown; source cites 1 eye-tracking finding, no ecommerce test",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "designer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": ""
+  },
+  "prerequisites": [
+   "A page or ad with a photo of a person near the CTA"
+  ],
+  "steps": [
+   "Identify any page or ad using a photo of a person near the CTA.",
+   "Check or reshoot so the person's gaze points toward the button.",
+   "Compare conversion or click-through against the prior version with a different gaze direction.",
+   "Apply the same check to future photo placements near a CTA."
+  ],
+  "test": {
+   "method": "Compare click-through or conversion on the CTA before and after the gaze direction change.",
+   "measure": "cvr_overall",
+   "read_point": "After the changed image has been live for a test period."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "06"
+   ],
+   "cards": [
+    "e374cf034894"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "ADC-204",
+  "title": "Build a timely landing page around a real, relevant news story",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "acquisition_efficiency",
+   "trust_brand"
+  ],
+  "lever": "newsjacking landing page",
+  "hypothesis": "If a time-sensitive landing page or campaign is built around a real, relevant news story (an industry event or a competitor's public misstep) instead of manufactured motivation, then it converts better because the news itself has already created the reader's motivation.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "The brand has no process for spotting a relevant, timely news story and quickly building a factual, non-nasty landing page or campaign around it.",
+   "metrics": [
+    "cvr_overall"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown; source's own case claims sales near double forecast, single case",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "Cite the news factually and stay non-nasty; using a competitor's trouble in an unfair way can backfire on the brand's own reputation."
+  },
+  "prerequisites": [
+   "A relevant, timely, verifiable news story"
+  ],
+  "steps": [
+   "Watch for a relevant industry news story or a competitor's public misstep.",
+   "Confirm the facts before building anything around it.",
+   "Write a short, factual, time-sensitive landing page or email tying the news to the brand's offer.",
+   "Keep the tone factual and non-nasty, citing sources where relevant."
+  ],
+  "test": {
+   "method": "Compare conversion and sales on the newsjacking page against a similar campaign with manufactured urgency.",
+   "measure": "cvr_overall",
+   "read_point": "While the news is still current, and again after it fades."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "06"
+   ],
+   "cards": [
+    "d225b0070e78"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "ADC-205",
+  "title": "Mine site-search and keyword data for exact customer phrases",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "conversion",
+   "acquisition_volume"
+  ],
+  "lever": "search-language mining",
+  "hypothesis": "If the brand's own site-search terms and paid or organic keyword data are mined for the exact phrases customers type, then headlines and subheads convert better because they use the customer's own search language instead of internal product terminology.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Headlines, subheads and buttons use internal product terminology, while the brand's own site-search and keyword data (showing what customers actually type) go unused for copy.",
+   "metrics": [
+    "organic_clicks",
+    "cvr_overall"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown; no measured lift given in source",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": ""
+  },
+  "prerequisites": [
+   "Access to site-search query data and keyword/search-term reports"
+  ],
+  "steps": [
+   "Pull the brand's top site-search queries and top-performing keywords.",
+   "List the exact phrases and words customers use, not the brand's internal terms.",
+   "Rewrite headlines, subheads and button copy to include those exact phrases where true.",
+   "Track conversion and click-through after the language update."
+  ],
+  "test": {
+   "method": "Compare conversion rate on pages before and after headlines use mined customer search language.",
+   "measure": "cvr_overall",
+   "read_point": "After the updated copy has been live for a test period."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "06"
+   ],
+   "cards": [
+    "936e1b2b613f"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "ADC-206",
+  "title": "Personalize follow-up to exactly what a lead asked about, with local proof",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "intent-matched follow-up",
+  "hypothesis": "If a lead's follow-up communication answers exactly what they asked about, with proof from similar nearby customers, instead of sending the full generic catalog, then conversion improves because the response matches their specific interest instead of asking them to search again.",
+  "applies_when": [
+   "catalogue"
+  ],
+  "signal": {
+   "check": "Every inquiry or lead gets the same generic full catalog or product list in follow-up, regardless of what they specifically asked about.",
+   "metrics": [
+    "cvr_overall"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown; source example is a 1920s mail-order case with no numbers given",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": ""
+  },
+  "prerequisites": [
+   "A way to capture what specific product, style or price range a lead asked about"
+  ],
+  "steps": [
+   "Capture what specific product, style, or question the lead asked about at intake.",
+   "Build a follow-up (email or page) that answers only that specific interest in full.",
+   "Add proof from similar customers (local reviews, a similar buyer's story) where possible.",
+   "Compare conversion against the prior generic full-catalog follow-up."
+  ],
+  "test": {
+   "method": "Compare conversion rate of the personalized follow-up against a generic full-catalog follow-up.",
+   "measure": "cvr_overall",
+   "read_point": "After both approaches have run for a comparable volume of leads."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "07"
+   ],
+   "cards": [
+    "b60274dadf3c"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "ADC-207",
+  "title": "Observe live sales conversations to catch real objections and triggers",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "conversion",
+   "team_capacity"
+  ],
+  "lever": "live objection research",
+  "hypothesis": "If someone regularly observes or listens to live sales conversations (support chat, phone calls, in-store), then copy addresses real objections better because it is grounded in what actually makes people hesitate or say yes, not just what surveys report after the fact.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Copy and offer decisions are based only on surveys or written reviews, with no one regularly observing live support or sales conversations for real-time objections.",
+   "metrics": [
+    "cvr_overall"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown; source frames this as Hopkins's practice, no numbers given",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "support"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": ""
+  },
+  "prerequisites": [
+   "Access to live support chats, sales calls, or in-store conversations"
+  ],
+  "steps": [
+   "Set a recurring time to listen to or read live support chats, sales calls, or in-store conversations.",
+   "Note the objections, hesitations and moments that lead to a yes.",
+   "Feed the strongest real objections into the copy team's objection-handling list.",
+   "Repeat regularly, not as a one-time research pass."
+  ],
+  "test": {
+   "method": "Track whether copy updated from this research reduces the frequency of the same objection in support tickets.",
+   "measure": "cvr_overall",
+   "read_point": "After a quarter of regular observation and copy updates."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "07"
+   ],
+   "cards": [
+    "eafac9149579"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "ADC-208",
+  "title": "Split creative backlog into winners and losers at the natural break point",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "conversion",
+   "measurement_data"
+  ],
+  "lever": "winner/loser creative analysis",
+  "hypothesis": "If a channel's own or a competitor's content backlog is split into winners and losers at the natural performance break point, then hook and creative patterns get extracted more reliably because winners are contrasted against real losers instead of studied in isolation.",
+  "applies_when": [
+   "paid_social_led",
+   "organic_led"
+  ],
+  "signal": {
+   "check": "Creative research looks only at the single best-performing pieces with no comparison against the underperforming pieces from the same backlog.",
+   "metrics": [
+    "other:hook_pattern_confidence"
+   ]
+  },
+  "expected_effect": {
+   "metric": "hook_rate",
+   "direction": "up",
+   "size": "unknown; source's own findings are from 1 demo run on organic content, not paid ads",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Views alone rank paid content by budget, not creative quality; use spend-normalized metrics (hook rate, CTR, cost per purchase) for paid creative instead of raw views."
+  },
+  "prerequisites": [
+   "A backlog of at least 10 pieces of content or ad creative per channel or competitor"
+  ],
+  "steps": [
+   "Rank a channel's or competitor's top pieces by a comparable performance metric.",
+   "Find the natural drop-off point that separates winners from the rest.",
+   "Extract patterns (psychology, framing, structure) only from the winners, using losers as contrast.",
+   "Re-run the analysis as more content is added to the backlog."
+  ],
+  "test": {
+   "method": "Track whether hooks built from this analysis outperform hooks built without a winner/loser split.",
+   "measure": "hook_rate",
+   "read_point": "After the new hooks have run long enough to compare."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "08"
+   ],
+   "cards": [
+    "ad297d96546e"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "ADC-209",
+  "title": "Filter out likely paid content before treating it as a creative-research winner",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "measurement_data"
+  ],
+  "lever": "organic-signal filtering",
+  "hypothesis": "If a high-performing piece of content is checked for engagement rate before being treated as an organic creative winner, then hook and creative research stays clean because paid-boosted content is filtered out instead of falsely inflating what looks like a winning pattern.",
+  "applies_when": [
+   "organic_led"
+  ],
+  "signal": {
+   "check": "Creative or hook research treats every high-view piece of content as an organic winner with no check for whether paid spend was behind its reach.",
+   "metrics": [
+    "other:hook_pattern_confidence"
+   ]
+  },
+  "expected_effect": {
+   "metric": "hook_rate",
+   "direction": "up",
+   "size": "unknown; source's 2% engagement floor is a rule of thumb, not validated",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Engagement norms vary by platform and account size; treat the specific percentage as a starting rule of thumb to calibrate, not a fixed law."
+  },
+  "prerequisites": [],
+  "steps": [
+   "Check engagement rate (likes, comments, shares relative to views) on each high-performing piece being studied.",
+   "Set a rule-of-thumb floor below which a high-view piece is likely paid or boosted.",
+   "Exclude pieces below that floor from the organic-winner analysis.",
+   "Override the exclusion if a known organic post happens to fall under the line."
+  ],
+  "test": {
+   "method": "Track whether excluding low-engagement high-view content changes the extracted hook patterns.",
+   "measure": "hook_rate",
+   "read_point": "Each time a new batch of content is analyzed."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "08"
+   ],
+   "cards": [
+    "03d175f0d156"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "ADC-210",
+  "title": "Check a winning format fits the new topic before reusing it",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "format-topic fit screening",
+  "hypothesis": "If a winning hook or ad format is checked for fit against the new topic or product before reuse, then generated hooks perform better because a mismatched template (a stat-driven format on a topic with no stat) is rejected instead of force-fit.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Winning hook or ad formats get reused on new topics or products without checking whether the format's structure actually fits the new subject.",
+   "metrics": [
+    "ctr",
+    "hook_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "hook_rate",
+   "direction": "up",
+   "size": "unknown; source's own findings are from 1 demo run on organic content",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": ""
+  },
+  "prerequisites": [
+   "A library of past winning hook or ad formats with notes on what makes each format work"
+  ],
+  "steps": [
+   "Review each candidate winning format against the new topic or product.",
+   "Ask whether the format's structure (a stat, a case study, a challenge) can be honestly filled for this topic.",
+   "Reject and skip formats that don't fit rather than forcing them.",
+   "Prefer analyzing more content over force-fitting a mismatched format when too few fit."
+  ],
+  "test": {
+   "method": "Compare CTR or hook rate on topic-matched formats against previously force-fit mismatched formats.",
+   "measure": "hook_rate",
+   "read_point": "After the new format-screened hooks have run."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "08"
+   ],
+   "cards": [
+    "721989c4c0ef"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "ADC-211",
+  "title": "Reskin a winning hook or ad structure with your own facts, don't clone it",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "reskinning technique",
+  "hypothesis": "If a winning hook or ad structure is rewritten with the brand's own specific facts and wording instead of cloned word for word or left generic, then it performs better because it keeps the proven structure while avoiding both a spammy copy-paste and a bland cold-AI draft.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "New hooks or ad copy are either copy-pasted from a winning example with only the product name swapped, or written from scratch with no structural grounding at all.",
+   "metrics": [
+    "ctr",
+    "hook_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "hook_rate",
+   "direction": "up",
+   "size": "unknown; source frames this as the middle path between 2 failure modes, no measured lift",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "Never copy a rival's or another niche's exact wording, claims or proof; reuse structure only."
+  },
+  "prerequisites": [],
+  "steps": [
+   "Identify a winning hook or ad structure worth reusing (from the brand's own or a close competitor's proven creative).",
+   "Strip it down to its structural pattern (not the specific words).",
+   "Rewrite it fully with the brand's own facts, numbers and voice.",
+   "Check the result is neither a clone of the original nor a generic, ungrounded new line."
+  ],
+  "test": {
+   "method": "Compare CTR or hook rate of reskinned hooks against both cloned and cold-AI-generated hooks.",
+   "measure": "hook_rate",
+   "read_point": "After each version has run long enough to compare."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "08"
+   ],
+   "cards": [
+    "a80ff986fd63",
+    "721989c4c0ef"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "ADC-212",
+  "title": "Grade drafts against a rubric built from your own winners, then override for voice",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "conversion",
+   "team_capacity"
+  ],
+  "lever": "data-grounded grading rubric",
+  "hypothesis": "If new hook or headline drafts are graded against a written rubric built from the brand's own best-performing creative, then the review process gets more consistent, provided a human still overrides any high-graded draft that doesn't fit the brand's actual voice.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Drafts are approved or rejected on gut feel alone, with no written rubric derived from what has actually performed for the brand.",
+   "metrics": [
+    "other:brand_voice_consistency"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:brand_voice_consistency",
+   "direction": "up",
+   "size": "unknown; no measured lift given in source",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A high grade is not the final word; reject a well-scored draft that doesn't fit the brand's voice or length norms."
+  },
+  "prerequisites": [
+   "A set of the brand's own best-performing hooks or headlines to build the rubric from"
+  ],
+  "steps": [
+   "Identify traits shared by the brand's own best-performing hooks or headlines (specificity, payoff placement, declarative tone).",
+   "Write those traits into a short scoring rubric.",
+   "Grade new drafts against the rubric before they ship.",
+   "Have a human reviewer override any high-graded draft that doesn't match the brand's real voice."
+  ],
+  "test": {
+   "method": "Track whether rubric-approved drafts perform as well as or better than gut-approved drafts historically.",
+   "measure": "other:brand_voice_consistency",
+   "read_point": "After a batch of rubric-graded drafts has run."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "08"
+   ],
+   "cards": [
+    "e9f81c60dc73"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "ADC-213",
+  "title": "Choose broadcast or automation by whether the message is time-bound",
+  "domain": "11-ADC",
+  "bottleneck": [
+   "team_capacity",
+   "repeat_retention"
+  ],
+  "lever": "send-type decision rule",
+  "hypothesis": "If the choice between a broadcast and an automation is made by whether the message is time-bound news or a behavior- or date-triggered message, then email operations run more smoothly because each message type goes through the right delivery mechanism instead of one being used for both.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "The team sends time-bound announcements and individually triggered messages through the same delivery method with no clear rule for which should be a broadcast versus an automation.",
+   "metrics": [
+    "other:email_ops_consistency"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:email_ops_consistency",
+   "direction": "up",
+   "size": "unknown; no measured lift given in source",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": ""
+  },
+  "prerequisites": [
+   "An email platform that supports both broadcast sends and triggered automations"
+  ],
+  "steps": [
+   "List upcoming and recurring email messages the brand sends.",
+   "Classify each as time-bound news (broadcast) or behavior- or date-triggered (automation).",
+   "Move any triggered message currently sent as a one-off broadcast into an automation.",
+   "Review the classification whenever a new recurring message type is added."
+  ],
+  "test": {
+   "method": "Check whether triggered messages moved to automation show more consistent timing and engagement than when sent as broadcasts.",
+   "measure": "other:email_ops_consistency",
+   "read_point": "After the reclassification has been in place for a month."
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "55bc15e13681"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
  }
 ]
