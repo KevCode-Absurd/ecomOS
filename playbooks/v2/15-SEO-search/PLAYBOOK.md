@@ -4,6 +4,8 @@ version: 2.0-draft  |  date: 24 Sep 2026  |  sources: 16  |  cards: 420  |  buil
 
 ## 0. How to use this playbook
 
+**Ecommerce first.** This playbook is for an ecommerce store, not a generic website. Load section 3.0 first: it ranks the levers that matter most for a store (money pages, technical floor, branded search, catalog shape, and so on) before any group-level rule. Store-type conditions, such as catalog size, AOV, subscription vs one-off, marketplace exposure, physical location and region, decide which rules in the groups below actually apply to a given brand.
+
 **Who runs it.** The SEO agent for an ecommerce store. It decides whether organic search is worth the store's time, builds the keyword map and site architecture, writes the page briefs for collection and product templates, runs the technical audit, plans blog content and links, reads Search Console every month, and reports organic revenue. It works on Shopify first (sources 02, 06, 07, 14, 15 are Shopify-specific), on any CMS for the general rules, and it hands depth on speed to 08-SPD and depth on AI answer engines to 16-AEO.
 
 **What the sources are.** Almost every source is a vendor demo, an agency sales funnel or an affiliate video. Source 08 is a paid Semrush partnership. Sources 09, 10 and 11 are Surfer-sponsored. Source 07 carries an SEO Ant discount code. Source 04 is the Rankability founder demoing his own tool. Source 03 has affiliate links for DataForSEO, Machined AI and a link vendor. Source 12 promotes Arvo and a scheduler. Sources 02, 06, 13, 14 and 16 end with a pitch for an agency, a course, a mentorship program or a keyword product. Source 01 opens with a sponsored certificate. Source 05 gates its main template behind a community. Section 12 rates each one. Treat every tool recommendation as a lead to check, every case result as a story, and every threshold as a presenter heuristic unless section 6 says otherwise.
@@ -72,11 +74,30 @@ version: 2.0-draft  |  date: 24 Sep 2026  |  sources: 16  |  cards: 420  |  buil
 
 Numbering runs across all groups. Each rule gives the rule, its condition, the mini playbooks that support it (by number), conflicts (pointing to section 7) and card ids. "Sources: 13" alone means 1 practitioner's view, not a law. Where sources give different numbers, the rule keeps the strictest condition and section 7 keeps the disagreement.
 
+### 3.0 Ecommerce priority order
+
+Rank levers in this order for any store. Conditions by store type decide which ones apply.
+
+1. **Money pages before anything else.** Collections and products convert; blogs do not. Every other lever waits. -> R4, R5, R67, conflict 7.1.
+2. **Technical floor, once, sitewide.** Crawlable, indexed, no broken links, usable mobile UX. A blocked money page beats every content or link gain. -> R86, R87, R88.
+3. **Protect branded search.** Any store running paid ads must hold position 1 for its own name and product names, or ad spend leaks to a competitor. -> R10.
+4. **Catalog shape decides the template weight.** 50+ SKUs: collections likely carry most organic revenue, invest there first. Hero SKU or thin catalog: the product page and its cluster is the money page; do not force an empty collection layer. -> R58, R59, R37.
+5. **Set the volume floor from AOV and catalog size, never a guru's number.** A niche or high-AOV, low-frequency ("considered purchase") store needs a lower floor and more patience than a low-AOV impulse category. -> R23. `[general practice]` on the considered-purchase half; the playbook gives only the catalog-size half.
+6. **Marketplace-heavy categories change the target.** Where Amazon or another marketplace owns first-page or AI-citation slots, list there instead of fighting for a standalone page. -> R11.
+7. **Concentrate on 1 category or cluster at a time, sized to the catalog.** A multi-category retailer picks 1 category per quarter; a hero-SKU or subscription store applies the same discipline to its 1 money page and cluster. -> R6, R68.
+8. **Subscription and considered-purchase stores need the comparison and trust layer earlier.** These buyers read alternatives and reviews before converting; build that content sooner than a low-AOV, one-off store would. -> R65, R69, conflict 7.1. `[general practice]`.
+9. **Local-only levers apply only with a physical location.** Google Business Profile, citations, NAP: skip for a pure online store. -> R138, R116.
+10. **Mobile-first stores (most India-market and mobile-heavy US catalogs) should treat mobile UX as the primary check, not an equal-weight item.** `[general practice]`.
+11. **AI answer-engine visibility rises for comparison-heavy, considered or subscription categories; matters less for one commodity SKU.** -> R118, R119, R120.
+12. **Link building is last, sized to the catalog's link gap, not a fixed quota.** No source conditions it by store type beyond authority level. -> R104, R105, R111.
+
+Load this block first; the groups below are the detail.
+
 ### Group A. Strategy, scope and order of work
 
 **R1. Do SEO only where search demand already exists and margin can pay for it.** Condition: before any SEO budget. SEO captures existing demand; it does not create demand for a new product type (source 14). Check that the main category terms have real volume and commercial intent, and that AOV and margin can absorb months of content and link work. Source 14 gives no numeric floor for margin or AOV; source 09 adds that a keyword without a conversion path is vanity traffic. Sources: 14, 09, 06. Cards: [6d35da604075] [03569978ba18] [f8b0ca8237ae]. [needs brand data: AOV, margin, category search volume]
 
-**R2. Set a months-long expectation and never promise a date or a position.** Condition: every SEO proposal and report. Source 01 refuses to promise a timeline. Source 06's wine client saw momentum only after 12 to 13 months. Source 03 expects no link ROI for 3 to 6 months. Source 11 puts several months of work per cluster plus more months for results. Source 13 calls "6 to 12 months" a myth, but its own cases run from under 100 days to 11 months and are self-reported. Source 11: anyone who guarantees #1 is beyond a marketer's control. Sources: 01, 06, 03, 11, 13. Conflict on timelines: 7.17. Cards: [5437c6f5b94e] [f8b0ca8237ae] [691b416017c3] [1e7d8c5e6402] [41463bbdbca1].
+**R2. Never promise a launch, restock or seasonal-campaign date off an SEO timeline; a Q4 promotion planned around an unranked page is the most common way this rule gets broken.** Condition: every SEO proposal and report. Source 01 refuses to promise a timeline. Source 06's wine client saw momentum only after 12 to 13 months. Source 03 expects no link ROI for 3 to 6 months. Source 11 puts several months of work per cluster plus more months for results. Source 13 calls "6 to 12 months" a myth, but its own cases run from under 100 days to 11 months and are self-reported. Source 11: anyone who guarantees #1 is beyond a marketer's control. Sources: 01, 06, 03, 11, 13. Conflict on timelines: 7.17. Cards: [5437c6f5b94e] [f8b0ca8237ae] [691b416017c3] [1e7d8c5e6402] [41463bbdbca1].
 
 **R3. The KPI is organic search revenue, then non-branded clicks and money-keyword rankings; traffic and rankings alone are vanity.** Condition: every report. Source 13's case: 2 agencies at about $5,000 a month each for 2 years, traffic and blog output looked fine, organic revenue never passed about $2,000 a month. Source 03 names over-celebrating rankings without conversions as his own past mistake. Source 09: have a business goal, not an SEO goal. Sources: 13, 09, 03, 10. Cards: [7cc511272fe0] [28f51e6a77cb] [fb7381a080bf] [dd8f0c00b989].
 
@@ -86,9 +107,9 @@ Numbering runs across all groups. Each rule gives the rule, its condition, the m
 
 **R6. Do sitewide hygiene once, then concentrate content and link effort on 1 category or cluster at a time.** Condition: growth-stage work after the technical floor. Source 04 attacks 1 category from the main menu for about 90 days (sometimes 1 to 2 quarters) and says spreading effort across every category gives "a centimeter in each direction". Sources 02 and 09 build 1 cluster fully before the next. Sources 01, 02 and 09 still expect baseline crawl, index and template hygiene across the whole site. Sources: 04, 02, 09, 11. Conflict on how far to concentrate: 7.5. Cards: [03e2459fa1f6] [618a252af117] [435ce96184bc] [1e7d8c5e6402].
 
-**R7. Stay inside the core topical map; do not branch into shoulder niches before the core is covered.** Condition: content and collection planning. Source 02's own agency branched early, ranked briefly, then lost rankings on the original topic when Google recrawled. Source 09: working down a volume-sorted list across unrelated topics spreads authority thin. Sources: 02, 09. Cards: [626394ae29f2] [435ce96184bc] [618a252af117].
+**R7. Do not build content for a product category the store does not sell just because it clusters near a covered one; every page in the map must map to a real collection or product.** Condition: content and collection planning. Source 02's own agency branched early, ranked briefly, then lost rankings on the original topic when Google recrawled. Source 09: working down a volume-sorted list across unrelated topics spreads authority thin. Sources: 02, 09. Cards: [626394ae29f2] [435ce96184bc] [618a252af117].
 
-**R8. Run SEO as a fixed monthly cycle: validate keywords, update pages, publish, get links, track.** Condition: ongoing operation after setup. Source 06's team runs it on a fixed calendar day; source 08's loop is the same 4 steps with tracking. Re-evaluate each tracked keyword: source 06 gives it about 6 months before adding support content or swapping it. Sources: 06, 08. Cards: [6c5f723270e6] [d0068f9ba972] [6d1a4ae6d1e0] [e8139b1b3363].
+**R8. Run the cycle against the catalog: validate keywords for the categories on sale or in season this month, update those pages first, then publish and get links.** Condition: ongoing operation after setup. Source 06's team runs it on a fixed calendar day; source 08's loop is the same 4 steps with tracking. Re-evaluate each tracked keyword: source 06 gives it about 6 months before adding support content or swapping it. Sources: 06, 08. Cards: [6c5f723270e6] [d0068f9ba972] [6d1a4ae6d1e0] [e8139b1b3363].
 
 **R9. Benchmark only against SEO competitors that outrank you for your terms and sell what you sell; skip the giants.** Condition: competitor research and link prospecting. Source 01: rivals below you contain no useful gaps. Source 02: SEO competition differs from business competition, and Amazon, Walmart, Target and Ikea are excluded from prospecting. Source 14: if only a giant like Nike ranks, the term is too competitive. Sources: 01, 02, 14, 08. Cards: [30500e1bfd7e] [931c46ea6362] [0120e72eaf94] [e656b0848811].
 
@@ -100,17 +121,21 @@ Numbering runs across all groups. Each rule gives the rule, its condition, the m
 
 **R13. Knowing a tool is not knowing SEO, and no tool or vendor can promise a rank.** Condition: choosing tools, agencies and content platforms. Source 13's analogy: knowing Robinhood does not make a trader. Source 03: do not trust "our content will rank you number one". Source 11: prioritization, not execution, is the hard part. Sources: 13, 03, 11. Cards: [3dd3ec99006f] [b95c25b2d3c8] [41463bbdbca1].
 
+**R147. List every eligible product in Google's free Shopping listings (the Merchant Center product feed) in addition to organic SEO; it is a second, no-cost slot on the same SERP.** Condition: any store on a platform that can generate a product feed. `[general practice]` No library source; verify against brand data before use.
+
+**R148. Build and refresh the pages for a seasonal or promotional category ahead of the season it sells in, not after; tie the content calendar to the inventory calendar, not to a fixed publishing day alone.** Condition: any store with seasonal or promotional SKUs. Source 01 flags a seasonal push as a case for the fixed cycle (R8, R2); source 03's principle 7 makes the same point without a card. Sources: 01, 03. Cards: [5437c6f5b94e].
+
 ### Group B. How search works and query intent
 
-**R14. Search is crawl, then index, then rank; a problem upstream blocks everything downstream.** Condition: diagnosing any ranking problem. Start at crawl (can the bot reach the page), then index (is it stored), then rank (is it competitive). Source 15 maps the same 3 stages onto AI search as Found, Matched, Chosen. Sources: 01, 09, 15. Cards: [4d7e19f8ea9d] [2a24068d5a43] [7c2ebc1068d0] [2a7d0c66c403].
+Moved to Appendix A: R14, the crawl-index-rank diagnostic sequence (general search mechanics, section A.1).
 
 **R15. Classify every query by intent and match the page type to it.** Condition: before any keyword is assigned to a page. Four classes: informational (learn), commercial (compare), transactional (buy), navigational (reach a brand). Source 03 says 2 buckets (transactional and informational) are enough to start. Informational queries go to blog or guide pages; transactional and commercial queries go to collection and product pages; a blog post ranking for a buy query rarely converts, and a bare product page ranking for a learn query bounces. Sources: 01, 09, 03, 05, 07, 06. Cards: [cdfba6f37765] [f32610667b5f] [b2ab9292f6ba] [4cf93efa0b3e] [6c1d36ed15c3] [33805e3f1916].
 
 **R16. Read the live SERP before building any page; the page type follows what already ranks.** Condition: every target keyword, re-checked when a page is refreshed. Source 02 reads positions 1 to 3. Source 09 reads the top 10 organic results and their format. Source 11: if 5 or more of the top results share a format, build that format; if mixed, pick the format your authority can win. Source 14: if other collection pages rank, a collection can rank; if only giants rank, skip. Source 05: skip terms whose top results are other businesses or job seekers. Use an incognito window. Sources: 02, 09, 11, 14, 05, 01. Cards: [6f239699ac8d] [f32610667b5f] [8786029ccf04] [0120e72eaf94] [4cf93efa0b3e] [1bae7bf49f42].
 
-**R17. Read the SERP features too: an AI Overview means the term is also an answer-engine target; a video carousel means a text page alone will not win.** Condition: the same SERP read as R16. Source 08 shows the AI Overview in the keyword tool's SERP panel. Source 09: AI Overviews now appear on commercial and transactional queries, so the page must add what the summary cannot. Sources: 08, 09, 10. Cards: [1449fb3da4a7] [f32610667b5f] [245141abe8fc].
+Moved to Appendix A: R17, reading SERP features such as AI Overviews and video carousels (general search mechanics, section A.1).
 
-**R18. New or low-authority stores start on long-tail and specific terms and move up to head terms as authority grows.** Condition: any store that does not already rank for its category head term. Source 09's example: "coffee" at about 650,000 US searches a month has a mixed SERP; "best dark roast coffee beans for espresso" has a few hundred searches and a uniform buying-guide SERP. Source 15 applies the same logic to AI answers: "shoes" goes to big brands, "vegan waterproof trail running shoes" is winnable. Source 03: chase low-difficulty first, not shiny high-volume terms. Sources: 09, 15, 03, 05, 08. Cards: [f32610667b5f] [2a7d0c66c403] [d2b1c9b1538f] [1449fb3da4a7].
+Moved to Appendix A: R18, long-tail-to-head-term theory, kept store-specific in the R23 keyword gate and R58/R59 (section A.1).
 
 **R19. Answer the query's intent in the first screen; a shopper who clicks back and picks another result is a signal against the page.** Condition: any page targeting a query. Source 01 calls this pogo-sticking and says to put product name, price and the answer in the first visible band. Source 03: one clear headline naming the offer and 1 primary call to action above the fold. Sources: 01, 03. Cards: [6468710f6f02] [3ddb50cffb54] [abc864090582].
 
@@ -182,6 +207,8 @@ Numbering runs across all groups. Each rule gives the rule, its condition, the m
 
 **R51. Reuse a page template across similar pages, but give each page its own demand, its own copy and a cap on the count.** Condition: variant collections, location pages, programmatic pages. Source 03: identical layouts are not duplication if the content differs (presenter opinion; the card flags doorway risk). Source 05: no objective cap, but avoid thousands and "probably" hundreds. Source 05: ramp releases rather than publishing a flood. Sources: 03, 05, 14. Conflict: 7.7. Cards: [c6d42d7d4d1f] [ecfb3aa47dee] [e400cd54ed6c] [0120e72eaf94]. [web check: current Google guidance on doorway pages]
 
+**R149. When a batch of seasonal SKUs turns over at once, route the whole batch through the R50 decision (redirect or keep live with "shop similar") in 1 pass, and update the collection page and internal links at the same time, not product by product.** Condition: catalog-wide seasonal turnover, not a single SKU. `[general practice]` No library source beyond R50's own cards; verify against brand data before use.
+
 ### Group E. Collection page template
 
 **R52. The 3 core elements: title tag with the keyword first and about 60 characters, H1 equal to the target keyword, short URL that mirrors it.** Condition: every collection page. Source 02 fills the remaining title space with modifiers. Source 06 sets the collection Title field to the hero keyword. Sources: 02, 06, 07. Conflict on title length limits: 7.10. Cards: [d22a5b9d1e85] [e879133cad0d] [04a11dea33db].
@@ -216,6 +243,10 @@ Numbering runs across all groups. Each rule gives the rule, its condition, the m
 
 **R66. Reviews, FAQs and specs must be in the HTML at load, not injected later by an app widget.** Condition: every product template. Source 15: most crawlers see only load-time HTML; Gemini is the named exception. Source 02: no JS-rendered grids. Source 05 overstates this as "you can't rank" with client-side rendering; the card corrects it (R95). Sources: 15, 02, 05. Cards: [f8f8462498cb] [c463c6a96f1d] [df678a626742].
 
+**R150. Treat a subscription product as a third money-page template, next to collection and product: state cadence, pause and cancel terms, and price-per-delivery on the page itself, not only at checkout.** Condition: any store selling a subscription or recurring-delivery product. Source 09's Counterculture coffee-subscription example illustrates a money page but was not turned into a template rule. Sources: 09. Cards: [28f51e6a77cb].
+
+**R151. Give a bundle or kit its own product page with its own keyword, price and spec table; do not fold it into a single component's page or rely on an upsell widget alone.** Condition: any store selling bundles, kits or sets. `[general practice]` No library source; verify against brand data before use.
+
 ### Group G. Blog and buying-guide content
 
 **R67. A store blog earns its place by supporting collection rankings through internal links and topical authority, and by ranking buyer-intent formats; generic seasonal and lifestyle posts do not.** Condition: deciding whether and what to blog. Source 02's example: Soapery's 210 blog posts drive under 7% of traffic directly but support collection rankings; Q for Quinn's blog drives over half of organic traffic. Source 14's 4 formats: you vs competitor, alternatives to competitor, best X for use case, buying guide. Source 13 calls informational blog traffic near-worthless for conversion. Source 04 builds reviews, alternatives and head-to-head pages. Sources: 02, 14, 09, 13, 04. Conflict: 7.1. Cards: [45f79a195c33] [9dcbebf25933] [618a252af117] [4ebd0ef27d61] [5346127695b9].
@@ -224,9 +255,9 @@ Numbering runs across all groups. Each rule gives the rule, its condition, the m
 
 **R69. Comparison content is factual and never hostile; in an alternatives list put your brand first with claims you can support and list 7 to 10 competitors; name competitors directly.** Condition: writing vs, alternatives and roundup pages. Source 04: silence cedes the comparison to competitors and AI summaries. Source 14's example: a client ranked #3 for a competitor's brand name within about a week (self-reported). Sources: 04, 14. Cards: [5346127695b9] [9dcbebf25933].
 
-**R70. Before writing, read what ranks and match or beat its coverage; treat the average length as a comprehensiveness benchmark, not a word count target.** Condition: every new page. Source 09 reads the top 5 in full and records table stakes, gaps, average length and unique angles; his bar is "at least 5x better" and he cites an Ahrefs study that over 96% of pages get no Google traffic. Source 05 averages the top 3 non-forum results. Source 11: Google rewards completeness, not length. Sources: 09, 05, 02, 11. Conflict on length: 7.9. Cards: [5ff1064a03ea] [5e49646f576c] [869cf61bff5a] [bd25b3cabfdf].
+**R70. Read what ranks for a collection or product term and add what a shopper needs to decide (specs, comparisons, real photos) that the top results skip; do not just lengthen the page.** Condition: every new page. Source 09 reads the top 5 in full and records table stakes, gaps, average length and unique angles; his bar is "at least 5x better" and he cites an Ahrefs study that over 96% of pages get no Google traffic. Source 05 averages the top 3 non-forum results. Source 11: Google rewards completeness, not length. Sources: 09, 05, 02, 11. Conflict on length: 7.9. Cards: [5ff1064a03ea] [5e49646f576c] [869cf61bff5a] [bd25b3cabfdf].
 
-**R71. Add what AI cannot: your own experience, a stated opinion, original data, expert quotes, specific examples with real numbers; cite a source for every factual claim.** Condition: every page, and non-negotiable for health, money or safety topics. Source 03's GEO principles from a Princeton paper (claimed 40% lift, unverified). Sources: 09, 03, 11. Cards: [b7c89ca36202] [205809992aba] [7e809a393a1d] [1512b69d5402]. [web check: the Princeton GEO paper and its 40% figure]
+**R71. The store's own moat is its product testing notes, real customer photos, sizing and fit data, and return-rate-informed advice, not generic expert quotes.** Condition: every page, and non-negotiable for health, money or safety topics. Source 03's GEO principles from a Princeton paper (claimed 40% lift, unverified). Sources: 09, 03, 11. Cards: [b7c89ca36202] [205809992aba] [7e809a393a1d] [1512b69d5402]. [web check: the Princeton GEO paper and its 40% figure]
 
 **R72. Go deeper than the AI Overview for the query: if the page only restates the summary there is no reason to click.** Condition: any query that triggers an AI Overview. Add original data, hands-on notes, specific products, prices and dimensions, and the follow-up questions a buyer has after the summary. Sources: 09, 10. Cards: [245141abe8fc] [cc309b3d5cf7].
 
@@ -238,29 +269,31 @@ Numbering runs across all groups. Each rule gives the rule, its condition, the m
 
 **R76. Build 1 linkable asset per category when a simple gap exists: a calculator, a definitive guide, original data.** Condition: after money pages and the first cluster. Source 09's example: "coffee to water ratio calculator" at about 500 searches and KD 8, built with an AI coding tool in about 10 minutes. Source 13 warns that earning links purely from content is the slowest path and mostly works for DR 70 to 80 brands. Sources: 09, 13. Cards: [b7d9a9c621b3] [88997600260b] [248b6ed3e810].
 
+**R154. For a low-frequency, high-AOV or considered purchase, build the comparison, trust and reassurance content (reviews, guarantees, sizing or fit guides, alternatives pages) earlier in the plan than a low-AOV, one-off store would; these buyers research longer before they buy.** Condition: luxury or considered-purchase catalogs. `[general practice]` No library source; verify against brand data before use.
+
 ### Group H. AI-assisted content with human gates
 
-**R77. Search engines do not penalize AI-written text; they devalue low-quality, verbatim, mass-produced text. Every AI draft is a first draft.** Condition: any AI use in content. Source 06's team published many AI posts, ranked, then lost value in a Google sweep. Source 01: verbatim AI without added value is recognized and devalued. Source 03: the source of a draft does not matter, the quality does. Sources: 03, 01, 06, 09. Cards: [0b71c176e2e3] [4c3f55273a76] [f6a17ed1177e] [5ff1064a03ea].
+Moved to Appendix A: R77, AI text is not penalized, low quality is (general content-ops practice, section A.2).
 
-**R78. Ground every prompt in the brand's real pages, Search Console data, facts, tone document and banned-word list.** Condition: before any generation. Source 04 pastes the category page plus 5 product pages as sources and expects about 20% weak ideas. Source 03 builds a tone-of-voice document from the owner's own writing and a growing negative-word list, and the prompt asks clarifying questions first. Source 05 injects voice, stats and stories from transcripts and posts. Sources: 04, 03, 05, 06. Cards: [a539906b58c4] [0b71c176e2e3] [24994938e6b4] [d625e29f8820].
+**R78. Ground every product or collection draft in the actual catalog feed, real specs, and existing reviews for that SKU, not a generic brand voice document alone.** Condition: before any generation. Source 04 pastes the category page plus 5 product pages as sources and expects about 20% weak ideas. Source 03 builds a tone-of-voice document from the owner's own writing and a growing negative-word list, and the prompt asks clarifying questions first. Source 05 injects voice, stats and stories from transcripts and posts. Sources: 04, 03, 05, 06. Cards: [a539906b58c4] [0b71c176e2e3] [24994938e6b4] [d625e29f8820].
 
-**R79. Human gates at every stage: approve the title and keyword list, review the draft, fact-check every number and claim, rewrite the weak 10% to 20% by hand, and publish only from a draft state; the ecomOS quality gate (reading level, digits, short sentences, no invented claims, no em dashes) runs last.** Condition: every AI-assisted page that reaches a client store. Source 12's own default is draft, then manual publish. Source 04 expects 3 to 5 revision passes and no "contact for pricing" placeholders. Source 06 rewrites the last 10% to 20% by hand and rejects spinning tools. Source 05 warns the SEO checklist pass often strips the voice. Sources: 12, 04, 06, 03, 05. Cards: [6e4f81398cf7] [17c5ce84a5ee] [f6a17ed1177e] [0b71c176e2e3] [aeeccc51cf9d].
+Moved to Appendix A: R79, human gates on AI-assisted drafts (general content-ops practice, section A.2).
 
-**R80. Automate only after the fundamentals work, and let only low-risk, reversible actions run without a person.** Condition: any pipeline. Source 03 has seen "absolute horror cases" of automation on broken foundations; his automations auto-reply to 5-star reviews only. Source 12 keeps approval gates between research, generation and scheduling. Sources: 03, 12. Cards: [3b53ab90208b] [39455049b596] [3707612ddae8] [6e4f81398cf7].
+Moved to Appendix A: R80, automation caution (general content-ops practice, section A.2).
 
-**R81. Package a repeatable workflow as a reusable skill or prompt set in a local project folder that holds brand assets; re-run the voice check after any SEO checklist pass.** Condition: after 1 piece has been produced by hand end to end. Sources 05 and 12 build a "blog" skill; source 05 starts a fresh session for it to take effect. Sources: 05, 12. Cards: [cd866609b795] [7ad5eaa168b2] [09eb0afacdd2] [ab48255e465e] [aeeccc51cf9d].
+Moved to Appendix A: R81, packaging a repeatable AI workflow (general content-ops practice, section A.2).
 
-**R82. Use AI to read exports, not to invent data: feed Search Console CSVs and the sitemap to a model for gap lists, then validate demand and difficulty before committing.** Condition: monthly analysis. Source 10 exports up to 1,000 query rows. Source 03 feeds the last 28 days into a custom GPT. Sources: 03, 10. Cards: [3f3f7fbd3c01] [d2808d386582] [7a14782ab0f1].
+Moved to Appendix A: R82, using AI to read exports rather than invent data (general content-ops practice, section A.2).
 
 **R83. Stock and generated images are allowed only on informational posts where the image is illustrative; product and collection pages use real product photos.** Condition: any image choice. Source 05 auto-pulls Pexels stock; source 06 generates a hero image with DALL-E; both are local-service or blog contexts. ecomOS override applies. Sources: 05, 06. Cards: [b5a63fb310d9] [d625e29f8820].
 
-**R84. Write at or below an eighth-grade reading level for content and below tenth grade everywhere (ecomOS rule).** Condition: every page. Source 03 cites the GEO paper's eighth-grade target. Sources: 03. Cards: [7e809a393a1d].
+Moved to Appendix A: R84, reading-level target and its source (general content-ops practice, section A.2); enforced as the ecomOS override R143.
 
-**R85. Do not run parasite SEO: no published AI articles on third-party domains posing as editorial content, no link drops in lightly moderated communities, no undisclosed brand mentions in Reddit threads.** Condition: always (ecomOS override). Source 16's Claude Artifact tactic is untested by its own presenter and depends on a domain you do not control. Source 04 describes aged-account Reddit posting as "commonly used" without flagging disclosure rules. Source 04's LinkedIn company-page variant is allowed because it is a disclosed brand channel. Sources: 16, 04. Cards: [3adc2f4b92d2] [d671d4362dd1] [e54f1c0e014f] [70d7dddf86e4].
+Moved to Appendix A: R85, parasite SEO and why it is refused (general content-ops practice, section A.2); enforced as the ecomOS override R141.
 
 ### Group I. Technical SEO: crawl, index, canonicals, redirects, sitemaps, robots, rendering
 
-**R86. The technical floor is 4 things: key pages crawlable and indexed, no broken links, usable mobile and desktop experience, clear hierarchy. On a modern CMS assume you are most of the way there; do not disappear into a technical rabbit hole before pages exist.** Condition: small and mid-sized stores on Shopify, WordPress or Webflow. Source 13: an audit that pushes far past these 4 is a sales tactic. Source 09: Shopify or WordPress puts you "roughly 90% of the way there"; beginners are held back by unpublished content, not technical debt. Source 02 adds the Shopify-specific issue classes (R41 to R43) to the floor. Sources: 13, 09, 02. Conflict on how much technical work matters: 7.4. Cards: [6eb7236440e6] [e9e95368a588] [6b922910be56].
+**R86. For a store, the floor is: every collection and product meant to sell is crawlable and indexed, no broken links to product pages, mobile checkout and PDP usable, and category hierarchy clear from home to product. On a modern CMS assume you are most of the way there; do not disappear into a technical rabbit hole before pages exist.** Condition: small and mid-sized stores on Shopify, WordPress or Webflow. Source 13: an audit that pushes far past these 4 is a sales tactic. Source 09: Shopify or WordPress puts you "roughly 90% of the way there"; beginners are held back by unpublished content, not technical debt. Source 02 adds the Shopify-specific issue classes (R41 to R43) to the floor. Sources: 13, 09, 02. Conflict on how much technical work matters: 7.4. Cards: [6eb7236440e6] [e9e95368a588] [6b922910be56].
 
 **R87. Crawl the whole site with a crawler set to mobile and JavaScript rendering, then work errors first, warnings second, notices last; a high health score does not mean a clean site.** Condition: first audit and every quarter. Source 01's example: Ahrefs health 96 of 100 with 404s, canonical mismatches, orphan pages and oversized images still present. Source 08: reduce the count, do not chase 100. Source 02 uses Sitebulb with the Chrome crawler and structured-data checks on. Sources: 01, 02, 08, 09. Cards: [86975c6c2e81] [6b922910be56] [978afa7cbda6] [e9e95368a588].
 
@@ -282,11 +315,15 @@ Numbering runs across all groups. Each rule gives the rule, its condition, the m
 
 **R96. A video gets video results only when it is the main content of its own page, above the fold; embeds mid-post rank as normal pages without video features.** Condition: stores with product or how-to video. Sources: 10. Cards: [5bde395c6a3b].
 
-**R97. Use a Search Console Domain property; a URL-prefix property only when DNS access is impossible, and then for the exact https and www variant served.** Condition: property setup or migration. Source 10: Domain covers shop., blog., checkout., www and non-www, http and https. Sources 01 and 05 use URL-prefix (source 01 calls GSC "sensitive" to variants; the card questions it). Sources: 10, 01, 05. Conflict: 7.8. Cards: [02f0df47b84c] [c0017f6a1d90] [4f3b94c692d3].
+**R97. Use a Domain property so shop., checkout. and blog. subdomains and both http/https variants of the storefront are covered in one property; fall back to URL-prefix only when DNS access is impossible.** Condition: property setup or migration. Source 10: Domain covers shop., blog., checkout., www and non-www, http and https. Sources 01 and 05 use URL-prefix (source 01 calls GSC "sensitive" to variants; the card questions it). Sources: 10, 01, 05. Conflict: 7.8. Cards: [02f0df47b84c] [c0017f6a1d90] [4f3b94c692d3].
 
 **R98. Refresh page code, not only visible copy: stale years in source, old asset names and leftover app code count against the page.** Condition: page-level audit. Source 04 spotted 2022 and 2023 timestamps in source; source 15 finds orphaned metafields from uninstalled review apps that pollute the Shopify catalog feed. Sources: 04, 15, 02. Cards: [29ea2467bb38] [c0a13e75f012] [959f69db4f65].
 
 **R99. Gaps the sources do not cover: hreflang and multi-region, pagination beyond numbered pages, crawl budget on very large catalogs, migrations. Say so in the brief rather than invent steps.** Condition: any store that needs these. Sources: 01, 02, 07 (all state the gap). Cards: [273f1ec32b07].
+
+**R152. Treat mobile as the primary storefront design target, not a speed footnote: check navigation, filters, checkout and the product page on a phone before a desktop screen.** Condition: mobile-first stores, including most India-market and mobile-heavy US catalogs; check the brand's own session and revenue split. Sources: 01. Cards: [684253d7bab8]. [needs brand data: mobile share of sessions and revenue]
+
+**R153. For a store selling into more than 1 region or language, build region-specific pages (currency, shipping terms, near-me phrasing where relevant) with hreflang or a clear language switcher; do not run 1 generic page for India and US traffic.** Condition: any store selling into more than 1 country or language. Sources: 01. Cards: [9f38dfbf4f52]. [needs brand data: regions and languages served]
 
 ### Group J. Speed and Core Web Vitals (depth in 08-SPD)
 
@@ -300,33 +337,33 @@ Numbering runs across all groups. Each rule gives the rule, its condition, the m
 
 ### Group L. Link building
 
-**R104. Links matter, relevance beats volume, and a modest number of good links is the goal: source 13 says 10 to 20 relevant links "for a lot of keywords".** Condition: any link plan. Source 03: 1 relevant link from a reputable site beats 100 spammy ones; check that the referring-domain curve grew naturally, not in spikes. Source 01 judges a link by placement, anchor and source authority (its DA 30 to 40 floor is a heuristic). Source 02: never build far more links to 1 page than competitors have (10 vs 30 "sticks out"). Sources: 13, 03, 08, 02, 01. Conflict on whether links are the top factor: 7.2. Cards: [8901669ff766] [691b416017c3] [c5e862cbcad9] [d959e63d9769] [6e87a52bb240].
+Moved to Appendix A: R104, link volume and relevance (link-building doctrine, general to any website, section A.3).
 
-**R105. Sequence: content first (10 to 15 good pieces), then foundational profiles and citations (about 30, filled out fully), then earned links.** Condition: a store starting link work. Source 09 and 11: no outreach before the content exists. Source 02's foundational layer: social profiles, directories, Web 2.0 profiles, "entity stacking". Source 01: directories judged by relevance and authority, never mass submission. Sources: 09, 11, 02, 01, 03. Cards: [88997600260b] [1293de3e1c27] [d00b480b316f] [9ef468a1aa73] [a3d1dead77d7] [9fac54461fc4] [f943f246de27].
+Moved to Appendix A: R105, content-then-links sequencing (link-building doctrine, section A.3).
 
 **R106. No paid links, no link swaps for discounts, no bulk packages; a disclosed sponsored placement carries `rel="sponsored"` and is bought for referral traffic, not rank.** Condition: always (ecomOS override plus Google policy). The sources say otherwise: source 02 says paid guest posts "work really well provided you're doing it properly" and treats dofollow as the goal; source 13 buys insertions at $100 to $400; source 03 uses vendors (with a disclosed affiliate tie); source 05 quotes $10 to $1,000 per placement; source 04 says paid and organic citations count equally. The `rel="sponsored"` qualifier was added by the card writers on sources 01, 05, 09 and 13; no presenter said it. Source 01 itself warns that link partners delete links or demand payment later. Sources: 02, 13, 03, 05, 04, 01. Conflict: 7.3. Cards: [ed27a5301c83] [cb6fea298ce4] [3490d57698e0] [6b66d770867b] [a4314277133f] [ed80a4bbd5e3] [ccdeae1f4dff] [3ac30aa3629d] [f32610667b5f].
 
-**R107. Earn links from journalist queries, being the source, linkable assets, broken-link replacement, resource pages and unpaid editorial guest posts.** Condition: the link plan after R105. Journalist platforms: Featured.com (source 03: about 3 free answers a month), Source of Sources (source 09), Connectively (source 02, the HARO successor at recording); budget 15 minutes a day and expect about 1 hit per 100 submissions (source 09) or 20 answers to 2 replies to 1 link (source 02). Be the source: Counterculture's brew guide is cited by WikiHow, Gear Patrol and Breville. Broken-link swap: find 404s on niche hubs, offer your page. Guest posts: search `"[niche]" "write for us"`, write for the host's audience, 600 to 1,200 words, anchor in a relevant sentence near the top. Sources: 09, 02, 03, 05, 01. Cards: [88997600260b] [e0058ce635d6] [493daec89c20] [7f70083e00d5] [54ad628b63cd] [0d17f081b5be] [03b3bc6a6a34] [5ad59b6f29ec] [ee0764e85157] [d3cac352bc44] [cfd93f4f1fcb]. [web check: current names and status of Featured, Source of Sources, Connectively]
+Moved to Appendix A: R107, earning links (journalist queries, be-the-source, broken-link, guest posts) (link-building doctrine, section A.3).
 
 **R108. Point earned links at educational pages and the root domain, then pass authority to money pages with internal links; direct heavy linking to product pages "looks unnatural".** Condition: choosing link targets. Source 02: 50% to 75% of new links to the root domain in the first 3 months, 25% to 50% to collection pages ranking 4 to 10, about 3 to 5 pages a month. Source 11: "I will die on this hill". Source 14: most links land on the homepage or blog anyway. Sources: 02, 11, 14. Conflict: 7.15. Cards: [84d4795d239e] [3cf4abf037ab] [1293de3e1c27] [d0d5872a02aa].
 
-**R109. Anchor text is mostly partial, URL, brand and topic; exact match stays rare; calibrate against the top 3 competitors' anchor mix.** Condition: any placed link. Source 02 leans on soft anchors for months 1 to 5. Sources: 02. Cards: [fab6f93fabc4].
+Moved to Appendix A: R109, anchor text mix (link-building doctrine, section A.3).
 
-**R110. Screen every prospect: a real single-topic site, clean domain history on the Wayback Machine, topical relevance, at least about 1,000 monthly visits and no sudden drop, a clean backlink profile of its own; refuse Fiverr-style offers, "$5 for 100 links" and unsolicited link sellers.** Condition: before any outreach or acceptance. Source 02's 5-point check plus Authority Score 15 or more (raise it as your profile grows); source 08 filters Backlink Gap at Authority Score 50; source 02's gap analysis counts DR or DA 30 plus dofollow. Sources: 02, 08, 05, 03. Cards: [102c5f4bc1f8] [931c46ea6362] [c5e862cbcad9] [0878cf8caa37] [691b416017c3].
+Moved to Appendix A: R110, the link-prospect screen (link-building doctrine, section A.3).
 
-**R111. Set a monthly link pace from a gap analysis: your referring domains (DR or DA 30 plus, dofollow) vs the competitor average, closed over a set period.** Condition: link plan sizing. Source 02's example: 105 vs about 203, a gap of about 98, about 4 a month over 24 months, with 6 to 8 a month recommended. Sources: 02. Cards: [be35a3453380]. [needs brand data: own and competitor referring domains]
+Moved to Appendix A: R111, monthly link pace from a competitor gap (link-building doctrine, section A.3).
 
-**R112. Outreach is personalized and offers something better: a current, tested replacement for an outdated page, a real expert answer, a resource the host's readers want; warm up sending accounts and start around 20 emails a day per account.** Condition: any outreach. Source 02 estimates personalized pitches beat about 70% of template senders. Sources: 02, 11. Cards: [ed27a5301c83] [79c14ba1ded5] [6e04ce7fcb0e] [1293de3e1c27].
+Moved to Appendix A: R112, personalized outreach (link-building doctrine, section A.3).
 
-**R113. Most sites never need to disavow; investigate Manual Actions and link-scheme history first and reserve disavow for manipulative links tied to an actual or likely manual action.** Condition: backlink audit. Source 01's transcript uses spam-score bands (under 5 fine, 10 plus risky, 10 to 30 plus consider disavow); the card corrects it to the cautious rule. A DR 0 referring domain is not automatically bad. Sources: 01. Cards: [fe47b8b67efd] [e592af67a06c] [ade5208b890b].
+Moved to Appendix A: R113, disavow caution (link-building doctrine, section A.3).
 
-**R114. Reclaim lost links: check the Lost and Vital view for high-authority links that disappeared and ask whether it was a broken URL or a removal.** Condition: monthly. Sources: 08. Cards: [2b4bd20978c0].
+Moved to Appendix A: R114, reclaiming lost links (link-building doctrine, section A.3).
 
-**R115. Digital PR and organic earning at scale cost real money and time (source 13: about $5,000 a month for a PR service) and mostly work for brands already at DR 70 to 80; budget it as a later stage.** Condition: link plan for a small or mid brand. Sources: 13, 02. Cards: [248b6ed3e810] [4143ac10dcfc].
+Moved to Appendix A: R115, digital PR cost and scale (link-building doctrine, section A.3).
 
 **R116. Citations and directories: consistent name, address and phone, a small number of relevant directories, refreshed every 6 to 12 months; only for stores with a physical location.** Condition: local presence. Source 03's citation-service price of about $3.20 a listing is dated. Sources: 03, 01, 02. Cards: [f943f246de27] [1b05d31a2f5c] [d00b480b316f].
 
-**R117. Vet a link vendor or agency by asking for 1 named past client site with campaign start and end dates, then checking that site's traffic trend across the window; a decline is a refusal.** Condition: any paid link help, which ecomOS only allows for disclosed sponsored placements. Source 05's "top 1%" Upwork vendor showed a declining line. Source 03 claims 99% of agencies buy links from vendors (his estimate). Sources: 05, 03. Cards: [2d1aea0b1ec7] [691b416017c3].
+Moved to Appendix A: R117, vetting a link vendor (link-building doctrine, section A.3).
 
 ### Group M. AI search overlap (depth in 16-AEO)
 
@@ -346,7 +383,7 @@ Numbering runs across all groups. Each rule gives the rule, its condition, the m
 
 **R124. Search Console shows how Google sees the site; GA4 shows what visitors do; keep them separate and install both before launch, because GA4 has no backfill.** Condition: every store. Sources: 03, 01. Cards: [e247cdff3fb7] [88f4ed4866f4] [1a35cd16217e] [cd191b374d2e].
 
-**R125. Report non-branded and branded separately, compare the last 3 months to the previous period, and export before data ages out of Search Console's 16-month window.** Condition: monthly report. Regex filter "doesn't match" with brand terms separated by `|`. Sources: 10. Cards: [ab49d7297c19] [f754914adaba] [dd8f0c00b989] [02f0df47b84c].
+**R125. Report branded clicks (brand and product-name searches) separately from non-branded category and product-type searches; branded volume often moves with ad spend, not SEO work. Compare the last 3 months to the previous period, and export before data ages out of Search Console's 16-month window.** Condition: monthly report. Regex filter "doesn't match" with brand terms separated by `|`. Sources: 10. Cards: [ab49d7297c19] [f754914adaba] [dd8f0c00b989] [02f0df47b84c].
 
 **R126. Read leading indicators before clicks: rising impressions, new queries you did not target, positions moving from page 5 toward page 3; ignore 2-position wobbles on 40-impression terms.** Condition: the first months of a program. Sources: 09, 10. Cards: [9bb24c359ea8] [0363a4df755b].
 
@@ -370,7 +407,7 @@ Numbering runs across all groups. Each rule gives the rule, its condition, the m
 
 ### Group O. Vendor, agency and tool vetting
 
-**R136. Red flags: a guaranteed rank, an audit that lists dozens of critical fixes beyond the 4 essentials, a low retainer for blog posts only (source 13's example: $400 a month for 3 posts), cheap bulk links, "our content ranks #1" claims, and tool advice from someone paid by the tool.** Condition: any pitch. Sources: 13, 11, 03, 05, 06. Cards: [6eb7236440e6] [41463bbdbca1] [b95c25b2d3c8] [0878cf8caa37] [7cc511272fe0].
+**R136. Red flags: a guaranteed rank, an audit that lists dozens of critical fixes beyond the 4 essentials, a low retainer for blog posts only (source 13's example: $400 a month for 3 posts), cheap bulk links, "our content ranks #1" claims, tool advice from someone paid by the tool, and an audit or retainer that only proposes blog content and never touches collection or product page structure.** Condition: any pitch. Sources: 13, 11, 03, 05, 06. Cards: [6eb7236440e6] [41463bbdbca1] [b95c25b2d3c8] [0878cf8caa37] [7cc511272fe0].
 
 **R137. Judge an agency on organic revenue after 3 to 6 months of money-page and link work, with the store's own before data recorded first.** Condition: any engagement. Sources: 13. Cards: [527f947f429c] [7cc511272fe0].
 
@@ -865,11 +902,7 @@ Confidence: "high" means 3 or more sources agree or it matches Google's public s
 | PageSpeed field data lag | about 28 days | reading after a fix | 07 | high (tool behaviour) |
 | CLS poor | over 0.25 | Core Web Vitals | 01 | high (matches Google) |
 | Core Web Vitals set | LCP, CLS, INP (FID replaced March 2024) | any | 01 card correction | high |
-| Screaming Frog free tier | 500 URLs | crawl | 09, 13 | medium [web check] |
-| Screaming Frog licence | about $500 a year | crawl | 13 | dated [web check] |
-| Semrush starter plan | $199 a month (08); about $200 (06) | tools | 08, 06 | vendor [web check] |
-| Ahrefs cheap tier | about $29 a month vs $129 | tools | 03 | dated [web check] |
-| Featured.com free tier | about 3 answers a month | links | 03 | dated [web check] |
+| Tool and platform prices | Screaming Frog, Semrush, Ahrefs, Featured.com tiers | tools | 08, 09, 13, 06, 03 | moved to Appendix A, section A.4 (vendor trivia, not store-specific) |
 | Journalist query hit rate | about 1 per 100 (09); 20 to 2 to 1 (02) | links | 09, 02 | presenter heuristic |
 | Journalist query time | 15 minutes a day | links | 09 | presenter heuristic |
 | Foundational links | at least 30 profiles and citations | new store | 02 | presenter heuristic |
@@ -1054,7 +1087,7 @@ Merged from all sources and deduplicated, with the fix.
 
 **9.2 Site architecture spec.** The page tree (home, collections, subcollections, products, blog hubs) with 1 parent per page; URL patterns; the noindex list (tags, vendors, types, utilities, low-demand products); the facet rules and the list of filter combinations that get real pages; variant handling per product family; redirect map for merged or removed pages; the Shopify fix list (P2) in order; the internal link plan per hub (spokes, siblings, anchors); the menu spec; the templated-page cap with the justification per page.
 
-**9.3 Page brief per template.** One brief for the collection template, one for the product template, one for the blog or guide template, plus a filled brief per page being built. Each brief carries: primary and secondary terms; SERP format and features; title tag, H1, URL handle; short and detailed copy sections with word ranges; the facts that must appear (specs, sizes, materials, prices); FAQ questions with sources; review handling; image list with real photos, file names and alt text; schema types; internal links out (hub, siblings, money page in the first 100 to 200 words) and in; citations required; the human moat items; reading-level and claim rules; the human quality gate sign-off line.
+**9.3 Page brief per template.** Named so an agent or a client can ask for one by name: the **PDP brief** (product template), the **collection brief** (collection template) and the **guide brief** (blog or buying-guide template), plus a filled brief per page being built. Each brief carries: primary and secondary terms; SERP format and features; title tag, H1, URL handle; short and detailed copy sections with word ranges; the facts that must appear (specs, sizes, materials, prices); FAQ questions with sources; review handling; image list with real photos, file names and alt text; schema types; internal links out (hub, siblings, money page in the first 100 to 200 words) and in; citations required; the human moat items; reading-level and claim rules; the human quality gate sign-off line.
 
 **9.4 Technical fix list with priority.** One row per issue: URL or template, issue, evidence (crawler, Search Console, view source), priority (P1 money page not indexed or 404; P2 duplication, canonicals, robots, sitemap; P3 titles, metas, alt, schema warnings; P4 speed and notices), owner (agent, developer, host, app vendor), status, verification method, date fixed. The 4 essentials appear at the top; speed items carry a pointer to 08-SPD.
 
@@ -1108,6 +1141,7 @@ Merged from all sources and deduplicated, with the fix.
 - **Shopify admin.** Redirect UI, metafield and metaobject paths, robots.txt.liquid, theme file names (`main-collection-product-grid.liquid`), the hidden SEO toggle, Search and Discovery app, Sidekick, the agentic storefront and global catalog. Re-verify on every store.
 - **Journalist platforms.** HARO became Connectively; Source of Sources and Featured.com are named as current; free-tier limits change. Before each outreach cycle.
 - **Model names and prompts.** GPT-5 variants, Perplexity Sonar, OpenRouter credits, Claude Code skills and scheduling, the Antigravity workspace in source 05. The prompts in sources 03, 05 and 12 are mostly not reproduced; do not invent them. Re-check on each use.
+- **24 Sep 2026: ecommerce specificity pass applied from ECOM_REVIEW.md; priority block added, 13 rules reworded, 8 levers added, about 1,850 words moved to Appendix A.**
 
 ## 12. Source index
 
@@ -1141,3 +1175,67 @@ Merged from all sources and deduplicated, with the fix.
 - 23-SEC-bot-and-agent-security: which bots to allow or block for security reasons; this playbook only decides for search and AI visibility.
 - 05-SET-store-setup: brand settings, domains, non-search store fields (source 07's brand information tab).
 - 11-ADC-ad-copy-deployment and 24-DEP-ad-deployment: nothing from this folder; listed so the agent does not route SEO copy there.
+
+## Appendix A. General background
+
+Rules moved here on the 24 Sep 2026 ecommerce specificity pass. Each keeps its original rule id, condition, sources and card ids; only the location changed. They apply to any website, not only a store, and are kept for completeness and for the cross-references that still point to them from sections 3 to 10.
+
+### A.1 How search works and query intent (from Group B, section 3)
+
+**R14. On a store, the most common break is a money page (a collection or product) sitting behind noindex, a robots block, or a Shopify duplicate-URL path; check those before anything else.** Condition: diagnosing any ranking problem. Start at crawl (can the bot reach the page), then index (is it stored), then rank (is it competitive). Source 15 maps the same 3 stages onto AI search as Found, Matched, Chosen. Sources: 01, 09, 15. Cards: [4d7e19f8ea9d] [2a24068d5a43] [7c2ebc1068d0] [2a7d0c66c403].
+
+**R17. Read the SERP features too: an AI Overview means the term is also an answer-engine target; a video carousel means a text page alone will not win.** Condition: the same SERP read as R16. Source 08 shows the AI Overview in the keyword tool's SERP panel. Source 09: AI Overviews now appear on commercial and transactional queries, so the page must add what the summary cannot. Sources: 08, 09, 10. Cards: [1449fb3da4a7] [f32610667b5f] [245141abe8fc].
+
+**R18. A new or thin-catalog store should target its specific product and attribute combinations before its category head term; a full-catalog store can spread across both once its top categories rank.** Condition: any store that does not already rank for its category head term. Source 09's example: "coffee" at about 650,000 US searches a month has a mixed SERP; "best dark roast coffee beans for espresso" has a few hundred searches and a uniform buying-guide SERP. Source 15 applies the same logic to AI answers: "shoes" goes to big brands, "vegan waterproof trail running shoes" is winnable. Source 03: chase low-difficulty first, not shiny high-volume terms. Sources: 09, 15, 03, 05, 08. Cards: [f32610667b5f] [2a7d0c66c403] [d2b1c9b1538f] [1449fb3da4a7].
+
+### A.2 AI-assisted content hygiene and automation caution (from Group H, section 3)
+
+**R77. Product and collection copy generated from a spec sheet with no added detail reads as thin to Google the same way a scraped manufacturer description does; add what the manufacturer sheet does not have.** Condition: any AI use in content. Source 06's team published many AI posts, ranked, then lost value in a Google sweep. Source 01: verbatim AI without added value is recognized and devalued. Source 03: the source of a draft does not matter, the quality does. Sources: 03, 01, 06, 09. Cards: [0b71c176e2e3] [4c3f55273a76] [f6a17ed1177e] [5ff1064a03ea].
+
+**R79. Human gates at every stage: approve the title and keyword list, review the draft, fact-check every number and claim, rewrite the weak 10% to 20% by hand, and publish only from a draft state; the ecomOS quality gate (reading level, digits, short sentences, no invented claims, no em dashes) runs last.** Condition: every AI-assisted page that reaches a client store. Source 12's own default is draft, then manual publish. Source 04 expects 3 to 5 revision passes and no "contact for pricing" placeholders. Source 06 rewrites the last 10% to 20% by hand and rejects spinning tools. Source 05 warns the SEO checklist pass often strips the voice. Sources: 12, 04, 06, 03, 05. Cards: [6e4f81398cf7] [17c5ce84a5ee] [f6a17ed1177e] [0b71c176e2e3] [aeeccc51cf9d].
+
+**R80. Automate only after the fundamentals work, and let only low-risk, reversible actions run without a person.** Condition: any pipeline. Source 03 has seen "absolute horror cases" of automation on broken foundations; his automations auto-reply to 5-star reviews only. Source 12 keeps approval gates between research, generation and scheduling. Sources: 03, 12. Cards: [3b53ab90208b] [39455049b596] [3707612ddae8] [6e4f81398cf7].
+
+**R81. Package a repeatable workflow as a reusable skill or prompt set in a local project folder that holds brand assets; re-run the voice check after any SEO checklist pass.** Condition: after 1 piece has been produced by hand end to end. Sources 05 and 12 build a "blog" skill; source 05 starts a fresh session for it to take effect. Sources: 05, 12. Cards: [cd866609b795] [7ad5eaa168b2] [09eb0afacdd2] [ab48255e465e] [aeeccc51cf9d].
+
+**R82. Use AI to read exports, not to invent data: feed Search Console CSVs and the sitemap to a model for gap lists, then validate demand and difficulty before committing.** Condition: monthly analysis. Source 10 exports up to 1,000 query rows. Source 03 feeds the last 28 days into a custom GPT. Sources: 03, 10. Cards: [3f3f7fbd3c01] [d2808d386582] [7a14782ab0f1].
+
+**R84. Write at or below an eighth-grade reading level for content and below tenth grade everywhere (ecomOS rule).** Condition: every page. Source 03 cites the GEO paper's eighth-grade target. Sources: 03. Cards: [7e809a393a1d]. Enforced in this playbook as the ecomOS override R143.
+
+**R85. Do not run parasite SEO: no published AI articles on third-party domains posing as editorial content, no link drops in lightly moderated communities, no undisclosed brand mentions in Reddit threads.** Condition: always (ecomOS override). Source 16's Claude Artifact tactic is untested by its own presenter and depends on a domain you do not control. Source 04 describes aged-account Reddit posting as "commonly used" without flagging disclosure rules. Source 04's LinkedIn company-page variant is allowed because it is a disclosed brand channel. Sources: 16, 04. Cards: [3adc2f4b92d2] [d671d4362dd1] [e54f1c0e014f] [70d7dddf86e4]. Enforced in this playbook as the ecomOS override R141.
+
+### A.3 Link-building doctrine (from Group L, section 3)
+
+**R104. Links matter, relevance beats volume, and a modest number of good links is the goal: source 13 says 10 to 20 relevant links "for a lot of keywords".** Condition: any link plan. Source 03: 1 relevant link from a reputable site beats 100 spammy ones; check that the referring-domain curve grew naturally, not in spikes. Source 01 judges a link by placement, anchor and source authority (its DA 30 to 40 floor is a heuristic). Source 02: never build far more links to 1 page than competitors have (10 vs 30 "sticks out"). Sources: 13, 03, 08, 02, 01. Conflict on whether links are the top factor: 7.2. Cards: [8901669ff766] [691b416017c3] [c5e862cbcad9] [d959e63d9769] [6e87a52bb240].
+
+**R105. Sequence: content first (10 to 15 good pieces), then foundational profiles and citations (about 30, filled out fully), then earned links.** Condition: a store starting link work. Source 09 and 11: no outreach before the content exists. Source 02's foundational layer: social profiles, directories, Web 2.0 profiles, "entity stacking". Source 01: directories judged by relevance and authority, never mass submission. Sources: 09, 11, 02, 01, 03. Cards: [88997600260b] [1293de3e1c27] [d00b480b316f] [9ef468a1aa73] [a3d1dead77d7] [9fac54461fc4] [f943f246de27].
+
+**R107. Earn links from journalist queries, being the source, linkable assets, broken-link replacement, resource pages and unpaid editorial guest posts.** Condition: the link plan after R105. Journalist platforms: Featured.com (source 03: about 3 free answers a month), Source of Sources (source 09), Connectively (source 02, the HARO successor at recording); budget 15 minutes a day and expect about 1 hit per 100 submissions (source 09) or 20 answers to 2 replies to 1 link (source 02). Be the source: Counterculture's brew guide is cited by WikiHow, Gear Patrol and Breville. Broken-link swap: find 404s on niche hubs, offer your page. Guest posts: search `"[niche]" "write for us"`, write for the host's audience, 600 to 1,200 words, anchor in a relevant sentence near the top. Sources: 09, 02, 03, 05, 01. Cards: [88997600260b] [e0058ce635d6] [493daec89c20] [7f70083e00d5] [54ad628b63cd] [0d17f081b5be] [03b3bc6a6a34] [5ad59b6f29ec] [ee0764e85157] [d3cac352bc44] [cfd93f4f1fcb]. [web check: current names and status of Featured, Source of Sources, Connectively]
+
+**R109. Anchor text is mostly partial, URL, brand and topic; exact match stays rare; calibrate against the top 3 competitors' anchor mix.** Condition: any placed link. Source 02 leans on soft anchors for months 1 to 5. Sources: 02. Cards: [fab6f93fabc4].
+
+**R110. Screen every prospect: a real single-topic site, clean domain history on the Wayback Machine, topical relevance, at least about 1,000 monthly visits and no sudden drop, a clean backlink profile of its own; refuse Fiverr-style offers, "$5 for 100 links" and unsolicited link sellers.** Condition: before any outreach or acceptance. Source 02's 5-point check plus Authority Score 15 or more (raise it as your profile grows); source 08 filters Backlink Gap at Authority Score 50; source 02's gap analysis counts DR or DA 30 plus dofollow. Sources: 02, 08, 05, 03. Cards: [102c5f4bc1f8] [931c46ea6362] [c5e862cbcad9] [0878cf8caa37] [691b416017c3].
+
+**R111. Set a monthly link pace from a gap analysis: your referring domains (DR or DA 30 plus, dofollow) vs the competitor average, closed over a set period.** Condition: link plan sizing. Source 02's example: 105 vs about 203, a gap of about 98, about 4 a month over 24 months, with 6 to 8 a month recommended. Sources: 02. Cards: [be35a3453380]. [needs brand data: own and competitor referring domains]
+
+**R112. Outreach is personalized and offers something better: a current, tested replacement for an outdated page, a real expert answer, a resource the host's readers want; warm up sending accounts and start around 20 emails a day per account.** Condition: any outreach. Source 02 estimates personalized pitches beat about 70% of template senders. Sources: 02, 11. Cards: [ed27a5301c83] [79c14ba1ded5] [6e04ce7fcb0e] [1293de3e1c27].
+
+**R113. Most sites never need to disavow; investigate Manual Actions and link-scheme history first and reserve disavow for manipulative links tied to an actual or likely manual action.** Condition: backlink audit. Source 01's transcript uses spam-score bands (under 5 fine, 10 plus risky, 10 to 30 plus consider disavow); the card corrects it to the cautious rule. A DR 0 referring domain is not automatically bad. Sources: 01. Cards: [fe47b8b67efd] [e592af67a06c] [ade5208b890b].
+
+**R114. Reclaim lost links: check the Lost and Vital view for high-authority links that disappeared and ask whether it was a broken URL or a removal.** Condition: monthly. Sources: 08. Cards: [2b4bd20978c0].
+
+**R115. Digital PR and organic earning at scale cost real money and time (source 13: about $5,000 a month for a PR service) and mostly work for brands already at DR 70 to 80; budget it as a later stage.** Condition: link plan for a small or mid brand. Sources: 13, 02. Cards: [248b6ed3e810] [4143ac10dcfc].
+
+**R117. Vet a link vendor or agency by asking for 1 named past client site with campaign start and end dates, then checking that site's traffic trend across the window; a decline is a refusal.** Condition: any paid link help, which ecomOS only allows for disclosed sponsored placements. Source 05's "top 1%" Upwork vendor showed a declining line. Source 03 claims 99% of agencies buy links from vendors (his estimate). Sources: 05, 03. Cards: [2d1aea0b1ec7] [691b416017c3].
+
+### A.4 Vendor and tool prices (from section 6)
+
+Vendor trivia, already flagged `[web check]` in the original table; re-verify before quoting a price to a client.
+
+| Item | Value | Condition | Source(s) | Confidence |
+|---|---|---|---|---|
+| Screaming Frog free tier | 500 URLs | crawl | 09, 13 | medium [web check] |
+| Screaming Frog licence | about $500 a year | crawl | 13 | dated [web check] |
+| Semrush starter plan | $199 a month (08); about $200 (06) | tools | 08, 06 | vendor [web check] |
+| Ahrefs cheap tier | about $29 a month vs $129 | tools | 03 | dated [web check] |
+| Featured.com free tier | about 3 answers a month | links | 03 | dated [web check] |
