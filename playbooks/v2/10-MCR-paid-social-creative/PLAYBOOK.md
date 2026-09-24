@@ -857,3 +857,235 @@ Goal: a monthly view of coverage, concentration and sameness.
 7. Gap matrix: segments in comments and reviews with no ad; formats and styles competitors run that the brand has not tested (R158).
 8. Output: the gaps and concentration risks feed the next concept board (P3) and volume plan (P12).
 Rollback: none; this is a read. Act 6 to 8 months before a hero-ad decline would bite (01).
+
+## 5. Diagnostic checklists
+
+Written so a worker can run them without the sources. Each row: what to check, how, good, bad, fix, source.
+
+### 5.1 Static ad review
+
+| check | how | good | bad | fix | source |
+|---|---|---|---|---|---|
+| Spectrum end | Ask "clear enough to sell, or curious enough to pull a click?" | Clearly one end | Middle ("Guaranteed energy in 5 minutes", a brand slogan) | Push to one end or drop | 03, 07 |
+| Gap the reader cares about | If curiosity: would the target buyer want this answered for their own benefit? | Yes ("Symptoms of vitamin deficiency") | No ("We don't stop improving") | Rewrite around the buyer's problem | 07 |
+| Stage of the image | What must the viewer already know to get it? | Cold ads lead with problem, persona or "new" | Plain product shot to cold | Rebuild at a higher stage | 03, 10 |
+| Image and copy stage match | Classify image stage, then copy stage | Same | Product-aware image, solution-aware copy | Change one so both match | 03 |
+| First eye stop | Glance for 1 second, name what you saw | Problem, persona call-out or highest-awareness message | Category name, brand-centred line, no-context tagline | Resize and recontrast | 03, 07 |
+| Eye path | Follow the eye 3 to 4 stops | Each stop answers the last one's question | Reader hunts for what the product is | Add 1 bold line saying what it is | 03, 07 |
+| Image-headline fit | Substitution test with a generic image | Headline only makes sense with this image | Headline still fine, or now meaningless | Rewrite as 1 unit | 07, 03 |
+| Headline job | Product-shot static: 5 to 6 words answering "why this instead?" | Specific moment, money, persona plus problem | Generic promise a substitute gives too | New angle | 07 |
+| Benefit order | Read each claim as a non-expert | Plain outcome first, mechanism in brackets | Jargon first | Flip order | 07, 09 |
+| Text density and legibility | View at phone size | All lines readable; no repeats of the headline | Small sub-heads, redundant call-outs, unreadable graph | Enlarge about 30%, cut repeats, remove graph | 07, 03 |
+| Layout craft | Spacing, alignment, case, product placement | Clean | Product off to one side, random caps, awkward gaps | Fix layout | 03, 07 |
+| Logo | Is the brand shown by the page name? | Logo absent, or a deliberate reveal on a native static | Unknown logo in the corner | Remove | 03, 07 |
+| Proof | Is there a review with stars or name, a true number, a real product shot? | Present and legible | Unattributed line, staged product | Add credibility markers, real shot | 03, 07 |
+| Numbers | Trace each to a source | All sourced | Any invented or unsourced figure | Remove | 07, 10, 13 |
+| Primary text | Does it carry the education the image withheld? | Persona call-out, story, late reveal | Empty, or repeats the image | Write it (11-ADC) | 03, 07 |
+| Destination | Click it | Curiosity to an educational page; clear offer to PDP; offer congruent | Curiosity to PDP; 404; generic page | Build or switch page | 03, 04, 09 |
+| Concept or variant | Did persona, angle or offer change vs live ads? | At least 1 changed | Only design, colour, pose | Count as a variant or drop | 03, 05 |
+| Product accuracy | Compare product in image with the real photo | Real product | AI redraw | Composite the real photo | ecomOS |
+| Competitor trace | Compare with any reference ad | Layout or mood only | Their text, product, face, logo | Rewrite | ecomOS |
+| Compliance | Run checklist 5.4 | Pass | Any flag open | Fix before launch | all |
+
+### 5.2 Video script review
+
+| check | how | good | bad | fix | source |
+|---|---|---|---|---|---|
+| Hook type | Name it | Nameable and about the buyer's problem | "These are my vital packs"; a prop with no link to the problem | Rewrite hook | 09, 13 |
+| Who stops | Would only the target buyer have a reason to stop? | Yes | Anyone curious (meme, mystery food, knife) | Add persona or problem | 01, 04, 13 |
+| Hook layers | Audio, on-screen copy, visual each planned | All 3 working | Captions only; static frame; product named | Fix the weakest layer | 01, 04 |
+| Grade | Clarity, relevance, novelty, specificity, credibility | 2 or more strong, clarity and relevance not both low | Low clarity and low relevance | Rewrite | 01, 04 |
+| Hook-body stage | Classify both | Same stage | Curiosity hook into a feature tour | Change one | 13 |
+| Speaker fits persona | Look at who says it | Plausibly the persona or a trusted expert | Mismatch | Recast | 04 |
+| Product in hook | First words, first frames, top of primary text | Absent for cold; allowed for product-aware, demo or partnership formats | Product on screen and named by word 3 in a cold ad | Move product later | 04, 13 |
+| Bridge | Read the line after the hook | "A solution exists", then why the problem happens | "The solution is our product" plus benefits | Rewrite bridge | 04, 09, 11, 13 |
+| Mechanism | For each claim, ask "why does it work?" | Each ingredient or feature has its why; terms explained; prevalence proven and sourced | Claims only; clinical word dropped | Add the why | 11, 12, 13 |
+| Awareness curve | Second by second: does the viewer know it is an ad for a product yet? | Near 0 through hook, slow rise, peak at CTA | Stepstones up at each section | Pull back and teach | 04 |
+| Benefits vs features | List features | Each tied to a benefit, benefit first; table-stakes in 1 line | Feature list; whole ad on table-stakes | Flip and cut | 09, 13 |
+| Objections | List the buyer's doubts | At least 1 answered before the CTA, from customer data | None | Add a line or numbered reason | 09, 11, 13 |
+| Proof | For each claim, what is on screen? | Tests, labels, certificates, counts, matched testimonials | "Best in the world", "trust me" | Overlay proof or cut the claim | 02, 09, 10 |
+| Close | Read the last 20% | Reason to buy, risk reversal, clear CTA at the right intensity, loops closed | Jump from education to offer; hard pitch on a soft creator ad; new loop in CTA; abrupt end | Rewrite close | 02, 04, 09, 11, 13 |
+| Scarcity and offer | Check store and dates | True and live | Invented urgency; stale discount | Remove or fix | 09, 13 |
+| Motion | Scrub the timeline | Cuts, overlays, B-roll, camera moves throughout; polished formats cut every 3 seconds or faster | Static talking head through a long script | Re-edit | 02, 09, 13 |
+| Setting | Look at the frame | Native (car, home, store) or deliberate | Visible studio rig on a founder or creator ad | Reshoot native | 13, 18 |
+| Low-fi and product | Is the product in low-fi footage? | Product only in high-end shots | Yes | Re-edit | 02 |
+| AI tells | Search "isn't ... it's", stock analogies | None | Contrast negation, "single soldier" | Rewrite plainly | 01, 13 |
+| Expert precision | Have a category expert read it | No overlaps or errors | "Electrolytes, magnesium" | Fix terms | 13 |
+| Market width | Compare persona with real buyer mix | Covers the main market or is a deliberate persona slice | Positions a mass product to an elite niche | Re-angle | 13, 09 |
+| Swap-the-face | Would it work with a different presenter? | Yes | Only for the founder's fans | Add problem, mechanism, proof, or run organically | 09 |
+| Destination | Click it | Loads and holds the promise, continues the story | 404, generic PDP | Fix | 09, 11 |
+| Compliance | Run checklist 5.4 | Pass | Any flag | Fix | all |
+
+### 5.3 Concept board review
+
+| check | how | good | bad | fix | source |
+|---|---|---|---|---|---|
+| Real concepts | For each row, did persona, angle or offer change vs the others? | Yes | Rows differ only in format or design | Mark as variants of a parent | 01, 03 |
+| Angle written | 1 sentence: who, product, why, proof | Present, in customer words | Feature list, or team's idea with no quotes | Return to P1 | 01, 10 |
+| Persona sharp | Problems, desires, triggers | Specific ("mom who tried 6 supplements") | Demographic label | Rework (P2) | 01, 12 |
+| Mechanism | Problem cause and solution cause | Both, simple, new | Missing or vague | Add | 12 |
+| Offer | Named value framing, margin checked | Bundle, GWP, tiered, subscription, or single with reason | "Discount" only | Rework with 03-OFF | 01 |
+| Stage weight | Count rows by stage | At least 70% unaware, problem or solution aware | Mostly product aware | Add cold rows | 01, 02, 03 |
+| Bottom rows | 1 objection, 1 proof each | Yes | Benefit lists | Split | 08 |
+| Proof available | Column filled per row | Real, dated proof | "We'll find something" | Drop or research | 02, 10 |
+| Destination | Page per row | Matches stage and spectrum end | All rows to PDP | Plan pages with 07-LPG | 03, 11 |
+| Format after concept | Format column filled last | Chosen by the 5 questions and economics | "UGC" as the concept | Rework (P4) | 01, 10 |
+| Ads per concept | Count planned ads | 10+ for lead concepts, 4 to 8 per pack | 1 to 3 | Add or cut concepts | 01, 15 |
+| Diversity | Creative type and format across rows | Several types | 100 of the same ad | Add types | 16, 05 |
+| Idea sources | STORMING letter per row | Several sources | All swipes or all own head | Pull from research, matrix, new styles | 12 |
+| Hypothesis | 1 variable per row | Stated | "Test it" | Write it | 01, 10 |
+| Brand fit | Voice and category norms | Fits | Health-DR tone on a gifting jewellery brand | Adjust | 12, 16 |
+| Compliance flags | Any health, attribute, competitor, before-and-after row flagged | Flagged for P19 | Unflagged | Flag | all |
+
+### 5.4 Compliance check
+
+| check | how | good | bad | fix | source |
+|---|---|---|---|---|---|
+| Every number sourced | List numbers; find the document behind each | All traceable | Made-up or "even if there wasn't" | Remove | 03, 07, 10, 13 |
+| Health or body claim | Flag appetite, weight, hair, skin, gut, BP, fertility, jawline, disease | Substantiated and policy-checked | Unchecked | Check policy `[web check]`, then keep or cut | 02 to 18 |
+| Before-and-after | Any transformation imagery | Illustrated or framed within policy | "Sneak it past review" | Reframe | 01, 07 |
+| Personal attribute | Copy implies race, condition, sexual function, body shape | Cleared or rewritten | "All black men struggling with erections" | Rewrite | 12, 16 |
+| Fake formats | Interview, whistleblower, news style, invented person | Clearly the brand's own content, no impersonation | Fake interview or actor presented as real | Cut | 12 |
+| Reviews and stories | Every review, email, founder fact | Real, with permission, consistent | Scripted review as real; altered story | Cut | 02 |
+| Disclosure | Creator or founder handle, brand-owned pages | Partnership label; page presented as the brand's | Undisclosed whitelisting; "independent" review site | Label and disclose | 01, 03 |
+| Competitors | Names, logos, packaging, faces, text | Generic "old way" only | Rival shown or copied; staged failure | Rewrite | 08, 18, ecomOS |
+| Likeness and image rights | Every face and image | Licensed | Public figure without consent; found image | Replace | 11, 13 |
+| Product accuracy | AI images | Real product composited | Redrawn product | Replace | ecomOS |
+| Offer and scarcity | Compare with live store and dates | Match | "Before stock runs out" for 20 weeks; stale discount | Fix or remove | 09, 13 |
+| Research consent | Abandoner calls, comments used | Consent on file | None | Stop | 08 |
+| Record | Pass, fix, reject per line, attached to the test plan | Filed | Missing | File | this playbook |
+
+### 5.5 Winner analysis
+
+| check | how | good | bad | fix | source |
+|---|---|---|---|---|---|
+| Is it a winner by the pre-set definition? | Spend share, CPA or incremental ROAS threshold, days | Clears it with outsized results | At threshold, or only high ROAS on tiny spend | Leave alone, or mark "low-spend or retargeting candidate" | 08, 17, 10 |
+| Read level | Ad set or campaign, 7-day click or incremental, existing customers excluded | Yes | Ad-level last click | Re-read | 01, 15, 17 |
+| Spend artefact | Compare sales share with spend share | Wins on supporting metrics too | Wins only because it got the spend | Watch the ad; check chain | 10 |
+| Chain | Hook rate, hold rate, CTR vs link CTR, on-site conversion | Consistent through to purchase | High CTR, big link-CTR gap, no buying | Not a winner; empty attention | 10, 01 |
+| DNA filled | Segment, concept, angle, mechanism, copy blocks, hook, format, CAST | All fields | Blank fields | Complete | 12 |
+| Hypothesis | 1 element or a combination named | Written | "It just works" | Test 2 candidates | 12, 13 |
+| Segment grades | Hook, bridge, body each graded | Strong parts named | Only overall verdict | Grade each | 13 |
+| Funnel role | Combined metrics | Opener, closer or retargeting assigned | Assumed from the brief | Assign | 08, 10 |
+| Scale test | Metrics as budget rises | Holds | Falls apart above test budget | Low-spend role | 10 |
+| Portfolio effect | Profit at its spend vs other concepts | Adds profit | Cutting a profitable 2x to feed a 10x on $500 | Keep both | 17 |
+| Iteration plan | Levers to rotate, decent swings, new pack | Written | 1-word headline change; into the winning ad set | Rewrite plan | 15, 17, 01 |
+| Tagged | Library and gap matrix updated | Yes | No | Update | 05, 12 |
+
+### 5.6 Hook review (short form)
+
+| check | good | bad | fix | source |
+|---|---|---|---|---|
+| Right viewer stops | Only the target buyer has a reason | Anyone curious | Persona or problem call-out | 01, 04, 13 |
+| Clarity in 3 seconds | Stranger knows what it is about | Confusion | Add category or problem | 04, 09 |
+| Relevance | Pain obvious | Demographic label without pain | Agitate the problem | 01, 04 |
+| Novelty | Not done a million times | "Number 1 mistake..." | New type or format | 01, 04 |
+| Specificity | True number or name | "Some problems" | Use the real figure | 04 |
+| Credibility | Delivered by someone the persona trusts | None, or unlicensed famous face | Recast; clear rights | 01, 13 |
+| Layers | Audio, copy, visual all planned | Visual only, or captions only | Plan all 3 | 01, 04 |
+| Sells in hook | No product, no offer | Product named | Move product later | 04, 13 |
+| Bridges | Natural into the body | Hook topic missing from body | Cut the hook | 02, 04 |
+| Lever spread | Hooks differ on angle, offer, avatar or format | Wording-only variants | Add visual or avatar change | 19 |
+| Count per wave | 2 to 4 per body (up to 8), budget-sized | 20 to 40 per body at $1,000 a day | Wave it | 02 |
+
+### 5.7 Test read and pack health
+
+| check | good | bad | fix | source |
+|---|---|---|---|---|
+| Pack purity | 1 persona and 1 angle | Mixed | Move ads | 01, 08, 15 |
+| Pack size | 4 to 8 (min 3) | 1, or more than the budget can read | Split or merge | 01, 15, 17 |
+| New ads placement | New pack | Added to a winning ad set | Move; note learning reset | 01, 08, 17 |
+| Delivery guarantee | Stated in plan; floor removed on day 7 | Floor left on; or no plan for starvation | Fix in plan | 15, 17 |
+| Floors vs budget | Packs with floors x floor fits inside daily budget | Exceeds | Cut packs | 17, computed |
+| Read day | Day 7 first, day 14 decision | Day 2 kill | Wait | 10, 15, 17 |
+| Delivery per ad | Every ad got spend | Most got none | Inconclusive; rerun smaller | 10 |
+| Winner definition | Set before launch | Set after | Set now, apply next time | 08, 17 |
+| Hypothesis answered | Expected vs actual written | Not recorded | Record | 01 |
+| KPI-hitting ad set | Untouched | Ads cut or added inside it | Stop | 01 |
+| Exclusions | Existing customers excluded from cold packs | Not excluded | Fix with 24-DEP | 01, 08 |
+
+### 5.8 Portfolio health
+
+| check | good | bad | fix | source |
+|---|---|---|---|---|
+| Hero dependence | Top 1 to 3 ads hold a falling or modest share; new winners behind them | A few ads hold most spend, nothing behind | Production now; 6 to 8 months of lead | 01, 02, 05 |
+| Stage coverage | 70%+ of assets cold-stage | Mostly product aware | Cold rows in P3 | 01, 02, 03 |
+| Format and pillar coverage | Several formats; all 3 pillars live | 1 format family or 1 pillar | Add | 01, 05 |
+| Cold frequency | Under 2 at ad level, 30 and 60 days | Above 2 | More distinct concepts | 01 |
+| Similarity | Score low (via rep), or reach steady as frequency holds | Frequency up, reach down, ROAS down together | Change persona, angle or offer, not just the shot | 01 |
+| Desire vs pain | 60/40 to 70/30 pain-led for shoot-heavy brands | 90/10 desire | Add pain-led rows | 01 |
+| Production vs media | Within tier (25% then about 10%) or justified by per-ad economics | 15 live ads on $350K a month | Fund production | 01 |
+| Hit rate trend | Stable or rising with volume | Falling as volume rises | Cut volume, raise bar | 08 |
+| Live ad count vs spend | About 1 new ad per $1,000 monthly spend, or the model's number | Far below | Volume plan (P12) | 01 |
+| Inventory alignment | Winners squeezed or breathed by stock and cash | Stockouts from a squeezed winner; stock piling | Rebalance with 20-FIN | 01 |
+
+## 6. Thresholds and benchmarks
+
+One table for the folder. Confidence: how many independent sources agree (same-agency sources count once), and the evidence type. No figure here is measured with a control; all are practitioner rules or single cases.
+
+| value | condition | source(s) | confidence |
+|---|---|---|---|
+| Viewers lost at the hook: about 80% (19: 80% to 90%) | video ads; premise, not data | 01, 04, 11, 19 | low (2 agencies, unsourced) |
+| Viewers reaching the second half: about 15% | video; presenter estimate | 09 | low (1 source) |
+| Hook window: first 3 seconds (hook rate = views past 3 s); 3 to 5 s in 09 and 19; 0.5 s to earn attention in 16 | every hook | 01, 04, 09, 16, 19 | medium that it is short; low on the exact number |
+| Hold rate: views past 15 s (1 of several definitions) | video diagnostic | 01 | low |
+| Hook and hold rates do not correlate with conversions | reading video | 01 | low (1 source) |
+| Product first shown: not in the first 2 to 3 s of a story format; B-roll or product held to about 20 s; VSL reveals at about 1.5 min in 1 example; demo formats can show it in 3 s | cold video | 01, 02, 04, 13 | medium on "late" for education ads; conflict C1 |
+| Cut pace: at least every 3 s in polished formats | video, Instagram stressed | 09 (13 header only) | low; conflict C7 |
+| Extra mechanism before product: 4 to 6 s | education-led VSL | 13 | low |
+| VSL length: about 90 s to 20 min; 3 to 4 min normal; cuts to 2 to 3 min and 45 s | VSLs | 11, 13 | low to medium |
+| Hooks per body per launch wave: 2 to 4, up to 8 | video tests on modest budgets | 02 | low; conflict C10 |
+| Hooks to test on a finished VSL body: 3 to 6 | VSL | 11 | low |
+| Hooks per revival: more than 3, target 10 | fatigued proven body | 19 | low |
+| Hooks recorded per shoot: about 6 takes each; 10 hooks x 3 bodies = 30 ads in 4 to 5 min camera time | shoot planning | 01, 02 | low (same agency) |
+| Variants from 1 hook by layer swaps: 20 to 30 | volume from 1 concept | 04 | low |
+| Effort: 2 bodies x 15 hooks beats 2 hooks x 5 bodies; 10 hooks ≈ 1 body | body scripts already good | 01, 19 | low (same agency) |
+| Hook refresh case: 50 new hooks bought another $100K at same efficiency on ads that had spent $50K to $100K | 1 case | 01 | example only |
+| Scene change case: +$40,000 spend, same script | 1 case | 02 | example only |
+| Revival case: 2 bodies x 9 hooks at launch; 4 hooks x 2 bodies at revival; fatigue after 6 to 7 months; 5x better than the account | 1 case | 19 | example only |
+| Static consumed in about 4 s; clarity end must land in 3 to 4 s | statics | 03 | low |
+| Static headline: 5 to 6 words on a clean product-shot static | statics | 07 | low |
+| Unreadable sub-heads: enlarge about 30% | statics | 07 | low |
+| Minor variation effect: maybe 1% to 2%, unmeasurable | background, pose | 03 | low |
+| Static vs video production: about 4 statics (3 great) per 60 to 90 s video; AI static about $1 or "a few dollars" | production planning | 03, 05, 15 | medium that statics are far cheaper; low on the figures |
+| Expected GP per ad example: static $880 vs video $700 at 10x; $480 vs $300 at 2x ($1,000 revenue, $20 vs $200 production) | worked example | 03 | example only |
+| Ads per concept: 10+; about 20 at a 5% hit rate | new concept | 01 | low |
+| Ads per pack: 4 to 8 sweet spot; 2 to 10 seen; minimum 3 | packs | 01, 15, 17 | medium (2 agencies) |
+| Hit rate: 5% normal; range 5% to 15% | large accounts | 01, 03, 08 | medium (2 agencies, no data shown) |
+| Winner definition: spend > 5% of campaign budget AND at target CPA (08); high spend AND above incremental ROAS threshold (17); top incremental revenue (15) | pre-set per test | 08, 15, 17 | medium that a definition is needed; low on any one formula |
+| Example incremental ROAS bar: about 1.1 on new customers; leave 1.13 and 1.16 alone | 1 brand | 17 | example only |
+| Example incremental vs reported: 1.23 vs 1.42 on $97,000 | 1 brand | 17 | example only |
+| Ad set daily minimum: 1x target CPA, capped at 20% of budget; remove on day 7 | new packs | 15, 17 | low (same agency); conflict C5 |
+| Forced spend per pack at the floor: up to 7x target CPA over 7 days | computed from 15 and 17 | this playbook | arithmetic |
+| Impression cap per ad: 1,000 then 800 at $50 to $70 CPM; 13 ads at $30 a day | very small budget | 10 | example only |
+| Days to a first read: 7; winners within 1 to 2 weeks; 14-day analysis window | packs | 10, 15, 17 | medium |
+| CTR vs link CTR: 10.9% CTR with a drop over 3% and little buying vs 6.3% with a drop under 2% and buying | 1 pair of ads | 10 | example only |
+| Cold frequency ceiling: under 2 at ad level, 30 or 60 days | cold campaigns | 01 | low |
+| Identical creative helps up to 2 impressions, then purchase probability collapses | paraphrased Meta article | 01 | low, `[web check]` |
+| Mean spend per ad: about $700 to $1,500; revenue per ad about $2,000 | 1 agency's accounts | 01 | low |
+| Creative volume: 1 new ad per $1,000 of monthly spend | fallback | 01 | low |
+| Churn model example: 2 of 10 winners churn, 5% hit rate, 40 ads a month | forecast | 03 | example only |
+| Production budget: founder time under $30K a month; 25% of media at $30K to $100K; about 10% above $100K | tiers, AUD | 01 | low |
+| Testing budget share: 60% to 80% at $4K to $30K a month | small brands | 01 | low |
+| Active concepts: 3 / 5 to 6 / 8 to 10 by tier; creators 2 to 3 / 4 to 6 | tiers | 01 | low |
+| New creatives per month: 30 to 100 at $30K to $100K; 100+ above | tiers | 01 | low |
+| Funnel weight: 70% to 90% TOF, about 20% MOF, 5% to 10% BOF (01); most in stages 1 to 3, about 20% in 4 and 5 (02); 5/5/5 (05); extremes only (08) | portfolio | 01, 02, 05, 08 | medium that cold dominates; conflict C4 |
+| Sourcing split: 1/3 in-house, 1/3 UGC, 1/3 AI | starting heuristic | 05 | low |
+| Distinct formats live: 10 to 15 | portfolio | 05 | low |
+| Production effort: replication 50% to 60%, iteration 20% to 30%, net new 20% to 30% | batch planning | 01 | low |
+| Desire vs pain: from 90/10 to 60/40; best about 70/30 pain-led | shoot-heavy brands | 01 | low |
+| Partnership ad lift: 5% to 30%, not 10x; up to 40% of spend in some accounts | founder or creator handles | 02, 01 | low (same agency) |
+| Founder camera ramp: first about 10 hours robotic | new founders | 02 | low |
+| Content team volume: 200 to 400 ads a month with 1 to 2 people | systemised founder pipeline | 02 | example only |
+| UGC lead time: 1 to 4 weeks; 2 to 3 videos per sample; seeding case 100,000 invites, 6,000 creators, about 5,800 videos in 60 days | creator army | 05 | example only |
+| AI output usable: about 50% with deep context | AI statics | 15 | low (1 run) |
+| Manual research: 3 to 4 days for a new niche; about 80% of time on research and concepting | before production | 16, 03 | low |
+| Personas by hand: 20 to 40, then LLM roughly doubles | persona list | 01 | low |
+| Hero-ad decay: 8 to 10 clients 40% down YoY after 3 creatives held $1M; fix 6 to 8 months earlier | 1 agency | 01 | example only |
+| Junk volume: 2,000+ ads a month at about $4M a month, unprofitable | 2 accounts | 01 | example only |
+| Quality bar: 7 out of 10 | before volume counts | 01, 09 | low |
+| Pareto: 4% of ads hold about 64% of spend and revenue under CBO | account reads | 01 | low |
+| VSL account: 2.5 to 3 ROAS on new customers, 150% profit lift after year 1, 1 VSL spent $360,000 | 1 account | 11 | example only |
+| TikTok views vs sales: 34.5M views for 13,000 units; 78,000 views for 850 units | 7 public videos | 18 | example only |
+| Bundle: about $4.99 unit to $25 to $30 AOV via 3, 5, 6 packs | low-ticket consumables | 18 | low (inferred) |
+| Objection mix illustration: 20% each price, trust, quality doubt, not ready | BOF planning | 01 | illustration only |
