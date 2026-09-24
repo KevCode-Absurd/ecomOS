@@ -1,5 +1,31 @@
 # Meta ad gallery: handoff (23 Sep 2026)
 
+## Update 9: data refreshed to 23 Sep, refresh commands (24 Sep 2026)
+
+**Meta.** 1 to 23 Sep re-pulled through the MCP connector (read tools only).
+- 23 Sep was a part day in the last pull (taken 9:50 pm IST). Its spend went from ₹21,355 to ₹24,310. 1 to 22 Sep did not change. No new ads.
+- Account spend for 23 Sep 2025 to 23 Sep 2026 is ₹1,29,56,102. Daily rows add up to ₹996 less, the same gap as before.
+- September age, gender and platform rows match the daily rows within ₹20.
+- New raw file: `data/meta-gallery/raw/mcp_capture_2026-09-24_1y.json`. The 23 Sep file is kept.
+
+**Metabase.** 1 to 23 Sep re-pulled from dashboard 6 in a signed-in Chrome tab.
+- 23 Sep: ₹2,34,405 from 10 orders (was ₹2,12,305 from 9). 1 to 22 Sep did not change.
+- September to date: 178 items, ₹56,35,122. Days add up to the month exactly.
+- Traffic: 31 May and 31 Aug were missing and are now in. 23 Sep traffic was still rising an hour apart (12,873 then 25,900 visits), so yesterday's traffic is not final.
+- Quirk: the day card picks one of a product's codes each run (GHCSRG-6538 or GHCSRG-6538_17). Refresh matches products by name, so totals are not affected.
+
+**Shared page** (claude.ai artifact) now has the same data.
+
+**How to refresh next time** (no API keys needed, but Claude must do the pulls):
+1. Meta: Claude calls `ads_get_ad_entities` (read only) for the last 7+ days: daily ad rows, age, gender and platform, video rows, and the account total. Then:
+   `python -m meta_gallery.refresh meta --since … --until … --daily F --age F --gender F --platform F --video F --account-total N`
+   then `python -m meta_gallery.snapshot`.
+2. Metabase: sign in to analyze.gehnaindia.com in Chrome. Claude runs `meta_gallery/metabase_pull.js` in that tab (`ecomPull.start(since, until)`), saves the JSON, then:
+   `python -m meta_gallery.refresh sales FILE`. It checks the month against Metabase's month cards and stops if they differ. The old `sales.json` is copied to `backups/`.
+3. Shared page: republish `data.json` (from `meta_gallery.share.page_data`) and `sales.json`.
+
+Tests: `tests/test_refresh.py` (10, synthetic data).
+
 ## Update 8: competitor pills, 3 more brands
 
 - **Pills** at the top of Competitors: All brands, then one pill per brand with its active ad count. All shows a side-by-side table (formats, median and longest days live, new in 14 days, share pushing an offer, main button). A brand pill shows that brand's numbers, its top ideas and its ads.
