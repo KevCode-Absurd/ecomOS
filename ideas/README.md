@@ -57,6 +57,9 @@ Use `other:<name>` when none fits. The list grows only through this file.
 
 ## Rules for idea records
 
+- No upper cap on count. The value is in the number of distinct testable ideas. Merge only true duplicates (same action on the same surface).
+- Two passes per domain: pass 1 from the folder playbook, pass 2 from the mini playbooks in `sources/`, adding only ideas the bank does not already hold.
+
 - One idea is one thing a store could do or test. Not a definition, not a warning on its own; turn a mistake into the idea that avoids it.
 - Plain language, short sentences, digits, no em dashes. Below tenth-grade reading level.
 - `expected_effect.basis` is honest: `measured` only where a source reports a measured result, `source_claim` where a source asserts it, `general_practice` where no source says it.
