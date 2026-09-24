@@ -24,8 +24,8 @@ It gives an operator a complete Klaviyo-based email program for a Shopify store:
 9. **Break the reflex close.** Shoppers hit the top-right X by reflex. Hide or move the X and add a visible "No thanks" button so they must decide. Keep a clear exit. [397f14a8dca9]
 10. **Separate cart and checkout abandonment.** Added to Cart and Checkout Started are different events. Build 2 flows with the same content and different triggers. [8d43aac07129] [d962429e9e36] [b6389565ed83]
 11. **Recovery flows must match the decision cycle.** 6 or more emails over 1 to 2 weeks (about 10 days), not 1 or 2 emails. [ed0f5c1eb0f6]
-12. **In recovery emails the item does the selling.** Showing the exact abandoned item "carries 80% of the sales" (presenter estimate). Copy only removes objections: shipping, use, reviews, FAQs. [abb2fb64e79c] [8640fed0045c]
-13. **Hold discounts back in flows.** Browse and cart flows start without a discount. Discounts go only to people who never bought (or not in 60 to 90 days), late in the flow. Past buyers get a founder support email instead. [f0dfe6920491] [2fd76c2c2442] [b9c909970c5b]
+12. **In recovery emails the item does the selling.** Showing the exact abandoned item "carries 80% of the sales" (presenter estimate). Copy only removes objections: shipping, use, reviews, FAQs. Assume a wary 2024 buyer who compares brands and has been burned by late shipping. [abb2fb64e79c] [8640fed0045c] [099c7444116a]
+13. **Hold discounts back in flows.** Browse and cart flows start without a discount. Discounts go only to people who never bought (or not in 60 to 90 days), late in the flow. Past buyers get a founder support email instead. Place urgency and risk reversal where the remaining objection sits, not in email 1. [f0dfe6920491] [2fd76c2c2442] [b9c909970c5b] [84ab96a56baa]
 14. **Personal founder emails often perform best.** Plain text, first name, mission, support offer, one link. Used in welcome, cart, post-purchase and winback. Needs a real founder and a real reply inbox. [287733c58cdd] [38c0bd0fee2b]
 15. **Send 3 to 4 campaigns a week, mostly non-discount.** Source tested "2 per day to 2 per month": 3 to 4 gave the highest revenue and lowest unsubscribes. 1 to 2 a week is forgotten; 5 to 7 raises unsubscribes and complaints and revenue plateaus. Condition: only if content is good ("if your emails suck, 3 to 4 is too much") and only to engaged segments. [dfbf925e6f5d] [a91ac0807b44] [d435b73cfe27] [98e2eee7c689]
 16. **Needy discount content creates sales resistance.** Constant "buy or die" content annoys the list, wears out discounts and makes the brand look like it begs. Value content positions it as sought after. Opinion. [dfbf925e6f5d] [4a80d22c069f]
@@ -38,7 +38,7 @@ It gives an operator a complete Klaviyo-based email program for a Shopify store:
 23. **Deliverability is a sender credit score driven by engagement.** Good = primary tab, middle = promotions, bad = spam. Fix content first, then reputation by sending only to people who open. [61807f09ea38] [b7b58b63ae33]
 24. **Subject lines set the frame for sales, not opens.** Opens should come from sender name, content and cadence. Judge subject line tests on placed orders and revenue. Opinion; he still writes them carefully. [5143f6e2959a] [0a74cf1bac46] [c4cf02ddd233]
 25. **Write for the skim.** Avoid text blocks, bold main points, 1 to 2 mobile scrolls max, at least 1 infographic per email. [e5a610bd2f19] [ddcf74804625]
-26. **Vary emails and match the brand's real world.** Identical templates every send lose attention. Match email imagery to the site and Instagram. [a744284f4af9] [f4b51595abf4]
+26. **Vary emails and match the brand's real world.** Identical templates every send lose attention. Match email imagery, fonts and voice to the site and Instagram. [a744284f4af9] [f4b51595abf4] [9b7f9bd54fc3]
 27. **Every email needs a clear, early, big button.** First button above the fold, large, thumb-reachable; one decision per email even with many buttons. The source also says "you don't need a button at the top every single time; mix it up". [ca47b8d3f740] [ccc4b7310f94] [8d705e1b1a26]
 
 ## 3. Procedures
@@ -303,7 +303,7 @@ Other segment ideas from the same video:
 Use for launches, big sales, big announcements. Example: 60% opened, so resend to the 40%. Rebuild per campaign.
 
 ### 3.23 Copy workflow [95dff9b04773] [6471cdaa0f28] [d4d9215eb873] [b33ded12e90b] [9569a09dc9cc] [f248facd3631] [8051e7b15977]
-1. Pick an example email as the template (reallygoodemails.com, milled.com, your own swipe inbox). [d3a4af2f518c]
+1. Find angles in the brand's own Instagram language and blog (Gymshark treats "gym" as a verb: "do gym"). [3c8f273100f4] Pick an example email as the layout template (reallygoodemails.com, milled.com, your own swipe inbox). [d3a4af2f518c]
 2. Map it in a Google Doc with spacing and labels (headline, subheadline, "hero section with GIF", "table graphic", "fan favorites", Shop Now). This gives the copywriter control over the design.
 3. Prime ChatGPT once per chat: "I'm going to give you a bunch of background information on my ecom brand. I want you to process the information so I can later ask you to write email marketing copy." Then: brand and products, mission and goal, brand USPs, product USPs, customer age and demographic, what they enjoy, brand voice, customer goals and aspirations, why they are unique. Use full paragraphs. Paste the website link. Ask "Are you ready to write copy based on the topics I give you?"
 4. Request: "We are creating a graphic-based email campaign with minimal copy to send to our customers. The topic is [topic and USPs]. Using the information I gave you on the brand and the customer, write me a quick and punchy headline. Then write a slightly longer subheadline, then 2 to 3 sentences of body copy leading to a Shop Now call to action." Without "graphic-based" you get a letter; without "punchy" you get a 20-word headline.
@@ -347,7 +347,7 @@ Results are in section 7.
 4. Image block per slice, in order. Social row: table block, set cells to image, add columns, padding 0.
 5. Link each image: logo to homepage, hero to bestsellers or blog, category slices to collection pages.
 6. Alt text on each image, a short paraphrase. He says under 1% block images; "sometimes helps deliverability".
-7. Footer text trick (his practice): paste the brand's About Us text into a text block, size 5, color same as background, line spacing about 5%, so it is invisible, to make an image-only email look less spammy to Gmail. See conflict in section 9.
+7. Footer text trick (his practice) [bc0f81f5c30a]: paste the brand's About Us text into a text block, size 5, color same as background, line spacing about 5%, so it is invisible, to make an image-only email look less spammy to Gmail. See conflict in section 9.
 8. Send a test to yourself, click every link, check desktop and mobile, then schedule.
 
 ### 3.28 Six-week deliverability recovery [0f792188c5ee] [e5dfe8e98a49] [20fd44bca0dd] [b7b58b63ae33]
@@ -482,7 +482,7 @@ All are single client examples reported by the presenter. None is a promise.
 - **Welcome compounding illustration:** $100k/month store, $10k from welcome; +10% a month = +$1,000 the first month, compounding. [b568ff652c08]
 - **Priming illustration:** a campaign might make $5,000 without a welcome flow and $75,000 with one. Illustration only. [5b03b18152ec]
 - **Brand teardowns** (redesigns, no results): Whoop (button too low; lead with free month trial; "They not like us"; "They give you numbers, we give you insights"); Birkenstock (tiny text for an older audience; top nav; 6 competing CTAs; color swatches); Alo (browse email with no buttons at all); Gymshark (4 identical layouts, studio photos, no product buttons); Lululemon (small top-left button, "Style doesn't stop at the mat", shop by running, workout, casual, yoga); Hoka (blocky; add engineered mesh, Durabrasion outsole, 4 mm lugs education). He rates Alo the biggest business impact. [ca47b8d3f740] [684614ee0878] [26cdbc32e54d] [a744284f4af9] [c7ea4f6fc9b4] [85ad42e85dc1]
-- **Gymshark from scratch:** branded ("In a world where you can do anything, do gym"; ChatGPT body copy "The gym is our sanctuary, where sweat drowns out doubt"; mix-and-match GIF; "New drops just in"), social proof ("By gym lovers, for gym lovers", "100,000+ verified reviews", phone mockup, photo gallery), value ("No-fuss dumbbell back exercises", "Back Anatomy 101": traps, rhomboids, lats, erector spinae; subject "No-Fuss Dumbbell Back Exercises" plus "No gym, no problem..."). [b6c8e280a302] [0994838db851] [d7e086386324] [152b812030e7]
+- **Gymshark from scratch:** branded ("In a world where you can do anything, do gym"; ChatGPT body copy "The gym is our sanctuary, where sweat drowns out doubt"; mix-and-match GIF; "New drops just in"), social proof ("By gym lovers, for gym lovers", "100,000+ verified reviews", testimonials picked to answer objections and span male and female buyers, phone mockup, photo gallery [a81c6efc9ac4]), value ("No-fuss dumbbell back exercises", "Back Anatomy 101": traps, rhomboids, lats, erector spinae; subject "No-Fuss Dumbbell Back Exercises" plus "No gym, no problem..."). [b6c8e280a302] [0994838db851] [d7e086386324] [152b812030e7]
 
 ## 8. Mistakes the source warns about
 
@@ -552,3 +552,191 @@ What is missing or thin:
 - Brand-specific inputs needed before use: `[needs brand data: AOV, margin, opt-in rate by device, flow vs campaign revenue split, open and click rates by segment, days between orders, order-count distribution, product collections, review counts and ratings, guarantees and shipping times, founder name and photo, support reply capacity, discount policy, send volume per week]`
 
 ## 10. Card index
+- [e4411105b23e] Reframe the 2024 Ecommerce Market Before Planning Funnel Spend
+- [12ae02fd4ccd] Build the 'Stand a Chance' Funnel: 10% Email Capture Instead of Paying to Retarget
+- [76c9f6876c1e] Use the Trust Threshold Model to Justify Content Over One-Shot Ads
+- [b8c17a6d4d2d] Win the Honeymoon Phase: Prioritize New Subscriber Capture
+- [3d97f72a2969] Deploy the Four List-Growth Methods and Know Their Roles
+- [0de6758fd7b5] Balance Flows vs Campaigns at ~50/50 of Email Revenue
+- [dfbf925e6f5d] Run 3–4 Non-Discount Campaigns Weekly Using Microtopics
+- [9641bcb4fcd1] Build a Monthly Campaign Calendar from Key Dates Outward
+- [7ea9228eeda8] Diagnose the 9 Common Pop-Up Mistakes Killing Cost Per Acquisition
+- [60f8b169fd9a] Choose the Right Pop-Up Offer Based on Average Order Value
+- [1c9b788208ca] Run the 5-Step Pop-Up Build Process and a 7-Test Roadmap
+- [9eebdb581427] Design the offer before you design the popup
+- [92626e4998da] Micro-commit popups: ask a yes/no question before requesting the email
+- [0419dcd84c79] Quiz and gamified popups as alternative capture formats
+- [397f14a8dca9] Hide the X and force a claim-or-decline decision
+- [2a3063dcd723] Mobile popup build: single-step capture with email then SMS as a separate step
+- [7bf46bd3662b] Desktop popup design: go bigger, use a side image, keep one offer
+- [e5cbaa0f3a12] Form targeting: delay, frequency and avoiding exit-intent
+- [ff4c8404916f] Popup form QA checklist before launch
+- [b5dc319521e1] Seven A/B tests to run on popup forms, in rough priority order
+- [3adbacf055f8] Popup platform choice: built-in ESP forms versus a specialist tool
+- [8dcc18667354] Flows versus campaigns: what each is for and how to split revenue
+- [31dde167599f] The six baseline flows to build first, in order
+- [d076884d7359] Build flows in a mobile-first multi-step pattern you can clone across devices
+- [05d68e6eea8b] Prioritize core lifecycle flows over advanced segmentation
+- [2d5485f41fc3] Welcome flow: 8-email structure with exit filter
+- [93e2fdb3e09e] Welcome flow's two acceptable outcomes
+- [75b807a7abce] Site abandon flow: one-email nudge to keep browsing
+- [f0dfe6920491] Browse abandon flow: 5-email recap that escalates slowly
+- [8d43aac07129] Cart abandon and checkout abandon are two separate flows
+- [e502966b22d7] Cart/checkout abandon content sequence
+- [ebc0429d8032] Post-purchase flow: 3 emails that thank, bond, and enable
+- [61b12124e33c] Win-back flow: fire at double the average repurchase interval
+- [18ba82281157] Use campaigns as the testing ground for flow content
+- [f64d1327c5bf] Test flow time delays before content
+- [d5e95a86111e] Long-form versus short-form flow emails
+- [8b488b1b15d3] Subject line and preview text tests to run
+- [8c7fb0e97b5c] Graphic-heavy versus text-based email design
+- [825b599778e6] Promoting categories versus individual products in email
+- [96f3d3a24e34] Seed welcome-flow social proof with early testimonials
+- [287733c58cdd] Founder-message emails and when they convert
+- [6b256b3baf2e] Customize flows with dynamic product blocks
+- [1784ea2727ac] Run 3-4 email campaigns per week to carry retention
+- [84ab96a56baa] Risk reversal and urgency placement in sequence
+- [af45850fd4fc] Why the welcome flow exists: email as the cheap way across the trust threshold
+- [5b03b18152ec] Set the welcome flow length and goal by price point and buying cycle
+- [b0ac0c5d9d9b] Split dense welcome emails into short, skimmable, spread-out messages
+- [1fef69d7fc18] Email 1: deliver the incentive and prove legitimacy in the first screen
+- [6ff7df41c99b] Email 2: put a face to the brand to convert skeptical new signups
+- [5c60bad74418] Email 3: use a bestseller email to collapse choice paralysis
+- [974086eb7dfa] Email 4: add urgency plus risk reversal to push the fence-sitters
+- [089beec94d13] Email 5: answer 'why you instead of the competitor' head-on
+- [4240a92f17f1] Email 6: dedicate a whole email to social proof
+- [7ee979f51388] Emails 7-8: close with hard urgency, then a founder's personal note
+- [3b8a84dc1d94] Configure the Clavio trigger and filter so buyers drop out of the flow
+- [b568ff652c08] Give the welcome flow a target conversion rate and a testing loop
+- [debbcf824284] Reuse winning campaigns as welcome-flow emails to save build time
+- [d962429e9e36] Audit whether you actually have an abandoned cart flow (added-to-cart vs checkout started)
+- [40bce4fbddfc] Why abandonment is so high and why recovery is high-leverage
+- [ed0f5c1eb0f6] Design the recovery flow around the customer's decision cycle, not 1-2 emails
+- [abb2fb64e79c] Write plain, item-first recovery copy that overcomes objections
+- [8640fed0045c] Conversion-optimized recovery email layout
+- [815150bfedbc] Email 1: the 30-minute quick reminder
+- [e7a5c9132999] Email 2: second reminder with expanded social proof
+- [962de4f96ab5] Emails 3-4: split by product for specific info, then specific testimonials
+- [e99b377f856f] Email 5: last-chance urgency email
+- [2fd76c2c2442] Email 6A: buyer branch — founder support email, no discount
+- [b9c909970c5b] Email 6B: discount opener for first-time buyers, then a discount last-chance
+- [34204d0c3ce5] Install the added-to-cart metric and trigger in Klaviyo
+- [c42f60fa5fca] Set up dynamic abandoned-item content (careful: cart and checkout variables differ)
+- [74b2b4379cdb] Set up A/B tests inside the flow rather than on the email
+- [608aaa1e7d79] Small A/B tests can compound into large revenue gains
+- [b6389565ed83] Separate cart and checkout flows to avoid double-messaging
+- [099c7444116a] Adapt to the 2024 more-competitive buyer who does due diligence
+- [1911a725b087] Build a six-email post-purchase flow with timed emotional beats
+- [05c3a4b18253] Exploit the 3-hour post-purchase buyer window
+- [38c0bd0fee2b] Use founder-voice emails to build small-brand trust after purchase
+- [5b7ae7297305] Use product-education emails to cut returns and boost repeat orders
+- [a91ac0807b44] Set post-purchase email frequency to 3-4 sends per week
+- [4a80d22c069f] Send non-discount content to stay top-of-mind and win repeat purchases
+- [998246dfc602] Structure every email around one micro-topic and one takeaway
+- [e7738e173006] Use the problem-process-solution framework to position your product
+- [f124cc441468] Generate unlimited micro-topics with a ChatGPT prompt
+- [36e7bc2aac2f] Position email as warm-lead content between cold paid ads and repeat purchases
+- [6a7d3a3bd48a] Understand the trust threshold before asking for a purchase
+- [1c24d38d786b] Run A/B tests on flows using the flow-level split, not the email-level test
+- [1b02d04b4fff] Add winning campaign emails into your post-purchase flow
+- [6927559464b4] Use email frequency to build habitual opens and the exposure effect
+- [a18c13f52100] One-Benefit Email Framework
+- [277143b6f6c2] One-Feature Email: Selling Ingredient and Spec Differentiation
+- [623d951e5d86] Single-FAQ Email to Kill Objections
+- [dac289376b1c] 'What's Inside' Email for Bundles and Consumables
+- [532cdab329e6] How-It's-Made and How-To-Use Emails
+- [a1e654a1f091] Back-in-Stock Email Leveraging Popularity and Urgency
+- [4e7b9fc24619] Trending Product Email — Frame Future, Not Past
+- [78a2320e9eca] Reviews and Testimonials Email for Social Proof
+- [50ed5320f524] Us vs Them Comparison Email
+- [255dda5b5409] Myth vs Fact Email
+- [0fc7fc3f1f45] Blog Promo Email That Sells the Click
+- [fe4206a3d106] Research Study Highlight Email
+- [eb45bf2a9d5c] Holiday Email Using Obscure Holidays
+- [5960dbd3e3b0] 15 Rapid-Fire Campaign Angenres for Ecommerce Lists
+- [2ebf32e7465a] Building a Monthly Campaign Calendar
+- [24e40adf1b4f] Segmentation: Dynamic Segments vs Static Lists
+- [e385d9458d21] Email Engagement Segments for Deliverability
+- [29b075b3e1cf] Store-Engagement Segments to Find Funnel Leaks
+- [aa2e8130acf6] High Potential Purchaser Segment
+- [766ca8aa5269] VIP Segment Built on Purchase Count
+- [fbb4bfea66bf] Winback and Unengaged: Distinguishing Two Recovery Segments
+- [7b644e511db9] Predictive Analytics for AOV, CLV and Replenishment Timing
+- [cd65fcd0d48d] Location Segmentation for Pop-Ups and Regional Offers
+- [98e2eee7c689] Cadence and Content Rule: Send Three to Four Emails a Week
+- [c049ecf47935] Build core Klaviyo segments: VIP, winback, suppress, engaged
+- [68cf12bbb813] Interest and cross-sell segments by product/category
+- [d11a34c7dc7f] Resend unopened important emails with the campaign-ID segment trick
+- [e5a610bd2f19] Optimize email copy for the skim, not the read
+- [99679e755f67] Clear and concise email copy: short and sweet, one takeaway
+- [28bbeaa03336] Write engaging copy: punchy, informational, entertaining
+- [ddcf74804625] Use infographics as email 'secret sauce' to hit all copy principles
+- [95dff9b04773] Outline email copy in a doc against an existing template
+- [b33ded12e90b] Prime ChatGPT with your brand, then request punchy hero copy
+- [b88c44dec23c] Prioritize basics before advanced segmentation and copy tricks
+- [9569a09dc9cc] Write email copy with an AI prompt + real email outline
+- [5143f6e2959a] Treat subject lines as frames, and test them on revenue
+- [966ff3299f67] Subject line framework: 2–5 words, title case, curiosity loop
+- [d97f313a3c32] Preview text framework: support the headline, end with an ellipsis
+- [32434c0d9bd2] Build urgency and holidays into seasonal campaign angles
+- [7a64062e31d6] Diagnose and fix weak inbox subject lines
+- [0a74cf1bac46] Prioritize content quality and cadence over subject-line tricks
+- [106de14b286c] Rewrite subject lines as curiosity gap, then judge them by sales
+- [54eb9e4fd217] Design ecommerce emails in Figma instead of Canva
+- [6471cdaa0f28] Write email copy as a layout brief before design starts
+- [fa875107b080] Build a reusable email section template library
+- [274f9828c4d5] Gradient overlay to place text over a hero image without covering faces
+- [b816f97502f1] Build a CTA button with a rounded rectangle and correct layer order
+- [ca47b8d3f740] Put the first CTA button above the fold and keep buttons large
+- [ba367d283c2b] Give every product its own Shop Now button, or at minimum underline the product name
+- [584d61f99f2e] Add review counts and short product descriptors to fill out product tiles
+- [5721fb4801f1] Build a visual theme and repeat it across sections for depth
+- [3f1dbdd5d793] Use layering and grouping to keep long email files navigable
+- [00d5eebb6a8f] Close with a general Shop Now CTA after the product section
+- [d71019e19cc1] Build a footer with category shopping links plus trust icons
+- [a744284f4af9] Vary layout, imagery and copy between sends to prevent subscriber fatigue
+- [684614ee0878] Shift CTA copy from 'learn more' to a concrete value proposition
+- [68bb391cba1a] Use vertical stacking over side-by-side layouts in email copy
+- [1fa479fcc307] Slice an email design into separate export images, one link each
+- [9d1475541314] Compress exported email images in a batch before uploading
+- [acc8bc585d69] Assemble the sliced email in Klaviyo and attach links and alt text
+- [f4b51595abf4] Keep site and email visual worlds consistent
+- [26cdbc32e54d] Redesign browse-abandonment automations to include a top CTA
+- [440ee1d565ba] Use an interactive mix-and-match block to demonstrate outfit combinations
+- [0994838db851] Use testimonial and social-proof emails to build trust for later purchases
+- [d7e086386324] Use value and educational emails that still carry a shop path
+- [40faa5864b0a] Design emails as image slices, then link buttons in Klaviyo
+- [b6c8e280a302] Use a non-discount email strategy: brand, value, social proof
+- [3c8f273100f4] Source email angles from your own Instagram and website
+- [d3a4af2f518c] Pick email layouts from an inspiration bank of proven brands
+- [85ad42e85dc1] Educate with a product 'bridge' section to justify the price
+- [d0f558e18896] Build product interest with a GIF 'mix and match' section
+- [879f2132fb8a] Add texture, gradients, and depth so emails don't look flat
+- [ccc4b7310f94] Reduce thumb stretch: size and place CTAs for mobile taps
+- [c7ea4f6fc9b4] Give a fallback general CTA plus shop-by-collection at the bottom
+- [a81c6efc9ac4] Use big aggregate review counts as a trust signal in emails
+- [152b812030e7] Write blog emails that sell the click and teach on the way
+- [d4d9215eb873] Lay out copy section-by-section before designing
+- [ea0e763b4c0f] Choose a design tool that supports advanced layout
+- [8d705e1b1a26] Keep the CTA goal singular even with many buttons
+- [1fce4c03c35f] Compress email images to protect load time
+- [9b7f9bd54fc3] Match email design and copy to the brand's voice
+- [bc0f81f5c30a] Footer text block to offset image-heavy emails
+- [bcc326384a22] Link and alt-text pass before a campaign goes out
+- [61807f09ea38] Treat deliverability as a sender reputation score
+- [b7b58b63ae33] Improve the emails before chasing technical fixes
+- [20fd44bca0dd] Build 14/30/60/90-day engaged segments
+- [0f792188c5ee] Six-week deliverability recovery protocol
+- [e5dfe8e98a49] Keep only high-engagement flows during recovery
+- [d435b73cfe27] Three-to-four campaigns per week as your default cadence
+- [125460461476] Text-based emails vs graphic emails A/B test
+- [c4cf02ddd233] Judge subject-line tests on placed orders, not opens
+- [3bfa393df934] Products vs categories in the email body
+- [481bda83c865] Long-form vs short-form email body copy
+- [0137d385aaeb] Test send time of day for campaigns
+- [70e9cc171c68] Test flow delay timing for site abandonment
+- [0adcc430d16d] Branded text email vs plain native text email
+- [e846a075130e] Weekly A/B test roster of high-leverage variables
+- [f248facd3631] Prime an LLM with brand context before writing email copy
+- [8051e7b15977] Prompt for graphic-email copy structure, then iterate
+- [a45e96ee496c] Generate a year of non-discount email topics from micro-topics

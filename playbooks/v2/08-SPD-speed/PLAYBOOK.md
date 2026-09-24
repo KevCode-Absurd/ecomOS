@@ -61,7 +61,7 @@ version: 2.0-draft  |  date: 24 Sep 2026  |  sources: 9  |  cards: 226  |  built
 | Sessions and revenue by template (home, collection, product, cart, checkout) | Data layer | Required | Page priority (R3) |
 | Pages ads land on, and paid vs organic share | Brand record, data layer | Required | Ad landing page gets fixed first (R3); score weighting (R5) |
 | AOV, daily sessions, conversion rate, margin, monthly orders, cart abandonment | Data layer | Required for business case; optional for a fix | Revenue model (P6), hosting tier (R92) |
-| Baseline PSI averages per template, mobile and desktop, with dates | Agent produces in P1 | Required before any change | Proof of fix (R98) |
+| Baseline PSI averages per template, mobile and desktop, with dates | Agent produces in P1 | Required before any change | Proof of fix (R102) |
 | Visitor connection and device mix | Data layer (analytics device and network reports), or user | Optional | Picks the throttling profile (P2) and the test device (R10) |
 | Scroll and click heatmaps | Data layer (Hotjar or similar) | Optional | Quick View usage (R61), buy button reach (neighbour 09-CRO) |
 | Search Console Core Web Vitals report | Data layer | Optional | Field confirmation of CLS and LCP fixes (R102) |
