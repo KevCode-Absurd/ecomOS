@@ -4,6 +4,8 @@ version: 2.0-draft  |  date: 24 Sep 2026  |  sources: 10  |  cards: 213  |  buil
 
 ## 0. How to use this playbook
 
+**Ecommerce first.** This playbook is for ecommerce stores, not lead-gen or SaaS advertisers running on the same platforms. Section 3.0 ranks the levers that matter most for a store; load it before the detail groups in section 3. Store-type conditions (hero SKU vs catalogue, low vs high AOV, subscription vs one-off, marketplace-heavy, luxury or considered purchase, mobile-first India vs US) decide which rules apply and how much weight to give each one.
+
 **Who runs it.** The paid social performance agent for Meta and TikTok. It owns account and campaign structure, launch settings, test sizing, kill and scale calls, budget pacing, attribution settings, new-customer measurement, retargeting and exclusions, account audits, and TikTok setup (pixel, in-feed, Spark, Search, Shop, GMV Max). Creative production, hooks and scripts belong to 10-MCR. Attribution modelling, MMM and analytics tooling belong to 06-MEA. Google Ads belongs to 12-GAD. Ad copy belongs to 11-ADC.
 
 **Meta is read-only in ecomOS. Propose, do not execute.** Every Meta step in this playbook ends in a written recommendation for a human to apply. The Meta MCP has write tools; they are not allowed. TikTok has no connector yet; all TikTok steps are also proposals or instructions for a human operator.
@@ -69,6 +71,23 @@ version: 2.0-draft  |  date: 24 Sep 2026  |  sources: 10  |  cards: 213  |  buil
 
 Each rule states the rule, its condition, the mini playbooks that support it (S01 to S10), conflicts, and card ids. Where only 1 source says it, the rule says "Source Sxx says".
 
+### 3.0 Ecommerce priority order
+
+1. Fix data access and new-vs-returning order data before any other read. R1, R59; TikTok read P9 step 1.
+2. Confirm unit economics can support paid acquisition (AOV, margin, LTV) before sizing any test or scale plan. R3.
+3. Pick the structure template for spend tier and business complexity. R7, R9 to R13. Catalogue or multi-persona stores need business-unit campaigns; single hero-SKU, low-AOV stores can consolidate (R9's 10% exception).
+4. Set attribution to 7-day click everywhere and reconcile with acquisition MER before trusting any number. R55, R58, R59; procedure P18.
+5. Exclude existing customers from all cold spend, sized to the repurchase cycle. R27. Subscription or short-cycle stores need a tighter window than one-off or considered-purchase stores.
+6. Hit the creative volume and concept-diversity band for the spend tier. R40, R41.
+7. Confirm a "winner" is a real new-customer winner before briefing more of it. R46; procedure P8. Matters most for high-AOV, low-volume or marketplace-heavy stores where 1 ad can carry the account.
+8. Scale through equilibrium and a dedicated scaling campaign, not budget jumps. R49 to R51.
+9. Choose a scale ceiling the owner has agreed to: GP to CAC band (default) or near-break-even with a cash check for cash-rich, high-repeat brands. R52; section 7.16. `[general practice: match to subscription vs one-off]`
+10. Read frequency by segment monthly; existing-customer frequency is the first fatigue signal for repeat-purchase categories. R71, R77.
+11. Cap retargeting and DPA as a support layer, not a growth line; DPA share is the fastest catalogue-store red flag. R75, R81.
+12. Re-audit structure and creative bottleneck order on a cadence tied to spend tier and season. R87 to R91. `[general practice: tighten cadence going into peak season; no source gives a peak-season cadence]`
+
+Load this block first; the groups below are the detail.
+
 ### Group A. Foundations
 
 **R1. Fix in this order: data integrity, then account structure, then creative.** Condition: any audit or restructure. Data is first because everything else is judged on it and it is quickest to fix. Structure is second because it is fast. Creative is second by commercial impact but slowest to fix. Supports: S03 (explicit order), S02 (data integrity as non-negotiable), S08 (data integrity test). Conflict: card 2156baae2c7a says structure is number 2 by impact; the S03 transcript says creative is. Use the transcript. [7101da7d331d] [2156baae2c7a] [b8107473f4c3] [e336ef61445a]
@@ -105,11 +124,15 @@ Each rule states the rule, its condition, the mini playbooks that support it (S0
 
 **R16. Do not add structure to make reporting look tidy.** Condition: any proposed split. Structure is a manual signal that some ads must learn separately. Reporting problems are solved with naming and filters. Supports: S04, S02 (international reporting by filters, not accounts). [0ed2f8dbde17] [b8c4642d637c]
 
+**R108. Ramp budget and structure ahead of a peak sale (BFCM, festive or Diwali-scale events) and set a wind-down date before it starts.** Condition: any store with a seasonal sale calendar. Partial support: CPM inflates in a cycle around Black Friday, and some accounts rotate CBO in Q4, ABO in Q1 for clean testing (R32). Sources: S02. `[general practice: no source in this folder gives a pre-sale ramp, sale-price ad set or wind-down procedure; verify against the brand's own past sale performance before use]` [5b99bf6d671d] [2f66cf4f65c6]
+
+**R109. Give cross-border buyers their own currency display, delivery-time and duty message; do not assume the domestic ad and page convert the same buyer.** Condition: any store selling into a second currency zone or country. R12 only covers splitting ad accounts by currency, not creative or targeting for cross-border buyers. `[general practice]` No library source; verify against brand data before use. [b8c4642d637c]
+
 ### Group C. Ad set design
 
-**R17. A concept = persona + angle + offer (+ ad type or format when it changes enough to be read as a different ad). 1 ad set holds 1 concept.** Condition: cold campaigns at every tier. Change any 1 of the 3 and it is a new concept. Ad type is flexible inside a concept. Supports: S02, S03, S04, S06 (1 stage per concept), S07 (1 net-new concept per ad set), S08. [b722b2c086bc] [65e0503d7bc4] [94c8e0f902f4] [917ee36d87e9] [45c43e3ff759] [6ee9db26f236] [faa05bf3cff8]
+**R17. Concept = the SKU or range, the buyer's stated pain or occasion, and the price or bundle offer on the PDP; changing any one is a new ad set.** Condition: cold campaigns at every tier. Change any 1 of the 3 and it is a new concept. Ad type is flexible inside a concept. Supports: S02, S03, S04, S06 (1 stage per concept), S07 (1 net-new concept per ad set), S08. [b722b2c086bc] [65e0503d7bc4] [94c8e0f902f4] [917ee36d87e9] [45c43e3ff759] [6ee9db26f236] [faa05bf3cff8]
 
-**R18. Minimum 3 ads per ad set; rule of thumb 3 to 15; 5 to 20 for reading spend share; up to 50 new per concept per month at high volume.** Condition: 3 is the floor so the ad set can sequence (people see an ad 2 to 6 times before buying). 200 ads in 1 ad set is possible but usually spans several concepts that should be split. Supports: S02 (3 to 15, min 3), S08 (5, 10, 20; 50 per concept per month), S07 (1 concept + 3 variations = 4). `[web check: current ads-per-ad-set limit]` [d6c0209e9d6b] [ab729ba34368] [3ae3be9f8f79] [6ee9db26f236]
+**R18. Load each concept ad set with enough ads that a shopper sees a matching hook 2 to 6 times before the PDP decides the sale, not just before the ad "learns".** Condition: 3 is the floor so the ad set can sequence (people see an ad 2 to 6 times before buying). 200 ads in 1 ad set is possible but usually spans several concepts that should be split. Supports: S02 (3 to 15, min 3), S08 (5, 10, 20; 50 per concept per month), S07 (1 concept + 3 variations = 4). `[web check: current ads-per-ad-set limit]` [d6c0209e9d6b] [ab729ba34368] [3ae3be9f8f79] [6ee9db26f236]
 
 **R19. Load a new concept with the concept ad plus 3 variations (different hooks) so a concept is not killed on 1 ad.** Condition: new-concept tests. Source S07 says a hook variation won while the original lost. Variations of the account's current top ad usually do "decent" but do not beat it. Conflict with "only net-new concepts after Andromeda": see 7.8. [6ee9db26f236]
 
@@ -123,7 +146,7 @@ Each rule states the rule, its condition, the mini playbooks that support it (S0
 
 ### Group D. Targeting
 
-**R24. Go broad on Meta. Keep only hard controls: exclusions, minimum age, locations (never worldwide), languages.** Condition: cold prospecting, all tiers. Age bands, gender, interests and lookalikes are suggestions Meta may ignore. The creative does the targeting (see group J). Supports: S02, S03 (would not use interests or lookalikes in 99% of ecommerce purchase accounts), S04, S07, S09 (7-day broad vs stack test). Conflict on whether interests and lookalikes are fully dead: see 7.5. `[verify UI]` `[web check: which audience fields are hard controls vs Advantage+ audience suggestions]` [4c81bdf1685a] [b025c790c4ac] [48728b3abcdf] [071837c01e9b] [32581af3f424] [9869e4293b51]
+**R24. Go broad and let the product page, price and reviews qualify the buyer; do not pre-select by interest when the PDP and offer already do that work.** Condition: cold prospecting, all tiers. Age bands, gender, interests and lookalikes are suggestions Meta may ignore. The creative does the targeting (see group J). Supports: S02, S03 (would not use interests or lookalikes in 99% of ecommerce purchase accounts), S04, S07, S09 (7-day broad vs stack test). Conflict on whether interests and lookalikes are fully dead: see 7.5. `[verify UI]` `[web check: which audience fields are hard controls vs Advantage+ audience suggestions]` [4c81bdf1685a] [b025c790c4ac] [48728b3abcdf] [071837c01e9b] [32581af3f424] [9869e4293b51]
 
 **R25. If you test interests, lookalikes or custom audiences on Meta, cap them as a small sandbox.** Condition: S07's practice; no cap amount given. Spend the saved time on creative. [32581af3f424] [a55d9b19503c]
 
@@ -155,7 +178,7 @@ Each rule states the rule, its condition, the mini playbooks that support it (S0
 
 **R37. Do not judge ads on $1 to $2 of spend, and do not set ad set budgets from the learning-phase rule.** Condition: any test. Ads never stop learning; do not obsess over exiting learning. Supports: S08, S02, S07. Conflict on learning phase: see 7.7. [3ae3be9f8f79] [1c683e007b76] [c8f9d9634c5f]
 
-**R38. Test creatives that differ a lot, so winners and losers are clear.** Condition: any test batch. Near-identical ads collapse into 1 Entity ID and share the same audience pool (S04: 200 ads read as 20). Diversity means concepts (angle, offer, persona), not formats. Supports: S04, S03, S05, S08. [917ee36d87e9] [45c43e3ff759] [d3b3e82930e5]
+**R38. Test ads that differ by product benefit, price point or persona, not just crop or colour, so a losing SKU angle and a losing hook are never confused.** Condition: any test batch. Near-identical ads collapse into 1 Entity ID and share the same audience pool (S04: 200 ads read as 20). Diversity means concepts (angle, offer, persona), not formats. Supports: S04, S03, S05, S08. [917ee36d87e9] [45c43e3ff759] [d3b3e82930e5]
 
 **R39. Never test inside the scaling campaign.** Condition: any account with a scaling campaign. Source S02. [b8a2663f518f]
 
@@ -165,7 +188,7 @@ Each rule states the rule, its condition, the mini playbooks that support it (S0
 
 ### Group G. Kill, keep and scale rules
 
-**R42. Make the ad set the unit of decision. Do not kill or scale single ads on their ROAS.** Condition: every read. Campaign 7-day-click ROAS is relatively reliable, ad set less, ad very unreliable, because the UI is last click while Meta optimises across multi-ad sequences. 3 ads at $5,000 each with very different ROAS may all be doing their job. Ask 1 question: is this ad set, with this set of ads, at KPI? Supports: S02, S08, S06 (judge unaware ads account-wide), S10 (rankings untrustworthy under view-through). Conflict with S05 and S09, which rank ads: see 7.9. [9ede69b02ec7] [ab729ba34368] [b722b2c086bc] [7443b5bb8016] [34a82c492fd6]
+**R42. Judge and move budget at the ad set (SKU or concept) level; a single ad's ROAS says nothing about whether that product angle works.** Condition: every read. Campaign 7-day-click ROAS is relatively reliable, ad set less, ad very unreliable, because the UI is last click while Meta optimises across multi-ad sequences. 3 ads at $5,000 each with very different ROAS may all be doing their job. Ask 1 question: is this ad set, with this set of ads, at KPI? Supports: S02, S08, S06 (judge unaware ads account-wide), S10 (rankings untrustworthy under view-through). Conflict with S05 and S09, which rank ads: see 7.9. [9ede69b02ec7] [ab729ba34368] [b722b2c086bc] [7443b5bb8016] [34a82c492fd6]
 
 **R43. Inside an ad set that is at KPI, use spend share as a rough creative read: the ads taking spend are the ones to make more of.** Condition: only inside an ad set at KPI, and only for creative briefs, never for budget moves. Of 20 ads maybe 4 spend. Source S08. [ab729ba34368] [94c8e0f902f4]
 
@@ -193,9 +216,11 @@ Each rule states the rule, its condition, the mini playbooks that support it (S0
 
 **R54. Judge a scale-up on store-side new-customer sales for the SKU being scaled, not platform ROAS.** Condition: the scaled ad concentrates on 1 SKU. Store-wide reads need a much longer test or a bigger budget change. Confirm the SKU was not promoted elsewhere in the window (card addition). Source S10. `[needs brand data: SKU sales split new vs returning, daily]` [b410bffcb50f]
 
+**R110. Check live stock before raising budget or moving an ad set into the scaling campaign; do not add spend to a concept whose SKU is low or out of stock.** Condition: any budget raise or scale step (P5). Source material grades inventory by margin (A to D, R9) but gives no live stock check before a scale step. `[general practice]` No library source for the live check; verify against brand data before use. [ebff07a9e6f2]
+
 ### Group I. Attribution settings and new-customer measurement
 
-**R55. Optimise and read on 7-day click. Turn 1-day view off for budget decisions.** Condition: Meta, all cold campaigns; S10 says all campaigns. View-through pulls spend to ads that win on views, not clicks, and over-credits existing-customer revenue. Supports: S02, S08, S10. S03's go-to is 7-day click plus 1-day engaged view. Conflict: see 7.3. `[verify UI]` [fb9db4eb1b28] [04f6f0b93295] [ab729ba34368] [de104cfb484c] [34a82c492fd6] [451238284cae]
+**R55. Read and pay on 7-day click because a shopper's path from ad to checkout, not a view, is what the store gets paid for.** Condition: Meta, all cold campaigns; S10 says all campaigns. View-through pulls spend to ads that win on views, not clicks, and over-credits existing-customer revenue. Supports: S02, S08, S10. S03's go-to is 7-day click plus 1-day engaged view. Conflict: see 7.3. `[verify UI]` [fb9db4eb1b28] [04f6f0b93295] [ab729ba34368] [de104cfb484c] [34a82c492fd6] [451238284cae]
 
 **R56. Use the same attribution setting on every campaign.** Condition: mixed settings change ROAS between campaigns and break comparisons. Source S03. `[verify UI]` [451238284cae]
 
@@ -211,23 +236,27 @@ Each rule states the rule, its condition, the mini playbooks that support it (S0
 
 **R62. TikTok: 1-day view inflates ROAS a lot; read 7-day click, and reconcile TikTok-reported purchases with store orders.** Condition: any TikTok read. S01 leaves attribution windows at default and never reconciles; S03 says TikTok drops to about aMER or lower at 7-day click. `[verify UI]` `[needs brand data: store orders to reconcile]` [378c1eb72ff9] [e413ec2ddfd9]
 
+**R111. For a marketplace-heavy store, treat platform ROAS and aMER as unreliable where a meaningful share of ad-driven sales happen on Amazon, Flipkart or another marketplace outside the pixel's reach.** Condition: any store where paid social also drives marketplace sales, not just the brand's own checkout. The TikTok Shop material in this folder only covers a synced catalogue on TikTok's own checkout, not attribution for outside marketplaces. `[general practice]` No library source; verify against brand data before use.
+
+**R112. Where cash-on-delivery or another pay-later option is common, expect the purchase event and its reported value to lag or undercount against confirmed, paid orders; reconcile store orders net of COD returns before trusting platform ROAS.** Condition: mobile-first, COD-heavy markets such as India. `[general practice]` No library source; verify against brand data before use.
+
 ### Group J. The algorithm: delivery, ranking, auction, creative as targeting
 
-**R63. Every impression passes retrieval, ranking (S07: light and heavy), then auction, in about 200 ms. Retrieval decides which ads even enter a user's auction, and that is where creative does the targeting.** Condition: mental model, not a setting. Andromeda (Dec 2024) changed retrieval; GEM made it multimodal (reads video, audio, groups creatives by representation); sequence learning (Nov 2024) optimises across ad sequences; adaptive ranking spends compute per impression. Supports: S04, S07. All dates and roles are presenter claims `[web check: Meta engineering posts on Andromeda, GEM, sequence learning, adaptive ranking]`. [e82a1ef3cf77] [4844059375a6] [6ee9db26f236] [066b6cc383fe]
+**R63. Every impression a shopper sees is scored and ranked first; a store wins impressions with strong buy signals (clicks that convert), not by fighting the auction with bid alone.** Condition: mental model, not a setting. Andromeda (Dec 2024) changed retrieval; GEM made it multimodal (reads video, audio, groups creatives by representation); sequence learning (Nov 2024) optimises across ad sequences; adaptive ranking spends compute per impression. Supports: S04, S07. All dates and roles are presenter claims `[web check: Meta engineering posts on Andromeda, GEM, sequence learning, adaptive ranking]`. [e82a1ef3cf77] [4844059375a6] [6ee9db26f236] [066b6cc383fe]
 
-**R64. Auction score = bid x estimated action rate + ad quality (S07 calls the last term user value). Estimated action rate = expected CTR x expected conversion rate. Relevance beats bid.** Condition: a $0.50 bid can beat $1 with better action rate and quality. You have 2 levers in action rate (creative for CTR, funnel for conversion rate) and 1 in bid. Quality and action rate are rear-view diagnostics you cannot set directly; diversify creative instead. Misleading clickbait works against the quality term and loses delivery over time. Supports: S04, S07. `[web check: current Meta help wording of the auction formula]` [8ffd28b7fc7e] [3ad804612663] [71ab0ba03b8a] [a55d9b19503c]
+**R64. A cheaper bid beats a pricier one when the ad's expected click and purchase rate is higher, so a sharper product hook or clearer price buys cheaper reach than raising the bid.** Condition: a $0.50 bid can beat $1 with better action rate and quality. You have 2 levers in action rate (creative for CTR, funnel for conversion rate) and 1 in bid. Quality and action rate are rear-view diagnostics you cannot set directly; diversify creative instead. Misleading clickbait works against the quality term and loses delivery over time. Supports: S04, S07. `[web check: current Meta help wording of the auction formula]` [8ffd28b7fc7e] [3ad804612663] [71ab0ba03b8a] [a55d9b19503c]
 
 **R65. Broad targeting is a probe: Meta sprinkles spend across the space, finds clusters that buy, then narrows. Narrow creative saturates its cluster, frequency rises, then delivery drifts to nearby colder clusters and ROAS tapers.** Condition: this is why ads fatigue when scaled. S04's illustration: a very specific callout saturates after maybe $10,000. S02: as you scale the targeted area widens into less convinced people. [48728b3abcdf] [4de396baf031] [4c81bdf1685a]
 
-**R66. Near-identical ads collapse into 1 Entity ID and reach no new people; only concept diversity reaches net-new audiences. Iterations are still allowed.** Condition: creative planning. S04: 200 ads read as 20 unique in groups of 10 (illustration). Entity ID is not visible in the account. Conflict with S07 on variations: see 7.8. [917ee36d87e9] [4de396baf031] [6ee9db26f236]
+**R66.** Moved to Appendix A: near-identical ads, Entity ID collapse and concept diversity. See Appendix A.1.
 
-**R67. Post Andromeda, Meta will keep a product-aware ad on warm people who might convert and will not push it to unaware people. Loading many bottom-funnel ads and raising budget sends frequency "through the roof".** Condition: S06's model; verify in own data. It means the creative mix by awareness stage, not audience settings, decides cold reach. [7443b5bb8016] [faa05bf3cff8]
+**R67.** Moved to Appendix A: post-Andromeda delivery to warm vs unaware audiences. See Appendix A.1.
 
-**R68. Keep signal clean (pixel plus CAPI, purchase event EMQ), but treat EMQ as plumbing, not a profit lever.** Condition: if Meta sees 70 of 100 conversions it under-estimates your action rate and you lose auctions you should win (S04). S07: EMQ 9.8 to 9.9 with no visible link to profit. S04: paid server-side tools are a "very small" unmeasurable lever; get them if affordable. Conflict: see 7.6. Setup lives in 06-MEA. `[verify UI]` `[needs brand data: purchase EMQ, Meta purchases vs backend orders]` [74d3bc849c6b] [40de3bd68e44] [773fc35a99e9]
+**R68. Pass every order and its value cleanly from checkout to the pixel and CAPI; a store missing 30% of real orders is bidding blind on its actual best customers.** Condition: if Meta sees 70 of 100 conversions it under-estimates your action rate and you lose auctions you should win (S04). S07: EMQ 9.8 to 9.9 with no visible link to profit. S04: paid server-side tools are a "very small" unmeasurable lever; get them if affordable. Conflict: see 7.6. Setup lives in 06-MEA. `[verify UI]` `[needs brand data: purchase EMQ, Meta purchases vs backend orders]` [74d3bc849c6b] [40de3bd68e44] [773fc35a99e9]
 
-**R69. Meta updates aim at small platform-wide lifts so Meta can raise CPMs; expect your ROAS to stay flat while you adapt.** Condition: planning. Do not expect an update to raise your ROAS. Sources S04, S02. [e82a1ef3cf77] [5b99bf6d671d]
+**R69.** Moved to Appendix A: Meta platform-wide updates and CPM effects. See Appendix A.1.
 
-**R70. CPC and CTR barely predict return except at extremes; a new ad set or campaign over-weights soft metrics until it has conversion data.** Condition: allocating on CTR, CPC or hook rate. Very high CPC does mean very low ROI (S02). In a new account images and DPAs take spend early on soft metrics (S08). S07 still says Meta rewards high CTR with lower CPMs over time. `[needs brand data: CPC vs ROAS by ad]` [1589854e06d9] [a5c883d83f91] [3ad804612663]
+**R70.** Moved to Appendix A: CPC and CTR as predictors of return. See Appendix A.1.
 
 ### Group K. Frequency and fatigue
 
@@ -241,7 +270,7 @@ Each rule states the rule, its condition, the mini playbooks that support it (S0
 
 ### Group L. Retargeting, existing customers and DPA
 
-**R75. Retargeting is a capped support layer, not a growth driver. On cold ask "where can we spend more", on retargeting ask "where can we spend less".** Condition: all retargeting on Meta, TikTok, Pinterest. Audits find about 50% of spend on existing plus engaged, which is a mistake. Source S02; S03 agrees (frequency-based caps). [028483f1e7af] [9d8a9963309a] [b8a436d33e2f]
+**R75. Ask "where can cold spend grow" for new-customer campaigns and "where can this shrink" for cart-abandoner and past-buyer campaigns; retargeting supports the store, it does not grow it.** Condition: all retargeting on Meta, TikTok, Pinterest. Audits find about 50% of spend on existing plus engaged, which is a mistake. Source S02; S03 agrees (frequency-based caps). [028483f1e7af] [9d8a9963309a] [b8a436d33e2f]
 
 **R76. Skip a website-visitor retargeting campaign in about 90% of accounts.** Condition: the audience segment breakdown shows the engaged segment already gets meaningful spend at enough frequency from cold campaigns. Source S02. S07 runs retargeting broad with at most a purchaser exclusion. S01 (TikTok) builds a 30-day web-visitor retargeting campaign from about $3,000 budget. Keep both. [ccf942b9f2c8] [32581af3f424] [ab880cedcc94]
 
@@ -255,11 +284,17 @@ Each rule states the rule, its condition, the mini playbooks that support it (S0
 
 **R81. DPA ROAS mirrors top-of-funnel spend; read it on 7-day click or incremental, keep it out of the cold CBO, and never cut prospecting because DPAs "hold up performance".** Condition: any account with catalog ads. S02: furniture DPA 7x shown, 1.9x on 7-day click and incremental, holding 57% of cold budget; 6 fashion brands at about 80% DPA share declining for 6 months (death spiral). S03: 70% DPA share is too much. Supports: S02, S03. [cf36e5f30572] [805594665ccc] [1589854e06d9] [278c94b0c456]
 
+**R113. Time a win-back or reminder ad to land just before a customer's typical reorder date, not on a fixed retargeting schedule.** Condition: repeat-purchase categories where R77 already justifies an existing-customer campaign. R77 gates existing-customer spend on repeat purchase being "expected" but gives no reminder-timing rule. `[general practice]` No library source; verify against brand data before use. [3a48f7471999]
+
+**R114. For high-AOV, considered-purchase categories like jewellery, run a longer nurture ladder (proof, financing or EMI messaging, objection handling) before a same-day retargeting push.** Condition: slow purchase-cycle, high-AOV stores. R36 and R71 note longer windows and lower cold frequency for slow-cycle categories but give no nurture ladder. `[general practice]` No library source; verify against brand data before use.
+
+**R115. State the return or exchange policy in retargeting and objection-handling ads for buyers who have not converted; a clear policy is a trust signal, not just a logistics note.** Condition: any non-buyer retargeting ad, especially for higher-consideration or higher-AOV products. `[general practice]` No library source; every "return" reference in the source material is about ROAS or warehouse logistics, not a shopper-facing policy. Verify against brand data before use.
+
 ### Group M. Settings hygiene
 
-**R82. Flexible ads off, unless forced by page caps, and then only with near-identical assets.** Condition: you cannot read which asset drove results, cropping is uncontrolled, and Meta may build a carousel the client never approved. Source S02. `[verify UI: current name of flexible ads]` [e323039d800f]
+**R82. Keep flexible or dynamic-crop ads off catalogue and product ads so a shopper never sees a cropped or mismatched product photo they did not order.** Condition: you cannot read which asset drove results, cropping is uncontrolled, and Meta may build a carousel the client never approved. Source S02. `[verify UI: current name of flexible ads]` [e323039d800f]
 
-**R83. Advantage+ creative optimisations off at 2 levels: per ad, and in advertiser settings where automated rules switch them back on.** Condition: every launch; recheck recently launched ads. Source S02. `[verify UI: advertiser settings path]` [04cf2865b996]
+**R83. Turn Advantage+ creative edits off on every product ad; an automatic overlay on a jewellery or apparel photo can misstate size, material or price.** Condition: every launch; recheck recently launched ads. Source S02. `[verify UI: advertiser settings path]` [04cf2865b996]
 
 **R84. Define audience segments (new, engaged, existing) in advertiser settings and check the customer sync on a schedule.** Condition: the Klaviyo to Meta sync breaks periodically; then existing customers get served as new. Without the definitions the audience breakdown and frequency reads do not exist. Supports: S02, S03. `[verify UI]` [d74e033578c8] [ccf942b9f2c8] [b025c790c4ac]
 
@@ -271,7 +306,7 @@ Each rule states the rule, its condition, the mini playbooks that support it (S0
 
 **R87. An audit names the 1 constraint on profitable growth and ranks fixes by commercial impact into a 90-day roadmap. It is not 40 screenshots of settings errors.** Condition: every audit. Refuse to audit on platform data alone; get backend access first. Source S03. [ce4264077b22] [3b7f250f224e]
 
-**R88. Audit top-down: business numbers, then platform, campaign, ad set, ad.** Condition: every audit. Start at Shopify revenue, new-customer revenue, CAC; name the problem type; find the platform; then drill. Review the whole account at once, not 1 campaign. Supports: S03, S02. [f547d41f4dd4] [092e8775c5e9]
+**R88. Start every audit at store revenue and new-customer revenue, not the ad platform, because platform numbers cannot see refunds, COGS or repeat buyers.** Condition: every audit. Start at Shopify revenue, new-customer revenue, CAC; name the problem type; find the platform; then drill. Review the whole account at once, not 1 campaign. Supports: S03, S02. [f547d41f4dd4] [092e8775c5e9]
 
 **R89. Structure review: list every campaign, write its 1-line defendable purpose, error-check against that purpose, cut or merge what cannot be defended. Often half cannot.** Condition: every audit. Then 4 checks: 30-day frequency by segment; attribution consistency; a methodical testing structure exists; settings errors (segments not defined, app rewards, legacy targeting, missing exclusions, names that lie). Naming that does not match settings is the most common finding. Source S03; S02 and S08 agree. [5ce17b008587] [b8a436d33e2f] [451238284cae] [b025c790c4ac] [36f63e27c6d5] [e336ef61445a]
 
@@ -285,7 +320,7 @@ Each rule states the rule, its condition, the mini playbooks that support it (S0
 
 **R93. No pixel, no spend. Install via the official TikTok for Shopify app (developer TikTok Inc.) or partner integration, then test every event (page view, view content, add to cart, initiate checkout, complete payment) with Pixel Helper or Test Events before launch.** Condition: if purchase or add to cart does not fire, stop. Supports: S01, S05. `[verify UI]` `[web check: consent rules before choosing "maximum" data sharing]` [837875464f88] [41b98e976611]
 
-**R94. Objective Sales (web conversions), destination Website, manual campaign not Smart+ at first, advanced view, campaign catalog off, split test off, CBO off while testing.** Condition: first in-feed campaign for a store. Smart+ as a later parallel test ("mixed results", S01). S05: toggle off smart campaigns. `[verify UI]` `[web check: current Smart+ defaults and names]` [f6953a15849d] [097d6ce5e477] [479be1c347e0] [0856c5eb5224]
+**R94. Launch the first TikTok campaign as a website Sales campaign with the catalog off, so the pixel is credited for real checkouts, not browsing a synced catalogue.** Condition: first in-feed campaign for a store. Smart+ as a later parallel test ("mixed results", S01). S05: toggle off smart campaigns. `[verify UI]` `[web check: current Smart+ defaults and names]` [f6953a15849d] [097d6ce5e477] [479be1c347e0] [0856c5eb5224]
 
 **R95. Ad group: optimise for Complete Payment on the pixel, placements TikTok only or automatic with a placement read later, targeting broad (country, language, 18+), continuous schedule, no target CPA on a new account, attribution windows default, conversions not value.** Condition: first launch. S01 uses automatic placements and says TikTok placement usually wins; S05 unticks everything but TikTok. Either way, read the placement breakdown and opt out of weak ones. `[verify UI]` [b9a9580d6fee] [e413ec2ddfd9] [e9592c1f1fb3]
 
@@ -313,7 +348,7 @@ Each rule states the rule, its condition, the mini playbooks that support it (S0
 
 **R106. GMV Max: 1 campaign per product, start with the top 20% of SKUs by orders, ROI target = TikTok's suggestion + 1 (demo 1.2 to 2.2) and never below break-even, daily budget 2x target CPA, cut special promotion days to 50% and a 1x limit, auto-select creative on, boost winners at $10 a day minimum on top of budget.** Condition: S01. Lower the ROI target only if no impressions after a few days. TikTok's suggestion is often below break-even. Conflict: card 153cd8af7351 says set it low then raise; follow the transcript. `[needs brand data: break-even ROAS]` `[verify UI]` [3f9a7828109d] [c3654a90de4f] [153cd8af7351]
 
-**R107. TikTok retargeting: web visitors 30 days excluding 30-day purchasers, auto refresh on, audience expansion off, reach-and-frequency off; audiences take about 24 hours to populate. Add at about $3,000 budget (period unstated), then 7-day non-buyers and 30-day add-to-cart as budget grows; at $10k+ add re-engagement and GMV Max.** Condition: S01. Audience expansion on "might as well be broad". `[verify UI]` [1ee708d070fe] [ab880cedcc94]
+**R107. Build TikTok retargeting from site visitors and cart or product-page viewers, excluding recent buyers, so spend chases shoppers still deciding, not repeat buyers.** Condition: S01. Audience expansion on "might as well be broad". `[verify UI]` [1ee708d070fe] [ab880cedcc94]
 
 ## 4. Procedures (implementation)
 
@@ -467,10 +502,10 @@ Steps:
 
 Goal: a launch-ready TikTok account with tested events.
 Steps (all `[verify UI]`):
-1. Create the ads account with a business email; region, currency, time zone correct; read any credit offer terms `[web check: current offer]`. [bbb344647f7f] [4204465b105f]
-2. Tools > Account setup: address, documents (upload anything requested), payment type automatic, credit card, plus a backup method. [bbb344647f7f] [4204465b105f]
-3. Audience controls: default location, minimum age 18. Brand safety hub: standard inventory, apply to all objectives; exclude categories as needed. [bbb344647f7f]
-4. Business Center: users and roles, link the ad account, link the TikTok account by QR code with "show as ad only", link the Shop if any, 2-step auth, allowed email domain. Confirm Assets shows the TikTok account under the ad account. [fe05eddfed67] [cd344df6562d]
+1. Create the account. Moved to Appendix A.2 (standard onboarding, same for any TikTok advertiser). [bbb344647f7f] [4204465b105f]
+2. Account setup: documents, payment, backup method. Moved to Appendix A.2. [bbb344647f7f] [4204465b105f]
+3. Audience controls and brand safety hub. Moved to Appendix A.2. [bbb344647f7f]
+4. Business Center links, 2-step auth, allowed email domain. Moved to Appendix A.2. [fe05eddfed67] [cd344df6562d]
 5. Pixel: Events Manager > Web > Shopify; install the official TikTok app (developer TikTok Inc.); "TikTok Ads setup"; match the Business Center and ad account in each dropdown; data sharing level after checking consent rules `[web check]`. [837875464f88] [41b98e976611]
 6. Test events with Pixel Helper or Test Events: page view, view content, add to cart, initiate checkout, complete payment. If purchase or add to cart does not fire, stop. [837875464f88]
 7. Account health: good or excellent; clear notifications. [bbb344647f7f]
@@ -860,6 +895,8 @@ All deliverables carry the brand name, the date range, the attribution setting u
 
 **9.5 TikTok launch sheet** (when TikTok is in scope). The 5.5 checklist with pass or fail per row, the P12 settings as built, the first test plan (P13), and the 24-hour and 3-day read table filled in.
 
+**9.6 Peak-season plan** (BFCM, festive or Diwali-scale sale events). Markdown, 1 page. Ramp date, sale-price ad set or campaign, pre-sale audience and creative plan, and a wind-down date (R108). `[general practice]` No source in this folder gives a peak-season plan template; verify against the brand's own past sale performance before use.
+
 ## 10. What needs live data or a web check
 
 **Brand data `[needs brand data]`**
@@ -895,21 +932,22 @@ All deliverables carry the brand name, the date range, the attribution setting u
 - **Pricing named in sources (CapCut, UGC packages, server-side tools).** Point-in-time; do not quote without a check.
 - **GP to CAC bands, frequency ceilings, retargeting share flags (R60, R71, R75).** Opinion-based and not UI-dependent, so they age slowly, but they assume the sources' 7 to 9 figure USD context. Re-fit to the brand's margin, currency and retention.
 - **ecomOS constraint.** Meta is read-only and TikTok has no connector. Any move to production access (META_GALLERY_STATUS.md next steps) changes how P4 to P6 hand off, not the rules.
+- 24 Sep 2026: ecommerce specificity pass applied from ECOM_REVIEW.md; priority block added, 15 rules reworded, 8 levers added, about 680 words moved to Appendix A.
 
 ## 12. Source index
 
 | No. | Title | Type | Credibility | Contributed most |
 |---|---|---|---|---|
-| S01 | The BEST TikTok Ads Course For Beginners in 2026 | Course transcript, about 10 modules, 43,104 words, 57 cards | Agency owner (Zoco Marketing) selling a "free" course with affiliate and partner links (TikTok credits, CapCut, Arc Ads, Foreplay, Kalodata, Shopify). 1 presenter's claims; blurred client screenshots; no test sizes or controls. Strong as a click-by-click setup guide, thin on kill and scale rules. | TikTok account, Business Center, pixel test, in-feed Sales build, budget rules (2x CPA, 25 in 7), broad first then interest test, Spark organic-first loop, Search campaigns, TikTok Shop, affiliates, GMV Max settings, retargeting audiences and budget tiers. |
-| S02 | The Only Video You Need On Meta Ads In 2026 | 2-hour talk transcript, 22,222 words, 48 cards | Australian agency (Blue Sense Digital) selling management and free audits to $5M+ brands; recruiting. Evidence is its own audits, aggregated spend report and 1 $750k a month account; no controlled tests; presenter admits some preferences are agency labour or bias. The most complete structural source. | Spend-tier templates, 5 diagnostic questions, concept ad sets, fork rule, test sizing (3x or 5x CPA; formula), test duration, spend equilibrium and scaling campaign, ABO vs CBO, breakdown effect, retargeting as capped layer, existing-customer dollars and frequency, DPA death spiral, settings to turn off, page strategy, second account. |
-| S03 | How We Audit 8 and 9 Figure Ad Accounts (Full Process) | Solo walkthrough transcript, 10,451 words, 25 cards | Unnamed agency lead ($400M a year claimed under management) selling free audits to $5M+ brands and recruiting. No data tables or before-and-after cases; key models (retention benchmarks, velocity models, geo-lift design) kept in-house. Document header describes a different CRO video; ignore it. | Audit method: cohort model (CAC, first-purchase GP, GP to CAC bands), normalized and first-time P&L, aMER reconciliation, 7-day click + 1-day engaged view, defend-every-campaign structure review, frequency by segment, settings errors, creative bottleneck order (volume, diversity, quality), 1 ad per $1,000, concept bands, fix order data then structure then creative. |
-| S04 | How The Meta Ads Algorithm Works in 2026 | Whiteboard talk transcript, 7,214 words, 13 cards | Same agency as S02 (Blue Sense Digital); sells audits to $10M+ brands. Claims all mechanics come from Meta docs but cites none. Meta's own lift claims quoted; agency observations; opinion. Strong on why, weak on how. | Retrieval, ranking, auction model; auction formula; hard controls vs suggestions; broad as a probe; narrow-creative saturation; Entity ID and concept diversity; EMQ as accuracy of action rate; server-side tracking unmeasurable; 20% rule undocumented; economics beat tactics; consolidate by default. |
-| S05 | The Only TikTok Ads Tutorial You Will Ever Need | Tutorial transcript, 5,518 words, 16 cards | Agency owner "Tim" ($5M+ TikTok spend claimed) selling done-for-you management. 1 fashion case, 1 SaaS viral ad, unsourced platform stats; several internal contradictions (CTA, music, age, interests). US-centric thresholds, undated. | Business Center and payment setup, Shopify pixel partner integration, 3-tier pyramid, $50 a day per ad group, 2 to 3 parent interests, custom audiences as lookalike seeds, 4-week targeting ladder, 3:2:1 first test, 24-hour and 3-day thresholds, kill bottom 50%, naming convention, smart campaigns off. |
-| S06 | How To Make Your Meta Ads Scale | Talk transcript, 5,480 words, 11 cards | Unnamed creative-breakdown presenter, likely agency-side; nothing sold in the transcript. All rules are 1 practitioner's reading of other brands' ads; 1 observed result (a static running 4 to 5 months). Mostly creative strategy (10-MCR); the deployment part is frequency diagnosis and structure by awareness. | Post-Andromeda holding of product-aware ads on warm users; frequency as a creative-mix problem, not an exclusion problem; 80/10/10 stage split; judge unaware ads account-wide; structure follows concepts and 1 stage per concept; DPA can cover most-aware. |
-| S07 | The entire Meta ads algorithm explained in 21 mins | Talk transcript, 5,262 words, 13 cards | Media buyer "Mark" selling a free AI-ads masterclass; runs accounts at 5 figures a day. 1 screenshot; a withdrawn Meta doc reconstructed from memory; peer hearsay; opinionated and profane. Ban-wave theory is unverified and excluded from rules. | 4-stage pipeline and Total Value equation; broad default with a capped sandbox; 1 concept + 3 variations per ad set; variations still work; bid strategy by constraint (lowest cost profitable at scale); ads always learning; 7-day minimum and noise under $1,000 a day; EMQ overrated; distrust Meta suggestions and scores; outside attribution. |
-| S08 | How To Structure Meta For High Creative Volume | Talking-head transcript, 4,549 words, 13 cards | Unnamed paid social agency speaker selling services; all numbers are worked examples (3x, 70% and 55% margin, 50 and 120 creatives, 40% cap, $10,000 a month); no client data. Andromeda claims are the speaker's model. | Campaign splits by business unit, ad set splits by the variable you want to learn (concept preferred; format only for new accounts; never launch date); ROAS reliability falls by level; ad set as decision unit; spend share as creative read; Pareto; double down (120 vs 40) or cap (40%); 2 tests (data integrity, commercial alignment). |
-| S09 | Learn 97% of Meta Ads in Under 19 Minutes | "8 hacks" transcript, 4,461 words, 10 cards | Agency owner selling his AI copy tool (Kong); likely lead-gen focused; "$300M spent" self-reported; anecdotes only; most examples are services, 1 ecommerce example. Aggressive stances (statics only, scale to break-even). | Do not ride 1 winner; clone into variants under CBO; zombie ad set for starved ads (capped use); identity words and long copy as targeting context; 7-day broad vs interest-stack test; headline-to-page match; retarget non-buyers with a different offer; blended ROAS and net free cash flow; scale toward break-even as an owner's choice. |
-| S10 | How To Scale Meta TOF Campaigns | Short screen-share transcript, 2,121 words, 7 cards | Unnamed auditor ("90% of accounts I look at"); 1 real Advantage+ campaign on screen plus 2 hypotheticals; no after-fix result; incremental attribution explanation is the presenter's assumption. Card fe7d1d8bcc27 has no basis in the transcript. | The new-customer profitability diagnostic (audience breakdown, then attribution comparison); 12.84x vs 5x vs 1.71x example; about half of TOF spend on existing customers; 7-day click on all campaigns; incremental attribution as column only; 2-year exclusion with lapsed carve-out; Conversion Lift Test vs incremental attribution; measure scaling on new-customer SKU sales. |
+| S01 | The BEST TikTok Ads Course For Beginners in 2026 | Course transcript, about 10 modules, 43,104 words, 57 cards | Agency owner selling a paid course with affiliate links; 1 presenter's claims, no test sizes or controls (full note: Appendix A.3). | TikTok account, Business Center, pixel test, in-feed Sales build, budget rules (2x CPA, 25 in 7), broad first then interest test, Spark organic-first loop, Search campaigns, TikTok Shop, affiliates, GMV Max settings, retargeting audiences and budget tiers. |
+| S02 | The Only Video You Need On Meta Ads In 2026 | 2-hour talk transcript, 22,222 words, 48 cards | Agency selling management and audits; own audits and 1 account, no controlled tests; most complete structural source (full note: Appendix A.3). | Spend-tier templates, 5 diagnostic questions, concept ad sets, fork rule, test sizing (3x or 5x CPA; formula), test duration, spend equilibrium and scaling campaign, ABO vs CBO, breakdown effect, retargeting as capped layer, existing-customer dollars and frequency, DPA death spiral, settings to turn off, page strategy, second account. |
+| S03 | How We Audit 8 and 9 Figure Ad Accounts (Full Process) | Solo walkthrough transcript, 10,451 words, 25 cards | Agency lead selling free audits; no data tables, key models kept in-house (full note: Appendix A.3). | Audit method: cohort model (CAC, first-purchase GP, GP to CAC bands), normalized and first-time P&L, aMER reconciliation, 7-day click + 1-day engaged view, defend-every-campaign structure review, frequency by segment, settings errors, creative bottleneck order (volume, diversity, quality), 1 ad per $1,000, concept bands, fix order data then structure then creative. |
+| S04 | How The Meta Ads Algorithm Works in 2026 | Whiteboard talk transcript, 7,214 words, 13 cards | Same agency as S02; claims mechanics come from Meta docs but cites none; strong on why, weak on how (full note: Appendix A.3). | Retrieval, ranking, auction model; auction formula; hard controls vs suggestions; broad as a probe; narrow-creative saturation; Entity ID and concept diversity; EMQ as accuracy of action rate; server-side tracking unmeasurable; 20% rule undocumented; economics beat tactics; consolidate by default. |
+| S05 | The Only TikTok Ads Tutorial You Will Ever Need | Tutorial transcript, 5,518 words, 16 cards | Agency owner selling TikTok management; unsourced stats, some internal contradictions, US-centric and undated (full note: Appendix A.3). | Business Center and payment setup, Shopify pixel partner integration, 3-tier pyramid, $50 a day per ad group, 2 to 3 parent interests, custom audiences as lookalike seeds, 4-week targeting ladder, 3:2:1 first test, 24-hour and 3-day thresholds, kill bottom 50%, naming convention, smart campaigns off. |
+| S06 | How To Make Your Meta Ads Scale | Talk transcript, 5,480 words, 11 cards | Unnamed creative-breakdown presenter, likely agency-side; 1 practitioner's reading of other brands' ads (full note: Appendix A.3). | Post-Andromeda holding of product-aware ads on warm users; frequency as a creative-mix problem, not an exclusion problem; 80/10/10 stage split; judge unaware ads account-wide; structure follows concepts and 1 stage per concept; DPA can cover most-aware. |
+| S07 | The entire Meta ads algorithm explained in 21 mins | Talk transcript, 5,262 words, 13 cards | Media buyer selling a free masterclass; 1 screenshot, a memory-reconstructed doc, peer hearsay (full note: Appendix A.3). | 4-stage pipeline and Total Value equation; broad default with a capped sandbox; 1 concept + 3 variations per ad set; variations still work; bid strategy by constraint (lowest cost profitable at scale); ads always learning; 7-day minimum and noise under $1,000 a day; EMQ overrated; distrust Meta suggestions and scores; outside attribution. |
+| S08 | How To Structure Meta For High Creative Volume | Talking-head transcript, 4,549 words, 13 cards | Unnamed agency speaker selling services; all numbers are worked examples, no client data (full note: Appendix A.3). | Campaign splits by business unit, ad set splits by the variable you want to learn (concept preferred; format only for new accounts; never launch date); ROAS reliability falls by level; ad set as decision unit; spend share as creative read; Pareto; double down (120 vs 40) or cap (40%); 2 tests (data integrity, commercial alignment). |
+| S09 | Learn 97% of Meta Ads in Under 19 Minutes | "8 hacks" transcript, 4,461 words, 10 cards | Agency owner selling an AI copy tool; anecdotes only, mostly lead-gen, 1 ecommerce example (full note: Appendix A.3). | Do not ride 1 winner; clone into variants under CBO; zombie ad set for starved ads (capped use); identity words and long copy as targeting context; 7-day broad vs interest-stack test; headline-to-page match; retarget non-buyers with a different offer; blended ROAS and net free cash flow; scale toward break-even as an owner's choice. |
+| S10 | How To Scale Meta TOF Campaigns | Short screen-share transcript, 2,121 words, 7 cards | Unnamed auditor; 1 real account plus 2 hypotheticals, no after-fix result (full note: Appendix A.3). | The new-customer profitability diagnostic (audience breakdown, then attribution comparison); 12.84x vs 5x vs 1.71x example; about half of TOF spend on existing customers; 7-day click on all campaigns; incremental attribution as column only; 2-year exclusion with lapsed carve-out; Conversion Lift Test vs incremental attribution; measure scaling on new-customer SKU sales. |
 
 **Neighbour folders and what lives there.**
 - 10-MCR-paid-social-creative: hooks, scripts, awareness-stage writing, formats, UGC, AI video tools, creative production systems (S01 modules on psychology, CapCut, Arc Ads; S05 filming and editing; S06 stage scripting; S09 native content).
@@ -918,3 +956,43 @@ All deliverables carry the brand name, the date range, the attribution setting u
 - 11-ADC-ad-copy-deployment: ad copy and the ad-copy v1.2 playbook (identity words and long copy from S09 belong there for writing; here only as a targeting model).
 - 09-CRO-testing and 07-LPG: landing page split tests, headline-to-page match (S09 hack 6), page conversion reads.
 - Offer and finance folders: pricing, AOV levers, unit economics detail (S04 R3, S03 cohort model as a finance model).
+
+## Appendix A. General background
+
+Moved here on 24 Sep 2026 during the ecommerce specificity pass (ECOM_REVIEW.md section 5). This content is background and provenance, not ranked ecommerce decision rules; it is kept for reference, not deleted.
+
+### A.1 Group J: Meta delivery mechanics (moved from section 3)
+
+From section 3, Group J. How Meta's delivery system works for any advertiser on any vertical; nothing here names a store metric. The store-consequence rules from the same group (R63, R64, R65, R68) stayed in place in section 3.
+
+**R66 (full text).** Near-identical ads collapse into 1 Entity ID and reach no new people; only concept diversity reaches net-new audiences. Iterations are still allowed. Condition: creative planning. S04: 200 ads read as 20 unique in groups of 10 (illustration). Entity ID is not visible in the account. Conflict with S07 on variations: see 7.8. [917ee36d87e9] [4de396baf031] [6ee9db26f236]
+
+**R67 (full text).** Post Andromeda, Meta will keep a product-aware ad on warm people who might convert and will not push it to unaware people. Loading many bottom-funnel ads and raising budget sends frequency "through the roof". Condition: S06's model; verify in own data. It means the creative mix by awareness stage, not audience settings, decides cold reach. [7443b5bb8016] [faa05bf3cff8]
+
+**R69 (full text).** Meta updates aim at small platform-wide lifts so Meta can raise CPMs; expect your ROAS to stay flat while you adapt. Condition: planning. Do not expect an update to raise your ROAS. Sources S04, S02. [e82a1ef3cf77] [5b99bf6d671d]
+
+**R70 (full text).** CPC and CTR barely predict return except at extremes; a new ad set or campaign over-weights soft metrics until it has conversion data. Condition: allocating on CTR, CPC or hook rate. Very high CPC does mean very low ROI (S02). In a new account images and DPAs take spend early on soft metrics (S08). S07 still says Meta rewards high CTR with lower CPMs over time. `[needs brand data: CPC vs ROAS by ad]` [1589854e06d9] [a5c883d83f91] [3ad804612663]
+
+### A.2 P11 steps 1 to 4: TikTok account and Business Center admin (moved from section 4)
+
+From section 4, procedure P11. Standard TikTok onboarding, the same for any advertiser, store or not; kept for completeness.
+
+1. Create the ads account with a business email; region, currency, time zone correct; read any credit offer terms `[web check: current offer]`. [bbb344647f7f] [4204465b105f]
+2. Tools > Account setup: address, documents (upload anything requested), payment type automatic, credit card, plus a backup method. [bbb344647f7f] [4204465b105f]
+3. Audience controls: default location, minimum age 18. Brand safety hub: standard inventory, apply to all objectives; exclude categories as needed. [bbb344647f7f]
+4. Business Center: users and roles, link the ad account, link the TikTok account by QR code with "show as ad only", link the Shop if any, 2-step auth, allowed email domain. Confirm Assets shows the TikTok account under the ad account. [fe05eddfed67] [cd344df6562d]
+
+### A.3 Source credibility, full text (moved from section 12)
+
+From section 12, source index table, Credibility column. Useful for provenance, not for running the domain.
+
+- **S01.** Agency owner (Zoco Marketing) selling a "free" course with affiliate and partner links (TikTok credits, CapCut, Arc Ads, Foreplay, Kalodata, Shopify). 1 presenter's claims; blurred client screenshots; no test sizes or controls. Strong as a click-by-click setup guide, thin on kill and scale rules.
+- **S02.** Australian agency (Blue Sense Digital) selling management and free audits to $5M+ brands; recruiting. Evidence is its own audits, aggregated spend report and 1 $750k a month account; no controlled tests; presenter admits some preferences are agency labour or bias. The most complete structural source.
+- **S03.** Unnamed agency lead ($400M a year claimed under management) selling free audits to $5M+ brands and recruiting. No data tables or before-and-after cases; key models (retention benchmarks, velocity models, geo-lift design) kept in-house. Document header describes a different CRO video; ignore it.
+- **S04.** Same agency as S02 (Blue Sense Digital); sells audits to $10M+ brands. Claims all mechanics come from Meta docs but cites none. Meta's own lift claims quoted; agency observations; opinion. Strong on why, weak on how.
+- **S05.** Agency owner "Tim" ($5M+ TikTok spend claimed) selling done-for-you management. 1 fashion case, 1 SaaS viral ad, unsourced platform stats; several internal contradictions (CTA, music, age, interests). US-centric thresholds, undated.
+- **S06.** Unnamed creative-breakdown presenter, likely agency-side; nothing sold in the transcript. All rules are 1 practitioner's reading of other brands' ads; 1 observed result (a static running 4 to 5 months). Mostly creative strategy (10-MCR); the deployment part is frequency diagnosis and structure by awareness.
+- **S07.** Media buyer "Mark" selling a free AI-ads masterclass; runs accounts at 5 figures a day. 1 screenshot; a withdrawn Meta doc reconstructed from memory; peer hearsay; opinionated and profane. Ban-wave theory is unverified and excluded from rules.
+- **S08.** Unnamed paid social agency speaker selling services; all numbers are worked examples (3x, 70% and 55% margin, 50 and 120 creatives, 40% cap, $10,000 a month); no client data. Andromeda claims are the speaker's model.
+- **S09.** Agency owner selling his AI copy tool (Kong); likely lead-gen focused; "$300M spent" self-reported; anecdotes only; most examples are services, 1 ecommerce example. Aggressive stances (statics only, scale to break-even).
+- **S10.** Unnamed auditor ("90% of accounts I look at"); 1 real Advantage+ campaign on screen plus 2 hypotheticals; no after-fix result; incremental attribution explanation is the presenter's assumption. Card fe7d1d8bcc27 has no basis in the transcript.
