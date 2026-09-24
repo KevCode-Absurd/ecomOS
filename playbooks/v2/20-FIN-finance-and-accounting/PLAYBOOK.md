@@ -133,7 +133,7 @@ Store-type notes, tagged `[general practice]` where the playbook gives no explic
 
 Load this block first; the groups below are the detail.
 
-### 3.0 Definitions and formula register
+### 3.0b Definitions and formula register
 
 Conventions for the developer. All money in the brand's reporting currency, tax exclusive. All percentages as decimals in code (0.30, not 30). A period is a day, week or month; every ratio for a period uses period totals (sum of numerators over sum of denominators), never an average of daily ratios. "Order" is 1 checkout; "unit" is 1 item; "customer" is 1 unique buyer; state which count a metric uses [49110942deea] [9a77dac5a3ba]. Missing inputs return "unavailable", never 0. Every output carries its definition label (for example "CM2, internal COD scope, tax excluded").
 
