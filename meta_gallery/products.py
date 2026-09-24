@@ -205,9 +205,9 @@ def _photo_bytes(url):
     return None
 
 
-def product(name, code='', folder=None, refresh=False):
-    """Product facts and local photo files for a product name. Cached for a day."""
-    slug = slugify(name)
+def product(name, code='', folder=None, refresh=False, slug=None):
+    """Product facts and local photo files for a product name (or its page slug). Cached for a day."""
+    slug = slug or slugify(name)
     if not SAFE_SLUG.match(slug):
         raise ProductError('This product name cannot be turned into a page address.')
     root = Path(folder or PRODUCTS) / slug

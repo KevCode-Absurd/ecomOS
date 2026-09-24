@@ -33,9 +33,12 @@ from .view import Engine, ViewError
 
 STATIC = Path(__file__).resolve().parent / 'static'
 WEB = Path(__file__).resolve().parent / 'web'
-WEB_FILES = ('engine.js', 'app.js', 'insights.js', 'overview.js', 'lab.js', 'studio.js', 'sales.js', 'testlab.js', 'prodads.js', 'report.js')
+WEB_FILES = ('engine.js', 'app.js', 'insights.js', 'overview.js', 'lab.js', 'studio.js', 'sales.js', 'testlab.js', 'prodads.js', 'report.js', 'buyer.js', 'catalog.js')
 COMPETITORS = DATA / 'competitors.json'
 COMP_MEDIA = DATA / 'comp_media.json'
+CATALOG = DATA / 'catalog.json'
+CATALOG_IMAGES = DATA / 'catalog_images'
+CATALOG_APPROVED = DATA / 'catalog_refresh' / 'approved.json'
 CACHE = DATA / 'cache' / 'gallery.json'
 IMAGES = DATA / 'images'
 SAFE_ID = re.compile(r'^[0-9]{5,25}$')
@@ -44,7 +47,7 @@ MAX_NOTES_BODY = 2_000_000
 MAX_AI_BODY = 80_000
 MAX_REF_BODY = 4_000_000     # AI routes that can carry one pasted reference image
 MAX_REF_IMAGE = 2_500_000
-DOCS = ('packs.json', 'playbook.json', 'tests.json')
+DOCS = ('packs.json', 'playbook.json', 'tests.json', 'catalog_prompt.json')
 MAX_DOC = 1_500_000
 
 
@@ -220,6 +223,92 @@ def pasted_image(value):
     return data
 
 
+_CATALOG = {'mtime': None, 'data': {}}
+
+
+def catalog_item(code):
+    """A best seller from catalog.json (read-only copy of the Meta catalog for the top 100)."""
+    if not CATALOG.is_file() or not ai.SAFE_CODE.match(str(code)):
+        return None
+    mtime = CATALOG.stat().st_mtime
+    if _CATALOG['mtime'] != mtime:
+        try:
+            _CATALOG['data'] = {p['code']: p for p in json.loads(CATALOG.read_text(encoding='utf-8')).get('products', [])}
+        except (ValueError, KeyError, TypeError):
+            _CATALOG['data'] = {}
+        _CATALOG['mtime'] = mtime
+    return _CATALOG['data'].get(str(code))
+
+
+def catalog_image(code):
+    """The product's current catalog image, downloaded once from the Gehna CDN."""
+    item = catalog_item(code)
+    url = item and item.get('image_url')
+    if not url or not url.startswith('https://cdn-assets.gehnaindia.com/'):
+        return None
+    for ext in ('jpg', 'png', 'webp'):
+        path = CATALOG_IMAGES / f'{code}.{ext}'
+        if path.is_file() and path.stat().st_size:
+            return path
+    try:
+        data = products._photo_bytes(url)
+    except products.ProductError:
+        data = None
+    if not data:
+        return None
+    ext = {'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp'}[products.image_kind(data)]
+    CATALOG_IMAGES.mkdir(parents=True, exist_ok=True)
+    path = CATALOG_IMAGES / f'{code}.{ext}'
+    path.write_bytes(data)
+    return path
+
+
+TYPE_WORDS = [('earring', 'Earrings'), ('jhumk', 'Earrings'), ('chain', 'Chains'), ('necklace', 'Chains'), ('bracelet', 'Bracelets'),
+              ('bangle', 'Bracelets'), ('pendant', 'Pendants'), ('ring', 'Rings'), ('nose', 'Nosepins')]
+
+
+def typecat(name):
+    n = str(name).lower()
+    return next((c for w, c in TYPE_WORDS if w in n), 'Other')
+
+
+def load_approved():
+    try:
+        return json.loads(CATALOG_APPROVED.read_text(encoding='utf-8'))
+    except (FileNotFoundError, ValueError):
+        return {}
+
+
+def save_approved(body):
+    """body: {code, file}. file null clears it. Only files that exist are accepted."""
+    code, name = str(body.get('code') or ''), body.get('file')
+    if not catalog_item(code):
+        raise ValueError('Unknown product.')
+    data = load_approved()
+    if name:
+        if not ai.catalog_image_path(code, str(name)):
+            raise ValueError('Unknown image.')
+        data[code] = str(name)
+    else:
+        data.pop(code, None)
+    CATALOG_APPROVED.parent.mkdir(parents=True, exist_ok=True)
+    CATALOG_APPROVED.write_text(json.dumps(data, indent=1), encoding='utf-8')
+    return {'approved': data}
+
+
+def catalog_csv():
+    """Approved images as a list to upload by hand: the catalog id and the local file to host and link."""
+    import csv
+    import io
+    buf = io.StringIO()
+    w = csv.writer(buf)
+    w.writerow(['id', 'title', 'current_image_link', 'new_image_file', 'link'])
+    for code, name in sorted(load_approved().items()):
+        item = catalog_item(code) or {}
+        w.writerow([code, item.get('name', ''), item.get('image_url', ''), f'data/meta-gallery/catalog_refresh/{code}/{name}', item.get('url', '')])
+    return buf.getvalue()
+
+
 def save_doc(name, body):
     """Team documents written by the page (copy packs, playbook, test tracker): any JSON object, size-capped."""
     if name not in DOCS or not isinstance(body, dict):
@@ -297,7 +386,7 @@ def make_handler(gallery):
                     if COMPETITORS.is_file():
                         return self.send_file(COMPETITORS)
                     return self.send_json({'error': 'not found'}, 404)
-                if len(parts) == 1 and parts[0] in DOCS + ('brand.json', 'sales.json', 'comp_media.json'):
+                if len(parts) == 1 and parts[0] in DOCS + ('brand.json', 'sales.json', 'comp_media.json', 'catalog.json'):
                     path = DATA / parts[0]
                     return self.send_file(path) if path.is_file() else self.send_json({})
                 if parts == ['breakdowns.json']:
@@ -326,6 +415,21 @@ def make_handler(gallery):
                 if len(parts) == 3 and parts[0] == 'product-ads':
                     path = ai.product_ad_path(parts[1], parts[2])
                     return self.send_file(path, cache='max-age=86400') if path else self.send_json({'error': 'not found'}, 404)
+                if len(parts) == 2 and parts[0] == 'catalog-image':
+                    path = catalog_image(parts[1])
+                    return self.send_file(path, cache='max-age=3600') if path else self.send_json({'error': 'image unavailable'}, 404)
+                if parts == ['api', 'catalog-refresh']:
+                    return self.send_json({'made': ai.list_catalog_images(), 'approved': load_approved(), 'default_prompt': ai.CATALOG_PROMPT})
+                if len(parts) == 3 and parts[0] == 'catalog-refresh':
+                    path = ai.catalog_image_path(parts[1], parts[2])
+                    return self.send_file(path, cache='max-age=86400') if path else self.send_json({'error': 'not found'}, 404)
+                if len(parts) == 3 and parts[:2] == ['api', 'product-story']:
+                    return self.send_json(ai.list_story(parts[2]))
+                if len(parts) == 3 and parts[0] == 'product-story':
+                    path = ai.story_path(parts[1], parts[2])
+                    return self.send_file(path, cache='max-age=86400') if path else self.send_json({'error': 'not found'}, 404)
+                if parts == ['api', 'catalog-export.csv']:
+                    return self.send_bytes(catalog_csv().encode('utf-8'), 'text/csv; charset=utf-8')
                 if parts == ['old']:
                     return self.send_file(STATIC / 'index.html')
                 if parts == ['report']:
@@ -371,7 +475,10 @@ def make_handler(gallery):
                       '/api/variants': (self.ai_variants, MAX_REF_BODY),
                       '/api/ask': (self.ai_ask, MAX_REF_BODY),
                       '/api/competitor-variants': (self.ai_competitor, MAX_REF_BODY),
-                      '/api/product-ads': (self.ai_product_ads, MAX_REF_BODY)}
+                      '/api/product-ads': (self.ai_product_ads, MAX_REF_BODY),
+                      '/api/catalog-premium': (self.ai_catalog_premium, MAX_AI_BODY),
+                      '/api/catalog-approve': (save_approved, MAX_BODY),
+                      '/api/product-story': (self.ai_product_story, MAX_AI_BODY)}
             for doc in DOCS:
                 savers['/api/save/' + doc] = ((lambda d: lambda body: save_doc(d, body))(doc), MAX_DOC)
             if url.path not in savers:
@@ -469,6 +576,26 @@ def make_handler(gallery):
             made = ai.make_product_ads(p, photos, n, size, body.get('quality', 'medium'), ref,
                                        extra={'ref_ad_id': ref_id if SAFE_ID.match(ref_id) and not body.get('ref_image') else ''})
             return {'made': made, 'all': ai.list_product_ads(meta['slug']), 'slug': meta['slug']}
+
+        def ai_catalog_premium(self, body):
+            """body: {code, prompt, quality}. Makes 1 premium version of the product's current catalog image."""
+            code = str(body.get('code') or '')
+            path = catalog_image(code)
+            if not path:
+                raise ValueError('The catalog image for this product could not be loaded.')
+            made = ai.make_catalog_image(code, path.read_bytes(), str(body.get('prompt') or ''), body.get('quality', 'high'))
+            return {'made': made, 'all': ai.list_catalog_images().get(code, [])}
+
+        def ai_product_story(self, body):
+            """body: {code, n, size, quality}. The product's photos and page facts come from its page on the website."""
+            item = catalog_item(str(body.get('code') or ''))
+            if not item or not item.get('url'):
+                raise ValueError('This product is not in the catalog list.')
+            slug = item['url'].rstrip('/').split('/')[-1]
+            meta = products.product(item.get('name') or slug, item['code'], slug=slug)
+            p = dict(meta, facts=meta.get('facts') or [], cat=typecat(item.get('name') or ''))
+            made = ai.make_story(p, products.photo_bytes(meta['slug']), body.get('n', 10), body.get('size', 'square'), body.get('quality', 'medium'))
+            return {'made': made, 'all': ai.list_story(meta['slug']), 'slug': meta['slug']}
 
         def reject(self):
             self.send_json({'error': 'read-only'}, 405)

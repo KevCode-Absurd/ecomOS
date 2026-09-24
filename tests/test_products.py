@@ -198,3 +198,44 @@ class ProductAdsTest(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class CatalogStoryTest(unittest.TestCase):
+    def test_story_uses_page_facts_and_body_part(self):
+        p = {'name': 'Celestial Bracelet', 'slug': 'celestial', 'cat': 'Bracelets', 'facts': [
+            {'group': 'trust', 'text': 'BIS hallmarked gold'}, {'group': 'trust', 'text': 'Lifetime exchange'}, {'group': 'trust', 'text': '7 day return'},
+            {'group': 'product', 'text': 'Gold weight 0.71 g net'}, {'group': 'proof', 'text': 'Rated 4.8 out of 5 from 514 Google reviews of the store'},
+            {'group': 'price', 'text': 'Price ₹22,210, inclusive of all taxes'}]}
+        c = ai.story_concepts(p, 15)
+        self.assertEqual(len(c), 15)
+        self.assertEqual(c[0]['shot'], 'hero')
+        worn = next(x for x in c if x['shot'] == 'worn')
+        self.assertIn('wrist', worn['prompt'])
+        why = next(x for x in c if x['shot'] == 'benefits')
+        self.assertIn('BIS hallmarked gold; Lifetime exchange; 7 day return', why['prompt'])
+        self.assertIn('Price ₹22,210', next(x for x in c if x['shot'] == 'price')['prompt'])
+        self.assertEqual(len(ai.story_concepts(p, 5)), 5)
+        self.assertIn('exact same piece', ai.story_prompt(p, c[0]))
+
+    def test_story_skips_cards_without_facts(self):
+        c = ai.story_concepts({'name': 'X', 'cat': 'Rings', 'facts': []}, 15)
+        self.assertNotIn('proof', [x['shot'] for x in c])
+        self.assertNotIn('price', [x['shot'] for x in c])
+
+    def test_catalog_image_keeps_the_piece_whatever_the_prompt(self):
+        cfg = {'openai_key': 'k', 'anthropic_key': '', 'AI_IMAGE_MODEL': 'm', 'AI_IMAGE_FALLBACK': 'm'}
+        seen = {}
+
+        def fake_variant(cfg_, prompt, images, size, quality):
+            seen['prompt'] = prompt
+            return b'\x89PNG\r\n\x1a\n', 'm'
+
+        with tempfile.TemporaryDirectory() as d, mock.patch.object(ai, 'settings', return_value=cfg), mock.patch.object(ai, 'make_variant', fake_variant):
+            made = ai.make_catalog_image('GHCSBG-6129', JPEG, 'Put it on a red background', 'high', out_dir=d)
+            self.assertTrue(made['file'].endswith('.png'))
+            self.assertIn('red background', seen['prompt'])
+            self.assertIn('exact same piece', seen['prompt'])
+            self.assertEqual(list(ai.list_catalog_images(out_dir=d)), ['GHCSBG-6129'])
+            self.assertIsNone(ai.catalog_image_path('../x', made['file'], out_dir=d))
+            with self.assertRaises(ai.AIError):
+                ai.make_catalog_image('bad code!', JPEG, out_dir=d)

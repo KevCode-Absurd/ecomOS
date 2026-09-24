@@ -659,3 +659,122 @@ def product_ad_path(slug, name, out_dir=None):
         return None
     p = Path(out_dir or PRODUCT_ADS) / str(slug) / name
     return p if p.is_file() else None
+
+
+# ---------- catalog refresh and product story ----------
+CATALOG_REFRESH = DATA / 'catalog_refresh'
+PRODUCT_STORY = DATA / 'product_story'
+SAFE_CODE = re.compile(r'^[A-Za-z0-9._-]{3,40}$')
+CATALOG_PROMPT = ("Retouch this jewellery product photo for an online catalog. Make it look premium: a clean seamless off-white "
+                  "or soft warm background, soft studio light, crisp focus, true-to-life gold tone, a gentle natural shadow, "
+                  "the piece centred with even margins. No text, no props, no hands, no watermark.")
+# Always added after the team's prompt, so no prompt can change the piece itself.
+KEEP_PIECE = ("\nThis must stay the exact same piece: same metal colour, stones, stone colours, shape, size, proportions, "
+              "clasp and every detail. Do not add, remove, straighten or redesign any part of the jewellery.")
+
+
+def make_catalog_image(code, image_bytes, prompt='', quality='high', out_dir=None, env_path=None):
+    """1 premium catalog photo from the current catalog image. Returns the saved note (or an error)."""
+    cfg = settings(env_path)
+    if not cfg['openai_key']:
+        raise AIError('Image making is not set up on this computer yet.')
+    if not SAFE_CODE.match(str(code)):
+        raise AIError('Bad product code.')
+    if not image_bytes:
+        raise AIError('The catalog image could not be loaded.')
+    text = (str(prompt or '').strip()[:2000] or CATALOG_PROMPT) + KEEP_PIECE
+    made = _render_in(cfg, Path(out_dir or CATALOG_REFRESH) / str(code), [{'name': 'Premium catalog photo', 'prompt': text}], [image_bytes],
+                      'square', quality, {'source': 'catalog', 'code': str(code)}, lambda c: c['prompt'], keep=('prompt',))
+    return made[0]
+
+
+def list_catalog_images(out_dir=None):
+    root = Path(out_dir or CATALOG_REFRESH)
+    out = {}
+    if root.is_dir():
+        for folder in root.iterdir():
+            if folder.is_dir() and SAFE_CODE.match(folder.name):
+                items = []
+                for meta in sorted(folder.glob('*.png.json'), reverse=True):
+                    try:
+                        m = json.loads(meta.read_text(encoding='utf-8'))
+                        if SAFE_FILE.match(m.get('file', '')) and (folder / m['file']).exists():
+                            items.append({k: m.get(k) for k in ('file', 'date', 'quality', 'model')})
+                    except ValueError:
+                        continue
+                if items:
+                    out[folder.name] = items[:12]
+    return out
+
+
+def catalog_image_path(code, name, out_dir=None):
+    if not SAFE_CODE.match(str(code)) or not SAFE_FILE.match(str(name)):
+        return None
+    p = Path(out_dir or CATALOG_REFRESH) / str(code) / name
+    return p if p.is_file() else None
+
+
+BODY_PART = {'Earrings': 'ears', 'Chains': 'neck', 'Pendants': 'neck', 'Bracelets': 'wrist', 'Rings': 'finger', 'Nosepins': 'nose'}
+# The product story: up to 15 images, in this order. {part} is where it is worn; {facts} are page facts.
+STORY_SHOTS = [
+    ('hero', 'Premium hero', 'A premium hero shot of the piece on a clean seamless warm off-white background, soft studio light, gentle shadow, centred. No text.'),
+    ('lifestyle', 'Lifestyle hero', 'The piece styled on soft ivory silk with a few fresh flowers, warm natural window light, shallow depth of field. No text.'),
+    ('macro', 'Close-up of the work', 'An extreme macro close-up of the stones and gold work, showing texture, setting and shine. No text.'),
+    ('worn', 'Worn', 'The piece worn on the {part} of an Indian woman, natural light, face only partly visible, elegant and real. No text.'),
+    ('worn_outfit', 'Worn with an outfit', 'The piece worn on the {part} with a simple elegant outfit (a saree or a plain dress), warm light, editorial feel. No text.'),
+    ('scale', 'True size', 'The piece held in an open palm or next to a common object so its real size is clear, clean background. No text.'),
+    ('gift', 'Gift box', 'The piece in an open premium jewellery gift box on a soft surface, ready to gift. No text.'),
+    ('craft', 'Handmade', 'Close-up of a jeweller\'s hands finishing this piece at a workbench, warm light, no face. No text.'),
+    ('benefits', 'Why buy', 'A clean product card: the piece on the left, and on the right these 3 short lines as crisp text: {facts3}. Plenty of space, premium look.'),
+    ('details', 'Details', 'A clean product card with the piece and these details as crisp small text: {facts_detail}. Premium, easy to read.'),
+    ('flatlay', 'Flat lay', 'A top-down flat lay of the piece on textured linen with soft shadows and a few minimal props. No text.'),
+    ('festive', 'Festive', 'The piece in a warm festive setting with soft diya light and marigold petals, tasteful, not busy. No text.'),
+    ('proof', 'Loved by buyers', 'A clean card with the piece and this line as crisp text: {proof}. Premium, simple.'),
+    ('price', 'Price and EMI', 'A clean card with the piece and this line as crisp text: {price}. Premium, simple.'),
+    ('pair', 'Side view', 'The same piece from a different angle (side or three-quarter view) on a clean background, showing depth. No text.'),
+]
+
+
+def story_concepts(p, n=10):
+    facts = [str(f.get('text') if isinstance(f, dict) else f) for f in p.get('facts') or []]
+    pick = lambda words: [f for f in facts if any(w in f.lower() for w in words)]
+    trust = pick(['hallmark', 'exchange', 'return', 'natural gemstones'])[:3] or ['BIS hallmarked gold', 'Lifetime exchange', '7 day return']
+    detail = (pick(['gold weight', 'stones:', 'length', 'k yellow', 'k rose', 'k white'])[:4]) or [p.get('name', '')]
+    proof = (pick(['rated', 'badge'])[:1] or [''])[0]
+    price = (pick(['price', 'emi'])[:2])
+    fill = {'part': BODY_PART.get(p.get('cat') or '', 'body'), 'facts3': '; '.join(trust), 'facts_detail': '; '.join(detail),
+            'proof': proof.replace('Site badge: ', ''), 'price': ' | '.join(price)}
+    out = []
+    for key, name, tmpl in STORY_SHOTS:
+        if key == 'proof' and not proof or key == 'price' and not price:
+            continue
+        out.append({'name': name, 'shot': key, 'prompt': tmpl.format(**fill)})
+    return out[:max(1, min(15, int(n)))]
+
+
+def story_prompt(p, c):
+    return ("Create 1 image for the product page and ads of Gehna, an Indian fine jewellery brand. The attached photos show the product: "
+            f"{p.get('name', '')}.\n" + c['prompt'] + KEEP_PIECE +
+            "\nOnly use text given here, spelled exactly. Photographic, premium, no watermark, no logo.\n" + brand_brief())
+
+
+def make_story(p, photos, n=10, size='square', quality='medium', env_path=None, out_dir=None):
+    cfg = settings(env_path)
+    if not cfg['openai_key']:
+        raise AIError('Image making is not set up on this computer yet.')
+    slug = str(p.get('slug') or '')
+    if not SAFE_SLUG.match(slug):
+        raise AIError('Bad product.')
+    if not photos:
+        raise AIError('No product photo could be loaded, so the story would show the wrong piece.')
+    concepts = story_concepts(p, n)
+    return _render_in(cfg, Path(out_dir or PRODUCT_STORY) / slug, concepts, [b for b, _ in photos][:3], size, quality,
+                      {'source': 'story', 'product': _txt(p.get('name'), 160)}, lambda c: story_prompt(p, c), keep=('shot',))
+
+
+def list_story(slug, out_dir=None):
+    return list_product_ads(slug, out_dir=out_dir or PRODUCT_STORY)
+
+
+def story_path(slug, name, out_dir=None):
+    return product_ad_path(slug, name, out_dir=out_dir or PRODUCT_STORY)
