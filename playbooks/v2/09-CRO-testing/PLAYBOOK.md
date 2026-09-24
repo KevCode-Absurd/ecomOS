@@ -11,12 +11,12 @@ version: 2.0-draft  |  date: 24 Sep 2026  |  sources: 7  |  cards: 177  |  built
 | task | load |
 |---|---|
 | Find where the funnel leaks | 2, 3.1, 3.2, procedures P1 to P3, checklist 5.1 |
-| Gather research (recordings, heatmaps, surveys, review mining, user tests) | 3.3, P4 to P9, checklist 5.7 |
-| Audit a page type for test ideas | 3.10, checklists 5.2 to 5.6 |
+| Gather research (recordings, heatmaps, surveys, review mining, user tests) | 3.3, P4 to P9, checklist 5.8 |
+| Audit a page type for test ideas | 3.10, checklists 5.2 to 5.7 |
 | Write and rank hypotheses | 3.4, P10, P11 |
 | Decide repair, ship or test | 3.5, P12, section 6 |
 | Size and design a test | 3.6, 3.7, P13, P14, section 6 |
-| Launch, monitor, audit validity | 3.7, P15, P16, checklist 5.8 |
+| Launch, monitor, audit validity | 3.7, P15, P16, checklist 5.9 |
 | Read and close a test | 3.8, P17, P18 |
 | Prove programme or feature value (holdouts) | 3.9, P19, P20, P23 |
 | Price or offer test | 3.11, P21 |
@@ -75,7 +75,7 @@ version: 2.0-draft  |  date: 24 Sep 2026  |  sources: 7  |  cards: 177  |  built
 
 | input | from where | required or optional | why |
 |---|---|---|---|
-| Monthly sessions (GA4) and monthly orders, last 3 to 6 months | data layer (GA4, Shopify) | required | Picks the traffic band and the CRO model (R52 to R55). Shopify sessions include more bots (02). |
+| Monthly sessions (GA4) and monthly orders, last 3 to 6 months | data layer (GA4, Shopify) | required | Picks the traffic band and the CRO model (R53 and R54). Shopify sessions include more bots (02). |
 | Conversion rate by page, device, and traffic temperature (cold paid, warm, returning) | data layer | required | Diagnoses mix effects before any page change (R15). Baseline for sample size (R59). |
 | AOV including shipping collected; revenue net of tax | data layer (Shopify: Net sales + Shipping collected) | required | Correct RPV (R3). |
 | Gross margin by SKU or category | brand record or finance | required for ranking and RPV decisions | Profit-weighted prioritisation (R9, R44); contribution per visitor. |
@@ -343,7 +343,7 @@ These rules tell the agent what to look for on each page type. Design and copy e
 
 **R103. Price, shipping cost, returns and a realistic delivery estimate must be easy to find, with consistent currency and origin cues.** 01's Shark Proof teardown: a "$75 free shipping" note on a pounds price made a UK buyer worry about US shipping time; delivery times shown inconsistently; review dates clustered. Condition: every PDP audit. Sources: 06, 01, 02. Cards: [fc7c739888fc] [e24c4415d85e] [27026398ed8a].
 
-**R104. Proof: get reviews first, sort media first, match proof to the claim, and show a believable distribution.** 02: going from 0 to about 100 reviews roughly doubled conversion on his own 2019 to 2020 stores, mostly in the jump from 0 to 80, beyond that "immeasurable"; image and video reviews are worth far more than text, auto-sort them first; 5 hyper-relevant reviews beat 400 generic ones; a 4.8 reads as more genuine than 5.0 (opinion). 06: a mix of 4 and 5 stars feels more real than a wall of 5 stars. 01: review volume often beats average rating (seminar exercise); build volume by sending review links; if you have 2 reviews, use the 2; specifics ("at age 50", "dropped 30 lbs") build belief and must be true and permissioned. Incentivise photo reviews only where legal (02: $10 gift card or cash back for submitting a review with an image; you can reward submitting, not a rating). Condition: proof hypotheses; volume matters up to about 100 reviews (02), relevance after that. Sources: 02, 06, 01. `[needs brand data: review count, media-review share]` `[web check: incentivised-review rules in the brand's markets]`. Cards: [a507cc86ec03] [0a1f9ee893a3] [1d5e67c73cdd] [e18bae3af3dd] [affc22a52d1b] [3ef8c77c4464] [f95f16ca7611] [1cdf5f4a3630].
+**R104. Proof: get reviews first, sort media first, match proof to the claim, and show a believable distribution.** 02: going from 0 to about 100 reviews roughly doubled conversion on his own 2019 to 2020 stores, mostly in the jump from 0 to 80, beyond that "immeasurable"; image and video reviews are worth far more than text, auto-sort them first; 5 hyper-relevant reviews beat 400 generic ones; a 4.8 reads as more genuine than 5.0 (opinion). 06: a mix of 4 and 5 stars feels more real than a wall of 5 stars. 01: review volume often beats average rating (seminar exercise); build volume by sending review links; if you have 2 reviews, use the 2; specifics ("at age 50", "dropped 30 lbs") build belief and must be true and permissioned. Incentivise photo reviews only where legal (02: $10 gift card or cash back for submitting a review with an image; you can reward submitting, not a rating). Condition: proof hypotheses; volume matters up to about 100 reviews (02), relevance after that. Sources: 02, 06, 01. Conflict: C18. `[needs brand data: review count, media-review share]` `[web check: incentivised-review rules in the brand's markets]`. Cards: [a507cc86ec03] [0a1f9ee893a3] [1d5e67c73cdd] [e18bae3af3dd] [affc22a52d1b] [3ef8c77c4464] [f95f16ca7611] [1cdf5f4a3630].
 
 **R105. Trust badges: remove generic security seals unless a test says otherwise; test specific policy and proof statements beside the CTA.** 02: footer security seals "do absolutely nothing to close anyone"; guarantees and returns are table stakes but useful as risk reversal after the proof. 03: winning designs include a "trust policy bar" (easy returns, support, satisfaction guarantee, money-back guarantee) in cart and trust seals by the CTA (money-back guarantee, "over 10,000 happy customers", vegan-friendly, made in the US, "featured in" logos, only if true). 06: one DTC brand moved trust icons inline next to Add to Cart and reported +18% revenue per session after 3 weeks; 06 also lists payment trust signals at a 40.5% test win rate (unsourced). 01: secure-checkout logos, awards and Trustpilot badges as credibility. Condition: the disagreement is about generic security seals versus specific policy and proof statements; see C1 for what to do. Sources: 02, 03, 06, 01. Conflict: C1. Cards: [cdd5df001439] [1d5e67c73cdd] [84ebf548938d] [4653645c47ac] [e18bae3af3dd].
 
@@ -377,13 +377,13 @@ These rules tell the agent what to look for on each page type. Design and copy e
 
 **R118. Put express payment first and offer the market's methods.** Shop Pay, Apple Pay, Google Pay at the top; UPI in India; recognisable payment brands; no redirects or context switches. Condition: every checkout. Sources: 02, 06. `[verify UI]`. Cards: [a5c46083a30f] [d4104b13110f].
 
-**R119. Cut fields to the strictly necessary, enable autofill, add progress indicators on multi-step flows.** 02: make fields optional, shorten the address block. Baymard average is 11.3 checkout fields (05). Form-field evidence from lead-gen sources, adaptation only: 04's B2B forms lose most people by the 3rd or 4th field and 4 or fewer is "the sweet point", phone number causes "a substantial drop off"; 01's HubSpot study showed conversion falling from 3 to 10 fields and also lower at 1 to 2 fields, with free-text boxes worst; ask only for what you will use. Condition: checkout and any capture form. Sources: 02, 06, 05, 04, 01 (adaptation). Conflict: C18 (01 allows deliberate friction for costly free services). Cards: [c6984ab0f0cc] [d4104b13110f] [4ae56138baa5] [8accb09355e6].
+**R119. Cut fields to the strictly necessary, enable autofill, add progress indicators on multi-step flows.** 02: make fields optional, shorten the address block. Baymard average is 11.3 checkout fields (05). Form-field evidence from lead-gen sources, adaptation only: 04's B2B forms lose most people by the 3rd or 4th field and 4 or fewer is "the sweet point", phone number causes "a substantial drop off"; 01's HubSpot study showed conversion falling from 3 to 10 fields and also lower at 1 to 2 fields, with free-text boxes worst; ask only for what you will use. Condition: checkout and any capture form. Sources: 02, 06, 05, 04, 01 (adaptation). Conflict: C17 (01 allows deliberate friction for costly free services). Cards: [c6984ab0f0cc] [d4104b13110f] [4ae56138baa5] [8accb09355e6].
 
 **R120. State the returns policy at the decision point, but do not rush to free returns, above all in fashion.** Test and accept some loss only if more profitable. Condition: returns hypotheses. Sources: 02, 06. Cards: [1e401776f34b] [d4104b13110f].
 
 **R121. One-page versus multi-step checkout is a test, not a rule.** 02's agency data says one-page converts "a little" better (data not shared). 06's marketplace switchback (12 days, rotating hourly) found the 3-page checkout raised AOV 2.1% at 98% significance and improved RPV, "flipping" the fewer-steps advice; the card calls it context-specific. Condition: Shopify Plus or server-side only (R123). Sources: 02, 06. Conflict: C15. Cards: [c6984ab0f0cc] [04a08881ac09].
 
-**R122. Slow delivery: get faster options before you consider hiding dates.** 02 suggests a 7 to 10 day split test of hiding delivery times, noting hiding adds ambiguity and lowers conversion. That runtime is short against 02's own sample math, and hiding may conflict with consumer disclosure rules. Condition: only with legal review and a properly sized test. Source: 02. `[web check: delivery disclosure rules]`. Cards: [27026398ed8a].
+**R122. Slow delivery: get faster options before you consider hiding dates.** 02 suggests a 7 to 10 day split test of hiding delivery times, noting hiding adds ambiguity and lowers conversion. That runtime is short against 02's own sample math, and hiding may conflict with consumer disclosure rules. Condition: only with legal review and a properly sized test. Source: 02. Conflict: C16. `[web check: delivery disclosure rules]`. Cards: [27026398ed8a].
 
 **R123. Shopify checkout cannot be A/B tested client-side on standard plans.** Since checkout extensibility replaced checkout.liquid (general rollout August 2024), JavaScript injection into checkout is gone, and there is no built-in way to show a checkout customisation to one group and hide it from another. Shopify Plus has checkout extensibility (Checkout Blocks, UI extensions, Functions, Branding API) and some apps run limited checkout-element tests. About 80% of high-impact ecommerce tests happen before checkout anyway. Condition: any checkout hypothesis; ship as repairs on standard plans. Source: 05. `[verify UI]` `[web check: current Shopify checkout A/B options, yearly]`. Cards: [7c932a3b4986].
 
@@ -649,7 +649,7 @@ Goal: a decision and a learning.
 2. Compare the interval with the MDE, incremental gross profit, build cost and guardrails.
 3. Plot the daily effect; if novelty is suspected, compare first-exposure with repeat-exposure conversion; judge on the stable period.
 4. Read the pre-registered segments (device, paid vs organic, new vs returning). Opposite directions: do not ship blind.
-5. Win within the realistic band and guardrails flat or better: ship to 100%, add to the live-winner register, schedule the post-ship verification (P6 step 8, P7 step 7).
+5. Win within the realistic band and guardrails flat or better: ship to 100%, add to the live-winner register, schedule the post-ship verification (P6 step 8, P7 step 7, checklist 5.8).
 6. Win that is surprising or large: replicate or hold out before banking the revenue.
 7. Fully powered inconclusive: record "effect smaller than MDE"; ship neither, or the simpler and cheaper version; do not extend.
 8. Clearly negative: stop; do not wait for a reversal; record why it lost.
@@ -1019,7 +1019,7 @@ One table for the folder. Confidence: how many sources agree and what kind of ev
 | Trust gap | 14% trust brand claims | consumers | 06 | 1 source, unsourced |
 | Category test win rates | benefit communication 54.5%; shipping and returns 41.8%; payment trust 40.5% | | 06 | 1 source, unsourced |
 | Inline trust icons | +18% revenue per session after 3 weeks | 1 DTC brand | 06 | 1 case, no stats |
-| Homepage curation | broad assortment: ATC −6.07%, CTR −10.4%; bestsellers to new visitors +23.01% CTR; personalised +136% CTR | single experiments | 06 | 1 source, unsourced |
+| Homepage curation | broad assortment: ATC down 6.07%, CTR down 10.4%; bestsellers to new visitors +23.01% CTR; personalised +136% CTR | single experiments | 06 | 1 source, unsourced |
 | Hero test | 3 seconds (06); 5 seconds or less (04) | homepage hero | 06, 04 | 2 sources, different numbers |
 | Mobile share | 60 to 95% by brand (80% in hero section) (02); about 60% (06) | | 02, 06 | 2 sources |
 | Mobile conversion | about half desktop | | 06 | 1 source |
@@ -1043,7 +1043,7 @@ One table for the folder. Confidence: how many sources agree and what kind of ev
 | Programme holdout | 5% traffic, 90 days | illustrative | 06 | illustration |
 | Popup holdout | 90% exposed / 10% holdout | illustrative | 06 | illustration |
 | Recommendation holdout | 5% | illustrative | 06 | illustration |
-| Email holdout | 10% of list; lift = 3.8% − 2.1% = 1.7 points | illustrative | 06 | illustration |
+| Email holdout | 10% of list; lift = 3.8% minus 2.1% = 1.7 points | illustrative | 06 | illustration |
 | Retargeting holdout | 80/20, 14 days, 30-day non-buyers; holdout at 70% of exposed rate = 30% incremental | illustrative | 06 | illustration; 11-ADC |
 | Geo holdout | 10 DMAs, 6 weeks, correlations 0.96 to 0.99; incremental CPA $130 (10.4% lift, 99% confidence) | Hourglass 2025 | 06 | 1 real case; 11-ADC |
 | **Tool prices (dated)** | | | | |
