@@ -740,3 +740,89 @@ Every gap is explained by a named cause (tax, timing, processed vs accrued retur
 
 **R104. P&L and cash are different games; trade margin for cash on purpose when cash is the priority.** Liquidation, discounts and paying more for longer terms all hurt the P&L and help cash. Growing the bank account is the top priority when funding and M&A are hard (02). Condition: the owner has said cash is the constraint; each trade is written down with its P&L cost. Sources: 02, 03. Cards: [20d195846808] [f2fc5286cc97] [c73b11cb714e] [4d29da5108ca].
 
+### 3.13 Inventory, cash conversion cycle, purchase orders, demand plans and liquidation
+
+**R105. Forecast inventory with lead time and cycle time before you model cash; never let projected inventory go negative.** Roll inventory = prior minus sold plus arrivals, with arrivals lagged by lead time (F35). A negative month is a stockout; move or enlarge the PO. 01's models use 3 to 4 months lead time and a 4-month order cycle. Condition: every PO and every cash plan. Source: 01 only. Cards: [308a0d76128c] [49138d1247d7].
+
+**R106. Use the inventory investment line (units times unit cost, when paid) for cash planning, never per-unit COGS.** COGS matches cost to the sale; cash leaves at deposit and balance dates. Condition: every cash forecast `[needs brand data: supplier deposit and balance terms]`. Sources: 01, 05. Cards: [49138d1247d7] [939b20dbac4b] [6a8332853dd6].
+
+**R107. Target days of inventory equal to production lead time, so a PO placed today lands as you run out.** Grade stock A to D by sell-through or days outstanding; neither source gives day cut-offs `[needs brand data: grade cut-offs]`. Stock far above lead time (02's example 1,000 days; 03's 400 days after a failed launch) is a cash problem. Condition: every SKU, weekly. Sources: 02, 03. Cards: [f2fc5286cc97] [69c220a278fc].
+
+**R108. Hold a weekly inventory and media meeting: days of stock vs lead time vs spend by SKU.** If a top SKU will sell out before restock (02: 30 days of stock, 80-day reorder), raise its ROAS target sharply or pause its ads, and move spend to SKUs with stock, including aged stock. Selling out a hero size or colour mid-flight makes Meta mark the ad a loser and it will not come back on restock. Condition: every week `[needs brand data: days of inventory by SKU, SKU-level spend]`. Source: 02 only; 03 agrees marketing needs the inventory position. Cards: [61a1eefb7db0] [224e4db9b5c9] [4d29da5108ca].
+
+**R109. Every PO should maximise the marginal value of that batch: do not pay high CAC to sell stock that is about to run out, and do not sit on stock with no plan to sell it.** Condition: every PO and every budget move. Source: 02 only. Cards: [61a1eefb7db0] [c73b11cb714e].
+
+**R110. Write a demand plan before any PO: units by channel (existing customers via email and SMS, influencer seeding, paid at a stated efficiency), the media dollars needed for the paid share, wide error bars for a new category, PO timing and cash cycle.** 02's failure: a brand expected $20M from a new SKU with "no idea" of the media needed. Condition: every PO above a routine reorder. Source: 02 only. Cards: [20338553ad10].
+
+**R111. Test demand before a large PO: about 100 units, list, run ads, read efficiency, then order; run 2 supply chains (a fast low-MOQ chain to learn demand, a large-PO chain for proven items); use pre-orders when suppliers will not give terms and demand is already strong.** Condition: new products and new categories. Source: 02 only. Cards: [135d3773766f] [032c38a487a4].
+
+**R112. Liquidate non-moving aged stock and make a new bet, even if you do not need the cash.** Funnel: an unlisted PDP or whitelisted creator page, ads excluding existing customers, deep discount on that page only or full price at lower efficiency (02: core at 2.0 ROAS, liquidation at 1.0 or 0.8; 03: break-even or a slight loss). Other outlets: a narrative discount email, a bulk liquidator, a new country where discounts will not hurt the main market. Judge by cash recovered, not ROAS; keep it separate from profitable acquisition. Condition: grade C and D stock. Sources: 02, 03. Cards: [f2fc5286cc97] [c73b11cb714e] [69c220a278fc] [4d29da5108ca].
+
+**R113. Rotate dated goods nearest-expiry first; log stock in and out; count periodically; fire-sale stock very close to expiry as a last resort.** Recurring count gaps are shrink or process error and feed back into COGS assumptions. Condition: perishable, dated or seasonal goods; the obsolescence part applies to everything. Source: 06 only. Cards: [2d244e2a4df6].
+
+**R114. Rationalise SKU count as new products launch.** Many launches sell 30 to 40% of stock on the initial organic pop and then stall; each failed launch parks cash on the balance sheet. Condition: every launch review. Source: 03 only. Cards: [69c220a278fc].
+
+**R115. The cash conversion cycle, not ad efficiency, often caps growth.** CCC = DIO + DSO minus DPO. Sell 10 units, make $50 GP, buy 11 next; with a 90-day lead time and full payment up front you stock out for 90 days waiting for cash. "You can't triple an ecom business in a year" without multi-million self-funding, outside funding or financing (03's view, no data). Condition: any plan to grow faster than the CCC allows. Sources: 03, 02. Cards: [beb1703b3d17] [377b3fd122bf].
+
+**R116. Fix a CCC squeeze in this order: smaller deposit (03: 20% up front, rest on shipment), shorter lead time (90 to 30 days), longer terms than production plus sell-through (02: 90 days to make, 120-day terms, a negative CCC), consignment, then financing.** Learn each counterpart's cost of capital and trade what they value (a slightly higher unit cost, a longer contract, a bigger commitment) for terms. Condition: every supplier review `[needs brand data: supplier terms and lead times]`. Sources: 03, 02. Cards: [beb1703b3d17] [377b3fd122bf].
+
+**R117. Each new product must solve 1 of 3 problems: margin, volume or cash.** A cash problem with bimodal revenue (winter PO placed in the summer valley) wants a valley product or better terms; a margin problem wants a product that breaks even at 1.4 ROAS instead of 2.0; a volume problem wants a category with rising velocity. Condition: every product idea is scored against the named problem. Source: 02 only. Cards: [9d3c956f2cd5].
+
+**R118. Classify SKUs monthly by volume, revenue, media spent and SKU-level efficiency: champion, hidden gem (high volume, low spend), growth driver (spend and revenue both rising), underperformer (high inventory, low velocity).** Scale hidden gems and growth drivers; turn underperformers to cash. No numeric cut-offs given `[needs brand data: SKU-level spend, units, revenue, stock]`. Condition: monthly. Source: 02 only. Cards: [ca6522622ee6] [8e1550070943].
+
+### 3.14 Financing
+
+**R119. Financing is expensive and risky; slower growth at better efficiency can earn more.** Lenders usually want the founder as collateral; debt bets on selling future units at an efficiency that repays the loan. 03 has seen about 5 times: spend $20K to $200K a month, revenue $2M to $7M, millions in inventory financing, net margin to near 0. Condition: any financing decision; stress-test slower sales before borrowing. Source: 03 only. Cards: [beb1703b3d17].
+
+**R120. Do not sell permanent equity to fund 3 months of inventory.** 01 calls it "absurd" and points to revenue-based financing (Clearco for ecommerce, Pipe for SaaS); note the affiliate link and that terms are historical `[web check: current financing products and terms]`. Condition: short-term working capital needs. Source: 01 only. Cards: [a20812fa24c9].
+
+**R121. Cost-of-capital reference points: credit cards about 30%, merchant cash advance about 70%; Chinese suppliers often have cheaper, subsidised capital.** Use these to decide who should carry the float. Condition: 02's estimates, US context. Source: 02 only. Cards: [377b3fd122bf].
+
+**R122. Keep inventory payments in the cash schedule when modelling financing; treat the financing as a cash inflow and repayments as outflows, never as revenue or as a deleted inventory row.** 01's own model deletes the inventory row and replaces it with a revenue-share repayment; the card's version is the correct accounting. Condition: any financing model. Source: 01 (card correction). Cards: [a20812fa24c9] [59714f58fac1].
+
+**R123. Assume a 7-figure client is using financing; interest alone does not change MER, so model sales and spend separately from debt cost.** Condition: agency or advisor context. Source: 03 (card addition). Cards: [8d570963a07c] [beb1703b3d17].
+
+### 3.15 Scenario analysis and the profit frontier
+
+**R124. Every founder must be able to answer: if we spend an extra $10,000 next month, where does it return the most incremental new-customer revenue, and can $10,000 moved from one channel return more in another.** Push each channel until the marginal dollar makes no more profit (incremental aMER hits break-even), then stop; add tertiary channels only after the 3 primaries hit the frontier. Condition: every budget change; incrementality tests are the only reliable measure, MMM or a +delta test stands in at 7-figure scale. Sources: 03, 02. Cards: [c60eaf1ca845] [35efd9091446].
+
+**R125. A plan with spend up 50% and CAC flat is not real; model efficiency falling with spend (F42).** Condition: every plan. Sources: 02, 03. Cards: [4d4d40fe1138] [0d00eb5d6d39].
+
+**R126. Test CAC and churn sensitivity on every model: what CAC breaks even in month 5 vs month 11, what churn halves LTV.** Condition: every model. Source: 01 only. Cards: [9a3cda2fe90f] [86fcb4012931].
+
+**R127. Compare scenarios on total post-marketing CM at equal spend and on lowest cash month, never on per-customer margin or revenue alone.** Condition: every scenario answer (deliverable 9.3). Sources: 01, 05. Cards: [993ecc7a19f0] [9d2823e98694].
+
+**R128. Put spend where contribution per sale is highest, not where CPA is lowest.** Maximize conversions favours the cheapest-to-acquire product; 03's hoodie made $24 contribution at $45 CPA vs the t-shirt's $12 at $15 CPA. Split campaigns by product economics; if a low-CPA product sells without ads, cut its spend (validate with a holdout). Condition: multi-product accounts; execution in 24-DEP. Source: 03 only. Cards: [3827dc99f5ed] [ac6ec12672a6].
+
+### 3.16 Reconciliation of platform numbers to the books
+
+**R129. The ad account is not the business; paid media must reconcile to the P&L.** If the ad account looks good and the business does not improve, the problem is measurement, margin or cash flow, not ads. Condition: every month. Sources: 03, 02. Cards: [4ca15f364bbb] [d5c2a3d880d9] [25d900c4c527].
+
+**R130. Reconcile 5 gaps every month with a named cause for each (F45): platform net sales vs books revenue; accrued vs processed refunds; platform fees vs fees in the books; platform spend vs marketing in the books; sum of attributed revenue vs actual revenue.** Attribution overlap is expected and is not an error; an unexplained revenue gap is. Condition: monthly close. Sources: 02, 03, 04. Cards: [1d3d04198311] [c9ccfa76430a] [4b0ff6e78865].
+
+**R131. Never compare ROAS across platforms, and never move budget on a raw ROAS gap.** Different attribution windows, funnel positions and incrementality. 03's pattern: TikTok drives impressions, Meta retargets, Google captures the brand search; cutting TikTok on its ROAS kills the top of the funnel. Condition: always; test design in 06-MEA. Sources: 03, 02. Cards: [08a2587ba438] [bc14184eea60] [3929ca774887].
+
+**R132. Calibrate platform numbers with an incrementality factor before comparing them to break-even, and optimise on the platform setting with the tightest link to new-customer revenue (both sources prefer 7-day click without view-through).** Check the link with a daily correlation of 7-day-click ROAS and aMER (02 hopes for about 0.78). Condition: single-channel brands can trust the correlation; multi-channel brands need tests (06-MEA). Sources: 02, 03. Cards: [ccf3794cd11d] [3929ca774887] [de7656f52701].
+
+**R133. When distribution widens (Amazon, retail), widen measurement: 1 engine, 1 blended contribution, not rival .com and Amazon P&Ls.** Measured on .com only, Meta looks worse as Amazon grows and the team cuts spend. Condition: any brand with more than 1 sales channel. Source: 02 only. Cards: [e840728f10ad] [ab546c35c94e].
+
+### 3.17 Subscriptions and churn
+
+**R134. Churn applies only to subscriptions; a one-off store uses cohort retention.** Always state the period (11% monthly and 11% annual are very different). Condition: always. Source: 01 only. Cards: [d4b9ff187dc2].
+
+**R135. Churn denominator is the prior period's subscribers, never this period's total or new signups.** 01's example: 100 prior + 50 new minus 9 cancelled; churn 9%, not 6%. Condition: always. Source: 01 only. Cards: [e587bb652cdc] [1903080a3a75].
+
+**R136. Average lifetime = 1 / churn; use it as a fast fallback, not the real answer, and be conservative (01 uses 25% monthly churn for a subscription box model).** Bands: 25% = 4 months, 20% = 5, 15% = 6.7, 10% = 10, 5% = 20. Annual to monthly conversion has 2 versions (C13). Condition: subscriptions with little cohort data. Source: 01 only. Cards: [fe4a0757982c] [136827bb25c7] [602ada5d7d4a].
+
+**R137. Build separate unit economics for transactional and subscription customers, and expect blended CM percent to fall as the subscription mix rises.** Subscribers have lower AOV and lower margin per order but 3 to 5x revenue per customer (01's opinion). Condition: any subscribe-and-save brand. Source: 01 only. Cards: [17cd13e806d9] [69e7ae8e0048].
+
+**R138. Forecast transactional repeats with a rolling 6-month return rate (3 to 5% of trailing-6-month customers per month in 01's experience).** Condition: non-subscription repeat. Source: 01 only. Cards: [c1e5e9113ebe].
+
+**R139. Treat vendor subscription claims as hypotheses to test: increasing discounts over the lifetime beat flat subscribe-and-save; prepaid lifts LTV "100% or more" and creates negative working capital; defaulting the cart to subscription lifts signups 60 to 70%; about 50% roll off at the end of each prepaid term.** All from Ordergroove with no sample. Default-to-subscription carts carry consent and negative-option billing risk `[web check: auto-renewal consent rules in the brand's market]`. Condition: never cite as fact; 03-OFF holds the offer mechanics. Source: 01 only. Cards: [d8e1973bffac] [013b592e17af] [17cd13e806d9].
+
+**R140. Prepaid is judged on lifetime GP and cash timing, not per-order margin.** 01's example: one-time $54 LTV, 3-order prepaid at 25% off $146, 6-order at 30% off $198; a 10% and 5% mix shift lifts weighted LTV 30%. Condition: model with the brand's own retention `[needs brand data: prepaid retention]`. Source: 01 only (vendor context). Cards: [d8e1973bffac].
+
+**R141. Subscription LTV is checked 2 ways: churn method (GP per order times orders per period / churn) and cohort method (sum of survivors times GP per order / starting customers); they must agree.** 01's coffee case: $92 both ways. Condition: every subscription LTV. Source: 01 only. Cards: [0b060b80b16f] [8b747d69f620].
+
+**R142. Post-advertising CM in a subscription launch may not cover payroll for a year or more; size the raise to the lowest cash month, not to the P&L.** 01's T10: CM covers nothing until month 11, payroll from month 14 to 15; $500,000 raised, about $1.5M needed to reach profitability. Condition: any subscription launch model. Source: 01 only. Cards: [9d2823e98694] [f39ad32b21d7].
+

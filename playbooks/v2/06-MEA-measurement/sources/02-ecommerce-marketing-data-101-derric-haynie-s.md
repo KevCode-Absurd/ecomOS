@@ -151,7 +151,7 @@ Formulas the source does not give: CAC, LTV, ROAS, contribution margin, referral
 | Facebook, Google | Named as third-party aggregate sources; Google Ads as the platform that may claim a sale the customer credits to a friend | [e11ec2148e14] |
 | CRM / email service provider | Destination for zero-party data; avoid data silos. Data lakes and warehouses mentioned but not explained | [e11ec2148e14] |
 | Predictive analytics, "big ERPs" | Regression-style predictions of spend outcomes; no product named | [0f952763382f] |
-| ChatGPT, OpenAI | Rewriting landing pages; "ChatGPT to Figma" design mock-ups | Prediction context [0f952763382f] [ae8e451f0caa] |
+| ChatGPT, OpenAI | Rewriting landing pages; "ChatGPT to Figma" design mock-ups | Prediction context [0f952763382f] [ae8e451f0cae] |
 | eCommerceTech.io | Speaker's directory, 260+ independently reviewed tools, mainly Shopify | Speaker's own business; `[web check: current listings]` [28a475f2a0fd] |
 | Shopify, Oberlo, Amazon | Named as having "democratised" ecommerce | Context only |
 
@@ -199,7 +199,7 @@ All are examples, not promises.
 - **3% / 3%** is second-hand; ProfitWell source unnamed; no method to pick the groups.
 - **Second-party data** definition is uncertain ("I always get this one wrong").
 - **Missing:** formulas for CAC, LTV, ROAS, AOV, contribution margin; attribution windows; UTM rules; event deduplication; match quality; consent; restatement; test sample sizes or significance; how to decide which qualitative feedback to act on; which cost lines go into pre-ads CAC; an S-curve threshold.
-- **AI section is prediction.** Next 3 to 5 years: AI executes tests (landing pages, creative), humans only set guardrails ("no misspelled words, no cussing") and adding humans "slows the process"; media agencies, creative and writing teams shrink to 1 editor then none; customer service near fully automated; merchandising by AI including false-door demand tests before a 10,000-unit purchase order; "$1M in a bank account and 25 conditions" to run a business; 15 to 20 years to full democratisation. The "humans slow the loop" view conflicts with this repo's rules (brand voice, no invented claims, owner review). Career advice: move toward strategy, running AI tools and understanding the tech; learn business fundamentals and bankroll management; no-code and low-code make tech startups easier. [0f952763382f] [ae8e451f0caa]
+- **AI section is prediction.** Next 3 to 5 years: AI executes tests (landing pages, creative), humans only set guardrails ("no misspelled words, no cussing") and adding humans "slows the process"; media agencies, creative and writing teams shrink to 1 editor then none; customer service near fully automated; merchandising by AI including false-door demand tests before a 10,000-unit purchase order; "$1M in a bank account and 25 conditions" to run a business; 15 to 20 years to full democratisation. The "humans slow the loop" view conflicts with this repo's rules (brand voice, no invented claims, owner review). Career advice: move toward strategy, running AI tools and understanding the tech; learn business fundamentals and bankroll management; no-code and low-code make tech startups easier. [0f952763382f] [ae8e451f0cae]
 - **Commercial interest:** the speaker runs a tool directory, so "add tools as you grow" advice suits his business `[web check: eCommerceTech.io revenue model]`. [28a475f2a0fd]
 - Card [3a1918a526e2] has a typo ("comp1ounding"); content unaffected.
 
@@ -226,5 +226,5 @@ All are examples, not promises.
 - [5869b757b0e7] When to Change KPIs: The Top-of-S-Curve Test
 - [0f952763382f] Predictive Analytics and AI Execution in Ecommerce
 - [776e59649374] Start Collecting Store Data Before It's Worth Anything
-- [ae8e451f0caa] Plan ecommerce roles around AI-resistant work
+- [ae8e451f0cae] Plan ecommerce roles around AI-resistant work
 - [28a475f2a0fd] Use an independent tool directory before buying ecommerce software

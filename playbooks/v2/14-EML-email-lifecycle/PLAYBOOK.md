@@ -175,3 +175,95 @@ Each rule states the rule, the condition, the supporting mini playbooks, conflic
 **R46. Welcome conversion target: 10% of entrants as the floor, 20% as very good.** Sources 01, 02. [b568ff652c08] [aa555d450d5a] `[needs brand data: welcome flow placed order rate]`
 
 **R47. Reviews in the welcome flow must name a pain point or objection.** 1 specific review beats 3 "great product" reviews. Sources 02, 04, 08. [38077a826b12] [6e89698da8b5] [6e5742c076f2]
+
+### 3.6 Site abandonment flow
+
+**R48. Trigger: Active on Site. Exit filters: viewed product 0, added to cart 0, checkout started 0, placed order 0, all since starting this flow. Re-entry: not in this flow in the last 30 days.** No Klaviyo template exists; build it (04). Sources 01, 04. [75b807a7abce] [b0f7b82a2bb3]
+
+**R49. First delay 1 to 4 hours; 1 email.** 01: 2 to 4 hours, and a test where 4 hours beat 30 minutes on placed-order rate. 02 and 04: 1 to 4 hours, test 1 vs 4. Content: a shop-assistant email ("Lost in choices? Let us point you in the right direction"), bestsellers or collections, light social proof. Goal: a product view. Sources 01, 02, 04. [75b807a7abce] [70e9cc171c68] [0528a2003316] [b0f7b82a2bb3]
+
+**R50. Keep it on during deliverability repair.** 02 keeps site abandonment on; 01 turns it off. Prefer 02 because the flow is small and high intent. Sources 02 against 01. [df98522f016b] [e5dfe8e98a49]
+
+### 3.7 Browse abandonment flow
+
+**R51. Trigger: Viewed Product. Filters: added to cart 0, checkout started 0, placed order 0, all since starting this flow. Re-entry: 30 days.** The Klaviyo template lacks the added-to-cart filter; add it by hand (03, 04). On Shopify use the Shopify Added to Cart metric, not the API one (02). Sources 01, 02, 03, 04. [f0dfe6920491] [5ad3da1bdb3a] [909e75c1eb8d] [5aad4467fa44]
+
+**R52. First delay 30 minutes to 2 hours; then 1 day between emails.** 01: 45 minutes. 02: 30 to 45 minutes up to 2 hours (default 2, demo 1). 04: test 1 vs 3 hours. Sources 01, 02, 04. [c83fa5e0d0d6] [f0dfe6920491] [5aad4467fa44]
+
+**R53. Length 4 to 6 emails, trust before urgency.** Browse is mid-funnel persuasion, not lost-sale recovery (02). Order: (1) light reminder with the viewed item and 4 related products; (2) risk reversal and objections; (3) product-specific reviews; (4) small discount with a 48-hour deadline, or subscribe-and-save for replenishables (02 puts this at email 3); (5) plain-text 24-hour closer. Link to the product URL, not the homepage (03). Sources 01, 02, 03, 04. [d0e8f91819ba] [9d0646c87a39] [aaef1103dc77] [890a5c97d555] [8c9c22844f69] [79cdac8bb86e]
+
+**R54. No new vs returning split in browse by default.** Browsers are low intent even if they bought before, so everyone gets the same ladder; split only if margins cannot carry any incentive to past buyers (02). Conflict: 03 branches prospects vs customers. Sources 02 against 03. [5ad3da1bdb3a] [4085ce710e47] [f147a186a98d]
+
+### 3.8 Cart abandonment and checkout abandonment
+
+**R55. Build 2 flows: Added to Cart and Checkout Started.** Klaviyo's "Abandoned Cart Reminder" template fires on Checkout Started, so it is a checkout flow. 01 says 90% of brands he audits lack a real cart flow. People who add to cart but never start checkout get nothing otherwise. Sources 01, 02, 03, 04. [8d43aac07129] [d962429e9e36] [d94eb68e5e18] [85117c7d0910] [fac642b0957b] [393737091e3e]
+
+**R56. Confirm the Added to Cart metric fires before building.** 01 gives snippet install steps; 01 also says Klaviyo added it natively in September 2024; 02 says pick the Shopify Added to Cart metric, not the API one. Test with a known profile. Sources 01, 02, 04. [34204d0c3ce5] [5ad3da1bdb3a] `[web check: whether Klaviyo's Shopify integration sends Added to Cart natively or needs the onsite snippet]`
+
+**R57. Cart flow filters: checkout started 0 since starting this flow; placed order 0 since starting this flow; not in this flow in the last X days.** Checkout flow: placed order 0 since starting this flow; not in this flow in the last X days. X: 01 and 02 use 30 days; 04 template 7, prefers 14; 03 uses 2 to 3 days for checkout because a repeat checkout shows interest. Pick X from repurchase interval: weekly consumables 7 or less, otherwise 14 to 30. Sources 01, 02, 03, 04. [b6389565ed83] [d94eb68e5e18] [85117c7d0910] [fac642b0957b] `[needs brand data: repurchase interval]`
+
+**R58. First delay 15 minutes to 1 hour; test up to 2 to 4 hours.** 01: 30 minutes (30 to 45 best; test 1 and 4 hours). 02: 15 minutes to 1 hour; default 4 hours is "way too long". 03: test 4 vs 2 hours, shorter usually wins. 04: 30 minutes to 2 hours. Sources 01, 02, 03, 04. [815150bfedbc] [d94eb68e5e18] [fbfeb91636ec] [fac642b0957b]
+
+**R59. Length 6 to 8 emails over about 10 days, minimum 3 for prospects.** 1 or 2 emails let buyers "off the hook" before their decision cycle ends (01). 14 to 20 emails gets complaints (04). Sources 01, 02, 03, 04. [ed0f5c1eb0f6] [f147a186a98d] [fac642b0957b]
+
+**R60. Sequence: reminder, founder check-in, objections, product-specific proof, last chance with alternatives, then split by buyer status.** (1) 30 minutes: "You left this behind", dynamic item, risk reversal, no discount. (2) +1 day: plain-text founder check-in "did you run into any issues?" with 1 differentiator (02), or social proof (01). (3) +1 day: objections answered with USPs (price, shipping, fit, quality). (4) product-specific testimonials (01: convert better than general ones). (5) last chance, "You may also like" alternatives about day 5. (6) split placed order at least once over all time: buyers get a founder support email, no discount or a smaller one; non-buyers get a discount with 48 hours, then a plain-text 24-hour closer. Sources 01, 02, 03, 04. [e502966b22d7] [815150bfedbc] [e7a5c9132999] [962de4f96ab5] [e99b377f856f] [2fd76c2c2442] [b9c909970c5b] [bdbde349add0] [4085ce710e47]
+
+**R61. Discount only people who never bought, or have not bought in 60 to 90 days.** 01: 60 to 90 days "depending on how averse you are". 02: 20% off in email 1 "will generate revenue but destroy margins". Sources 01, 02, 03, 04. [b9c909970c5b] [bdbde349add0] [f147a186a98d] `[needs brand data: discount policy, margin]`
+
+**R62. The dynamic item block is the most important part; cart and checkout variables differ.** Never copy one flow's block into the other. Checkout: link every slice to `{{ event.extra.checkout_url }}` (03). Cart: link to the cart page or the item. Preview with several profiles. Sources 01, 02, 03. [c42f60fa5fca] [79cdac8bb86e] [a0bdafa6ea40] `[verify UI]`
+
+**R63. In the checkout flow, answer checkout objections.** A shopper who saw a $10 shipping fee responds to free shipping better and cheaper than to 10% off (04). Sources 03, 04. [393737091e3e] [f147a186a98d] `[needs brand data: shipping cost, AOV]`
+
+**R64. Split by product or collection for emails 3 and 4 where the catalogue has a few main collections.** Not 20 splits. Source 01; 04 uses trigger filters for the same effect. [962de4f96ab5] [bccb578fdd8b]
+
+### 3.9 Post-purchase flow
+
+**R65. Trigger: Placed Order. Filters: placed order 0 since starting this flow (a new order restarts it); cancelled order 0 since starting this flow.** Optional: exclude subscription or B2B customers to their own flow (03). Sources 02, 03, 04. [58bdfe185e63] [9f9c84a1b824] [55898f20e161]
+
+**R66. First email 10 to 30 minutes after the order, plain text from the founder.** Shopify's order confirmation fires at once, so do not send at 0 minutes (02: 10 minutes; 04: 30 minutes). Conflict: 01 sends at 0 minutes; 03 sends 1 day later with no fixed hour and warns against fixing 9 AM. Sources 02, 04; 01 and 03 differ. [58bdfe185e63] [d4ea5342470c] [05c3a4b18253] [55898f20e161]
+
+**R67. Split first-time vs returning at the start.** First-timers: thanks for trusting us, reassurance, what happens next, soft cross-sell PS ("add to your order in the next 24 hours"). Returning: thanks for loyalty, no acquisition offer, subscribe-and-save, loyalty, cross-sell. Sources 01, 02, 03, 04. [1911a725b087] [5956a124a134] [55898f20e161] [3da6d6371379]
+
+**R68. Merged sequence for the first-time track.** (1) +10 to 30 minutes: founder thank-you. (2) +1 to 2 days: "your order is on its way", add-ons, reduce remorse (worst in the first 24 to 48 hours). (3) after delivery: how to get the most from the product, split by product or category; cuts returns. (4) about day 7: follow 1 social channel, 1 CTA. (5) after delivery (04: day 10): loyalty program with the benefit stated at once. (6) +3 days: review request, optional thank-you code. (7) 1 to 2 weeks after delivery: founder check-in "how did everything go?" (02: "one of the emails that generates the most revenue"). (8) optional cross-sell with a 48-hour code, then a 24-hour plain-text closer (04). Sources 01, 02, 03, 04. [05c3a4b18253] [38c0bd0fee2b] [5b7ae7297305] [5956a124a134] [0a935c9bd091] [c17894672b54] [55898f20e161] `[needs brand data: fulfilment and delivery times]`
+
+**R69. Most repeat purchases happen within 30 days of the first order; work that window.** The first-to-second purchase is the hardest step. Sources 02, 04. [b3058403e9f8] [f6a8fc1ece5f]
+
+**R70. Post-purchase how-to content must match what the customer bought.** Apparel may need only care instructions; technical products need guides. Sources 02, 03. [5956a124a134] [55898f20e161]
+
+**R71. If a reviews app is connected, run the review request on its triggers and stop asking once a review event exists.** Sources 03, 04. [9ca8e23a01f3] [0a935c9bd091]
+
+### 3.10 Replenishment flow
+
+**R72. Time the reminder to days of supply plus delivery time, a few days before the product runs out.** 04: day 25 of a 30-day pack. 09 (SMS): 30-day supply plus 7 days delivery, send about day 35. 01: predictive "average time between orders" reminder on day 40 for a 45-day cohort. Content: "Are you running low? Reorder here." No offer at first. Sources 01, 04, 09. [b8acdbab97a3] [586799a976b3] [7b644e511db9] `[needs brand data: days of supply per product, delivery time]`
+
+**R73. Use Klaviyo's expected date of next order as the trigger when predictive data exists.** Fire on the date, 12 PM local time, never repeat, filter placed order 0 since starting this flow. Source 03. [109f8c9de246] [6818bdf85834] `[verify UI]`
+
+### 3.11 Win-back flow
+
+**R74. Trigger: Placed Order plus a wait; filter placed order 0 since starting this flow.** Set the wait from the brand's own data, never Klaviyo's default (04 template 75 days; 03 says default "probably 90"). Methods: 01 and 09: 2 times the average days between orders (45 becomes 90); 03: a point between the median and the mean days between orders, sanity-checked against consumption (30-day product plus 5 days shipping gives 45); 01 alternative: 60, 90, 120 days. Sources 01, 03, 04, 09. [61b12124e33c] [021057848a4f] [4bfa7e9cadf3] [c2903035a7f5] `[needs brand data: median and mean days between orders]`
+
+**R75. Gaps between win-back emails are 3 to 7 days, not 1 day.** Lapsed buyers complain faster. 03: 5 to 7 days. 04: +3 days, +7 days, +1 day, +14 days, +1 day. 01: about 1 week. Sources 01, 03, 04. [021057848a4f] [a5998cc28759] [61b12124e33c]
+
+**R76. Sequence: "It's been a while" with no discount and new arrivals; reminder; unique dynamic code with a 48-hour deadline; 24-hour plain-text closer; optional bigger second offer 2 weeks later.** Sources 01, 03, 04. [61b12124e33c] [021057848a4f] [a5998cc28759]
+
+**R77. Use "add past profiles" so the first send does not wait 75 days; this needs a static code.** Source 04. [a704ce6294f2] `[verify UI]`
+
+**R78. Expect low returns; campaigns carry most retention.** 01: campaigns drive "99% of retention" (unverified). 02's client export: win-back flows "barely convert". Split high-value customers (historic or predicted CLV at least $1,000) into a stronger offer (03). Sources 01, 02, 03. [1784ea2727ac] [af644216425f] [6818bdf85834]
+
+### 3.12 Sunset flow and suppression
+
+**R79. Sunset trigger: added to an unengaged segment.** Definitions differ: 03: 0 opens AND 0 clicks in 180 days; 04: 0 opens, clicks, orders, checkouts, carts, views, site visits in 120 days AND received at least 6 emails in 120 days; 02: 120 days with no order ever, past buyers kept. See 7.9. Sources 02, 03, 04. [56d433c32a2b] [c57d2fe2264a] [171bd57ff251] [336b88ac711f]
+
+**R80. Flow filters: opened 0 AND clicked 0 since starting this flow.** 03 states OR by mistake; with OR someone who opens but does not click keeps getting sunset emails. Use AND. Source 03 (corrected). [56d433c32a2b]
+
+**R81. 3 plain-text emails with 5-day gaps, then set profile property unengaged = true, then suppress monthly.** Email 1: "Still interested? If not, unsubscribe here." Emails 2 and 3: strongest offer, unique code, "we will remove you unless you click". Goal is an open or click, not a sale. Sources 03, 04. [56d433c32a2b] [c57d2fe2264a]
+
+**R82. Suppress: anyone marked as spam, any hard bounce, 4 or more soft bounces, and the unengaged segment (120 to 180 days). Review monthly.** Klaviyo bills on active profiles. Sources 01, 02, 03, 04. [c049ecf47935] [951b0132a90b] [6dcb0bfce104] [62ea5bc24ef6] `[web check: Klaviyo billing basis and unsuppress rules]`
+
+### 3.13 Back in stock, review request, birthday
+
+**R83. Back in stock: use Klaviyo's "subscribed to back in stock" metric for the flow; use the campaign type only for real restocks.** 01: "you can use it for any new inventory, do not fake sell-outs". 09 and 12 send restock texts for items that did not restock. ecomOS forbids that (R196). Sources 01, 04; against 09, 12. [a1e654a1f091] [7eaef73fe8eb] [3f1ec5d057e8]
+
+**R84. Review request sits about 3 days after the loyalty email, after delivery.** Non-reviewers can still get the thank-you code. Source 04; 01 names it as a goal without an email. [0a935c9bd091] [ebc0429d8032]
+
+**R85. Birthday flow: trigger on the loyalty app's customer birthday event, and personalise with the points balance property.** Preview with 2 profiles to confirm the numbers differ. Source 03. [9b7b4dd86442] `[verify UI]`
