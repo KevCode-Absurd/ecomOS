@@ -6,7 +6,7 @@ Date: 24 September 2026. Orchestrator: the ecomOS session. Judges: 2 independent
 
 | | Report 1 (playbook) | Report 2 (general) | Judge's pick | Guessed the playbook arm |
 |---|---|---|---|---|
-| Judge 1 | JUDGE1_R1 | JUDGE1_R2 | JUDGE1_PICK | JUDGE1_GUESS |
+| Judge 1 | 28 / 35 | 27 / 35 | Report 1 for the owner; Report 2 fix list for week 1 | Report 1 (correct) |
 | Judge 2 | 28 / 35 | 29 / 35 | Report 2, by a narrow margin | Report 1 (correct) |
 
 ## Where the two reports agree
