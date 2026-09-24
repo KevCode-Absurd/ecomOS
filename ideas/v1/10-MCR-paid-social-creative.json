@@ -10862,5 +10862,1747 @@
   },
   "confidence": "low",
   "general_practice": false
+ },
+ {
+  "id": "MCR-165",
+  "title": "Track production cost per asset by source and compare to profit",
+  "domain": "10-MCR",
+  "bottleneck": [
+   "margin_cogs",
+   "acquisition_efficiency"
+  ],
+  "lever": "production cost attribution",
+  "hypothesis": "If production cost is tracked per asset by its source, in-house, a named creator, or an agency, alongside the profit each ad returns, then the store can see which production source pays for itself instead of guessing from total spend.",
+  "applies_when": [
+   "any",
+   "scaling_store"
+  ],
+  "signal": {
+   "check": "Look at the account's ad list. If nobody can say which creator, designer, or agency made a given ad, or what it cost, this idea is live.",
+   "metrics": [
+    "contribution_margin",
+    "other:cost_per_asset"
+   ]
+  },
+  "expected_effect": {
+   "metric": "contribution_margin",
+   "direction": "up",
+   "size": "unknown, no source measures this directly",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Tracking adds admin work but does not change what is produced."
+  },
+  "prerequisites": [
+   "A list of assets tagged by production source",
+   "Per-ad spend and revenue data"
+  ],
+  "steps": [
+   "Tag every new asset with its production source: in-house, a named creator, or an agency.",
+   "Record the cost to produce that asset next to its tag.",
+   "Pull spend and revenue per ad and compute contribution margin per asset.",
+   "Compare contribution margin per dollar of production cost across sources.",
+   "Shift future production budget toward the source with the best margin per dollar spent."
+  ],
+  "test": {
+   "method": "Run this tracking for one full production cycle and compare sources before shifting budget.",
+   "measure": "contribution_margin",
+   "read_point": "After one full month of tagged production"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "aa8f85929d1f",
+    "0c485f7f58f5"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "MCR-166",
+  "title": "Pay a creative strategist a base plus a percent of ad spend",
+  "domain": "10-MCR",
+  "bottleneck": [
+   "team_capacity",
+   "acquisition_efficiency"
+  ],
+  "lever": "creative team incentive",
+  "hypothesis": "If a creative strategist is paid a base salary plus a small percent of the ad spend running on their concepts, then their incentive lines up with making ads that actually get spend and hold it.",
+  "applies_when": [
+   "scaling_store"
+  ],
+  "signal": {
+   "check": "Check who owns creative output today. If no one person is accountable for concept quality and volume, or pay has no link to ad performance, this idea is live.",
+   "metrics": [
+    "other:creative_hit_rate",
+    "spend"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:creative_hit_rate",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "founder"
+  },
+  "cost": "medium",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "Percent-of-spend pay can become unaffordable at very high spend and needs a cap."
+  },
+  "prerequisites": [
+   "A defined role and reporting line for creative strategy",
+   "Enough monthly ad spend to justify a dedicated role"
+  ],
+  "steps": [
+   "Define the creative strategist role: own concepts, briefs, and the production pipeline.",
+   "Set a base salary plus a small percent of spend running on that person's ads.",
+   "Cap the percent-of-spend bonus so it does not become unaffordable at high spend.",
+   "Review the incentive every quarter as spend grows."
+  ],
+  "test": {
+   "method": "Compare creative hit rate and volume in the 2 quarters before and after hiring against this structure.",
+   "measure": "other:creative_hit_rate",
+   "read_point": "After 2 quarters"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "68f7fe0e09fc"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "MCR-167",
+  "title": "Start with organic content before scaling paid for a new store",
+  "domain": "10-MCR",
+  "bottleneck": [
+   "team_capacity",
+   "acquisition_volume"
+  ],
+  "lever": "organic-first sequencing",
+  "hypothesis": "If a new or small store posts organic content and builds the skill of making content people watch before scaling paid spend, then its paid creative starts from real practice instead of a blank page.",
+  "applies_when": [
+   "new_store",
+   "organic_led"
+  ],
+  "signal": {
+   "check": "Check whether the store has ever posted organic content before writing its first paid ad briefs. If not, this idea is live.",
+   "metrics": [
+    "organic_sessions",
+    "other:creative_hit_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:creative_hit_rate",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Organic-first delays paid launch, which can matter for a store that needs revenue fast."
+  },
+  "prerequisites": [
+   "A social account for the brand",
+   "Someone able to post regularly"
+  ],
+  "steps": [
+   "Post organic content daily or several times a week before the first paid batch.",
+   "Track which organic posts hold attention and get shares or saves.",
+   "Carry the formats and hooks that worked organically into the first paid briefs.",
+   "Move to a mixed organic-plus-paid pipeline once a few organic formats prove out."
+  ],
+  "test": {
+   "method": "Compare the hit rate of the first paid batch for stores that ran organic-first against one that did not.",
+   "measure": "other:creative_hit_rate",
+   "read_point": "After the first paid batch"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "d5563b66d646"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "MCR-168",
+  "title": "Screen AI-drafted scripts for AI tells before finalizing",
+  "domain": "10-MCR",
+  "bottleneck": [
+   "trust_brand",
+   "conversion"
+  ],
+  "lever": "AI script quality control",
+  "hypothesis": "If every AI-drafted script is checked for repeated AI patterns such as contrast negation before it airs, then the ad reads as human-written instead of giving away that it was AI drafted.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Read the last few AI-drafted scripts. If lines like 'it is not X, it is Y' or stock analogies appear, this idea is live.",
+   "metrics": [
+    "other:ai_tell_count"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:ai_tell_count",
+   "direction": "down",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Over-editing can strip a script of natural rhythm if done carelessly."
+  },
+  "prerequisites": [
+   "A written script draft from an AI tool"
+  ],
+  "steps": [
+   "Search the draft for contrast-negation lines such as 'it is not X, it is Y'.",
+   "Search for stock analogies and generic science tone.",
+   "Rewrite any flagged line as a plain, specific claim.",
+   "Add a standing instruction to the AI prompt not to use contrast negation."
+  ],
+  "test": {
+   "method": "Track how many flagged lines appear in drafts before and after adding the standing instruction.",
+   "measure": "other:ai_tell_count",
+   "read_point": "After the next 5 scripts"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01",
+    "13"
+   ],
+   "cards": [
+    "156808a7c843",
+    "ba72533dddbc"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "MCR-169",
+  "title": "Build a founder-ad matrix across persona, stage, angle, offer, proof, role",
+  "domain": "10-MCR",
+  "bottleneck": [
+   "acquisition_efficiency",
+   "conversion"
+  ],
+  "lever": "founder ad concept variety",
+  "hypothesis": "If a founder-ad concept matrix varies persona, awareness stage, angle, offer, proof type, and founder role, changing one variable at a time, then a single founder story can produce 20 or more distinct concepts instead of a handful of near-duplicates.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Count today's live founder ads. If most share persona, angle, and proof type, and only the visual changes, this idea is live.",
+   "metrics": [
+    "other:creative_hit_rate",
+    "frequency"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:creative_hit_rate",
+   "direction": "up",
+   "size": "example: 20 to 30 concepts from 3 base ads",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Too many concepts at once can outpace production capacity."
+  },
+  "prerequisites": [
+   "A true founder story with origin, mechanism, and adversarial angle already written",
+   "A list of the brand's personas and offers"
+  ],
+  "steps": [
+   "List the founder story's fixed parts: origin, mechanism, adversarial angle.",
+   "For each persona, pick the matching awareness stage, angle, offer, and proof type.",
+   "Pick a founder script role for each: protagonist, witness, interviewer, or reader.",
+   "Change one variable at a time to generate new concepts from the same story.",
+   "Brief and produce the highest-priority concepts first."
+  ],
+  "test": {
+   "method": "Count distinct concepts produced from the matrix versus the prior month's founder-ad output.",
+   "measure": "other:creative_hit_rate",
+   "read_point": "After one production cycle"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "e52028da9a2d",
+    "289897a2c363"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": false
+ },
+ {
+  "id": "MCR-170",
+  "title": "Time the product reveal to the ad's format, demo or story",
+  "domain": "10-MCR",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "product reveal timing",
+  "hypothesis": "If a demo-style ad shows the product working within the first few seconds, and a story-style ad holds the product back until the story has landed, then each format uses the timing that fits how it earns attention instead of one fixed rule for every ad.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Check whether every video ad reveals the product at the same point regardless of format. If a story ad shows the product as early as a demo ad, this idea is live.",
+   "metrics": [
+    "hold_rate",
+    "hook_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "hold_rate",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "This is a scripting choice, not a platform setting; test both timings before committing."
+  },
+  "prerequisites": [
+   "A script draft classified as demo or story format"
+  ],
+  "steps": [
+   "Classify the script as a demonstration or a story format.",
+   "For a demo, show the product working within the first few seconds.",
+   "For a story format, hold the product back until the narrative has built interest.",
+   "Test both timings on the same story where the format is ambiguous."
+  ],
+  "test": {
+   "method": "Run a demo-timed cut and a story-timed cut of the same ad and compare hold rate and purchase rate.",
+   "measure": "hold_rate",
+   "read_point": "After each cut has enough delivery to compare"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "c75046cd85fd",
+    "7c2ba984d570"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "MCR-171",
+  "title": "Open a premium ad low-fi, then reveal the product in high-end shots",
+  "domain": "10-MCR",
+  "bottleneck": [
+   "trust_brand",
+   "conversion"
+  ],
+  "lever": "contrast production technique",
+  "hypothesis": "If a premium-positioned ad opens with low-fi, casual footage that keeps the product off screen, then shows the product only in high-end shots later, then the low-fi opening builds contrast instead of cheapening the brand.",
+  "applies_when": [
+   "high_aov",
+   "luxury_considered"
+  ],
+  "signal": {
+   "check": "Watch the brand's premium video ads. If low-fi opening footage also shows the product, or every shot is equally polished, this idea is live.",
+   "metrics": [
+    "hold_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "hold_rate",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "designer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "This reasoning is untested; confirm the brand's own audience does not read low-fi as low quality."
+  },
+  "prerequisites": [
+   "A premium or high-AOV product with real high-end product footage available"
+  ],
+  "steps": [
+   "Open the ad on low-fi, casual footage: a founder, a problem, or a customer, with no product visible.",
+   "Hold the low-fi opening long enough to build the story or problem.",
+   "Reveal the product only in high-end, polished shots later in the ad.",
+   "Check the contrast reads as intentional, not accidental low quality."
+  ],
+  "test": {
+   "method": "Run this structure against a version that is polished throughout and compare hold rate and purchase rate.",
+   "measure": "hold_rate",
+   "read_point": "After both versions have run long enough to compare"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "a9237fc18657"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "MCR-172",
+  "title": "Use matching customer proof instead of founder self-vouching",
+  "domain": "10-MCR",
+  "bottleneck": [
+   "trust_brand"
+  ],
+  "lever": "proof source selection",
+  "hypothesis": "If a founder ad uses testimony from a real customer who matches the target persona instead of the founder praising their own product experience, then the proof carries more credibility because it is not self-interested.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Read the proof section of live founder ads. If the founder is the only voice praising the product's results, this idea is live.",
+   "metrics": [
+    "hold_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "hold_rate",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Requires a real, permissioned customer testimonial that actually matches the persona."
+  },
+  "prerequisites": [
+   "A pool of real customer testimonials or reviews tagged by persona"
+  ],
+  "steps": [
+   "Find a real, permissioned customer testimonial from someone who matches the ad's target persona.",
+   "Use that testimony as the proof section instead of the founder's own account of using the product.",
+   "Keep the founder's role to origin, mechanism, and adversarial angle, not personal product experience."
+  ],
+  "test": {
+   "method": "Run 2 versions of a founder ad, one with founder-vouched proof and one with matching customer proof, and compare purchase rate.",
+   "measure": "cvr_overall",
+   "read_point": "After both versions have enough delivery to compare"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "b27bfdea1a9c"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "MCR-173",
+  "title": "Write hooks from persona, problem, pattern interrupt, and promise",
+  "domain": "10-MCR",
+  "bottleneck": [
+   "conversion",
+   "acquisition_efficiency"
+  ],
+  "lever": "hook scripting template",
+  "hypothesis": "If a hook is built from persona, problem, pattern interrupt, then promise, then a beginner or small team gets a working starting hook instead of a blank page, and can move to freehand writing once the pattern is clear.",
+  "applies_when": [
+   "any",
+   "new_store"
+  ],
+  "signal": {
+   "check": "Look at how the team currently starts a hook. If there is no starting structure and hooks vary wildly in quality, this idea is live.",
+   "metrics": [
+    "hook_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "hook_rate",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A template can become generic if the team never moves past it; use it as a starting point, not a permanent formula."
+  },
+  "prerequisites": [
+   "A named persona and a known problem the product solves"
+  ],
+  "steps": [
+   "Name the persona who has the problem.",
+   "State the problem within the first line.",
+   "Add a pattern interrupt: something unexpected that stops a viewer who senses an ad coming.",
+   "Close with a promise that gives a reason to keep watching.",
+   "Cast a speaker who plausibly is the named persona."
+  ],
+  "test": {
+   "method": "Compare hook rate on template-built hooks against the team's prior freehand hooks.",
+   "measure": "hook_rate",
+   "read_point": "After the first batch of template hooks runs"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "04"
+   ],
+   "cards": [
+    "21dee8ebaffe"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "MCR-174",
+  "title": "Multiply one hook into variants by splitting audio, copy, visual",
+  "domain": "10-MCR",
+  "bottleneck": [
+   "acquisition_efficiency"
+  ],
+  "lever": "hook variant production",
+  "hypothesis": "If one hook concept is varied by independently changing its audio line, its on-screen copy, and its visual, then a single script produces 20 to 30 distinct test variants instead of 1 or 2.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Check how many variants the team makes from 1 hook idea. If it is 1 or 2, this idea is live.",
+   "metrics": [
+    "other:creative_hit_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:creative_hit_rate",
+   "direction": "up",
+   "size": "his estimate: 20 to 30 variants from 1 concept",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "designer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "More variants only help if the audience is large enough to give each one enough delivery to read."
+  },
+  "prerequisites": [
+   "1 strong hook script that has tested well"
+  ],
+  "steps": [
+   "Keep the core hook line fixed as the audio.",
+   "Produce 3 to 5 different visuals for the same audio line.",
+   "Produce 3 to 5 different on-screen copy treatments for the same audio and visual.",
+   "Combine audio, visual, and copy choices to reach 20 to 30 distinct hook variants.",
+   "Launch only as many as the daily budget can give a fair read."
+  ],
+  "test": {
+   "method": "Track hook rate across the variant set and identify which single layer drove the biggest swing.",
+   "measure": "hook_rate",
+   "read_point": "After the variant batch has enough delivery"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "04"
+   ],
+   "cards": [
+    "227f69979a61",
+    "98385b907b9b"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "MCR-175",
+  "title": "Use a wide brief for discovery and a specific brief for replication",
+  "domain": "10-MCR",
+  "bottleneck": [
+   "acquisition_efficiency",
+   "team_capacity"
+  ],
+  "lever": "creator brief strategy",
+  "hypothesis": "If creators get a wide open brief to find new angles and a separate specific brief with real ad numbers to replicate a proven winner, then the creator program both discovers new ideas and multiplies what already works, instead of doing only one.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Check the last 5 creator briefs. If they are all identical in how open or specific they are, this idea is live.",
+   "metrics": [
+    "other:creative_hit_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:creative_hit_rate",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A wide brief can return unusable footage if the creator has too little product context."
+  },
+  "prerequisites": [
+   "A creator roster",
+   "At least 1 proven winning ad with real spend and ROAS to cite"
+  ],
+  "steps": [
+   "For discovery, send a wide brief: give only the product and let the creator tell it through their own story.",
+   "For replication, send a specific brief that names a proven ad and its real numbers, and asks for more like it.",
+   "Post the winners from either brief type back to the creator community.",
+   "Track which brief type sourced each winning idea."
+  ],
+  "test": {
+   "method": "Compare the hit rate of ideas sourced from wide briefs against specific briefs over a quarter.",
+   "measure": "other:creative_hit_rate",
+   "read_point": "After a quarter of briefs"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "05"
+   ],
+   "cards": [
+    "58ba8efa52c9"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "MCR-176",
+  "title": "Build creative only for the funnel extremes, skip the middle",
+  "domain": "10-MCR",
+  "bottleneck": [
+   "acquisition_efficiency",
+   "team_capacity"
+  ],
+  "lever": "funnel-stage production focus",
+  "hypothesis": "If creative is built only for the top of funnel, problem or solution aware, and the bottom of funnel, objection handling, with nothing built specifically for the middle, then production stays focused and the natural spread of finished ads still covers the middle.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Count live ads by funnel stage. If a meaningful share is built specifically for the middle, with no clear top or bottom purpose, this idea is live.",
+   "metrics": [
+    "other:stage_coverage"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:stage_coverage",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "A category with a long consideration cycle may need explicit middle-funnel creative; test before dropping it entirely."
+  },
+  "prerequisites": [
+   "A brief list tagged by funnel stage"
+  ],
+  "steps": [
+   "Classify each planned brief as top of funnel, problem or solution aware, or bottom of funnel, objection handling.",
+   "Do not write a brief aimed only at the middle stage.",
+   "Let ads that land near the middle through natural variance cover that gap.",
+   "Check funnel coverage monthly; add explicit middle creative only if a real gap shows up."
+  ],
+  "test": {
+   "method": "Track funnel-stage coverage and conversion by stage for one quarter without dedicated middle creative.",
+   "measure": "other:stage_coverage",
+   "read_point": "After one quarter"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "08"
+   ],
+   "cards": [
+    "7d806738414a"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "MCR-177",
+  "title": "Reposition against a self-image or identity objection",
+  "domain": "10-MCR",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "objection handling",
+  "hypothesis": "If a script names a self-image or identity objection out loud, then repositions the product against it with a supporting reason, then the ad clears a doubt that a feature-based objection list never reaches.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "List the objections the current bottom-of-funnel ads handle. If none address how the buyer thinks they will look or be seen using the product, this idea is live.",
+   "metrics": [
+    "cvr_overall"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Naming the objection wrong can introduce a doubt the viewer did not have."
+  },
+  "prerequisites": [
+   "Customer language showing a self-image or identity concern about the product category"
+  ],
+  "steps": [
+   "Find a real self-image or identity objection from reviews, comments, or support tickets.",
+   "Say the objection out loud in the ad, in the buyer's own words.",
+   "Reposition the product against it with a supporting reason such as design origin or a different use case.",
+   "Close with a CTA that fits the new frame."
+  ],
+  "test": {
+   "method": "Run this ad against a feature-only objection ad and compare conversion rate.",
+   "measure": "cvr_overall",
+   "read_point": "After both ads have enough delivery to compare"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "09"
+   ],
+   "cards": [
+    "dc0bcc2c4ae1"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": false
+ },
+ {
+  "id": "MCR-178",
+  "title": "Build a cold ad around one argument, move logistics to the page",
+  "domain": "10-MCR",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "cold ad content discipline",
+  "hypothesis": "If a cold-traffic ad carries exactly one argument and moves logistics such as returns, warranty, and specs to the landing page, then the ad has room to sell the one thing that matters instead of reading like an infomercial.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Read the last few cold ads. If a single ad lists dimensions, returns, warranty, and several benefits at once, this idea is live.",
+   "metrics": [
+    "cvr_overall",
+    "ctr"
+   ]
+  },
+  "expected_effect": {
+   "metric": "ctr",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Cutting logistics from the ad only works if the landing page actually covers them."
+  },
+  "prerequisites": [
+   "A landing page that states returns, warranty, and other logistics clearly"
+  ],
+  "steps": [
+   "Pick the one argument the ad will make for its target persona.",
+   "List every line planned for the ad and mark which support that argument.",
+   "Cut any line about returns, warranty, dimensions, or specs that does not support the argument.",
+   "Confirm the landing page states the cut details clearly."
+  ],
+  "test": {
+   "method": "Compare a single-argument cut of an ad against a multi-point version on the same audience.",
+   "measure": "cvr_overall",
+   "read_point": "After both versions have enough delivery to compare"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "10"
+   ],
+   "cards": [
+    "13fa07bab746"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": false
+ },
+ {
+  "id": "MCR-179",
+  "title": "Check the landing page before blaming creative for weak sales",
+  "domain": "10-MCR",
+  "bottleneck": [
+   "conversion",
+   "measurement_data"
+  ],
+  "lever": "result diagnosis order",
+  "hypothesis": "If quality clicks arrive but do not convert, and the team checks landing page speed, offer, and price before rewriting the ad, then a site problem does not get misread as a creative failure.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Look at the last ad pulled for not converting. If nobody checked landing page speed, price, or offer before rewriting the creative, this idea is live.",
+   "metrics": [
+    "cvr_overall",
+    "lcp_mobile_p75"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "This adds a step before creative changes; skip it only when the landing page is already known to be sound."
+  },
+  "prerequisites": [
+   "Access to landing page speed and on-site funnel data by ad or campaign"
+  ],
+  "steps": [
+   "Confirm the ad is sending quality clicks: check CTR next to link CTR and time on site.",
+   "Check landing page load speed for that traffic.",
+   "Check the offer and price shown match what the ad promised.",
+   "Only rewrite the creative if the landing page, offer, and price all check out."
+  ],
+  "test": {
+   "method": "Track how often a failing ad turns out to be a landing page issue once this check runs first.",
+   "measure": "cvr_overall",
+   "read_point": "After the next several ads flagged as underperforming"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "10"
+   ],
+   "cards": [
+    "f6fbbab529e7"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "MCR-180",
+  "title": "Test a VSL by reordering whole script sections",
+  "domain": "10-MCR",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "VSL script testing",
+  "hypothesis": "If a VSL is tested by moving whole sections, such as mechanism before problem or objection handling earlier, then the team finds a stronger order cheaply instead of only testing new hooks or shorter cuts.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Check the VSL test history. If every variant only changes the hook or the length, this idea is live.",
+   "metrics": [
+    "hold_rate",
+    "cvr_overall"
+   ]
+  },
+  "expected_effect": {
+   "metric": "hold_rate",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Reordering can break the logic of the script; check it still reads sensibly after the swap."
+  },
+  "prerequisites": [
+   "A finished VSL with a clear body and CTA"
+  ],
+  "steps": [
+   "List the VSL's sections: hook, problem, mechanism, objection handling, bridge, proof, risk reversal, CTA.",
+   "Pick 1 reorder to test, such as moving objection handling earlier or pulling mechanism before problem.",
+   "Re-edit the sections in the new order without rewriting the content.",
+   "Launch the reordered cut against the original and compare hold rate through to purchase."
+  ],
+  "test": {
+   "method": "Run the reordered cut and the original cut side by side on the same audience.",
+   "measure": "hold_rate",
+   "read_point": "After both cuts have enough delivery to compare"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "11"
+   ],
+   "cards": [
+    "053dc07009fa"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "MCR-181",
+  "title": "Write hooks in 4 steps: isolate, commit, deep fry, bang",
+  "domain": "10-MCR",
+  "bottleneck": [
+   "conversion",
+   "acquisition_efficiency"
+  ],
+  "lever": "hook scripting method",
+  "hypothesis": "If a hook is built by isolating the core idea from the product, committing to it, adding contrast or stakes, then punching up the wording, then the hook earns more attention than a plain statement of the same idea.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Look at how hooks are drafted today. If the process is to write a plain claim and move on, this idea is live.",
+   "metrics": [
+    "hook_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "hook_rate",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Stretching a claim for effect can cross into an unsupported claim; check every stretched line against what the brand can prove."
+  },
+  "prerequisites": [
+   "A product fact or mechanism to build the hook from"
+  ],
+  "steps": [
+   "Isolate the core idea: start from the product's mechanism and ask why it matters.",
+   "Commit to that one idea instead of hedging across several.",
+   "Deep fry it: add contrast, surprise, novelty, or stakes that are true to the product.",
+   "Make it bang: use emotional trigger words, simple language, the best information first, and an open loop.",
+   "Check every stretched claim against what the brand can actually prove."
+  ],
+  "test": {
+   "method": "Compare hook rate on hooks built this way against the team's prior hooks.",
+   "measure": "hook_rate",
+   "read_point": "After the next hook batch"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "12"
+   ],
+   "cards": [
+    "85ea7dc45ab8"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "MCR-182",
+  "title": "Build an ad around a pretend media format",
+  "domain": "10-MCR",
+  "bottleneck": [
+   "acquisition_efficiency",
+   "trust_brand"
+  ],
+  "lever": "creative conceit",
+  "hypothesis": "If an ad is built around a recognizable media format it pretends to be, such as an interview, a whistleblower exposé, or a magazine-style comparison, then it earns attention as content instead of reading as an obvious ad.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Scan live ads for a structural conceit. If every ad is a plain product pitch with no borrowed format, this idea is live.",
+   "metrics": [
+    "hook_rate",
+    "ctr"
+   ]
+  },
+  "expected_effect": {
+   "metric": "hook_rate",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "designer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "A pretend format such as a fake interview or exposé can raise disclosure and authenticity concerns; keep every fact true and clearly a brand ad where disclosure rules require it."
+  },
+  "prerequisites": [
+   "A concept and angle already written"
+  ],
+  "steps": [
+   "Pick a media format the target buyer already recognizes: an interview, an exposé, a magazine comparison, or similar.",
+   "Fit the ad's concept and angle into that format's structure.",
+   "Keep every claim in the pretend format true and provable.",
+   "Check the format does not mislead about who made the ad where disclosure rules apply."
+  ],
+  "test": {
+   "method": "Run the pretend-format ad against a plain-format version of the same concept and compare hook rate.",
+   "measure": "hook_rate",
+   "read_point": "After both versions have enough delivery to compare"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "12"
+   ],
+   "cards": [
+    "10b56ec55756"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "MCR-183",
+  "title": "Match technical word precision to the audience's expertise",
+  "domain": "10-MCR",
+  "bottleneck": [
+   "trust_brand",
+   "conversion"
+  ],
+  "lever": "copy precision",
+  "hypothesis": "If technical terms in ad copy are checked against how expert the target persona actually is, then an expert audience does not catch an imprecise claim that a general audience would have let pass.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Read copy aimed at an expert or enthusiast persona. If it uses loose or overlapping technical terms, this idea is live.",
+   "metrics": [
+    "hold_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "hold_rate",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Over-precision can make copy harder to read for a general audience; match the level to the actual persona."
+  },
+  "prerequisites": [
+   "A clear picture of how expert the target persona is in the product category"
+  ],
+  "steps": [
+   "Identify how expert the ad's target persona is in the category.",
+   "List every technical term or ingredient claim in the script.",
+   "Check each term for accuracy at the expert level, not just at a glance.",
+   "Fix or simplify any term that would read as a mistake to that expert audience."
+  ],
+  "test": {
+   "method": "Have someone with real category expertise review the copy before launch and log any flagged terms.",
+   "measure": "hold_rate",
+   "read_point": "Before every launch to an expert-heavy audience"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "13"
+   ],
+   "cards": [
+    "4f6f2e7601e9"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "MCR-184",
+  "title": "Follow a named condition with a stat to widen self-identification",
+  "domain": "10-MCR",
+  "bottleneck": [
+   "acquisition_volume",
+   "conversion"
+  ],
+  "lever": "problem framing",
+  "hypothesis": "If naming a clinical or technical condition is followed at once by a true stat on how common and often invisible it is, then more viewers self-identify with the problem instead of assuming the term does not apply to them.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Check scripts that name a clinical or technical term. If the term is left unexplained with no follow-up on how common it is, this idea is live.",
+   "metrics": [
+    "hold_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "hold_rate",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "The prevalence stat must be real and sourced; an invented number is a compliance risk."
+  },
+  "prerequisites": [
+   "A real, sourced prevalence statistic for the named condition"
+  ],
+  "steps": [
+   "Name the condition or mechanism in plain terms.",
+   "Immediately follow it with a true, sourced statistic on how common it is.",
+   "Add a line noting many people do not know they have it, if that is also true.",
+   "Confirm the statistic traces to a real source before launch."
+  ],
+  "test": {
+   "method": "Run the version with the prevalence stat against a version without it and compare hold rate.",
+   "measure": "hold_rate",
+   "read_point": "After both versions have enough delivery to compare"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "13"
+   ],
+   "cards": [
+    "2656d0241771",
+    "51a88883a763"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "MCR-185",
+  "title": "Build funny, shareable ads for light, low-stakes products",
+  "domain": "10-MCR",
+  "bottleneck": [
+   "acquisition_volume",
+   "aov"
+  ],
+  "lever": "tone by product weight",
+  "hypothesis": "If a light, low-stakes product's ads lean on humor and something the buyer would send to a friend, instead of heavy emotion or dark curiosity, then the ad earns organic pass-along that a heavier tone would not.",
+  "applies_when": [
+   "impulse",
+   "low_aov"
+  ],
+  "signal": {
+   "check": "Check the tone of ads for the brand's lightest, lowest-stakes products. If they use the same fear-led or curiosity-heavy tone as a serious health product, this idea is live.",
+   "metrics": [
+    "other:hold_rate",
+    "organic_sessions"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:hold_rate",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "designer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Forced humor that does not land reads worse than a plain ad; test with real reactions before scaling."
+  },
+  "prerequisites": [
+   "A light or low-stakes product where the buyer's problem is not private or painful"
+  ],
+  "steps": [
+   "Identify products where the buyer's problem is light, not private or painful.",
+   "Write the ad around a joke or shareable moment tied to the product's actual use.",
+   "Check with a small audience or a trial post whether the joke actually lands before paid spend.",
+   "Track shares and saves alongside purchases for these ads."
+  ],
+  "test": {
+   "method": "Compare shares, saves, and AOV on humor-led ads against the brand's standard tone for the same product.",
+   "measure": "other:hold_rate",
+   "read_point": "After the humor-led batch has enough delivery to compare"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "16"
+   ],
+   "cards": [
+    "9d1bbe5069da"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "MCR-186",
+  "title": "Study competitor ads one or two revenue tiers above your own",
+  "domain": "10-MCR",
+  "bottleneck": [
+   "acquisition_efficiency"
+  ],
+  "lever": "competitor research targeting",
+  "hypothesis": "If competitor research targets a brand roughly one or two revenue tiers above your own instead of a category giant or a brand too small to be selling, then the ideas found are actually reachable and relevant to where the store is now.",
+  "applies_when": [
+   "scaling_store"
+  ],
+  "signal": {
+   "check": "Check which competitors the team studies for creative ideas. If it is only the largest brand in the category or brands with barely any visible sales, this idea is live.",
+   "metrics": [
+    "other:creative_hit_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:creative_hit_rate",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Revenue tier is often a guess without real data on the competitor; use spend and ad-library signals as a proxy."
+  },
+  "prerequisites": [
+   "A rough sense of the store's own revenue tier and a list of competitors at each tier"
+  ],
+  "steps": [
+   "Estimate the store's own rough revenue tier.",
+   "List competitors roughly one or two tiers above, using visible signals like ad count, site scale, or reported figures.",
+   "Study those brands' longest-running ads for structure and threads that repeat.",
+   "Avoid using a category giant or an inactive small brand as the main reference."
+  ],
+  "test": {
+   "method": "Compare the hit rate of concepts sourced from tier-matched competitors against ones sourced from a category giant.",
+   "measure": "other:creative_hit_rate",
+   "read_point": "After one research and production cycle"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "17"
+   ],
+   "cards": [
+    "5790ccbc3904"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "MCR-187",
+  "title": "Bundle a low-ticket product when unit price cannot cover ad cost",
+  "domain": "10-MCR",
+  "bottleneck": [
+   "aov",
+   "margin_cogs"
+  ],
+  "lever": "offer construction",
+  "hypothesis": "If a low-ticket product's single-unit price cannot cover ad cost and margin, then offering it in bundles of 3, 5, or more lifts average order value enough to make paid acquisition profitable.",
+  "applies_when": [
+   "low_aov",
+   "impulse"
+  ],
+  "signal": {
+   "check": "Compare the single-unit price against production cost, shipping, and current CAC. If the single unit alone cannot cover them, this idea is live.",
+   "metrics": [
+    "aov",
+    "cpa"
+   ]
+  },
+  "expected_effect": {
+   "metric": "aov",
+   "direction": "up",
+   "size": "example: unit price near $5 lifted to $25 to $30 AOV through bundling",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A bundle only helps if it fits how often the buyer actually uses or replenishes the product."
+  },
+  "prerequisites": [
+   "Unit cost, margin, and current CAC for the product"
+  ],
+  "steps": [
+   "Check whether the single-unit price covers production cost, shipping, and current CAC.",
+   "If not, build bundle sizes such as 3-packs, 5-packs, or more.",
+   "Show a real per-unit saving in the bundle versus buying single units.",
+   "Match bundle size to how often the buyer would realistically use or reorder the product.",
+   "Feature the bundle as the default offer in ads for this product, not the single unit."
+  ],
+  "test": {
+   "method": "Compare AOV and blended profitability of bundle-led ads against single-unit ads for the same product.",
+   "measure": "aov",
+   "read_point": "After the bundle offer has run long enough to compare"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "18"
+   ],
+   "cards": [
+    "5aaabe53c66f"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": false
+ },
+ {
+  "id": "MCR-188",
+  "title": "Default to ad-set budgets, switch to campaign budgets for a short push",
+  "domain": "10-MCR",
+  "bottleneck": [
+   "risk_compliance",
+   "cash_inventory"
+  ],
+  "lever": "budget allocation risk",
+  "hypothesis": "If a store runs ad-set-level budgets as the steady state and switches to campaign-level budget optimization only for a short efficiency push, then it protects sell-through across products most of the time and only accepts concentration risk when it deliberately wants a quick lift.",
+  "applies_when": [
+   "scaling_store"
+  ],
+  "signal": {
+   "check": "Check how campaign budgets are set today. If campaign-level budget optimization runs by default with no plan for when to step back to ad-set budgets, this idea is live.",
+   "metrics": [
+    "other:spend_share_top_ads",
+    "roas_blended"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:spend_share_top_ads",
+   "direction": "down",
+   "size": "example: without a plan, about 4% of ads can take about 64% of spend",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "Switching back and forth between budget modes can reset delivery learning; plan the switch, do not flip it constantly."
+  },
+  "prerequisites": [
+   "A live prospecting campaign with more than one ad set or product"
+  ],
+  "steps": [
+   "Run ad-set-level budgets as the default so spend spreads across products and concepts.",
+   "Reserve campaign-level budget optimization for a short window when a fast efficiency gain matters more than spread.",
+   "Before switching, check that a spend spike on 1 or 2 ads would not create a stockout or sell-through problem.",
+   "Return to ad-set budgets once the short push ends."
+  ],
+  "test": {
+   "method": "Compare spend concentration and stockout incidents in a period run under each budget mode.",
+   "measure": "other:spend_share_top_ads",
+   "read_point": "After one full month under each mode"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "a02bc677cd84",
+    "1493b95923ed"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "MCR-189",
+  "title": "Test one ad set holding all awareness stages against split ad sets",
+  "domain": "10-MCR",
+  "bottleneck": [
+   "acquisition_efficiency"
+  ],
+  "lever": "ad set structure",
+  "hypothesis": "If creative for every awareness stage runs inside a single ad set instead of being split into separate stage-based ad sets, then delivery can match each creative to the right viewer on its own, which may reach more people than manually splitting the audience by stage.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Check whether the account currently splits ad sets by awareness stage. If each stage-based ad set struggles to get enough delivery on its own, this idea is worth testing.",
+   "metrics": [
+    "other:stage_coverage",
+    "roas_blended"
+   ]
+  },
+  "expected_effect": {
+   "metric": "roas_blended",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "This directly conflicts with keeping one persona-and-angle pair per ad set; treat both as hypotheses to test against each other, not as a settled rule."
+  },
+  "prerequisites": [
+   "Creative already tagged by awareness stage",
+   "A live prospecting campaign to test against"
+  ],
+  "steps": [
+   "Build one ad set that holds creative for every awareness stage the account currently makes.",
+   "Tag each creative with its stage so results can still be read by stage after the test.",
+   "Run it alongside the account's current stage-split ad sets for the same budget tier.",
+   "Compare blended results and spend spread across stages between the 2 structures."
+  ],
+  "test": {
+   "method": "Run the mixed-stage ad set and the stage-split ad sets side by side for a full test window.",
+   "measure": "roas_blended",
+   "read_point": "After both structures have had a full test window"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "05"
+   ],
+   "cards": [
+    "14533d4ab993",
+    "86dcadbf0b6b"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "MCR-190",
+  "title": "Turn on catalog retargeting under handcrafted objection ads",
+  "domain": "10-MCR",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "bottom-funnel retargeting layer",
+  "hypothesis": "If catalog or dynamic product ads retarget anyone who viewed similar products, running alongside handcrafted objection ads rather than replacing them, then the bottom of funnel covers browsers the objection ads alone would miss.",
+  "applies_when": [
+   "catalogue",
+   "any"
+  ],
+  "signal": {
+   "check": "Check whether catalog or dynamic retargeting is turned on for site visitors. If not, and objection ads are the only retargeting creative, this idea is live.",
+   "metrics": [
+    "cvr_overall",
+    "roas_retargeting"
+   ]
+  },
+  "expected_effect": {
+   "metric": "roas_retargeting",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "Catalog ad ROAS can look strong on last click while adding little incremental revenue; read it with incremental attribution, not last click alone."
+  },
+  "prerequisites": [
+   "A product catalog set up for the ad platform",
+   "Existing bottom-of-funnel objection ads already live"
+  ],
+  "steps": [
+   "Turn on catalog or dynamic product retargeting for people who viewed similar products.",
+   "Keep the handcrafted, one-objection-per-ad creative live alongside it, not replaced by it.",
+   "Read catalog ad results with incremental attribution, not last-click ROAS alone.",
+   "Watch for budget drifting from top-of-funnel creative toward catalog ads and correct it if it does."
+  ],
+  "test": {
+   "method": "Compare incremental ROAS and new-customer volume before and after turning on catalog retargeting.",
+   "measure": "roas_retargeting",
+   "read_point": "After 2 to 4 weeks of catalog retargeting live"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "08"
+   ],
+   "cards": [
+    "7d806738414a"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "MCR-191",
+  "title": "Cap per-ad delivery during a test so one ad does not starve the rest",
+  "domain": "10-MCR",
+  "bottleneck": [
+   "measurement_data"
+  ],
+  "lever": "test delivery equalization",
+  "hypothesis": "If each ad in a new test batch is capped at a similar number of impressions early on, then an ad that gets lucky early engagement does not take all the test budget before the rest get a fair read.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Check spend and impressions per ad in the last test batch. If one ad took most of the budget on day 1 while others got almost none, this idea is live.",
+   "metrics": [
+    "frequency",
+    "other:creative_hit_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:creative_hit_rate",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Forcing equal delivery can slow how fast a true early winner gets spend; remove the cap once the test window ends."
+  },
+  "prerequisites": [
+   "A way to set or approximate a per-ad delivery cap in the ad platform"
+  ],
+  "steps": [
+   "Before launching a batch, decide on a similar impression or spend cap for every ad in the test.",
+   "Set that cap on each ad for the test window.",
+   "Check midway that delivery is actually spreading roughly evenly.",
+   "Remove the cap once the test window ends and let real winners take more spend."
+  ],
+  "test": {
+   "method": "Compare how evenly test spend and impressions were split across ads with and without the cap.",
+   "measure": "other:creative_hit_rate",
+   "read_point": "After the test window closes"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "10"
+   ],
+   "cards": [
+    "d13b3e03307b"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "MCR-192",
+  "title": "Route a no-CTA top-of-funnel VSL's viewers to Amazon search",
+  "domain": "10-MCR",
+  "bottleneck": [
+   "acquisition_efficiency"
+  ],
+  "lever": "off-platform conversion routing",
+  "hypothesis": "If a top-of-funnel VSL that carries no direct CTA sends its most interested viewers toward searching for the product on Amazon instead of a DTC landing page, then the store captures sales at Amazon's higher marketplace conversion rate for categories where that gap is real.",
+  "applies_when": [
+   "marketplace_heavy"
+  ],
+  "signal": {
+   "check": "Check whether the brand runs any top-of-funnel video with no CTA. If interested viewers are only ever sent to the DTC site, and a marketplace converts noticeably higher for this category, this idea is live.",
+   "metrics": [
+    "cvr_overall",
+    "marketplace_share"
+   ]
+  },
+  "expected_effect": {
+   "metric": "marketplace_share",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "This only makes sense where a marketplace genuinely converts higher than the brand's own site for this product; confirm with the brand's own data first, and note it gives up direct customer data and margin to the marketplace."
+  },
+  "prerequisites": [
+   "The product is listed and in stock on the marketplace being routed to",
+   "Data showing the marketplace converts higher than the DTC site for this category"
+  ],
+  "steps": [
+   "Confirm the product is listed, in stock, and priced consistently on the marketplace.",
+   "Build a top-of-funnel VSL that carries no direct CTA and stays purely educational.",
+   "Prompt viewers to search for the product by name on the marketplace instead of clicking to the DTC site.",
+   "Compare marketplace sales lift against what the same spend would have driven on a DTC landing page."
+  ],
+  "test": {
+   "method": "Run the no-CTA marketplace-routed VSL against a matched VSL with a normal DTC CTA and compare total attributable sales.",
+   "measure": "cvr_overall",
+   "read_point": "After both versions have run long enough to compare"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "11"
+   ],
+   "cards": [
+    "b8868a83a786"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
  }
 ]
