@@ -44,12 +44,14 @@ function pbRefAds(cat) {
   const SALE = /\b(sale|eoss|% ?off|off on|discount|offer|coupon|hours left|days left|last \d+ (days|hours)|flat \d+)/i;
   const sale = (id) => { const a = ENGINE.c.ads[id] || DATA.ads[id] || {}, c = a.creative || {};
     return (VIEW.ads[id].tags && VIEW.ads[id].tags.angle.code === 'offer') || SALE.test([a.name, c.name, c.headline, c.primary_text].join(' ')); };
-  const all = ((VIEW.collections.static_image || {}).ad_ids || []).filter((id) => VIEW.ads[id] && VIEW.ads[id].view.metrics.roas !== null && VIEW.ads[id].view.metrics.purchases >= 1);
+  // From the top 100 image ads by ROAS in these dates (1+ purchase), plus the top 30 by spend.
+  const pool = [...new Set([...((VIEW.collections['roas1:static_image'] || {}).ad_ids || []), ...((VIEW.collections.static_image || {}).ad_ids || [])])];
+  const all = pool.filter((id) => VIEW.ads[id] && VIEW.ads[id].view.metrics.roas !== null && VIEW.ads[id].view.metrics.purchases >= 1);
   const ids = all.filter((id) => !sale(id)).length ? all.filter((id) => !sale(id)) : all;
   const by = (l) => l.sort((a, b) => VIEW.ads[b].view.metrics.roas - VIEW.ads[a].view.metrics.roas);
   const inCat = by(ids.filter((id) => adCat(ENGINE.c.ads[id] || DATA.ads[id]) === cat));
   const rest = by(ids.filter((id) => !inCat.includes(id)));
-  return [...inCat, ...rest].slice(0, 4);
+  return [...inCat.slice(0, 4), ...rest].slice(0, 8);
 }
 function pbOpt(p) {
   if (!PB.opt[p.code]) { const refs = pbRefAds(p.cat); PB.opt[p.code] = { n: 4, size: 'square', quality: 'medium', ref: refs.length ? 'ad' : 'none', refAd: refs[0] || null, picks: [1, 2], off: [], paste: '' }; }
@@ -160,7 +162,7 @@ function pbRefHtml(p) {
   const opt = (v, l) => `<button type="button" data-pbref="${v}" aria-pressed="${o.ref === v}">${l}</button>`;
   return `<div class="pb-sec"><h4>Style reference</h4>
     <div class="seg" role="group" aria-label="Style reference">${refs.length ? opt('ad', 'Your best image ad') : ''}${opt('paste', 'Paste an image')}${opt('none', 'None')}</div>
-    ${o.ref === 'ad' ? `<div class="pb-refads">${refs.map((id) => { const a = VIEW.ads[id], m = a.view.metrics; return `<button type="button" class="base-card${id === o.refAd ? ' on' : ''}" data-pbrefad="${esc(id)}" aria-pressed="${id === o.refAd}"><span class="bc-th">${thumbHtml(id, a.name)}</span><span class="small"><b>ROAS ${roasTxt(m.roas)}</b> · ${m.purchases} sales</span><span class="mt small">${esc(adCat(ENGINE.c.ads[id] || DATA.ads[id]))}</span></button>`; }).join('')}</div><p class="small muted">Layout, framing and mood only. The piece always comes from the product. Picked from image ads with a sale in the dates above, sale ads left out.${refs.length < 3 ? ' Widen the dates to see more.' : ''}</p>` : ''}
+    ${o.ref === 'ad' ? `<div class="pb-refads">${refs.map((id) => { const a = VIEW.ads[id], m = a.view.metrics; return `<button type="button" class="base-card${id === o.refAd ? ' on' : ''}" data-pbrefad="${esc(id)}" aria-pressed="${id === o.refAd}"><span class="bc-th">${thumbHtml(id, a.name)}</span><span class="small"><b>ROAS ${roasTxt(m.roas)}</b> · ${m.purchases} sales</span><span class="mt small">${esc(adCat(ENGINE.c.ads[id] || DATA.ads[id]))}</span></button>`; }).join('')}</div><p class="small muted">Layout, framing and mood only. The piece always comes from the product. Best ROAS image ads in the dates above (same category first), sale ads left out.${refs.length < 4 ? ' Pick Last 365 days at the top to see more.' : ''}</p>` : ''}
     ${o.ref === 'paste' ? `${refSlotHtml('Style reference')}<p class="small muted" data-refmsg></p>` : ''}</div>`;
 }
 function pbBuildHtml(p) {

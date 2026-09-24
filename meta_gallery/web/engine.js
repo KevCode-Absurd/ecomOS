@@ -4,6 +4,7 @@
 // totals come from daily rows, breakdowns from monthly rows, kept apart.
 (function (root) {
   const COLLECTION_SIZE = 30;
+  const ROAS_SET_SIZE = 100, ROAS_FLOORS = [2, 1, 0];   // "Top 100 by ROAS" lists with a floor of 2, 1 or 0 purchases
   const WATCH_BAND = 0.7;
   const CUT_SPEND_MULTIPLE = 2.0;
   const RECENT = 7, BASE = 21, CTR_DROP = 0.25, ROAS_DROP = 0.30, MIN_RECENT_IMPR = 1000, MIN_BASE_IMPR = 3000;
@@ -168,6 +169,19 @@
       for (const [k, v] of Object.entries(byType)) byTypeOut[k] = { ...Engine.addUp(v), label: this.labels[k] || k };
       const picks = { all: cands.slice(0, COLLECTION_SIZE) };
       for (const f of FORMATS) picks[f] = cands.filter(([id]) => ads[id].creative.type === f).slice(0, COLLECTION_SIZE);
+      // Second set of lists: the best ROAS, with a floor on purchases. Spend is the tie-break.
+      // Ads with no reported value go last (unavailable, not zero). Keys look like roas2:static_image.
+      const roasOrder = cands.slice().sort((x, y) => (y[1].roas ?? -1) - (x[1].roas ?? -1) || y[1].spend - x[1].spend);
+      const roasPool = {};
+      for (const fl of ROAS_FLOORS) {
+        roasPool[fl] = fl ? roasOrder.filter(([, m]) => m.roas !== null && (m.purchases || 0) >= fl) : roasOrder;
+        // All formats: the top 100, plus every single image ad with a reported ROAS even when it falls outside the 100.
+        const top = roasPool[fl].slice(0, ROAS_SET_SIZE), inTop = new Set(top.map(([id]) => id));
+        const extraImg = roasPool[fl].filter(([id, m]) => !inTop.has(id) && ads[id].creative.type === 'static_image' && m.roas !== null);
+        picks[`roas${fl}:all`] = roasPool[fl].filter(([id]) => inTop.has(id) || extraImg.some(([x]) => x === id));
+        roasPool['extra' + fl] = extraImg.length;
+        for (const f of FORMATS) picks[`roas${fl}:${f}`] = roasPool[fl].filter(([id]) => ads[id].creative.type === f).slice(0, ROAS_SET_SIZE);
+      }
       const rank = {};
       cands.forEach(([id], i) => { rank[id] = i + 1; });
       const media = {};
@@ -191,8 +205,11 @@
       }
       const collections = {};
       for (const [key, grp] of Object.entries(picks)) {
-        collections[key] = { label: this.labels[key] || key, ad_ids: grp.map((x) => x[0]), size: grp.length,
-          available: key === 'all' ? cands.length : (byType[key] || []).length, totals: Engine.addUp(grp.map((x) => x[1])) };
+        const rm = /^roas(\d):(.+)$/.exec(key), f = rm ? rm[2] : key, fl = rm ? Number(rm[1]) : 0;
+        collections[key] = { label: this.labels[f] || f, ad_ids: grp.map((x) => x[0]), size: grp.length, by: rm ? 'roas' : 'spend',
+          limit: rm ? ROAS_SET_SIZE : COLLECTION_SIZE, min_purchases: fl, extra_images: rm && f === 'all' ? roasPool['extra' + fl] : 0,
+          available: rm ? (f === 'all' ? roasPool[fl].length : roasPool[fl].filter(([id]) => ads[id].creative.type === f).length) : f === 'all' ? cands.length : (byType[f] || []).length,
+          totals: Engine.addUp(grp.map((x) => x[1])) };
       }
       const demoAll = {};
       for (const dim of ['age', 'gender', 'publisher_platform']) {

@@ -59,7 +59,7 @@ function thumbHtml(adId, alt) {
 
 // ---------- per-viewer memory (filters only) ----------
 function remember() {
-  try { localStorage.setItem('gallery-state', JSON.stringify({ since: state.since, until: state.until, kw: state.kw, camp: state.camp, xp: state.preset, preset: $('preset').value, fmt: $('format').value, compare: $('compare').checked })); } catch (e) { /* storage unavailable */ }
+  try { localStorage.setItem('gallery-state', JSON.stringify({ since: state.since, until: state.until, kw: state.kw, camp: state.camp, xp: state.preset, preset: $('preset').value, fmt: $('format').value, set: $('rankSet').value, compare: $('compare').checked })); } catch (e) { /* storage unavailable */ }
 }
 function recall() {
   try { return JSON.parse(localStorage.getItem('gallery-state') || 'null'); } catch (e) { return null; }
@@ -99,6 +99,7 @@ async function boot() {
     Object.assign(state, { since: saved.since, until: saved.until, kw: cleanKeywords(saved.kw || []), camp: (saved.camp || []).filter((i) => /^\d{5,25}$/.test(i)) });
     $('preset').value = saved.preset && $('preset').querySelector(`option[value="${saved.preset}"]`) ? saved.preset : 'custom';
     if (saved.fmt && m.formats.includes(saved.fmt)) $('format').value = saved.fmt;
+    if (/^roas[012]$/.test(saved.set || '')) { $('rankSet').value = saved.set; $('sort').value = 'roas'; }
     $('compare').checked = saved.compare !== false;
     if (['7', '14', '30', '90', '180', '365', 'this_month', 'last_month'].includes($('preset').value)) applyPreset($('preset').value);
   } else {
@@ -157,6 +158,12 @@ function wire() {
   for (const id of ['agency', 'client', 'note']) $(id).addEventListener('input', renderReport);
   for (const id of ['sort', 'verdict', 'minSpend', 'minRoas', 'campaign', 'adStatus']) $(id).addEventListener('input', renderGrid);
   $('format').addEventListener('change', () => { fillFilters(); renderGrid(); remember(); });
+  $('rankSet').addEventListener('change', () => {
+    // The ROAS list is mostly used to find image ads to learn from, so start it on single images.
+    $('sort').value = $('rankSet').value === 'spend' ? 'spend' : 'roas';
+    fillFilters(); renderGrid(); remember();
+  });
+  $('sortNote').addEventListener('click', (e) => { if (e.target.closest('[data-year]')) { $('preset').value = '365'; applyPreset('365'); refresh(); } });
   for (const t of TABS) $('tab-' + t).addEventListener('click', () => { setTab(t); window.scrollTo(0, 0); });
   $('exportGrid').addEventListener('click', exportGridCsv);
   $('grid').addEventListener('change', (e) => { if (e.target.matches('input[data-compare]')) toggleCompare(e.target.dataset.compare, e.target.checked); });
@@ -440,7 +447,10 @@ function demoBlock(demos, note) {
 }
 
 // ---------- grid ----------
-const collection = () => VIEW.collections[$('format').value] || VIEW.collections.all;
+const collection = () => {
+  const set = $('rankSet') ? $('rankSet').value : 'spend', f = $('format').value;
+  return (set !== 'spend' ? VIEW.collections[`${set}:${f}`] || VIEW.collections[`${set}:all`] : VIEW.collections[f]) || VIEW.collections.all;
+};
 const items = () => collection().ad_ids.map((id) => VIEW.ads[id]);
 function fillFilters() {
   const all = items();
@@ -473,12 +483,21 @@ function renderGrid() {
   else if (sort === 'change') list.sort((a, b) => chg(b) - chg(a));
   else list.sort((a, b) => b.view.metrics.spend - a.view.metrics.spend);
   const scope = fmtKey === 'all' ? 'across all formats' : `${col.label.toLowerCase()} ads only`;
-  $('collectionLabel').textContent = `Top 30 by spend, ${scope}` + (col.size < 30 ? ` · only ${col.size} spent in these dates` : '') + ` · showing ${list.length} of ${col.size}`;
+  const byRoas = col.by === 'roas';
+  $('collectionLabel').textContent = byRoas
+    ? `Top ${col.limit} by ROAS, ${scope}${col.min_purchases ? `, ${col.min_purchases}+ purchase${col.min_purchases > 1 ? 's' : ''}` : ''}` + (col.extra_images ? ` + ${col.extra_images} more image ad${col.extra_images === 1 ? '' : 's'}` : '')
+      + (col.size - col.extra_images < col.limit ? ` · ${col.size} qualify in these dates` : ` · ${col.available} qualify`) + ` · showing ${list.length} of ${col.size}`
+    : `Top 30 by spend, ${scope}` + (col.size < 30 ? ` · only ${col.size} spent in these dates` : '') + ` · showing ${list.length} of ${col.size}`;
   const notes = [];
-  if (sort === 'roas') notes.push('Sorted by ROAS within this top-30-by-spend set, not the account\'s top 30 by ROAS. Ads with no reported value are last.');
+  if (byRoas && fmtKey === 'all') notes.push('All formats are ranked together, and every single image ad with a reported ROAS is always included, even outside the top 100.');
+  if (byRoas) notes.push(col.min_purchases > 1 ? `Ranked by purchase ROAS in these dates. Ads need ${col.min_purchases} or more purchases, so 1 lucky sale does not top the list.`
+    : col.min_purchases === 1 ? 'Ranked by purchase ROAS in these dates. 1 purchase can make a high ROAS, so check spend and purchases on each card.'
+    : 'Ranked by purchase ROAS in these dates. Ads with no reported purchase value come last, ordered by spend.');
+  if (byRoas && VIEW.range.days < 360) notes.push(`<button class="linkbtn" type="button" data-year>Use the last 365 days</button> for the widest list.`);
+  if (sort === 'roas' && !byRoas) notes.push('Sorted by ROAS within this top-30-by-spend set, not the account\'s top 30 by ROAS. Switch Show to "Top 100 by ROAS" for that. Ads with no reported value are last.');
   if (sort === 'change') notes.push('Sorted by spend change vs the previous period. New ads come first.');
   if (hidden) notes.push(`${hidden} ads hidden by the ROAS filter because Meta reported no purchase value for them.`);
-  $('sortNote').textContent = notes.join(' ');
+  $('sortNote').innerHTML = notes.map((n) => (n.startsWith('<button') ? n : esc(n))).join(' ');
   const t = col.totals, vc = {};
   for (const ad of items()) vc[ad.view.verdict.code] = (vc[ad.view.verdict.code] || 0) + 1;
   $('totals').innerHTML = `This set (all ${col.size} ads, filters ignored): spend ${fmt(t.spend, 'money')} · purchase value ${fmt(t.purchase_value, 'money')} · ROAS ${fmt(t.roas, 'x')} · Verdicts: ${vc.scale || 0} scale, ${vc.watch || 0} watch, ${vc.cut || 0} cut, ${vc.not_enough_data || 0} not enough data`;
