@@ -4,6 +4,8 @@ version: 2.0-draft  |  date: 24 Sep 2026  |  sources: 7 mini playbooks (6 indepe
 
 ## 0. How to use this playbook
 
+**Ecommerce first.** This playbook is written for stores, not for SaaS, publisher or enterprise properties. Section 3.0 ranks the levers that matter most to a store before any group below it. Store-type conditions (hero SKU vs catalogue, low vs high AOV, subscription vs one-off, marketplace-heavy, luxury or considered purchase, mobile-first India vs US) decide which rules in the groups below apply and in what order.
+
 **Who runs it.** The measurement and data trust agent. Its job is to make every number the other agents use trustworthy before they use it. It sets up and audits GA4 and Google Tag Manager, checks ecommerce event coverage, checks the Meta pixel and Conversions API (CAPI) and their deduplication, judges server-side and gateway options, reads GA4 and Shopify reports without being fooled by them, reconciles platform purchases to store orders, keeps the brand's top metric fixed, and runs the daily trust check. It hands ad account structure to 24-DEP, Google Ads to 12-GAD, test design and significance to 09-CRO, landing page fixes to 07-LPG, email metrics to 14-EML, and P&L, COGS and contribution definitions to 20-FIN.
 
 **ecomOS rules that override every source in this folder.**
@@ -39,7 +41,7 @@ version: 2.0-draft  |  date: 24 Sep 2026  |  sources: 7 mini playbooks (6 indepe
 
 **Covers.** GA4 account, property and stream structure. Install through GTM, a platform integration or hard code. Preview and DebugView testing. Day-1 GA4 settings (retention, domains, internal traffic, session timeout, Google Signals) and what to change or leave. Key events and why the purchase event, not a thank-you page view, is the sales key event. Ecommerce event coverage. Meta pixel plus CAPI through server-side GTM, with event ID dedup, consent gating and test event codes. The CAPI Gateway and what it cannot do. Shopify constraints on tagging. UTM discipline and channel grouping. Attribution model comparison and platform versus self-reported source conflicts. Reconciliation of GA4, Meta and Shopify purchase counts and revenue to store orders. Revenue definitions (net sales plus shipping charges, tax out, returns timing). Choosing 1 top metric and when to change it. Funnel ratios, bot checks and the sessions x conversion rate x AOV triage. Reading GA4 and Shopify reports without the common traps. Daily trust checks, trust scores and new-source onboarding.
 
-**Does not cover.** Meta account structure, attribution window choice for buying, and campaign reads: 24-DEP. Google Ads conversion actions and Shopping: 12-GAD. Test design, sample size and significance: 09-CRO. Checkout and page fixes once a funnel leak is found: 07-LPG and 09-CRO. Cohort reading, LTV, CAC, contribution margin, COGS, cash conversion cycle and sell-through: 20-FIN (S06 raises them [37f16297a48e]; the formulas are not here). Email deliverability and per-send metrics: 14-EML. Store setup and theme code: a 05-SET folder that does not yet exist in v2; S01, S03 and S05 point there.
+**Does not cover.** Meta account structure, attribution window choice for buying, and campaign reads: 24-DEP. Google Ads conversion actions and Shopping: 12-GAD. Test design, sample size and significance: 09-CRO. Checkout and page fixes once a funnel leak is found: 07-LPG and 09-CRO. Cohort reading, LTV, CAC, contribution margin, COGS, cash conversion cycle and sell-through: 20-FIN (S06 raises them [37f16297a48e]; the formulas are not here). Email deliverability and per-send metrics: 14-EML. SMS as a measured channel: no source here names it; treat SMS sends and metrics as 14-EML's remit alongside email until it gets its own section. Store setup and theme code: a 05-SET folder that does not yet exist in v2; S01, S03 and S05 point there.
 
 **Business measures it moves.** Fewer wrong budget decisions made on double-counted, bot-inflated or return-timed numbers (S06 return dip example; S04 double count before dedup). Faster decisions because 1 top metric and 1 source of truth per question are agreed (S02, S05). Higher share of Meta events matched and deduplicated (S04, S07; no source measures the lift). Less analyst time lost to numbers that later turn out wrong (S02: analytics must end in a decision).
 
@@ -72,27 +74,46 @@ version: 2.0-draft  |  date: 24 Sep 2026  |  sources: 7 mini playbooks (6 indepe
 
 Each rule states the rule, its condition, the mini playbooks that support it (S01 to S07), conflicts, and card ids. Where only 1 source says it, the rule says "Source Sxx says". Where no source says it, the rule says "ecomOS rule" or "common practice" and carries a `[web check]`.
 
+### 3.0 Ecommerce priority order
+
+Rank these levers before working through the groups below. Each names the rule ids it draws on and, where the sources give one, the store-type condition that changes it.
+
+1. **Confirm ecommerce events arrive** (view_item, add_to_cart, begin_checkout, purchase with value, items, transaction_id) before trusting any other number. Nothing below this works without it. R25, R26, P6.
+2. **Purchase is the only sales key event**, counted once per transaction, never a thank-you page view. R26 to R28, C1.
+3. **Reconcile GA4, Meta and Shopify purchase counts and revenue to store orders**, same dates and channel. This is the trust layer every other read sits on. R73, P21.
+4. **Meta pixel plus CAPI redundancy and dedup**, checked per event type, not only PageView. Ad-driven stores mis-state spend efficiency without it. R44 to R47, P9, P11.
+5. **Fix the revenue definition**: net sales plus shipping, tax out, returns on refund date. Every triage and reconciliation number depends on this first. R74, R75.
+6. **Sessions x conversion rate x AOV triage**, on 1 basis, before anyone names a cause for a sales move. R76, R77, P19.
+7. **Shopify constraints**: GTM does not run in checkout, Shopify sessions include bots, AOV excludes shipping. Skipping this misreads the store's own dashboard. R60, R61, R65.
+8. **UTM and channel tagging discipline** for the store's paid mix (Meta, Google, affiliate, email). Bad tags break every read below this line. R66 to R68.
+9. **Publish the daily trust check** before any other agent reads yesterday's numbers. R92, P22.
+10. **Set the top metric** (customers, revenue or profit) by store stage and offer. A hero-SKU or early-stage store runs on customers; a catalogue or repeat-heavy store can run on revenue or profit; a subscription store needs a repeat or renewal view alongside it (subscription framing is `[general practice]`, not sourced). R79 to R81.
+11. **Benchmark the funnel by store type.** Use the brand's own history first. S06's 2:1:1 fits low-ticket or FMCG stores, not luxury or considered-purchase stores with longer paths, where R69's attribution windows matter more. R87, R38.
+12. **Write the platform vs self-reported attribution rule once.** It is more urgent for marketplace-heavy or mobile-first stores, where platform tracking is weakest (`[general practice]` for the geography point). R69 to R71.
+
+Load this block first; the groups below are the detail.
+
 ### Group A. Ground rules for any number
 
 **R1. Every metric is computed in code, from logged inputs. The model never does the arithmetic.** Condition: always. Reason from the sources: S06's presenter calls a 5% AOV dip plus a 4% conversion dip "a 10% dip" (0.95 x 0.96 = 0.912, an 8.8% drop) [9e9d4013f967]; S02's presenter says $11,000 then corrects to $10,100 for a 1% lift [3a1918a526e2]; S05's transcript carries a 99.2% add-to-cart figure that cannot be right (R80) [000e5a39ddc8]. ecomOS rule. Supports: S02, S05, S06 by counterexample.
 
 **R2. Missing, unsupported or thresholded values show as "unavailable", never as 0.** Condition: always, in every table, page and report. GA4 "(not set)" is unknown (S03) [d54ee95e619b]. An empty Monetization coupon or promotion card means the parameter is not sent, not that no coupons were used (S03) [2fa8beb663c8]. Empty age and gender means Signals is off, not that no data exists (S01, S03) [374c795a2291] [c01dc627e7b1]. ecomOS rule; supports: S01, S03.
 
-**R3. Every report ends in a decision, even "keep doing the same thing".** Condition: any report the agent produces. Aim reports at open questions, not at metrics already understood. A report made to celebrate is not analytics. Source S02 says this [11a74e34ca53]. Show comparative series (revenue against AOV, profit, new customers and channel), never a single-line "revenue up month over month" chart [3a1918a526e2].
+**R3. Every report ends in a decision, even "keep doing the same thing".** Condition: any report the agent produces. Aim reports at open questions, not at metrics already understood. A report made to celebrate is not analytics. Close every report with a store action (restock a SKU, pause or scale a channel, change an offer, fix a funnel step), never "keep monitoring". Source S02 says this [11a74e34ca53]. Show comparative series (revenue against AOV, profit, new customers and channel), never a single-line "revenue up month over month" chart [3a1918a526e2].
 
 **R4. Pick 1 source of truth per question and write it down.** Condition: whenever 2 tools report the same thing. Use the store platform for order and sales totals, GA4 for traffic source, engagement and per-page conversion (S05) [1735fbb29aff]. Use GA4 or another session counter as the sessions denominator when Shopify sessions are suspect (S06) [084db9abd48b]. Use the store's payments or finance report for cash, not a sales report (S06 card) [a3ae4e9e2a00]. GA4 and Shopify numbers will differ; do not force them to match. Supports: S05, S06.
 
 **R5. Start logging data before you know what it is worth.** Condition: any data point that might matter later (order attributes, survey answers, funnel step counts, refund dates). You cannot analyse history you never logged. Compute cost of acquisition before paid ads start, not after. Source S02 says this [776e59649374] [11a74e34ca53]. `[needs brand data: all acquisition cost lines before paid ads, and new-customer counts]`
 
-**R6. Size analytics spend to the size of the decisions it can inform, counting analyst and decision-maker time.** Condition: any tool or headcount decision. S02's illustration: a $1M business makes $5K to $15K decisions from analytics; a $100M business makes $1M to $10M decisions. Illustrative, not a benchmark. Source S02 says this [11a74e34ca53].
+**R6. Match analytics effort to the size of the store's own ad spend tier, counting analyst and decision-maker time; a $5K a month Meta spender needs no $10M brand's data team.** Condition: any tool or headcount decision. Moved to Appendix A: S02's $1M/$100M decision-sizing illustration. Source S02 says this [11a74e34ca53].
 
 ### Group B. GA4 account, property and stream structure
 
-**R7. 1 GA4 account per organization; 1 GTM account per organization.** Condition: 1 business. Set up another business in another account. Supports: S01 [a61d1986b945], S03 [5c923d97e1f7].
+**R7. 1 GA4 account per organization; 1 GTM account per organization.** Condition: 1 business. Set up another business in another account. An agency running several brands never merges 2 brands into 1 GA4 account to save setup time. Supports: S01 [a61d1986b945], S03 [5c923d97e1f7].
 
 **R8. 1 property per user journey, not per website.** Condition: if a shopper moves across several of your domains before converting (main site, then a separate checkout domain), those domains share 1 property, and every one of them is listed under Configure your domains (R14). Give a site its own property only when it is a separate business line whose data you never want mixed. Supports: S01 [a61d1986b945] [60bd489184a8], S03 (usually 1 property per business) [5c923d97e1f7]. `[needs brand data: every domain a shopper touches from landing to thank-you page]`
 
-**R9. 1 web data stream per property, even when several websites share it. Apps get their own streams.** Condition: web properties. S01 says Google "highly recommends" 1 web stream, and the domain typed at creation "does not matter much". S03 says 1 stream per site or app (website plus app = 2 streams). Conflict on wording only: S03 is describing web vs app, not several websites. Use S01's rule for several websites in 1 journey. Supports: S01 [a61d1986b945], S03 [5c923d97e1f7] [f2f53af85949].
+**R9. 1 web data stream per property, even when several websites share it. Apps get their own streams.** Condition: web properties. S01 says Google "highly recommends" 1 web stream, and the domain typed at creation "does not matter much". S03 says 1 stream per site or app (website plus app = 2 streams). Conflict on wording only: S03 is describing web vs app, not several websites. Use S01's rule for several websites in 1 journey. A subscription portal or wholesale storefront still shares 1 web stream with the main site if a shopper crosses both. Supports: S01 [a61d1986b945], S03 [5c923d97e1f7] [f2f53af85949].
 
 **R10. Set reporting time zone and currency at creation to match the store and finance reports. Do not change time zone later.** Condition: property creation. A later time zone change causes a gap or overlap in data (S03). GA4 converts values sent in other currencies into the property currency (S03 example: AUD sent to a USD property shows as USD). Supports: S01, S03 [5c923d97e1f7]. `[needs brand data: business time zone and store currency]`
 
@@ -116,7 +137,7 @@ Each rule states the rule, its condition, the mini playbooks that support it (S0
 
 ### Group D. Day-1 settings and what to leave alone
 
-**R19. Set event data retention to 14 months the moment the property exists.** Condition: every new property; audit every old one. Default is 2 months. Data beyond the window is not recovered by changing the setting later (S01 card claim). Both sources agree on 14 months. Scope of the effect is disputed: S01 says explorations only reach the retention window; S03's transcript says "more historical data in your reports" while its card narrows this to Explore. Common understanding is that retention limits explorations, not standard aggregated reports. Supports: S01 [017251ba79b0] [4bce06a3a94d], S03 [c01dc627e7b1]. `[web check: whether retention affects standard reports or only explorations]` `[verify UI]`
+**R19. Set event data retention to 14 months the moment the property exists.** Condition: every new property; audit every old one. Default is 2 months. Data beyond the window is not recovered by changing the setting later (S01 card claim). Both sources agree on 14 months. 14-month retention is what lets a store compare this BFCM week to last year's; do not find this out the week after peak season. Scope of the effect is disputed: S01 says explorations only reach the retention window; S03's transcript says "more historical data in your reports" while its card narrows this to Explore. Common understanding is that retention limits explorations, not standard aggregated reports. Supports: S01 [017251ba79b0] [4bce06a3a94d], S03 [c01dc627e7b1]. `[web check: whether retention affects standard reports or only explorations]` `[verify UI]`
 
 **R20. Leave session timeout at the 30-minute default unless the brand decides otherwise in writing, and log the change date.** Condition: this is a brand decision, not a default. S01's presenter sets at least 4 hours and often the maximum 7 hours 55 minutes to cut "(not set)" and false checkout landing pages. He admits "some people might disagree" and states the cost: same-day visits merge, session counts fall, per-session conversion rate changes, and history is no longer comparable. S03 never raises it. Common practice keeps 30 minutes for comparability with ad platforms and past data. Conflict C5. Supports: S01 only (opinion) [ca9e3c7b6aec] [c91c77718ecd]. `[needs brand data: typical time from first visit to purchase]` `[verify UI]`
 
@@ -146,11 +167,17 @@ Each rule states the rule, its condition, the mini playbooks that support it (S0
 
 **R32. Register the parameters you will report on (coupon, item_list_name, promotion, custom fields) or their cards stay empty.** Condition: Monetization overview coupon, promotion and list cards, and any custom parameter. Supports: S01 [a043dadb24a2], S03 [2fa8beb663c8]. The sources do not show how to send these ecommerce parameters. `[web check: GA4 recommended ecommerce events and parameters]`
 
+**R96. Track cart and checkout abandonment as its own stage, separate from the purchase funnel, and hand recovery sends to 14-EML.** Condition: begin_checkout or add_to_cart confirmed arriving (R25). No source in this folder covers abandonment tracking. `[general practice]`. No library source; verify against brand data before use. `[needs brand data: abandoned cart definition and the time window before a cart counts as abandoned]`
+
+**R97. For a subscription or recurring-revenue store, add a renewal event (value, currency, subscription id) next to the purchase event, and read churn by cancellation date, not by a failed card.** Condition: subscription or recurring-revenue stores. S02 mentions a subscription box only as a homepage-test anecdote, not a method. No source gives a renewal event, MRR or churn definition. `[general practice]`. No library source; verify against brand data before use.
+
+**R98. Tag a post-purchase upsell or cross-sell as its own event, separate from the original purchase, so its revenue is not folded into the first order's AOV.** Condition: any store running post-purchase offers. S02 names upsell only as 1 AOV lever, with no event or reporting method [5869b757b0e7]. `[general practice]`. No library source for the event method; verify against brand data before use.
+
 ### Group F. Reading GA4 reports without the traps
 
-**R33. Pick the acquisition report that matches the question: User acquisition is first touch ever; Traffic acquisition is the source of each session.** Condition: any channel judgement. A returning user's 5 later sessions all sit under the first source in User acquisition. S01's presenter says most marketers want Traffic acquisition. S03's card adds "first touch for brand and LTV talk, session for campaign and budget talk" (card inference). Supports: S01 [a26e80bd2101], S03 [0d831192ef28].
+**R33. Pick the acquisition report that matches the question: User acquisition is first touch ever; Traffic acquisition is the source of each session.** Condition: any channel judgement. A returning user's 5 later sessions all sit under the first source in User acquisition. S01's presenter says most marketers want Traffic acquisition. S03's card adds "first touch for brand and LTV talk, session for campaign and budget talk" (card inference). Traffic acquisition tells a store whether yesterday's Meta or Google spend earned its sessions; User acquisition is a brand or LTV read, not a spend decision. Supports: S01 [a26e80bd2101], S03 [0d831192ef28].
 
-**R34. Read channel group, then add medium, then campaign.** Condition: Traffic acquisition. Channel group alone hides CPC vs paid social vs a named email sender (S05: Omnisend appears as its own medium). Medium values come from UTMs, so bad tagging makes this view wrong (S05 card). S01 shows the same with Session source / medium and Session campaign name. Supports: S01 [a26e80bd2101], S05 [b84c5ad106a2] [5dde1ccb7160].
+**R34. Read channel group, then add medium, then campaign.** Condition: Traffic acquisition. Channel group alone hides CPC vs paid social vs a named email sender (S05: Omnisend appears as its own medium). Medium values come from UTMs, so bad tagging makes this view wrong (S05 card). S01 shows the same with Session source / medium and Session campaign name. Read channel then medium then campaign whenever the question is "did this ad set or email send work", which is most of a store's marketing questions. Supports: S01 [a26e80bd2101], S05 [b84c5ad106a2] [5dde1ccb7160].
 
 **R35. Customize and save report tables; do not read defaults.** Condition: any recurring read. S05's set: sessions, engaged sessions, engagement rate, average engagement time, events per session, event count, key events, session key event rate (purchase), total revenue. Pick the set that fits the question; there is no fixed list. Source S05 [67d1533fdd9c]. `[verify UI]`
 
@@ -164,11 +191,13 @@ Each rule states the rule, its condition, the mini playbooks that support it (S0
 
 **R40. In a funnel exploration, keep "indirectly followed by" unless you mean to drop everyone who viewed another page between steps.** Condition: any funnel. "Directly followed by" changes the numbers a lot. Add a Device category breakdown; a desktop vs mobile gap is a hypothesis about the mobile experience, not a finding. Supports: S03 [ac9071a3bbdd], S01 [2cac3e89ff27].
 
-**R41. Treat AI answers (Analytics Advisor, Insights) as leads to check in a report, never as findings.** Condition: any AI chat over GA4 data. S01's demo: 1 correct number (125 organic purchases), then a wrong date range and a repeated myth ("a custom event before page_view causes (not set) landing pages"; the presenter's own experiments say it does not). S05's creator uses Insights for a "very quick answer" only. Supports: S01 [bb64df0f76c5] [1ed5edfed51c], S03 [a338f3ce307d] [57ce958e9267], S05 [7cef7f4d4e54]. S02 predicts AI will soon run tests and reports with humans only setting guardrails; that is a forecast, not a method, and it conflicts with ecomOS owner review [0f952763382f].
+**R41. Treat AI answers (Analytics Advisor, Insights) as leads to check in a report, never as findings.** Condition: any AI chat over GA4 data. S01's demo: 1 correct number (125 organic purchases), then a wrong date range and a repeated myth ("a custom event before page_view causes (not set) landing pages"; the presenter's own experiments say it does not). S05's creator uses Insights for a "very quick answer" only. Never let an AI summary decide a store's ROAS, reorder or channel-kill call; check it in the underlying report first. Supports: S01 [bb64df0f76c5] [1ed5edfed51c], S03 [a338f3ce307d] [57ce958e9267], S05 [7cef7f4d4e54]. Moved to Appendix A: S02's AI-forecast aside.
 
 **R42. Read "(not set)" as unknown and report its share. Investigate when the share is large; no source gives a threshold.** Condition: any dimension. Source S03 [d54ee95e619b]. Longer session timeouts reduce "(not set)" landing pages per S01 [ca9e3c7b6aec]; see R20 before changing anything. `[needs brand data: baseline "(not set)" share per report]`
 
 **R43. Use the E-commerce purchases report (item views, add to carts, purchases, item revenue) for product decisions, and the Checkout journey report with Device category and Browser breakdowns for technical checkout problems.** Condition: ecommerce events present (R25). 1 browser dropping far more at 1 step is a likely bug to reproduce, not proven. Source S01 [d6b4bece9591] [ae2ed547485e]. `[verify UI]`
+
+**R99. Adjust reads for peak periods: check BFCM and flash-sale days day-over-day, not week-over-week, and widen the attribution window before judging a holiday campaign.** Condition: BFCM, flash sales and other peak-traffic windows. No source states this as a rule; Black Friday appears only as a flavour example in R34. `[general practice]`. No library source; verify against brand data before use.
 
 ### Group G. Meta pixel, Conversions API and deduplication
 
@@ -224,7 +253,7 @@ Each rule states the rule, its condition, the mini playbooks that support it (S0
 
 ### Group K. UTM rules and channel classification
 
-**R66. Every paid and owned link carries UTM parameters in the brand's convention. Medium and campaign reads are only as good as the tags.** Condition: always. No source gives a UTM standard. S05's card warns medium comes from UTMs; S01 sketches a paid social filter (Session medium exactly matches cpc AND Session source contains facebook.com, then Session campaign name) and notes ads must use that medium value; S03's campaign report depends on real names. Common practice, not a source rule. Supports: S01 [a26e80bd2101], S03 [8db1bf5fadc7], S05 [b84c5ad106a2]. `[needs brand data: the UTM template used on Meta, Google, email and affiliate links]` `[web check: GA4 default channel group rules for paid social and paid shopping]`
+**R66. Every paid and owned link carries UTM parameters in the brand's convention. Medium and campaign reads are only as good as the tags.** Condition: always. No source gives a UTM standard. S05's card warns medium comes from UTMs; S01 sketches a paid social filter (Session medium exactly matches cpc AND Session source contains facebook.com, then Session campaign name) and notes ads must use that medium value; S03's campaign report depends on real names. Common practice, not a source rule. Cover every paid and owned link a store sends (Meta, Google, affiliate, influencer, email, SMS), not only the ad platforms. Supports: S01 [a26e80bd2101], S03 [8db1bf5fadc7], S05 [b84c5ad106a2]. `[needs brand data: the UTM template used on Meta, Google, email and affiliate links]` `[web check: GA4 default channel group rules for paid social and paid shopping]`
 
 **R67. Real campaign names never start with "(" and end with ")". Filter Session campaign with Does Not Match Regex `^\(.*\)$` to see only named campaigns.** Condition: campaign tables in Explore. Drops "(organic)", "(direct)", "(not set)". Source S03 [8db1bf5fadc7]. `[verify UI]`
 
@@ -232,13 +261,13 @@ Each rule states the rule, its condition, the mini playbooks that support it (S0
 
 ### Group L. Attribution models, windows and conflicts between platforms
 
-**R69. Attribution models describe how credit is given; they do not settle it. Read Last Click and Data Driven side by side and report the gap, never 1 model as truth.** Condition: Key event attribution models report. A large gap is a signal about a channel, not a measurement of incremental value (S03 card). Source S03 [675a952696ec]. Attribution window choice for buying (for example 7-day click on Meta) belongs to 24-DEP; no source here states a window. `[web check: current GA4 attribution settings: reporting model default, lookback windows, channels that can receive credit]`
+**R69. Attribution models describe how credit is given; they do not settle it. Read Last Click and Data Driven side by side and report the gap, never 1 model as truth.** Condition: Key event attribution models report. A large gap is a signal about a channel, not a measurement of incremental value (S03 card). Source S03 [675a952696ec]. Attribution window choice for buying (for example 7-day click on Meta) belongs to 24-DEP; no source here states a window. Expect the Last Click vs Data Driven gap to be largest on stores running Meta and Google Ads together; report it per channel before either loses budget. `[web check: current GA4 attribution settings: reporting model default, lookback windows, channels that can receive credit]`
 
 **R70. When analytics and the customer disagree on source, neither wins by default. Write a rule for the brand and apply it every time.** Condition: post-purchase survey ("how did you hear about us") vs platform or GA4 credit. S02's presenter: "it's on you ... to decide how to handle that conflict". His cards go further and favour self-report for strategic channel calls; that is card advice. Card 7f3bed7f5dd1 adds: compute the gap per channel for the same window, treat platform numbers as directional, keep budget on channels customers name that platforms cannot see (word of mouth, podcasts, offline), and do not cut an over-claiming channel on platform data alone. Source S02 [e11ec2148e14] [9c479169d7e9] [45d7e49e638b] [7f3bed7f5dd1]. `[needs brand data: survey answers and platform credit for the same buyers and window]`
 
 **R71. Incrementality (holdout) tests are the only way to settle credit. No source in this folder gives a method, volume, window or threshold.** Condition: before reallocating spend on attribution gaps. Card 859e4f5b289d sketches: define channel and outcome, hold out a random segment or geography, measure the difference over "a sufficient window", scale only where lift pays. The S02 speaker never says "incrementality". Test design belongs to 09-CRO and 24-DEP. Source S02 (card only) [859e4f5b289d].
 
-**R72. Get data as close to the customer's mouth as possible, and hold zero-party, first-party and third-party data together. Zero-party answers must reach the CRM, not sit in a quiz tool.** Condition: any source-of-truth question about customers. Zero-party = the customer told you; first-party = you tracked it; third-party = aggregated (Meta, Google, Experian). Source S02 [e11ec2148e14] [9c479169d7e9] [7e8ec204ea88]. `[web check: privacy rules for third-party data in each selling country]`
+**R72. Get data as close to the customer's mouth as possible, and hold zero-party, first-party and third-party data together. Zero-party answers must reach the CRM, not sit in a quiz tool.** Condition: any source-of-truth question about customers. Moved to Appendix A: the zero-party, first-party and third-party data tier definitions. Source S02 [e11ec2148e14] [9c479169d7e9] [7e8ec204ea88]. `[web check: privacy rules for third-party data in each selling country]`
 
 ### Group M. Reconciliation and revenue definitions
 
@@ -254,11 +283,15 @@ Each rule states the rule, its condition, the mini playbooks that support it (S0
 
 **R78. Unshipped orders = orders minus orders fulfilled. Report the gap.** Condition: Shopify dashboard. A large gap is a fulfilment backlog to raise with operations. Source S06 [9d66cacbbfcd].
 
+**R100. Build a repeat purchase or new-vs-returning revenue split from the full cohort analysis report, never from Shopify's returning customer rate (R64).** Condition: any store judging loyalty or repeat revenue. No source here gives the formulas; S02's mini playbook names this gap directly ("missing: formulas for CAC, LTV, ROAS"). The cohort method itself lives in 20-FIN. `[general practice]` for the split; no library source for the formulas here; verify against brand data before use.
+
+**R101. Reconcile marketplace and omnichannel sales (Amazon, TikTok Shop, Instagram Shop, a Shopping feed) to their own platform reports before folding them into the store's total, and never blend them into a paid-media read (R63).** Condition: any store selling on more than the Online Store channel. No source in this folder covers a marketplace feed; R63 only filters Shopify's own channels out. `[general practice]`. No library source; verify against brand data before use.
+
 ### Group N. The 1 top metric
 
-**R79. The executive team picks 1 top metric: number of customers, revenue, or profit. It tells every department. Sometimes 2 can move; almost never all 3.** Condition: company level. Customers max at a free price; revenue sits with a reasonably priced product that makes money per sale; profit "typically is your highest priced product" (S02's claim). Source S02 [13ce65376d8f].
+**R79. The executive team picks 1 top metric: number of customers, revenue, or profit. It tells every department. Sometimes 2 can move; almost never all 3.** Condition: company level. Customers max at a free price; revenue sits with a reasonably priced product that makes money per sale; profit "typically is your highest priced product" (S02's claim). A hero-SKU or pre-launch store usually runs on customers; a catalogue store with margin runs on revenue or profit; name which case the brand is in. Source S02 [13ce65376d8f].
 
-**R80. Match the top metric to stage and bankroll: early stage customers, then revenue, then profit. A stable business may choose profit.** Condition: setting or reviewing the metric. Bigger bankroll means a longer horizon; a small startup needs the next customer but must not burn them with a poor product. Source S02 [0c302f4b2883] [13ce65376d8f].
+**R80. Match the top metric to stage and bankroll: early stage customers, then revenue, then profit. A stable business may choose profit.** Condition: setting or reviewing the metric. Bigger bankroll means a longer horizon; a small startup needs the next customer but must not burn them with a poor product. A store still finding product-market fit chases customers even at a CAC loss; a store past that point chases revenue then profit. Source S02 [0c302f4b2883] [13ce65376d8f].
 
 **R81. Keep the top metric fixed for about a year. Review big focus shifts quarterly at most. Allow quick-win KPI pushes of a couple of weeks to a month without changing it.** Condition: swapping monthly "causes turmoil". Quick-win examples: review count, referral coefficient, loyalty points used, products per order, purchase frequency. Source S02 [13ce65376d8f] [5869b757b0e7].
 
@@ -266,9 +299,9 @@ Each rule states the rule, its condition, the mini playbooks that support it (S0
 
 **R83. Before scaling a winner, list the metrics it may break: LTV, customer quality, brand affinity, customer experience.** Condition: any winning test or tactic. S02: higher conversion rate can lower LTV; higher AOV can lower LTV (stated, not measured); misspelled ads lifted conversions and hurt brand (second-hand, no numbers). Source S02 [06aa9f46abe7] [13ce65376d8f].
 
-**R84. Data reveals its position; it is not there to back yours. Run the test instead of arguing; ask "can we do both?".** Condition: any HiPPO (highest paid person's opinion) moment. Source S02 [129ad3db527d] [c50f782181a7].
+**R84. When a HiPPO wants a PDP or offer change on opinion alone, propose the test the store can run (a hero image swap, a shipping threshold change), not an abstract "test it".** Condition: any HiPPO (highest paid person's opinion) moment. Moved to Appendix A: S02's general framing ("data reveals its position"). Source S02 [129ad3db527d] [c50f782181a7].
 
-**R85. Classify each lever as compounding, incremental or one-off before ranking it, and check the arithmetic.** Condition: prioritising levers. S02 calls conversion rate and referral coefficient compounding. Its arithmetic ($10,000 x 1.01 = $10,100; 100 customers x 1.05 = 105) is a 1-time step, not compounding (S02 caveat). Source S02 [3a1918a526e2] [63817d833e21].
+**R85.** Moved to Appendix A: S02's compounding vs incremental vs one-off lever classification, with its flawed arithmetic example. Condition: prioritising levers. Source S02 [3a1918a526e2] [63817d833e21].
 
 ### Group O. Funnel ratios and bot checks
 
@@ -282,7 +315,9 @@ Each rule states the rule, its condition, the mini playbooks that support it (S0
 
 **R90. Suspect bots when Shopify shows a session spike or conversion dip GA4 does not, or when 1 city spikes in Sessions by location.** Condition: Shopify stores. A single-city spike "often means" a server hitting the site (S06). Filtering bots inside Shopify is not simple and may need third-party tools (S06 card). Use GA4 sessions as the denominator meanwhile. Source S06 [57a97c0614d6] [084db9abd48b]. `[needs brand data: Shopify vs GA4 sessions for the same dates]`
 
-**R91. Very low engaged sessions on a channel is a relevance warning, after bots and mis-tagged campaigns are ruled out.** Condition: Traffic acquisition. Paid: check ad-to-page message match before adding spend. Organic: check the page matches search intent. Not a proven link to sales. Source S05 [22a5b5e7d62e].
+**R91. Very low engaged sessions on a channel is a relevance warning, after bots and mis-tagged campaigns are ruled out.** Condition: Traffic acquisition. Paid: check ad-to-page message match before adding spend. Organic: check the page matches search intent. For a paid channel, check the ad's promise (price, offer, product) against the landing page before adding spend; for organic, check the page against the search term. Not a proven link to sales. Source S05 [22a5b5e7d62e].
+
+**R102. Before reading a conversion drop on a product page or funnel step as a page or traffic problem, check stock status. A sold-out SKU causes a false conversion drop.** Condition: any funnel or landing page read (R38, R86). S06 covers sell-through, not stockout-aware conversion reading; the sell-through metric itself routes to 20-FIN [37f16297a48e]. `[general practice]` for the conversion-reading link; no library source for this specific check; verify against brand data before use.
 
 ### Group P. Daily trust and freshness
 
@@ -294,7 +329,7 @@ Each rule states the rule, its condition, the mini playbooks that support it (S0
 
 ### Group Q. Qualitative inputs
 
-**R95. Quantitative tells what; qualitative tells why. Pair every quantitative drop with a recording, heatmap, survey verbatim or customer call before proposing a fix.** Condition: any diagnosis. Ask at every stage: before awareness, after awareness, on-site ("what is this page missing?"), post-purchase (source survey), after churn (for example no purchase for 1 year). Founders talk to at least 1 customer a week in the first 3 years (S02 opinion). Listen most to the 3% most loyal and 3% biggest haters (second-hand from ProfitWell). Source S02 [e2f188649f8f] [5dffd6bf5d3c] [7e8ec204ea88] [375f45ad5513] [338914784a95]. Research method belongs to 09-CRO.
+**R95. Quantitative tells what; qualitative tells why. Pair every quantitative drop with a recording, heatmap, survey verbatim or customer call before proposing a fix.** Condition: any diagnosis. Ask at every stage: before awareness, after awareness, on-site ("what is this page missing?"), post-purchase (source survey), after churn (for example no purchase for 1 year). Pair a cart or checkout drop with a session recording, a post-purchase survey verbatim, or a support ticket, not a generic interview. Moved to Appendix A: S02's general customer-development heuristics. Source S02 [e2f188649f8f] [5dffd6bf5d3c] [7e8ec204ea88] [375f45ad5513] [338914784a95]. Research method belongs to 09-CRO.
 
 ## 4. Procedures (implementation)
 
@@ -948,6 +983,10 @@ Format: question, period, source of truth used (R4), the table exported from the
 
 Format: date, property or container, setting, old value, new value, who decided, why, reports affected. Appended, never edited.
 
+### 9.7 Measurement health snapshot for the brand owner
+
+Purpose: the daily trust check (P22) and the audit and fix lists (9.1, 9.2) are written for a technical operator; this deliverable is for the brand owner. Format: 1 page, plain English, short sentences, no jargon. Shows the trust score per source for the period (from 9.3), the reconciliation gap in dollars (from 9.1), and the 1 thing to fix this week (the highest-risk row from 9.2). No GA4, GTM or Meta menu names. No GPT or .env mentions.
+
 ## 10. What needs live data or a web check
 
 ### 10.1 `[needs brand data]`
@@ -1032,6 +1071,7 @@ Format: date, property or container, setting, old value, new value, who decided,
 - **Tool names (medium risk).** Fairing (formerly EnquireLabs), Octane AI, Typeform, Hotjar, Stape, Ghostery, Meta Pixel Helper. S02 tool names date from about 2023.
 - **Slow-aging content.** S02's decision principles (1 top metric, S curve, HiPPO, data tiers), S06's revenue identity and return-timing warning, S05's "filter to purchase" rule, S04's dedup logic. These need no re-verification beyond the UI steps that implement them.
 - **Card additions.** Several rules note claims that exist only in a card, not the transcript (S01 section 9 list, S02 incrementality cards, S03 card differences, S06 card paths and lists, S07 stopgap framing). Treat each as the card writer's view until a `[web check]` or brand data confirms it.
+- **24 Sep 2026: ecommerce specificity pass applied from ECOM_REVIEW.md; priority block added, 15 rules reworded, 7 levers added, about 250 words moved to Appendix A.**
 
 ## 12. Source index
 
@@ -1056,3 +1096,19 @@ Format: date, property or container, setting, old value, new value, who decided,
 - 20-FIN-finance-and-accounting: profit, contribution, COGS, cash vs sales, cohort and LTV reading, sell-through, cash conversion cycle.
 - 17-CXP-post-purchase: post-purchase survey placement and returns handling.
 - 05-SET (not in v2 yet): store setup, theme code, Shopify app installs. S01, S03 and S05 defer setup there.
+
+## Appendix A. General background
+
+Moved out of section 3 in the 24 Sep 2026 ecommerce specificity pass. This is general business philosophy the sources raised, not a store-specific rule. Kept for reference; not part of the ranked rule set in 3.0.
+
+**From R6 (Group A).** S02's decision-sizing illustration: a $1M business makes $5K to $15K decisions from analytics; a $100M business makes $1M to $10M decisions. Illustrative, not a benchmark. Source S02 [11a74e34ca53].
+
+**From R41 (Group F).** S02 predicts AI will soon run tests and reports with humans only setting guardrails; that is a forecast, not a method, and it conflicts with ecomOS owner review. Source S02 [0f952763382f].
+
+**From R72 (Group L).** The zero-party, first-party and third-party data tier taxonomy: zero-party = the customer told you; first-party = you tracked it; third-party = aggregated (Meta, Google, Experian). Source S02 [e11ec2148e14] [9c479169d7e9] [7e8ec204ea88].
+
+**From R84 (Group N).** S02's general framing behind the HiPPO rule: data reveals its position; it is not there to back yours. Run the test instead of arguing; ask "can we do both?". Source S02 [129ad3db527d] [c50f782181a7].
+
+**From R85 (Group N).** Classify each lever as compounding, incremental or one-off before ranking it, and check the arithmetic. Condition: prioritising levers. S02 calls conversion rate and referral coefficient compounding. Its arithmetic ($10,000 x 1.01 = $10,100; 100 customers x 1.05 = 105) is a 1-time step, not compounding (S02 caveat). This rule is referenced in section 6's thresholds table as "1 (flawed, R85)". Source S02 [3a1918a526e2] [63817d833e21].
+
+**From R95 (Group Q).** General customer-development heuristics: founders talk to at least 1 customer a week in the first 3 years (S02 opinion). Listen most to the 3% most loyal and 3% biggest haters (second-hand from ProfitWell). Source S02 [375f45ad5513] [338914784a95].
