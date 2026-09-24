@@ -32,7 +32,7 @@ It helps an email marketer plan and write a monthly broadcast campaign program t
 18. **Every email must be skimmable, clear and concise, and engaging.** Skimmable: no blocks of copy, break things up, bold points and headlines. Clear and concise: short; nobody wants "to read an essay when they're in their inbox". Engaging: not boring; humour, fun, or genuinely educational content. Stats and fun facts are strong hooks: "Anytime I see a number, I love it." [28952f8a6673]
 19. **Overload on infographics.** "This is the cheat code for email engagement." "Nobody wants to read blocks of copy. Your copy is just not going to be read." Point to AG1's ad library as a brand that shows everything visually rather than writing straight copy. Condition: his opinion, no test data. [5b56681c9114]
 20. **Subject line and preview text are the headline and sub-headline.** He says subject lines "don't have a massive effect on open rates" and that "people should be opening emails based off your sender name rather than the subject line". He calls this "kind of controversial". Write for intrigue without telling the full story, so the reader opens to find out why. [32c744be62a5]
-21. **Do not over-segment broadcasts.** "You can just send it to your engaged email list. You don't need to go too crazy on segmentation, especially in 2026." He never defines "engaged". `[needs brand data: the brand's engaged segment rule, for example opened or clicked in the last N days, and its size]` [c284594478331]
+21. **Do not over-segment broadcasts.** "You can just send it to your engaged email list. You don't need to go too crazy on segmentation, especially in 2026." He never defines "engaged". `[needs brand data: the brand's engaged segment rule, for example opened or clicked in the last N days, and its size]` [c28459447833]
 22. **AI makes the strategy easier, but review everything.** A properly trained custom GPT gives "a really good starting point"; "you might have to go back and forth with it". "It's not going to be perfect all the time. So make sure that you review this." [8e823019286f]
 
 ## 3. Procedures
@@ -213,12 +213,12 @@ Checklists; icon graphics calling out features; feature diagrams showing what is
 12. Boring copy; no humour, no stats, nothing to learn. [28952f8a6673]
 13. Using AI output without review, for example shipping an email with no CTA. [8e823019286f]
 14. Treating the subject line as the main open lever. [32c744be62a5]
-15. Going "too crazy on segmentation" for broadcasts. [c284594478331]
+15. Going "too crazy on segmentation" for broadcasts. [c28459447833]
 16. Having a strong calendar but weak copy, creative and subject lines: "nobody's going to even read your emails". [28952f8a6673]
 
 ## 9. Caveats, conflicts and what is missing
 
-- **Scope: broadcasts only.** The ingest header says the talk focuses on manual campaigns, not triggered flows. No flow, trigger, delay or flow timing is given. The folder playbook must get flows from other sources. [c284594478331]
+- **Scope: broadcasts only.** The ingest header says the talk focuses on manual campaigns, not triggered flows. No flow, trigger, delay or flow timing is given. The folder playbook must get flows from other sources. [c28459447833]
 - **Revenue claim is not split.** The 30% to 50% email revenue share is not split into campaigns vs flows, and no list size or category is given. Do not use it as a target. [46a5333c2392]
 - **Internal inconsistencies.**
   - Cadence: "3 to 4" vs "2 to 4, ideally 3 to 4". [1dbc06e4564f]
@@ -229,7 +229,7 @@ Checklists; icon graphics calling out features; feature diagrams showing what is
   - Text emails: "all of my best performing emails" yet only 1 in 4 or 5 sends. He does not explain why not more.
 - **Long form hedge.** He says long form "doesn't convert nearly as well" but also "at times long form content can work", and proposes testing a 250-word version. No result shown. [b840c4db6372]
 - **Subject lines.** He admits the sender-name view is "controversial" and gives no data. Common ecommerce advice treats subject lines as a testable open and click lever. Open rates are also distorted by privacy features in some mail apps, which weakens any open-rate claim either way `[web check: current state of open-rate tracking under Apple Mail Privacy Protection]`. [32c744be62a5]
-- **Segmentation.** "Don't go too crazy on segmentation" conflicts with common advice to split by purchase history, engagement level and new vs repeat buyer. He does narrow to an "engaged list" but never defines it. The card adds "revisit segmentation when data or deliverability point to a need"; that step is not in the talk. [c284594478331]
+- **Segmentation.** "Don't go too crazy on segmentation" conflicts with common advice to split by purchase history, engagement level and new vs repeat buyer. He does narrow to an "engaged list" but never defines it. The card adds "revisit segmentation when data or deliverability point to a need"; that step is not in the talk. [c28459447833]
 - **Deliverability.** He links low frequency to poor Gmail reputation, but gives no setup steps (authentication, list cleaning, sunset rules, complaint rates). `[web check: Gmail and Yahoo bulk sender requirements]` [1dbc06e4564f]
 - **Discount training.** His claim that list-wide discounts train customers never to pay full price matches common advice, but no data is shown. `[needs brand data: share of orders using a discount code, before and after a program change]`
 - **Market statistics** (170 ads a day, 1,000 brands a week) are unsourced. `[web check]`
