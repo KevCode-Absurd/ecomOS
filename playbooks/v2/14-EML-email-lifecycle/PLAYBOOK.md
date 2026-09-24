@@ -31,6 +31,8 @@ Tags: `[verify UI]` marks platform steps that can change. `[needs brand data: x]
 
 Rules that start with "ecomOS" override any source. They are in 3.21.
 
+Ecommerce first. This playbook is for stores, not for a generic email-marketing account. Section 3.0 is the priority ranking: it says which lever to build next for a given store. Store-type conditions (hero SKU vs catalogue, low vs high AOV, subscription vs one-off, marketplace-heavy, luxury or considered purchase, mobile-first India vs US) decide which rules in sections 3.1 to 3.21 actually apply to the store in front of the agent, and which the agent can skip.
+
 ## 1. Scope and outcomes
 
 Covers: list growth and pop-ups; consent and opt-in; the core flows (welcome, site abandonment, browse abandonment, cart abandonment, checkout abandonment, post-purchase, replenishment, win-back, sunset, back in stock, review request, birthday); segment definitions; campaign cadence, content pillars and calendar; copy structure and subject lines; email design; deliverability (authentication, warm-up, list hygiene, limits); SMS (consent, quiet hours, frequency, flows, cost, RCS and iMessage); metrics and the monthly review.
@@ -71,6 +73,25 @@ Business measures this domain moves:
 ## 3. Decision rules
 
 Each rule states the rule, the condition, the supporting mini playbooks, conflicts, and card ids. "Sources 01, 02" means mini playbooks 01 and 02. Where only 1 source supports a rule, it says so.
+
+### 3.0 Ecommerce priority order
+
+Ranked levers for a specific store, built from this playbook's own revenue-share and gating rules plus store-type conditions stated elsewhere but never ranked end to end. `[general practice]` marks a ranking line that no single source states outright.
+
+1. **Deliverability and tracking floor.** A flagged sender or missing attribution invalidates every step below. R135 to R137, R179, P1, P2.
+2. **Cart and checkout abandonment flows.** Highest revenue per build hour; R55 says 90% of audited accounts lack a real Added to Cart flow. R55 to R64, P8.
+3. **Welcome flow.** Biggest per-entrant conversion win, 10% to 20% of entrants, most of it in 72 hours. R41 to R46, P5.
+4. **Popup and list growth.** Opt-in rate caps every downstream flow's volume; offer is the biggest lever on it. R7 to R10, P3, P4.
+5. **Post-purchase flow.** Most repeat purchases land inside 30 days of order 1; ranks higher for repeat or replenishable catalogues, lower for a 1-and-done gift item. R65 to R69, P9. `[general practice]` on the catalogue-shape condition.
+6. **Core segments (engaged, VIP, prospects vs customers).** Needed before campaigns or suppression can run safely. R86 to R91, P12.
+7. **Campaign cadence and content mix.** Campaigns and flows split email revenue about 50/50 once flows exist; do this after steps 2 and 3, not before. R3, R100 to R102, P13, P14.
+8. **Win-back and replenishment.** Ranks higher for consumables and subscription-adjacent catalogues, timed from the brand's own days between orders; lower for a single considered purchase bought once. R72 to R78, P10. `[general practice]` on the catalogue-shape condition.
+9. **Sunset and suppression.** Protects deliverability as the list ages; low priority for a new small list, high once list age passes 6 months. R79 to R82, R92 to R93, P11.
+10. **SMS program.** Only after flows and consent are solid (R25); ranks higher for mobile-first markets with heavy phone use such as India (R192), lower where iPhone share and iMessage vendor claims do not apply. R152, R157, R192. `[general practice]` on the market condition.
+11. **Copy and design testing.** Marginal gains once structure exists; skip granular tests like CTA colour under about $100k a month (R176 says so directly). R173 to R176.
+12. **Loyalty, birthday and back-in-stock extras.** Highest value for catalogue brands with a loyalty app and repeat buyers, lowest for a single hero SKU with no program. R83 to R85, R94. `[general practice]` on the catalogue-shape condition.
+
+Load this block first; the groups below are the detail.
 
 ### 3.1 Program order and revenue structure
 
@@ -126,6 +147,8 @@ Each rule states the rule, the condition, the supporting mini playbooks, conflic
 
 **R25. Collect phone numbers from day 1 even with no SMS program.** The SMS list only earns as much as its size. Sources 03, 09. [51b9472f8d06] [4be0db20360f]
 
+**R196. Exclude marketplace-channel customers from the pop-up and from acquisition sends the same way as wholesale.** A customer bought via Amazon or another marketplace the brand cannot legally or practically email; showing them the signup pop-up or a first-order discount wastes the offer and can break marketplace terms. `[general practice]` No library source beyond the wholesale exclusion (R19); verify against brand data before use. `[needs brand data: marketplace channels sold on, and whether the brand holds the customer's email from that channel]`
+
 ### 3.3 Consent and opt-in
 
 **R26. Single opt-in is the sources' default for email; check the market first.** 02, 03, 04 all use single opt-in and rely on engaged segments plus a sunset flow. 02 says double opt-in "massively" cuts subscribers; Aaliyah recommends double opt-in for Postscript and Attentive. Double opt-in is expected or required in some EU markets. See 7.1. Sources 02, 03, 04. [33c8d10a4bf5] [8c1b383c08cf] `[web check: double opt-in rules per market]`
@@ -136,7 +159,7 @@ Each rule states the rule, the condition, the supporting mini playbooks, conflic
 
 **R29. In the EU add "because person subscribed" to segment conditions, or keep 2 segment versions.** Someone can be emailable without marketing consent (checkout entry). Source 02. [516248e6ac94] `[web check: GDPR consent rules for the brand's markets]`
 
-**R30. Make unsubscribing easy and honour it at once.** Dormant subscribers who cannot leave hurt deliverability for everyone. Klaviyo blocks sends without an unsubscribe link. Gmail one-click unsubscribe is live (02). Sources 02, 03, 06. [c1faaf881fc4] [5fde08efd3f8] [91d6fd433f58] `[web check: Gmail and Yahoo one-click unsubscribe requirement]`
+**R30. Make unsubscribing easy and honour it at once.** A subscriber who cannot leave sits inside win-back and sunset counts and skews the revenue-per-recipient math the program is judged on. Sources 02, 03, 06. [c1faaf881fc4] [5fde08efd3f8] [91d6fd433f58] `[web check: Gmail and Yahoo one-click unsubscribe requirement]`
 
 ### 3.4 Flow rules that apply to every flow
 
@@ -146,7 +169,7 @@ Each rule states the rule, the condition, the supporting mini playbooks, conflic
 
 **R33. Smart sending OFF on every flow email; ON for campaigns.** Flows carry high-intent revenue and must not be skipped because a campaign went out. Klaviyo default window 16 hours. Condition: total pressure then rises; see 7.4. Sources 02, 04; 03 keeps it on at account level and turns it off per campaign for launches. [4d6f11a9f443] [58bdfe185e63] [b837f7435caf] [a891648996f4] [1ce671434e00]
 
-**R34. UTM tracking ON on every flow and campaign email.** Sources 02, 03, 04. [8796c9f1ffa6] [b837f7435caf]
+**R34. UTM tracking ON on every flow and campaign email.** Turn it on so flow and campaign revenue split cleanly from paid and organic in Shopify or GA4, the split that decides R3 and R4. Sources 02, 03, 04. [8796c9f1ffa6] [b837f7435caf]
 
 **R35. The later the journey stage, the shorter the first delay.** Site abandonment 1 to 4 hours; browse 30 minutes to 2 hours; cart 15 minutes to 2 hours; checkout as early as 15 minutes. Klaviyo defaults (cart 4 hours, welcome 3 days, post-purchase 1 day) are too slow. Sources 01, 02, 03, 04. [c83fa5e0d0d6] [0528a2003316] [d94eb68e5e18] [3638d8afef7a] [fbfeb91636ec]
 
@@ -232,6 +255,16 @@ Each rule states the rule, the condition, the supporting mini playbooks, conflic
 
 **R71. If a reviews app is connected, run the review request on its triggers and stop asking once a review event exists.** Sources 03, 04. [9ca8e23a01f3] [0a935c9bd091]
 
+**R197. Build a refunds segment and a short post-refund touch, split from the standard post-purchase track.** Klaviyo's own "Refunds" segment is usable but the sources never turn it into a flow rule; a refunded buyer should exit cross-sell and review-request messaging and get a brief, no-pressure check-in instead. Source 02 (segment only, rule extended here). [516248e6ac94] `[general practice]` on the flow content; no library source states the exact sequence, verify against brand data before use.
+
+**R198. Subscription customers need their own lifecycle emails: charge reminder, pause-or-skip save flow, and failed-payment recovery.** The sources only exclude subscribers from acquisition flows (R65, R157); none build the subscription-side emails. `[general practice]` No library source; verify against brand data before use. `[needs brand data: subscription platform, billing cadence, dunning settings]`
+
+**R199. Post-purchase for a gift needs 2 threads: a buyer thread (delivery, gifting confirmation, a thank-you note option) and a recipient thread (product care, how-to, the account and return path) once the recipient is known.** Only a generic gift-guide campaign exists in the sources; no flow separates buyer from recipient. `[general practice]` No library source; verify against brand data before use.
+
+**R200. For size- or fit-dependent products, add a fit-check email inside the first-time post-purchase track to head off a return.** R70 covers how-to content by category but not a fit check; ask 1 question ("did it fit?") before the review request so a bad fit reaches support, not a return label first. `[general practice]` No library source; verify against brand data before use.
+
+**R201. International orders need a shipping-delay update separate from the domestic timing in R66 to R68.** Ship-to country today only drives consent and popup targeting (R19, R154); it should also set a longer, honest delivery-expectation email and a customs or delay notice where the brand ships across borders. `[general practice]` No library source; verify against brand data before use. `[needs brand data: shipping times and carriers by country]`
+
 ### 3.10 Replenishment flow
 
 **R72. Time the reminder to days of supply plus delivery time, a few days before the product runs out.** 04: day 25 of a 30-day pack. 09 (SMS): 30-day supply plus 7 days delivery, send about day 35. 01: predictive "average time between orders" reminder on day 40 for a 45-day cohort. Content: "Are you running low? Reorder here." No offer at first. Sources 01, 04, 09. [b8acdbab97a3] [586799a976b3] [7b644e511db9] `[needs brand data: days of supply per product, delivery time]`
@@ -268,6 +301,12 @@ Each rule states the rule, the condition, the supporting mini playbooks, conflic
 
 **R85. Birthday flow: trigger on the loyalty app's customer birthday event, and personalise with the points balance property.** Preview with 2 profiles to confirm the numbers differ. Source 03. [9b7b4dd86442] `[verify UI]`
 
+**R85a. Points-earned flow: trigger on the loyalty app's points-earned event and confirm the new balance in the email.** Source 03 names points earned as an integration event alongside birthday, but only the birthday flow gets built. [9ca8e23a01f3] `[verify UI]`
+
+**R85b. Tier-up flow: trigger on the loyalty app's tier-change event and state the new tier's benefit at once.** Same source gap as R85a. Source 03. [9ca8e23a01f3] `[verify UI]`
+
+**R85c. Reward-redeemed flow: trigger on the loyalty app's redemption event and confirm what was redeemed and how to use it.** Same source gap as R85a. Source 03. [9ca8e23a01f3] `[verify UI]`
+
 ### 3.14 Segments
 
 **R86. Lists are static and hold opt-ins; segments are dynamic and receive campaigns.** Keep 1 master email list and 1 SMS list. Never send a campaign to a list or to the whole list (R98 gives the exceptions the sources allow). Sources 01, 02, 03, 04. [24e40adf1b4f] [d7c5cedcb3dd] [f24ba64fabd7] [bb790bf6e145]
@@ -302,7 +341,7 @@ Each rule states the rule, the condition, the supporting mini playbooks, conflic
 
 **R100. Default cadence: 3 to 4 campaigns a week to the engaged segment, if the content is good.** 01: tested 2 a day to 2 a month, 3 to 4 gave the highest revenue and lowest unsubscribes. 02: 3 to 4 across 120 brands. 10: 3 to 4 (2 to 4 acceptable). 1 to 2 a week is forgotten; 5 to 7 raises unsubscribes and revenue plateaus (01, 02, 10). Conflicts: 03 says at least 1 a week, raise while CTR, unsubscribes and spam stay flat, and commit only to what you can sustain (example 2); 04 sets tiers by revenue (under $50k a month 2 to 3, over $50k 3 to 4, over $200k 4 to 5) and adds 1 a week only when opens exceed 30% and unsubscribes stay low; 06 says quality over any fixed cadence and starts at once a month. See 7.11. [dfbf925e6f5d] [d435b73cfe27] [7a1145af87dc] [1dbc06e4564f] [dbd9ab70c7db] [a6116076fc6e] [c53d577bf872]
 
-**R101. Never skip weeks.** Several weeks of silence then a Black Friday push fails; unsubscribes and complaints rise when you return. Minimum 1 a week (03), 2 a week (01). Sources 01, 03, 06. [dbd9ab70c7db] [d435b73cfe27] [e23b7d7d24b2]
+**R101. Never skip weeks.** Silence then a Black Friday blast reads as re-engagement fraud to Gmail right when the brand needs inbox placement for its highest-revenue week. Minimum 1 a week (03), 2 a week (01). Sources 01, 03, 06. [dbd9ab70c7db] [d435b73cfe27] [e23b7d7d24b2]
 
 **R102. Content mix: mostly non-discount.** 02: per month 1 to 2 promotional, 4 to 6 product, 4 to 6 education, 2 to 4 social proof, 2 to 4 brand; promo under one third. 04: at least 5 non-discount emails per discount email (he uses 10:1), max 1 discount email a month outside Q4. 10: 4 pillars (educational, social proof, community and brand, product) roughly equal plus about 1 sale a month. 01: 3 to 4 a week "mostly non-discount". Max 1 sales event a month; every other month is better (02). Sources 01, 02, 04, 10. [e5552f0a655e] [81f4514ba7d3] [9077e5d437cb] [071d76074c86] [46a5333c2392]
 
@@ -320,13 +359,13 @@ Each rule states the rule, the condition, the supporting mini playbooks, conflic
 
 **R109. Coordinate campaigns with flows.** Smart sending on for campaigns (off for a big launch where people who got a flow email still want it); exclude people who bought in the same category in the last 3 days; tick "determine recipients at send time" when exclusions are dynamic. Sources 03, 04. [ba5c04225d61] [5b2cad894e44] [24b8079fe1fe]
 
-**R110. Resend to non-openers for launches and big sales, 1 to 2 days later with a new subject.** 01: message-ID segment trick. 03: sequence builder follow-up, 48-hour minimum, narrow to the 30-day segment; 2 to 3 manual resends on Black Friday. Sources 01, 03. [d11a34c7dc7f] [6964a9fc308f]
+**R110. Resend to non-openers, 1 to 2 days later with a new subject.** Reserve this for launch day, a real restock, or a sale's last day, never an evergreen send with no expiry. 01: message-ID segment trick. 03: sequence builder follow-up, 48-hour minimum, narrow to the 30-day segment; 2 to 3 manual resends on Black Friday. Sources 01, 03. [d11a34c7dc7f] [6964a9fc308f]
 
 ### 3.16 Copy, subject lines and preview text
 
-**R111. Write for the skim: 3 to 5 seconds of attention.** Bold points, short sections, 1 to 2 mobile scrolls, 100 to 300 words for a campaign, under 100 for a welcome email. Sources 01, 04, 07, 08, 10. [e5a610bd2f19] [99679e755f67] [c5f693b5c277] [658d97cafe81] [effdf39b2845] [28952f8a6673]
+**R111. Write for the skim: 3 to 5 seconds of attention.** A shopper reads this one-handed while comparing your product to 2 open competitor tabs, not while relaxed; the first line has to survive that. Bold points, short sections, 1 to 2 mobile scrolls, 100 to 300 words for a campaign, under 100 for a welcome email. Sources 01, 04, 07, 08, 10. [e5a610bd2f19] [99679e755f67] [c5f693b5c277] [658d97cafe81] [effdf39b2845] [28952f8a6673]
 
-**R112. Simple words, 5th grade level, cut 20% to 30% when read aloud, active voice.** Sources 04, 01. [c5f693b5c277] [737d5783fddc] [28bbeaa03336]
+**R112. Simple words, 5th grade level, cut 20% to 30% when read aloud, active voice.** Write at the level of someone deciding if a $40 product solves their problem in the next 10 seconds, not a general reader. Sources 04, 01. [c5f693b5c277] [737d5783fddc] [28bbeaa03336]
 
 **R113. Headline names the pain or outcome, not the feature.** "Brain fog has met its match", "1,000 songs in your pocket". Then 1 to 2 sentences, then the first button. Sources 03, 04, 07, 10. [7f637dd1902a] [98dec094905b] [658d97cafe81] [7c77592817cb]
 
@@ -336,29 +375,29 @@ Each rule states the rule, the condition, the supporting mini playbooks, conflic
 
 **R116. Deep emotional copy only for insecurity-anchor benefits; perks get icon rows.** Shift blame to an external cause only when that cause is true and provable; never name competitor companies. Brand voice may rule out insecurity angles. Source 08. [14d83f5d3f3e] [fac6b8c9debd] [b5dbf59a5f38] `[needs brand data: brand voice limits]`
 
-**R117. Regulated claims must be substantiated and allowed, stated or implied.** Source 08 says "imply" them; ecomOS rejects that (R191). [4dac36087f55] `[web check: implied claim rules in the selling market]`
+**R117. Regulated claims must be substantiated and allowed, stated or implied.** Check claims about ingredients, materials, safety or shipping speed against the brand's spec sheet or returns data, never imply them. Source 08 says "imply" them; ecomOS rejects that (R191). [4dac36087f55] `[web check: implied claim rules in the selling market]`
 
-**R118. Subject line: short, curiosity gap, value first.** 01: 2 to 5 words, Title Case, 1 to 2 emojis sometimes. 03: under 50 characters, value in the first 3 words. 02: conversational ("would a friend send this?"). 04: short, no clickbait the email does not deliver. Preview text: written by hand, longer than the subject, adds to it, often ends with "..." (01, 06). Sources 01, 02, 03, 04, 06. [966ff3299f67] [d97f313a3c32] [685553ea4865] [660cfc96df62] [589fc4bc3d9b] [4516dab6a1af]
+**R118. Subject line: short, curiosity gap, value first.** Frame the curiosity gap around a product benefit, a real restock, or a real deadline; a subject that oversells the product invites returns. 01: 2 to 5 words, Title Case, 1 to 2 emojis sometimes. 03: under 50 characters, value in the first 3 words. 02: conversational ("would a friend send this?"). 04: short, no clickbait the email does not deliver. Preview text: written by hand, longer than the subject, adds to it, often ends with "..." (01, 06). Sources 01, 02, 03, 04, 06. [966ff3299f67] [d97f313a3c32] [685553ea4865] [660cfc96df62] [589fc4bc3d9b] [4516dab6a1af]
 
 **R119. Judge subject lines on placed orders, not opens.** 01: opens 68% vs 69%, placed order 11.6% vs 3.8% in a cart email. 01 and 10 say opens come from sender name and cadence. 03 and 04 say do not spend campaign tests on subject lines; 04 says flow subject lines are worth testing. 06 runs a subject A/B on every send. See 7.13. [c4cf02ddd233] [5143f6e2959a] [32c744be62a5] [db47183f351f] [8f302c6bcdfe] [4516dab6a1af]
 
-**R120. Sender name: brand, or founder plus brand; test it; keep the sender email constant across flows and campaigns, on the authenticated domain, with reply-to at support.** Sources 03, 04. [3247c58dc8b5] [ef1cb30f5c95]
+**R120. Sender name: brand, or founder plus brand; test it; keep the sender email constant across flows and campaigns, on the authenticated domain, with reply-to at support.** Keep 1 sender identity across the journey so a customer trusts the win-back email from the same "person" who sent the cart email. Sources 03, 04. [3247c58dc8b5] [ef1cb30f5c95]
 
 **R121. AI drafts are drafts.** Prime the model with brand, products, audience, voice and USPs; ask for a punchy headline, sub-headline and 2 to 3 sentences; strip AI tells ("crafting", "enthusiasts", "unleash"); write product blurbs yourself; fact-check every claim against the brand record; add the CTA the draft forgot. Sources 01, 02, 07, 10. [b33ded12e90b] [f248facd3631] [8051e7b15977] [e932614a8a69] [fab16f82f356] [8e823019286f]
 
 ### 3.17 Design
 
-**R122. 600 px wide; text 18 px desktop and at least 16 px mobile; line height 1.5; about 20 px block padding.** Sources 01, 04, 07. [54eb9e4fd217] [046d714ac94c] [e34234698845]
+**R122. 600 px wide; text 18 px desktop and at least 16 px mobile; line height 1.5; about 20 px block padding.** These sizes exist so a product photo and price stay legible on the phone screen most orders come from. Sources 01, 04, 07. [54eb9e4fd217] [046d714ac94c] [e34234698845]
 
 **R123. Above the fold: headline, 1 to 2 sentences, big button, and the code in promo emails.** 90% to 99% never scroll further (02). Bold the code right before the CTA. Sources 01, 02, 03, 04, 07, 08. [ca47b8d3f740] [681426ed9a3a] [d1327991a91c] [82bb67e79aeb] [9a3babffe41e] [0dec9bea1128]
 
-**R124. Section order: header, sub-header, short body, image, CTA; repeat per section; a CTA at the end of every section and under every product; end with "Shop all" or "Shop bestsellers".** 1 decision per email even with many buttons. Sources 01, 02, 03, 07. [4410834af2cb] [c69f1a6ad23e] [ba367d283c2b] [00d5eebb6a8f] [8d705e1b1a26] [660cfc96df62]
+**R124. Section order: header, sub-header, short body, image, CTA; repeat per section; a CTA at the end of every section and under every product; end with "Shop all" or "Shop bestsellers".** Every section ends on a path to a product page or the cart, never a generic "learn more"; the goal is a purchase, not a click. 1 decision per email even with many buttons. Sources 01, 02, 03, 07. [4410834af2cb] [c69f1a6ad23e] [ba367d283c2b] [00d5eebb6a8f] [8d705e1b1a26] [660cfc96df62]
 
-**R125. Buttons big and thumb-reachable.** Sources 01, 04, 07. [ccc4b7310f94] [72945bee8a3a] [9a3babffe41e]
+*R125 moved to Appendix A: button size mechanics.*
 
 **R126. 3 to 5 products max; 1 per row with copy, or a 2x2 grid; never 3x2 on mobile.** Sources 02, 04, 08. [660cfc96df62] [46502d7fa9bc] [974a7ea84ff1]
 
-**R127. Infographics instead of paragraphs: checklists, icon rows, comparison tables, timelines, graphs, flowcharts; icons instead of bullets.** At least 1 per email (01). Sources 01, 03, 04, 07, 10. [ddcf74804625] [aea3035bb04a] [82bb67e79aeb] [c69f1a6ad23e] [5b56681c9114]
+**R127. Infographics instead of paragraphs: checklists, icon rows, comparison tables, timelines, graphs, flowcharts; icons instead of bullets.** Use them to show how the product works or a before-and-after, content a listing page cannot show as well. At least 1 per email (01). Sources 01, 03, 04, 07, 10. [ddcf74804625] [aea3035bb04a] [82bb67e79aeb] [c69f1a6ad23e] [5b56681c9114]
 
 **R128. Vary layout, imagery and theme between sends; match the brand's site and Instagram; use real product photos where accuracy matters.** Sources 01, 03. [a744284f4af9] [f4b51595abf4] [9b7f9bd54fc3] [82bb67e79aeb]
 
@@ -366,49 +405,27 @@ Each rule states the rule, the condition, the supporting mini playbooks, conflic
 
 **R130. Keep the offer, product names and footer as live text, not only inside images.** Gmail's AI reads text; image-only emails read as empty. Use native product blocks, a live top bar, a live footer with category links, and rebuild short text as live text after slicing. Sources 02, 04 against 07's "image-only is fine" and 01/03's full-slice method. See 7.12. [31b2f58bfc95] [8f1c460f5eed] [cfa416cb8d27] [5fde08efd3f8]
 
-**R131. Send 1 to 3 plain-text emails a month; keep a graphic to text ratio of about 3 or 4 to 1.** Plain text founder emails are the top performers in 01, 02, 04, 10; 01 tests: text beat graphic on clicks and orders. Sources 01, 02, 04, 10. [125460461476] [8c7fb0e97b5c] [0adcc430d16d] [31b2f58bfc95] [65281424ea63]
+*R131 moved to Appendix A: plain-text send ratio mechanics.*
 
 **R132. Footer: unsubscribe (mandatory), organisation name and address via dynamic tags, category links, trust icons, social icons.** Sources 01, 03, 07. [d71019e19cc1] [5fde08efd3f8] [5b334bf3aab6]
 
-**R133. Custom fonts need a web-safe fallback; avoid the HTML editor; check email size stays well under Gmail's clip limit (04 demo: 35 KB).** Sources 03, 04. [b8afb62d37d6] [ebb2548fab18] `[web check: Gmail clipping threshold]`
+*R133 moved to Appendix A: font fallback and email size mechanics.*
 
 **R134. Test send to yourself, click every link, check desktop and mobile, then schedule.** Sources 01, 03, 04, 06, 07. [bcc326384a22] [5b2cad894e44] [d1d5d6fe035a] [400d584b7e15]
 
 ### 3.18 Deliverability
 
-**R135. Deliverability is a sender reputation score built from engagement, complaints, bounces, cadence and authentication.** Inbox providers reward opens, clicks and replies and punish ignores, spam reports and unsubscribes. Technical setup is required but rarely the main cause of poor placement; list quality is. Sources 01, 02, 03, 06. [61807f09ea38] [660cfc96df62] [e758ab334635] [6d8587217a67] [84e6a958f0b2]
+**R135. Deliverability is a sender reputation score built from engagement, complaints, bounces, cadence and authentication.** A low score silently shrinks the reach of every cart, browse and post-purchase flow, where the store's recovery revenue lives. Inbox providers reward opens, clicks and replies and punish ignores, spam reports and unsubscribes. Technical setup is required but rarely the main cause of poor placement; list quality is. Sources 01, 02, 03, 06. [61807f09ea38] [660cfc96df62] [e758ab334635] [6d8587217a67] [84e6a958f0b2]
 
-**R136. Branded sending domain is mandatory.** Add the root domain, pick a sending subdomain (send.brand.com), add the DNS records Klaviyo lists, wait up to 48 hours for verification, then limit sends to engaged recipients for 2 to 4 weeks (Klaviyo's own notice, 04). Sources 02, 03, 04. [a192f5312b82] [e758ab334635] [fc0425a31c0f]
+See 3.18 for the account-mechanics rules that back this up (moved to Appendix A; store framing kept here).
 
-**R137. SPF, DKIM and DMARC must all be present.** Sources 02, 03, 04 name them; none shows SPF or DKIM steps beyond the domain setup. Add a `_dmarc` TXT record with reporting addresses. Sources 02, 03, 04. [e758ab334635] [a192f5312b82] `[web check: Gmail and Yahoo bulk sender requirements]`
+*R136 to R144 moved to Appendix A: domain authentication, DMARC policy, and spam, bounce, unsubscribe, open and click rate floors. These do not change for a store versus a SaaS or publisher sender; the store tie-in stays here in R135 and R146.*
 
-**R138. DMARC policy is a disagreement.** 03: p=none "always, never quarantine or reject" (his reasoning is wrong: DMARC acts on alignment failures, not on content). 04: start at none via a generator; his own record is p=quarantine pct=90. Start at p=none with reports, then move to quarantine and reject once all legitimate mail aligns. See 7.6. [a192f5312b82] [fc0425a31c0f] `[web check: current DMARC guidance and provider minimums]`
-
-**R139. Spam complaint limits: stay under 0.1%, alarm at 0.3%.** 03: below 0.3% (Gmail and Yahoo), ideally below 0.1%; Klaviyo's tab says under 0.01% (03 client at 0.004%); 02 target 0.01%. Keep the strictest as the working target (0.01%) and 0.3% as the hard ceiling. See 7.7. Sources 02, 03. [6d8587217a67] [3dca25bfe545] [91d6fd433f58] `[web check: current Google and Yahoo spam-rate limits]`
-
-**R140. Bounce rate under 1%; hard bounces suppressed at once, soft bounces after 4.** Sources 02, 03, 04. [6d8587217a67] [951b0132a90b] [62ea5bc24ef6]
-
-**R141. Unsubscribe rate under 0.3% (Klaviyo's value); 03 accepts up to 0.67% when extra sends earn more.** 06: about 0.42% per send is normal on his list; over 1% on the first send after a long silence is expected. Sources 02, 03, 06. [91d6fd433f58] [3dca25bfe545] [c1faaf881fc4]
-
-**R142. Clicks, not opens, are the placement signal.** Since iOS 15 Apple Mail opens every email. Exclude Apple privacy opens from attribution and from engaged segments where the builder allows; judge on unique clicks, placed order rate and revenue per recipient. Open-rate gates (R143) apply only to opens with Apple opens excluded. Sources 03, 06; 01 and 02 never mention Apple. See 7.13. [3dca25bfe545] [dccf91db3e0a] [c5f48c89de68] [1ce671434e00]
-
-**R143. Open-rate floors, where opens are used: below 30% to 35% signals a placement problem; 45% to 50%+ on engaged segments is healthy.** 01: under 40% is a problem, 50% healthy. 02: under 30 to 35 placement problem, 45 to 50 target. 03: open above 30% and click above 0.5% as floors; Klaviyo tab: open above 33%, click above 1.2%. Sources 01, 02, 03. [61807f09ea38] [75378f892825] [91d6fd433f58] [ea472261103e] [3dca25bfe545]
-
-**R144. Click rate floor 0.5%; 1.2% is Klaviyo's "okay"; 02 aims at 2%+ on redesigned emails.** Source 02's "5%" is transcript damage; read 0.5%. Sources 02, 03. [91d6fd433f58] [ea472261103e] [7dccf4216521]
-
-**R145. Improve the emails before chasing technical fixes.** Varied topics and layouts, real value, 1 above-the-fold CTA, conversational subject lines, category footer links, invite replies ("Ask us anything"). Sources 01, 02. [b7b58b63ae33] [660cfc96df62]
+**R145. Improve the emails before chasing technical fixes.** The fix that works is usually a real bestseller, a real product photo and a real founder voice, not a generic rewrite. Varied topics and layouts, real value, 1 above-the-fold CTA, conversational subject lines, category footer links, invite replies ("Ask us anything"). Sources 01, 02. [b7b58b63ae33] [660cfc96df62]
 
 **R146. Repair ladder: send only to engaged 14 days, 3 campaigns a week, then widen to 30, 60, 90 as opens hold at or above 50%.** 01: 6 weeks, move up after 3 straight sends at 50%+. 02: 2 weeks and 6 sends per stage; below 50%, stay 2 more weeks; still below, remove site activity from the segment. 03: tighten from 90 to 30 or 60, hold, then widen. During repair keep only welcome, browse, cart, checkout and post-purchase (and site abandonment per 02). Sources 01, 02, 03. [0f792188c5ee] [20fd44bca0dd] [df98522f016b] [98d43fdb4da1] [e5dfe8e98a49]
 
-**R147. Clean the list before the ladder: suppress no opens, clicks or site visits in 180 days with 10+ emails received, no email in a year, never emailed and created over a year ago, any spam mark, hard bounce or 4 soft bounces.** Source 02; 01 and 04 use 180-day and 365-day unengaged. [6dcb0bfce104] [c049ecf47935] [171bd57ff251]
-
-**R148. Run a seed-list placement test monthly and read Klaviyo's deliverability tab by inbox provider and country.** Where 1 provider is weak (02 and 03 examples: Hotmail and Outlook), build a tighter engaged segment for that provider. Sources 02, 03. [75378f892825] [3dca25bfe545] `[web check: GlockApps features and pricing]`
-
-**R149. Warm-up applies to new domains, new IPs and returning senders: engaged only for 2 to 4 weeks, steady daily volume, then widen.** Source 04 (Klaviyo notice); 01 and 02 ladders do the same job. [fc0425a31c0f] [0f792188c5ee]
-
-**R150. Optional: BIMI (logo and Gmail blue check) at about $1,500 a year, for 8 and 9 figure brands.** Source 02. [e758ab334635] `[web check: BIMI cost and requirements]`
-
-**R151. Never use invisible text to pad an image-heavy email.** 01 and 07's header describe it; ecomOS forbids it (R188). [bc0f81f5c30a] [9efe76ee1d22]
+*R147 to R151 moved to Appendix A: list-cleaning thresholds, placement testing, warm-up mechanics, BIMI and invisible text. Standard sender hygiene, not store-specific.*
 
 ### 3.19 SMS (and RCS, iMessage)
 
@@ -454,17 +471,17 @@ Each rule states the rule, the condition, the supporting mini playbooks, conflic
 
 **R172. Push notifications need the brand's own app; add push steps to flows the same way as SMS.** Source 03 only. [4c7296971696] `[verify UI]`
 
+**R202. Use WhatsApp business messaging where SMS is expensive and the market is mobile-first and non-US, and where R170 already rules out iMessage for Android-heavy lists.** Source 02 recommends it as an option but never turns it into a flow rule, and no alternative is offered for markets like India where iMessage does not fit. Source 02. [b9130f4f4dca] `[web check: WhatsApp business messaging cost and setup in the brand's markets]` `[needs brand data: iPhone vs Android share of list]`
+
 ### 3.20 Testing and metrics
 
-**R173. Revenue per recipient and placed order rate decide tests; clicks second; opens last.** 02: revenue decides "95% of tests". 03: placed order rate for content tests, click rate for send-time tests, never open rate. 04: placed order rate, then click, then open. 06: CTR as main metric. 01: placed orders and revenue. See 7.13. Sources 01, 02, 03, 04, 06. [59ae581e3e7f] [659e9f913086] [5d7c84dc41ce] [c4cf02ddd233] [c5f48c89de68]
+**R173. Revenue per recipient and placed order rate decide tests; clicks second; opens last.** The winning metric for a store test is placed order rate or revenue per recipient, never open rate; state that in the hypothesis before testing. 02: revenue decides "95% of tests". 03: placed order rate for content tests, click rate for send-time tests, never open rate. 04: placed order rate, then click, then open. 06: CTR as main metric. 01: placed orders and revenue. See 7.13. Sources 01, 02, 03, 04, 06. [59ae581e3e7f] [659e9f913086] [5d7c84dc41ce] [c4cf02ddd233] [c5f48c89de68]
 
-**R174. Test with a written hypothesis, 1 variable, manual 50/50 at 100% of the audience, manual winner.** Klaviyo's automatic 20/20/60 after 4 hours picks winners too early and sends the majority at a worse time. Sources 02, 03, 04. [ac370b420628] [659e9f913086] [e753b3fb98af]
-
-**R175. Sample floors: 1,000 recipients per branch (500 if the gap is huge), about 2 weeks for flows; 3,000 to 5,000 impressions or 15 days for forms; 5 to 10 campaigns per send-time pair.** Do not call winners at 50 to 100 recipients. Sources 02, 04. [e8e1adc8fefe] [eed1632440b9] [9211d9b5ff9c]
+*R174 and R175 moved to Appendix A: test setup and sample-size mechanics.*
 
 **R176. Test priority: flow delay of email 1 in the biggest flows; content and offer; product vs collection; long vs short; text vs designed; send time; then subject lines; CTA colour last (skip under about $100k a month).** Sources 01, 02, 03, 04. [e846a075130e] [700ad4cccb44] [db47183f351f] [8cab23f94038] [97bfd09fd8e1]
 
-**R177. Winners do not transfer between flows or campaigns; retest.** Sources 01, 02. [8b488b1b15d3] [2176f28aa94d]
+*R177 moved to Appendix A: winners do not transfer between flows or campaigns.*
 
 **R178. In flow timing tests, duplicate every email onto both branches; do not rejoin after email 1.** Source 04. [5f42a553bc22]
 
@@ -472,7 +489,7 @@ Each rule states the rule, the condition, the supporting mini playbooks, conflic
 
 **R180. Turn on anonymous visitor tracking so pre-signup views and carts backfill and feed browse and cart flows.** Sources 03, 04. [8796c9f1ffa6] [fc0425a31c0f]
 
-**R181. Optimise unique counts, not rates.** Open rate down 10% with unique opens up 40% is a win. Source 03. [489a0deaff01]
+*R181 moved to Appendix A: optimise unique counts, not rates.*
 
 **R182. Read the metric chain, not the headline: recipients, unique opens, open rate, unique clicks, click rate, unique conversions, conversion rate, revenue, revenue per recipient, AOV.** Opens down: deliverability. Clicks down: content. Conversions down with clicks steady: merchandising or offer. Under 5% change is noise; look for over 10%. Read revenue and order count together to catch AOV distortion. Source 03. [8183b1fcc7d0] [dccf91db3e0a] [7b7bba687f4a] [ea472261103e]
 
@@ -480,7 +497,7 @@ Each rule states the rule, the condition, the supporting mini playbooks, conflic
 
 **R184. Monthly review is mandatory to catch silent breakage: a theme update that hides the pop-up, a cart flow that stopped, a broken integration that throws no error.** Sources 03, 11. [5d6743fc3f40] [059f73755fa8] [02f841a00c26]
 
-**R185. AI analysis of Klaviyo exports gives hypotheses, not findings; verify against the CSV, then test.** Source 02. [7dccf4216521] [87afe3ecbaf6]
+*R185 moved to Appendix A: AI analysis of Klaviyo exports gives hypotheses, not findings.*
 
 ### 3.21 ecomOS rules that override any source
 
@@ -1298,6 +1315,10 @@ Format: a ranked list, 1 row per test: hypothesis (1 sentence), where (flow and 
 
 Format: the 6 checklists of section 5 with every row filled, then the metric chain for the last 2 months, the deliverability numbers against section 6, and a 10-item fix list in revenue order with P references.
 
+### 9.8 SMS and email compliance sign-off
+
+Format: 1 checklist per market the brand sends to, pulled from the scattered `[web check]` and `[needs brand data]` items in section 10 so legal or ops has a single sign-off before an SMS launch or a new market's first send. Rows: consent type collected (single or double opt-in, explicit SMS consent) and its wording; quiet-hour window in recipient local time; sender registration state (toll-free, short code, or India DLT headers and templates); opt-out handling present (STOP or the market's equivalent); result (pass, fail, open item) and owner. Run this before P20 (SMS setup) and before P2 (domain authentication) reaches a new market.
+
 ## 10. What needs live data or a web check
 
 ### 10.1 `[needs brand data]`
@@ -1377,6 +1398,8 @@ Claims and statistics cited by the sources (do not reuse without a source): 70% 
 | Benchmarks | Every number in section 6 is a presenter or vendor claim from 2024 to 2026 client accounts. Replace with the brand's own data as soon as 2 months of clean exports exist. | Monthly |
 | Market statistics | The uncited figures listed in 10.2. | Never reuse without a current source |
 
+24 Sep 2026: ecommerce specificity pass applied from ECOM_REVIEW.md; priority block added, 15 rules reworded, 8 levers added, about 880 words moved to Appendix A.
+
 ## 12. Source index
 
 | No. | Title | Type | Credibility and bias | Contributed most |
@@ -1403,3 +1426,69 @@ Neighbour folders:
 - Offers: the offers folder holds discount economics, guarantees and bundle design; this folder only sets where offers sit in flows.
 - Ad copy: 11 (copywriting) holds long-form and ad copy frameworks; this folder keeps email and SMS copy only.
 - Retention and loyalty: loyalty program design lives outside this folder; this folder holds the emails that promote it.
+
+## Appendix A. General background
+
+Moved here on 24 Sep 2026 during the ecommerce specificity pass. This content is standard email-sender or testing craft that does not change for a store versus a SaaS or publisher sender. It stays in the playbook for reference and `[verify UI]` checks, but an agent should load section 3 first; nothing here overrides the store-specific rules there.
+
+### A.1 Deliverability mechanics (from 3.18)
+
+Origin: 3.18 Deliverability, R136 to R144 and R147 to R151. The store tie-in (a deliverability floor gates the cart, browse and post-purchase flows) stays in R135 and R146 in the main text.
+
+**R136. Branded sending domain is mandatory.** Add the root domain, pick a sending subdomain (send.brand.com), add the DNS records Klaviyo lists, wait up to 48 hours for verification, then limit sends to engaged recipients for 2 to 4 weeks (Klaviyo's own notice, 04). Sources 02, 03, 04. [a192f5312b82] [e758ab334635] [fc0425a31c0f]
+
+**R137. SPF, DKIM and DMARC must all be present.** Sources 02, 03, 04 name them; none shows SPF or DKIM steps beyond the domain setup. Add a `_dmarc` TXT record with reporting addresses. Sources 02, 03, 04. [e758ab334635] [a192f5312b82] `[web check: Gmail and Yahoo bulk sender requirements]`
+
+**R138. DMARC policy is a disagreement.** 03: p=none "always, never quarantine or reject" (his reasoning is wrong: DMARC acts on alignment failures, not on content). 04: start at none via a generator; his own record is p=quarantine pct=90. Start at p=none with reports, then move to quarantine and reject once all legitimate mail aligns. See 7.6. [a192f5312b82] [fc0425a31c0f] `[web check: current DMARC guidance and provider minimums]`
+
+**R139. Spam complaint limits: stay under 0.1%, alarm at 0.3%.** 03: below 0.3% (Gmail and Yahoo), ideally below 0.1%; Klaviyo's tab says under 0.01% (03 client at 0.004%); 02 target 0.01%. Keep the strictest as the working target (0.01%) and 0.3% as the hard ceiling. See 7.7. Sources 02, 03. [6d8587217a67] [3dca25bfe545] [91d6fd433f58] `[web check: current Google and Yahoo spam-rate limits]`
+
+**R140. Bounce rate under 1%; hard bounces suppressed at once, soft bounces after 4.** Sources 02, 03, 04. [6d8587217a67] [951b0132a90b] [62ea5bc24ef6]
+
+**R141. Unsubscribe rate under 0.3% (Klaviyo's value); 03 accepts up to 0.67% when extra sends earn more.** 06: about 0.42% per send is normal on his list; over 1% on the first send after a long silence is expected. Sources 02, 03, 06. [91d6fd433f58] [3dca25bfe545] [c1faaf881fc4]
+
+**R142. Clicks, not opens, are the placement signal.** Since iOS 15 Apple Mail opens every email. Exclude Apple privacy opens from attribution and from engaged segments where the builder allows; judge on unique clicks, placed order rate and revenue per recipient. Open-rate gates (R143) apply only to opens with Apple opens excluded. Sources 03, 06; 01 and 02 never mention Apple. See 7.13. [3dca25bfe545] [dccf91db3e0a] [c5f48c89de68] [1ce671434e00]
+
+**R143. Open-rate floors, where opens are used: below 30% to 35% signals a placement problem; 45% to 50%+ on engaged segments is healthy.** 01: under 40% is a problem, 50% healthy. 02: under 30 to 35 placement problem, 45 to 50 target. 03: open above 30% and click above 0.5% as floors; Klaviyo tab: open above 33%, click above 1.2%. Sources 01, 02, 03. [61807f09ea38] [75378f892825] [91d6fd433f58] [ea472261103e] [3dca25bfe545]
+
+**R144. Click rate floor 0.5%; 1.2% is Klaviyo's "okay"; 02 aims at 2%+ on redesigned emails.** Source 02's "5%" is transcript damage; read 0.5%. Sources 02, 03. [91d6fd433f58] [ea472261103e] [7dccf4216521]
+
+**R147. Clean the list before the ladder: suppress no opens, clicks or site visits in 180 days with 10+ emails received, no email in a year, never emailed and created over a year ago, any spam mark, hard bounce or 4 soft bounces.** Source 02; 01 and 04 use 180-day and 365-day unengaged. [6dcb0bfce104] [c049ecf47935] [171bd57ff251]
+
+**R148. Run a seed-list placement test monthly and read Klaviyo's deliverability tab by inbox provider and country.** Where 1 provider is weak (02 and 03 examples: Hotmail and Outlook), build a tighter engaged segment for that provider. Sources 02, 03. [75378f892825] [3dca25bfe545] `[web check: GlockApps features and pricing]`
+
+**R149. Warm-up applies to new domains, new IPs and returning senders: engaged only for 2 to 4 weeks, steady daily volume, then widen.** Source 04 (Klaviyo notice); 01 and 02 ladders do the same job. [fc0425a31c0f] [0f792188c5ee]
+
+**R150. Optional: BIMI (logo and Gmail blue check) at about $1,500 a year, for 8 and 9 figure brands.** Source 02. [e758ab334635] `[web check: BIMI cost and requirements]`
+
+**R151. Never use invisible text to pad an image-heavy email.** 01 and 07's header describe it; ecomOS forbids it (R188). [bc0f81f5c30a] [9efe76ee1d22]
+
+### A.2 Copy and design mechanics (from 3.16 and 3.17)
+
+Origin: 3.17 Design, R125, R131, R133. Plain email craft that does not change for a store; the store reasons for the related rules stay in the section 3 rewrites (R111, R112, R118, R120, R122, R124, R127).
+
+**R125. Buttons big and thumb-reachable.** Sources 01, 04, 07. [ccc4b7310f94] [72945bee8a3a] [9a3babffe41e]
+
+**R131. Send 1 to 3 plain-text emails a month; keep a graphic to text ratio of about 3 or 4 to 1.** Plain text founder emails are the top performers in 01, 02, 04, 10; 01 tests: text beat graphic on clicks and orders. Sources 01, 02, 04, 10. [125460461476] [8c7fb0e97b5c] [0adcc430d16d] [31b2f58bfc95] [65281424ea63]
+
+**R133. Custom fonts need a web-safe fallback; avoid the HTML editor; check email size stays well under Gmail's clip limit (04 demo: 35 KB).** Sources 03, 04. [b8afb62d37d6] [ebb2548fab18] `[web check: Gmail clipping threshold]`
+
+### A.3 A/B test mechanics (from 3.20)
+
+Origin: 3.20 Testing and metrics, R174, R175, R177, R181, R185. Standard test method for any digital channel; the store-specific winning metric stays in R173.
+
+**R174. Test with a written hypothesis, 1 variable, manual 50/50 at 100% of the audience, manual winner.** Klaviyo's automatic 20/20/60 after 4 hours picks winners too early and sends the majority at a worse time. Sources 02, 03, 04. [ac370b420628] [659e9f913086] [e753b3fb98af]
+
+**R175. Sample floors: 1,000 recipients per branch (500 if the gap is huge), about 2 weeks for flows; 3,000 to 5,000 impressions or 15 days for forms; 5 to 10 campaigns per send-time pair.** Do not call winners at 50 to 100 recipients. Sources 02, 04. [e8e1adc8fefe] [eed1632440b9] [9211d9b5ff9c]
+
+**R177. Winners do not transfer between flows or campaigns; retest.** Sources 01, 02. [8b488b1b15d3] [2176f28aa94d]
+
+**R181. Optimise unique counts, not rates.** Open rate down 10% with unique opens up 40% is a win. Source 03. [489a0deaff01]
+
+**R185. AI analysis of Klaviyo exports gives hypotheses, not findings; verify against the CSV, then test.** Source 02. [7dccf4216521] [87afe3ecbaf6]
+
+### A.4 Consent and unsubscribe mechanics (from 3.3)
+
+Origin: 3.3 Consent and opt-in, the platform-mechanics half of R30. The store reason (a subscriber who cannot leave skews win-back and sunset math) stays in R30 in the main text.
+
+Klaviyo blocks sends without an unsubscribe link. Gmail one-click unsubscribe is live (02). [5fde08efd3f8] [91d6fd433f58] `[web check: Gmail and Yahoo one-click unsubscribe requirement]`
